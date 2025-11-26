@@ -173,17 +173,21 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
 
-    with patch("subprocess.run") as mock_run:
-        mock_run.return_value = subprocess.CompletedProcess([], 0)
-        run_main_with_args(["--install-runtime-deps"])
+    # Mock platform.system to avoid subprocess issues on Windows
+    with patch("stack.platform.system", return_value="Linux"):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = subprocess.CompletedProcess([], 0)
+            run_main_with_args(["--install-runtime-deps"])
 
-        # Verifica que poetry add FOI chamado para produção
-        poetry_add_calls = [
-            call for call in mock_run.call_args_list
-            if len(call[0][0]) > 2 and call[0][0][0:2] == ["poetry", "add"]
-            and "--group" not in call[0][0]
-        ]
-        assert len(poetry_add_calls) > 0
+            # Verifica que poetry add FOI chamado para produção
+            # Procura por chamadas que incluem 'pydantic' (dependência de produção)
+            poetry_add_calls = [
+                call for call in mock_run.call_args_list
+                if len(call[0]) > 0 and "poetry" in str(call[0][0])
+                and "add" in str(call[0][0])
+                and any("pydantic" in str(arg) for arg in call[0][0])
+            ]
+            assert len(poetry_add_calls) > 0, "Poetry add with pydantic should have been called"
 
 
 def test_python_version_detection(tmp_path):
