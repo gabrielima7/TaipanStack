@@ -16,6 +16,8 @@ PYPROJECT_TOML_PATH = Path("pyproject.toml")
 PRE_COMMIT_CONFIG_PATH = Path(".pre-commit-config.yaml")
 GITHUB_DIR = Path(".github")
 DEPENDABOT_CONFIG_PATH = GITHUB_DIR / "dependabot.yml"
+SECURITY_MD_PATH = Path("SECURITY.md")
+
 
 # --- Funções de Utilidade ---
 
@@ -192,6 +194,37 @@ updates:
     except (OSError, PermissionError) as e:
         _handle_error(f"Não foi possível criar o arquivo .github/dependabot.yml: {e}")
 
+def _generate_security_policy() -> None:
+    """Gera o arquivo SECURITY.md com uma política de segurança padrão."""
+    print("📝 Gerando política de segurança em SECURITY.md...")
+    content = """# Security Policy
+
+## Supported Versions
+
+Use this section to tell people about which versions of your project are
+currently being supported with security updates.
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 5.1.x   | :white_check_mark: |
+| 5.0.x   | :x:                |
+| 4.0.x   | :white_check_mark: |
+| < 4.0   | :x:                |
+
+## Reporting a Vulnerability
+
+Use this section to tell people how to report a vulnerability.
+
+Tell them where to go, how often they can expect to get an update on a
+reported vulnerability, what to expect if the vulnerability is accepted or
+declined, etc.
+"""
+    try:
+        SECURITY_MD_PATH.write_text(content, encoding="utf-8")
+    except (OSError, PermissionError) as e:
+        _handle_error(f"Não foi possível criar o arquivo SECURITY.md: {e}")
+
+
 # --- Funções de Orquestração ---
 
 def _initialize_poetry_project() -> None:
@@ -236,6 +269,7 @@ def main() -> None:
     _generate_pyproject_config()
     _generate_pre_commit_config()
     _generate_dependabot_config()
+    _generate_security_policy()
     _setup_pre_commit_hooks()
 
     print("\n✅ Ambiente configurado com sucesso!")
