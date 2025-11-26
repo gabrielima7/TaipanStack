@@ -7,6 +7,7 @@ performance, segurança e integridade.
 
 import argparse
 import platform
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -53,6 +54,7 @@ def _run_command(
         )
         return result
     except FileNotFoundError:
+        # A verificação de Poetry é tratada separadamente, então este é um erro inesperado.
         _handle_error(f"Comando '{command[0]}' não encontrado. Verifique se ele está instalado e no PATH.")
     except subprocess.CalledProcessError as e:
         error_message = f"O comando `{' '.join(command)}` falhou com o código de saída {e.returncode}."
@@ -70,7 +72,7 @@ def _safe_write(path: Path, content: str, args: argparse.Namespace) -> None:
     if args.dry_run:
         return
 
-    if path.exists():
+    if path.exists() and not args.force:
         backup_path = path.with_suffix(f"{path.suffix}.bak")
         try:
             path.rename(backup_path)
@@ -92,9 +94,8 @@ def _generate_pyproject_config(args: argparse.Namespace) -> None:
     try:
         pyproject_content = PYPROJECT_TOML_PATH.read_text(encoding="utf-8")
     except FileNotFoundError:
-        _handle_error("O arquivo pyproject.toml não foi encontrado. Execute `poetry init` primeiro.")
-    except (OSError, PermissionError) as e:
-        _handle_error(f"Não foi possível ler o arquivo pyproject.toml: {e}")
+        # Se o pyproject.toml não existe, significa que o `poetry init` ainda não rodou.
+        pyproject_content = ""
 
     config_to_add = ""
 
@@ -140,15 +141,15 @@ addopts = "-v --cov=."
                 f.write(config_to_add)
         except (OSError, PermissionError) as e:
             _handle_error(f"Não foi possível escrever no arquivo pyproject.toml: {e}")
+    elif args.dry_run and config_to_add:
+        _log("Adicionaria configurações de ferramentas ao pyproject.toml", args, is_verbose=True)
     elif not config_to_add:
         _log("✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.", args)
-
 
 def _generate_pre_commit_config(args: argparse.Namespace) -> None:
     """Gera e escreve o arquivo de configuração do .pre-commit-config.yaml."""
     _log("📝 Gerando arquivo de configuração .pre-commit-config.yaml...", args)
-    config_content = """
-repos:
+    config_content = """repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
@@ -156,31 +157,26 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 'v0.4.4'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: 'v1.10.0'
     hooks:
       - id: mypy
-
   - repo: https://github.com/PyCQA/bandit
     rev: '1.7.9'
     hooks:
       - id: bandit
         args: ["-r", "."]
-
   - repo: https://github.com/pycqa/safety
     rev: '3.2.3'
     hooks:
       - id: safety
         args: ["--full-report"]
-
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.69.1'
     hooks:
@@ -188,7 +184,6 @@ repos:
         args: ['--config=auto']
 """
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
-
 
 def _generate_dependabot_config(args: argparse.Namespace) -> None:
     """Gera o arquivo de configuração do Dependabot."""
@@ -198,7 +193,6 @@ def _generate_dependabot_config(args: argparse.Namespace) -> None:
             GITHUB_DIR.mkdir(exist_ok=True)
         except (FileExistsError, PermissionError) as e:
             _handle_error(f"Não foi possível criar o diretório .github: {e}")
-
     config_content = """version: 2
 updates:
   - package-ecosystem: "pip"
@@ -216,7 +210,6 @@ updates:
           - "pre-commit"
           - "semgrep"
           - "py-spy"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -224,9 +217,8 @@ updates:
 """
     _safe_write(DEPENDABOT_CONFIG_PATH, config_content, args)
 
-
 def _generate_security_policy(args: argparse.Namespace) -> None:
-    """Gera o arquivo SECURITY.md com uma política de segurança padrão."""
+    """Gera o arquivo SECURITY.md com uma política de segurança moderna."""
     _log("📝 Gerando política de segurança em SECURITY.md...", args)
     content = """# Security Policy
 
@@ -243,31 +235,30 @@ Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou 
 """
     _safe_write(SECURITY_MD_PATH, content, args)
 
-
 # --- Funções de Orquestração ---
 
 def _check_poetry_installation(args: argparse.Namespace) -> None:
-    """Verifica se o Poetry está instalado."""
+    """Verifica se o Poetry está instalado de forma inteligente."""
     _log("🔎 Verificando se o Poetry está instalado...", args)
-    try:
-        _run_command(["poetry", "--version"], args, capture_output=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        _handle_error(
-            "Poetry não encontrado. Por favor, instale o Poetry antes de executar este script. "
-            "Veja: https://python-poetry.org/docs/#installation"
-        )
-    _log("✅ Poetry encontrado.", args)
+    if shutil.which("poetry"):
+        _log("✅ Poetry encontrado.", args)
+        return
 
+    # Se Poetry não foi encontrado, cria uma mensagem de erro mais útil
+    if shutil.which("pipx"):
+        suggestion = "Tente instalar com: `pipx install poetry`"
+    else:
+        suggestion = "Consulte a documentação oficial: https://python-poetry.org/docs/#installation"
+
+    _handle_error(f"Poetry não encontrado. {suggestion}")
 
 def _initialize_poetry_project(args: argparse.Namespace) -> None:
     """Inicializa um novo projeto Poetry."""
     if PYPROJECT_TOML_PATH.exists():
         _log("✅ Projeto Poetry já inicializado.", args)
         return
-
     _log("🛠️  Inicializando projeto Poetry...", args)
     _run_command(["poetry", "init", "-n"], args)
-
 
 def _add_dependencies(args: argparse.Namespace) -> None:
     """Adiciona as dependências de produção e desenvolvimento ao projeto."""
@@ -283,7 +274,6 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "pytest", "pytest-cov", "py-spy", "semgrep"
     ]
     _run_command(["poetry", "add", "--group", "dev"] + dev_deps, args)
-
 
 def _setup_pre_commit_hooks(args: argparse.Namespace) -> None:
     """Instala e configura os hooks de pre-commit."""
@@ -303,17 +293,18 @@ def _setup_cli() -> argparse.Namespace:
         action="store_true",
         help="Exibe logs detalhados sobre cada etapa do processo.",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Força a sobrescrita de arquivos de configuração sem criar backups.",
+    )
     return parser.parse_args()
-
 
 def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
     args = _setup_cli()
-
     _check_poetry_installation(args)
-
     _log("\n🚀 Iniciando a configuração do ambiente Python de alta performance...", args)
-
     _initialize_poetry_project(args)
     _add_dependencies(args)
     _generate_pyproject_config(args)
@@ -321,11 +312,10 @@ def main() -> None:
     _generate_dependabot_config(args)
     _generate_security_policy(args)
     _setup_pre_commit_hooks(args)
-
     _log("\n✅ Ambiente configurado com sucesso!", args)
     _log("Execute `poetry shell` para ativar o ambiente virtual.", args)
     _log("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.", args)
-
+    _log("\n🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.", args)
 
 if __name__ == "__main__":
     main()
