@@ -14,6 +14,8 @@ from typing import List, NoReturn
 # Constantes de configuração
 PYPROJECT_TOML_PATH = Path("pyproject.toml")
 PRE_COMMIT_CONFIG_PATH = Path(".pre-commit-config.yaml")
+GITHUB_DIR = Path(".github")
+DEPENDABOT_CONFIG_PATH = GITHUB_DIR / "dependabot.yml"
 
 # --- Funções de Utilidade ---
 
@@ -154,6 +156,42 @@ repos:
     except (OSError, PermissionError) as e:
         _handle_error(f"Não foi possível criar o arquivo .pre-commit-config.yaml: {e}")
 
+def _generate_dependabot_config() -> None:
+    """Gera o arquivo de configuração do Dependabot."""
+    print("📝 Gerando arquivo de configuração .github/dependabot.yml...")
+    try:
+        GITHUB_DIR.mkdir(exist_ok=True)
+    except (FileExistsError, PermissionError) as e:
+        _handle_error(f"Não foi possível criar o diretório .github: {e}")
+
+    config_content = """version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "ruff"
+          - "mypy"
+          - "bandit"
+          - "safety"
+          - "pytest*"
+          - "pre-commit"
+          - "semgrep"
+          - "py-spy"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+"""
+    try:
+        DEPENDABOT_CONFIG_PATH.write_text(config_content, encoding="utf-8")
+    except (OSError, PermissionError) as e:
+        _handle_error(f"Não foi possível criar o arquivo .github/dependabot.yml: {e}")
+
 # --- Funções de Orquestração ---
 
 def _initialize_poetry_project() -> None:
@@ -197,6 +235,7 @@ def main() -> None:
     _add_dependencies()
     _generate_pyproject_config()
     _generate_pre_commit_config()
+    _generate_dependabot_config()
     _setup_pre_commit_hooks()
 
     print("\n✅ Ambiente configurado com sucesso!")
