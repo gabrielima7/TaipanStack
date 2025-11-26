@@ -41,13 +41,29 @@ def _run_command(command: List[str], capture_output: bool = False) -> subprocess
         _handle_error(f"Comando '{command[0]}' não encontrado. Verifique se ele está instalado e no PATH.")
     except subprocess.CalledProcessError as e:
         error_message = f"O comando `{' '.join(command)}` falhou com o código de saída {e.returncode}."
-        if e.stderr:
+        if e.stderr and not capture_output:
             error_message += f"\nErro:\n{e.stderr}"
         _handle_error(error_message)
 
 def _is_windows() -> bool:
     """Verifica se o sistema operacional é Windows."""
     return platform.system() == "Windows"
+
+def _safe_write(path: Path, content: str) -> None:
+    """Escreve conteúdo em um arquivo, criando um backup se o arquivo já existir."""
+    if path.exists():
+        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        try:
+            path.rename(backup_path)
+            print(f"⚠️  Backup criado: {backup_path.name}")
+        except (OSError, PermissionError) as e:
+            _handle_error(f"Não foi possível criar o backup do arquivo {path.name}: {e}")
+
+    try:
+        path.write_text(content, encoding="utf-8")
+    except (OSError, PermissionError) as e:
+        _handle_error(f"Não foi possível escrever no arquivo {path.name}: {e}")
+
 
 # --- Funções de Geração de Configuração ---
 
@@ -153,10 +169,7 @@ repos:
       - id: semgrep
         args: ['--config=auto']
 """
-    try:
-        PRE_COMMIT_CONFIG_PATH.write_text(config_content, encoding="utf-8")
-    except (OSError, PermissionError) as e:
-        _handle_error(f"Não foi possível criar o arquivo .pre-commit-config.yaml: {e}")
+    _safe_write(PRE_COMMIT_CONFIG_PATH, config_content)
 
 def _generate_dependabot_config() -> None:
     """Gera o arquivo de configuração do Dependabot."""
@@ -189,10 +202,7 @@ updates:
     schedule:
       interval: "daily"
 """
-    try:
-        DEPENDABOT_CONFIG_PATH.write_text(config_content, encoding="utf-8")
-    except (OSError, PermissionError) as e:
-        _handle_error(f"Não foi possível criar o arquivo .github/dependabot.yml: {e}")
+    _safe_write(DEPENDABOT_CONFIG_PATH, config_content)
 
 def _generate_security_policy() -> None:
     """Gera o arquivo SECURITY.md com uma política de segurança padrão."""
@@ -200,32 +210,32 @@ def _generate_security_policy() -> None:
     content = """# Security Policy
 
 ## Supported Versions
-
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Nós priorizamos correções de segurança na versão mais recente (Rolling Release).
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Latest  | :white_check_mark: |
+| Older   | :x:                |
 
 ## Reporting a Vulnerability
-
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou email.
 """
-    try:
-        SECURITY_MD_PATH.write_text(content, encoding="utf-8")
-    except (OSError, PermissionError) as e:
-        _handle_error(f"Não foi possível criar o arquivo SECURITY.md: {e}")
+    _safe_write(SECURITY_MD_PATH, content)
 
 
 # --- Funções de Orquestração ---
+
+def _check_poetry_installation() -> None:
+    """Verifica se o Poetry está instalado."""
+    print("🔎 Verificando se o Poetry está instalado...")
+    try:
+        _run_command(["poetry", "--version"], capture_output=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        _handle_error(
+            "Poetry não encontrado. Por favor, instale o Poetry antes de executar este script. "
+            "Veja: https://python-poetry.org/docs/#installation"
+        )
+    print("✅ Poetry encontrado.")
 
 def _initialize_poetry_project() -> None:
     """Inicializa um novo projeto Poetry."""
@@ -262,7 +272,9 @@ def _setup_pre_commit_hooks() -> None:
 
 def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
-    print("🚀 Iniciando a configuração do ambiente Python de alta performance...")
+    _check_poetry_installation()
+
+    print("\n🚀 Iniciando a configuração do ambiente Python de alta performance...")
 
     _initialize_poetry_project()
     _add_dependencies()
