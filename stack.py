@@ -331,7 +331,7 @@ def _create_project_structure(args: argparse.Namespace) -> None:
             try:
                 content = f'"""Package initialization for {init_file.parent.name}."""\n'
                 if init_file.parent.name == project_name:
-                    content += f'\n__version__ = "0.1.0"\n'
+                    content += '\n__version__ = "0.1.0"\n'
                 init_file.write_text(content, encoding="utf-8")
                 _log(f"✅ Criado: {init_file}", args, is_verbose=True)
             except (OSError, PermissionError) as e:
@@ -541,7 +541,7 @@ def main() -> None:
     _log("Execute `poetry shell` para ativar o ambiente virtual.", args)
     _log("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.", args)
     _log("\n🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.", args)
-    _log(f"\n📚 Consulte o README.md para mais informações sobre o projeto.", args)
+    _log("\n📚 Consulte o README.md para mais informações sobre o projeto.", args)
 
 if __name__ == "__main__":
     main()
