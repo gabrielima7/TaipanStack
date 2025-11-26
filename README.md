@@ -2,7 +2,7 @@
 
 Este projeto fornece um script "Zero-to-Hero" que configura um ambiente de desenvolvimento Python completo em segundos. Ele automatiza a instalação e configuração de um conjunto de ferramentas de alta performance, segurança e qualidade, permitindo que você foque apenas em codificar.
 
-## ✨ A Stack (O "Dream Team")
+## ✨ A Stack 
 
 O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosamente selecionadas para garantir a máxima eficiência e robustez do seu projeto.
 
