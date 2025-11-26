@@ -112,39 +112,42 @@ def _generate_pre_commit_config() -> None:
     config_content = """
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.1.6'
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.4.4'
     hooks:
       - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.6.1'
+    rev: 'v1.10.0'
     hooks:
       - id: mypy
 
   - repo: https://github.com/PyCQA/bandit
-    rev: '1.7.5'
+    rev: '1.7.9'
     hooks:
       - id: bandit
         args: ["-r", "."]
 
   - repo: https://github.com/pycqa/safety
-    rev: '2.3.5'
+    rev: '3.2.3'
     hooks:
       - id: safety
+        args: ["--full-report"]
 
-  - repo: https://github.com/returntocorp/semgrep
-    rev: 'v1.17.1'
+  - repo: https://github.com/semgrep/pre-commit
+    rev: 'v1.69.1'
     hooks:
       - id: semgrep
-        args: ['--config=p/python']
+        args: ['--config=auto']
 """
     try:
         PRE_COMMIT_CONFIG_PATH.write_text(config_content, encoding="utf-8")
