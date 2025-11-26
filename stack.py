@@ -5,6 +5,7 @@ Este script automatiza a configuração inicial de um ambiente Python focado em
 performance, segurança e integridade.
 """
 
+import argparse
 import platform
 import subprocess
 import sys
@@ -21,13 +22,27 @@ SECURITY_MD_PATH = Path("SECURITY.md")
 
 # --- Funções de Utilidade ---
 
+def _log(message: str, args: argparse.Namespace, is_verbose: bool = False) -> None:
+    """Função de log centralizada que respeita os modos dry-run e verbose."""
+    if is_verbose and not args.verbose:
+        return
+
+    prefix = "[DRY-RUN] " if args.dry_run else ""
+    print(f"{prefix}{message}")
+
 def _handle_error(message: str) -> NoReturn:
     """Exibe uma mensagem de erro e encerra o script."""
     print(f"❌ Erro: {message}", file=sys.stderr)
     sys.exit(1)
 
-def _run_command(command: List[str], capture_output: bool = False) -> subprocess.CompletedProcess[str]:
-    """Executa um comando no shell e trata erros."""
+def _run_command(
+    command: List[str], args: argparse.Namespace, capture_output: bool = False
+) -> subprocess.CompletedProcess[str]:
+    """Executa um comando no shell, tratando erros e modo dry-run."""
+    _log(f"Executando comando: `{' '.join(command)}`", args, is_verbose=True)
+    if args.dry_run:
+        return subprocess.CompletedProcess(command, 0, "", "")
+
     try:
         result = subprocess.run(
             command,
@@ -49,13 +64,17 @@ def _is_windows() -> bool:
     """Verifica se o sistema operacional é Windows."""
     return platform.system() == "Windows"
 
-def _safe_write(path: Path, content: str) -> None:
-    """Escreve conteúdo em um arquivo, criando um backup se o arquivo já existir."""
+def _safe_write(path: Path, content: str, args: argparse.Namespace) -> None:
+    """Escreve conteúdo em um arquivo, com backup e modo dry-run."""
+    _log(f"Escrevendo no arquivo: {path}", args, is_verbose=True)
+    if args.dry_run:
+        return
+
     if path.exists():
         backup_path = path.with_suffix(f"{path.suffix}.bak")
         try:
             path.rename(backup_path)
-            print(f"⚠️  Backup criado: {backup_path.name}")
+            _log(f"⚠️  Backup criado: {backup_path.name}", args)
         except (OSError, PermissionError) as e:
             _handle_error(f"Não foi possível criar o backup do arquivo {path.name}: {e}")
 
@@ -64,12 +83,11 @@ def _safe_write(path: Path, content: str) -> None:
     except (OSError, PermissionError) as e:
         _handle_error(f"Não foi possível escrever no arquivo {path.name}: {e}")
 
-
 # --- Funções de Geração de Configuração ---
 
-def _generate_pyproject_config() -> None:
+def _generate_pyproject_config(args: argparse.Namespace) -> None:
     """Gera e escreve as configurações do Ruff e Mypy no pyproject.toml."""
-    print("📝 Gerando configurações para Ruff, Mypy e Pytest no pyproject.toml...")
+    _log("📝 Gerando configurações para Ruff, Mypy e Pytest no pyproject.toml...", args)
 
     try:
         pyproject_content = PYPROJECT_TOML_PATH.read_text(encoding="utf-8")
@@ -116,19 +134,19 @@ testpaths = ["tests"]
 addopts = "-v --cov=."
 """
 
-    if config_to_add:
+    if not args.dry_run and config_to_add:
         try:
             with PYPROJECT_TOML_PATH.open("a", encoding="utf-8") as f:
                 f.write(config_to_add)
         except (OSError, PermissionError) as e:
             _handle_error(f"Não foi possível escrever no arquivo pyproject.toml: {e}")
-    else:
-        print("✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.")
+    elif not config_to_add:
+        _log("✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.", args)
 
 
-def _generate_pre_commit_config() -> None:
+def _generate_pre_commit_config(args: argparse.Namespace) -> None:
     """Gera e escreve o arquivo de configuração do .pre-commit-config.yaml."""
-    print("📝 Gerando arquivo de configuração .pre-commit-config.yaml...")
+    _log("📝 Gerando arquivo de configuração .pre-commit-config.yaml...", args)
     config_content = """
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -169,15 +187,17 @@ repos:
       - id: semgrep
         args: ['--config=auto']
 """
-    _safe_write(PRE_COMMIT_CONFIG_PATH, config_content)
+    _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
-def _generate_dependabot_config() -> None:
+
+def _generate_dependabot_config(args: argparse.Namespace) -> None:
     """Gera o arquivo de configuração do Dependabot."""
-    print("📝 Gerando arquivo de configuração .github/dependabot.yml...")
-    try:
-        GITHUB_DIR.mkdir(exist_ok=True)
-    except (FileExistsError, PermissionError) as e:
-        _handle_error(f"Não foi possível criar o diretório .github: {e}")
+    _log("📝 Gerando arquivo de configuração .github/dependabot.yml...", args)
+    if not args.dry_run:
+        try:
+            GITHUB_DIR.mkdir(exist_ok=True)
+        except (FileExistsError, PermissionError) as e:
+            _handle_error(f"Não foi possível criar o diretório .github: {e}")
 
     config_content = """version: 2
 updates:
@@ -202,11 +222,12 @@ updates:
     schedule:
       interval: "daily"
 """
-    _safe_write(DEPENDABOT_CONFIG_PATH, config_content)
+    _safe_write(DEPENDABOT_CONFIG_PATH, config_content, args)
 
-def _generate_security_policy() -> None:
+
+def _generate_security_policy(args: argparse.Namespace) -> None:
     """Gera o arquivo SECURITY.md com uma política de segurança padrão."""
-    print("📝 Gerando política de segurança em SECURITY.md...")
+    _log("📝 Gerando política de segurança em SECURITY.md...", args)
     content = """# Security Policy
 
 ## Supported Versions
@@ -220,73 +241,90 @@ Nós priorizamos correções de segurança na versão mais recente (Rolling Rele
 ## Reporting a Vulnerability
 Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou email.
 """
-    _safe_write(SECURITY_MD_PATH, content)
+    _safe_write(SECURITY_MD_PATH, content, args)
 
 
 # --- Funções de Orquestração ---
 
-def _check_poetry_installation() -> None:
+def _check_poetry_installation(args: argparse.Namespace) -> None:
     """Verifica se o Poetry está instalado."""
-    print("🔎 Verificando se o Poetry está instalado...")
+    _log("🔎 Verificando se o Poetry está instalado...", args)
     try:
-        _run_command(["poetry", "--version"], capture_output=True)
+        _run_command(["poetry", "--version"], args, capture_output=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
         _handle_error(
             "Poetry não encontrado. Por favor, instale o Poetry antes de executar este script. "
             "Veja: https://python-poetry.org/docs/#installation"
         )
-    print("✅ Poetry encontrado.")
+    _log("✅ Poetry encontrado.", args)
 
-def _initialize_poetry_project() -> None:
+
+def _initialize_poetry_project(args: argparse.Namespace) -> None:
     """Inicializa um novo projeto Poetry."""
     if PYPROJECT_TOML_PATH.exists():
-        print("✅ Projeto Poetry já inicializado.")
+        _log("✅ Projeto Poetry já inicializado.", args)
         return
 
-    print("🛠️  Inicializando projeto Poetry...")
-    _run_command(["poetry", "init", "-n"])
+    _log("🛠️  Inicializando projeto Poetry...", args)
+    _run_command(["poetry", "init", "-n"], args)
 
 
-def _add_dependencies() -> None:
+def _add_dependencies(args: argparse.Namespace) -> None:
     """Adiciona as dependências de produção e desenvolvimento ao projeto."""
-    print("📦 Adicionando dependências de produção...")
+    _log("📦 Adicionando dependências de produção...", args)
     prod_deps = ["pydantic>=2.0", "orjson"]
     if not _is_windows():
         prod_deps.append("uvloop")
+    _run_command(["poetry", "add"] + prod_deps, args)
 
-    _run_command(["poetry", "add"] + prod_deps)
-
-    print("🔧 Adicionando dependências de desenvolvimento...")
+    _log("🔧 Adicionando dependências de desenvolvimento...", args)
     dev_deps = [
         "ruff", "mypy", "bandit", "safety", "pre-commit",
         "pytest", "pytest-cov", "py-spy", "semgrep"
     ]
-    _run_command(["poetry", "add", "--group", "dev"] + dev_deps)
+    _run_command(["poetry", "add", "--group", "dev"] + dev_deps, args)
 
 
-def _setup_pre_commit_hooks() -> None:
+def _setup_pre_commit_hooks(args: argparse.Namespace) -> None:
     """Instala e configura os hooks de pre-commit."""
-    print("⚙️  Instalando hooks de pre-commit...")
-    _run_command(["poetry", "run", "pre-commit", "install"])
+    _log("⚙️  Instalando hooks de pre-commit...", args)
+    _run_command(["poetry", "run", "pre-commit", "install"], args)
+
+def _setup_cli() -> argparse.Namespace:
+    """Configura a interface de linha de comando."""
+    parser = argparse.ArgumentParser(description="Automatiza a configuração de um ambiente Python de alta performance.")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Simula a execução sem fazer alterações reais no sistema de arquivos.",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Exibe logs detalhados sobre cada etapa do processo.",
+    )
+    return parser.parse_args()
 
 
 def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
-    _check_poetry_installation()
+    args = _setup_cli()
 
-    print("\n🚀 Iniciando a configuração do ambiente Python de alta performance...")
+    _check_poetry_installation(args)
 
-    _initialize_poetry_project()
-    _add_dependencies()
-    _generate_pyproject_config()
-    _generate_pre_commit_config()
-    _generate_dependabot_config()
-    _generate_security_policy()
-    _setup_pre_commit_hooks()
+    _log("\n🚀 Iniciando a configuração do ambiente Python de alta performance...", args)
 
-    print("\n✅ Ambiente configurado com sucesso!")
-    print("Execute `poetry shell` para ativar o ambiente virtual.")
-    print("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.")
+    _initialize_poetry_project(args)
+    _add_dependencies(args)
+    _generate_pyproject_config(args)
+    _generate_pre_commit_config(args)
+    _generate_dependabot_config(args)
+    _generate_security_policy(args)
+    _setup_pre_commit_hooks(args)
+
+    _log("\n✅ Ambiente configurado com sucesso!", args)
+    _log("Execute `poetry shell` para ativar o ambiente virtual.", args)
+    _log("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.", args)
 
 
 if __name__ == "__main__":
