@@ -2,7 +2,7 @@
 
 Este projeto fornece um script "Zero-to-Hero" que configura um ambiente de desenvolvimento Python completo em segundos. Ele automatiza a instalação e configuração de um conjunto de ferramentas de alta performance, segurança e qualidade, permitindo que você foque apenas em codificar.
 
-## ✨ A Stack 
+## ✨ A Stack (O "Dream Team")
 
 O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosamente selecionadas para garantir a máxima eficiência e robustez do seu projeto.
 
@@ -26,13 +26,17 @@ O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosam
 ### Pré-requisitos
 
 - **Python 3.10+**
-- **Poetry** instalado globalmente.
+- **Poetry**: Recomenda-se a instalação via `pipx` para isolamento de pacotes:
+  ```bash
+  pipx install poetry
+  ```
 
 ### Instalação
 
-1.  **Copie o script para o seu novo projeto:**
+1.  **Clone o repositório:**
     ```bash
-    cp /path/to/stack.py .
+    git clone https://github.com/gabrielima7/stack.git
+    cd stack
     ```
 
 2.  **Execute o script:**
@@ -48,6 +52,14 @@ O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosam
 
 Pronto! Seu ambiente está configurado e pronto para uso.
 
+## 🛠️ Opções Avançadas (CLI)
+
+O script possui uma interface de linha de comando para dar a você controle total sobre a execução:
+
+-   `--dry-run`: Simula a execução completa sem fazer nenhuma alteração real no sistema de arquivos. Perfeito para testar o que o script fará.
+-   `--verbose`: Ativa logs detalhados, exibindo cada comando e operação de arquivo que está sendo executada.
+-   `--force`: Sobrescreve arquivos de configuração existentes (`.pre-commit-config.yaml`, etc.) **sem criar backups**. Use com cuidado, ideal para ambientes de CI/CD ou quando você tem certeza de que deseja uma configuração limpa.
+
 ## 🤖 Automação Inteligente
 
 O `stack.py` foi projetado para ser o mais inteligente e autônomo possível:
@@ -57,4 +69,5 @@ O `stack.py` foi projetado para ser o mais inteligente e autônomo possível:
     -   `pyproject.toml` (com configurações para Ruff, Mypy e Pytest)
     -   `.pre-commit-config.yaml` (com hooks para Ruff, Mypy, Bandit, Safety e Semgrep)
     -   `.github/dependabot.yml` (com automação de atualização diária para `pip` e `GitHub Actions`)
--   **Idempotente:** O script pode ser executado várias vezes sem causar erros ou duplicar configurações.
+    -   `SECURITY.md` (com uma política de segurança padrão)
+-   **Idempotente e Seguro:** O script pode ser executado várias vezes. Por padrão, ele cria backups (`.bak`) de arquivos existentes antes de sobrescrevê-los para evitar perda de dados.
