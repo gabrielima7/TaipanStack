@@ -2,20 +2,20 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Como este é um projeto em evolução (rolling release), nós priorizamos correções de segurança na versão mais recente disponível no branch principal.
 
-| Version | Supported          |
+| Version | Supported |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Latest  | :white_check_mark: |
+| Older   | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+A segurança deste bootstrapper é crítica, pois ele é a base para outros projetos.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Se você descobrir uma vulnerabilidade no script `stack.py` ou nas configurações que ele gera (ex: uma configuração insegura do Bandit ou dependência vulnerável):
+
+1.  **NÃO** abra uma Issue pública se a falha for crítica ou explorável.
+2.  Por favor, reporte através da aba **[Security](https://github.com/gabrielima7/stack/security)** do repositório (se habilitada) ou envie um e-mail para **[SEU-EMAIL-AQUI]**.
+
+Nós nos comprometemos a analisar e corrigir falhas reportadas o mais rápido possível (geralmente em até 48h).
