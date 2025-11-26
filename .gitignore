@@ -99,3 +99,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Backup files
+*.bak
+
+# Environment files
+.env
+
+# Ruff cache
+.ruff_cache/
+

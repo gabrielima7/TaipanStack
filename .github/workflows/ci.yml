@@ -5,19 +5,26 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
         run: pipx install poetry
@@ -26,10 +33,19 @@ jobs:
         run: pip install pytest pytest-cov
 
       - name: Run tests with pytest
-        run: pytest tests/test_stack_script.py
+        run: pytest tests/test_stack_script.py -v --cov=. --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   lint:
-    name: Lint Code
+    name: Code Quality Checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -44,4 +60,104 @@ jobs:
         run: pip install ruff
 
       - name: Run ruff check
-        run: ruff check stack.py
+        run: ruff check stack.py tests/
+
+      - name: Run ruff format check
+        run: ruff format --check stack.py tests/
+
+  typecheck:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install mypy
+        run: pip install mypy types-all
+
+      - name: Run mypy
+        run: mypy stack.py --strict
+
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install security tools
+        run: pip install bandit safety
+
+      - name: Run Bandit security scanner
+        run: bandit -r stack.py -ll
+
+      - name: Run Safety dependency checker
+        run: safety scan --json || true
+        continue-on-error: true
+
+  dry-run:
+    name: Dry Run Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Run stack.py in dry-run mode
+        run: python stack.py --dry-run --verbose
+
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: [test, lint, typecheck]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Create test directory
+        run: mkdir -p /tmp/stack-test && cd /tmp/stack-test
+
+      - name: Run stack.py
+        run: python $GITHUB_WORKSPACE/stack.py --verbose
+        working-directory: /tmp/stack-test
+
+      - name: Verify files created
+        run: |
+          test -f pyproject.toml
+          test -f .pre-commit-config.yaml
+          test -f SECURITY.md
+          test -d .github
+          test -f .github/dependabot.yml
+          test -d src
+          test -d tests
+        working-directory: /tmp/stack-test
+
+      - name: Show project structure
+        run: ls -la
+        working-directory: /tmp/stack-test
+

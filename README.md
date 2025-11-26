@@ -1,8 +1,13 @@
 # 🐍 Python Stack: Performance, Security & Integrity Bootstrapper
 
+[![Stack CI](https://github.com/gabrielima7/stack/workflows/Stack%20CI/badge.svg)](https://github.com/gabrielima7/stack/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 Este projeto fornece um script "Zero-to-Hero" que configura um ambiente de desenvolvimento Python completo em segundos. Ele automatiza a instalação e configuração de um conjunto de ferramentas de alta performance, segurança e qualidade, permitindo que você foque apenas em codificar.
 
-## ✨ A Stack 
+## ✨ A Stack
 
 O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosamente selecionadas para garantir a máxima eficiência e robustez do seu projeto.
 
@@ -56,6 +61,20 @@ O script possui uma interface de linha de comando para dar a você controle tota
 -   `--dry-run`: Simula a execução sem alterações.
 -   `--force`: Sobrescreve arquivos de configuração existentes sem criar backup.
 -   `--verbose`: Exibe logs detalhados.
+-   `--install-runtime-deps`: Instala dependências de produção opcionais (pydantic, orjson, uvloop).
+
+**Exemplo:**
+```bash
+# Simular setup sem fazer mudanças
+python3 stack.py --dry-run
+
+# Setup completo com dependências de runtime
+python3 stack.py --install-runtime-deps
+
+# Setup verboso com logs detalhados
+python3 stack.py --verbose
+```
+
 
 ## Desenvolvimento e Testes
 
@@ -66,9 +85,31 @@ O projeto inclui uma suíte de testes própria (`tests/`) e um pipeline de CI qu
 O `stack.py` foi projetado para ser o mais inteligente e autônomo possível:
 
 -   **Detecção de Sistema Operacional:** O script verifica automaticamente o seu SO e instala o `uvloop` apenas em ambientes Linux e macOS, onde é compatível.
+-   **Inicialização do Git:** Detecta se o Git já foi inicializado e executa `git init` automaticamente se necessário.
+-   **Estrutura de Projeto:** Cria automaticamente a estrutura recomendada com pastas `src/`, `tests/`, `docs/` e arquivos de exemplo.
 -   **Geração Automática de Configuração:** Todos os arquivos de configuração são gerados e pré-configurados com padrões rigorosos:
     -   `pyproject.toml` (com configurações para Ruff, Mypy e Pytest)
-    -   `.pre-commit-config.yaml` (com hooks para Ruff, Mypy, Bandit, Safety e Semgrep)
+    -   `.pre-commit-config.yaml` (com hooks para Ruff, Mypy, Bandit, Safety, Semgrep e detect-secrets)
     -   `.github/dependabot.yml` (com automação de atualização diária para `pip` e `GitHub Actions`)
     -   `SECURITY.md` (com uma política de segurança padrão)
+    -   `.editorconfig` (para consistência entre editores)
+    -   `Makefile` (com comandos de desenvolvimento comuns)
+-   **Versão Python Dinâmica:** Detecta automaticamente a versão do Python em uso e configura o Mypy adequadamente.
+-   **Validação Pós-Setup:** Verifica se tudo foi configurado corretamente após a execução.
 -   **Idempotente e Seguro:** O script pode ser executado várias vezes. Por padrão, ele cria backups (`.bak`) de arquivos existentes antes de sobrescrevê-los para evitar perda de dados.
+
+## 📚 Documentação Adicional
+
+- [**Contributing Guide**](CONTRIBUTING.md) - Como contribuir para o projeto
+- [**Changelog**](CHANGELOG.md) - Histórico de versões e mudanças
+- [**Security Policy**](SECURITY.md) - Política de segurança e reporte de vulnerabilidades
+- [**License**](LICENSE) - Licença MIT
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Veja nosso [guia de contribuição](CONTRIBUTING.md) para mais detalhes.
+
+## 📝 Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+

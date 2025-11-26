@@ -5,9 +5,12 @@ Este script automatiza a configuração inicial de um ambiente Python focado em
 performance, segurança e integridade.
 """
 
+__version__ = "1.0.0"
+
 import argparse
 import platform
 import shutil
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -100,39 +103,49 @@ def _generate_pyproject_config(args: argparse.Namespace) -> None:
     config_to_add = ""
 
     if "[tool.ruff]" not in pyproject_content:
-        config_to_add += """
+        python_version = f"py{sys.version_info.major}{sys.version_info.minor}"
+        config_to_add += f"""
 # --- Configurações de Qualidade de Código ---
 [tool.ruff]
 line-length = 88
+target-version = "{python_version}"
+
+[tool.ruff.lint]
 select = [
     "F", "E", "W", "I", "N", "D", "Q", "S", "B", "A", "C4", "T20", "SIM", "PTH",
     "TID", "ARG", "PIE", "PLC", "PLE", "PLR", "PLW", "RUF"
 ]
 ignore = ["D203", "D212", "D213", "D416", "D417", "B905"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 10
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 """
 
     if "[tool.mypy]" not in pyproject_content:
-        config_to_add += """
+        python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+        config_to_add += f"""
 [tool.mypy]
-python_version = "3.10"
+python_version = "{python_version}"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-disallow_any_unimported = true
+disallow_any_unimported = false
 no_implicit_optional = true
 check_untyped_defs = true
 strict_optional = true
 strict_equality = true
+ignore_missing_imports = true
 """
 
     if "[tool.pytest.ini_options]" not in pyproject_content:
         config_to_add += """
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=."
+addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80"
 """
 
     if not args.dry_run and config_to_add:
@@ -151,37 +164,43 @@ def _generate_pre_commit_config(args: argparse.Namespace) -> None:
     _log("📝 Gerando arquivo de configuração .pre-commit-config.yaml...", args)
     config_content = """repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.4.4'
+    rev: 'v0.8.4'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v1.10.0'
+    rev: 'v1.13.0'
     hooks:
       - id: mypy
+        additional_dependencies: [types-all]
   - repo: https://github.com/PyCQA/bandit
-    rev: '1.7.9'
+    rev: '1.8.0'
     hooks:
       - id: bandit
-        args: ["-r", "."]
+        args: ["-r", ".", "-ll"]
   - repo: https://github.com/pycqa/safety
-    rev: '3.2.3'
+    rev: '3.2.11'
     hooks:
       - id: safety
-        args: ["--full-report"]
+        args: ["scan", "--json"]
   - repo: https://github.com/semgrep/pre-commit
-    rev: 'v1.69.1'
+    rev: 'v1.99.0'
     hooks:
       - id: semgrep
         args: ['--config=auto']
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: 'v1.5.0'
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
 """
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
@@ -237,6 +256,182 @@ Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou 
 
 # --- Funções de Orquestração ---
 
+def _check_git_initialized(args: argparse.Namespace) -> None:
+    """Verifica se o Git está inicializado e inicializa se necessário."""
+    _log("🔎 Verificando se o Git está inicializado...", args)
+    git_dir = Path(".git")
+
+    if git_dir.exists():
+        _log("✅ Repositório Git já inicializado.", args)
+        return
+
+    if not shutil.which("git"):
+        _log("⚠️  Git não encontrado no PATH. Pulando inicialização do Git.", args)
+        return
+
+    _log("🛠️  Inicializando repositório Git...", args)
+    _run_command(["git", "init"], args)
+    _log("✅ Repositório Git inicializado com sucesso.", args)
+
+def _check_connectivity(args: argparse.Namespace) -> None:
+    """Verifica conectividade com a internet antes de instalar dependências."""
+    _log("🔎 Verificando conectividade com a internet...", args, is_verbose=True)
+
+    try:
+        # Tenta conectar ao PyPI para verificar conectividade
+        socket.create_connection(("pypi.org", 443), timeout=5)
+        _log("✅ Conectividade confirmada.", args, is_verbose=True)
+    except (socket.timeout, socket.error, OSError):
+        _handle_error(
+            "Não foi possível conectar à internet. "
+            "Verifique sua conexão e proxies antes de continuar."
+        )
+
+def _create_project_structure(args: argparse.Namespace) -> None:
+    """Cria a estrutura básica de pastas do projeto."""
+    _log("📁 Criando estrutura de pastas do projeto...", args)
+
+    # Detecta o nome do projeto do pyproject.toml
+    project_name = "my_project"
+    if PYPROJECT_TOML_PATH.exists():
+        try:
+            content = PYPROJECT_TOML_PATH.read_text(encoding="utf-8")
+            for line in content.split("\n"):
+                if line.startswith("name = "):
+                    project_name = line.split("=")[1].strip().strip('"').strip("'")
+                    break
+        except (OSError, IndexError):
+            pass
+
+    # Cria estrutura de diretórios
+    directories = [
+        Path("src") / project_name,
+        Path("tests"),
+        Path("docs"),
+    ]
+
+    for directory in directories:
+        if not args.dry_run:
+            try:
+                directory.mkdir(parents=True, exist_ok=True)
+                _log(f"✅ Criado: {directory}", args, is_verbose=True)
+            except (OSError, PermissionError) as e:
+                _log(f"⚠️  Não foi possível criar {directory}: {e}", args)
+        else:
+            _log(f"Criaria diretório: {directory}", args, is_verbose=True)
+
+    # Cria arquivos __init__.py
+    init_files = [
+        Path("src") / project_name / "__init__.py",
+        Path("tests") / "__init__.py",
+    ]
+
+    for init_file in init_files:
+        if not init_file.exists() and not args.dry_run:
+            try:
+                content = f'"""Package initialization for {init_file.parent.name}."""\n'
+                if init_file.parent.name == project_name:
+                    content += f'\n__version__ = "0.1.0"\n'
+                init_file.write_text(content, encoding="utf-8")
+                _log(f"✅ Criado: {init_file}", args, is_verbose=True)
+            except (OSError, PermissionError) as e:
+                _log(f"⚠️  Não foi possível criar {init_file}: {e}", args)
+
+    # Cria arquivo main.py de exemplo
+    main_file = Path("src") / project_name / "main.py"
+    if not main_file.exists() and not args.dry_run:
+        example_content = f'''"""Main module for {project_name}."""
+
+def greet(name: str) -> str:
+    """
+    Return a greeting message.
+
+    Args:
+        name: The name to greet.
+
+    Returns:
+        A greeting message.
+    """
+    return f"Hello, {{name}}!"
+
+
+def main() -> None:
+    """Main entry point for the application."""
+    message = greet("World")
+    print(message)
+
+
+if __name__ == "__main__":
+    main()
+'''
+        try:
+            main_file.write_text(example_content, encoding="utf-8")
+            _log(f"✅ Criado: {main_file}", args)
+        except (OSError, PermissionError) as e:
+            _log(f"⚠️  Não foi possível criar {main_file}: {e}", args)
+
+    # Cria arquivo de teste de exemplo
+    test_file = Path("tests") / "test_example.py"
+    if not test_file.exists() and not args.dry_run:
+        test_content = f'''"""Example test module for {project_name}."""
+
+from src.{project_name}.main import greet
+
+
+def test_greet() -> None:
+    """Test the greet function."""
+    result = greet("Alice")
+    assert result == "Hello, Alice!"
+    assert isinstance(result, str)
+
+
+def test_greet_empty() -> None:
+    """Test greet with empty string."""
+    result = greet("")
+    assert result == "Hello, !"
+'''
+        try:
+            test_file.write_text(test_content, encoding="utf-8")
+            _log(f"✅ Criado: {test_file}", args)
+        except (OSError, PermissionError) as e:
+            _log(f"⚠️  Não foi possível criar {test_file}: {e}", args)
+
+def _validate_setup(args: argparse.Namespace) -> None:
+    """Valida se o setup foi concluído com sucesso."""
+    _log("\n🔍 Validando configuração...", args)
+
+    issues = []
+
+    # Verifica arquivos obrigatórios
+    required_files = [
+        PYPROJECT_TOML_PATH,
+        PRE_COMMIT_CONFIG_PATH,
+        SECURITY_MD_PATH,
+        DEPENDABOT_CONFIG_PATH,
+    ]
+
+    for file in required_files:
+        if not file.exists():
+            issues.append(f"Arquivo não encontrado: {file}")
+
+    # Verifica se pre-commit está instalado
+    if shutil.which("poetry"):
+        result = _run_command(
+            ["poetry", "run", "pre-commit", "--version"],
+            args,
+            capture_output=True
+        )
+        if result.returncode != 0:
+            issues.append("Pre-commit não está instalado corretamente")
+
+    if issues:
+        _log("⚠️  Problemas encontrados durante a validação:", args)
+        for issue in issues:
+            _log(f"  - {issue}", args)
+    else:
+        _log("✅ Validação concluída com sucesso!", args)
+
+
 def _check_poetry_installation(args: argparse.Namespace) -> None:
     """Verifica se o Poetry está instalado de forma inteligente."""
     _log("🔎 Verificando se o Poetry está instalado...", args)
@@ -262,11 +457,16 @@ def _initialize_poetry_project(args: argparse.Namespace) -> None:
 
 def _add_dependencies(args: argparse.Namespace) -> None:
     """Adiciona as dependências de produção e desenvolvimento ao projeto."""
-    _log("📦 Adicionando dependências de produção...", args)
-    prod_deps = ["pydantic>=2.0", "orjson"]
-    if not _is_windows():
-        prod_deps.append("uvloop")
-    _run_command(["poetry", "add"] + prod_deps, args)
+
+    # Dependências de produção são opcionais
+    if args.install_runtime_deps:
+        _log("📦 Adicionando dependências de produção opcionais...", args)
+        prod_deps = ["pydantic>=2.0", "orjson"]
+        if not _is_windows():
+            prod_deps.append("uvloop")
+        _run_command(["poetry", "add"] + prod_deps, args)
+    else:
+        _log("⏭️  Pulando dependências de produção (use --install-runtime-deps para incluí-las).", args)
 
     _log("🔧 Adicionando dependências de desenvolvimento...", args)
     dev_deps = [
@@ -298,24 +498,50 @@ def _setup_cli() -> argparse.Namespace:
         action="store_true",
         help="Força a sobrescrita de arquivos de configuração sem criar backups.",
     )
+    parser.add_argument(
+        "--install-runtime-deps",
+        action="store_true",
+        help="Instala dependências de produção opcionais (pydantic, orjson, uvloop).",
+    )
     return parser.parse_args()
 
 def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
     args = _setup_cli()
+
+    _log(f"\n🚀 Python Stack Bootstrapper v{__version__}", args)
+    _log("Iniciando a configuração do ambiente Python de alta performance...\n", args)
+
+    # Verificações iniciais
     _check_poetry_installation(args)
-    _log("\n🚀 Iniciando a configuração do ambiente Python de alta performance...", args)
+    _check_git_initialized(args)
+    _check_connectivity(args)
+
+    # Inicialização do projeto
     _initialize_poetry_project(args)
+    _create_project_structure(args)
+
+    # Instalação de dependências
     _add_dependencies(args)
+
+    # Geração de arquivos de configuração
     _generate_pyproject_config(args)
     _generate_pre_commit_config(args)
     _generate_dependabot_config(args)
     _generate_security_policy(args)
+
+    # Setup de hooks
     _setup_pre_commit_hooks(args)
+
+    # Validação final
+    _validate_setup(args)
+
+    # Mensagens finais
     _log("\n✅ Ambiente configurado com sucesso!", args)
     _log("Execute `poetry shell` para ativar o ambiente virtual.", args)
     _log("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.", args)
     _log("\n🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.", args)
+    _log(f"\n📚 Consulte o README.md para mais informações sobre o projeto.", args)
 
 if __name__ == "__main__":
     main()

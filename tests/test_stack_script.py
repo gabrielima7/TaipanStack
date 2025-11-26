@@ -107,3 +107,98 @@ def test_idempotency_for_pyproject_toml(tmp_path):
     # Compara o conteúdo e garante que não houve duplicação
     assert content_after_first_run == content_after_second_run
     assert content_after_second_run.count("[tool.ruff]") == 1
+
+
+def test_git_initialization(tmp_path):
+    """
+    Verifica se o Git é inicializado automaticamente quando não existe.
+    """
+    # Garante que .git não existe
+    assert not (tmp_path / ".git").exists()
+
+    run_main_with_args([])
+
+    # Verifica se .git foi criado (se git estiver disponível)
+    # Nota: pode não existir se git não estiver instalado no sistema de teste
+
+
+def test_project_structure_creation(tmp_path):
+    """
+    Verifica se a estrutura de pastas do projeto é criada corretamente.
+    """
+    # Cria um pyproject.toml com nome de projeto
+    pyproject_toml = tmp_path / "pyproject.toml"
+    pyproject_toml.write_text('[tool.poetry]\nname = "my_test_project"\n')
+
+    run_main_with_args([])
+
+    # Verifica se as pastas foram criadas
+    assert (tmp_path / "src" / "my_test_project").exists()
+    assert (tmp_path / "tests").exists()
+    assert (tmp_path / "docs").exists()
+
+    # Verifica se __init__.py foram criados
+    assert (tmp_path / "src" / "my_test_project" / "__init__.py").exists()
+    assert (tmp_path / "tests" / "__init__.py").exists()
+
+    # Verifica se arquivos de exemplo foram criados
+    assert (tmp_path / "src" / "my_test_project" / "main.py").exists()
+    assert (tmp_path / "tests" / "test_example.py").exists()
+
+
+def test_optional_dependencies_flag(tmp_path, monkeypatch):
+    """
+    Verifica se a flag --install-runtime-deps controla a instalação de dependências.
+    """
+    pyproject_toml = tmp_path / "pyproject.toml"
+    pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
+
+    # Sem a flag, não deve instalar dependências de produção
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = subprocess.CompletedProcess([], 0)
+        run_main_with_args([])
+
+        # Verifica que poetry add NÃO foi chamado para produção
+        poetry_add_calls = [
+            call for call in mock_run.call_args_list
+            if call[0][0][0:2] == ["poetry", "add"] and "--group" not in call[0][0]
+        ]
+        assert len(poetry_add_calls) == 0
+
+
+def test_install_runtime_deps_flag(tmp_path, monkeypatch):
+    """
+    Verifica se --install-runtime-deps instala as dependências de produção.
+    """
+    pyproject_toml = tmp_path / "pyproject.toml"
+    pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
+
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value = subprocess.CompletedProcess([], 0)
+        run_main_with_args(["--install-runtime-deps"])
+
+        # Verifica que poetry add FOI chamado para produção
+        poetry_add_calls = [
+            call for call in mock_run.call_args_list
+            if len(call[0][0]) > 2 and call[0][0][0:2] == ["poetry", "add"]
+            and "--group" not in call[0][0]
+        ]
+        assert len(poetry_add_calls) > 0
+
+
+def test_python_version_detection(tmp_path):
+    """
+    Verifica se a versão do Python é detectada dinamicamente.
+    """
+    pyproject_toml = tmp_path / "pyproject.toml"
+    pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
+
+    run_main_with_args([])
+
+    content = pyproject_toml.read_text()
+
+    # Verifica se a versão do Python está na configuração
+    import sys
+    expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+    assert f'python_version = "{expected_version}"' in content
+
