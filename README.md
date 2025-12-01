@@ -37,7 +37,7 @@ O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosam
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/gabrielima7/stack.git](https://github.com/gabrielima7/Stack.git)
+    git clone https://github.com/gabrielima7/Stack.git
     cd stack
     ```
 
