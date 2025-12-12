@@ -1,6 +1,5 @@
 version: 2
 updates:
-  # Manter dependências do pip (Poetry) atualizadas
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -12,10 +11,10 @@ updates:
           - "mypy"
           - "bandit"
           - "safety"
-          - "pytest"
+          - "pytest*"
           - "pre-commit"
-
-  # Manter GitHub Actions atualizadas
+          - "semgrep"
+          - "py-spy"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
