@@ -1,37 +1,20 @@
 """Tests for the secure_system module."""
 
-from typing import Optional
-from uuid import UUID, uuid4
+import logging
+from uuid import uuid4
 
 import pytest
 from pydantic import SecretStr, ValidationError
 
 from app.secure_system import (
-    User,
+    InMemoryUserRepository,
     UserCreate,
     UserNotFoundError,
-    UserRepository,
     UserService,
 )
 
 
-class InMemoryUserRepository(UserRepository):
-    """In-memory implementation of UserRepository for testing."""
-
-    def __init__(self) -> None:
-        """Initialize the in-memory repository."""
-        self._storage: dict[UUID, User] = {}
-
-    def save(self, user: User) -> None:
-        """Save a user to the in-memory storage."""
-        self._storage[user.id] = user
-
-    def get_by_id(self, user_id: UUID) -> Optional[User]:
-        """Retrieve a user from the in-memory storage."""
-        return self._storage.get(user_id)
-
-
-def test_create_user_success() -> None:
+def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     """Test creating a user with valid data."""
     repository = InMemoryUserRepository()
     service = UserService(repository)
@@ -42,12 +25,15 @@ def test_create_user_success() -> None:
         ip_address="192.168.1.1",
     )
 
-    user = service.create_user(user_create)
+    with caplog.at_level(logging.INFO):
+        user = service.create_user(user_create)
 
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
     assert user.is_active is True
     assert service.get_user(user.id) == user
+
+    assert f"User created: {user.id}" in caplog.text
 
 
 def test_create_user_invalid_email() -> None:
@@ -70,11 +56,14 @@ def test_create_user_invalid_username() -> None:
         )
 
 
-def test_get_non_existent_user() -> None:
+def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
     """Test retrieving a non-existent user raises UserNotFoundError."""
     repository = InMemoryUserRepository()
     service = UserService(repository)
     user_id = uuid4()
-    with pytest.raises(UserNotFoundError) as exc_info:
-        service.get_user(user_id)
+    with caplog.at_level(logging.WARNING):
+        with pytest.raises(UserNotFoundError) as exc_info:
+            service.get_user(user_id)
+
     assert str(user_id) in str(exc_info.value)
+    assert f"User not found: {user_id}" in caplog.text

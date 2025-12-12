@@ -5,12 +5,16 @@ This module demonstrates a secure implementation of a user management service
 following strict typing and security guidelines.
 """
 
+import logging
 from abc import ABC, abstractmethod
 from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 
 class UserNotFoundError(Exception):
@@ -88,6 +92,37 @@ class UserRepository(ABC):
         """
 
 
+class InMemoryUserRepository(UserRepository):
+    """In-memory implementation of UserRepository."""
+
+    def __init__(self) -> None:
+        """Initialize the in-memory repository."""
+        self._storage: dict[UUID, User] = {}
+
+    def save(self, user: User) -> None:
+        """
+        Save a user to the in-memory storage.
+
+        Args:
+            user: The user to save.
+
+        """
+        self._storage[user.id] = user
+
+    def get_by_id(self, user_id: UUID) -> Optional[User]:
+        """
+        Retrieve a user from the in-memory storage.
+
+        Args:
+            user_id: The UUID of the user.
+
+        Returns:
+            The User object if found, otherwise None.
+
+        """
+        return self._storage.get(user_id)
+
+
 class UserService:
     """Service for managing users securely."""
 
@@ -124,6 +159,7 @@ class UserService:
             is_active=True,
         )
         self._user_repository.save(user)
+        logger.info("User created: %s", user.id)
         return user
 
     def get_user(self, user_id: UUID) -> User:
@@ -142,5 +178,6 @@ class UserService:
         """
         user = self._user_repository.get_by_id(user_id)
         if user is None:
+            logger.warning("User not found: %s", user_id)
             raise UserNotFoundError(user_id)
         return user
