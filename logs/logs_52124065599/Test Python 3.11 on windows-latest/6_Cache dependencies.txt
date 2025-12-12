@@ -1,0 +1,19 @@
+﻿2025-12-12T20:43:53.1582073Z ##[group]Run actions/cache@v4
+2025-12-12T20:43:53.1582686Z with:
+2025-12-12T20:43:53.1582892Z   path: .venv
+2025-12-12T20:43:53.1583298Z   key: Windows-poetry-3.11-dd05d43ec074f1401e9de45214791bc0d37923b8f3b0fe71bb84677460e66455
+2025-12-12T20:43:53.1583830Z   restore-keys: Windows-poetry-3.11-
+
+2025-12-12T20:43:53.1584121Z   enableCrossOsArchive: false
+2025-12-12T20:43:53.1584593Z   fail-on-cache-miss: false
+2025-12-12T20:43:53.1584828Z   lookup-only: false
+2025-12-12T20:43:53.1585023Z   save-always: false
+2025-12-12T20:43:53.1585216Z env:
+2025-12-12T20:43:53.1585397Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:53.1585725Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T20:43:53.1586197Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T20:43:53.1586647Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T20:43:53.1587056Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T20:43:53.1587500Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T20:43:53.1587875Z ##[endgroup]
+2025-12-12T20:43:53.7252829Z Cache not found for input keys: Windows-poetry-3.11-dd05d43ec074f1401e9de45214791bc0d37923b8f3b0fe71bb84677460e66455, Windows-poetry-3.11-

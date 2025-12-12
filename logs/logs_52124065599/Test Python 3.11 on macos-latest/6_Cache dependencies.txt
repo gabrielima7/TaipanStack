@@ -1,0 +1,19 @@
+﻿2025-12-12T20:43:28.9331200Z ##[group]Run actions/cache@v4
+2025-12-12T20:43:28.9331470Z with:
+2025-12-12T20:43:28.9331620Z   path: .venv
+2025-12-12T20:43:28.9331910Z   key: macOS-poetry-3.11-dddbcec77aace8ea46b8e4dc49af4adbf8a33d76eb561e7fb5c3f00a438f980a
+2025-12-12T20:43:28.9332320Z   restore-keys: macOS-poetry-3.11-
+
+2025-12-12T20:43:28.9332580Z   enableCrossOsArchive: false
+2025-12-12T20:43:28.9332750Z   fail-on-cache-miss: false
+2025-12-12T20:43:28.9332960Z   lookup-only: false
+2025-12-12T20:43:28.9333190Z   save-always: false
+2025-12-12T20:43:28.9333390Z env:
+2025-12-12T20:43:28.9333560Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:28.9333820Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.9334210Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2025-12-12T20:43:28.9334650Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.9335030Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.9335390Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.9335700Z ##[endgroup]
+2025-12-12T20:43:29.2142470Z Cache not found for input keys: macOS-poetry-3.11-dddbcec77aace8ea46b8e4dc49af4adbf8a33d76eb561e7fb5c3f00a438f980a, macOS-poetry-3.11-

@@ -1,0 +1,20 @@
+﻿2025-12-12T20:43:21.3207206Z ##[group]Run pipx install poetry
+2025-12-12T20:43:21.3208290Z [36;1mpipx install poetry[0m
+2025-12-12T20:43:21.3982589Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T20:43:21.3983050Z env:
+2025-12-12T20:43:21.3983250Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:21.3983607Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.10.11\x64
+2025-12-12T20:43:21.3984122Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.10.11\x64/lib/pkgconfig
+2025-12-12T20:43:21.3984620Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.10.11\x64
+2025-12-12T20:43:21.3985058Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.10.11\x64
+2025-12-12T20:43:21.3985492Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.10.11\x64
+2025-12-12T20:43:21.3985828Z ##[endgroup]
+2025-12-12T20:43:27.1657927Z Found a space in the pipx home path. We heavily discourage this, due to
+2025-12-12T20:43:27.1659033Z     multiple incompatibilities. Please check our docs for more information on
+2025-12-12T20:43:27.1660082Z     this, as well as some pointers on how to migrate to a different home path.
+2025-12-12T20:43:27.7840287Z creating virtual environment...
+2025-12-12T20:43:28.1521311Z installing poetry...
+2025-12-12T20:43:45.9389992Z done! 
+2025-12-12T20:43:45.9393054Z   installed package poetry 2.2.1, installed using Python 3.9.13
+2025-12-12T20:43:45.9393606Z   These apps are now globally available
+2025-12-12T20:43:45.9393906Z     - poetry.exe

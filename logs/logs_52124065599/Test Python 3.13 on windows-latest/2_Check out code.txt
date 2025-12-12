@@ -1,0 +1,61 @@
+﻿2025-12-12T20:43:18.6016627Z ##[group]Run actions/checkout@v4
+2025-12-12T20:43:18.6018010Z with:
+2025-12-12T20:43:18.6019134Z   repository: gabrielima7/Stack
+2025-12-12T20:43:18.6020480Z   token: ***
+2025-12-12T20:43:18.6021324Z   ssh-strict: true
+2025-12-12T20:43:18.6022221Z   ssh-user: git
+2025-12-12T20:43:18.6023703Z   persist-credentials: true
+2025-12-12T20:43:18.6024919Z   clean: true
+2025-12-12T20:43:18.6025858Z   sparse-checkout-cone-mode: true
+2025-12-12T20:43:18.6026985Z   fetch-depth: 1
+2025-12-12T20:43:18.6027966Z   fetch-tags: false
+2025-12-12T20:43:18.6028964Z   show-progress: true
+2025-12-12T20:43:18.6029985Z   lfs: false
+2025-12-12T20:43:18.6030662Z   submodules: false
+2025-12-12T20:43:18.6031399Z   set-safe-directory: true
+2025-12-12T20:43:18.6032481Z env:
+2025-12-12T20:43:18.6033167Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:18.6034035Z ##[endgroup]
+2025-12-12T20:43:18.7719417Z Syncing repository: gabrielima7/Stack
+2025-12-12T20:43:18.7722811Z ##[group]Getting Git version info
+2025-12-12T20:43:18.7724149Z Working directory is 'D:\a\Stack\Stack'
+2025-12-12T20:43:18.8855158Z [command]"C:\Program Files\Git\bin\git.exe" version
+2025-12-12T20:43:19.2128201Z git version 2.52.0.windows.1
+2025-12-12T20:43:19.2189980Z ##[endgroup]
+2025-12-12T20:43:19.2212496Z Temporarily overriding HOME='D:\a\_temp\55e1e8ac-d225-4bd8-8a0c-396abc185302' before making global git config changes
+2025-12-12T20:43:19.2214827Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T20:43:19.2227902Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Stack\Stack
+2025-12-12T20:43:19.2917659Z Deleting the contents of 'D:\a\Stack\Stack'
+2025-12-12T20:43:19.2925186Z ##[group]Initializing the repository
+2025-12-12T20:43:19.2935543Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Stack\Stack
+2025-12-12T20:43:19.3655437Z Initialized empty Git repository in D:/a/Stack/Stack/.git/
+2025-12-12T20:43:19.3706504Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T20:43:19.4209346Z ##[endgroup]
+2025-12-12T20:43:19.4210729Z ##[group]Disabling automatic garbage collection
+2025-12-12T20:43:19.4219198Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2025-12-12T20:43:19.4538301Z ##[endgroup]
+2025-12-12T20:43:19.4539556Z ##[group]Setting up auth
+2025-12-12T20:43:19.4552564Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T20:43:19.4879592Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2025-12-12T20:43:20.8383941Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T20:43:20.8695580Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2025-12-12T20:43:21.4012128Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T20:43:21.4351113Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2025-12-12T20:43:21.9797054Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2025-12-12T20:43:22.0108751Z ##[endgroup]
+2025-12-12T20:43:22.0109335Z ##[group]Fetching the repository
+2025-12-12T20:43:22.0123587Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +66608d266f8835005cdc5ce8e255cf8beab12bfe:refs/remotes/origin/main
+2025-12-12T20:43:23.0623972Z From https://github.com/gabrielima7/Stack
+2025-12-12T20:43:23.0628118Z  * [new ref]         66608d266f8835005cdc5ce8e255cf8beab12bfe -> origin/main
+2025-12-12T20:43:23.0917681Z ##[endgroup]
+2025-12-12T20:43:23.0918410Z ##[group]Determining the checkout info
+2025-12-12T20:43:23.0921302Z ##[endgroup]
+2025-12-12T20:43:23.0934123Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2025-12-12T20:43:23.1433007Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2025-12-12T20:43:23.1770320Z ##[group]Checking out the ref
+2025-12-12T20:43:23.1781390Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T20:43:23.2567608Z branch 'main' set up to track 'origin/main'.
+2025-12-12T20:43:23.2577232Z Switched to a new branch 'main'
+2025-12-12T20:43:23.2630354Z ##[endgroup]
+2025-12-12T20:43:23.3033485Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2025-12-12T20:43:23.3321563Z 66608d266f8835005cdc5ce8e255cf8beab12bfe

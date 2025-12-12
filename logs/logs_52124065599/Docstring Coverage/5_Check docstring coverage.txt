@@ -1,0 +1,29 @@
+﻿2025-12-12T20:43:21.0867219Z ##[group]Run interrogate -v --fail-under=70 src/
+2025-12-12T20:43:21.0867632Z [36;1minterrogate -v --fail-under=70 src/[0m
+2025-12-12T20:43:21.0902272Z shell: /usr/bin/bash -e {0}
+2025-12-12T20:43:21.0902542Z env:
+2025-12-12T20:43:21.0902714Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:21.0903025Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:21.0903416Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T20:43:21.0903792Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:21.0904127Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:21.0904468Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:21.0904810Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T20:43:21.0905085Z ##[endgroup]
+2025-12-12T20:43:21.2267941Z =============== Coverage for /home/runner/work/Stack/Stack/src/ ================
+2025-12-12T20:43:21.2269199Z ----------------------------------- Summary ------------------------------------
+2025-12-12T20:43:21.2276026Z | Name                             |    Total |    Miss |    Cover |    Cover% |
+2025-12-12T20:43:21.2278962Z |----------------------------------|----------|---------|----------|-----------|
+2025-12-12T20:43:21.2279907Z | app/main.py                      |        3 |       0 |        3 |      100% |
+2025-12-12T20:43:21.2280500Z | app/secure_system.py             |       16 |       0 |       16 |      100% |
+2025-12-12T20:43:21.2281132Z | stack/config/generators.py       |        7 |       0 |        7 |      100% |
+2025-12-12T20:43:21.2281778Z | stack/config/models.py           |       10 |       0 |       10 |      100% |
+2025-12-12T20:43:21.2282438Z | stack/security/guards.py         |        8 |       1 |        7 |       88% |
+2025-12-12T20:43:21.2283183Z | stack/security/sanitizers.py     |        6 |       0 |        6 |      100% |
+2025-12-12T20:43:21.2283855Z | stack/security/validators.py     |        8 |       0 |        8 |      100% |
+2025-12-12T20:43:21.2284544Z | stack/utils/filesystem.py        |        8 |       0 |        8 |      100% |
+2025-12-12T20:43:21.2285191Z | stack/utils/logging.py           |       14 |       0 |       14 |      100% |
+2025-12-12T20:43:21.2285845Z | stack/utils/subprocess.py        |        9 |       0 |        9 |      100% |
+2025-12-12T20:43:21.2286464Z |----------------------------------|----------|---------|----------|-----------|
+2025-12-12T20:43:21.2286970Z | TOTAL                            |       89 |       1 |       88 |     98.9% |
+2025-12-12T20:43:21.2287576Z ---------------- RESULT: PASSED (minimum: 70.0%, actual: 98.9%) ----------------

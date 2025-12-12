@@ -1,0 +1,13 @@
+﻿2025-12-12T20:43:32.2573030Z ##[group]Run poetry run mypy src/ --strict
+2025-12-12T20:43:32.2573345Z [36;1mpoetry run mypy src/ --strict[0m
+2025-12-12T20:43:32.2592967Z shell: /usr/bin/bash -e {0}
+2025-12-12T20:43:32.2593178Z env:
+2025-12-12T20:43:32.2593359Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:32.2593626Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:32.2593999Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T20:43:32.2594355Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:32.2594671Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:32.2594987Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:32.2595299Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T20:43:32.2595695Z ##[endgroup]
+2025-12-12T20:43:37.8254012Z Success: no issues found in 15 source files

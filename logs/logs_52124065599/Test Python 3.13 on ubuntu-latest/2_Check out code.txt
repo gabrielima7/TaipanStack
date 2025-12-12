@@ -1,0 +1,74 @@
+﻿2025-12-12T20:43:16.4059983Z ##[group]Run actions/checkout@v4
+2025-12-12T20:43:16.4060853Z with:
+2025-12-12T20:43:16.4061274Z   repository: gabrielima7/Stack
+2025-12-12T20:43:16.4062031Z   token: ***
+2025-12-12T20:43:16.4062408Z   ssh-strict: true
+2025-12-12T20:43:16.4062804Z   ssh-user: git
+2025-12-12T20:43:16.4063494Z   persist-credentials: true
+2025-12-12T20:43:16.4064105Z   clean: true
+2025-12-12T20:43:16.4064509Z   sparse-checkout-cone-mode: true
+2025-12-12T20:43:16.4064990Z   fetch-depth: 1
+2025-12-12T20:43:16.4065394Z   fetch-tags: false
+2025-12-12T20:43:16.4065798Z   show-progress: true
+2025-12-12T20:43:16.4066207Z   lfs: false
+2025-12-12T20:43:16.4066567Z   submodules: false
+2025-12-12T20:43:16.4066973Z   set-safe-directory: true
+2025-12-12T20:43:16.4067754Z env:
+2025-12-12T20:43:16.4068148Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:16.4068593Z ##[endgroup]
+2025-12-12T20:43:16.5165920Z Syncing repository: gabrielima7/Stack
+2025-12-12T20:43:16.5167839Z ##[group]Getting Git version info
+2025-12-12T20:43:16.5168528Z Working directory is '/home/runner/work/Stack/Stack'
+2025-12-12T20:43:16.5169736Z [command]/usr/bin/git version
+2025-12-12T20:43:16.5242563Z git version 2.52.0
+2025-12-12T20:43:16.5270192Z ##[endgroup]
+2025-12-12T20:43:16.5285985Z Temporarily overriding HOME='/home/runner/work/_temp/3b87ff4a-95a7-4682-bf42-ddd7225112ec' before making global git config changes
+2025-12-12T20:43:16.5288310Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T20:43:16.5299114Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T20:43:16.5339922Z Deleting the contents of '/home/runner/work/Stack/Stack'
+2025-12-12T20:43:16.5344484Z ##[group]Initializing the repository
+2025-12-12T20:43:16.5348808Z [command]/usr/bin/git init /home/runner/work/Stack/Stack
+2025-12-12T20:43:16.5456845Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-12T20:43:16.5459085Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-12T20:43:16.5460828Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-12T20:43:16.5462379Z hint: call:
+2025-12-12T20:43:16.5462933Z hint:
+2025-12-12T20:43:16.5463707Z hint: 	git config --global init.defaultBranch <name>
+2025-12-12T20:43:16.5464329Z hint:
+2025-12-12T20:43:16.5464911Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-12T20:43:16.5465817Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-12T20:43:16.5466609Z hint:
+2025-12-12T20:43:16.5467199Z hint: 	git branch -m <name>
+2025-12-12T20:43:16.5467749Z hint:
+2025-12-12T20:43:16.5468313Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-12T20:43:16.5469235Z Initialized empty Git repository in /home/runner/work/Stack/Stack/.git/
+2025-12-12T20:43:16.5473304Z [command]/usr/bin/git remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T20:43:16.5535282Z ##[endgroup]
+2025-12-12T20:43:16.5536091Z ##[group]Disabling automatic garbage collection
+2025-12-12T20:43:16.5539823Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-12T20:43:16.5570870Z ##[endgroup]
+2025-12-12T20:43:16.5572004Z ##[group]Setting up auth
+2025-12-12T20:43:16.5577717Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T20:43:16.5609751Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T20:43:16.5944010Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T20:43:16.5977547Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T20:43:16.6206645Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T20:43:16.6237470Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T20:43:16.6474822Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-12T20:43:16.6510234Z ##[endgroup]
+2025-12-12T20:43:16.6511103Z ##[group]Fetching the repository
+2025-12-12T20:43:16.6518659Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +66608d266f8835005cdc5ce8e255cf8beab12bfe:refs/remotes/origin/main
+2025-12-12T20:43:16.9314216Z From https://github.com/gabrielima7/Stack
+2025-12-12T20:43:16.9315201Z  * [new ref]         66608d266f8835005cdc5ce8e255cf8beab12bfe -> origin/main
+2025-12-12T20:43:16.9347991Z ##[endgroup]
+2025-12-12T20:43:16.9348783Z ##[group]Determining the checkout info
+2025-12-12T20:43:16.9350271Z ##[endgroup]
+2025-12-12T20:43:16.9356179Z [command]/usr/bin/git sparse-checkout disable
+2025-12-12T20:43:16.9398565Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-12T20:43:16.9424367Z ##[group]Checking out the ref
+2025-12-12T20:43:16.9428069Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T20:43:16.9539346Z Switched to a new branch 'main'
+2025-12-12T20:43:16.9540942Z branch 'main' set up to track 'origin/main'.
+2025-12-12T20:43:16.9548620Z ##[endgroup]
+2025-12-12T20:43:16.9586053Z [command]/usr/bin/git log -1 --format=%H
+2025-12-12T20:43:16.9609518Z 66608d266f8835005cdc5ce8e255cf8beab12bfe

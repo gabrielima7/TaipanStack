@@ -1,0 +1,94 @@
+﻿2025-12-12T20:43:29.6704660Z ##[group]Run poetry install --with dev
+2025-12-12T20:43:29.6704994Z [36;1mpoetry install --with dev[0m
+2025-12-12T20:43:29.6737780Z shell: /usr/bin/bash -e {0}
+2025-12-12T20:43:29.6738009Z env:
+2025-12-12T20:43:29.6738181Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:29.6738473Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:29.6738871Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T20:43:29.6739255Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:29.6739595Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:29.6739932Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:29.6740273Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T20:43:29.6740722Z ##[endgroup]
+2025-12-12T20:43:30.1941231Z Creating virtualenv stack-mVHv_5u6-py3.11 in /home/runner/.cache/pypoetry/virtualenvs
+2025-12-12T20:43:30.5883356Z Installing dependencies from lock file
+2025-12-12T20:43:30.7280034Z 
+2025-12-12T20:43:30.7280543Z Package operations: 75 installs, 0 updates, 0 removals
+2025-12-12T20:43:30.7280875Z 
+2025-12-12T20:43:30.7284835Z   - Installing mdurl (0.1.2)
+2025-12-12T20:43:30.7292090Z   - Installing pycparser (2.23)
+2025-12-12T20:43:30.7302508Z   - Installing typing-extensions (4.15.0)
+2025-12-12T20:43:30.8612913Z   - Installing annotated-types (0.7.0)
+2025-12-12T20:43:30.8618441Z   - Installing certifi (2025.11.12)
+2025-12-12T20:43:30.8626154Z   - Installing cffi (2.0.0)
+2025-12-12T20:43:30.8634867Z   - Installing h11 (0.16.0)
+2025-12-12T20:43:30.8643564Z   - Installing idna (3.11)
+2025-12-12T20:43:30.8650860Z   - Installing markdown-it-py (4.0.0)
+2025-12-12T20:43:30.8664003Z   - Installing packaging (25.0)
+2025-12-12T20:43:30.8676789Z   - Installing pydantic-core (2.41.5)
+2025-12-12T20:43:30.9466390Z   - Installing pygments (2.19.2)
+2025-12-12T20:43:31.0059477Z   - Installing ruamel-yaml-clib (0.2.14)
+2025-12-12T20:43:31.0414854Z   - Installing typing-inspection (0.4.2)
+2025-12-12T20:43:31.2471684Z   - Installing anyio (4.12.0)
+2025-12-12T20:43:31.2478701Z   - Installing charset-normalizer (3.4.4)
+2025-12-12T20:43:31.2483006Z   - Installing click (8.1.8)
+2025-12-12T20:43:31.2493594Z   - Installing cryptography (46.0.3)
+2025-12-12T20:43:31.2499713Z   - Installing distlib (0.4.0)
+2025-12-12T20:43:31.2515365Z   - Installing dparse (0.6.4)
+2025-12-12T20:43:31.2519999Z   - Installing filelock (3.20.0)
+2025-12-12T20:43:31.2533645Z   - Installing httpcore (1.0.9)
+2025-12-12T20:43:31.3236069Z   - Installing iniconfig (2.3.0)
+2025-12-12T20:43:31.3446450Z   - Installing joblib (1.5.2)
+2025-12-12T20:43:31.3821079Z   - Installing markupsafe (3.0.3)
+2025-12-12T20:43:31.3884257Z   - Installing platformdirs (4.5.1)
+2025-12-12T20:43:31.4383349Z   - Installing pluggy (1.6.0)
+2025-12-12T20:43:31.4650549Z   - Installing pydantic (2.12.5)
+2025-12-12T20:43:31.4700912Z   - Installing regex (2025.11.3)
+2025-12-12T20:43:31.4833073Z   - Installing rich (13.5.3)
+2025-12-12T20:43:31.5110216Z   - Installing ruamel-yaml (0.18.16)
+2025-12-12T20:43:31.5206239Z   - Installing shellingham (1.5.4)
+2025-12-12T20:43:31.5349496Z   - Installing tqdm (4.67.1)
+2025-12-12T20:43:31.5908224Z   - Installing urllib3 (2.6.2)
+2025-12-12T20:43:31.8572535Z   - Installing attrs (25.4.0)
+2025-12-12T20:43:31.8577873Z   - Installing authlib (1.6.6)
+2025-12-12T20:43:31.8582275Z   - Installing cfgv (3.5.0)
+2025-12-12T20:43:31.8588302Z   - Installing colorama (0.4.6)
+2025-12-12T20:43:31.8601079Z   - Installing coverage (7.13.0)
+2025-12-12T20:43:31.8607808Z   - Installing dnspython (2.8.0)
+2025-12-12T20:43:31.8631205Z   - Installing execnet (2.1.2)
+2025-12-12T20:43:31.8633444Z   - Installing httpx (0.28.1)
+2025-12-12T20:43:31.9233289Z   - Installing identify (2.6.15)
+2025-12-12T20:43:31.9669256Z   - Installing jinja2 (3.1.6)
+2025-12-12T20:43:31.9985411Z   - Installing librt (0.7.3)
+2025-12-12T20:43:32.0040139Z   - Installing marshmallow (4.1.1)
+2025-12-12T20:43:32.0101406Z   - Installing mypy-extensions (1.1.0)
+2025-12-12T20:43:32.0155950Z   - Installing nltk (3.9.2)
+2025-12-12T20:43:32.0670192Z   - Installing nodeenv (1.9.1)
+2025-12-12T20:43:32.1181804Z   - Installing pathspec (0.12.1)
+2025-12-12T20:43:32.1305162Z   - Installing py (1.11.0)
+2025-12-12T20:43:32.1318774Z   - Installing pytest (9.0.2)
+2025-12-12T20:43:32.1526622Z   - Installing pyyaml (6.0.3)
+2025-12-12T20:43:32.1545345Z   - Installing requests (2.32.5)
+2025-12-12T20:43:32.2020620Z   - Installing safety-schemas (0.0.16)
+2025-12-12T20:43:32.2704083Z   - Installing sortedcontainers (2.4.0)
+2025-12-12T20:43:32.3210464Z   - Installing stevedore (5.6.0)
+2025-12-12T20:43:32.3444467Z   - Installing tabulate (0.9.0)
+2025-12-12T20:43:32.3467798Z   - Installing tenacity (9.1.2)
+2025-12-12T20:43:32.3726801Z   - Installing tomlkit (0.13.3)
+2025-12-12T20:43:32.4122895Z   - Installing typer (0.20.0)
+2025-12-12T20:43:32.4220814Z   - Installing virtualenv (20.35.4)
+2025-12-12T20:43:32.6801336Z   - Installing bandit (1.9.2)
+2025-12-12T20:43:32.6807118Z   - Installing email-validator (2.3.0)
+2025-12-12T20:43:32.6812840Z   - Installing hypothesis (6.148.7)
+2025-12-12T20:43:32.6821475Z   - Installing interrogate (1.7.0)
+2025-12-12T20:43:32.6828089Z   - Installing mypy (1.19.0)
+2025-12-12T20:43:32.6832989Z   - Installing orjson (3.11.5)
+2025-12-12T20:43:32.6846203Z   - Installing pre-commit (4.5.0)
+2025-12-12T20:43:32.6853755Z   - Installing pytest-cov (7.0.0)
+2025-12-12T20:43:32.7696811Z   - Installing pytest-timeout (2.4.0)
+2025-12-12T20:43:32.7791728Z   - Installing pytest-xdist (3.8.0)
+2025-12-12T20:43:32.8056415Z   - Installing ruff (0.14.9)
+2025-12-12T20:43:32.8406722Z   - Installing safety (3.7.0)
+2025-12-12T20:43:32.8553388Z   - Installing vulture (2.14)
+2025-12-12T20:43:33.7041788Z 
+2025-12-12T20:43:33.7042281Z Installing the current project: stack (2.0.0)

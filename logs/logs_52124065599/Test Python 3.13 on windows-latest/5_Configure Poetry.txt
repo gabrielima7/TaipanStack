@@ -1,0 +1,11 @@
+﻿2025-12-12T20:44:11.4416718Z ##[group]Run poetry config virtualenvs.in-project true
+2025-12-12T20:44:11.4417156Z [36;1mpoetry config virtualenvs.in-project true[0m
+2025-12-12T20:44:11.4485006Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T20:44:11.4485318Z env:
+2025-12-12T20:44:11.4485485Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:44:11.4485772Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.13.11\x64
+2025-12-12T20:44:11.4486178Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.13.11\x64/lib/pkgconfig
+2025-12-12T20:44:11.4486627Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.13.11\x64
+2025-12-12T20:44:11.4486983Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.13.11\x64
+2025-12-12T20:44:11.4487342Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.13.11\x64
+2025-12-12T20:44:11.4487624Z ##[endgroup]

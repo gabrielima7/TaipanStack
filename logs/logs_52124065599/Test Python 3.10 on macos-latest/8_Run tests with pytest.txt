@@ -1,0 +1,127 @@
+﻿2025-12-12T20:43:52.3475740Z ##[group]Run poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60
+2025-12-12T20:43:52.3476270Z [36;1mpoetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60[0m
+2025-12-12T20:43:52.3509220Z shell: /bin/bash -e {0}
+2025-12-12T20:43:52.3509430Z env:
+2025-12-12T20:43:52.3509580Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:52.3509840Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.10.11/arm64
+2025-12-12T20:43:52.3510230Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.10.11/arm64/lib/pkgconfig
+2025-12-12T20:43:52.3510610Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.10.11/arm64
+2025-12-12T20:43:52.3510930Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.10.11/arm64
+2025-12-12T20:43:52.3511280Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.10.11/arm64
+2025-12-12T20:43:52.3511530Z ##[endgroup]
+2025-12-12T20:43:54.3023100Z ============================= test session starts ==============================
+2025-12-12T20:43:54.3024040Z platform darwin -- Python 3.10.11, pytest-9.0.2, pluggy-1.6.0 -- /Users/runner/work/Stack/Stack/.venv/bin/python
+2025-12-12T20:43:54.3024580Z cachedir: .pytest_cache
+2025-12-12T20:43:54.3025030Z hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True, suppress_health_check=(HealthCheck.too_slow,)
+2025-12-12T20:43:54.3025530Z rootdir: /Users/runner/work/Stack/Stack
+2025-12-12T20:43:54.3025870Z configfile: pyproject.toml
+2025-12-12T20:43:54.3026200Z plugins: anyio-4.12.0, xdist-3.8.0, timeout-2.4.0, hypothesis-6.148.7, cov-7.0.0
+2025-12-12T20:43:54.3026480Z timeout: 60.0s
+2025-12-12T20:43:54.3026620Z timeout method: signal
+2025-12-12T20:43:54.3026790Z timeout func_only: False
+2025-12-12T20:43:54.6196820Z collecting ... collected 74 items
+2025-12-12T20:43:54.6197540Z 
+2025-12-12T20:43:54.6215920Z tests/test_config_models.py::TestSecurityConfig::test_default_values PASSED [  1%]
+2025-12-12T20:43:54.6244270Z tests/test_config_models.py::TestSecurityConfig::test_paranoid_level PASSED [  2%]
+2025-12-12T20:43:54.6246210Z tests/test_config_models.py::TestSecurityConfig::test_frozen_config PASSED [  4%]
+2025-12-12T20:43:54.6246820Z tests/test_config_models.py::TestSecurityConfig::test_extra_fields_forbidden PASSED [  5%]
+2025-12-12T20:43:54.6253730Z tests/test_config_models.py::TestDependencyConfig::test_default_values PASSED [  6%]
+2025-12-12T20:43:54.6272350Z tests/test_config_models.py::TestDependencyConfig::test_custom_dependencies PASSED [  8%]
+2025-12-12T20:43:54.6281860Z tests/test_config_models.py::TestLoggingConfig::test_default_values PASSED [  9%]
+2025-12-12T20:43:54.6288810Z tests/test_config_models.py::TestLoggingConfig::test_valid_levels PASSED [ 10%]
+2025-12-12T20:43:54.6295610Z tests/test_config_models.py::TestLoggingConfig::test_invalid_level_rejected PASSED [ 12%]
+2025-12-12T20:43:54.6306700Z tests/test_config_models.py::TestStackConfig::test_default_values PASSED [ 13%]
+2025-12-12T20:43:54.6314780Z tests/test_config_models.py::TestStackConfig::test_valid_project_name PASSED [ 14%]
+2025-12-12T20:43:54.6327970Z tests/test_config_models.py::TestStackConfig::test_invalid_project_name_rejected PASSED [ 16%]
+2025-12-12T20:43:54.6336170Z tests/test_config_models.py::TestStackConfig::test_valid_python_version PASSED [ 17%]
+2025-12-12T20:43:54.6343900Z tests/test_config_models.py::TestStackConfig::test_invalid_python_version_rejected PASSED [ 18%]
+2025-12-12T20:43:54.6406100Z tests/test_config_models.py::TestStackConfig::test_path_traversal_rejected PASSED [ 20%]
+2025-12-12T20:43:54.6418410Z tests/test_config_models.py::TestStackConfig::test_paranoid_requires_all_tools PASSED [ 21%]
+2025-12-12T20:43:54.6427680Z tests/test_config_models.py::TestStackConfig::test_to_target_version PASSED [ 22%]
+2025-12-12T20:43:54.6436310Z tests/test_config_models.py::TestStackConfig::test_nested_configs PASSED [ 24%]
+2025-12-12T20:43:54.6443450Z tests/test_example.py::test_greet PASSED                                 [ 25%]
+2025-12-12T20:43:54.6450220Z tests/test_example.py::test_greet_empty PASSED                           [ 27%]
+2025-12-12T20:43:54.6924280Z tests/test_secure_system.py::test_create_user_success PASSED             [ 28%]
+2025-12-12T20:43:54.6930540Z tests/test_secure_system.py::test_create_user_invalid_email PASSED       [ 29%]
+2025-12-12T20:43:54.6938290Z tests/test_secure_system.py::test_create_user_invalid_username PASSED    [ 31%]
+2025-12-12T20:43:54.6947350Z tests/test_secure_system.py::test_get_non_existent_user PASSED           [ 32%]
+2025-12-12T20:43:54.6960070Z tests/test_security_guards.py::TestGuardPathTraversal::test_safe_path_passes PASSED [ 33%]
+2025-12-12T20:43:54.6973950Z tests/test_security_guards.py::TestGuardPathTraversal::test_relative_path_within_base PASSED [ 35%]
+2025-12-12T20:43:54.6983800Z tests/test_security_guards.py::TestGuardPathTraversal::test_path_traversal_blocked PASSED [ 36%]
+2025-12-12T20:43:54.6994350Z tests/test_security_guards.py::TestGuardPathTraversal::test_double_dot_blocked PASSED [ 37%]
+2025-12-12T20:43:54.7005680Z tests/test_security_guards.py::TestGuardPathTraversal::test_url_encoded_traversal_blocked PASSED [ 39%]
+2025-12-12T20:43:54.7018830Z tests/test_security_guards.py::TestGuardPathTraversal::test_path_escapes_base_dir PASSED [ 40%]
+2025-12-12T20:43:54.7026490Z tests/test_security_guards.py::TestGuardCommandInjection::test_safe_command_passes PASSED [ 41%]
+2025-12-12T20:43:54.7032860Z tests/test_security_guards.py::TestGuardCommandInjection::test_empty_command_blocked PASSED [ 43%]
+2025-12-12T20:43:54.7040590Z tests/test_security_guards.py::TestGuardCommandInjection::test_semicolon_blocked PASSED [ 44%]
+2025-12-12T20:43:54.7047110Z tests/test_security_guards.py::TestGuardCommandInjection::test_pipe_blocked PASSED [ 45%]
+2025-12-12T20:43:54.7053260Z tests/test_security_guards.py::TestGuardCommandInjection::test_backtick_blocked PASSED [ 47%]
+2025-12-12T20:43:54.7059320Z tests/test_security_guards.py::TestGuardCommandInjection::test_dollar_expansion_blocked PASSED [ 48%]
+2025-12-12T20:43:54.7065570Z tests/test_security_guards.py::TestGuardCommandInjection::test_allowed_commands_whitelist PASSED [ 50%]
+2025-12-12T20:43:54.7072120Z tests/test_security_guards.py::TestGuardCommandInjection::test_command_not_in_whitelist_blocked PASSED [ 51%]
+2025-12-12T20:43:54.7078530Z tests/test_security_guards.py::TestGuardFileExtension::test_safe_extension_passes PASSED [ 52%]
+2025-12-12T20:43:54.7085000Z tests/test_security_guards.py::TestGuardFileExtension::test_dangerous_extension_blocked PASSED [ 54%]
+2025-12-12T20:43:54.7091420Z tests/test_security_guards.py::TestGuardFileExtension::test_custom_denied_extensions PASSED [ 55%]
+2025-12-12T20:43:54.7098070Z tests/test_security_guards.py::TestGuardFileExtension::test_extension_with_dot PASSED [ 56%]
+2025-12-12T20:43:54.7105890Z tests/test_security_validators.py::TestValidateProjectName::test_valid_project_name PASSED [ 58%]
+2025-12-12T20:43:54.7113270Z tests/test_security_validators.py::TestValidateProjectName::test_empty_name_rejected PASSED [ 59%]
+2025-12-12T20:43:54.7123010Z tests/test_security_validators.py::TestValidateProjectName::test_name_must_start_with_letter PASSED [ 60%]
+2025-12-12T20:43:54.7128240Z tests/test_security_validators.py::TestValidateProjectName::test_reserved_names_rejected PASSED [ 62%]
+2025-12-12T20:43:54.7135920Z tests/test_security_validators.py::TestValidateProjectName::test_max_length_enforced PASSED [ 63%]
+2025-12-12T20:43:54.7144320Z tests/test_security_validators.py::TestValidatePythonVersion::test_valid_versions PASSED [ 64%]
+2025-12-12T20:43:54.7152060Z tests/test_security_validators.py::TestValidatePythonVersion::test_invalid_format_rejected PASSED [ 66%]
+2025-12-12T20:43:54.7160040Z tests/test_security_validators.py::TestValidatePythonVersion::test_unsupported_version_rejected PASSED [ 67%]
+2025-12-12T20:43:54.7170260Z tests/test_security_validators.py::TestValidateEmail::test_valid_emails PASSED [ 68%]
+2025-12-12T20:43:54.7176880Z tests/test_security_validators.py::TestValidateEmail::test_empty_email_rejected PASSED [ 70%]
+2025-12-12T20:43:54.7184440Z tests/test_security_validators.py::TestValidateEmail::test_invalid_format_rejected PASSED [ 71%]
+2025-12-12T20:43:54.7192980Z tests/test_security_validators.py::TestValidateUrl::test_valid_urls PASSED [ 72%]
+2025-12-12T20:43:54.7199720Z tests/test_security_validators.py::TestValidateUrl::test_empty_url_rejected PASSED [ 74%]
+2025-12-12T20:43:54.7206880Z tests/test_security_validators.py::TestValidateUrl::test_missing_scheme_rejected PASSED [ 75%]
+2025-12-12T20:43:54.7214050Z tests/test_security_validators.py::TestValidateUrl::test_invalid_scheme_rejected PASSED [ 77%]
+2025-12-12T20:43:54.7220160Z tests/test_security_validators.py::TestValidateIpAddress::test_valid_ipv4 PASSED [ 78%]
+2025-12-12T20:43:54.7226440Z tests/test_security_validators.py::TestValidateIpAddress::test_valid_ipv6 PASSED [ 79%]
+2025-12-12T20:43:54.7234250Z tests/test_security_validators.py::TestValidateIpAddress::test_invalid_ip_rejected PASSED [ 81%]
+2025-12-12T20:43:54.7241050Z tests/test_security_validators.py::TestValidatePort::test_valid_ports PASSED [ 82%]
+2025-12-12T20:43:54.7249230Z tests/test_security_validators.py::TestValidatePort::test_invalid_port_rejected PASSED [ 83%]
+2025-12-12T20:43:54.7256780Z tests/test_security_validators.py::TestValidatePort::test_privileged_ports_blocked PASSED [ 85%]
+2025-12-12T20:43:54.7265920Z tests/test_security_validators.py::TestValidateSemver::test_valid_semver PASSED [ 86%]
+2025-12-12T20:43:54.7274000Z tests/test_security_validators.py::TestValidateSemver::test_invalid_semver_rejected PASSED [ 87%]
+2025-12-12T20:43:54.7461620Z tests/test_stack_script.py::test_dry_run_does_not_create_files PASSED    [ 89%]
+2025-12-12T20:43:54.7614310Z tests/test_stack_script.py::test_safe_write_creates_backup PASSED        [ 90%]
+2025-12-12T20:43:54.7770570Z tests/test_stack_script.py::test_force_mode_overwrites_without_backup PASSED [ 91%]
+2025-12-12T20:43:54.8110760Z tests/test_stack_script.py::test_idempotency_for_pyproject_toml PASSED   [ 93%]
+2025-12-12T20:43:54.8300320Z tests/test_stack_script.py::test_git_initialization PASSED               [ 94%]
+2025-12-12T20:43:54.8463830Z tests/test_stack_script.py::test_project_structure_creation PASSED       [ 95%]
+2025-12-12T20:43:54.8634510Z tests/test_stack_script.py::test_optional_dependencies_flag PASSED       [ 97%]
+2025-12-12T20:43:54.8770310Z tests/test_stack_script.py::test_install_runtime_deps_flag PASSED        [ 98%]
+2025-12-12T20:43:55.3928180Z tests/test_stack_script.py::test_python_version_detection PASSED         [100%]
+2025-12-12T20:43:55.3934120Z ERROR: Coverage failure: total of 37 is less than fail-under=80
+2025-12-12T20:43:55.3934840Z 
+2025-12-12T20:43:55.3934940Z 
+2025-12-12T20:43:55.3935450Z ================================ tests coverage ================================
+2025-12-12T20:43:55.3936610Z ______________ coverage: platform darwin, python 3.10.11-final-0 _______________
+2025-12-12T20:43:55.3938460Z 
+2025-12-12T20:43:55.3938980Z Name                               Stmts   Miss Branch BrPart  Cover   Missing
+2025-12-12T20:43:55.3950980Z ------------------------------------------------------------------------------
+2025-12-12T20:43:55.3951950Z src/app/__init__.py                    1      0      0      0   100%
+2025-12-12T20:43:55.3956190Z src/app/main.py                        8      2      0      0    75%   25-26
+2025-12-12T20:43:55.3956710Z src/app/secure_system.py              45      0      2      0   100%
+2025-12-12T20:43:55.3957150Z src/stack/__init__.py                  5      0      0      0   100%
+2025-12-12T20:43:55.3957590Z src/stack/config/__init__.py           3      0      0      0   100%
+2025-12-12T20:43:55.3958080Z src/stack/config/generators.py        34     25     14      0    19%   27-28, 124-182, 218, 264, 311, 349-357
+2025-12-12T20:43:55.3958550Z src/stack/config/models.py            73      2     12      1    96%   235-236
+2025-12-12T20:43:55.3958960Z src/stack/security/__init__.py         4      0      0      0   100%
+2025-12-12T20:43:55.3959440Z src/stack/security/guards.py          83     23     44      4    68%   100-101, 117->125, 119, 250->259, 253, 283-348
+2025-12-12T20:43:55.3960690Z src/stack/security/sanitizers.py     104     95     58      0     6%   40-70, 100-152, 177-224, 244-260, 278-297
+2025-12-12T20:43:55.3961460Z src/stack/security/validators.py     125     25     54     11    80%   54->56, 56->59, 65-66, 114-116, 160-161, 164-165, 196-198, 209-210, 212->221, 218-219, 251-252, 255-256, 259-260, 285-287
+2025-12-12T20:43:55.3962180Z src/stack/utils/__init__.py            4      4      0      0     0%   3-7
+2025-12-12T20:43:55.3963010Z src/stack/utils/filesystem.py        113    113     62      0     0%   8-349
+2025-12-12T20:43:55.3963540Z src/stack/utils/logging.py            99     99     32      0     0%   8-324
+2025-12-12T20:43:55.3964150Z src/stack/utils/subprocess.py         73     73     26      0     0%   8-340
+2025-12-12T20:43:55.3964650Z ------------------------------------------------------------------------------
+2025-12-12T20:43:55.3965100Z TOTAL                                774    461    304     16    37%
+2025-12-12T20:43:55.3965540Z Coverage HTML written to dir htmlcov
+2025-12-12T20:43:55.3965920Z Coverage XML written to file coverage.xml
+2025-12-12T20:43:55.3966320Z FAIL Required test coverage of 80.0% not reached. Total coverage: 36.64%
+2025-12-12T20:43:55.3966730Z ============================== 74 passed in 1.65s ==============================
+2025-12-12T20:43:55.4910770Z ##[error]Process completed with exit code 1.

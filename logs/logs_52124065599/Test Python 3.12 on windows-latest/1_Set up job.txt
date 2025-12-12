@@ -1,0 +1,33 @@
+﻿2025-12-12T20:43:16.7178075Z Current runner version: '2.329.0'
+2025-12-12T20:43:16.7388089Z ##[group]Runner Image Provisioner
+2025-12-12T20:43:16.7388844Z Hosted Compute Agent
+2025-12-12T20:43:16.7389313Z Version: 20251202.455
+2025-12-12T20:43:16.7389903Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+2025-12-12T20:43:16.7390521Z Build Date: 2025-12-02T15:56:59Z
+2025-12-12T20:43:16.7391113Z Worker ID: {e36b3b5c-a9b5-4835-8a6c-f880d37bd99a}
+2025-12-12T20:43:16.7391753Z ##[endgroup]
+2025-12-12T20:43:16.7392192Z ##[group]Operating System
+2025-12-12T20:43:16.7392715Z Microsoft Windows Server 2025
+2025-12-12T20:43:16.7393535Z 10.0.26100
+2025-12-12T20:43:16.7393957Z Datacenter
+2025-12-12T20:43:16.7394383Z ##[endgroup]
+2025-12-12T20:43:16.7395000Z ##[group]Runner Image
+2025-12-12T20:43:16.7395461Z Image: windows-2025
+2025-12-12T20:43:16.7395915Z Version: 20251208.136.1
+2025-12-12T20:43:16.7396924Z Included Software: https://github.com/actions/runner-images/blob/win25/20251208.136/images/windows/Windows2025-Readme.md
+2025-12-12T20:43:16.7398684Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20251208.136
+2025-12-12T20:43:16.7399524Z ##[endgroup]
+2025-12-12T20:43:16.7400499Z ##[group]GITHUB_TOKEN Permissions
+2025-12-12T20:43:16.7402223Z Contents: read
+2025-12-12T20:43:16.7402784Z Metadata: read
+2025-12-12T20:43:16.7403210Z Packages: read
+2025-12-12T20:43:16.7403656Z ##[endgroup]
+2025-12-12T20:43:16.7405624Z Secret source: Actions
+2025-12-12T20:43:16.7406292Z Prepare workflow directory
+2025-12-12T20:43:16.8349001Z Prepare all required actions
+2025-12-12T20:43:16.8386607Z Getting action download info
+2025-12-12T20:43:17.1111209Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-12T20:43:17.2694993Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2025-12-12T20:43:17.4720093Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2025-12-12T20:43:17.6811514Z Download action repository 'codecov/codecov-action@v4' (SHA:b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238)
+2025-12-12T20:43:18.5256774Z Complete job name: Test Python 3.12 on windows-latest

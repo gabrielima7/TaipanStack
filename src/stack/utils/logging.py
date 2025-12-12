@@ -312,7 +312,7 @@ def log_operation(
             log_method(f"Completed: {operation}", duration_seconds=duration)
         except Exception as e:
             duration = (datetime.now(timezone.utc) - start_time).total_seconds()
-            logger.error(
+            logger.exception(
                 f"Failed: {operation}",
                 duration_seconds=duration,
                 error=str(e),

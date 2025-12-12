@@ -1,0 +1,52 @@
+﻿2025-12-12T20:43:26.5726739Z ##[group]Run python stack_bootstrapper.py --dry-run --verbose
+2025-12-12T20:43:26.5727284Z [36;1mpython stack_bootstrapper.py --dry-run --verbose[0m
+2025-12-12T20:43:26.5762210Z shell: /usr/bin/bash -e {0}
+2025-12-12T20:43:26.5762489Z env:
+2025-12-12T20:43:26.5762710Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:26.5763050Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:26.5763500Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T20:43:26.5763961Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:26.5764349Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:26.5764778Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:26.5765538Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T20:43:26.5765904Z ##[endgroup]
+2025-12-12T20:43:27.0110054Z [DRY-RUN] 
+2025-12-12T20:43:27.0110747Z 🚀 Python Stack Bootstrapper v1.0.0
+2025-12-12T20:43:27.0111766Z [DRY-RUN] Iniciando a configuração do ambiente Python de alta performance...
+2025-12-12T20:43:27.0112307Z 
+2025-12-12T20:43:27.0112625Z [DRY-RUN] 🔎 Verificando se o Poetry está instalado...
+2025-12-12T20:43:27.0113194Z [DRY-RUN] ✅ Poetry encontrado.
+2025-12-12T20:43:27.0113741Z [DRY-RUN] 🔎 Verificando se o Git está inicializado...
+2025-12-12T20:43:27.0114357Z [DRY-RUN] ✅ Repositório Git já inicializado.
+2025-12-12T20:43:27.0115195Z [DRY-RUN] 🔎 Verificando conectividade com a internet...
+2025-12-12T20:43:27.0115622Z [DRY-RUN] ✅ Conectividade confirmada.
+2025-12-12T20:43:27.0115969Z [DRY-RUN] ✅ Projeto Poetry já inicializado.
+2025-12-12T20:43:27.0116421Z [DRY-RUN] 📁 Criando estrutura de pastas do projeto...
+2025-12-12T20:43:27.0116805Z [DRY-RUN] Criaria diretório: src/stack
+2025-12-12T20:43:27.0117177Z [DRY-RUN] Criaria diretório: tests
+2025-12-12T20:43:27.0117492Z [DRY-RUN] Criaria diretório: docs
+2025-12-12T20:43:27.0118090Z [DRY-RUN] ⏭️  Pulando dependências de produção (use --install-runtime-deps para incluí-las).
+2025-12-12T20:43:27.0118703Z [DRY-RUN] 🔧 Adicionando dependências de desenvolvimento...
+2025-12-12T20:43:27.0119350Z [DRY-RUN] Executando comando: `poetry add --group dev ruff mypy bandit safety pre-commit pytest pytest-cov py-spy semgrep`
+2025-12-12T20:43:27.0120150Z [DRY-RUN] 📝 Gerando configurações para Ruff, Mypy e Pytest no pyproject.toml...
+2025-12-12T20:43:27.0120758Z [DRY-RUN] ✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.
+2025-12-12T20:43:27.0121357Z [DRY-RUN] 📝 Gerando arquivo de configuração .pre-commit-config.yaml...
+2025-12-12T20:43:27.0121807Z [DRY-RUN] Escrevendo no arquivo: .pre-commit-config.yaml
+2025-12-12T20:43:27.0122618Z [DRY-RUN] 📝 Gerando arquivo de configuração .github/dependabot.yml...
+2025-12-12T20:43:27.0123092Z [DRY-RUN] Escrevendo no arquivo: .github/dependabot.yml
+2025-12-12T20:43:27.0123533Z [DRY-RUN] 📝 Gerando política de segurança em SECURITY.md...
+2025-12-12T20:43:27.0123899Z [DRY-RUN] Escrevendo no arquivo: SECURITY.md
+2025-12-12T20:43:27.0124271Z [DRY-RUN] ⚙️  Instalando hooks de pre-commit...
+2025-12-12T20:43:27.0124661Z [DRY-RUN] Executando comando: `poetry run pre-commit install`
+2025-12-12T20:43:27.0125205Z [DRY-RUN] 
+2025-12-12T20:43:27.0125441Z 🔍 Validando configuração...
+2025-12-12T20:43:27.0125741Z [DRY-RUN] Executando comando: `poetry run pre-commit --version`
+2025-12-12T20:43:27.0126114Z [DRY-RUN] ✅ Validação concluída com sucesso!
+2025-12-12T20:43:27.0126356Z [DRY-RUN] 
+2025-12-12T20:43:27.0126563Z ✅ Ambiente configurado com sucesso!
+2025-12-12T20:43:27.0126881Z [DRY-RUN] Execute `poetry shell` para ativar o ambiente virtual.
+2025-12-12T20:43:27.0127472Z [DRY-RUN] 💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.
+2025-12-12T20:43:27.0127900Z [DRY-RUN] 
+2025-12-12T20:43:27.0128274Z 🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.
+2025-12-12T20:43:27.0128635Z [DRY-RUN] 
+2025-12-12T20:43:27.0128932Z 📚 Consulte o README.md para mais informações sobre o projeto.

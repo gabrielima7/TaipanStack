@@ -278,15 +278,14 @@ class StackConfig(BaseModel):
 
         """
         # If paranoid security, ensure all security tools are enabled
-        if self.security.level == "paranoid":
-            if not all([
-                self.security.enable_bandit,
-                self.security.enable_safety,
-                self.security.enable_semgrep,
-                self.security.enable_detect_secrets,
-            ]):
-                msg = "Paranoid security level requires all security tools enabled."
-                raise ValueError(msg)
+        if self.security.level == "paranoid" and not all([
+            self.security.enable_bandit,
+            self.security.enable_safety,
+            self.security.enable_semgrep,
+            self.security.enable_detect_secrets,
+        ]):
+            msg = "Paranoid security level requires all security tools enabled."
+            raise ValueError(msg)
 
         return self
 

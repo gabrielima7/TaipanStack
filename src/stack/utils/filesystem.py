@@ -124,7 +124,7 @@ def safe_write(
     # Write file
     if atomic:
         # Write to temp file first, then rename
-        fd, temp_path = tempfile.mkstemp(
+        _fd, temp_path = tempfile.mkstemp(
             dir=path.parent,
             prefix=f".{path.name}.",
             suffix=".tmp",

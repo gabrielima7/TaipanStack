@@ -1,0 +1,33 @@
+﻿2025-12-12T20:43:17.7607537Z ##[group]Run pip install interrogate
+2025-12-12T20:43:17.7608418Z [36;1mpip install interrogate[0m
+2025-12-12T20:43:17.7654573Z shell: /usr/bin/bash -e {0}
+2025-12-12T20:43:17.7655205Z env:
+2025-12-12T20:43:17.7655627Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:17.7656460Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:17.7657694Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T20:43:17.7659079Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:17.7660149Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:17.7661298Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T20:43:17.7662468Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T20:43:17.7663421Z ##[endgroup]
+2025-12-12T20:43:19.0220466Z Collecting interrogate
+2025-12-12T20:43:19.1075752Z   Downloading interrogate-1.7.0-py3-none-any.whl.metadata (37 kB)
+2025-12-12T20:43:19.1444681Z Collecting attrs (from interrogate)
+2025-12-12T20:43:19.1587869Z   Downloading attrs-25.4.0-py3-none-any.whl.metadata (10 kB)
+2025-12-12T20:43:19.1810375Z Collecting click>=7.1 (from interrogate)
+2025-12-12T20:43:19.1965560Z   Downloading click-8.3.1-py3-none-any.whl.metadata (2.6 kB)
+2025-12-12T20:43:19.2129165Z Collecting colorama (from interrogate)
+2025-12-12T20:43:19.2270662Z   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+2025-12-12T20:43:19.2490371Z Collecting py (from interrogate)
+2025-12-12T20:43:19.2634927Z   Downloading py-1.11.0-py2.py3-none-any.whl.metadata (2.8 kB)
+2025-12-12T20:43:19.6793940Z Collecting tabulate (from interrogate)
+2025-12-12T20:43:19.6942005Z   Downloading tabulate-0.9.0-py3-none-any.whl.metadata (34 kB)
+2025-12-12T20:43:19.8917150Z Downloading interrogate-1.7.0-py3-none-any.whl (46 kB)
+2025-12-12T20:43:19.9274843Z Downloading click-8.3.1-py3-none-any.whl (108 kB)
+2025-12-12T20:43:19.9749817Z Downloading attrs-25.4.0-py3-none-any.whl (67 kB)
+2025-12-12T20:43:20.0390898Z Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+2025-12-12T20:43:20.2329597Z Downloading py-1.11.0-py2.py3-none-any.whl (98 kB)
+2025-12-12T20:43:20.3114957Z Downloading tabulate-0.9.0-py3-none-any.whl (35 kB)
+2025-12-12T20:43:20.5874540Z Installing collected packages: tabulate, py, colorama, click, attrs, interrogate
+2025-12-12T20:43:20.9351865Z 
+2025-12-12T20:43:20.9362419Z Successfully installed attrs-25.4.0 click-8.3.1 colorama-0.4.6 interrogate-1.7.0 py-1.11.0 tabulate-0.9.0

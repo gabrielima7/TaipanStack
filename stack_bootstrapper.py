@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Este script automatiza a configuração inicial de um ambiente Python focado em
 performance, segurança e integridade.
@@ -14,7 +13,7 @@ import socket
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, NoReturn
+from typing import NoReturn
 
 # Constantes de configuração
 PYPROJECT_TOML_PATH = Path("pyproject.toml")
@@ -31,16 +30,13 @@ def _log(message: str, args: argparse.Namespace, is_verbose: bool = False) -> No
     if is_verbose and not args.verbose:
         return
 
-    prefix = "[DRY-RUN] " if args.dry_run else ""
-    print(f"{prefix}{message}")
 
 def _handle_error(message: str) -> NoReturn:
     """Exibe uma mensagem de erro e encerra o script."""
-    print(f"❌ Erro: {message}", file=sys.stderr)
     sys.exit(1)
 
 def _run_command(
-    command: List[str], args: argparse.Namespace, capture_output: bool = False
+    command: list[str], args: argparse.Namespace, capture_output: bool = False
 ) -> subprocess.CompletedProcess[str]:
     """Executa um comando no shell, tratando erros e modo dry-run."""
     _log(f"Executando comando: `{' '.join(command)}`", args, is_verbose=True)
@@ -52,7 +48,7 @@ def _run_command(
             command,
             check=True,
             text=True,
-            encoding='utf-8',
+            encoding="utf-8",
             capture_output=capture_output,
         )
         return result
@@ -281,7 +277,7 @@ def _check_connectivity(args: argparse.Namespace) -> None:
         # Tenta conectar ao PyPI para verificar conectividade
         socket.create_connection(("pypi.org", 443), timeout=5)
         _log("✅ Conectividade confirmada.", args, is_verbose=True)
-    except (socket.timeout, socket.error, OSError):
+    except (TimeoutError, OSError):
         _handle_error(
             "Não foi possível conectar à internet. "
             "Verifique sua conexão e proxies antes de continuar."
@@ -457,14 +453,13 @@ def _initialize_poetry_project(args: argparse.Namespace) -> None:
 
 def _add_dependencies(args: argparse.Namespace) -> None:
     """Adiciona as dependências de produção e desenvolvimento ao projeto."""
-
     # Dependências de produção são opcionais
     if args.install_runtime_deps:
         _log("📦 Adicionando dependências de produção opcionais...", args)
         prod_deps = ["pydantic>=2.0", "orjson"]
         if not _is_windows():
             prod_deps.append("uvloop")
-        _run_command(["poetry", "add"] + prod_deps, args)
+        _run_command(["poetry", "add", *prod_deps], args)
     else:
         _log("⏭️  Pulando dependências de produção (use --install-runtime-deps para incluí-las).", args)
 
@@ -473,7 +468,7 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "ruff", "mypy", "bandit", "safety", "pre-commit",
         "pytest", "pytest-cov", "py-spy", "semgrep"
     ]
-    _run_command(["poetry", "add", "--group", "dev"] + dev_deps, args)
+    _run_command(["poetry", "add", "--group", "dev", *dev_deps], args)
 
 def _setup_pre_commit_hooks(args: argparse.Namespace) -> None:
     """Instala e configura os hooks de pre-commit."""

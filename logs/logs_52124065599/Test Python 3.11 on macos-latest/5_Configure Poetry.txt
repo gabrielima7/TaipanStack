@@ -1,0 +1,11 @@
+﻿2025-12-12T20:43:28.2948010Z ##[group]Run poetry config virtualenvs.in-project true
+2025-12-12T20:43:28.2948450Z [36;1mpoetry config virtualenvs.in-project true[0m
+2025-12-12T20:43:28.2980940Z shell: /bin/bash -e {0}
+2025-12-12T20:43:28.2981160Z env:
+2025-12-12T20:43:28.2981340Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:28.2981700Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.2982160Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2025-12-12T20:43:28.2982590Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.2983010Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.2983460Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2025-12-12T20:43:28.2983750Z ##[endgroup]

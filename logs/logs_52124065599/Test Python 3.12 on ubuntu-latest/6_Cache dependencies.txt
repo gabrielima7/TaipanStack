@@ -1,0 +1,20 @@
+﻿2025-12-12T20:43:27.8747290Z ##[group]Run actions/cache@v4
+2025-12-12T20:43:27.8747582Z with:
+2025-12-12T20:43:27.8747751Z   path: .venv
+2025-12-12T20:43:27.8748141Z   key: Linux-poetry-3.12-dddbcec77aace8ea46b8e4dc49af4adbf8a33d76eb561e7fb5c3f00a438f980a
+2025-12-12T20:43:27.8748607Z   restore-keys: Linux-poetry-3.12-
+
+2025-12-12T20:43:27.8748871Z   enableCrossOsArchive: false
+2025-12-12T20:43:27.8749107Z   fail-on-cache-miss: false
+2025-12-12T20:43:27.8749326Z   lookup-only: false
+2025-12-12T20:43:27.8749530Z   save-always: false
+2025-12-12T20:43:27.8749711Z env:
+2025-12-12T20:43:27.8749886Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T20:43:27.8750165Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.12/x64
+2025-12-12T20:43:27.8750561Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.12/x64/lib/pkgconfig
+2025-12-12T20:43:27.8751313Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+2025-12-12T20:43:27.8751698Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+2025-12-12T20:43:27.8752039Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+2025-12-12T20:43:27.8752447Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.12/x64/lib
+2025-12-12T20:43:27.8752738Z ##[endgroup]
+2025-12-12T20:43:28.1172554Z Cache not found for input keys: Linux-poetry-3.12-dddbcec77aace8ea46b8e4dc49af4adbf8a33d76eb561e7fb5c3f00a438f980a, Linux-poetry-3.12-
