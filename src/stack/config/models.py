@@ -20,6 +20,10 @@ from pydantic import (
     model_validator,
 )
 
+# Constants to avoid magic values (PLR2004)
+PYTHON_MAJOR_VERSION = 3
+MIN_PYTHON_MINOR_VERSION = 10
+
 
 class SecurityConfig(BaseModel):
     """Security-related configuration options.
@@ -41,7 +45,9 @@ class SecurityConfig(BaseModel):
     enable_bandit: bool = Field(default=True, description="Enable Bandit SAST")
     enable_safety: bool = Field(default=True, description="Enable Safety SCA")
     enable_semgrep: bool = Field(default=True, description="Enable Semgrep")
-    enable_detect_secrets: bool = Field(default=True, description="Enable secret detection")
+    enable_detect_secrets: bool = Field(
+        default=True, description="Enable secret detection"
+    )
     bandit_severity: Literal["low", "medium", "high"] = Field(
         default="low",
         description="Minimum Bandit severity",
@@ -232,12 +238,21 @@ class StackConfig(BaseModel):
         """
         pattern = r"^\d+\.\d+$"
         if not re.match(pattern, value):
-            msg = f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
+            msg = (
+                f"Python version '{value}' is invalid. "
+                "Use format 'X.Y' (e.g., '3.12')."
+            )
             raise ValueError(msg)
 
         major, minor = map(int, value.split("."))
-        if major < 3 or (major == 3 and minor < 10):
-            msg = f"Python version {value} is not supported. Minimum is 3.10."
+        is_old_python = major < PYTHON_MAJOR_VERSION or (
+            major == PYTHON_MAJOR_VERSION and minor < MIN_PYTHON_MINOR_VERSION
+        )
+        if is_old_python:
+            msg = (
+                f"Python version {value} is not supported. "
+                f"Minimum is {PYTHON_MAJOR_VERSION}.{MIN_PYTHON_MINOR_VERSION}."
+            )
             raise ValueError(msg)
 
         return value
@@ -278,12 +293,13 @@ class StackConfig(BaseModel):
 
         """
         # If paranoid security, ensure all security tools are enabled
-        if self.security.level == "paranoid" and not all([
+        all_tools_enabled = all([
             self.security.enable_bandit,
             self.security.enable_safety,
             self.security.enable_semgrep,
             self.security.enable_detect_secrets,
-        ]):
+        ])
+        if self.security.level == "paranoid" and not all_tools_enabled:
             msg = "Paranoid security level requires all security tools enabled."
             raise ValueError(msg)
 

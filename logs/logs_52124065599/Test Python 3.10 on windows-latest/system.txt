@@ -1,5 +1,0 @@
-2025-12-12T20:43:11.7930000Z Requested labels: windows-latest
-2025-12-12T20:43:11.7930000Z Job defined at: gabrielima7/Stack/.github/workflows/ci.yml@refs/heads/main
-2025-12-12T20:43:11.7930000Z Waiting for a runner to pick up this job...
-2025-12-12T20:43:12.7730000Z Job is about to start running on the hosted runner: GitHub Actions 1000001804
-2025-12-12T20:43:12.7730000Z Job is waiting for a hosted runner to come online.

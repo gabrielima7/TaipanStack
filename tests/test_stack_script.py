@@ -1,7 +1,7 @@
-import sys
 import subprocess
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -9,7 +9,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import stack_bootstrapper as stack
-
 
 
 @pytest.fixture(autouse=True)
@@ -29,7 +28,7 @@ def setup_teardown(tmp_path, monkeypatch):
 
 def run_main_with_args(args):
     """Helper para rodar a função main do script com argumentos específicos."""
-    with patch.object(sys, "argv", ["stack.py"] + args):
+    with patch.object(sys, "argv", ["stack.py", *args]):
         stack.main()
 
 

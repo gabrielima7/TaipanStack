@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any, Literal
 
@@ -21,7 +22,10 @@ except ImportError:
 
 # Default log format
 DEFAULT_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
-JSON_FORMAT = '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "logger": "%(name)s", "message": "%(message)s"}'
+JSON_FORMAT = (
+    '{"timestamp": "%(asctime)s", "level": "%(levelname)s", '
+    '"logger": "%(name)s", "message": "%(message)s"}'
+)
 
 
 class StackLogger:
@@ -292,8 +296,6 @@ def log_operation(
         ...     logger.info("Setting up environment")
 
     """
-    from contextlib import contextmanager
-
     @contextmanager
     def _log_context() -> Any:
         nonlocal logger

@@ -12,6 +12,15 @@ from ipaddress import IPv4Address, IPv6Address, ip_address
 from typing import Literal
 from urllib.parse import urlparse
 
+# Constants to avoid magic values (PLR2004)
+PYTHON_MAJOR_VERSION = 3
+MIN_PYTHON_MINOR_VERSION = 10
+MAX_EMAIL_LOCAL_LENGTH = 64
+MAX_EMAIL_DOMAIN_LENGTH = 255
+MAX_PORT_NUMBER = 65535
+MIN_PRIVILEGED_PORT = 1024
+LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
+
 
 def validate_project_name(
     name: str,
@@ -62,7 +71,12 @@ def validate_project_name(
         if not name[0].isalpha():
             msg = "Project name must start with a letter"
             raise ValueError(msg)
-        msg = f"Project name contains invalid characters. Allowed: letters, numbers{', hyphens' if allow_hyphen else ''}{', underscores' if allow_underscore else ''}"
+        hyphen_msg = ", hyphens" if allow_hyphen else ""
+        underscore_msg = ", underscores" if allow_underscore else ""
+        msg = (
+            f"Project name contains invalid characters. "
+            f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
+        )
         raise ValueError(msg)
 
     # Check for reserved names
@@ -115,12 +129,15 @@ def validate_python_version(version: str) -> str:
         msg = f"Invalid version numbers in '{version}'"
         raise ValueError(msg) from e
 
-    if major != 3:
+    if major != PYTHON_MAJOR_VERSION:
         msg = f"Only Python 3.x is supported, got {major}.x"
         raise ValueError(msg)
 
-    if minor < 10:
-        msg = f"Python 3.{minor} is not supported. Minimum is 3.10"
+    if minor < MIN_PYTHON_MINOR_VERSION:
+        msg = (
+            f"Python 3.{minor} is not supported. "
+            f"Minimum is 3.{MIN_PYTHON_MINOR_VERSION}"
+        )
         raise ValueError(msg)
 
     return version
@@ -156,12 +173,12 @@ def validate_email(email: str) -> str:
     # Additional checks
     local, domain = email.rsplit("@", 1)
 
-    if len(local) > 64:
-        msg = "Email local part exceeds 64 characters"
+    if len(local) > MAX_EMAIL_LOCAL_LENGTH:
+        msg = f"Email local part exceeds {MAX_EMAIL_LOCAL_LENGTH} characters"
         raise ValueError(msg)
 
-    if len(domain) > 255:
-        msg = "Email domain exceeds 255 characters"
+    if len(domain) > MAX_EMAIL_DOMAIN_LENGTH:
+        msg = f"Email domain exceeds {MAX_EMAIL_DOMAIN_LENGTH} characters"
         raise ValueError(msg)
 
     return email
@@ -212,11 +229,11 @@ def validate_url(
     if require_tld:
         # Check for TLD (at least one dot)
         domain = parsed.netloc.split(":")[0]  # Remove port if present
-        if "." not in domain or domain.endswith("."):
-            # Allow localhost for development
-            if domain.lower() not in ("localhost", "127.0.0.1", "::1"):
-                msg = f"URL domain must have a TLD: {domain}"
-                raise ValueError(msg)
+        has_no_tld = "." not in domain or domain.endswith(".")
+        is_localhost = domain.lower() in LOCALHOST_DOMAINS
+        if has_no_tld and not is_localhost:
+            msg = f"URL domain must have a TLD: {domain}"
+            raise ValueError(msg)
 
     return url
 
@@ -286,12 +303,12 @@ def validate_port(
         msg = f"Invalid port number: {port}"
         raise ValueError(msg) from e
 
-    if port_int < 0 or port_int > 65535:
-        msg = f"Port must be between 0 and 65535: {port_int}"
+    if port_int < 0 or port_int > MAX_PORT_NUMBER:
+        msg = f"Port must be between 0 and {MAX_PORT_NUMBER}: {port_int}"
         raise ValueError(msg)
 
-    if not allow_privileged and port_int < 1024:
-        msg = f"Privileged ports (< 1024) are not allowed: {port_int}"
+    if not allow_privileged and port_int < MIN_PRIVILEGED_PORT:
+        msg = f"Privileged ports (< {MIN_PRIVILEGED_PORT}) are not allowed: {port_int}"
         raise ValueError(msg)
 
     return port_int

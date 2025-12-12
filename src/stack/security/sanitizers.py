@@ -11,6 +11,8 @@ import re
 import unicodedata
 from pathlib import Path
 
+# Constants to avoid magic values (PLR2004)
+MAX_SQL_IDENTIFIER_LENGTH = 128
 
 def sanitize_string(
     value: str,
@@ -48,7 +50,9 @@ def sanitize_string(
 
     # Remove null bytes and control characters
     result = result.replace("\x00", "")
-    result = "".join(c for c in result if unicodedata.category(c) != "Cc" or c in "\n\r\t")
+    result = "".join(
+        c for c in result if unicodedata.category(c) != "Cc" or c in "\n\r\t"
+    )
 
     # Handle HTML
     if not allow_html:
@@ -287,8 +291,8 @@ def sanitize_sql_identifier(identifier: str) -> str:
         result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
-    if len(result) > 128:
-        result = result[:128]
+    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
+        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
 
     if not result:
         msg = "SQL identifier contains no valid characters"

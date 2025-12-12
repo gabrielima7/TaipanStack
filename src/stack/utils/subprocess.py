@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -138,8 +139,6 @@ def run_safe_command(
         ...     print("Installation complete!")
 
     """
-    import time
-
     # Convert to list
     cmd_list = list(command)
 
@@ -204,7 +203,10 @@ def run_safe_command(
         duration = time.time() - start_time
         stdout_str = ""
         if hasattr(e, "stdout") and e.stdout is not None:
-            stdout_str = e.stdout if isinstance(e.stdout, str) else e.stdout.decode("utf-8", errors="replace")
+            if isinstance(e.stdout, str):
+                stdout_str = e.stdout
+            else:
+                stdout_str = e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
@@ -331,10 +333,10 @@ def get_command_version(
         )
         if result.success:
             # Return first non-empty line
-            for line in result.stdout.split("\n"):
-                line = line.strip()
-                if line:
-                    return line
+            for raw_line in result.stdout.split("\n"):
+                stripped_line = raw_line.strip()
+                if stripped_line:
+                    return stripped_line
         return None
     except (SecurityError, subprocess.SubprocessError):
         return None

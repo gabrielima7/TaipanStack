@@ -111,7 +111,10 @@ def guard_path_traversal(
         ) from e
 
     # Check for symlinks if not allowed
-    if not allow_symlinks and resolved.exists() and resolved.is_symlink():
+    is_existing_symlink = (
+        not allow_symlinks and resolved.exists() and resolved.is_symlink()
+    )
+    if is_existing_symlink:
         raise SecurityError(
             "Symlinks are not allowed",
             guard_name="path_traversal",
@@ -187,7 +190,11 @@ def guard_command_injection(
         base_command = cmd_list[0]
         # Get just the command name without path
         command_name = Path(base_command).name
-        if command_name not in allowed_commands and base_command not in allowed_commands:
+        cmd_not_allowed = (
+            command_name not in allowed_commands
+            and base_command not in allowed_commands
+        )
+        if cmd_not_allowed:
             raise SecurityError(
                 f"Command not in allowed list: {command_name}",
                 guard_name="command_injection",
