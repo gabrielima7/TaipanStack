@@ -33,7 +33,7 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     assert user.is_active is True
     assert service.get_user(user.id) == user
 
-    assert f"User created with ID: {user.id}" in caplog.text
+    assert f"User created successfully: {user.id}" in caplog.text
 
 
 def test_create_user_invalid_email() -> None:
@@ -66,4 +66,4 @@ def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
             service.get_user(user_id)
 
     assert str(user_id) in str(exc_info.value)
-    assert f"User not found: {user_id}" in caplog.text
+    assert f"User lookup failed for ID: {user_id}" in caplog.text

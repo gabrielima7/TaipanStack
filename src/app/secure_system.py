@@ -159,7 +159,7 @@ class UserService:
             is_active=True,
         )
         self._user_repository.save(user)
-        logger.info("User created with ID: %s", user.id)
+        logger.info("User created successfully: %s", user.id)
         return user
 
     def get_user(self, user_id: UUID) -> User:
@@ -178,6 +178,6 @@ class UserService:
         """
         user = self._user_repository.get_by_id(user_id)
         if user is None:
-            logger.warning("User not found: %s", user_id)
+            logger.warning("User lookup failed for ID: %s", user_id)
             raise UserNotFoundError(user_id)
         return user
