@@ -1,0 +1,166 @@
+﻿2025-12-12T18:55:38.2125101Z Current runner version: '2.329.0'
+2025-12-12T18:55:38.2159954Z ##[group]Runner Image Provisioner
+2025-12-12T18:55:38.2161229Z Hosted Compute Agent
+2025-12-12T18:55:38.2162134Z Version: 20251202.455
+2025-12-12T18:55:38.2163076Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+2025-12-12T18:55:38.2164460Z Build Date: 2025-12-02T15:56:59Z
+2025-12-12T18:55:38.2165612Z Worker ID: {13cbf482-6ad2-4033-af10-0e283ba1d95b}
+2025-12-12T18:55:38.2166852Z ##[endgroup]
+2025-12-12T18:55:38.2167667Z ##[group]Operating System
+2025-12-12T18:55:38.2168963Z Ubuntu
+2025-12-12T18:55:38.2169737Z 24.04.3
+2025-12-12T18:55:38.2170551Z LTS
+2025-12-12T18:55:38.2171516Z ##[endgroup]
+2025-12-12T18:55:38.2172371Z ##[group]Runner Image
+2025-12-12T18:55:38.2173270Z Image: ubuntu-24.04
+2025-12-12T18:55:38.2174213Z Version: 20251208.163.1
+2025-12-12T18:55:38.2176041Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251208.163/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-12T18:55:38.2179240Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251208.163
+2025-12-12T18:55:38.2181062Z ##[endgroup]
+2025-12-12T18:55:38.2183048Z ##[group]GITHUB_TOKEN Permissions
+2025-12-12T18:55:38.2185814Z Contents: read
+2025-12-12T18:55:38.2186698Z Metadata: read
+2025-12-12T18:55:38.2187629Z Packages: read
+2025-12-12T18:55:38.2188553Z ##[endgroup]
+2025-12-12T18:55:38.2191455Z Secret source: Actions
+2025-12-12T18:55:38.2192997Z Prepare workflow directory
+2025-12-12T18:55:38.2580959Z Prepare all required actions
+2025-12-12T18:55:38.2619218Z Getting action download info
+2025-12-12T18:55:38.5837723Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-12T18:55:38.7089758Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2025-12-12T18:55:38.8721107Z Complete job name: Dry Run Test
+2025-12-12T18:55:38.9385918Z ##[group]Run actions/checkout@v4
+2025-12-12T18:55:38.9386732Z with:
+2025-12-12T18:55:38.9387135Z   repository: gabrielima7/Stack
+2025-12-12T18:55:38.9387799Z   token: ***
+2025-12-12T18:55:38.9388182Z   ssh-strict: true
+2025-12-12T18:55:38.9388576Z   ssh-user: git
+2025-12-12T18:55:38.9389336Z   persist-credentials: true
+2025-12-12T18:55:38.9389792Z   clean: true
+2025-12-12T18:55:38.9390194Z   sparse-checkout-cone-mode: true
+2025-12-12T18:55:38.9390690Z   fetch-depth: 1
+2025-12-12T18:55:38.9391083Z   fetch-tags: false
+2025-12-12T18:55:38.9391508Z   show-progress: true
+2025-12-12T18:55:38.9391924Z   lfs: false
+2025-12-12T18:55:38.9392292Z   submodules: false
+2025-12-12T18:55:38.9392710Z   set-safe-directory: true
+2025-12-12T18:55:38.9393581Z env:
+2025-12-12T18:55:38.9393981Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:38.9394444Z ##[endgroup]
+2025-12-12T18:55:39.0495824Z Syncing repository: gabrielima7/Stack
+2025-12-12T18:55:39.0497526Z ##[group]Getting Git version info
+2025-12-12T18:55:39.0498234Z Working directory is '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:39.0500137Z [command]/usr/bin/git version
+2025-12-12T18:55:39.0584763Z git version 2.52.0
+2025-12-12T18:55:39.0612881Z ##[endgroup]
+2025-12-12T18:55:39.0628404Z Temporarily overriding HOME='/home/runner/work/_temp/a8f67003-b9ee-4582-9568-3bf39a4860c6' before making global git config changes
+2025-12-12T18:55:39.0630006Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:39.0641004Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:55:39.0681913Z Deleting the contents of '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:39.0685637Z ##[group]Initializing the repository
+2025-12-12T18:55:39.0689682Z [command]/usr/bin/git init /home/runner/work/Stack/Stack
+2025-12-12T18:55:39.0814200Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-12T18:55:39.0815384Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-12T18:55:39.0816492Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-12T18:55:39.0817569Z hint: call:
+2025-12-12T18:55:39.0817977Z hint:
+2025-12-12T18:55:39.0818510Z hint: 	git config --global init.defaultBranch <name>
+2025-12-12T18:55:39.0819735Z hint:
+2025-12-12T18:55:39.0820554Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-12T18:55:39.0821615Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-12T18:55:39.0822461Z hint:
+2025-12-12T18:55:39.0822908Z hint: 	git branch -m <name>
+2025-12-12T18:55:39.0823434Z hint:
+2025-12-12T18:55:39.0824165Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-12T18:55:39.0825699Z Initialized empty Git repository in /home/runner/work/Stack/Stack/.git/
+2025-12-12T18:55:39.0831226Z [command]/usr/bin/git remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T18:55:39.0866978Z ##[endgroup]
+2025-12-12T18:55:39.0868181Z ##[group]Disabling automatic garbage collection
+2025-12-12T18:55:39.0872193Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-12T18:55:39.0902756Z ##[endgroup]
+2025-12-12T18:55:39.0903951Z ##[group]Setting up auth
+2025-12-12T18:55:39.0910834Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:39.0943438Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:55:39.1313192Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:39.1344863Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:55:39.1568462Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:39.1600955Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:55:39.1847096Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-12T18:55:39.1885245Z ##[endgroup]
+2025-12-12T18:55:39.1886009Z ##[group]Fetching the repository
+2025-12-12T18:55:39.1894038Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +265f2b5c1d4934c9f9ad4d635b5ad0997efee979:refs/remotes/origin/main
+2025-12-12T18:55:39.7080700Z From https://github.com/gabrielima7/Stack
+2025-12-12T18:55:39.7082400Z  * [new ref]         265f2b5c1d4934c9f9ad4d635b5ad0997efee979 -> origin/main
+2025-12-12T18:55:39.7084153Z ##[endgroup]
+2025-12-12T18:55:39.7084866Z ##[group]Determining the checkout info
+2025-12-12T18:55:39.7085646Z ##[endgroup]
+2025-12-12T18:55:39.7086177Z [command]/usr/bin/git sparse-checkout disable
+2025-12-12T18:55:39.7110064Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-12T18:55:39.7138372Z ##[group]Checking out the ref
+2025-12-12T18:55:39.7142737Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T18:55:39.7237372Z Switched to a new branch 'main'
+2025-12-12T18:55:39.7239631Z branch 'main' set up to track 'origin/main'.
+2025-12-12T18:55:39.7248049Z ##[endgroup]
+2025-12-12T18:55:39.7286558Z [command]/usr/bin/git log -1 --format=%H
+2025-12-12T18:55:39.7309962Z 265f2b5c1d4934c9f9ad4d635b5ad0997efee979
+2025-12-12T18:55:39.7597141Z ##[group]Run actions/setup-python@v5
+2025-12-12T18:55:39.7598287Z with:
+2025-12-12T18:55:39.7599302Z   python-version: 3.11
+2025-12-12T18:55:39.7600153Z   check-latest: false
+2025-12-12T18:55:39.7601228Z   token: ***
+2025-12-12T18:55:39.7601985Z   update-environment: true
+2025-12-12T18:55:39.7602920Z   allow-prereleases: false
+2025-12-12T18:55:39.7603801Z   freethreaded: false
+2025-12-12T18:55:39.7604578Z env:
+2025-12-12T18:55:39.7605260Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:39.7606150Z ##[endgroup]
+2025-12-12T18:55:39.9308997Z ##[group]Installed versions
+2025-12-12T18:55:39.9440747Z Successfully set up CPython (3.11.14)
+2025-12-12T18:55:39.9443147Z ##[endgroup]
+2025-12-12T18:55:39.9585571Z ##[group]Run pipx install poetry
+2025-12-12T18:55:39.9586648Z [36;1mpipx install poetry[0m
+2025-12-12T18:55:39.9635181Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:39.9636244Z env:
+2025-12-12T18:55:39.9636890Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:39.9638044Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.9639983Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:39.9641651Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.9643107Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.9644579Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.9646193Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:39.9647594Z ##[endgroup]
+2025-12-12T18:55:40.2059197Z creating virtual environment...
+2025-12-12T18:55:40.3157411Z installing poetry...
+2025-12-12T18:55:51.8208388Z done! ✨ 🌟 ✨
+2025-12-12T18:55:51.8209700Z   installed package poetry 2.2.1, installed using Python 3.12.3
+2025-12-12T18:55:51.8210407Z   These apps are now globally available
+2025-12-12T18:55:51.8210934Z     - poetry
+2025-12-12T18:55:51.8477129Z ##[group]Run python stack.py --dry-run --verbose
+2025-12-12T18:55:51.8477547Z [36;1mpython stack.py --dry-run --verbose[0m
+2025-12-12T18:55:51.8512430Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:51.8512677Z env:
+2025-12-12T18:55:51.8512867Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:51.8513168Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:51.8513588Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:51.8513985Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:51.8514346Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:51.8514724Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:51.8515086Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:51.8515444Z ##[endgroup]
+2025-12-12T18:55:51.8885837Z python: can't open file '/home/runner/work/Stack/Stack/stack.py': [Errno 2] No such file or directory
+2025-12-12T18:55:51.8920558Z ##[error]Process completed with exit code 2.
+2025-12-12T18:55:51.9028379Z Post job cleanup.
+2025-12-12T18:55:52.0032713Z [command]/usr/bin/git version
+2025-12-12T18:55:52.0068013Z git version 2.52.0
+2025-12-12T18:55:52.0112641Z Temporarily overriding HOME='/home/runner/work/_temp/72ea43ac-3893-4877-aafc-0c12188b12ca' before making global git config changes
+2025-12-12T18:55:52.0114053Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:52.0119283Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:55:52.0156107Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:52.0188555Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:55:52.0426368Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:52.0447799Z http.https://github.com/.extraheader
+2025-12-12T18:55:52.0460587Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-12T18:55:52.0490722Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:55:52.0722133Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:52.0755088Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:55:52.1088347Z Cleaning up orphan processes

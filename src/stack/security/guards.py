@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 
 class SecurityError(Exception):

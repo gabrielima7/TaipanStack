@@ -7,7 +7,6 @@ following strict typing and security guidelines.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
@@ -40,7 +39,7 @@ class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
     password: SecretStr
-    ip_address: Optional[IPvAnyAddress] = None
+    ip_address: IPvAnyAddress | None = None
 
     model_config = ConfigDict(frozen=True)
 
@@ -79,7 +78,7 @@ class UserRepository(ABC):
         """
 
     @abstractmethod
-    def get_by_id(self, user_id: UUID) -> Optional[User]:
+    def get_by_id(self, user_id: UUID) -> User | None:
         """
         Retrieve a user by their ID.
 
@@ -109,7 +108,7 @@ class InMemoryUserRepository(UserRepository):
         """
         self._storage[user.id] = user
 
-    def get_by_id(self, user_id: UUID) -> Optional[User]:
+    def get_by_id(self, user_id: UUID) -> User | None:
         """
         Retrieve a user from the in-memory storage.
 

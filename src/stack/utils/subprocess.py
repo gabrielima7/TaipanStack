@@ -9,11 +9,11 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
-from stack.security.guards import guard_command_injection, SecurityError
+from stack.security.guards import SecurityError, guard_command_injection
 
 
 @dataclass(frozen=True)
@@ -41,7 +41,7 @@ class SafeCommandResult:
         """Check if command succeeded."""
         return self.returncode == 0
 
-    def raise_on_error(self) -> "SafeCommandResult":
+    def raise_on_error(self) -> SafeCommandResult:
         """Raise an exception if command failed.
 
         Returns:
@@ -202,10 +202,13 @@ def run_safe_command(
         )
     except subprocess.TimeoutExpired as e:
         duration = time.time() - start_time
+        stdout_str = ""
+        if hasattr(e, "stdout") and e.stdout is not None:
+            stdout_str = e.stdout if isinstance(e.stdout, str) else e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
-            stdout=e.stdout or "" if hasattr(e, "stdout") else "",
+            stdout=stdout_str,
             stderr=f"Command timed out after {timeout}s",
             duration_seconds=duration,
         )

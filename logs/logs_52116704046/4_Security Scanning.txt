@@ -1,0 +1,460 @@
+﻿2025-12-12T18:55:38.6103504Z Current runner version: '2.329.0'
+2025-12-12T18:55:38.6127207Z ##[group]Runner Image Provisioner
+2025-12-12T18:55:38.6128046Z Hosted Compute Agent
+2025-12-12T18:55:38.6128554Z Version: 20251202.455
+2025-12-12T18:55:38.6129242Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+2025-12-12T18:55:38.6129902Z Build Date: 2025-12-02T15:56:59Z
+2025-12-12T18:55:38.6130581Z Worker ID: {442f03b1-fe4b-4410-8c3a-eed25317bda3}
+2025-12-12T18:55:38.6131282Z ##[endgroup]
+2025-12-12T18:55:38.6131867Z ##[group]Operating System
+2025-12-12T18:55:38.6132430Z Ubuntu
+2025-12-12T18:55:38.6133266Z 24.04.3
+2025-12-12T18:55:38.6133774Z LTS
+2025-12-12T18:55:38.6134197Z ##[endgroup]
+2025-12-12T18:55:38.6134767Z ##[group]Runner Image
+2025-12-12T18:55:38.6135290Z Image: ubuntu-24.04
+2025-12-12T18:55:38.6135823Z Version: 20251208.163.1
+2025-12-12T18:55:38.6136791Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251208.163/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-12T18:55:38.6138440Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251208.163
+2025-12-12T18:55:38.6139482Z ##[endgroup]
+2025-12-12T18:55:38.6140553Z ##[group]GITHUB_TOKEN Permissions
+2025-12-12T18:55:38.6142610Z Contents: read
+2025-12-12T18:55:38.6143410Z Metadata: read
+2025-12-12T18:55:38.6143917Z Packages: read
+2025-12-12T18:55:38.6144405Z ##[endgroup]
+2025-12-12T18:55:38.6146412Z Secret source: Actions
+2025-12-12T18:55:38.6147384Z Prepare workflow directory
+2025-12-12T18:55:38.6533130Z Prepare all required actions
+2025-12-12T18:55:38.6572445Z Getting action download info
+2025-12-12T18:55:39.0049869Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-12T18:55:39.1174526Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2025-12-12T18:55:39.1985309Z Download action repository 'semgrep/semgrep-action@v1' (SHA:713efdd345f3035192eaa63f56867b88e63e4e5d)
+2025-12-12T18:55:39.7483517Z Complete job name: Security Scanning
+2025-12-12T18:55:39.7947530Z ##[group]Pull down action image 'returntocorp/semgrep-agent:v1'
+2025-12-12T18:55:39.7998329Z ##[command]/usr/bin/docker pull returntocorp/semgrep-agent:v1
+2025-12-12T18:55:40.5371549Z v1: Pulling from returntocorp/semgrep-agent
+2025-12-12T18:55:40.6948189Z 7264a8db6415: Pulling fs layer
+2025-12-12T18:55:40.6949525Z 66e1d5e70e42: Pulling fs layer
+2025-12-12T18:55:40.6950788Z 64dfa579cd50: Pulling fs layer
+2025-12-12T18:55:40.6951699Z afa58c10ee34: Pulling fs layer
+2025-12-12T18:55:40.6952496Z cd87b3fa61f8: Pulling fs layer
+2025-12-12T18:55:40.6953606Z a54df9278105: Pulling fs layer
+2025-12-12T18:55:40.6954460Z 22d9c0f131ae: Pulling fs layer
+2025-12-12T18:55:40.6955316Z bfa6cbe2a060: Pulling fs layer
+2025-12-12T18:55:40.6956182Z e6455d0c4d0a: Pulling fs layer
+2025-12-12T18:55:40.6956999Z 4e6528b8b44b: Pulling fs layer
+2025-12-12T18:55:40.6957803Z 77aae498c7b4: Pulling fs layer
+2025-12-12T18:55:40.6958674Z f6a963258091: Pulling fs layer
+2025-12-12T18:55:40.6959559Z e68b04e3dc22: Pulling fs layer
+2025-12-12T18:55:40.6960384Z e50eacad623d: Pulling fs layer
+2025-12-12T18:55:40.6961196Z 464938719a27: Pulling fs layer
+2025-12-12T18:55:40.6962009Z c09dc33c2ea4: Pulling fs layer
+2025-12-12T18:55:40.6963104Z db70a1bf97d5: Pulling fs layer
+2025-12-12T18:55:40.6963977Z 5667267dbf96: Pulling fs layer
+2025-12-12T18:55:40.6964853Z 55e5ab738d77: Pulling fs layer
+2025-12-12T18:55:40.6965717Z fbf9ea8fb0f3: Pulling fs layer
+2025-12-12T18:55:40.6966515Z afa58c10ee34: Waiting
+2025-12-12T18:55:40.6967215Z cd87b3fa61f8: Waiting
+2025-12-12T18:55:40.6967977Z a54df9278105: Waiting
+2025-12-12T18:55:40.6968812Z 22d9c0f131ae: Waiting
+2025-12-12T18:55:40.6969657Z bfa6cbe2a060: Waiting
+2025-12-12T18:55:40.6970508Z e6455d0c4d0a: Waiting
+2025-12-12T18:55:40.6971392Z 4e6528b8b44b: Waiting
+2025-12-12T18:55:40.6972284Z 77aae498c7b4: Waiting
+2025-12-12T18:55:40.6973396Z f6a963258091: Waiting
+2025-12-12T18:55:40.6974303Z 5667267dbf96: Waiting
+2025-12-12T18:55:40.6975183Z e68b04e3dc22: Waiting
+2025-12-12T18:55:40.6976076Z 55e5ab738d77: Waiting
+2025-12-12T18:55:40.6977291Z e50eacad623d: Waiting
+2025-12-12T18:55:40.6978286Z c09dc33c2ea4: Waiting
+2025-12-12T18:55:40.6979186Z fbf9ea8fb0f3: Waiting
+2025-12-12T18:55:40.6980078Z 464938719a27: Waiting
+2025-12-12T18:55:40.9276157Z 66e1d5e70e42: Verifying Checksum
+2025-12-12T18:55:40.9277712Z 66e1d5e70e42: Download complete
+2025-12-12T18:55:40.9600469Z 7264a8db6415: Verifying Checksum
+2025-12-12T18:55:40.9602007Z 7264a8db6415: Download complete
+2025-12-12T18:55:41.0703955Z 7264a8db6415: Pull complete
+2025-12-12T18:55:41.1534326Z afa58c10ee34: Verifying Checksum
+2025-12-12T18:55:41.1536384Z afa58c10ee34: Download complete
+2025-12-12T18:55:41.2529054Z cd87b3fa61f8: Verifying Checksum
+2025-12-12T18:55:41.2530737Z cd87b3fa61f8: Download complete
+2025-12-12T18:55:41.3244379Z 64dfa579cd50: Verifying Checksum
+2025-12-12T18:55:41.3244952Z 64dfa579cd50: Download complete
+2025-12-12T18:55:41.4092561Z a54df9278105: Verifying Checksum
+2025-12-12T18:55:41.4096991Z a54df9278105: Download complete
+2025-12-12T18:55:41.5019932Z 22d9c0f131ae: Verifying Checksum
+2025-12-12T18:55:41.5020478Z 22d9c0f131ae: Download complete
+2025-12-12T18:55:41.8004564Z bfa6cbe2a060: Verifying Checksum
+2025-12-12T18:55:41.8005144Z bfa6cbe2a060: Download complete
+2025-12-12T18:55:41.9772503Z 66e1d5e70e42: Pull complete
+2025-12-12T18:55:42.0313073Z 77aae498c7b4: Verifying Checksum
+2025-12-12T18:55:42.0320993Z 77aae498c7b4: Download complete
+2025-12-12T18:55:42.0335226Z e6455d0c4d0a: Verifying Checksum
+2025-12-12T18:55:42.0336449Z e6455d0c4d0a: Download complete
+2025-12-12T18:55:42.0578392Z 4e6528b8b44b: Verifying Checksum
+2025-12-12T18:55:42.0583341Z 4e6528b8b44b: Download complete
+2025-12-12T18:55:42.2088725Z e68b04e3dc22: Verifying Checksum
+2025-12-12T18:55:42.2089370Z e68b04e3dc22: Download complete
+2025-12-12T18:55:42.2521183Z e50eacad623d: Verifying Checksum
+2025-12-12T18:55:42.2524158Z e50eacad623d: Download complete
+2025-12-12T18:55:42.4183209Z 464938719a27: Verifying Checksum
+2025-12-12T18:55:42.4184114Z 464938719a27: Download complete
+2025-12-12T18:55:42.4504735Z c09dc33c2ea4: Verifying Checksum
+2025-12-12T18:55:42.4510669Z c09dc33c2ea4: Download complete
+2025-12-12T18:55:42.4882328Z 64dfa579cd50: Pull complete
+2025-12-12T18:55:42.5003847Z afa58c10ee34: Pull complete
+2025-12-12T18:55:42.6044098Z db70a1bf97d5: Download complete
+2025-12-12T18:55:42.6346868Z 5667267dbf96: Verifying Checksum
+2025-12-12T18:55:42.6347454Z 5667267dbf96: Download complete
+2025-12-12T18:55:42.7972018Z cd87b3fa61f8: Pull complete
+2025-12-12T18:55:42.8059173Z 55e5ab738d77: Verifying Checksum
+2025-12-12T18:55:42.8059645Z 55e5ab738d77: Download complete
+2025-12-12T18:55:42.8075782Z a54df9278105: Pull complete
+2025-12-12T18:55:42.8312202Z 22d9c0f131ae: Pull complete
+2025-12-12T18:55:42.8677980Z f6a963258091: Verifying Checksum
+2025-12-12T18:55:42.8678412Z f6a963258091: Download complete
+2025-12-12T18:55:42.8785993Z fbf9ea8fb0f3: Verifying Checksum
+2025-12-12T18:55:42.8787250Z fbf9ea8fb0f3: Download complete
+2025-12-12T18:55:43.0601311Z bfa6cbe2a060: Pull complete
+2025-12-12T18:55:43.8450550Z e6455d0c4d0a: Pull complete
+2025-12-12T18:55:44.9865760Z 4e6528b8b44b: Pull complete
+2025-12-12T18:55:44.9956448Z 77aae498c7b4: Pull complete
+2025-12-12T18:55:45.5373928Z f6a963258091: Pull complete
+2025-12-12T18:55:45.5473226Z e68b04e3dc22: Pull complete
+2025-12-12T18:55:45.5564585Z e50eacad623d: Pull complete
+2025-12-12T18:55:45.5672938Z 464938719a27: Pull complete
+2025-12-12T18:55:45.5755160Z c09dc33c2ea4: Pull complete
+2025-12-12T18:55:45.5844565Z db70a1bf97d5: Pull complete
+2025-12-12T18:55:45.5935185Z 5667267dbf96: Pull complete
+2025-12-12T18:55:45.6022839Z 55e5ab738d77: Pull complete
+2025-12-12T18:55:45.6259952Z fbf9ea8fb0f3: Pull complete
+2025-12-12T18:55:45.6299218Z Digest: sha256:2ed984f89000f77516016248700ad91681cb89bbe2adbdecd1d38dc84394adbb
+2025-12-12T18:55:45.6309746Z Status: Downloaded newer image for returntocorp/semgrep-agent:v1
+2025-12-12T18:55:45.6320493Z docker.io/returntocorp/semgrep-agent:v1
+2025-12-12T18:55:45.6343052Z ##[endgroup]
+2025-12-12T18:55:45.6593795Z ##[group]Run actions/checkout@v4
+2025-12-12T18:55:45.6594323Z with:
+2025-12-12T18:55:45.6594525Z   repository: gabrielima7/Stack
+2025-12-12T18:55:45.6594912Z   token: ***
+2025-12-12T18:55:45.6595084Z   ssh-strict: true
+2025-12-12T18:55:45.6595262Z   ssh-user: git
+2025-12-12T18:55:45.6595440Z   persist-credentials: true
+2025-12-12T18:55:45.6595648Z   clean: true
+2025-12-12T18:55:45.6595835Z   sparse-checkout-cone-mode: true
+2025-12-12T18:55:45.6596074Z   fetch-depth: 1
+2025-12-12T18:55:45.6596248Z   fetch-tags: false
+2025-12-12T18:55:45.6596435Z   show-progress: true
+2025-12-12T18:55:45.6596613Z   lfs: false
+2025-12-12T18:55:45.6596782Z   submodules: false
+2025-12-12T18:55:45.6596969Z   set-safe-directory: true
+2025-12-12T18:55:45.6597416Z env:
+2025-12-12T18:55:45.6597605Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:45.6597807Z ##[endgroup]
+2025-12-12T18:55:45.7643058Z Syncing repository: gabrielima7/Stack
+2025-12-12T18:55:45.7644331Z ##[group]Getting Git version info
+2025-12-12T18:55:45.7644751Z Working directory is '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:45.7645306Z [command]/usr/bin/git version
+2025-12-12T18:55:45.7717604Z git version 2.52.0
+2025-12-12T18:55:45.7744018Z ##[endgroup]
+2025-12-12T18:55:45.7759318Z Temporarily overriding HOME='/home/runner/work/_temp/b6d84e27-8240-4bd9-8709-0af32cd79e94' before making global git config changes
+2025-12-12T18:55:45.7760690Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:45.7772293Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:55:45.7809498Z Deleting the contents of '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:45.7813051Z ##[group]Initializing the repository
+2025-12-12T18:55:45.7816911Z [command]/usr/bin/git init /home/runner/work/Stack/Stack
+2025-12-12T18:55:45.7918900Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-12T18:55:45.7919707Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-12T18:55:45.7920244Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-12T18:55:45.7920655Z hint: call:
+2025-12-12T18:55:45.7920895Z hint:
+2025-12-12T18:55:45.7921251Z hint: 	git config --global init.defaultBranch <name>
+2025-12-12T18:55:45.7921599Z hint:
+2025-12-12T18:55:45.7921918Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-12T18:55:45.7922422Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-12T18:55:45.7923143Z hint:
+2025-12-12T18:55:45.7923487Z hint: 	git branch -m <name>
+2025-12-12T18:55:45.7923853Z hint:
+2025-12-12T18:55:45.7924368Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-12T18:55:45.7925232Z Initialized empty Git repository in /home/runner/work/Stack/Stack/.git/
+2025-12-12T18:55:45.7934216Z [command]/usr/bin/git remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T18:55:45.7966218Z ##[endgroup]
+2025-12-12T18:55:45.7966877Z ##[group]Disabling automatic garbage collection
+2025-12-12T18:55:45.7971136Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-12T18:55:45.7998582Z ##[endgroup]
+2025-12-12T18:55:45.7999193Z ##[group]Setting up auth
+2025-12-12T18:55:45.8006100Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:45.8035663Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:55:45.8351941Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:45.8380685Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:55:45.8595745Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:45.8625599Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:55:45.8852356Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-12T18:55:45.8885727Z ##[endgroup]
+2025-12-12T18:55:45.8886409Z ##[group]Fetching the repository
+2025-12-12T18:55:45.8894235Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +265f2b5c1d4934c9f9ad4d635b5ad0997efee979:refs/remotes/origin/main
+2025-12-12T18:55:46.1635871Z From https://github.com/gabrielima7/Stack
+2025-12-12T18:55:46.1636870Z  * [new ref]         265f2b5c1d4934c9f9ad4d635b5ad0997efee979 -> origin/main
+2025-12-12T18:55:46.1670170Z ##[endgroup]
+2025-12-12T18:55:46.1670826Z ##[group]Determining the checkout info
+2025-12-12T18:55:46.1672410Z ##[endgroup]
+2025-12-12T18:55:46.1678165Z [command]/usr/bin/git sparse-checkout disable
+2025-12-12T18:55:46.1719769Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-12T18:55:46.1746135Z ##[group]Checking out the ref
+2025-12-12T18:55:46.1750652Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T18:55:46.1841523Z Switched to a new branch 'main'
+2025-12-12T18:55:46.1844880Z branch 'main' set up to track 'origin/main'.
+2025-12-12T18:55:46.1851033Z ##[endgroup]
+2025-12-12T18:55:46.1887356Z [command]/usr/bin/git log -1 --format=%H
+2025-12-12T18:55:46.1910359Z 265f2b5c1d4934c9f9ad4d635b5ad0997efee979
+2025-12-12T18:55:46.2120417Z ##[group]Run actions/setup-python@v5
+2025-12-12T18:55:46.2120683Z with:
+2025-12-12T18:55:46.2120867Z   python-version: 3.11
+2025-12-12T18:55:46.2121065Z   check-latest: false
+2025-12-12T18:55:46.2121370Z   token: ***
+2025-12-12T18:55:46.2121557Z   update-environment: true
+2025-12-12T18:55:46.2121774Z   allow-prereleases: false
+2025-12-12T18:55:46.2121977Z   freethreaded: false
+2025-12-12T18:55:46.2122165Z env:
+2025-12-12T18:55:46.2122328Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:46.2122527Z ##[endgroup]
+2025-12-12T18:55:46.3755671Z ##[group]Installed versions
+2025-12-12T18:55:46.3867710Z Successfully set up CPython (3.11.14)
+2025-12-12T18:55:46.3868882Z ##[endgroup]
+2025-12-12T18:55:46.4038783Z ##[group]Run pipx install poetry
+2025-12-12T18:55:46.4039132Z [36;1mpipx install poetry[0m
+2025-12-12T18:55:46.4084820Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:46.4085056Z env:
+2025-12-12T18:55:46.4085229Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:46.4085518Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:46.4085931Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:46.4086315Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:46.4086658Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:46.4086986Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:46.4087328Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:46.4087606Z ##[endgroup]
+2025-12-12T18:55:46.7151781Z creating virtual environment...
+2025-12-12T18:55:46.8632189Z installing poetry...
+2025-12-12T18:55:57.3369426Z done! ✨ 🌟 ✨
+2025-12-12T18:55:57.3370007Z   installed package poetry 2.2.1, installed using Python 3.12.3
+2025-12-12T18:55:57.3370518Z   These apps are now globally available
+2025-12-12T18:55:57.3370868Z     - poetry
+2025-12-12T18:55:57.3586763Z ##[group]Run poetry install --with dev
+2025-12-12T18:55:57.3587097Z [36;1mpoetry install --with dev[0m
+2025-12-12T18:55:57.3620257Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:57.3620475Z env:
+2025-12-12T18:55:57.3620645Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:57.3620920Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:57.3621316Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:57.3621716Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:57.3622230Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:57.3622568Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:57.3623261Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:57.3623565Z ##[endgroup]
+2025-12-12T18:55:57.8779666Z Creating virtualenv stack-mVHv_5u6-py3.11 in /home/runner/.cache/pypoetry/virtualenvs
+2025-12-12T18:55:58.2654606Z Installing dependencies from lock file
+2025-12-12T18:55:58.4058216Z 
+2025-12-12T18:55:58.4058766Z Package operations: 75 installs, 0 updates, 0 removals
+2025-12-12T18:55:58.4059252Z 
+2025-12-12T18:55:58.4062307Z   - Installing mdurl (0.1.2)
+2025-12-12T18:55:58.4076444Z   - Installing pycparser (2.23)
+2025-12-12T18:55:58.4085189Z   - Installing typing-extensions (4.15.0)
+2025-12-12T18:55:58.7028787Z   - Installing annotated-types (0.7.0)
+2025-12-12T18:55:58.7034714Z   - Installing certifi (2025.11.12)
+2025-12-12T18:55:58.7039418Z   - Installing cffi (2.0.0)
+2025-12-12T18:55:58.7045180Z   - Installing h11 (0.16.0)
+2025-12-12T18:55:58.7060737Z   - Installing idna (3.11)
+2025-12-12T18:55:58.7072550Z   - Installing markdown-it-py (4.0.0)
+2025-12-12T18:55:58.7081741Z   - Installing packaging (25.0)
+2025-12-12T18:55:58.7092055Z   - Installing pydantic-core (2.41.5)
+2025-12-12T18:55:58.8090073Z   - Installing pygments (2.19.2)
+2025-12-12T18:55:58.8185217Z   - Installing ruamel-yaml-clib (0.2.14)
+2025-12-12T18:55:58.9026490Z   - Installing typing-inspection (0.4.2)
+2025-12-12T18:55:59.2072563Z   - Installing anyio (4.12.0)
+2025-12-12T18:55:59.2073944Z   - Installing charset-normalizer (3.4.4)
+2025-12-12T18:55:59.2079317Z   - Installing click (8.1.8)
+2025-12-12T18:55:59.2088028Z   - Installing cryptography (46.0.3)
+2025-12-12T18:55:59.2093710Z   - Installing distlib (0.4.0)
+2025-12-12T18:55:59.2108406Z   - Installing dparse (0.6.4)
+2025-12-12T18:55:59.2119275Z   - Installing filelock (3.20.0)
+2025-12-12T18:55:59.2136254Z   - Installing httpcore (1.0.9)
+2025-12-12T18:55:59.2996492Z   - Installing iniconfig (2.3.0)
+2025-12-12T18:55:59.3060071Z   - Installing joblib (1.5.2)
+2025-12-12T18:55:59.3073219Z   - Installing markupsafe (3.0.3)
+2025-12-12T18:55:59.3148244Z   - Installing platformdirs (4.5.1)
+2025-12-12T18:55:59.3769037Z   - Installing pluggy (1.6.0)
+2025-12-12T18:55:59.3974077Z   - Installing pydantic (2.12.5)
+2025-12-12T18:55:59.4090087Z   - Installing regex (2025.11.3)
+2025-12-12T18:55:59.4195829Z   - Installing rich (13.5.3)
+2025-12-12T18:55:59.4786062Z   - Installing ruamel-yaml (0.18.16)
+2025-12-12T18:55:59.5116643Z   - Installing shellingham (1.5.4)
+2025-12-12T18:55:59.5707201Z   - Installing tqdm (4.67.1)
+2025-12-12T18:55:59.6109647Z   - Installing urllib3 (2.6.2)
+2025-12-12T18:55:59.8320524Z   - Installing attrs (25.4.0)
+2025-12-12T18:55:59.8325840Z   - Installing authlib (1.6.6)
+2025-12-12T18:55:59.8333460Z   - Installing cfgv (3.5.0)
+2025-12-12T18:55:59.8341267Z   - Installing colorama (0.4.6)
+2025-12-12T18:55:59.8345748Z   - Installing coverage (7.13.0)
+2025-12-12T18:55:59.8353316Z   - Installing dnspython (2.8.0)
+2025-12-12T18:55:59.8360902Z   - Installing execnet (2.1.2)
+2025-12-12T18:55:59.8371487Z   - Installing httpx (0.28.1)
+2025-12-12T18:55:59.8917406Z   - Installing identify (2.6.15)
+2025-12-12T18:55:59.9436159Z   - Installing jinja2 (3.1.6)
+2025-12-12T18:55:59.9561901Z   - Installing librt (0.7.3)
+2025-12-12T18:55:59.9595628Z   - Installing marshmallow (4.1.1)
+2025-12-12T18:55:59.9854638Z   - Installing mypy-extensions (1.1.0)
+2025-12-12T18:56:00.0579121Z   - Installing nltk (3.9.2)
+2025-12-12T18:56:00.0752167Z   - Installing nodeenv (1.9.1)
+2025-12-12T18:56:00.0879011Z   - Installing pathspec (0.12.1)
+2025-12-12T18:56:00.1028906Z   - Installing py (1.11.0)
+2025-12-12T18:56:00.1073006Z   - Installing pytest (9.0.2)
+2025-12-12T18:56:00.1160623Z   - Installing pyyaml (6.0.3)
+2025-12-12T18:56:00.1660908Z   - Installing requests (2.32.5)
+2025-12-12T18:56:00.1882033Z   - Installing safety-schemas (0.0.16)
+2025-12-12T18:56:00.2272464Z   - Installing sortedcontainers (2.4.0)
+2025-12-12T18:56:00.2892811Z   - Installing stevedore (5.6.0)
+2025-12-12T18:56:00.2945941Z   - Installing tabulate (0.9.0)
+2025-12-12T18:56:00.3141159Z   - Installing tenacity (9.1.2)
+2025-12-12T18:56:00.3227514Z   - Installing tomlkit (0.13.3)
+2025-12-12T18:56:00.3295099Z   - Installing typer (0.20.0)
+2025-12-12T18:56:00.3447427Z   - Installing virtualenv (20.35.4)
+2025-12-12T18:56:01.1548654Z   - Installing bandit (1.9.2)
+2025-12-12T18:56:01.1554851Z   - Installing email-validator (2.3.0)
+2025-12-12T18:56:01.1567239Z   - Installing hypothesis (6.148.7)
+2025-12-12T18:56:01.1574140Z   - Installing interrogate (1.7.0)
+2025-12-12T18:56:01.1580583Z   - Installing mypy (1.19.0)
+2025-12-12T18:56:01.1585903Z   - Installing orjson (3.11.5)
+2025-12-12T18:56:01.1590007Z   - Installing pre-commit (4.5.0)
+2025-12-12T18:56:01.1601454Z   - Installing pytest-cov (7.0.0)
+2025-12-12T18:56:01.2604167Z   - Installing pytest-timeout (2.4.0)
+2025-12-12T18:56:01.2739655Z   - Installing pytest-xdist (3.8.0)
+2025-12-12T18:56:01.3051194Z   - Installing ruff (0.14.9)
+2025-12-12T18:56:01.3057603Z   - Installing safety (3.7.0)
+2025-12-12T18:56:01.3649000Z   - Installing vulture (2.14)
+2025-12-12T18:56:02.2038665Z 
+2025-12-12T18:56:02.2039261Z Installing the current project: stack (2.0.0)
+2025-12-12T18:56:02.2904826Z ##[group]Run poetry run bandit -r src/ -ll -c pyproject.toml
+2025-12-12T18:56:02.2905282Z [36;1mpoetry run bandit -r src/ -ll -c pyproject.toml[0m
+2025-12-12T18:56:02.2937958Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:56:02.2938187Z env:
+2025-12-12T18:56:02.2938357Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:02.2938654Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:02.2939058Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:56:02.2939468Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:02.2939813Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:02.2940147Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:02.2940512Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:56:02.2940797Z ##[endgroup]
+2025-12-12T18:56:03.2077006Z [main]	INFO	profile include tests: None
+2025-12-12T18:56:03.2077645Z [main]	INFO	profile exclude tests: B101
+2025-12-12T18:56:03.2078108Z [main]	INFO	cli include tests: None
+2025-12-12T18:56:03.2078541Z [main]	INFO	cli exclude tests: None
+2025-12-12T18:56:03.2079764Z [main]	INFO	using config: pyproject.toml
+2025-12-12T18:56:03.2080801Z [main]	INFO	running on Python 3.11.14
+2025-12-12T18:56:03.3336279Z Run started:2025-12-12 18:56:03.333377+00:00
+2025-12-12T18:56:03.3336683Z 
+2025-12-12T18:56:03.3336848Z Test results:
+2025-12-12T18:56:03.3337619Z 	No issues identified.
+2025-12-12T18:56:03.3337867Z 
+2025-12-12T18:56:03.3338012Z Code scanned:
+2025-12-12T18:56:03.3338356Z 	Total lines of code: 2238
+2025-12-12T18:56:03.3338778Z 	Total lines skipped (#nosec): 0
+2025-12-12T18:56:03.3339561Z 	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+2025-12-12T18:56:03.3340353Z 
+2025-12-12T18:56:03.3340505Z Run metrics:
+2025-12-12T18:56:03.3340903Z 	Total issues (by severity):
+2025-12-12T18:56:03.3341364Z 		Undefined: 0
+2025-12-12T18:56:03.3341746Z 		Low: 2
+2025-12-12T18:56:03.3342125Z 		Medium: 0
+2025-12-12T18:56:03.3342473Z 		High: 0
+2025-12-12T18:56:03.3343190Z 	Total issues (by confidence):
+2025-12-12T18:56:03.3343712Z 		Undefined: 0
+2025-12-12T18:56:03.3343998Z 		Low: 0
+2025-12-12T18:56:03.3344271Z 		Medium: 0
+2025-12-12T18:56:03.3344560Z 		High: 2
+2025-12-12T18:56:03.3344858Z Files skipped (0):
+2025-12-12T18:56:03.3636136Z ##[group]Run poetry run pip-audit --strict
+2025-12-12T18:56:03.3636456Z [36;1mpoetry run pip-audit --strict[0m
+2025-12-12T18:56:03.3669218Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:56:03.3669432Z env:
+2025-12-12T18:56:03.3669607Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:03.3669887Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.3670437Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:56:03.3670811Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.3671141Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.3671478Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.3671802Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:56:03.3672080Z ##[endgroup]
+2025-12-12T18:56:03.8591721Z Command not found: pip-audit
+2025-12-12T18:56:03.9049762Z ##[error]Process completed with exit code 1.
+2025-12-12T18:56:03.9102431Z ##[group]Run semgrep/semgrep-action@v1
+2025-12-12T18:56:03.9102928Z with:
+2025-12-12T18:56:03.9103101Z   config: auto
+2025-12-12T18:56:03.9103275Z env:
+2025-12-12T18:56:03.9103444Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:03.9103736Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.9104136Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:56:03.9104544Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.9104882Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.9105221Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:56:03.9105550Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:56:03.9105833Z ##[endgroup]
+2025-12-12T18:56:03.9197817Z ##[command]/usr/bin/docker run --name returntocorpsemgrepagentv1_28b1c3 --label 42d2ec --workdir /github/workspace --rm -e "PYTHON_VERSION_DEFAULT" -e "pythonLocation" -e "PKG_CONFIG_PATH" -e "Python_ROOT_DIR" -e "Python2_ROOT_DIR" -e "Python3_ROOT_DIR" -e "LD_LIBRARY_PATH" -e "INPUT_CONFIG" -e "INPUT_PUBLISHTOKEN" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/Stack/Stack":"/github/workspace" returntocorp/semgrep-agent:v1
+2025-12-12T18:56:04.8572900Z === Running: SEMGREP_RULES="auto" semgrep ci
+2025-12-12T18:56:05.5979877Z                   
+2025-12-12T18:56:05.5980272Z                   
+2025-12-12T18:56:05.5980889Z ┌────────────────┐
+2025-12-12T18:56:05.5981463Z │ Debugging Info │
+2025-12-12T18:56:05.5981872Z └────────────────┘
+2025-12-12T18:56:05.5984770Z                   
+2025-12-12T18:56:05.5985237Z   SCAN ENVIRONMENT
+2025-12-12T18:56:05.6004239Z   versions    - semgrep 1.36.0 on python 3.11.4                                
+2025-12-12T18:56:05.6005058Z   environment - running in environment github-actions, triggering event is push
+2025-12-12T18:56:06.0206166Z                
+2025-12-12T18:56:06.0206535Z                
+2025-12-12T18:56:06.0207080Z ┌─────────────┐
+2025-12-12T18:56:06.0207429Z │ Scan Status │
+2025-12-12T18:56:06.0208158Z └─────────────┘
+2025-12-12T18:56:06.0871011Z   Scanning 43 files tracked by git with 1063 Code rules:
+2025-12-12T18:56:06.0930711Z                                                                                 
+2025-12-12T18:56:06.0931340Z   Language      Rules   Files          Origin      Rules                        
+2025-12-12T18:56:06.0932135Z  ─────────────────────────────        ───────────────────                       
+2025-12-12T18:56:06.0932516Z   <multilang>      48      72          Community    1063                        
+2025-12-12T18:56:06.0933508Z   python          243      16                                                   
+2025-12-12T18:56:06.0933866Z   yaml             31       4                                                   
+2025-12-12T18:56:06.0934185Z   json              4       1                                                   
+2025-12-12T18:56:06.0934479Z                                                                                 
+2025-12-12T18:56:08.2723566Z                 
+2025-12-12T18:56:08.2724020Z                 
+2025-12-12T18:56:08.2724639Z ┌──────────────┐
+2025-12-12T18:56:08.2725022Z │ Scan Summary │
+2025-12-12T18:56:08.2725402Z └──────────────┘
+2025-12-12T18:56:08.2725817Z Some files were skipped or only partially analyzed.
+2025-12-12T18:56:08.2726178Z   Scan was limited to files tracked by git.
+2025-12-12T18:56:08.2726505Z   Scan skipped: 7 files matching .semgrepignore patterns
+2025-12-12T18:56:08.2726928Z   For a full list of skipped files, run semgrep with the --verbose flag.
+2025-12-12T18:56:08.2727193Z 
+2025-12-12T18:56:08.2727459Z (need more rules? `semgrep login` for additional free Semgrep Registry rules)
+2025-12-12T18:56:08.2727753Z 
+2025-12-12T18:56:08.2727843Z CI scan completed successfully.
+2025-12-12T18:56:08.2728114Z   Found 0 findings (0 blocking) from 1063 rules.
+2025-12-12T18:56:08.2728410Z   No blocking findings so exiting with code 0
+2025-12-12T18:56:08.2849481Z 
+2025-12-12T18:56:08.2850124Z A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+2025-12-12T18:56:08.2850707Z 
+2025-12-12T18:56:08.2851060Z Versions prior to 1.76.0 are no longer supported by Semgrep.dev, please upgrade.
+2025-12-12T18:56:09.3116374Z Post job cleanup.
+2025-12-12T18:56:09.4697988Z Post job cleanup.
+2025-12-12T18:56:09.5636342Z [command]/usr/bin/git version
+2025-12-12T18:56:09.5672825Z git version 2.52.0
+2025-12-12T18:56:09.5716574Z Temporarily overriding HOME='/home/runner/work/_temp/69078bb4-5e63-49e8-9d29-6e013ecc287a' before making global git config changes
+2025-12-12T18:56:09.5717893Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:56:09.5729036Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:56:09.5765065Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:56:09.5797802Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:56:09.6028691Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:56:09.6048739Z http.https://github.com/.extraheader
+2025-12-12T18:56:09.6060868Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-12T18:56:09.6092416Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:56:09.6311086Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:56:09.6341593Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:56:09.6672585Z Cleaning up orphan processes

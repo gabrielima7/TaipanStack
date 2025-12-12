@@ -11,9 +11,8 @@ import hashlib
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Any
 
-from stack.security.guards import guard_path_traversal, SecurityError
+from stack.security.guards import guard_path_traversal
 from stack.security.sanitizers import sanitize_filename
 
 
@@ -46,10 +45,9 @@ def safe_read(
     # Validate path
     if base_dir is not None:
         path = guard_path_traversal(path, Path(base_dir))
-    else:
-        # At minimum, prevent obvious traversal
-        if ".." in str(path):
-            path = guard_path_traversal(path, Path.cwd())
+    # At minimum, prevent obvious traversal
+    elif ".." in str(path):
+        path = guard_path_traversal(path, Path.cwd())
 
     if not path.exists():
         raise FileNotFoundError(f"File not found: {path}")
@@ -107,9 +105,8 @@ def safe_write(
             guard_path_traversal(parent, base)
         else:
             guard_path_traversal(path, base)
-    else:
-        if ".." in str(path):
-            guard_path_traversal(path, Path.cwd())
+    elif ".." in str(path):
+        guard_path_traversal(path, Path.cwd())
 
     # Sanitize filename
     safe_name = sanitize_filename(path.name)
