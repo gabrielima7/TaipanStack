@@ -1,0 +1,68 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "google-labs-jules[bot]",email = "161369871+google-labs-jules[bot]@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic (>=2.0)",
+    "orjson (>=3.11.5,<4.0.0)",
+    "uvloop (>=0.22.1,<0.23.0)",
+    "email-validator (>=2.3.0,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.9,<0.15.0)",
+    "mypy (>=1.19.0,<2.0.0)",
+    "bandit (>=1.9.2,<2.0.0)",
+    "safety (>=3.7.0,<4.0.0)",
+    "pre-commit (>=4.5.0,<5.0.0)",
+    "pytest (>=9.0.2,<10.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)",
+    "py-spy (>=0.4.1,<0.5.0)",
+    "semgrep (>=1.145.1,<2.0.0)"
+]
+
+# --- Configurações de Qualidade de Código ---
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "F", "E", "W", "I", "N", "D", "Q", "S", "B", "A", "C4", "T20", "SIM", "PTH",
+    "TID", "ARG", "PIE", "PLC", "PLE", "PLR", "PLW", "RUF"
+]
+ignore = ["D203", "D212", "D213", "D416", "D417", "B905"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+check_untyped_defs = true
+strict_optional = true
+strict_equality = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80"
