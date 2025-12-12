@@ -7,6 +7,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  PYTHON_VERSION_DEFAULT: '3.11'
+
 jobs:
   test:
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
@@ -19,25 +22,36 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Install test dependencies
-        run: pip install pytest pytest-cov
+      - name: Configure Poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: poetry install --with dev
 
       - name: Run tests with pytest
-        run: pytest tests/test_stack_script.py -v --cov=. --cov-report=xml --cov-report=term
+        run: poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
           flags: unittests
@@ -49,75 +63,84 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
       - name: Install linter
         run: pip install ruff
 
       - name: Run ruff check
-        run: ruff check stack.py tests/
+        run: ruff check src/ tests/ stack.py
 
       - name: Run ruff format check
-        run: ruff format --check stack.py tests/ || true
-        continue-on-error: true
+        run: ruff format --check src/ tests/ stack.py
 
   typecheck:
     name: Type Checking
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install mypy
-        run: pip install mypy
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev
 
       - name: Run mypy
-        run: mypy stack.py || true
-        continue-on-error: true
+        run: poetry run mypy src/ --strict
 
   security:
     name: Security Scanning
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install security tools
-        run: pip install bandit safety
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev
 
       - name: Run Bandit security scanner
-        run: bandit -r stack.py -ll
+        run: poetry run bandit -r src/ -ll -c pyproject.toml
 
-      - name: Run Safety dependency checker
-        run: safety scan --json || true
+      - name: Run pip-audit
+        run: poetry run pip-audit --strict
         continue-on-error: true
+
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: auto
 
   dry-run:
     name: Dry Run Test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
       - name: Install Poetry
         run: pipx install poetry
@@ -131,12 +154,12 @@ jobs:
     needs: [test, lint, typecheck]
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
       - name: Install Poetry
         run: pipx install poetry
@@ -160,6 +183,28 @@ jobs:
         working-directory: /tmp/stack-test
 
       - name: Show project structure
-        run: ls -la
+        run: |
+          echo "=== Project Structure ==="
+          find . -type f -name "*.py" | head -20
+          echo "=== Configuration Files ==="
+          ls -la *.toml *.yaml *.yml 2>/dev/null || true
         working-directory: /tmp/stack-test
 
+  docstring-coverage:
+    name: Docstring Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: Install interrogate
+        run: pip install interrogate
+
+      - name: Check docstring coverage
+        run: interrogate -v --fail-under=70 src/
+        continue-on-error: true

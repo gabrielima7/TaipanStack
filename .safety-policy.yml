@@ -1,0 +1,18 @@
+# Safety Policy Configuration
+# This file configures the Safety vulnerability scanner
+
+security:
+  ignore-cvss-severity-below: 4.0
+  ignore-cvss-unknown-severity: false
+
+scan:
+  exclude:
+    - path: tests/
+    - path: docs/
+
+announcements:
+  enabled: true
+
+report:
+  dependency-vulnerabilities:
+    enabled: true
