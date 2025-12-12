@@ -159,7 +159,7 @@ class UserService:
             is_active=True,
         )
         self._user_repository.save(user)
-        logger.info("User created: %s", user.id)
+        logger.info("User created with ID: %s", user.id)
         return user
 
     def get_user(self, user_id: UUID) -> User:
