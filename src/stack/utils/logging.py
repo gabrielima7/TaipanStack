@@ -63,7 +63,7 @@ class StackLogger:
             self._logger.setLevel(getattr(logging, level.upper()))
             self._structured = False
 
-    def bind(self, **context: Any) -> "StackLogger":
+    def bind(self, **context: Any) -> StackLogger:
         """Add context to logger.
 
         Args:
@@ -78,7 +78,7 @@ class StackLogger:
             self._logger = self._logger.bind(**context)
         return self
 
-    def unbind(self, *keys: str) -> "StackLogger":
+    def unbind(self, *keys: str) -> StackLogger:
         """Remove context keys.
 
         Args:

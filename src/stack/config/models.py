@@ -267,7 +267,7 @@ class StackConfig(BaseModel):
         return resolved
 
     @model_validator(mode="after")
-    def validate_config_consistency(self) -> "StackConfig":
+    def validate_config_consistency(self) -> StackConfig:
         """Validate configuration consistency.
 
         Returns:

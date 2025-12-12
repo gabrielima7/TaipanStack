@@ -1,0 +1,414 @@
+﻿2025-12-12T18:55:38.5531957Z Current runner version: '2.329.0'
+2025-12-12T18:55:38.5563237Z ##[group]Runner Image Provisioner
+2025-12-12T18:55:38.5564054Z Hosted Compute Agent
+2025-12-12T18:55:38.5564560Z Version: 20251202.455
+2025-12-12T18:55:38.5565153Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+2025-12-12T18:55:38.5565774Z Build Date: 2025-12-02T15:56:59Z
+2025-12-12T18:55:38.5566388Z Worker ID: {100b4279-7c67-4c66-a9ca-fd6bc498abeb}
+2025-12-12T18:55:38.5567036Z ##[endgroup]
+2025-12-12T18:55:38.5567492Z ##[group]Operating System
+2025-12-12T18:55:38.5568046Z Microsoft Windows Server 2025
+2025-12-12T18:55:38.5568563Z 10.0.26100
+2025-12-12T18:55:38.5568993Z Datacenter
+2025-12-12T18:55:38.5569415Z ##[endgroup]
+2025-12-12T18:55:38.5569904Z ##[group]Runner Image
+2025-12-12T18:55:38.5570365Z Image: windows-2025
+2025-12-12T18:55:38.5571280Z Version: 20251208.136.1
+2025-12-12T18:55:38.5572874Z Included Software: https://github.com/actions/runner-images/blob/win25/20251208.136/images/windows/Windows2025-Readme.md
+2025-12-12T18:55:38.5574401Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20251208.136
+2025-12-12T18:55:38.5575253Z ##[endgroup]
+2025-12-12T18:55:38.5576325Z ##[group]GITHUB_TOKEN Permissions
+2025-12-12T18:55:38.5578246Z Contents: read
+2025-12-12T18:55:38.5578791Z Metadata: read
+2025-12-12T18:55:38.5579232Z Packages: read
+2025-12-12T18:55:38.5579805Z ##[endgroup]
+2025-12-12T18:55:38.5582382Z Secret source: Actions
+2025-12-12T18:55:38.5583173Z Prepare workflow directory
+2025-12-12T18:55:38.6047264Z Prepare all required actions
+2025-12-12T18:55:38.6088629Z Getting action download info
+2025-12-12T18:55:38.8806855Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-12T18:55:39.0172022Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2025-12-12T18:55:39.1659671Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2025-12-12T18:55:39.3003686Z Download action repository 'codecov/codecov-action@v4' (SHA:b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238)
+2025-12-12T18:55:39.7629258Z Complete job name: Test Python 3.11 on windows-latest
+2025-12-12T18:55:39.8775895Z ##[group]Run actions/checkout@v4
+2025-12-12T18:55:39.8776976Z with:
+2025-12-12T18:55:39.8777392Z   repository: gabrielima7/Stack
+2025-12-12T18:55:39.8778175Z   token: ***
+2025-12-12T18:55:39.8778546Z   ssh-strict: true
+2025-12-12T18:55:39.8778930Z   ssh-user: git
+2025-12-12T18:55:39.8779327Z   persist-credentials: true
+2025-12-12T18:55:39.8779763Z   clean: true
+2025-12-12T18:55:39.8780158Z   sparse-checkout-cone-mode: true
+2025-12-12T18:55:39.8780643Z   fetch-depth: 1
+2025-12-12T18:55:39.8781029Z   fetch-tags: false
+2025-12-12T18:55:39.8781424Z   show-progress: true
+2025-12-12T18:55:39.8781843Z   lfs: false
+2025-12-12T18:55:39.8782217Z   submodules: false
+2025-12-12T18:55:39.8782638Z   set-safe-directory: true
+2025-12-12T18:55:39.8783284Z env:
+2025-12-12T18:55:39.8783654Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:39.8784153Z ##[endgroup]
+2025-12-12T18:55:40.0520901Z Syncing repository: gabrielima7/Stack
+2025-12-12T18:55:40.0523005Z ##[group]Getting Git version info
+2025-12-12T18:55:40.0523626Z Working directory is 'D:\a\Stack\Stack'
+2025-12-12T18:55:40.1634056Z [command]"C:\Program Files\Git\bin\git.exe" version
+2025-12-12T18:55:40.4385199Z git version 2.52.0.windows.1
+2025-12-12T18:55:40.4438609Z ##[endgroup]
+2025-12-12T18:55:40.4460653Z Temporarily overriding HOME='D:\a\_temp\a3944d78-4929-4ea9-adb3-2f8cdeabfe3e' before making global git config changes
+2025-12-12T18:55:40.4462605Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:40.4472420Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Stack\Stack
+2025-12-12T18:55:40.5105301Z Deleting the contents of 'D:\a\Stack\Stack'
+2025-12-12T18:55:40.5113342Z ##[group]Initializing the repository
+2025-12-12T18:55:40.5123408Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Stack\Stack
+2025-12-12T18:55:40.5822422Z Initialized empty Git repository in D:/a/Stack/Stack/.git/
+2025-12-12T18:55:40.5879824Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T18:55:40.6488230Z ##[endgroup]
+2025-12-12T18:55:40.6491107Z ##[group]Disabling automatic garbage collection
+2025-12-12T18:55:40.6498231Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2025-12-12T18:55:40.6837770Z ##[endgroup]
+2025-12-12T18:55:40.6839269Z ##[group]Setting up auth
+2025-12-12T18:55:40.6852794Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:40.7182595Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2025-12-12T18:55:42.0096177Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:42.0404424Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2025-12-12T18:55:42.5828076Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:42.6155088Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2025-12-12T18:55:43.1653883Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2025-12-12T18:55:43.1981584Z ##[endgroup]
+2025-12-12T18:55:43.1982331Z ##[group]Fetching the repository
+2025-12-12T18:55:43.1995751Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +265f2b5c1d4934c9f9ad4d635b5ad0997efee979:refs/remotes/origin/main
+2025-12-12T18:55:46.3717914Z From https://github.com/gabrielima7/Stack
+2025-12-12T18:55:46.3719135Z  * [new ref]         265f2b5c1d4934c9f9ad4d635b5ad0997efee979 -> origin/main
+2025-12-12T18:55:46.4036048Z ##[endgroup]
+2025-12-12T18:55:46.4036595Z ##[group]Determining the checkout info
+2025-12-12T18:55:46.4038920Z ##[endgroup]
+2025-12-12T18:55:46.4054963Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2025-12-12T18:55:46.4495553Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2025-12-12T18:55:46.4865630Z ##[group]Checking out the ref
+2025-12-12T18:55:46.4876482Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T18:55:46.5596232Z branch 'main' set up to track 'origin/main'.
+2025-12-12T18:55:46.5607102Z Switched to a new branch 'main'
+2025-12-12T18:55:46.5646255Z ##[endgroup]
+2025-12-12T18:55:46.6058221Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2025-12-12T18:55:46.6344325Z 265f2b5c1d4934c9f9ad4d635b5ad0997efee979
+2025-12-12T18:55:46.6782107Z ##[group]Run actions/setup-python@v5
+2025-12-12T18:55:46.6782419Z with:
+2025-12-12T18:55:46.6782594Z   python-version: 3.11
+2025-12-12T18:55:46.6782791Z   check-latest: false
+2025-12-12T18:55:46.6783101Z   token: ***
+2025-12-12T18:55:46.6783275Z   update-environment: true
+2025-12-12T18:55:46.6783472Z   allow-prereleases: false
+2025-12-12T18:55:46.6783688Z   freethreaded: false
+2025-12-12T18:55:46.6783874Z env:
+2025-12-12T18:55:46.6784038Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:46.6784231Z ##[endgroup]
+2025-12-12T18:55:46.9088405Z ##[group]Installed versions
+2025-12-12T18:55:46.9312423Z Successfully set up CPython (3.11.9)
+2025-12-12T18:55:46.9314118Z ##[endgroup]
+2025-12-12T18:55:46.9616006Z ##[group]Run pipx install poetry
+2025-12-12T18:55:46.9617132Z [36;1mpipx install poetry[0m
+2025-12-12T18:55:47.0153452Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T18:55:47.0154270Z env:
+2025-12-12T18:55:47.0154477Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:47.0154845Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:55:47.0155377Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T18:55:47.0155893Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:55:47.0156349Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:55:47.0156813Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:55:47.0157171Z ##[endgroup]
+2025-12-12T18:55:51.7067641Z Found a space in the pipx home path. We heavily discourage this, due to
+2025-12-12T18:55:51.7068340Z     multiple incompatibilities. Please check our docs for more information on
+2025-12-12T18:55:51.7068912Z     this, as well as some pointers on how to migrate to a different home path.
+2025-12-12T18:55:52.2218497Z creating virtual environment...
+2025-12-12T18:55:52.5580771Z installing poetry...
+2025-12-12T18:56:07.8526260Z done! 
+2025-12-12T18:56:07.8528770Z   installed package poetry 2.2.1, installed using Python 3.9.13
+2025-12-12T18:56:07.8529448Z   These apps are now globally available
+2025-12-12T18:56:07.8530013Z     - poetry.exe
+2025-12-12T18:56:08.4199645Z ##[group]Run poetry config virtualenvs.in-project true
+2025-12-12T18:56:08.4200066Z [36;1mpoetry config virtualenvs.in-project true[0m
+2025-12-12T18:56:08.4270086Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T18:56:08.4270767Z env:
+2025-12-12T18:56:08.4270942Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:08.4271215Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:08.4271616Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T18:56:08.4272015Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:08.4272383Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:08.4272744Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:08.4273012Z ##[endgroup]
+2025-12-12T18:56:09.9679255Z ##[group]Run actions/cache@v4
+2025-12-12T18:56:09.9679541Z with:
+2025-12-12T18:56:09.9679695Z   path: .venv
+2025-12-12T18:56:09.9680058Z   key: Windows-poetry-3.11-dd05d43ec074f1401e9de45214791bc0d37923b8f3b0fe71bb84677460e66455
+2025-12-12T18:56:09.9680512Z   restore-keys: Windows-poetry-3.11-
+
+2025-12-12T18:56:09.9680762Z   enableCrossOsArchive: false
+2025-12-12T18:56:09.9680981Z   fail-on-cache-miss: false
+2025-12-12T18:56:09.9681170Z   lookup-only: false
+2025-12-12T18:56:09.9681344Z   save-always: false
+2025-12-12T18:56:09.9681499Z env:
+2025-12-12T18:56:09.9681653Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:09.9681921Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:09.9682335Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T18:56:09.9682721Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:09.9683110Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:09.9683451Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:09.9683729Z ##[endgroup]
+2025-12-12T18:56:10.4073589Z Cache not found for input keys: Windows-poetry-3.11-dd05d43ec074f1401e9de45214791bc0d37923b8f3b0fe71bb84677460e66455, Windows-poetry-3.11-
+2025-12-12T18:56:10.4325309Z ##[group]Run poetry install --with dev
+2025-12-12T18:56:10.4325654Z [36;1mpoetry install --with dev[0m
+2025-12-12T18:56:10.4402608Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T18:56:10.4402911Z env:
+2025-12-12T18:56:10.4403071Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:10.4403351Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:10.4403956Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T18:56:10.4404342Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:10.4404701Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:10.4405061Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:10.4405333Z ##[endgroup]
+2025-12-12T18:56:12.0731996Z Creating virtualenv stack in D:\a\Stack\Stack\.venv
+2025-12-12T18:56:14.9035334Z Installing dependencies from lock file
+2025-12-12T18:56:15.1039716Z 
+2025-12-12T18:56:15.1040278Z Package operations: 75 installs, 0 updates, 0 removals
+2025-12-12T18:56:15.1044128Z 
+2025-12-12T18:56:15.1048330Z   - Installing mdurl (0.1.2)
+2025-12-12T18:56:15.1053890Z   - Installing pycparser (2.23)
+2025-12-12T18:56:15.1059499Z   - Installing typing-extensions (4.15.0)
+2025-12-12T18:56:15.2647136Z   - Installing annotated-types (0.7.0)
+2025-12-12T18:56:15.2655117Z   - Installing certifi (2025.11.12)
+2025-12-12T18:56:15.2658813Z   - Installing colorama (0.4.6)
+2025-12-12T18:56:15.2661436Z   - Installing h11 (0.16.0)
+2025-12-12T18:56:15.2676921Z   - Installing cffi (2.0.0)
+2025-12-12T18:56:15.2685059Z   - Installing idna (3.11)
+2025-12-12T18:56:15.2701569Z   - Installing markdown-it-py (4.0.0)
+2025-12-12T18:56:15.2723907Z   - Installing packaging (25.0)
+2025-12-12T18:56:15.4122850Z   - Installing pydantic-core (2.41.5)
+2025-12-12T18:56:15.4128727Z   - Installing pygments (2.19.2)
+2025-12-12T18:56:15.4756133Z   - Installing ruamel-yaml-clib (0.2.14)
+2025-12-12T18:56:15.4891941Z   - Installing typing-inspection (0.4.2)
+2025-12-12T18:56:15.8381562Z   - Installing anyio (4.12.0)
+2025-12-12T18:56:15.8384579Z   - Installing charset-normalizer (3.4.4)
+2025-12-12T18:56:15.8389487Z   - Installing click (8.1.8)
+2025-12-12T18:56:15.8394717Z   - Installing distlib (0.4.0)
+2025-12-12T18:56:15.8399864Z   - Installing dparse (0.6.4)
+2025-12-12T18:56:15.8407757Z   - Installing cryptography (46.0.3)
+2025-12-12T18:56:15.8422817Z   - Installing filelock (3.20.0)
+2025-12-12T18:56:15.8441941Z   - Installing httpcore (1.0.9)
+2025-12-12T18:56:16.0005194Z   - Installing iniconfig (2.3.0)
+2025-12-12T18:56:16.0206556Z   - Installing joblib (1.5.2)
+2025-12-12T18:56:16.0747240Z   - Installing markupsafe (3.0.3)
+2025-12-12T18:56:16.1108109Z   - Installing platformdirs (4.5.1)
+2025-12-12T18:56:16.1164737Z   - Installing pluggy (1.6.0)
+2025-12-12T18:56:16.1565377Z   - Installing pydantic (2.12.5)
+2025-12-12T18:56:16.1701880Z   - Installing regex (2025.11.3)
+2025-12-12T18:56:16.2632534Z   - Installing rich (13.5.3)
+2025-12-12T18:56:16.2824176Z   - Installing ruamel-yaml (0.18.16)
+2025-12-12T18:56:16.2892418Z   - Installing shellingham (1.5.4)
+2025-12-12T18:56:16.2966782Z   - Installing tqdm (4.67.1)
+2025-12-12T18:56:16.3758123Z   - Installing urllib3 (2.6.2)
+2025-12-12T18:56:16.7017308Z   - Installing attrs (25.4.0)
+2025-12-12T18:56:16.7020559Z   - Installing authlib (1.6.6)
+2025-12-12T18:56:16.7023769Z   - Installing cfgv (3.5.0)
+2025-12-12T18:56:16.7028846Z   - Installing dnspython (2.8.0)
+2025-12-12T18:56:16.7033586Z   - Installing execnet (2.1.2)
+2025-12-12T18:56:16.7040178Z   - Installing coverage (7.13.0)
+2025-12-12T18:56:16.7049377Z   - Installing httpx (0.28.1)
+2025-12-12T18:56:16.7068392Z   - Installing identify (2.6.15)
+2025-12-12T18:56:16.8350923Z   - Installing jinja2 (3.1.6)
+2025-12-12T18:56:16.8937561Z   - Installing librt (0.7.3)
+2025-12-12T18:56:16.9100824Z   - Installing marshmallow (4.1.1)
+2025-12-12T18:56:16.9885836Z   - Installing mypy-extensions (1.1.0)
+2025-12-12T18:56:17.0135009Z   - Installing nltk (3.9.2)
+2025-12-12T18:56:17.0454242Z   - Installing nodeenv (1.9.1)
+2025-12-12T18:56:17.0799525Z   - Installing pathspec (0.12.1)
+2025-12-12T18:56:17.1066127Z   - Installing py (1.11.0)
+2025-12-12T18:56:17.1114198Z   - Installing pytest (9.0.2)
+2025-12-12T18:56:17.1830330Z   - Installing pyyaml (6.0.3)
+2025-12-12T18:56:17.1883706Z   - Installing requests (2.32.5)
+2025-12-12T18:56:17.2399389Z   - Installing safety-schemas (0.0.16)
+2025-12-12T18:56:17.3721394Z   - Installing sortedcontainers (2.4.0)
+2025-12-12T18:56:17.3869540Z   - Installing stevedore (5.6.0)
+2025-12-12T18:56:17.4424280Z   - Installing tabulate (0.9.0)
+2025-12-12T18:56:17.4722821Z   - Installing tenacity (9.1.2)
+2025-12-12T18:56:17.4893377Z   - Installing tomlkit (0.13.3)
+2025-12-12T18:56:17.5116518Z   - Installing typer (0.20.0)
+2025-12-12T18:56:17.5372634Z   - Installing virtualenv (20.35.4)
+2025-12-12T18:56:17.9422198Z   - Installing bandit (1.9.2)
+2025-12-12T18:56:17.9425241Z   - Installing email-validator (2.3.0)
+2025-12-12T18:56:17.9429265Z   - Installing hypothesis (6.148.7)
+2025-12-12T18:56:17.9434408Z   - Installing mypy (1.19.0)
+2025-12-12T18:56:17.9439434Z   - Installing orjson (3.11.5)
+2025-12-12T18:56:17.9444558Z   - Installing interrogate (1.7.0)
+2025-12-12T18:56:17.9458412Z   - Installing pre-commit (4.5.0)
+2025-12-12T18:56:17.9474128Z   - Installing pytest-cov (7.0.0)
+2025-12-12T18:56:18.1416991Z   - Installing pytest-timeout (2.4.0)
+2025-12-12T18:56:18.1669731Z   - Installing pytest-xdist (3.8.0)
+2025-12-12T18:56:18.1893080Z   - Installing ruff (0.14.9)
+2025-12-12T18:56:18.1900687Z   - Installing safety (3.7.0)
+2025-12-12T18:56:18.2509122Z   - Installing vulture (2.14)
+2025-12-12T18:56:19.9762277Z 
+2025-12-12T18:56:19.9762735Z Installing the current project: stack (2.0.0)
+2025-12-12T18:56:20.2498475Z ##[group]Run poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60
+2025-12-12T18:56:20.2499152Z [36;1mpoetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60[0m
+2025-12-12T18:56:20.2571659Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2025-12-12T18:56:20.2571960Z env:
+2025-12-12T18:56:20.2572123Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:56:20.2572393Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:20.2572794Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.11.9\x64/lib/pkgconfig
+2025-12-12T18:56:20.2573207Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:20.2573570Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:20.2573923Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.11.9\x64
+2025-12-12T18:56:20.2574186Z ##[endgroup]
+2025-12-12T18:56:24.6935775Z ============================= test session starts =============================
+2025-12-12T18:56:24.6936636Z platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- D:\a\Stack\Stack\.venv\Scripts\python.exe
+2025-12-12T18:56:24.6937249Z cachedir: .pytest_cache
+2025-12-12T18:56:24.6938005Z hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True, suppress_health_check=(HealthCheck.too_slow,)
+2025-12-12T18:56:24.6938761Z rootdir: D:\a\Stack\Stack
+2025-12-12T18:56:24.6939427Z configfile: pyproject.toml
+2025-12-12T18:56:24.6939934Z plugins: anyio-4.12.0, hypothesis-6.148.7, cov-7.0.0, timeout-2.4.0, xdist-3.8.0
+2025-12-12T18:56:24.6940508Z timeout: 60.0s
+2025-12-12T18:56:24.6940815Z timeout method: thread
+2025-12-12T18:56:24.6941096Z timeout func_only: False
+2025-12-12T18:56:25.2667366Z collecting ... collected 74 items
+2025-12-12T18:56:25.2667647Z 
+2025-12-12T18:56:25.2708740Z tests/test_config_models.py::TestSecurityConfig::test_default_values PASSED [  1%]
+2025-12-12T18:56:25.2732522Z tests/test_config_models.py::TestSecurityConfig::test_paranoid_level PASSED [  2%]
+2025-12-12T18:56:25.2760337Z tests/test_config_models.py::TestSecurityConfig::test_frozen_config PASSED [  4%]
+2025-12-12T18:56:25.2783617Z tests/test_config_models.py::TestSecurityConfig::test_extra_fields_forbidden PASSED [  5%]
+2025-12-12T18:56:25.2805675Z tests/test_config_models.py::TestDependencyConfig::test_default_values PASSED [  6%]
+2025-12-12T18:56:25.2828351Z tests/test_config_models.py::TestDependencyConfig::test_custom_dependencies PASSED [  8%]
+2025-12-12T18:56:25.2852098Z tests/test_config_models.py::TestLoggingConfig::test_default_values PASSED [  9%]
+2025-12-12T18:56:25.2874402Z tests/test_config_models.py::TestLoggingConfig::test_valid_levels PASSED [ 10%]
+2025-12-12T18:56:25.2896239Z tests/test_config_models.py::TestLoggingConfig::test_invalid_level_rejected PASSED [ 12%]
+2025-12-12T18:56:25.2925815Z tests/test_config_models.py::TestStackConfig::test_default_values PASSED [ 13%]
+2025-12-12T18:56:25.2950032Z tests/test_config_models.py::TestStackConfig::test_valid_project_name PASSED [ 14%]
+2025-12-12T18:56:25.2982352Z tests/test_config_models.py::TestStackConfig::test_invalid_project_name_rejected PASSED [ 16%]
+2025-12-12T18:56:25.3007033Z tests/test_config_models.py::TestStackConfig::test_valid_python_version PASSED [ 17%]
+2025-12-12T18:56:25.3031075Z tests/test_config_models.py::TestStackConfig::test_invalid_python_version_rejected PASSED [ 18%]
+2025-12-12T18:56:25.3141955Z tests/test_config_models.py::TestStackConfig::test_path_traversal_rejected PASSED [ 20%]
+2025-12-12T18:56:25.3177914Z tests/test_config_models.py::TestStackConfig::test_paranoid_requires_all_tools PASSED [ 21%]
+2025-12-12T18:56:25.3206073Z tests/test_config_models.py::TestStackConfig::test_to_target_version PASSED [ 22%]
+2025-12-12T18:56:25.3231402Z tests/test_config_models.py::TestStackConfig::test_nested_configs PASSED [ 24%]
+2025-12-12T18:56:25.3254505Z tests/test_example.py::test_greet PASSED                                 [ 25%]
+2025-12-12T18:56:25.3274259Z tests/test_example.py::test_greet_empty PASSED                           [ 27%]
+2025-12-12T18:56:25.4486471Z tests/test_secure_system.py::test_create_user_success PASSED             [ 28%]
+2025-12-12T18:56:25.4509782Z tests/test_secure_system.py::test_create_user_invalid_email PASSED       [ 29%]
+2025-12-12T18:56:25.4534008Z tests/test_secure_system.py::test_create_user_invalid_username PASSED    [ 31%]
+2025-12-12T18:56:25.4562184Z tests/test_secure_system.py::test_get_non_existent_user PASSED           [ 32%]
+2025-12-12T18:56:25.4612965Z tests/test_security_guards.py::TestGuardPathTraversal::test_safe_path_passes PASSED [ 33%]
+2025-12-12T18:56:25.4667504Z tests/test_security_guards.py::TestGuardPathTraversal::test_relative_path_within_base PASSED [ 35%]
+2025-12-12T18:56:25.4711812Z tests/test_security_guards.py::TestGuardPathTraversal::test_path_traversal_blocked PASSED [ 36%]
+2025-12-12T18:56:25.4751157Z tests/test_security_guards.py::TestGuardPathTraversal::test_double_dot_blocked PASSED [ 37%]
+2025-12-12T18:56:25.4793726Z tests/test_security_guards.py::TestGuardPathTraversal::test_url_encoded_traversal_blocked PASSED [ 39%]
+2025-12-12T18:56:25.5290998Z tests/test_security_guards.py::TestGuardPathTraversal::test_path_escapes_base_dir FAILED [ 40%]
+2025-12-12T18:56:25.5313670Z tests/test_security_guards.py::TestGuardCommandInjection::test_safe_command_passes PASSED [ 41%]
+2025-12-12T18:56:25.5335996Z tests/test_security_guards.py::TestGuardCommandInjection::test_empty_command_blocked PASSED [ 43%]
+2025-12-12T18:56:25.5358736Z tests/test_security_guards.py::TestGuardCommandInjection::test_semicolon_blocked PASSED [ 44%]
+2025-12-12T18:56:25.5380120Z tests/test_security_guards.py::TestGuardCommandInjection::test_pipe_blocked PASSED [ 45%]
+2025-12-12T18:56:25.5401113Z tests/test_security_guards.py::TestGuardCommandInjection::test_backtick_blocked PASSED [ 47%]
+2025-12-12T18:56:25.5422917Z tests/test_security_guards.py::TestGuardCommandInjection::test_dollar_expansion_blocked PASSED [ 48%]
+2025-12-12T18:56:25.5445718Z tests/test_security_guards.py::TestGuardCommandInjection::test_allowed_commands_whitelist PASSED [ 50%]
+2025-12-12T18:56:25.5467559Z tests/test_security_guards.py::TestGuardCommandInjection::test_command_not_in_whitelist_blocked PASSED [ 51%]
+2025-12-12T18:56:25.5488798Z tests/test_security_guards.py::TestGuardFileExtension::test_safe_extension_passes PASSED [ 52%]
+2025-12-12T18:56:25.5512172Z tests/test_security_guards.py::TestGuardFileExtension::test_dangerous_extension_blocked PASSED [ 54%]
+2025-12-12T18:56:25.5535680Z tests/test_security_guards.py::TestGuardFileExtension::test_custom_denied_extensions PASSED [ 55%]
+2025-12-12T18:56:25.5558228Z tests/test_security_guards.py::TestGuardFileExtension::test_extension_with_dot PASSED [ 56%]
+2025-12-12T18:56:25.5582155Z tests/test_security_validators.py::TestValidateProjectName::test_valid_project_name PASSED [ 58%]
+2025-12-12T18:56:25.5604935Z tests/test_security_validators.py::TestValidateProjectName::test_empty_name_rejected PASSED [ 59%]
+2025-12-12T18:56:25.5628029Z tests/test_security_validators.py::TestValidateProjectName::test_name_must_start_with_letter PASSED [ 60%]
+2025-12-12T18:56:25.5650934Z tests/test_security_validators.py::TestValidateProjectName::test_reserved_names_rejected PASSED [ 62%]
+2025-12-12T18:56:25.5674273Z tests/test_security_validators.py::TestValidateProjectName::test_max_length_enforced PASSED [ 63%]
+2025-12-12T18:56:25.5695899Z tests/test_security_validators.py::TestValidatePythonVersion::test_valid_versions PASSED [ 64%]
+2025-12-12T18:56:25.5719324Z tests/test_security_validators.py::TestValidatePythonVersion::test_invalid_format_rejected PASSED [ 66%]
+2025-12-12T18:56:25.5744199Z tests/test_security_validators.py::TestValidatePythonVersion::test_unsupported_version_rejected PASSED [ 67%]
+2025-12-12T18:56:25.5768300Z tests/test_security_validators.py::TestValidateEmail::test_valid_emails PASSED [ 68%]
+2025-12-12T18:56:25.5791133Z tests/test_security_validators.py::TestValidateEmail::test_empty_email_rejected PASSED [ 70%]
+2025-12-12T18:56:25.5815093Z tests/test_security_validators.py::TestValidateEmail::test_invalid_format_rejected PASSED [ 71%]
+2025-12-12T18:56:25.5836236Z tests/test_security_validators.py::TestValidateUrl::test_valid_urls PASSED [ 72%]
+2025-12-12T18:56:25.5857998Z tests/test_security_validators.py::TestValidateUrl::test_empty_url_rejected PASSED [ 74%]
+2025-12-12T18:56:25.5880669Z tests/test_security_validators.py::TestValidateUrl::test_missing_scheme_rejected PASSED [ 75%]
+2025-12-12T18:56:25.5902891Z tests/test_security_validators.py::TestValidateUrl::test_invalid_scheme_rejected PASSED [ 77%]
+2025-12-12T18:56:25.5924035Z tests/test_security_validators.py::TestValidateIpAddress::test_valid_ipv4 PASSED [ 78%]
+2025-12-12T18:56:25.5945214Z tests/test_security_validators.py::TestValidateIpAddress::test_valid_ipv6 PASSED [ 79%]
+2025-12-12T18:56:25.5967899Z tests/test_security_validators.py::TestValidateIpAddress::test_invalid_ip_rejected PASSED [ 81%]
+2025-12-12T18:56:25.5992040Z tests/test_security_validators.py::TestValidatePort::test_valid_ports PASSED [ 82%]
+2025-12-12T18:56:25.6015258Z tests/test_security_validators.py::TestValidatePort::test_invalid_port_rejected PASSED [ 83%]
+2025-12-12T18:56:25.6037656Z tests/test_security_validators.py::TestValidatePort::test_privileged_ports_blocked PASSED [ 85%]
+2025-12-12T18:56:25.6063451Z tests/test_security_validators.py::TestValidateSemver::test_valid_semver PASSED [ 86%]
+2025-12-12T18:56:25.6087282Z tests/test_security_validators.py::TestValidateSemver::test_invalid_semver_rejected PASSED [ 87%]
+2025-12-12T18:56:25.7033876Z tests/test_stack_script.py::test_dry_run_does_not_create_files PASSED    [ 89%]
+2025-12-12T18:56:25.7513204Z tests/test_stack_script.py::test_safe_write_creates_backup PASSED        [ 90%]
+2025-12-12T18:56:25.7999171Z tests/test_stack_script.py::test_force_mode_overwrites_without_backup PASSED [ 91%]
+2025-12-12T18:56:25.8865054Z tests/test_stack_script.py::test_idempotency_for_pyproject_toml PASSED   [ 93%]
+2025-12-12T18:56:25.9463513Z tests/test_stack_script.py::test_git_initialization PASSED               [ 94%]
+2025-12-12T18:56:25.9949024Z tests/test_stack_script.py::test_project_structure_creation PASSED       [ 95%]
+2025-12-12T18:56:26.0490168Z tests/test_stack_script.py::test_optional_dependencies_flag PASSED       [ 97%]
+2025-12-12T18:56:26.1061306Z tests/test_stack_script.py::test_install_runtime_deps_flag PASSED        [ 98%]
+2025-12-12T18:56:26.9712557Z tests/test_stack_script.py::test_python_version_detection PASSED         [100%]
+2025-12-12T18:56:26.9714064Z ERROR: Coverage failure: total of 37 is less than fail-under=80
+2025-12-12T18:56:26.9714553Z 
+2025-12-12T18:56:26.9714561Z 
+2025-12-12T18:56:26.9714947Z ================================== FAILURES ===================================
+2025-12-12T18:56:26.9715837Z ______________ TestGuardPathTraversal.test_path_escapes_base_dir ______________
+2025-12-12T18:56:26.9716448Z 
+2025-12-12T18:56:26.9716962Z self = <tests.test_security_guards.TestGuardPathTraversal object at 0x0000024309899B50>
+2025-12-12T18:56:26.9718404Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_path_escapes_base_dir0')
+2025-12-12T18:56:26.9719327Z 
+2025-12-12T18:56:26.9719668Z     def test_path_escapes_base_dir(self, tmp_path: Path) -> None:
+2025-12-12T18:56:26.9720456Z         """Test that paths escaping base dir are blocked."""
+2025-12-12T18:56:26.9721100Z         with TemporaryDirectory() as other_dir:
+2025-12-12T18:56:26.9721816Z             with pytest.raises(SecurityError) as exc_info:
+2025-12-12T18:56:26.9722490Z                 guard_path_traversal(Path(other_dir), tmp_path)
+2025-12-12T18:56:26.9723125Z >           assert "escapes base directory" in str(exc_info.value)
+2025-12-12T18:56:26.9724188Z E           AssertionError: assert 'escapes base directory' in '[path_traversal] Path traversal pattern detected: ~'
+2025-12-12T18:56:26.9725989Z E            +  where '[path_traversal] Path traversal pattern detected: ~' = str(SecurityError('[path_traversal] Path traversal pattern detected: ~'))
+2025-12-12T18:56:26.9727941Z E            +    where SecurityError('[path_traversal] Path traversal pattern detected: ~') = <ExceptionInfo SecurityError('[path_traversal] Path traversal pattern detected: ~') tblen=2>.value
+2025-12-12T18:56:26.9729015Z 
+2025-12-12T18:56:26.9729280Z tests\test_security_guards.py:60: AssertionError
+2025-12-12T18:56:26.9729798Z =============================== tests coverage ================================
+2025-12-12T18:56:26.9730466Z _______________ coverage: platform win32, python 3.11.9-final-0 _______________
+2025-12-12T18:56:26.9730887Z 
+2025-12-12T18:56:26.9731530Z Name                               Stmts   Miss Branch BrPart  Cover   Missing
+2025-12-12T18:56:26.9732101Z ------------------------------------------------------------------------------
+2025-12-12T18:56:26.9732717Z src\app\__init__.py                    1      0      0      0   100%
+2025-12-12T18:56:26.9733285Z src\app\main.py                        8      2      0      0    75%   25-26
+2025-12-12T18:56:26.9733887Z src\app\secure_system.py              46      0      2      0   100%
+2025-12-12T18:56:26.9734440Z src\stack\__init__.py                  5      0      0      0   100%
+2025-12-12T18:56:26.9735091Z src\stack\config\__init__.py           3      0      0      0   100%
+2025-12-12T18:56:26.9735809Z src\stack\config\generators.py        34     25     14      0    19%   27-28, 124-182, 218, 264, 311, 349-357
+2025-12-12T18:56:26.9736497Z src\stack\config\models.py            73      2     12      1    96%   235-236
+2025-12-12T18:56:26.9737244Z src\stack\security\__init__.py         4      0      0      0   100%
+2025-12-12T18:56:26.9737942Z src\stack\security\guards.py          83     25     44      4    66%   100-101, 109-110, 117->125, 119, 250->259, 253, 283-348
+2025-12-12T18:56:26.9738786Z src\stack\security\sanitizers.py     104     95     58      0     6%   40-70, 100-152, 177-225, 245-261, 279-298
+2025-12-12T18:56:26.9739875Z src\stack\security\validators.py     125     25     54     11    80%   54->56, 56->59, 65-66, 114-116, 160-161, 164-165, 196-198, 209-210, 212->221, 218-219, 251-252, 255-256, 259-260, 285-287
+2025-12-12T18:56:26.9740763Z src\stack\utils\__init__.py            4      4      0      0     0%   3-7
+2025-12-12T18:56:26.9741417Z src\stack\utils\filesystem.py        114    114     62      0     0%   8-352
+2025-12-12T18:56:26.9742128Z src\stack\utils\logging.py            99     99     32      0     0%   8-324
+2025-12-12T18:56:26.9743036Z src\stack\utils\subprocess.py         70     70     24      0     0%   8-337
+2025-12-12T18:56:26.9743665Z ------------------------------------------------------------------------------
+2025-12-12T18:56:26.9744208Z TOTAL                                773    461    302     16    37%
+2025-12-12T18:56:26.9744704Z Coverage HTML written to dir htmlcov
+2025-12-12T18:56:26.9745132Z Coverage XML written to file coverage.xml
+2025-12-12T18:56:26.9745743Z FAIL Required test coverage of 80.0% not reached. Total coverage: 36.65%
+2025-12-12T18:56:26.9746388Z =========================== short test summary info ===========================
+2025-12-12T18:56:26.9747613Z FAILED tests/test_security_guards.py::TestGuardPathTraversal::test_path_escapes_base_dir - AssertionError: assert 'escapes base directory' in '[path_traversal] Path traversal pattern detected: ~'
+2025-12-12T18:56:26.9749691Z  +  where '[path_traversal] Path traversal pattern detected: ~' = str(SecurityError('[path_traversal] Path traversal pattern detected: ~'))
+2025-12-12T18:56:26.9751289Z  +    where SecurityError('[path_traversal] Path traversal pattern detected: ~') = <ExceptionInfo SecurityError('[path_traversal] Path traversal pattern detected: ~') tblen=2>.value
+2025-12-12T18:56:26.9752421Z ======================== 1 failed, 73 passed in 3.32s =========================
+2025-12-12T18:56:27.2665763Z ##[error]Process completed with exit code 1.
+2025-12-12T18:56:27.2932647Z Post job cleanup.
+2025-12-12T18:56:27.5397158Z [command]"C:\Program Files\Git\bin\git.exe" version
+2025-12-12T18:56:27.5684876Z git version 2.52.0.windows.1
+2025-12-12T18:56:27.5760938Z Temporarily overriding HOME='D:\a\_temp\2489a37b-4cf9-45d6-8332-380de6a26f1b' before making global git config changes
+2025-12-12T18:56:27.5761784Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:56:27.5772678Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Stack\Stack
+2025-12-12T18:56:27.6088595Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:56:27.6408217Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2025-12-12T18:56:28.2080473Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:56:28.2397799Z http.https://github.com/.extraheader
+2025-12-12T18:56:28.2457388Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2025-12-12T18:56:28.2820633Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2025-12-12T18:56:28.8187933Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:56:28.8504484Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2025-12-12T18:56:29.3764962Z Cleaning up orphan processes

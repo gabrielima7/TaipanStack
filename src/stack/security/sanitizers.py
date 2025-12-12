@@ -184,7 +184,7 @@ def sanitize_path(
     path = Path(path_str)
 
     # Remove any .. or . components manually
-    parts = []
+    parts: list[str] = []
     for part in path.parts:
         if part == "..":
             if parts and parts[-1] != "..":
@@ -200,7 +200,7 @@ def sanitize_path(
     if path.is_absolute():
         sanitized = Path("/").joinpath(*parts) if parts else Path("/")
     else:
-        sanitized = Path().joinpath(*parts) if parts else Path(".")
+        sanitized = Path().joinpath(*parts) if parts else Path()
 
     # Check depth
     depth = len(sanitized.parts)
@@ -217,10 +217,9 @@ def sanitize_path(
             except (OSError, RuntimeError) as e:
                 msg = f"Cannot resolve path: {e}"
                 raise ValueError(msg) from e
-        else:
-            # Make absolute relative to base
-            if not sanitized.is_absolute():
-                sanitized = base / sanitized
+        # Make absolute relative to base
+        elif not sanitized.is_absolute():
+            sanitized = base / sanitized
 
     return sanitized
 

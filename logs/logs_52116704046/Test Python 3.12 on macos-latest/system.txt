@@ -1,0 +1,5 @@
+2025-12-12T18:55:35.0540000Z Requested labels: macos-latest
+2025-12-12T18:55:35.0540000Z Job defined at: gabrielima7/Stack/.github/workflows/ci.yml@refs/heads/main
+2025-12-12T18:55:35.0540000Z Waiting for a runner to pick up this job...
+2025-12-12T18:55:35.0930000Z Job is about to start running on the hosted runner: GitHub Actions 1000001773
+2025-12-12T18:55:35.0970000Z Job is waiting for a hosted runner to come online.

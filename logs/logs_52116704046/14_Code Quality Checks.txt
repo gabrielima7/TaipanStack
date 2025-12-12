@@ -1,0 +1,1301 @@
+﻿2025-12-12T18:55:38.0824084Z Current runner version: '2.329.0'
+2025-12-12T18:55:38.0847728Z ##[group]Runner Image Provisioner
+2025-12-12T18:55:38.0848645Z Hosted Compute Agent
+2025-12-12T18:55:38.0849200Z Version: 20251202.455
+2025-12-12T18:55:38.0849767Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+2025-12-12T18:55:38.0850519Z Build Date: 2025-12-02T15:56:59Z
+2025-12-12T18:55:38.0851145Z Worker ID: {9a629d7a-180c-45c6-b29d-a15f132f0e83}
+2025-12-12T18:55:38.0851855Z ##[endgroup]
+2025-12-12T18:55:38.0852385Z ##[group]Operating System
+2025-12-12T18:55:38.0852976Z Ubuntu
+2025-12-12T18:55:38.0853641Z 24.04.3
+2025-12-12T18:55:38.0854253Z LTS
+2025-12-12T18:55:38.0854736Z ##[endgroup]
+2025-12-12T18:55:38.0855230Z ##[group]Runner Image
+2025-12-12T18:55:38.0855812Z Image: ubuntu-24.04
+2025-12-12T18:55:38.0856299Z Version: 20251208.163.1
+2025-12-12T18:55:38.0857321Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251208.163/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-12T18:55:38.0858931Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251208.163
+2025-12-12T18:55:38.0859931Z ##[endgroup]
+2025-12-12T18:55:38.0861087Z ##[group]GITHUB_TOKEN Permissions
+2025-12-12T18:55:38.0863160Z Contents: read
+2025-12-12T18:55:38.0863888Z Metadata: read
+2025-12-12T18:55:38.0864468Z Packages: read
+2025-12-12T18:55:38.0864984Z ##[endgroup]
+2025-12-12T18:55:38.0867068Z Secret source: Actions
+2025-12-12T18:55:38.0868324Z Prepare workflow directory
+2025-12-12T18:55:38.1254502Z Prepare all required actions
+2025-12-12T18:55:38.1291843Z Getting action download info
+2025-12-12T18:55:38.4679227Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-12T18:55:38.5898907Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2025-12-12T18:55:38.7488103Z Complete job name: Code Quality Checks
+2025-12-12T18:55:38.8160291Z ##[group]Run actions/checkout@v4
+2025-12-12T18:55:38.8161132Z with:
+2025-12-12T18:55:38.8161567Z   repository: gabrielima7/Stack
+2025-12-12T18:55:38.8162242Z   token: ***
+2025-12-12T18:55:38.8162648Z   ssh-strict: true
+2025-12-12T18:55:38.8163061Z   ssh-user: git
+2025-12-12T18:55:38.8163640Z   persist-credentials: true
+2025-12-12T18:55:38.8164115Z   clean: true
+2025-12-12T18:55:38.8164530Z   sparse-checkout-cone-mode: true
+2025-12-12T18:55:38.8165034Z   fetch-depth: 1
+2025-12-12T18:55:38.8165442Z   fetch-tags: false
+2025-12-12T18:55:38.8165868Z   show-progress: true
+2025-12-12T18:55:38.8166285Z   lfs: false
+2025-12-12T18:55:38.8166674Z   submodules: false
+2025-12-12T18:55:38.8167104Z   set-safe-directory: true
+2025-12-12T18:55:38.8167935Z env:
+2025-12-12T18:55:38.8168361Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:38.8168839Z ##[endgroup]
+2025-12-12T18:55:38.9226454Z Syncing repository: gabrielima7/Stack
+2025-12-12T18:55:38.9228138Z ##[group]Getting Git version info
+2025-12-12T18:55:38.9228870Z Working directory is '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:38.9229781Z [command]/usr/bin/git version
+2025-12-12T18:55:38.9340437Z git version 2.52.0
+2025-12-12T18:55:38.9366773Z ##[endgroup]
+2025-12-12T18:55:38.9380378Z Temporarily overriding HOME='/home/runner/work/_temp/cabda414-6653-4e20-987f-2bb85174d1c6' before making global git config changes
+2025-12-12T18:55:38.9381965Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:38.9392358Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:55:38.9432308Z Deleting the contents of '/home/runner/work/Stack/Stack'
+2025-12-12T18:55:38.9436752Z ##[group]Initializing the repository
+2025-12-12T18:55:38.9441601Z [command]/usr/bin/git init /home/runner/work/Stack/Stack
+2025-12-12T18:55:38.9563646Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-12T18:55:38.9565065Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-12T18:55:38.9566619Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-12T18:55:38.9568319Z hint: call:
+2025-12-12T18:55:38.9568928Z hint:
+2025-12-12T18:55:38.9569716Z hint: 	git config --global init.defaultBranch <name>
+2025-12-12T18:55:38.9570314Z hint:
+2025-12-12T18:55:38.9570876Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-12T18:55:38.9571784Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-12T18:55:38.9572479Z hint:
+2025-12-12T18:55:38.9572875Z hint: 	git branch -m <name>
+2025-12-12T18:55:38.9573320Z hint:
+2025-12-12T18:55:38.9574424Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-12T18:55:38.9575514Z Initialized empty Git repository in /home/runner/work/Stack/Stack/.git/
+2025-12-12T18:55:38.9579315Z [command]/usr/bin/git remote add origin https://github.com/gabrielima7/Stack
+2025-12-12T18:55:38.9629931Z ##[endgroup]
+2025-12-12T18:55:38.9630665Z ##[group]Disabling automatic garbage collection
+2025-12-12T18:55:38.9633865Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-12T18:55:38.9661366Z ##[endgroup]
+2025-12-12T18:55:38.9662055Z ##[group]Setting up auth
+2025-12-12T18:55:38.9668434Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:38.9699175Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:55:39.0074446Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:39.0103860Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:55:39.0319272Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:39.0349228Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:55:39.0582368Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-12T18:55:39.0620032Z ##[endgroup]
+2025-12-12T18:55:39.0621321Z ##[group]Fetching the repository
+2025-12-12T18:55:39.0629951Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +265f2b5c1d4934c9f9ad4d635b5ad0997efee979:refs/remotes/origin/main
+2025-12-12T18:55:39.3174257Z From https://github.com/gabrielima7/Stack
+2025-12-12T18:55:39.3175395Z  * [new ref]         265f2b5c1d4934c9f9ad4d635b5ad0997efee979 -> origin/main
+2025-12-12T18:55:39.3207265Z ##[endgroup]
+2025-12-12T18:55:39.3207979Z ##[group]Determining the checkout info
+2025-12-12T18:55:39.3210392Z ##[endgroup]
+2025-12-12T18:55:39.3216462Z [command]/usr/bin/git sparse-checkout disable
+2025-12-12T18:55:39.3261974Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-12T18:55:39.3288119Z ##[group]Checking out the ref
+2025-12-12T18:55:39.3292532Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-12T18:55:39.3389930Z Switched to a new branch 'main'
+2025-12-12T18:55:39.3393072Z branch 'main' set up to track 'origin/main'.
+2025-12-12T18:55:39.3399404Z ##[endgroup]
+2025-12-12T18:55:39.3431325Z [command]/usr/bin/git log -1 --format=%H
+2025-12-12T18:55:39.3452602Z 265f2b5c1d4934c9f9ad4d635b5ad0997efee979
+2025-12-12T18:55:39.3676540Z ##[group]Run actions/setup-python@v5
+2025-12-12T18:55:39.3677084Z with:
+2025-12-12T18:55:39.3677462Z   python-version: 3.11
+2025-12-12T18:55:39.3677888Z   check-latest: false
+2025-12-12T18:55:39.3678452Z   token: ***
+2025-12-12T18:55:39.3678844Z   update-environment: true
+2025-12-12T18:55:39.3679327Z   allow-prereleases: false
+2025-12-12T18:55:39.3679771Z   freethreaded: false
+2025-12-12T18:55:39.3680176Z env:
+2025-12-12T18:55:39.3680550Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:39.3681002Z ##[endgroup]
+2025-12-12T18:55:39.5332535Z ##[group]Installed versions
+2025-12-12T18:55:39.5469503Z Successfully set up CPython (3.11.14)
+2025-12-12T18:55:39.5471075Z ##[endgroup]
+2025-12-12T18:55:39.5618561Z ##[group]Run pip install ruff
+2025-12-12T18:55:39.5619396Z [36;1mpip install ruff[0m
+2025-12-12T18:55:39.5667994Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:39.5668659Z env:
+2025-12-12T18:55:39.5669112Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:39.5670079Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.5671526Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:39.5672960Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.5674733Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.5676126Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:39.5677581Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:39.5678576Z ##[endgroup]
+2025-12-12T18:55:40.8349547Z Collecting ruff
+2025-12-12T18:55:40.8939149Z   Downloading ruff-0.14.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (25 kB)
+2025-12-12T18:55:40.9738919Z Downloading ruff-0.14.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (14.2 MB)
+2025-12-12T18:55:41.2808652Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.2/14.2 MB 49.0 MB/s  0:00:00
+2025-12-12T18:55:41.3341186Z Installing collected packages: ruff
+2025-12-12T18:55:41.5643940Z Successfully installed ruff-0.14.9
+2025-12-12T18:55:41.9380172Z ##[group]Run ruff check src/ tests/ stack.py
+2025-12-12T18:55:41.9380592Z [36;1mruff check src/ tests/ stack.py[0m
+2025-12-12T18:55:41.9415154Z shell: /usr/bin/bash -e {0}
+2025-12-12T18:55:41.9415428Z env:
+2025-12-12T18:55:41.9415639Z   PYTHON_VERSION_DEFAULT: 3.11
+2025-12-12T18:55:41.9415969Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:41.9416407Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+2025-12-12T18:55:41.9416851Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:41.9417265Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:41.9417689Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+2025-12-12T18:55:41.9418074Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+2025-12-12T18:55:41.9418432Z ##[endgroup]
+2025-12-12T18:55:41.9790550Z UP045 [*] Use `X | None` for type annotations
+2025-12-12T18:55:41.9791391Z   --> src/app/secure_system.py:43:17
+2025-12-12T18:55:41.9791928Z    |
+2025-12-12T18:55:41.9792316Z 41 |     email: EmailStr
+2025-12-12T18:55:41.9792804Z 42 |     password: SecretStr
+2025-12-12T18:55:41.9793362Z 43 |     ip_address: Optional[IPvAnyAddress] = None
+2025-12-12T18:55:41.9794128Z    |                 ^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:41.9794591Z 44 |
+2025-12-12T18:55:41.9794989Z 45 |     model_config = ConfigDict(frozen=True)
+2025-12-12T18:55:41.9795473Z    |
+2025-12-12T18:55:41.9795825Z help: Convert to `X | None`
+2025-12-12T18:55:41.9796120Z 
+2025-12-12T18:55:41.9796326Z UP045 [*] Use `X | None` for type annotations
+2025-12-12T18:55:41.9796894Z   --> src/app/secure_system.py:82:43
+2025-12-12T18:55:41.9797345Z    |
+2025-12-12T18:55:41.9797681Z 81 |     @abstractmethod
+2025-12-12T18:55:41.9798173Z 82 |     def get_by_id(self, user_id: UUID) -> Optional[User]:
+2025-12-12T18:55:41.9798555Z    |                                           ^^^^^^^^^^^^^^
+2025-12-12T18:55:41.9798836Z 83 |         """
+2025-12-12T18:55:41.9799089Z 84 |         Retrieve a user by their ID.
+2025-12-12T18:55:41.9799496Z    |
+2025-12-12T18:55:41.9799841Z help: Convert to `X | None`
+2025-12-12T18:55:41.9800099Z 
+2025-12-12T18:55:41.9800381Z UP045 [*] Use `X | None` for type annotations
+2025-12-12T18:55:41.9800908Z    --> src/app/secure_system.py:112:43
+2025-12-12T18:55:41.9801302Z     |
+2025-12-12T18:55:41.9801772Z 110 |         self._storage[user.id] = user
+2025-12-12T18:55:41.9802047Z 111 |
+2025-12-12T18:55:41.9802304Z 112 |     def get_by_id(self, user_id: UUID) -> Optional[User]:
+2025-12-12T18:55:41.9803001Z     |                                           ^^^^^^^^^^^^^^
+2025-12-12T18:55:41.9803283Z 113 |         """
+2025-12-12T18:55:41.9803813Z 114 |         Retrieve a user from the in-memory storage.
+2025-12-12T18:55:41.9804353Z     |
+2025-12-12T18:55:41.9804700Z help: Convert to `X | None`
+2025-12-12T18:55:41.9804972Z 
+2025-12-12T18:55:41.9805192Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:41.9805722Z   --> src/stack/config/__init__.py:3:1
+2025-12-12T18:55:41.9806004Z    |
+2025-12-12T18:55:41.9806226Z  1 |   """Configuration models package."""
+2025-12-12T18:55:41.9806511Z  2 |
+2025-12-12T18:55:41.9806740Z  3 | / from stack.config.models import (
+2025-12-12T18:55:41.9807214Z  4 | |     DependencyConfig,
+2025-12-12T18:55:41.9807644Z  5 | |     LoggingConfig,
+2025-12-12T18:55:41.9808039Z  6 | |     SecurityConfig,
+2025-12-12T18:55:41.9808344Z  7 | |     StackConfig,
+2025-12-12T18:55:41.9808560Z  8 | | )
+2025-12-12T18:55:41.9808804Z  9 | | from stack.config.generators import (
+2025-12-12T18:55:41.9809114Z 10 | |     generate_dependabot_config,
+2025-12-12T18:55:41.9809398Z 11 | |     generate_pre_commit_config,
+2025-12-12T18:55:41.9809679Z 12 | |     generate_pyproject_config,
+2025-12-12T18:55:41.9809952Z 13 | |     generate_security_policy,
+2025-12-12T18:55:41.9810208Z 14 | | )
+2025-12-12T18:55:41.9810393Z    | |_^
+2025-12-12T18:55:41.9810583Z 15 |
+2025-12-12T18:55:41.9810767Z 16 |   __all__ = [
+2025-12-12T18:55:41.9810976Z    |
+2025-12-12T18:55:41.9811391Z help: Organize imports
+2025-12-12T18:55:41.9811550Z 
+2025-12-12T18:55:41.9811731Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9812152Z    --> src/stack/config/generators.py:30:12
+2025-12-12T18:55:41.9812444Z     |
+2025-12-12T18:55:41.9812679Z  28 |       python_version = config.python_version
+2025-12-12T18:55:41.9812956Z  29 |
+2025-12-12T18:55:41.9813152Z  30 |       return f'''
+2025-12-12T18:55:41.9813372Z     |  ____________^
+2025-12-12T18:55:41.9813920Z  31 | | # --- Stack v2.0 Quality Configuration ---
+2025-12-12T18:55:41.9814226Z  32 | | [tool.ruff]
+2025-12-12T18:55:41.9814444Z  33 | | line-length = 88
+2025-12-12T18:55:41.9814706Z  34 | | target-version = "{target_version}"
+2025-12-12T18:55:41.9814980Z  35 | |
+2025-12-12T18:55:41.9815181Z  36 | | [tool.ruff.lint]
+2025-12-12T18:55:41.9815405Z  37 | | select = [
+2025-12-12T18:55:41.9815624Z  38 | |     "F",    # Pyflakes
+2025-12-12T18:55:41.9815880Z  39 | |     "E",    # pycodestyle errors
+2025-12-12T18:55:41.9816178Z  40 | |     "W",    # pycodestyle warnings
+2025-12-12T18:55:41.9816447Z  41 | |     "I",    # isort
+2025-12-12T18:55:41.9816692Z  42 | |     "N",    # pep8-naming
+2025-12-12T18:55:41.9816950Z  43 | |     "D",    # pydocstyle
+2025-12-12T18:55:41.9817202Z  44 | |     "Q",    # flake8-quotes
+2025-12-12T18:55:41.9817464Z  45 | |     "S",    # flake8-bandit
+2025-12-12T18:55:41.9817718Z  46 | |     "B",    # flake8-bugbear
+2025-12-12T18:55:41.9817989Z  47 | |     "A",    # flake8-builtins
+2025-12-12T18:55:41.9818282Z  48 | |     "C4",   # flake8-comprehensions
+2025-12-12T18:55:41.9818571Z  49 | |     "T20",  # flake8-print
+2025-12-12T18:55:41.9818833Z  50 | |     "SIM",  # flake8-simplify
+2025-12-12T18:55:41.9819121Z  51 | |     "PTH",  # flake8-use-pathlib
+2025-12-12T18:55:41.9819417Z  52 | |     "TID",  # flake8-tidy-imports
+2025-12-12T18:55:41.9819708Z  53 | |     "ARG",  # flake8-unused-arguments
+2025-12-12T18:55:41.9820000Z  54 | |     "PIE",  # flake8-pie
+2025-12-12T18:55:41.9820275Z  55 | |     "PLC",  # Pylint Convention
+2025-12-12T18:55:41.9820553Z  56 | |     "PLE",  # Pylint Error
+2025-12-12T18:55:41.9820936Z  57 | |     "PLR",  # Pylint Refactor
+2025-12-12T18:55:41.9821439Z  58 | |     "PLW",  # Pylint Warning
+2025-12-12T18:55:41.9821896Z  59 | |     "RUF",  # Ruff-specific
+2025-12-12T18:55:41.9822334Z  60 | |     "UP",   # pyupgrade
+2025-12-12T18:55:41.9822761Z  61 | |     "ERA",  # eradicate
+2025-12-12T18:55:41.9823052Z  62 | |     "TRY",  # tryceratops
+2025-12-12T18:55:41.9823643Z  63 | | ]
+2025-12-12T18:55:41.9824004Z  64 | | ignore = ["D203", "D212", "D213", "D416", "D417", "B905"]
+2025-12-12T18:55:41.9824320Z  65 | |
+2025-12-12T18:55:41.9824529Z  66 | | [tool.ruff.lint.mccabe]
+2025-12-12T18:55:41.9885958Z  67 | | max-complexity = 10
+2025-12-12T18:55:41.9886258Z  68 | |
+2025-12-12T18:55:41.9886512Z  69 | | [tool.ruff.lint.per-file-ignores]
+2025-12-12T18:55:41.9886875Z  70 | | "tests/**/*.py" = ["S101", "D"]
+2025-12-12T18:55:41.9887197Z  71 | |
+2025-12-12T18:55:41.9887456Z  72 | | [tool.ruff.format]
+2025-12-12T18:55:41.9887756Z  73 | | quote-style = "double"
+2025-12-12T18:55:41.9888031Z  74 | | indent-style = "space"
+2025-12-12T18:55:41.9888276Z  75 | |
+2025-12-12T18:55:41.9888475Z  76 | | [tool.mypy]
+2025-12-12T18:55:41.9888725Z  77 | | python_version = "{python_version}"
+2025-12-12T18:55:41.9889021Z  78 | | warn_return_any = true
+2025-12-12T18:55:41.9889286Z  79 | | warn_unused_configs = true
+2025-12-12T18:55:41.9889561Z  80 | | disallow_untyped_defs = true
+2025-12-12T18:55:41.9889871Z  81 | | disallow_any_unimported = false
+2025-12-12T18:55:41.9890183Z  82 | | no_implicit_optional = true
+2025-12-12T18:55:41.9890453Z  83 | | check_untyped_defs = true
+2025-12-12T18:55:41.9890720Z  84 | | strict_optional = true
+2025-12-12T18:55:41.9890974Z  85 | | strict_equality = true
+2025-12-12T18:55:41.9891234Z  86 | | ignore_missing_imports = true
+2025-12-12T18:55:41.9891510Z  87 | | show_error_codes = true
+2025-12-12T18:55:41.9892089Z  88 | | enable_error_code = ["ignore-without-code", "redundant-cast", "truthy-bool"]
+2025-12-12T18:55:41.9892476Z  89 | |
+2025-12-12T18:55:41.9892698Z  90 | | [tool.pytest.ini_options]
+2025-12-12T18:55:41.9892971Z  91 | | testpaths = ["tests"]
+2025-12-12T18:55:41.9893437Z  92 | | addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80 --strict-markers"
+2025-12-12T18:55:41.9894233Z  93 | | markers = [
+2025-12-12T18:55:41.9894537Z  94 | |     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+2025-12-12T18:55:41.9894932Z  95 | |     "security: marks tests as security-related",
+2025-12-12T18:55:41.9895218Z  96 | | ]
+2025-12-12T18:55:41.9895410Z  97 | |
+2025-12-12T18:55:41.9895613Z  98 | | [tool.coverage.run]
+2025-12-12T18:55:41.9895868Z  99 | | branch = true
+2025-12-12T18:55:41.9896102Z 100 | | source = ["src"]
+2025-12-12T18:55:41.9896377Z 101 | | omit = ["*/tests/*", "*/__pycache__/*"]
+2025-12-12T18:55:41.9896659Z 102 | |
+2025-12-12T18:55:41.9896875Z 103 | | [tool.coverage.report]
+2025-12-12T18:55:41.9897145Z 104 | | exclude_lines = [
+2025-12-12T18:55:41.9897396Z 105 | |     "pragma: no cover",
+2025-12-12T18:55:41.9897656Z 106 | |     "def __repr__",
+2025-12-12T18:55:41.9897954Z 107 | |     "raise NotImplementedError",
+2025-12-12T18:55:41.9898272Z 108 | |     "if TYPE_CHECKING:",
+2025-12-12T18:55:41.9898587Z 109 | |     "if __name__ == .__main__.:",
+2025-12-12T18:55:41.9898850Z 110 | | ]
+2025-12-12T18:55:41.9899045Z 111 | | '''
+2025-12-12T18:55:41.9899237Z     | |___^
+2025-12-12T18:55:41.9899430Z     |
+2025-12-12T18:55:41.9899730Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9899967Z 
+2025-12-12T18:55:41.9900086Z E501 Line too long (105 > 88)
+2025-12-12T18:55:41.9900379Z   --> src/stack/config/generators.py:92:89
+2025-12-12T18:55:41.9900659Z    |
+2025-12-12T18:55:41.9900872Z 90 | [tool.pytest.ini_options]
+2025-12-12T18:55:41.9901140Z 91 | testpaths = ["tests"]
+2025-12-12T18:55:41.9901633Z 92 | addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80 --strict-markers"
+2025-12-12T18:55:41.9902180Z    |                                                                                         ^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:41.9902502Z 93 | markers = [
+2025-12-12T18:55:41.9902832Z 94 |     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+2025-12-12T18:55:41.9903166Z    |
+2025-12-12T18:55:41.9903270Z 
+2025-12-12T18:55:41.9903641Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9904108Z    --> src/stack/config/generators.py:128:27
+2025-12-12T18:55:41.9904563Z     |
+2025-12-12T18:55:41.9904814Z 126 |       if config.security.enable_bandit:
+2025-12-12T18:55:41.9905203Z 127 |           severity = config.security.bandit_severity[0].upper()
+2025-12-12T18:55:41.9905566Z 128 |           security_hooks += f'''
+2025-12-12T18:55:41.9905849Z     |  ___________________________^
+2025-12-12T18:55:41.9906191Z 129 | |   - repo: https://github.com/PyCQA/bandit
+2025-12-12T18:55:41.9906503Z 130 | |     rev: '1.8.0'
+2025-12-12T18:55:41.9906737Z 131 | |     hooks:
+2025-12-12T18:55:41.9906967Z 132 | |       - id: bandit
+2025-12-12T18:55:41.9907241Z 133 | |         args: ["-r", ".", "-l{severity}"]
+2025-12-12T18:55:41.9907515Z 134 | | '''
+2025-12-12T18:55:41.9907716Z     | |___^
+2025-12-12T18:55:41.9907905Z 135 |
+2025-12-12T18:55:41.9908146Z 136 |       if config.security.enable_safety:
+2025-12-12T18:55:41.9908419Z     |
+2025-12-12T18:55:41.9908704Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9908946Z 
+2025-12-12T18:55:41.9909148Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9909531Z    --> src/stack/config/generators.py:137:27
+2025-12-12T18:55:41.9909809Z     |
+2025-12-12T18:55:41.9910045Z 136 |       if config.security.enable_safety:
+2025-12-12T18:55:41.9910360Z 137 |           security_hooks += '''
+2025-12-12T18:55:41.9910638Z     |  ___________________________^
+2025-12-12T18:55:41.9910954Z 138 | |   - repo: https://github.com/pyupio/safety
+2025-12-12T18:55:41.9911375Z 139 | |     rev: '3.2.11'
+2025-12-12T18:55:41.9911630Z 140 | |     hooks:
+2025-12-12T18:55:41.9911857Z 141 | |       - id: safety
+2025-12-12T18:55:41.9912117Z 142 | |         args: ["check", "--json"]
+2025-12-12T18:55:41.9912382Z 143 | | '''
+2025-12-12T18:55:41.9912575Z     | |___^
+2025-12-12T18:55:41.9912760Z 144 |
+2025-12-12T18:55:41.9913004Z 145 |       if config.security.enable_semgrep:
+2025-12-12T18:55:41.9913281Z     |
+2025-12-12T18:55:41.9913675Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9913919Z 
+2025-12-12T18:55:41.9914117Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9914505Z    --> src/stack/config/generators.py:146:27
+2025-12-12T18:55:41.9914782Z     |
+2025-12-12T18:55:41.9915032Z 145 |       if config.security.enable_semgrep:
+2025-12-12T18:55:41.9915346Z 146 |           security_hooks += '''
+2025-12-12T18:55:41.9915623Z     |  ___________________________^
+2025-12-12T18:55:41.9915976Z 147 | |   - repo: https://github.com/semgrep/pre-commit
+2025-12-12T18:55:41.9916312Z 148 | |     rev: 'v1.99.0'
+2025-12-12T18:55:41.9916554Z 149 | |     hooks:
+2025-12-12T18:55:41.9916782Z 150 | |       - id: semgrep
+2025-12-12T18:55:41.9917049Z 151 | |         args: ['--config=auto']
+2025-12-12T18:55:41.9917307Z 152 | | '''
+2025-12-12T18:55:41.9917506Z     | |___^
+2025-12-12T18:55:41.9917690Z 153 |
+2025-12-12T18:55:41.9917948Z 154 |       if config.security.enable_detect_secrets:
+2025-12-12T18:55:41.9918245Z     |
+2025-12-12T18:55:41.9918525Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9918757Z 
+2025-12-12T18:55:41.9918963Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9919337Z    --> src/stack/config/generators.py:155:27
+2025-12-12T18:55:41.9919619Z     |
+2025-12-12T18:55:41.9919866Z 154 |       if config.security.enable_detect_secrets:
+2025-12-12T18:55:41.9920193Z 155 |           security_hooks += '''
+2025-12-12T18:55:41.9920468Z     |  ___________________________^
+2025-12-12T18:55:41.9920801Z 156 | |   - repo: https://github.com/Yelp/detect-secrets
+2025-12-12T18:55:41.9921122Z 157 | |     rev: 'v1.5.0'
+2025-12-12T18:55:41.9921356Z 158 | |     hooks:
+2025-12-12T18:55:41.9921596Z 159 | |       - id: detect-secrets
+2025-12-12T18:55:41.9921908Z 160 | |         args: ['--baseline', '.secrets.baseline']
+2025-12-12T18:55:41.9922203Z 161 | | '''
+2025-12-12T18:55:41.9922395Z     | |___^
+2025-12-12T18:55:41.9922587Z 162 |
+2025-12-12T18:55:41.9922820Z 163 |       # Add pip-audit for paranoid mode
+2025-12-12T18:55:41.9923231Z     |
+2025-12-12T18:55:41.9923613Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9923849Z 
+2025-12-12T18:55:41.9924046Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9924426Z    --> src/stack/config/generators.py:165:27
+2025-12-12T18:55:41.9924698Z     |
+2025-12-12T18:55:41.9924937Z 163 |       # Add pip-audit for paranoid mode
+2025-12-12T18:55:41.9925279Z 164 |       if config.security.level == "paranoid":
+2025-12-12T18:55:41.9925608Z 165 |           security_hooks += '''
+2025-12-12T18:55:41.9925882Z     |  ___________________________^
+2025-12-12T18:55:41.9926219Z 166 | |   - repo: https://github.com/trailofbits/pip-audit
+2025-12-12T18:55:41.9926553Z 167 | |     rev: 'v2.7.3'
+2025-12-12T18:55:41.9926779Z 168 | |     hooks:
+2025-12-12T18:55:41.9927015Z 169 | |       - id: pip-audit
+2025-12-12T18:55:41.9927250Z 170 | |
+2025-12-12T18:55:41.9927520Z 171 | |   - repo: https://github.com/jendrikseipp/vulture
+2025-12-12T18:55:41.9927846Z 172 | |     rev: 'v2.11'
+2025-12-12T18:55:41.9928077Z 173 | |     hooks:
+2025-12-12T18:55:41.9928297Z 174 | |       - id: vulture
+2025-12-12T18:55:41.9928530Z 175 | |
+2025-12-12T18:55:41.9928804Z 176 | |   - repo: https://github.com/guilatrova/tryceratops
+2025-12-12T18:55:41.9929124Z 177 | |     rev: 'v2.3.3'
+2025-12-12T18:55:41.9929353Z 178 | |     hooks:
+2025-12-12T18:55:41.9929579Z 179 | |       - id: tryceratops
+2025-12-12T18:55:41.9929822Z 180 | | '''
+2025-12-12T18:55:41.9930129Z     | |___^
+2025-12-12T18:55:41.9930330Z 181 |
+2025-12-12T18:55:41.9930600Z 182 |       return f'''# Stack v2.0 Pre-commit Configuration
+2025-12-12T18:55:41.9930907Z     |
+2025-12-12T18:55:41.9931174Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9931409Z 
+2025-12-12T18:55:41.9931603Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9931987Z    --> src/stack/config/generators.py:182:12
+2025-12-12T18:55:41.9932266Z     |
+2025-12-12T18:55:41.9932452Z 180 |   '''
+2025-12-12T18:55:41.9932634Z 181 |
+2025-12-12T18:55:41.9932900Z 182 |       return f'''# Stack v2.0 Pre-commit Configuration
+2025-12-12T18:55:41.9933208Z     |  ____________^
+2025-12-12T18:55:41.9933679Z 183 | | # Security Level: {config.security.level}
+2025-12-12T18:55:41.9934078Z 184 | | repos:
+2025-12-12T18:55:41.9934399Z 185 | |   - repo: https://github.com/pre-commit/pre-commit-hooks
+2025-12-12T18:55:41.9934747Z 186 | |     rev: v5.0.0
+2025-12-12T18:55:41.9934976Z 187 | |     hooks:
+2025-12-12T18:55:41.9935220Z 188 | |       - id: trailing-whitespace
+2025-12-12T18:55:41.9935516Z 189 | |       - id: end-of-file-fixer
+2025-12-12T18:55:41.9935802Z 190 | |       - id: check-yaml
+2025-12-12T18:55:41.9936075Z 191 | |       - id: check-added-large-files
+2025-12-12T18:55:41.9936383Z 192 | |       - id: check-merge-conflict
+2025-12-12T18:55:41.9936675Z 193 | |       - id: check-case-conflict
+2025-12-12T18:55:41.9936975Z 194 | |       - id: detect-private-key
+2025-12-12T18:55:41.9937238Z 195 | |
+2025-12-12T18:55:41.9937518Z 196 | |   - repo: https://github.com/astral-sh/ruff-pre-commit
+2025-12-12T18:55:41.9937849Z 197 | |     rev: 'v0.8.4'
+2025-12-12T18:55:41.9938075Z 198 | |     hooks:
+2025-12-12T18:55:41.9938291Z 199 | |       - id: ruff
+2025-12-12T18:55:41.9938570Z 200 | |         args: [--fix, --exit-non-zero-on-fix]
+2025-12-12T18:55:41.9938882Z 201 | |       - id: ruff-format
+2025-12-12T18:55:41.9939113Z 202 | |
+2025-12-12T18:55:41.9939392Z 203 | |   - repo: https://github.com/pre-commit/mirrors-mypy
+2025-12-12T18:55:41.9939714Z 204 | |     rev: 'v1.13.0'
+2025-12-12T18:55:41.9939947Z 205 | |     hooks:
+2025-12-12T18:55:41.9940166Z 206 | |       - id: mypy
+2025-12-12T18:55:41.9940461Z 207 | |         additional_dependencies: [types-all, pydantic]
+2025-12-12T18:55:41.9940788Z 208 | | {security_hooks}'''
+2025-12-12T18:55:41.9941030Z     | |___________________^
+2025-12-12T18:55:41.9941255Z     |
+2025-12-12T18:55:41.9941516Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9941923Z 
+2025-12-12T18:55:41.9942111Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9942483Z    --> src/stack/config/generators.py:218:12
+2025-12-12T18:55:41.9942760Z     |
+2025-12-12T18:55:41.9942950Z 217 |       """
+2025-12-12T18:55:41.9943216Z 218 |       return '''# Stack v2.0 Dependabot Configuration
+2025-12-12T18:55:41.9943753Z     |  ____________^
+2025-12-12T18:55:41.9943994Z 219 | | version: 2
+2025-12-12T18:55:41.9944219Z 220 | | updates:
+2025-12-12T18:55:41.9944473Z 221 | |   - package-ecosystem: "pip"
+2025-12-12T18:55:41.9944774Z 222 | |     directory: "/"
+2025-12-12T18:55:41.9945013Z 223 | |     schedule:
+2025-12-12T18:55:41.9945252Z 224 | |       interval: "daily"
+2025-12-12T18:55:41.9945537Z 225 | |     open-pull-requests-limit: 10
+2025-12-12T18:55:41.9945812Z 226 | |     groups:
+2025-12-12T18:55:41.9946069Z 227 | |       dev-dependencies:
+2025-12-12T18:55:41.9946322Z 228 | |         patterns:
+2025-12-12T18:55:41.9946569Z 229 | |           - "ruff"
+2025-12-12T18:55:41.9946802Z 230 | |           - "mypy"
+2025-12-12T18:55:41.9947044Z 231 | |           - "bandit"
+2025-12-12T18:55:41.9947284Z 232 | |           - "safety"
+2025-12-12T18:55:41.9947538Z 233 | |           - "pytest*"
+2025-12-12T18:55:41.9947789Z 234 | |           - "pre-commit"
+2025-12-12T18:55:41.9948047Z 235 | |           - "semgrep"
+2025-12-12T18:55:41.9948292Z 236 | |           - "py-spy"
+2025-12-12T18:55:41.9948540Z 237 | |       security-tools:
+2025-12-12T18:55:41.9948920Z 238 | |         patterns:
+2025-12-12T18:55:41.9949158Z 239 | |           - "bandit"
+2025-12-12T18:55:41.9949401Z 240 | |           - "safety"
+2025-12-12T18:55:41.9949637Z 241 | |           - "semgrep"
+2025-12-12T18:55:41.9949886Z 242 | |           - "pip-audit"
+2025-12-12T18:55:41.9950120Z 243 | |     reviewers:
+2025-12-12T18:55:41.9950349Z 244 | |       - "gabrielima7"
+2025-12-12T18:55:41.9950572Z 245 | |
+2025-12-12T18:55:41.9950813Z 246 | |   - package-ecosystem: "github-actions"
+2025-12-12T18:55:41.9951122Z 247 | |     directory: "/"
+2025-12-12T18:55:41.9951351Z 248 | |     schedule:
+2025-12-12T18:55:41.9951582Z 249 | |       interval: "weekly"
+2025-12-12T18:55:41.9951819Z 250 | |     groups:
+2025-12-12T18:55:41.9952032Z 251 | |       actions:
+2025-12-12T18:55:41.9952252Z 252 | |         patterns:
+2025-12-12T18:55:41.9952484Z 253 | |           - "*"
+2025-12-12T18:55:41.9952699Z 254 | | '''
+2025-12-12T18:55:41.9952889Z     | |___^
+2025-12-12T18:55:41.9953073Z     |
+2025-12-12T18:55:41.9953349Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9953708Z 
+2025-12-12T18:55:41.9953901Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9954274Z    --> src/stack/config/generators.py:264:12
+2025-12-12T18:55:41.9954552Z     |
+2025-12-12T18:55:41.9954735Z 263 |       """
+2025-12-12T18:55:41.9954966Z 264 |       return '''# Security Policy
+2025-12-12T18:55:41.9955229Z     |  ____________^
+2025-12-12T18:55:41.9955439Z 265 | |
+2025-12-12T18:55:41.9955647Z 266 | | ## Supported Versions
+2025-12-12T18:55:41.9955883Z 267 | |
+2025-12-12T18:55:41.9956210Z 268 | | We prioritize security fixes for the latest version (Rolling Release).
+2025-12-12T18:55:41.9956571Z 269 | |
+2025-12-12T18:55:41.9956790Z 270 | | | Version | Supported          |
+2025-12-12T18:55:41.9957077Z 271 | | | ------- | ------------------ |
+2025-12-12T18:55:41.9957366Z 272 | | | Latest  | :white_check_mark: |
+2025-12-12T18:55:41.9957649Z 273 | | | Older   | :x:                |
+2025-12-12T18:55:41.9957912Z 274 | |
+2025-12-12T18:55:41.9958123Z 275 | | ## Security Features
+2025-12-12T18:55:41.9958354Z 276 | |
+2025-12-12T18:55:41.9958609Z 277 | | This project includes multiple layers of security:
+2025-12-12T18:55:41.9958915Z 278 | |
+2025-12-12T18:55:41.9959168Z 279 | | - **SAST**: Bandit for static security analysis
+2025-12-12T18:55:41.9959562Z 280 | | - **SCA**: Safety/pip-audit for dependency vulnerabilities
+2025-12-12T18:55:41.9959999Z 281 | | - **Secrets**: detect-secrets for preventing credential leaks
+2025-12-12T18:55:41.9960588Z 282 | | - **Type Safety**: Mypy + Pydantic for runtime validation
+2025-12-12T18:55:41.9961038Z 283 | | - **Runtime Guards**: Protection against path traversal and injection
+2025-12-12T18:55:41.9961388Z 284 | |
+2025-12-12T18:55:41.9961611Z 285 | | ## Reporting a Vulnerability
+2025-12-12T18:55:41.9961865Z 286 | |
+2025-12-12T18:55:41.9962147Z 287 | | 1. **DO NOT** create a public issue for security vulnerabilities
+2025-12-12T18:55:41.9962588Z 288 | | 2. Report via the [Security tab](../../security/advisories/new)
+2025-12-12T18:55:41.9962951Z 289 | | 3. Or email the maintainer directly
+2025-12-12T18:55:41.9963226Z 290 | | 4. Include:
+2025-12-12T18:55:41.9963574Z 291 | |    - Description of the vulnerability
+2025-12-12T18:55:41.9963885Z 292 | |    - Steps to reproduce
+2025-12-12T18:55:41.9964152Z 293 | |    - Potential impact
+2025-12-12T18:55:41.9964415Z 294 | |    - Suggested fix (if any)
+2025-12-12T18:55:41.9964664Z 295 | |
+2025-12-12T18:55:41.9964864Z 296 | | ## Response Timeline
+2025-12-12T18:55:41.9965101Z 297 | |
+2025-12-12T18:55:41.9965325Z 298 | | - **Acknowledgment**: Within 48 hours
+2025-12-12T18:55:41.9965647Z 299 | | - **Initial Assessment**: Within 1 week
+2025-12-12T18:55:41.9966065Z 300 | | - **Fix Release**: Depends on severity (critical: ASAP, others: next release)
+2025-12-12T18:55:41.9966439Z 301 | | '''
+2025-12-12T18:55:41.9966626Z     | |___^
+2025-12-12T18:55:41.9966815Z     |
+2025-12-12T18:55:41.9967078Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9967436Z 
+2025-12-12T18:55:41.9967631Z Q001 [*] Single quote multiline found but double quotes preferred
+2025-12-12T18:55:41.9968007Z    --> src/stack/config/generators.py:311:12
+2025-12-12T18:55:41.9968277Z     |
+2025-12-12T18:55:41.9968463Z 310 |       """
+2025-12-12T18:55:41.9968696Z 311 |       return '''# Stack v2.0 EditorConfig
+2025-12-12T18:55:41.9968991Z     |  ____________^
+2025-12-12T18:55:41.9969199Z 312 | | root = true
+2025-12-12T18:55:41.9969406Z 313 | |
+2025-12-12T18:55:41.9969588Z 314 | | [*]
+2025-12-12T18:55:41.9969790Z 315 | | end_of_line = lf
+2025-12-12T18:55:41.9970030Z 316 | | insert_final_newline = true
+2025-12-12T18:55:41.9970313Z 317 | | trim_trailing_whitespace = true
+2025-12-12T18:55:41.9970586Z 318 | | charset = utf-8
+2025-12-12T18:55:41.9970820Z 319 | | indent_style = space
+2025-12-12T18:55:41.9971064Z 320 | | indent_size = 4
+2025-12-12T18:55:41.9971274Z 321 | |
+2025-12-12T18:55:41.9971465Z 322 | | [*.py]
+2025-12-12T18:55:41.9971679Z 323 | | max_line_length = 88
+2025-12-12T18:55:41.9971917Z 324 | |
+2025-12-12T18:55:41.9972126Z 325 | | [*.{yml,yaml,toml,json}]
+2025-12-12T18:55:41.9972385Z 326 | | indent_size = 2
+2025-12-12T18:55:41.9972592Z 327 | |
+2025-12-12T18:55:41.9972784Z 328 | | [Makefile]
+2025-12-12T18:55:41.9973007Z 329 | | indent_style = tab
+2025-12-12T18:55:41.9973228Z 330 | | '''
+2025-12-12T18:55:41.9973417Z     | |___^
+2025-12-12T18:55:41.9973868Z     |
+2025-12-12T18:55:41.9974156Z help: Replace single multiline quotes with double quotes
+2025-12-12T18:55:41.9974397Z 
+2025-12-12T18:55:41.9974504Z E501 Line too long (92 > 88)
+2025-12-12T18:55:41.9974780Z   --> src/stack/config/models.py:44:89
+2025-12-12T18:55:41.9975039Z    |
+2025-12-12T18:55:41.9975370Z 42 |     enable_safety: bool = Field(default=True, description="Enable Safety SCA")
+2025-12-12T18:55:41.9975880Z 43 |     enable_semgrep: bool = Field(default=True, description="Enable Semgrep")
+2025-12-12T18:55:41.9976415Z 44 |     enable_detect_secrets: bool = Field(default=True, description="Enable secret detection")
+2025-12-12T18:55:41.9976886Z    |                                                                                         ^^^^
+2025-12-12T18:55:41.9977260Z 45 |     bandit_severity: Literal["low", "medium", "high"] = Field(
+2025-12-12T18:55:41.9977595Z 46 |         default="low",
+2025-12-12T18:55:41.9977811Z    |
+2025-12-12T18:55:41.9977922Z 
+2025-12-12T18:55:41.9978026Z E501 Line too long (90 > 88)
+2025-12-12T18:55:41.9978298Z    --> src/stack/config/models.py:235:89
+2025-12-12T18:55:41.9978705Z     |
+2025-12-12T18:55:41.9978921Z 233 |         pattern = r"^\d+\.\d+$"
+2025-12-12T18:55:41.9979217Z 234 |         if not re.match(pattern, value):
+2025-12-12T18:55:41.9979644Z 235 |             msg = f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
+2025-12-12T18:55:41.9980064Z     |                                                                                         ^^
+2025-12-12T18:55:41.9980373Z 236 |             raise ValueError(msg)
+2025-12-12T18:55:41.9980622Z     |
+2025-12-12T18:55:41.9980735Z 
+2025-12-12T18:55:41.9981001Z PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable
+2025-12-12T18:55:41.9981433Z    --> src/stack/config/models.py:239:20
+2025-12-12T18:55:41.9981686Z     |
+2025-12-12T18:55:41.9981928Z 238 |         major, minor = map(int, value.split("."))
+2025-12-12T18:55:41.9982269Z 239 |         if major < 3 or (major == 3 and minor < 10):
+2025-12-12T18:55:41.9982571Z     |                    ^
+2025-12-12T18:55:41.9982918Z 240 |             msg = f"Python version {value} is not supported. Minimum is 3.10."
+2025-12-12T18:55:41.9983295Z 241 |             raise ValueError(msg)
+2025-12-12T18:55:41.9983761Z     |
+2025-12-12T18:55:41.9983884Z 
+2025-12-12T18:55:41.9984160Z PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable
+2025-12-12T18:55:41.9984605Z    --> src/stack/config/models.py:239:35
+2025-12-12T18:55:41.9984879Z     |
+2025-12-12T18:55:41.9985148Z 238 |         major, minor = map(int, value.split("."))
+2025-12-12T18:55:41.9985662Z 239 |         if major < 3 or (major == 3 and minor < 10):
+2025-12-12T18:55:41.9985986Z     |                                   ^
+2025-12-12T18:55:41.9986364Z 240 |             msg = f"Python version {value} is not supported. Minimum is 3.10."
+2025-12-12T18:55:41.9986738Z 241 |             raise ValueError(msg)
+2025-12-12T18:55:41.9986994Z     |
+2025-12-12T18:55:41.9987100Z 
+2025-12-12T18:55:41.9987363Z PLR2004 Magic value used in comparison, consider replacing `10` with a constant variable
+2025-12-12T18:55:41.9987811Z    --> src/stack/config/models.py:239:49
+2025-12-12T18:55:41.9988073Z     |
+2025-12-12T18:55:41.9988311Z 238 |         major, minor = map(int, value.split("."))
+2025-12-12T18:55:41.9988655Z 239 |         if major < 3 or (major == 3 and minor < 10):
+2025-12-12T18:55:41.9988972Z     |                                                 ^^
+2025-12-12T18:55:41.9989353Z 240 |             msg = f"Python version {value} is not supported. Minimum is 3.10."
+2025-12-12T18:55:41.9989729Z 241 |             raise ValueError(msg)
+2025-12-12T18:55:41.9989978Z     |
+2025-12-12T18:55:41.9990080Z 
+2025-12-12T18:55:41.9990211Z UP037 [*] Remove quotes from type annotation
+2025-12-12T18:55:41.9990524Z    --> src/stack/config/models.py:270:46
+2025-12-12T18:55:41.9990784Z     |
+2025-12-12T18:55:41.9990998Z 269 |     @model_validator(mode="after")
+2025-12-12T18:55:41.9991356Z 270 |     def validate_config_consistency(self) -> "StackConfig":
+2025-12-12T18:55:41.9991712Z     |                                              ^^^^^^^^^^^^^
+2025-12-12T18:55:41.9992041Z 271 |         """Validate configuration consistency.
+2025-12-12T18:55:41.9992317Z     |
+2025-12-12T18:55:41.9992513Z help: Remove quotes
+2025-12-12T18:55:41.9992647Z 
+2025-12-12T18:55:41.9992853Z SIM102 Use a single `if` statement instead of nested `if` statements
+2025-12-12T18:55:41.9993243Z    --> src/stack/config/models.py:281:9
+2025-12-12T18:55:41.9993621Z     |
+2025-12-12T18:55:41.9993811Z 279 |           """
+2025-12-12T18:55:41.9994134Z 280 |           # If paranoid security, ensure all security tools are enabled
+2025-12-12T18:55:41.9994524Z 281 | /         if self.security.level == "paranoid":
+2025-12-12T18:55:41.9994828Z 282 | |             if not all([
+2025-12-12T18:55:41.9995112Z 283 | |                 self.security.enable_bandit,
+2025-12-12T18:55:41.9995445Z 284 | |                 self.security.enable_safety,
+2025-12-12T18:55:41.9995763Z 285 | |                 self.security.enable_semgrep,
+2025-12-12T18:55:41.9996230Z 286 | |                 self.security.enable_detect_secrets,
+2025-12-12T18:55:41.9996530Z 287 | |             ]):
+2025-12-12T18:55:41.9996747Z     | |_______________^
+2025-12-12T18:55:41.9997094Z 288 |                   msg = "Paranoid security level requires all security tools enabled."
+2025-12-12T18:55:41.9997489Z 289 |                   raise ValueError(msg)
+2025-12-12T18:55:41.9997752Z     |
+2025-12-12T18:55:41.9997973Z help: Combine `if` statements using `and`
+2025-12-12T18:55:41.9998171Z 
+2025-12-12T18:55:41.9998318Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:41.9998637Z   --> src/stack/security/__init__.py:3:1
+2025-12-12T18:55:41.9998900Z    |
+2025-12-12T18:55:41.9999144Z  1 |   """Security package for runtime protection."""
+2025-12-12T18:55:41.9999422Z  2 |
+2025-12-12T18:55:41.9999665Z  3 | / from stack.security.guards import (
+2025-12-12T18:55:41.9999950Z  4 | |     SecurityError,
+2025-12-12T18:55:42.0000206Z  5 | |     guard_command_injection,
+2025-12-12T18:55:42.0000480Z  6 | |     guard_env_variable,
+2025-12-12T18:55:42.0000742Z  7 | |     guard_file_extension,
+2025-12-12T18:55:42.0000997Z  8 | |     guard_path_traversal,
+2025-12-12T18:55:42.0001238Z  9 | | )
+2025-12-12T18:55:42.0001480Z 10 | | from stack.security.validators import (
+2025-12-12T18:55:42.0001778Z 11 | |     validate_email,
+2025-12-12T18:55:42.0002027Z 12 | |     validate_project_name,
+2025-12-12T18:55:42.0002292Z 13 | |     validate_python_version,
+2025-12-12T18:55:42.0002556Z 14 | |     validate_url,
+2025-12-12T18:55:42.0002891Z 15 | | )
+2025-12-12T18:55:42.0003141Z 16 | | from stack.security.sanitizers import (
+2025-12-12T18:55:42.0003443Z 17 | |     sanitize_filename,
+2025-12-12T18:55:42.0003806Z 18 | |     sanitize_path,
+2025-12-12T18:55:42.0004042Z 19 | |     sanitize_string,
+2025-12-12T18:55:42.0004272Z 20 | | )
+2025-12-12T18:55:42.0004459Z    | |_^
+2025-12-12T18:55:42.0004643Z 21 |
+2025-12-12T18:55:42.0004834Z 22 |   __all__ = [
+2025-12-12T18:55:42.0005036Z    |
+2025-12-12T18:55:42.0005241Z help: Organize imports
+2025-12-12T18:55:42.0005390Z 
+2025-12-12T18:55:42.0005562Z UP035 [*] Import from `collections.abc` instead: `Sequence`
+2025-12-12T18:55:42.0005925Z   --> src/stack/security/guards.py:14:1
+2025-12-12T18:55:42.0006183Z    |
+2025-12-12T18:55:42.0006373Z 12 | import re
+2025-12-12T18:55:42.0006596Z 13 | from pathlib import Path
+2025-12-12T18:55:42.0006867Z 14 | from typing import Sequence
+2025-12-12T18:55:42.0007122Z    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0007344Z    |
+2025-12-12T18:55:42.0007567Z help: Import from `collections.abc`
+2025-12-12T18:55:42.0007746Z 
+2025-12-12T18:55:42.0008172Z SIM108 Use ternary operator `resolved = path.resolve() if path.is_absolute() else (base_dir / path).resolve()` instead of `if`-`else`-block
+2025-12-12T18:55:42.0008747Z    --> src/stack/security/guards.py:96:9
+2025-12-12T18:55:42.0009010Z     |
+2025-12-12T18:55:42.0009220Z  94 |       # Resolve the path
+2025-12-12T18:55:42.0009457Z  95 |       try:
+2025-12-12T18:55:42.0009688Z  96 | /         if path.is_absolute():
+2025-12-12T18:55:42.0009989Z  97 | |             resolved = path.resolve()
+2025-12-12T18:55:42.0010264Z  98 | |         else:
+2025-12-12T18:55:42.0010523Z  99 | |             resolved = (base_dir / path).resolve()
+2025-12-12T18:55:42.0010844Z     | |__________________________________________________^
+2025-12-12T18:55:42.0011155Z 100 |       except (OSError, ValueError) as e:
+2025-12-12T18:55:42.0011448Z 101 |           raise SecurityError(
+2025-12-12T18:55:42.0011702Z     |
+2025-12-12T18:55:42.0012157Z help: Replace `if`-`else`-block with `resolved = path.resolve() if path.is_absolute() else (base_dir / path).resolve()`
+2025-12-12T18:55:42.0012562Z 
+2025-12-12T18:55:42.0012753Z SIM102 Use a single `if` statement instead of nested `if` statements
+2025-12-12T18:55:42.0013132Z    --> src/stack/security/guards.py:117:5
+2025-12-12T18:55:42.0013395Z     |
+2025-12-12T18:55:42.0013894Z 116 |       # Check for symlinks if not allowed
+2025-12-12T18:55:42.0014248Z 117 | /     if not allow_symlinks and resolved.exists():
+2025-12-12T18:55:42.0014738Z 118 | |         if resolved.is_symlink():
+2025-12-12T18:55:42.0015018Z     | |_________________________________^
+2025-12-12T18:55:42.0015303Z 119 |               raise SecurityError(
+2025-12-12T18:55:42.0015610Z 120 |                   "Symlinks are not allowed",
+2025-12-12T18:55:42.0015884Z     |
+2025-12-12T18:55:42.0016109Z help: Combine `if` statements using `and`
+2025-12-12T18:55:42.0016301Z 
+2025-12-12T18:55:42.0016406Z E501 Line too long (89 > 88)
+2025-12-12T18:55:42.0016690Z    --> src/stack/security/guards.py:194:89
+2025-12-12T18:55:42.0016957Z     |
+2025-12-12T18:55:42.0017198Z 192 |         # Get just the command name without path
+2025-12-12T18:55:42.0017527Z 193 |         command_name = Path(base_command).name
+2025-12-12T18:55:42.0017975Z 194 |         if command_name not in allowed_commands and base_command not in allowed_commands:
+2025-12-12T18:55:42.0018428Z     |                                                                                         ^
+2025-12-12T18:55:42.0018744Z 195 |             raise SecurityError(
+2025-12-12T18:55:42.0019079Z 196 |                 f"Command not in allowed list: {command_name}",
+2025-12-12T18:55:42.0019376Z     |
+2025-12-12T18:55:42.0019489Z 
+2025-12-12T18:55:42.0019595Z E501 Line too long (91 > 88)
+2025-12-12T18:55:42.0019879Z   --> src/stack/security/sanitizers.py:51:89
+2025-12-12T18:55:42.0020160Z    |
+2025-12-12T18:55:42.0020393Z 49 |     # Remove null bytes and control characters
+2025-12-12T18:55:42.0020827Z 50 |     result = result.replace("\x00", "")
+2025-12-12T18:55:42.0021263Z 51 |     result = "".join(c for c in result if unicodedata.category(c) != "Cc" or c in "\n\r\t")
+2025-12-12T18:55:42.0021701Z    |                                                                                         ^^^
+2025-12-12T18:55:42.0021982Z 52 |
+2025-12-12T18:55:42.0022175Z 53 |     # Handle HTML
+2025-12-12T18:55:42.0022386Z    |
+2025-12-12T18:55:42.0022490Z 
+2025-12-12T18:55:42.0022610Z PLR0912 Too many branches (14 > 12)
+2025-12-12T18:55:42.0022909Z    --> src/stack/security/sanitizers.py:155:5
+2025-12-12T18:55:42.0023181Z     |
+2025-12-12T18:55:42.0023375Z 155 | def sanitize_path(
+2025-12-12T18:55:42.0024345Z     |     ^^^^^^^^^^^^^
+2025-12-12T18:55:42.0024606Z 156 |     path: str | Path,
+2025-12-12T18:55:42.0024849Z 157 |     *,
+2025-12-12T18:55:42.0025041Z     |
+2025-12-12T18:55:42.0025153Z 
+2025-12-12T18:55:42.0025350Z PTH201 [*] Do not pass the current directory explicitly to `Path`
+2025-12-12T18:55:42.0025743Z    --> src/stack/security/sanitizers.py:203:64
+2025-12-12T18:55:42.0026019Z     |
+2025-12-12T18:55:42.0026316Z 201 |         sanitized = Path("/").joinpath(*parts) if parts else Path("/")
+2025-12-12T18:55:42.0026661Z 202 |     else:
+2025-12-12T18:55:42.0026967Z 203 |         sanitized = Path().joinpath(*parts) if parts else Path(".")
+2025-12-12T18:55:42.0027335Z     |                                                                ^^^
+2025-12-12T18:55:42.0027607Z 204 |
+2025-12-12T18:55:42.0027797Z 205 |     # Check depth
+2025-12-12T18:55:42.0028023Z     |
+2025-12-12T18:55:42.0028244Z help: Remove the current directory argument
+2025-12-12T18:55:42.0028443Z 
+2025-12-12T18:55:42.0028636Z PLR5501 [*] Use `elif` instead of `else` then `if`, to reduce indentation
+2025-12-12T18:55:42.0029024Z    --> src/stack/security/sanitizers.py:220:9
+2025-12-12T18:55:42.0029294Z     |
+2025-12-12T18:55:42.0029534Z 218 |                   msg = f"Cannot resolve path: {e}"
+2025-12-12T18:55:42.0029859Z 219 |                   raise ValueError(msg) from e
+2025-12-12T18:55:42.0030150Z 220 | /         else:
+2025-12-12T18:55:42.0030397Z 221 | |             # Make absolute relative to base
+2025-12-12T18:55:42.0030717Z 222 | |             if not sanitized.is_absolute():
+2025-12-12T18:55:42.0031001Z     | |____________^
+2025-12-12T18:55:42.0031243Z 223 |                   sanitized = base / sanitized
+2025-12-12T18:55:42.0031516Z     |
+2025-12-12T18:55:42.0031716Z help: Convert to `elif`
+2025-12-12T18:55:42.0031855Z 
+2025-12-12T18:55:42.0032119Z PLR2004 Magic value used in comparison, consider replacing `128` with a constant variable
+2025-12-12T18:55:42.0032720Z    --> src/stack/security/sanitizers.py:291:22
+2025-12-12T18:55:42.0032998Z     |
+2025-12-12T18:55:42.0033230Z 290 |     # Check length (most DBs limit to 128 chars)
+2025-12-12T18:55:42.0033664Z 291 |     if len(result) > 128:
+2025-12-12T18:55:42.0033923Z     |                      ^^^
+2025-12-12T18:55:42.0034175Z 292 |         result = result[:128]
+2025-12-12T18:55:42.0034420Z     |
+2025-12-12T18:55:42.0034525Z 
+2025-12-12T18:55:42.0034639Z E501 Line too long (166 > 88)
+2025-12-12T18:55:42.0034923Z   --> src/stack/security/validators.py:65:89
+2025-12-12T18:55:42.0035193Z    |
+2025-12-12T18:55:42.0035569Z 63 | …
+2025-12-12T18:55:42.0035771Z 64 | …
+2025-12-12T18:55:42.0036386Z 65 | …owed: letters, numbers{', hyphens' if allow_hyphen else ''}{', underscores' if allow_underscore else ''}"
+2025-12-12T18:55:42.0036909Z    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0037222Z 66 | …
+2025-12-12T18:55:42.0037409Z    |
+2025-12-12T18:55:42.0037512Z 
+2025-12-12T18:55:42.0037772Z PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable
+2025-12-12T18:55:42.0038219Z    --> src/stack/security/validators.py:118:17
+2025-12-12T18:55:42.0038492Z     |
+2025-12-12T18:55:42.0038712Z 116 |         raise ValueError(msg) from e
+2025-12-12T18:55:42.0038973Z 117 |
+2025-12-12T18:55:42.0039168Z 118 |     if major != 3:
+2025-12-12T18:55:42.0039531Z     |                 ^
+2025-12-12T18:55:42.0039833Z 119 |         msg = f"Only Python 3.x is supported, got {major}.x"
+2025-12-12T18:55:42.0040172Z 120 |         raise ValueError(msg)
+2025-12-12T18:55:42.0040414Z     |
+2025-12-12T18:55:42.0040523Z 
+2025-12-12T18:55:42.0040779Z PLR2004 Magic value used in comparison, consider replacing `10` with a constant variable
+2025-12-12T18:55:42.0041220Z    --> src/stack/security/validators.py:122:16
+2025-12-12T18:55:42.0041496Z     |
+2025-12-12T18:55:42.0041712Z 120 |         raise ValueError(msg)
+2025-12-12T18:55:42.0041954Z 121 |
+2025-12-12T18:55:42.0042154Z 122 |     if minor < 10:
+2025-12-12T18:55:42.0042380Z     |                ^^
+2025-12-12T18:55:42.0042691Z 123 |         msg = f"Python 3.{minor} is not supported. Minimum is 3.10"
+2025-12-12T18:55:42.0043040Z 124 |         raise ValueError(msg)
+2025-12-12T18:55:42.0043285Z     |
+2025-12-12T18:55:42.0043390Z 
+2025-12-12T18:55:42.0043769Z PLR2004 Magic value used in comparison, consider replacing `64` with a constant variable
+2025-12-12T18:55:42.0044225Z    --> src/stack/security/validators.py:159:21
+2025-12-12T18:55:42.0044503Z     |
+2025-12-12T18:55:42.0044722Z 157 |     local, domain = email.rsplit("@", 1)
+2025-12-12T18:55:42.0044995Z 158 |
+2025-12-12T18:55:42.0045191Z 159 |     if len(local) > 64:
+2025-12-12T18:55:42.0045440Z     |                     ^^
+2025-12-12T18:55:42.0045727Z 160 |         msg = "Email local part exceeds 64 characters"
+2025-12-12T18:55:42.0046049Z 161 |         raise ValueError(msg)
+2025-12-12T18:55:42.0046296Z     |
+2025-12-12T18:55:42.0046408Z 
+2025-12-12T18:55:42.0046665Z PLR2004 Magic value used in comparison, consider replacing `255` with a constant variable
+2025-12-12T18:55:42.0047114Z    --> src/stack/security/validators.py:163:22
+2025-12-12T18:55:42.0047381Z     |
+2025-12-12T18:55:42.0047586Z 161 |         raise ValueError(msg)
+2025-12-12T18:55:42.0047825Z 162 |
+2025-12-12T18:55:42.0048028Z 163 |     if len(domain) > 255:
+2025-12-12T18:55:42.0048279Z     |                      ^^^
+2025-12-12T18:55:42.0048570Z 164 |         msg = "Email domain exceeds 255 characters"
+2025-12-12T18:55:42.0048876Z 165 |         raise ValueError(msg)
+2025-12-12T18:55:42.0049122Z     |
+2025-12-12T18:55:42.0049227Z 
+2025-12-12T18:55:42.0049424Z SIM102 Use a single `if` statement instead of nested `if` statements
+2025-12-12T18:55:42.0049803Z    --> src/stack/security/validators.py:215:9
+2025-12-12T18:55:42.0050077Z     |
+2025-12-12T18:55:42.0050300Z 213 |           # Check for TLD (at least one dot)
+2025-12-12T18:55:42.0050819Z 214 |           domain = parsed.netloc.split(":")[0]  # Remove port if present
+2025-12-12T18:55:42.0051231Z 215 | /         if "." not in domain or domain.endswith("."):
+2025-12-12T18:55:42.0051581Z 216 | |             # Allow localhost for development
+2025-12-12T18:55:42.0052029Z 217 | |             if domain.lower() not in ("localhost", "127.0.0.1", "::1"):
+2025-12-12T18:55:42.0052436Z     | |_______________________________________________________________________^
+2025-12-12T18:55:42.0052810Z 218 |                   msg = f"URL domain must have a TLD: {domain}"
+2025-12-12T18:55:42.0053141Z 219 |                   raise ValueError(msg)
+2025-12-12T18:55:42.0053409Z     |
+2025-12-12T18:55:42.0053923Z help: Combine `if` statements using `and`
+2025-12-12T18:55:42.0054139Z 
+2025-12-12T18:55:42.0054409Z PLR2004 Magic value used in comparison, consider replacing `65535` with a constant variable
+2025-12-12T18:55:42.0054870Z    --> src/stack/security/validators.py:289:35
+2025-12-12T18:55:42.0055155Z     |
+2025-12-12T18:55:42.0055372Z 287 |         raise ValueError(msg) from e
+2025-12-12T18:55:42.0055629Z 288 |
+2025-12-12T18:55:42.0055854Z 289 |     if port_int < 0 or port_int > 65535:
+2025-12-12T18:55:42.0056143Z     |                                   ^^^^^
+2025-12-12T18:55:42.0056474Z 290 |         msg = f"Port must be between 0 and 65535: {port_int}"
+2025-12-12T18:55:42.0056799Z 291 |         raise ValueError(msg)
+2025-12-12T18:55:42.0057045Z     |
+2025-12-12T18:55:42.0057149Z 
+2025-12-12T18:55:42.0057550Z PLR2004 Magic value used in comparison, consider replacing `1024` with a constant variable
+2025-12-12T18:55:42.0058003Z    --> src/stack/security/validators.py:293:44
+2025-12-12T18:55:42.0058275Z     |
+2025-12-12T18:55:42.0058474Z 291 |         raise ValueError(msg)
+2025-12-12T18:55:42.0058948Z 292 |
+2025-12-12T18:55:42.0059191Z 293 |     if not allow_privileged and port_int < 1024:
+2025-12-12T18:55:42.0059512Z     |                                            ^^^^
+2025-12-12T18:55:42.0059886Z 294 |         msg = f"Privileged ports (< 1024) are not allowed: {port_int}"
+2025-12-12T18:55:42.0060243Z 295 |         raise ValueError(msg)
+2025-12-12T18:55:42.0060519Z     |
+2025-12-12T18:55:42.0060627Z 
+2025-12-12T18:55:42.0060771Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:42.0061094Z  --> src/stack/utils/__init__.py:3:1
+2025-12-12T18:55:42.0061346Z   |
+2025-12-12T18:55:42.0061563Z 1 |   """Utility modules for Stack."""
+2025-12-12T18:55:42.0061815Z 2 |
+2025-12-12T18:55:42.0062099Z 3 | / from stack.utils.logging import get_logger, setup_logging
+2025-12-12T18:55:42.0062552Z 4 | | from stack.utils.subprocess import run_safe_command, SafeCommandResult
+2025-12-12T18:55:42.0063039Z 5 | | from stack.utils.filesystem import safe_read, safe_write, ensure_dir
+2025-12-12T18:55:42.0063632Z   | |____________________________________________________________________^
+2025-12-12T18:55:42.0063988Z 6 |
+2025-12-12T18:55:42.0064181Z 7 |   __all__ = [
+2025-12-12T18:55:42.0064386Z   |
+2025-12-12T18:55:42.0064585Z help: Organize imports
+2025-12-12T18:55:42.0064728Z 
+2025-12-12T18:55:42.0064990Z RUF022 [*] `__all__` is not sorted
+2025-12-12T18:55:42.0065275Z   --> src/stack/utils/__init__.py:7:11
+2025-12-12T18:55:42.0065535Z    |
+2025-12-12T18:55:42.0065844Z  5 |   from stack.utils.filesystem import safe_read, safe_write, ensure_dir
+2025-12-12T18:55:42.0066329Z  6 |
+2025-12-12T18:55:42.0066518Z  7 |   __all__ = [
+2025-12-12T18:55:42.0066732Z    |  ___________^
+2025-12-12T18:55:42.0066958Z  8 | |     "get_logger",
+2025-12-12T18:55:42.0067199Z  9 | |     "setup_logging",
+2025-12-12T18:55:42.0067445Z 10 | |     "run_safe_command",
+2025-12-12T18:55:42.0067704Z 11 | |     "SafeCommandResult",
+2025-12-12T18:55:42.0067949Z 12 | |     "safe_read",
+2025-12-12T18:55:42.0068175Z 13 | |     "safe_write",
+2025-12-12T18:55:42.0068404Z 14 | |     "ensure_dir",
+2025-12-12T18:55:42.0068616Z 15 | | ]
+2025-12-12T18:55:42.0068802Z    | |_^
+2025-12-12T18:55:42.0068982Z    |
+2025-12-12T18:55:42.0069381Z help: Apply an isort-style sorting to `__all__`
+2025-12-12T18:55:42.0069596Z 
+2025-12-12T18:55:42.0069743Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:42.0070074Z   --> src/stack/utils/filesystem.py:8:1
+2025-12-12T18:55:42.0070335Z    |
+2025-12-12T18:55:42.0070520Z  6 |   """
+2025-12-12T18:55:42.0070702Z  7 |
+2025-12-12T18:55:42.0070920Z  8 | / from __future__ import annotations
+2025-12-12T18:55:42.0071192Z  9 | |
+2025-12-12T18:55:42.0071386Z 10 | | import hashlib
+2025-12-12T18:55:42.0071619Z 11 | | import shutil
+2025-12-12T18:55:42.0071839Z 12 | | import tempfile
+2025-12-12T18:55:42.0072086Z 13 | | from pathlib import Path
+2025-12-12T18:55:42.0072347Z 14 | | from typing import Any
+2025-12-12T18:55:42.0072583Z 15 | |
+2025-12-12T18:55:42.0072905Z 16 | | from stack.security.guards import guard_path_traversal, SecurityError
+2025-12-12T18:55:42.0073361Z 17 | | from stack.security.sanitizers import sanitize_filename
+2025-12-12T18:55:42.0073852Z    | |_______________________________________________________^
+2025-12-12T18:55:42.0074144Z    |
+2025-12-12T18:55:42.0074346Z help: Organize imports
+2025-12-12T18:55:42.0074483Z 
+2025-12-12T18:55:42.0074605Z F401 [*] `typing.Any` imported but unused
+2025-12-12T18:55:42.0074916Z   --> src/stack/utils/filesystem.py:14:20
+2025-12-12T18:55:42.0075179Z    |
+2025-12-12T18:55:42.0075372Z 12 | import tempfile
+2025-12-12T18:55:42.0075609Z 13 | from pathlib import Path
+2025-12-12T18:55:42.0075874Z 14 | from typing import Any
+2025-12-12T18:55:42.0076240Z    |                    ^^^
+2025-12-12T18:55:42.0076469Z 15 |
+2025-12-12T18:55:42.0077009Z 16 | from stack.security.guards import guard_path_traversal, SecurityError
+2025-12-12T18:55:42.0077605Z    |
+2025-12-12T18:55:42.0077895Z help: Remove unused import: `typing.Any`
+2025-12-12T18:55:42.0078095Z 
+2025-12-12T18:55:42.0078357Z F401 [*] `stack.security.guards.SecurityError` imported but unused
+2025-12-12T18:55:42.0078746Z   --> src/stack/utils/filesystem.py:16:57
+2025-12-12T18:55:42.0079011Z    |
+2025-12-12T18:55:42.0079291Z 14 | from typing import Any
+2025-12-12T18:55:42.0079570Z 15 |
+2025-12-12T18:55:42.0079960Z 16 | from stack.security.guards import guard_path_traversal, SecurityError
+2025-12-12T18:55:42.0080369Z    |                                                         ^^^^^^^^^^^^^
+2025-12-12T18:55:42.0080727Z 17 | from stack.security.sanitizers import sanitize_filename
+2025-12-12T18:55:42.0081043Z    |
+2025-12-12T18:55:42.0081341Z help: Remove unused import: `stack.security.guards.SecurityError`
+2025-12-12T18:55:42.0081898Z 
+2025-12-12T18:55:42.0082096Z PLR5501 [*] Use `elif` instead of `else` then `if`, to reduce indentation
+2025-12-12T18:55:42.0082471Z   --> src/stack/utils/filesystem.py:49:5
+2025-12-12T18:55:42.0082733Z    |
+2025-12-12T18:55:42.0082937Z 47 |       if base_dir is not None:
+2025-12-12T18:55:42.0083253Z 48 |           path = guard_path_traversal(path, Path(base_dir))
+2025-12-12T18:55:42.0083668Z 49 | /     else:
+2025-12-12T18:55:42.0083915Z 50 | |         # At minimum, prevent obvious traversal
+2025-12-12T18:55:42.0084221Z 51 | |         if ".." in str(path):
+2025-12-12T18:55:42.0084540Z    | |________^
+2025-12-12T18:55:42.0084808Z 52 |               path = guard_path_traversal(path, Path.cwd())
+2025-12-12T18:55:42.0085096Z    |
+2025-12-12T18:55:42.0085361Z help: Convert to `elif`
+2025-12-12T18:55:42.0085507Z 
+2025-12-12T18:55:42.0085680Z PLR0913 Too many arguments in function definition (7 > 5)
+2025-12-12T18:55:42.0086026Z   --> src/stack/utils/filesystem.py:71:5
+2025-12-12T18:55:42.0086444Z    |
+2025-12-12T18:55:42.0086641Z 71 | def safe_write(
+2025-12-12T18:55:42.0086857Z    |     ^^^^^^^^^^
+2025-12-12T18:55:42.0087077Z 72 |     path: Path | str,
+2025-12-12T18:55:42.0087317Z 73 |     content: str,
+2025-12-12T18:55:42.0087527Z    |
+2025-12-12T18:55:42.0087638Z 
+2025-12-12T18:55:42.0087832Z PLR5501 [*] Use `elif` instead of `else` then `if`, to reduce indentation
+2025-12-12T18:55:42.0088297Z    --> src/stack/utils/filesystem.py:110:5
+2025-12-12T18:55:42.0088572Z     |
+2025-12-12T18:55:42.0088913Z 108 |           else:
+2025-12-12T18:55:42.0089562Z 109 |               guard_path_traversal(path, base)
+2025-12-12T18:55:42.0090039Z 110 | /     else:
+2025-12-12T18:55:42.0090410Z 111 | |         if ".." in str(path):
+2025-12-12T18:55:42.0090847Z     | |________^
+2025-12-12T18:55:42.0091440Z 112 |               guard_path_traversal(path, Path.cwd())
+2025-12-12T18:55:42.0091923Z     |
+2025-12-12T18:55:42.0092263Z help: Convert to `elif`
+2025-12-12T18:55:42.0092518Z 
+2025-12-12T18:55:42.0092749Z RUF059 Unpacked variable `fd` is never used
+2025-12-12T18:55:42.0093291Z    --> src/stack/utils/filesystem.py:130:9
+2025-12-12T18:55:42.0094099Z     |
+2025-12-12T18:55:42.0094460Z 128 |     if atomic:
+2025-12-12T18:55:42.0094902Z 129 |         # Write to temp file first, then rename
+2025-12-12T18:55:42.0095481Z 130 |         fd, temp_path = tempfile.mkstemp(
+2025-12-12T18:55:42.0095964Z     |         ^^
+2025-12-12T18:55:42.0096343Z 131 |             dir=path.parent,
+2025-12-12T18:55:42.0097080Z 132 |             prefix=f".{path.name}.",
+2025-12-12T18:55:42.0097596Z     |
+2025-12-12T18:55:42.0098239Z help: Prefix it with an underscore or any other dummy variable pattern
+2025-12-12T18:55:42.0098719Z 
+2025-12-12T18:55:42.0098902Z E501 Line too long (118 > 88)
+2025-12-12T18:55:42.0099368Z   --> src/stack/utils/logging.py:24:89
+2025-12-12T18:55:42.0099812Z    |
+2025-12-12T18:55:42.0100149Z 22 | # Default log format
+2025-12-12T18:55:42.0100843Z 23 | DEFAULT_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+2025-12-12T18:55:42.0102283Z 24 | JSON_FORMAT = '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "logger": "%(name)s", "message": "%(message)s"}'
+2025-12-12T18:55:42.0103388Z    |                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0104016Z    |
+2025-12-12T18:55:42.0104182Z 
+2025-12-12T18:55:42.0104415Z UP037 [*] Remove quotes from type annotation
+2025-12-12T18:55:42.0104946Z   --> src/stack/utils/logging.py:66:39
+2025-12-12T18:55:42.0105409Z    |
+2025-12-12T18:55:42.0105761Z 64 |             self._structured = False
+2025-12-12T18:55:42.0106348Z 65 |
+2025-12-12T18:55:42.0106957Z 66 |     def bind(self, **context: Any) -> "StackLogger":
+2025-12-12T18:55:42.0107520Z    |                                       ^^^^^^^^^^^^^
+2025-12-12T18:55:42.0108014Z 67 |         """Add context to logger.
+2025-12-12T18:55:42.0108444Z    |
+2025-12-12T18:55:42.0108798Z help: Remove quotes
+2025-12-12T18:55:42.0109037Z 
+2025-12-12T18:55:42.0109273Z UP037 [*] Remove quotes from type annotation
+2025-12-12T18:55:42.0109819Z   --> src/stack/utils/logging.py:81:37
+2025-12-12T18:55:42.0110227Z    |
+2025-12-12T18:55:42.0110527Z 79 |         return self
+2025-12-12T18:55:42.0110858Z 80 |
+2025-12-12T18:55:42.0111222Z 81 |     def unbind(self, *keys: str) -> "StackLogger":
+2025-12-12T18:55:42.0111775Z    |                                     ^^^^^^^^^^^^^
+2025-12-12T18:55:42.0112254Z 82 |         """Remove context keys.
+2025-12-12T18:55:42.0112686Z    |
+2025-12-12T18:55:42.0113135Z help: Remove quotes
+2025-12-12T18:55:42.0113358Z 
+2025-12-12T18:55:42.0113779Z PLC0415 `import` should be at the top-level of a file
+2025-12-12T18:55:42.0114355Z    --> src/stack/utils/logging.py:295:5
+2025-12-12T18:55:42.0114803Z     |
+2025-12-12T18:55:42.0115109Z 294 |     """
+2025-12-12T18:55:42.0115516Z 295 |     from contextlib import contextmanager
+2025-12-12T18:55:42.0116030Z     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0116464Z 296 |
+2025-12-12T18:55:42.0116805Z 297 |     @contextmanager
+2025-12-12T18:55:42.0117175Z     |
+2025-12-12T18:55:42.0117347Z 
+2025-12-12T18:55:42.0117644Z TRY400 Use `logging.exception` instead of `logging.error`
+2025-12-12T18:55:42.0118234Z    --> src/stack/utils/logging.py:315:13
+2025-12-12T18:55:42.0118694Z     |
+2025-12-12T18:55:42.0119052Z 313 |           except Exception as e:
+2025-12-12T18:55:42.0119716Z 314 |               duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+2025-12-12T18:55:42.0120574Z 315 | /             logger.error(
+2025-12-12T18:55:42.0121053Z 316 | |                 f"Failed: {operation}",
+2025-12-12T18:55:42.0121608Z 317 | |                 duration_seconds=duration,
+2025-12-12T18:55:42.0122121Z 318 | |                 error=str(e),
+2025-12-12T18:55:42.0122524Z 319 | |             )
+2025-12-12T18:55:42.0122851Z     | |_____________^
+2025-12-12T18:55:42.0123185Z 320 |               raise
+2025-12-12T18:55:42.0123686Z 321 |           finally:
+2025-12-12T18:55:42.0124032Z     |
+2025-12-12T18:55:42.0124359Z help: Replace with `exception`
+2025-12-12T18:55:42.0124624Z 
+2025-12-12T18:55:42.0124836Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:42.0125356Z   --> src/stack/utils/subprocess.py:8:1
+2025-12-12T18:55:42.0125808Z    |
+2025-12-12T18:55:42.0126165Z  6 |   """
+2025-12-12T18:55:42.0126474Z  7 |
+2025-12-12T18:55:42.0126836Z  8 | / from __future__ import annotations
+2025-12-12T18:55:42.0127283Z  9 | |
+2025-12-12T18:55:42.0127612Z 10 | | import shutil
+2025-12-12T18:55:42.0128002Z 11 | | import subprocess
+2025-12-12T18:55:42.0128458Z 12 | | from dataclasses import dataclass, field
+2025-12-12T18:55:42.0128974Z 13 | | from pathlib import Path
+2025-12-12T18:55:42.0129431Z 14 | | from typing import Sequence
+2025-12-12T18:55:42.0129854Z 15 | |
+2025-12-12T18:55:42.0130403Z 16 | | from stack.security.guards import guard_command_injection, SecurityError
+2025-12-12T18:55:42.0131190Z    | |________________________________________________________________________^
+2025-12-12T18:55:42.0131710Z    |
+2025-12-12T18:55:42.0132199Z help: Organize imports
+2025-12-12T18:55:42.0132445Z 
+2025-12-12T18:55:42.0132672Z F401 [*] `dataclasses.field` imported but unused
+2025-12-12T18:55:42.0133222Z   --> src/stack/utils/subprocess.py:12:36
+2025-12-12T18:55:42.0133829Z    |
+2025-12-12T18:55:42.0134143Z 10 | import shutil
+2025-12-12T18:55:42.0134515Z 11 | import subprocess
+2025-12-12T18:55:42.0134951Z 12 | from dataclasses import dataclass, field
+2025-12-12T18:55:42.0135468Z    |                                    ^^^^^
+2025-12-12T18:55:42.0135946Z 13 | from pathlib import Path
+2025-12-12T18:55:42.0136395Z 14 | from typing import Sequence
+2025-12-12T18:55:42.0136800Z    |
+2025-12-12T18:55:42.0137199Z help: Remove unused import: `dataclasses.field`
+2025-12-12T18:55:42.0137557Z 
+2025-12-12T18:55:42.0137840Z UP035 [*] Import from `collections.abc` instead: `Sequence`
+2025-12-12T18:55:42.0138443Z   --> src/stack/utils/subprocess.py:14:1
+2025-12-12T18:55:42.0138896Z    |
+2025-12-12T18:55:42.0139276Z 12 | from dataclasses import dataclass, field
+2025-12-12T18:55:42.0139795Z 13 | from pathlib import Path
+2025-12-12T18:55:42.0140232Z 14 | from typing import Sequence
+2025-12-12T18:55:42.0140631Z    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0140981Z 15 |
+2025-12-12T18:55:42.0141481Z 16 | from stack.security.guards import guard_command_injection, SecurityError
+2025-12-12T18:55:42.0142069Z    |
+2025-12-12T18:55:42.0142395Z help: Import from `collections.abc`
+2025-12-12T18:55:42.0142679Z 
+2025-12-12T18:55:42.0142893Z UP037 [*] Remove quotes from type annotation
+2025-12-12T18:55:42.0143423Z   --> src/stack/utils/subprocess.py:44:33
+2025-12-12T18:55:42.0144100Z    |
+2025-12-12T18:55:42.0144457Z 42 |         return self.returncode == 0
+2025-12-12T18:55:42.0144902Z 43 |
+2025-12-12T18:55:42.0145313Z 44 |     def raise_on_error(self) -> "SafeCommandResult":
+2025-12-12T18:55:42.0145878Z    |                                 ^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0146400Z 45 |         """Raise an exception if command failed.
+2025-12-12T18:55:42.0146883Z    |
+2025-12-12T18:55:42.0147209Z help: Remove quotes
+2025-12-12T18:55:42.0167039Z 
+2025-12-12T18:55:42.0167390Z PLR0913 Too many arguments in function definition (8 > 5)
+2025-12-12T18:55:42.0168041Z    --> src/stack/utils/subprocess.py:100:5
+2025-12-12T18:55:42.0168511Z     |
+2025-12-12T18:55:42.0168858Z 100 | def run_safe_command(
+2025-12-12T18:55:42.0169266Z     |     ^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0169680Z 101 |     command: Sequence[str],
+2025-12-12T18:55:42.0170364Z 102 |     *,
+2025-12-12T18:55:42.0170692Z     |
+2025-12-12T18:55:42.0170871Z 
+2025-12-12T18:55:42.0171134Z PLC0415 `import` should be at the top-level of a file
+2025-12-12T18:55:42.0171721Z    --> src/stack/utils/subprocess.py:141:5
+2025-12-12T18:55:42.0172182Z     |
+2025-12-12T18:55:42.0172493Z 140 |     """
+2025-12-12T18:55:42.0172840Z 141 |     import time
+2025-12-12T18:55:42.0173201Z     |     ^^^^^^^^^^^
+2025-12-12T18:55:42.0173714Z 142 |
+2025-12-12T18:55:42.0174063Z 143 |     # Convert to list
+2025-12-12T18:55:42.0174540Z     |
+2025-12-12T18:55:42.0174705Z 
+2025-12-12T18:55:42.0174990Z S603 `subprocess` call: check for execution of untrusted input
+2025-12-12T18:55:42.0175582Z    --> src/stack/utils/subprocess.py:193:18
+2025-12-12T18:55:42.0176008Z     |
+2025-12-12T18:55:42.0176284Z 192 |     try:
+2025-12-12T18:55:42.0176627Z 193 |         result = subprocess.run(
+2025-12-12T18:55:42.0177038Z     |                  ^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0177440Z 194 |             validated_cmd,
+2025-12-12T18:55:42.0177869Z 195 |             cwd=cwd,
+2025-12-12T18:55:42.0178242Z     |
+2025-12-12T18:55:42.0178415Z 
+2025-12-12T18:55:42.0178744Z PLW2901 `for` loop variable `line` overwritten by assignment target
+2025-12-12T18:55:42.0179396Z    --> src/stack/utils/subprocess.py:332:17
+2025-12-12T18:55:42.0179854Z     |
+2025-12-12T18:55:42.0180223Z 330 |             # Return first non-empty line
+2025-12-12T18:55:42.0180784Z 331 |             for line in result.stdout.split("\n"):
+2025-12-12T18:55:42.0181472Z 332 |                 line = line.strip()
+2025-12-12T18:55:42.0181937Z     |                 ^^^^
+2025-12-12T18:55:42.0182325Z 333 |                 if line:
+2025-12-12T18:55:42.0182740Z 334 |                     return line
+2025-12-12T18:55:42.0183148Z     |
+2025-12-12T18:55:42.0183330Z 
+2025-12-12T18:55:42.0183749Z TRY300 Consider moving this statement to an `else` block
+2025-12-12T18:55:42.0184354Z    --> src/stack/utils/subprocess.py:335:9
+2025-12-12T18:55:42.0184805Z     |
+2025-12-12T18:55:42.0185140Z 333 |                 if line:
+2025-12-12T18:55:42.0185552Z 334 |                     return line
+2025-12-12T18:55:42.0185987Z 335 |         return None
+2025-12-12T18:55:42.0186363Z     |         ^^^^^^^^^^^
+2025-12-12T18:55:42.0186875Z 336 |     except (SecurityError, subprocess.SubprocessError):
+2025-12-12T18:55:42.0187433Z 337 |         return None
+2025-12-12T18:55:42.0187811Z     |
+2025-12-12T18:55:42.0187987Z 
+2025-12-12T18:55:42.0188202Z E902 No such file or directory (os error 2)
+2025-12-12T18:55:42.0188683Z --> stack.py:1:1
+2025-12-12T18:55:42.0188899Z 
+2025-12-12T18:55:42.0189116Z ARG002 Unused method argument: `tmp_path`
+2025-12-12T18:55:42.0189628Z    --> tests/test_config_models.py:131:44
+2025-12-12T18:55:42.0190076Z     |
+2025-12-12T18:55:42.0190456Z 129 |             StackConfig(python_version="2.7")
+2025-12-12T18:55:42.0190931Z 130 |
+2025-12-12T18:55:42.0191425Z 131 |     def test_path_traversal_rejected(self, tmp_path: Path) -> None:
+2025-12-12T18:55:42.0192079Z     |                                            ^^^^^^^^
+2025-12-12T18:55:42.0192507Z 132 |         """Test path traversal in project_dir is rejected."""
+2025-12-12T18:55:42.0192937Z 133 |         with pytest.raises(ValidationError, match="Path traversal"):
+2025-12-12T18:55:42.0193300Z     |
+2025-12-12T18:55:42.0193412Z 
+2025-12-12T18:55:42.0193920Z SIM117 Use a single `with` statement with multiple contexts instead of nested `with` statements
+2025-12-12T18:55:42.0194395Z   --> tests/test_secure_system.py:64:5
+2025-12-12T18:55:42.0194662Z    |
+2025-12-12T18:55:42.0194903Z 62 |       service = UserService(repository)
+2025-12-12T18:55:42.0195200Z 63 |       user_id = uuid4()
+2025-12-12T18:55:42.0195481Z 64 | /     with caplog.at_level(logging.WARNING):
+2025-12-12T18:55:42.0195848Z 65 | |         with pytest.raises(UserNotFoundError) as exc_info:
+2025-12-12T18:55:42.0196211Z    | |__________________________________________________________^
+2025-12-12T18:55:42.0196535Z 66 |               service.get_user(user_id)
+2025-12-12T18:55:42.0196950Z    |
+2025-12-12T18:55:42.0197160Z help: Combine `with` statements
+2025-12-12T18:55:42.0197327Z 
+2025-12-12T18:55:42.0197599Z RUF043 Pattern passed to `match=` contains metacharacters but is neither escaped nor raw
+2025-12-12T18:55:42.0198053Z   --> tests/test_security_validators.py:69:46
+2025-12-12T18:55:42.0198335Z    |
+2025-12-12T18:55:42.0198558Z 67 |             validate_python_version("3.9")
+2025-12-12T18:55:42.0198832Z 68 |
+2025-12-12T18:55:42.0199110Z 69 |         with pytest.raises(ValueError, match="Only Python 3.x"):
+2025-12-12T18:55:42.0199471Z    |                                              ^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0199775Z 70 |             validate_python_version("2.7")
+2025-12-12T18:55:42.0200049Z    |
+2025-12-12T18:55:42.0200344Z help: Use a raw string or `re.escape()` to make the intention explicit
+2025-12-12T18:55:42.0200602Z 
+2025-12-12T18:55:42.0200740Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:42.0201060Z  --> tests/test_stack_script.py:1:1
+2025-12-12T18:55:42.0201316Z   |
+2025-12-12T18:55:42.0201501Z 1 | / import sys
+2025-12-12T18:55:42.0201723Z 2 | | import subprocess
+2025-12-12T18:55:42.0201971Z 3 | | from pathlib import Path
+2025-12-12T18:55:42.0202258Z 4 | | from unittest.mock import patch, MagicMock
+2025-12-12T18:55:42.0202536Z 5 | |
+2025-12-12T18:55:42.0202726Z 6 | | import pytest
+2025-12-12T18:55:42.0202939Z   | |_____________^
+2025-12-12T18:55:42.0203135Z 7 |
+2025-12-12T18:55:42.0203905Z 8 |   # Adiciona o diretório raiz ao path para que o `stack_bootstrapper` possa ser importado
+2025-12-12T18:55:42.0204343Z   |
+2025-12-12T18:55:42.0204542Z help: Organize imports
+2025-12-12T18:55:42.0204694Z 
+2025-12-12T18:55:42.0204837Z I001 [*] Import block is un-sorted or un-formatted
+2025-12-12T18:55:42.0205158Z   --> tests/test_stack_script.py:11:1
+2025-12-12T18:55:42.0205427Z    |
+2025-12-12T18:55:42.0205696Z  9 | sys.path.insert(0, str(Path(__file__).parent.parent))
+2025-12-12T18:55:42.0206017Z 10 |
+2025-12-12T18:55:42.0206242Z 11 | import stack_bootstrapper as stack
+2025-12-12T18:55:42.0206538Z    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0206780Z    |
+2025-12-12T18:55:42.0206976Z help: Organize imports
+2025-12-12T18:55:42.0207121Z 
+2025-12-12T18:55:42.0207302Z RUF005 Consider `["stack.py", *args]` instead of concatenation
+2025-12-12T18:55:42.0207660Z   --> tests/test_stack_script.py:32:36
+2025-12-12T18:55:42.0207923Z    |
+2025-12-12T18:55:42.0208129Z 30 | def run_main_with_args(args):
+2025-12-12T18:55:42.0208611Z 31 |     """Helper para rodar a função main do script com argumentos específicos."""
+2025-12-12T18:55:42.0209072Z 32 |     with patch.object(sys, "argv", ["stack.py"] + args):
+2025-12-12T18:55:42.0209409Z    |                                    ^^^^^^^^^^^^^^^^^^^
+2025-12-12T18:55:42.0209695Z 33 |         stack.main()
+2025-12-12T18:55:42.0209914Z    |
+2025-12-12T18:55:42.0210136Z help: Replace with `["stack.py", *args]`
+2025-12-12T18:55:42.0210326Z 
+2025-12-12T18:55:42.0210430Z E501 Line too long (92 > 88)
+2025-12-12T18:55:42.0210708Z   --> tests/test_stack_script.py:66:89
+2025-12-12T18:55:42.0210969Z    |
+2025-12-12T18:55:42.0211254Z 64 |     # Verifica se o novo arquivo também foi criado
+2025-12-12T18:55:42.0211569Z 65 |     assert dummy_file.exists()
+2025-12-12T18:55:42.0212075Z 66 |     assert "pre-commit-hooks" in dummy_file.read_text()  # Verifica conteúdo do novo arquivo
+2025-12-12T18:55:42.0212544Z    |                                                                                         ^^^^
+2025-12-12T18:55:42.0212628Z    |
+2025-12-12T18:55:42.0212646Z 
+2025-12-12T18:55:42.0212787Z ARG001 Unused function argument: `monkeypatch`
+2025-12-12T18:55:42.0212917Z    --> tests/test_stack_script.py:150:47
+2025-12-12T18:55:42.0213001Z     |
+2025-12-12T18:55:42.0213190Z 150 | def test_optional_dependencies_flag(tmp_path, monkeypatch):
+2025-12-12T18:55:42.0213315Z     |                                               ^^^^^^^^^^^
+2025-12-12T18:55:42.0213402Z 151 |     """
+2025-12-12T18:55:42.0213844Z 152 |     Verifica se a flag --install-runtime-deps controla a instalação de dependências.
+2025-12-12T18:55:42.0214062Z     |
+2025-12-12T18:55:42.0214078Z 
+2025-12-12T18:55:42.0214218Z ARG001 Unused function argument: `monkeypatch`
+2025-12-12T18:55:42.0214341Z    --> tests/test_stack_script.py:170:46
+2025-12-12T18:55:42.0214424Z     |
+2025-12-12T18:55:42.0214611Z 170 | def test_install_runtime_deps_flag(tmp_path, monkeypatch):
+2025-12-12T18:55:42.0214733Z     |                                              ^^^^^^^^^^^
+2025-12-12T18:55:42.0214821Z 171 |     """
+2025-12-12T18:55:42.0215132Z 172 |     Verifica se --install-runtime-deps instala as dependências de produção.
+2025-12-12T18:55:42.0215215Z     |
+2025-12-12T18:55:42.0215224Z 
+2025-12-12T18:55:42.0215505Z SIM117 Use a single `with` statement with multiple contexts instead of nested `with` statements
+2025-12-12T18:55:42.0215631Z    --> tests/test_stack_script.py:178:5
+2025-12-12T18:55:42.0215713Z     |
+2025-12-12T18:55:42.0215900Z 177 |       # Mock platform.system to avoid subprocess issues on Windows
+2025-12-12T18:55:42.0216141Z 178 | /     with patch("stack_bootstrapper.platform.system", return_value="Linux"):
+2025-12-12T18:55:42.0216291Z 179 | |         with patch("subprocess.run") as mock_run:
+2025-12-12T18:55:42.0216411Z     | |_________________________________________________^
+2025-12-12T18:55:42.0216601Z 180 |               mock_run.return_value = subprocess.CompletedProcess([], 0)
+2025-12-12T18:55:42.0216767Z 181 |               run_main_with_args(["--install-runtime-deps"])
+2025-12-12T18:55:42.0216966Z     |
+2025-12-12T18:55:42.0217084Z help: Combine `with` statements
+2025-12-12T18:55:42.0217094Z 
+2025-12-12T18:55:42.0217207Z E501 Line too long (96 > 88)
+2025-12-12T18:55:42.0217326Z    --> tests/test_stack_script.py:191:89
+2025-12-12T18:55:42.0217409Z     |
+2025-12-12T18:55:42.0217578Z 189 |                 and any("pydantic" in str(arg) for arg in call[0][0])
+2025-12-12T18:55:42.0217674Z 190 |             ]
+2025-12-12T18:55:42.0217938Z 191 |             assert len(poetry_add_calls) > 0, "Poetry add with pydantic should have been called"
+2025-12-12T18:55:42.0218085Z     |                                                                                         ^^^^^^^^
+2025-12-12T18:55:42.0218172Z     |
+2025-12-12T18:55:42.0218181Z 
+2025-12-12T18:55:42.0218335Z PLC0415 `import` should be at the top-level of a file
+2025-12-12T18:55:42.0218450Z    --> tests/test_stack_script.py:206:5
+2025-12-12T18:55:42.0218537Z     |
+2025-12-12T18:55:42.0218761Z 205 |     # Verifica se a versão do Python está na configuração
+2025-12-12T18:55:42.0218865Z 206 |     import sys
+2025-12-12T18:55:42.0218953Z     |     ^^^^^^^^^^
+2025-12-12T18:55:42.0219178Z 207 |     expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+2025-12-12T18:55:42.0219356Z 208 |     assert f'python_version = "{expected_version}"' in content
+2025-12-12T18:55:42.0219437Z     |
+2025-12-12T18:55:42.0219446Z 
+2025-12-12T18:55:42.0219541Z Found 76 errors.
+2025-12-12T18:55:42.0219836Z [*] 34 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
+2025-12-12T18:55:42.0229510Z ##[error]Process completed with exit code 1.
+2025-12-12T18:55:42.0332781Z Post job cleanup.
+2025-12-12T18:55:42.1293862Z [command]/usr/bin/git version
+2025-12-12T18:55:42.1329214Z git version 2.52.0
+2025-12-12T18:55:42.1374643Z Temporarily overriding HOME='/home/runner/work/_temp/29677966-8a0a-4dbc-967c-dbc1f73dd9a4' before making global git config changes
+2025-12-12T18:55:42.1376131Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-12T18:55:42.1389485Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Stack/Stack
+2025-12-12T18:55:42.1675714Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-12T18:55:42.1713327Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-12T18:55:42.3103224Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-12T18:55:42.3128802Z http.https://github.com/.extraheader
+2025-12-12T18:55:42.3141187Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-12T18:55:42.3172603Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-12T18:55:42.3395005Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-12T18:55:42.3423820Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-12T18:55:42.3744630Z Cleaning up orphan processes

@@ -27,7 +27,7 @@ def generate_pyproject_config(config: StackConfig) -> str:
     target_version = config.to_target_version()
     python_version = config.python_version
 
-    return f'''
+    return f"""
 # --- Stack v2.0 Quality Configuration ---
 [tool.ruff]
 line-length = 88
@@ -108,7 +108,7 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
 ]
-'''
+"""
 
 
 def generate_pre_commit_config(config: StackConfig) -> str:
@@ -125,44 +125,44 @@ def generate_pre_commit_config(config: StackConfig) -> str:
 
     if config.security.enable_bandit:
         severity = config.security.bandit_severity[0].upper()
-        security_hooks += f'''
+        security_hooks += f"""
   - repo: https://github.com/PyCQA/bandit
     rev: '1.8.0'
     hooks:
       - id: bandit
         args: ["-r", ".", "-l{severity}"]
-'''
+"""
 
     if config.security.enable_safety:
-        security_hooks += '''
+        security_hooks += """
   - repo: https://github.com/pyupio/safety
     rev: '3.2.11'
     hooks:
       - id: safety
         args: ["check", "--json"]
-'''
+"""
 
     if config.security.enable_semgrep:
-        security_hooks += '''
+        security_hooks += """
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
     hooks:
       - id: semgrep
         args: ['--config=auto']
-'''
+"""
 
     if config.security.enable_detect_secrets:
-        security_hooks += '''
+        security_hooks += """
   - repo: https://github.com/Yelp/detect-secrets
     rev: 'v1.5.0'
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-'''
+"""
 
     # Add pip-audit for paranoid mode
     if config.security.level == "paranoid":
-        security_hooks += '''
+        security_hooks += """
   - repo: https://github.com/trailofbits/pip-audit
     rev: 'v2.7.3'
     hooks:
@@ -177,9 +177,9 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     rev: 'v2.3.3'
     hooks:
       - id: tryceratops
-'''
+"""
 
-    return f'''# Stack v2.0 Pre-commit Configuration
+    return f"""# Stack v2.0 Pre-commit Configuration
 # Security Level: {config.security.level}
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -205,7 +205,7 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-all, pydantic]
-{security_hooks}'''
+{security_hooks}"""
 
 
 def generate_dependabot_config() -> str:
@@ -215,7 +215,7 @@ def generate_dependabot_config() -> str:
         Dependabot configuration YAML string.
 
     """
-    return '''# Stack v2.0 Dependabot Configuration
+    return """# Stack v2.0 Dependabot Configuration
 version: 2
 updates:
   - package-ecosystem: "pip"
@@ -251,7 +251,7 @@ updates:
       actions:
         patterns:
           - "*"
-'''
+"""
 
 
 def generate_security_policy() -> str:
@@ -261,7 +261,7 @@ def generate_security_policy() -> str:
         Security policy markdown string.
 
     """
-    return '''# Security Policy
+    return """# Security Policy
 
 ## Supported Versions
 
@@ -298,7 +298,7 @@ This project includes multiple layers of security:
 - **Acknowledgment**: Within 48 hours
 - **Initial Assessment**: Within 1 week
 - **Fix Release**: Depends on severity (critical: ASAP, others: next release)
-'''
+"""
 
 
 def generate_editorconfig() -> str:
@@ -308,7 +308,7 @@ def generate_editorconfig() -> str:
         EditorConfig content string.
 
     """
-    return '''# Stack v2.0 EditorConfig
+    return """# Stack v2.0 EditorConfig
 root = true
 
 [*]
@@ -327,7 +327,7 @@ indent_size = 2
 
 [Makefile]
 indent_style = tab
-'''
+"""
 
 
 def write_config_file(
