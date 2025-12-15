@@ -96,16 +96,18 @@ ignore = ["D203", "D212", "D213", "D416", "D417", "B905", "TRY003"]
 max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
-# Tests: allow asserts, skip docs, magic values, unused args, long lines
-"tests/**/*.py" = ["S101", "D", "PLR2004", "ARG001", "ARG002", "SIM117", "RUF043", "PLC0415", "E501"]
+# Tests: allow asserts, skip docs, magic values, unused args, long lines, shadowing builtins
+"tests/**/*.py" = ["S101", "D", "PLR2004", "ARG001", "ARG002", "SIM117", "RUF043", "PLC0415", "E501", "A004", "TRY301", "UP024"]
 # Stack bootstrapper: allow print, long lines, complex branches, docstring style, unused args
 "stack_bootstrapper.py" = ["T201", "E501", "PLR0912", "TRY300", "S603", "D205", "ARG001"]
-# Utils: allow too many args for complex functions, subprocess inspection
-"src/stack/utils/*.py" = ["PLR0913", "S603", "TRY300"]
+# Utils: allow too many args, subprocess, random for jitter
+"src/stack/utils/*.py" = ["PLR0913", "S603", "TRY300", "S311", "TRY400"]
 # Config generators: allow long lines in generated content
 "src/stack/config/generators.py" = ["E501"]
 # Sanitizers: allow many branches for complex validation logic
 "src/stack/security/sanitizers.py" = ["PLR0912"]
+# Decorators: allow inline imports for lazy loading, unused signal args, D401 imperative mood
+"src/stack/security/decorators.py" = ["PLC0415", "ARG001", "D401"]
 
 [tool.ruff.format]
 quote-style = "double"
