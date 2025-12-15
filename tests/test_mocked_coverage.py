@@ -11,12 +11,12 @@ import pytest
 class TestLoggingStructlogBranches:
     """Tests for structlog branches in logging module."""
 
-    def test_has_structlog_false(self) -> None:
-        """Verify that HAS_STRUCTLOG is False when structlog not installed."""
+    def test_has_structlog_true_when_installed(self) -> None:
+        """Verify that HAS_STRUCTLOG is True when structlog is installed."""
         from stack.utils.logging import HAS_STRUCTLOG
 
-        # structlog is not installed in test environment
-        assert HAS_STRUCTLOG is False
+        # structlog is now installed in test environment
+        assert HAS_STRUCTLOG is True
 
     @patch("stack.utils.logging.HAS_STRUCTLOG", True)
     def test_stack_logger_with_structured_mock(self) -> None:
