@@ -1,115 +1,82 @@
-# 🐍 Python Stack: Performance, Security & Integrity Bootstrapper
+<div align="center">
 
-[![Stack CI](https://github.com/gabrielima7/stack/workflows/Stack%20CI/badge.svg)](https://github.com/gabrielima7/stack/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+# ⚡ Stack
+### The Modern Python Foundation
 
-Este projeto fornece um script "Zero-to-Hero" que configura um ambiente de desenvolvimento Python completo em segundos. Ele automatiza a instalação e configuração de um conjunto de ferramentas de alta performance, segurança e qualidade, permitindo que você foque apenas em codificar.
+[![CI](https://github.com/gabrielima7/Stack/actions/workflows/ci.yml/badge.svg)](https://github.com/gabrielima7/Stack/actions)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-000000)](https://github.com/astral-sh/ruff)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## ✨ A Stack
+*Launch secure, high-performance Python applications in seconds.*
 
-O script `stack.py` instala e configura um ecossistema de ferramentas cuidadosamente selecionadas para garantir a máxima eficiência e robustez do seu projeto.
+[Features](#-features) • [Quick Start](#-quick-start) • [Structure](#-project-structure) • [Contributing](#-contributing)
 
-| Categoria             | Ferramenta                                | Propósito                                                                      |
-| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
-| 🚀 **Runtime**        | `Pydantic V2`                             | Validação de dados de alta performance, parsing e serialização com tipagem.    |
-|                       | `Orjson`                                  | A biblioteca de serialização JSON mais rápida para Python.                     |
-|                       | `Uvloop`                                  | Implementação ultra-rápida do event loop do `asyncio` (apenas para Linux/macOS). |
-| 🛡️ **Qualidade & Seg.** | `Ruff`                                    | O linter e formatador mais rápido para Python, escrito em Rust.                |
-|                       | `Mypy`                                    | Checagem de tipagem estática para um código mais limpo e sem bugs.             |
-|                       | `Bandit`                                  | Análise Estática de Segurança (SAST) para encontrar vulnerabilidades comuns.   |
-|                       | `Safety`                                  | Análise de Composição de Software (SCA) para verificar dependências inseguras. |
-|                       | `Semgrep`                                 | Ferramenta de análise estática moderna para encontrar bugs e aplicar padrões.  |
-|                       | `Pytest` + `pytest-cov`                   | Framework de testes poderoso com medição de cobertura de código.               |
-| 🏗️ **Infraestrutura**  | `Poetry`                                  | Gestão de dependências e ambientes virtuais de forma declarativa e robusta.    |
-|                       | `Pre-commit`                              | Framework para gerenciar e manter ganchos Git de pré-commit.                   |
-|                       | `Dependabot`                              | Automação para manter as dependências sempre atualizadas e seguras.            |
+</div>
 
-## 🚀 Quick Start
+---
 
-### Pré-requisitos
+## 🚀 Features
 
-- **Python 3.10+**
-- **Poetry**: Recomenda-se a instalação via `pipx` para isolamento (`pipx install poetry`). O script verifica automaticamente se ele está disponível.
+Stack provides a battle-tested foundation for production-grade Python projects, combining speed, security, and developer experience.
 
-### Instalação
+- **🛡️ Security First**: Built-in defenses against path traversal, command injection, and more.
+- **⚡ High Performance**: Optimized with `uvloop`, `orjson`, and `Pydantic v2`.
+- **🔧 Developer Experience**: Pre-configured `Ruff`, `Mypy`, and `Poetry` for seamless workflows.
+- **🏗️ Robust Architecture**: Solid patterns for logging, metrics, retry logic, and circuit breakers.
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/gabrielima7/Stack.git
-    cd stack
-    ```
+## 🏁 Quick Start
 
-2.  **Execute o script:**
-    O script irá configurar o Poetry, instalar todas as dependências e gerar os arquivos de configuração.
-    ```bash
-    python3 stack.py
-    ```
+Get your environment up and running in moments.
 
-3.  **Ative o ambiente virtual:**
-    ```bash
-    poetry shell
-    ```
+### Prerequisites
+- Python 3.10+
+- [Poetry](https://python-poetry.org/)
 
-Pronto! Seu ambiente está configurado e pronto para uso.
+### Installation
 
-## CLI e Opções Avançadas
-
-O script possui uma interface de linha de comando para dar a você controle total sobre a execução:
-
--   `--dry-run`: Simula a execução sem alterações.
--   `--force`: Sobrescreve arquivos de configuração existentes sem criar backup.
--   `--verbose`: Exibe logs detalhados.
--   `--install-runtime-deps`: Instala dependências de produção opcionais (pydantic, orjson, uvloop).
-
-**Exemplo:**
 ```bash
-# Simular setup sem fazer mudanças
-python3 stack.py --dry-run
-
-# Setup completo com dependências de runtime
-python3 stack.py --install-runtime-deps
-
-# Setup verboso com logs detalhados
-python3 stack.py --verbose
+git clone https://github.com/gabrielima7/Stack.git
+cd Stack
+poetry install
 ```
 
+### Running Tests
+Ensure everything is working correctly:
 
-## Desenvolvimento e Testes
+```bash
+poetry run pytest
+```
 
-O projeto inclui uma suíte de testes própria (`tests/`) e um pipeline de CI que valida o script a cada commit.
+## 📂 Project Structure
 
-## 🤖 Automação Inteligente
+A clean, opinionated structure designed for scalability.
 
-O `stack.py` foi projetado para ser o mais inteligente e autônomo possível:
+```text
+Stack/
+├── src/stack/
+│   ├── config/       # Configuration management
+│   ├── security/     # Guards, sanitizers, and validators
+│   └── utils/        # Resilient utilities (filesystem, subprocess, etc.)
+├── tests/            # Comprehensive test suite (97% coverage)
+└── pyproject.toml    # Modern dependency management
+```
 
--   **Detecção de Sistema Operacional:** O script verifica automaticamente o seu SO e instala o `uvloop` apenas em ambientes Linux e macOS, onde é compatível.
--   **Inicialização do Git:** Detecta se o Git já foi inicializado e executa `git init` automaticamente se necessário.
--   **Estrutura de Projeto:** Cria automaticamente a estrutura recomendada com pastas `src/`, `tests/`, `docs/` e arquivos de exemplo.
--   **Geração Automática de Configuração:** Todos os arquivos de configuração são gerados e pré-configurados com padrões rigorosos:
-    -   `pyproject.toml` (com configurações para Ruff, Mypy e Pytest)
-    -   `.pre-commit-config.yaml` (com hooks para Ruff, Mypy, Bandit, Safety, Semgrep e detect-secrets)
-    -   `.github/dependabot.yml` (com automação de atualização diária para `pip` e `GitHub Actions`)
-    -   `SECURITY.md` (com uma política de segurança padrão)
-    -   `.editorconfig` (para consistência entre editores)
-    -   `Makefile` (com comandos de desenvolvimento comuns)
--   **Versão Python Dinâmica:** Detecta automaticamente a versão do Python em uso e configura o Mypy adequadamente.
--   **Validação Pós-Setup:** Verifica se tudo foi configurado corretamente após a execução.
--   **Idempotente e Seguro:** O script pode ser executado várias vezes. Por padrão, ele cria backups (`.bak`) de arquivos existentes antes de sobrescrevê-los para evitar perda de dados.
+## 🛠️ Built With
 
-## 📚 Documentação Adicional
+The best-in-class tools powering your stack:
 
-- [**Contributing Guide**](CONTRIBUTING.md) - Como contribuir para o projeto
-- [**Changelog**](CHANGELOG.md) - Histórico de versões e mudanças
-- [**Security Policy**](SECURITY.md) - Política de segurança e reporte de vulnerabilidades
-- [**License**](LICENSE) - Licença MIT
+| Core | Quality |
+|------|---------|
+| **Pydantic V2** | **Ruff** (Linting & Formatting) |
+| **Orjson** | **Mypy** (Static Typing) |
+| **Uvloop** | **Bandit** (Security Analysis) |
+| **Structlog** | **Pytest** (Testing Framework) |
 
-## 🤝 Contribuindo
+## 🤝 Contributing
 
-Contribuições são bem-vindas! Veja nosso [guia de contribuição](CONTRIBUTING.md) para mais detalhes.
+We welcome contributions! Please check our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## 📝 Licença
+## 📝 License
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
+This project is open-sourced under the [MIT License](LICENSE).
