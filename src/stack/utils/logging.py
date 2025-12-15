@@ -15,6 +15,7 @@ from typing import Any, Literal
 
 try:
     import structlog
+
     HAS_STRUCTLOG = True
 except ImportError:
     HAS_STRUCTLOG = False
@@ -296,6 +297,7 @@ def log_operation(
         ...     logger.info("Setting up environment")
 
     """
+
     @contextmanager
     def _log_context() -> Any:
         nonlocal logger

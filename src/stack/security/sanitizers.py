@@ -14,6 +14,7 @@ from pathlib import Path
 # Constants to avoid magic values (PLR2004)
 MAX_SQL_IDENTIFIER_LENGTH = 128
 
+
 def sanitize_string(
     value: str,
     *,
@@ -129,9 +130,28 @@ def sanitize_filename(
 
     # Handle reserved names (Windows)
     reserved_names = {
-        "CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+        "CON",
+        "PRN",
+        "AUX",
+        "NUL",
+        "COM1",
+        "COM2",
+        "COM3",
+        "COM4",
+        "COM5",
+        "COM6",
+        "COM7",
+        "COM8",
+        "COM9",
+        "LPT1",
+        "LPT2",
+        "LPT3",
+        "LPT4",
+        "LPT5",
+        "LPT6",
+        "LPT7",
+        "LPT8",
+        "LPT9",
     }
 
     if safe_stem.upper() in reserved_names:

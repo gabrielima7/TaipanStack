@@ -86,7 +86,9 @@ class TestSanitizersEmptyParts:
         from stack.security.sanitizers import sanitize_filename
 
         # Reserved name with just dots
-        result = sanitize_filename("....",)
+        result = sanitize_filename(
+            "....",
+        )
         assert result == "unnamed"
 
     def test_sanitize_path_base_dir_constraint(self, tmp_path: Path) -> None:

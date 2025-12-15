@@ -239,8 +239,7 @@ class StackConfig(BaseModel):
         pattern = r"^\d+\.\d+$"
         if not re.match(pattern, value):
             msg = (
-                f"Python version '{value}' is invalid. "
-                "Use format 'X.Y' (e.g., '3.12')."
+                f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
             )
             raise ValueError(msg)
 
@@ -293,12 +292,14 @@ class StackConfig(BaseModel):
 
         """
         # If paranoid security, ensure all security tools are enabled
-        all_tools_enabled = all([
-            self.security.enable_bandit,
-            self.security.enable_safety,
-            self.security.enable_semgrep,
-            self.security.enable_detect_secrets,
-        ])
+        all_tools_enabled = all(
+            [
+                self.security.enable_bandit,
+                self.security.enable_safety,
+                self.security.enable_semgrep,
+                self.security.enable_detect_secrets,
+            ]
+        )
         if self.security.level == "paranoid" and not all_tools_enabled:
             msg = "Paranoid security level requires all security tools enabled."
             raise ValueError(msg)

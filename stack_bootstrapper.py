@@ -25,6 +25,7 @@ SECURITY_MD_PATH = Path("SECURITY.md")
 
 # --- Funções de Utilidade ---
 
+
 def _log(message: str, args: argparse.Namespace, is_verbose: bool = False) -> None:
     """Função de log centralizada que respeita os modos dry-run e verbose."""
     if is_verbose and not args.verbose:
@@ -34,6 +35,7 @@ def _log(message: str, args: argparse.Namespace, is_verbose: bool = False) -> No
 def _handle_error(message: str) -> NoReturn:
     """Exibe uma mensagem de erro e encerra o script."""
     sys.exit(1)
+
 
 def _run_command(
     command: list[str], args: argparse.Namespace, capture_output: bool = False
@@ -54,16 +56,20 @@ def _run_command(
         return result
     except FileNotFoundError:
         # A verificação de Poetry é tratada separadamente, então este é um erro inesperado.
-        _handle_error(f"Comando '{command[0]}' não encontrado. Verifique se ele está instalado e no PATH.")
+        _handle_error(
+            f"Comando '{command[0]}' não encontrado. Verifique se ele está instalado e no PATH."
+        )
     except subprocess.CalledProcessError as e:
         error_message = f"O comando `{' '.join(command)}` falhou com o código de saída {e.returncode}."
         if e.stderr and not capture_output:
             error_message += f"\nErro:\n{e.stderr}"
         _handle_error(error_message)
 
+
 def _is_windows() -> bool:
     """Verifica se o sistema operacional é Windows."""
     return platform.system() == "Windows"
+
 
 def _safe_write(path: Path, content: str, args: argparse.Namespace) -> None:
     """Escreve conteúdo em um arquivo, com backup e modo dry-run."""
@@ -77,14 +83,18 @@ def _safe_write(path: Path, content: str, args: argparse.Namespace) -> None:
             path.rename(backup_path)
             _log(f"⚠️  Backup criado: {backup_path.name}", args)
         except (OSError, PermissionError) as e:
-            _handle_error(f"Não foi possível criar o backup do arquivo {path.name}: {e}")
+            _handle_error(
+                f"Não foi possível criar o backup do arquivo {path.name}: {e}"
+            )
 
     try:
         path.write_text(content, encoding="utf-8")
     except (OSError, PermissionError) as e:
         _handle_error(f"Não foi possível escrever no arquivo {path.name}: {e}")
 
+
 # --- Funções de Geração de Configuração ---
+
 
 def _generate_pyproject_config(args: argparse.Namespace) -> None:
     """Gera e escreve as configurações do Ruff e Mypy no pyproject.toml."""
@@ -151,9 +161,17 @@ addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-u
         except (OSError, PermissionError) as e:
             _handle_error(f"Não foi possível escrever no arquivo pyproject.toml: {e}")
     elif args.dry_run and config_to_add:
-        _log("Adicionaria configurações de ferramentas ao pyproject.toml", args, is_verbose=True)
+        _log(
+            "Adicionaria configurações de ferramentas ao pyproject.toml",
+            args,
+            is_verbose=True,
+        )
     elif not config_to_add:
-        _log("✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.", args)
+        _log(
+            "✅ Configurações de Ruff, Mypy e Pytest já existem no pyproject.toml.",
+            args,
+        )
+
 
 def _generate_pre_commit_config(args: argparse.Namespace) -> None:
     """Gera e escreve o arquivo de configuração do .pre-commit-config.yaml."""
@@ -200,6 +218,7 @@ def _generate_pre_commit_config(args: argparse.Namespace) -> None:
 """
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
+
 def _generate_dependabot_config(args: argparse.Namespace) -> None:
     """Gera o arquivo de configuração do Dependabot."""
     _log("📝 Gerando arquivo de configuração .github/dependabot.yml...", args)
@@ -232,6 +251,7 @@ updates:
 """
     _safe_write(DEPENDABOT_CONFIG_PATH, config_content, args)
 
+
 def _generate_security_policy(args: argparse.Namespace) -> None:
     """Gera o arquivo SECURITY.md com uma política de segurança moderna."""
     _log("📝 Gerando política de segurança em SECURITY.md...", args)
@@ -250,7 +270,9 @@ Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou 
 """
     _safe_write(SECURITY_MD_PATH, content, args)
 
+
 # --- Funções de Orquestração ---
+
 
 def _check_git_initialized(args: argparse.Namespace) -> None:
     """Verifica se o Git está inicializado e inicializa se necessário."""
@@ -269,6 +291,7 @@ def _check_git_initialized(args: argparse.Namespace) -> None:
     _run_command(["git", "init"], args)
     _log("✅ Repositório Git inicializado com sucesso.", args)
 
+
 def _check_connectivity(args: argparse.Namespace) -> None:
     """Verifica conectividade com a internet antes de instalar dependências."""
     _log("🔎 Verificando conectividade com a internet...", args, is_verbose=True)
@@ -282,6 +305,7 @@ def _check_connectivity(args: argparse.Namespace) -> None:
             "Não foi possível conectar à internet. "
             "Verifique sua conexão e proxies antes de continuar."
         )
+
 
 def _create_project_structure(args: argparse.Namespace) -> None:
     """Cria a estrutura básica de pastas do projeto."""
@@ -392,6 +416,7 @@ def test_greet_empty() -> None:
         except (OSError, PermissionError) as e:
             _log(f"⚠️  Não foi possível criar {test_file}: {e}", args)
 
+
 def _validate_setup(args: argparse.Namespace) -> None:
     """Valida se o setup foi concluído com sucesso."""
     _log("\n🔍 Validando configuração...", args)
@@ -413,9 +438,7 @@ def _validate_setup(args: argparse.Namespace) -> None:
     # Verifica se pre-commit está instalado
     if shutil.which("poetry"):
         result = _run_command(
-            ["poetry", "run", "pre-commit", "--version"],
-            args,
-            capture_output=True
+            ["poetry", "run", "pre-commit", "--version"], args, capture_output=True
         )
         if result.returncode != 0:
             issues.append("Pre-commit não está instalado corretamente")
@@ -443,6 +466,7 @@ def _check_poetry_installation(args: argparse.Namespace) -> None:
 
     _handle_error(f"Poetry não encontrado. {suggestion}")
 
+
 def _initialize_poetry_project(args: argparse.Namespace) -> None:
     """Inicializa um novo projeto Poetry."""
     if PYPROJECT_TOML_PATH.exists():
@@ -450,6 +474,7 @@ def _initialize_poetry_project(args: argparse.Namespace) -> None:
         return
     _log("🛠️  Inicializando projeto Poetry...", args)
     _run_command(["poetry", "init", "-n"], args)
+
 
 def _add_dependencies(args: argparse.Namespace) -> None:
     """Adiciona as dependências de produção e desenvolvimento ao projeto."""
@@ -461,23 +486,37 @@ def _add_dependencies(args: argparse.Namespace) -> None:
             prod_deps.append("uvloop")
         _run_command(["poetry", "add", *prod_deps], args)
     else:
-        _log("⏭️  Pulando dependências de produção (use --install-runtime-deps para incluí-las).", args)
+        _log(
+            "⏭️  Pulando dependências de produção (use --install-runtime-deps para incluí-las).",
+            args,
+        )
 
     _log("🔧 Adicionando dependências de desenvolvimento...", args)
     dev_deps = [
-        "ruff", "mypy", "bandit", "safety", "pre-commit",
-        "pytest", "pytest-cov", "py-spy", "semgrep"
+        "ruff",
+        "mypy",
+        "bandit",
+        "safety",
+        "pre-commit",
+        "pytest",
+        "pytest-cov",
+        "py-spy",
+        "semgrep",
     ]
     _run_command(["poetry", "add", "--group", "dev", *dev_deps], args)
+
 
 def _setup_pre_commit_hooks(args: argparse.Namespace) -> None:
     """Instala e configura os hooks de pre-commit."""
     _log("⚙️  Instalando hooks de pre-commit...", args)
     _run_command(["poetry", "run", "pre-commit", "install"], args)
 
+
 def _setup_cli() -> argparse.Namespace:
     """Configura a interface de linha de comando."""
-    parser = argparse.ArgumentParser(description="Automatiza a configuração de um ambiente Python de alta performance.")
+    parser = argparse.ArgumentParser(
+        description="Automatiza a configuração de um ambiente Python de alta performance."
+    )
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -499,6 +538,7 @@ def _setup_cli() -> argparse.Namespace:
         help="Instala dependências de produção opcionais (pydantic, orjson, uvloop).",
     )
     return parser.parse_args()
+
 
 def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
@@ -534,9 +574,16 @@ def main() -> None:
     # Mensagens finais
     _log("\n✅ Ambiente configurado com sucesso!", args)
     _log("Execute `poetry shell` para ativar o ambiente virtual.", args)
-    _log("💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.", args)
-    _log("\n🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.", args)
+    _log(
+        "💡 Dica: execute `poetry config virtualenvs.in-project true` para criar o .venv dentro do projeto.",
+        args,
+    )
+    _log(
+        "\n🔒 Lembre-se de commitar o arquivo `poetry.lock` para garantir builds reprodutíveis.",
+        args,
+    )
     _log("\n📚 Consulte o README.md para mais informações sobre o projeto.", args)
+
 
 if __name__ == "__main__":
     main()

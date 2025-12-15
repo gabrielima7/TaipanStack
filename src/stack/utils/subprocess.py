@@ -63,39 +63,41 @@ class SafeCommandResult:
 
 
 # Default allowed commands whitelist
-DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset({
-    # Python/Poetry
-    "python",
-    "python3",
-    "pip",
-    "pip3",
-    "poetry",
-    "pipx",
-    # Version control
-    "git",
-    # Build tools
-    "make",
-    # Testing
-    "pytest",
-    "mypy",
-    "ruff",
-    "bandit",
-    "safety",
-    "semgrep",
-    "pre-commit",
-    # System
-    "echo",
-    "cat",
-    "ls",
-    "pwd",
-    "mkdir",
-    "rm",
-    "cp",
-    "mv",
-    "touch",
-    "chmod",
-    "which",
-})
+DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
+    {
+        # Python/Poetry
+        "python",
+        "python3",
+        "pip",
+        "pip3",
+        "poetry",
+        "pipx",
+        # Version control
+        "git",
+        # Build tools
+        "make",
+        # Testing
+        "pytest",
+        "mypy",
+        "ruff",
+        "bandit",
+        "safety",
+        "semgrep",
+        "pre-commit",
+        # System
+        "echo",
+        "cat",
+        "ls",
+        "pwd",
+        "mkdir",
+        "rm",
+        "cp",
+        "mv",
+        "touch",
+        "chmod",
+        "which",
+    }
+)
 
 
 def run_safe_command(

@@ -229,9 +229,20 @@ def guard_file_extension(
 
     # Default dangerous extensions
     default_denied = {
-        "exe", "dll", "so", "dylib",  # Executables
-        "sh", "bash", "zsh", "ps1", "bat", "cmd",  # Scripts
-        "php", "jsp", "asp", "aspx",  # Server-side scripts
+        "exe",
+        "dll",
+        "so",
+        "dylib",  # Executables
+        "sh",
+        "bash",
+        "zsh",
+        "ps1",
+        "bat",
+        "cmd",  # Scripts
+        "php",
+        "jsp",
+        "asp",
+        "aspx",  # Server-side scripts
     }
 
     # Normalize extension lists

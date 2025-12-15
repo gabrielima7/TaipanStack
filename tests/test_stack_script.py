@@ -62,7 +62,9 @@ def test_safe_write_creates_backup(tmp_path):
 
     # Verifica se o novo arquivo também foi criado
     assert dummy_file.exists()
-    assert "pre-commit-hooks" in dummy_file.read_text()  # Verifica conteúdo do novo arquivo
+    assert (
+        "pre-commit-hooks" in dummy_file.read_text()
+    )  # Verifica conteúdo do novo arquivo
 
 
 def test_force_mode_overwrites_without_backup(tmp_path):
@@ -160,7 +162,8 @@ def test_optional_dependencies_flag(tmp_path, monkeypatch):
 
         # Verifica que poetry add NÃO foi chamado para produção
         poetry_add_calls = [
-            call for call in mock_run.call_args_list
+            call
+            for call in mock_run.call_args_list
             if call[0][0][0:2] == ["poetry", "add"] and "--group" not in call[0][0]
         ]
         assert len(poetry_add_calls) == 0
@@ -182,12 +185,16 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
             # Verifica que poetry add FOI chamado para produção
             # Procura por chamadas que incluem 'pydantic' (dependência de produção)
             poetry_add_calls = [
-                call for call in mock_run.call_args_list
-                if len(call[0]) > 0 and "poetry" in str(call[0][0])
+                call
+                for call in mock_run.call_args_list
+                if len(call[0]) > 0
+                and "poetry" in str(call[0][0])
                 and "add" in str(call[0][0])
                 and any("pydantic" in str(arg) for arg in call[0][0])
             ]
-            assert len(poetry_add_calls) > 0, "Poetry add with pydantic should have been called"
+            assert len(poetry_add_calls) > 0, (
+                "Poetry add with pydantic should have been called"
+            )
 
 
 def test_python_version_detection(tmp_path):
@@ -203,6 +210,6 @@ def test_python_version_detection(tmp_path):
 
     # Verifica se a versão do Python está na configuração
     import sys
+
     expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     assert f'python_version = "{expected_version}"' in content
-

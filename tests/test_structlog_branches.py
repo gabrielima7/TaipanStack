@@ -50,7 +50,6 @@ class TestLoggingWithMockedStructlog:
             patch("stack.utils.logging.HAS_STRUCTLOG", True),
             patch("stack.utils.logging.structlog", mock_structlog, create=True),
         ):
-
             import stack.utils.logging as logging_module
 
             logger = logging_module.StackLogger(use_structured=True)
@@ -68,7 +67,6 @@ class TestLoggingWithMockedStructlog:
             patch("stack.utils.logging.HAS_STRUCTLOG", True),
             patch("stack.utils.logging.structlog", mock_structlog, create=True),
         ):
-
             import stack.utils.logging as logging_module
 
             logger = logging_module.StackLogger(use_structured=True)
@@ -88,7 +86,6 @@ class TestSetupLoggingStructlog:
             patch("stack.utils.logging.HAS_STRUCTLOG", True),
             patch("stack.utils.logging.structlog", mock_structlog, create=True),
         ):
-
             import stack.utils.logging as logging_module
 
             logging_module.setup_logging(use_structured=True)

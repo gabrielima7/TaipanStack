@@ -100,7 +100,10 @@ class TestValidateUrl:
         """Test valid URLs pass."""
         assert validate_url("https://example.com") == "https://example.com"
         assert validate_url("http://localhost:8080") == "http://localhost:8080"
-        assert validate_url("https://api.github.com/repos") == "https://api.github.com/repos"
+        assert (
+            validate_url("https://api.github.com/repos")
+            == "https://api.github.com/repos"
+        )
 
     def test_empty_url_rejected(self) -> None:
         """Test empty URLs are rejected."""

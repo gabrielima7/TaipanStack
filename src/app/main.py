@@ -1,4 +1,5 @@
 """Main module for app."""
+
 import logging
 
 # Configure logging

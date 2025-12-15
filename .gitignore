@@ -109,3 +109,6 @@ dmypy.json
 # Ruff cache
 .ruff_cache/
 
+# GitHub Actions logs (local only)
+logs/
+

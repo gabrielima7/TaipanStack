@@ -183,9 +183,7 @@ class TestLogOperation:
                 pass
         assert "duration_seconds" in caplog.text
 
-    def test_logs_exception_on_failure(
-        self, caplog: pytest.LogCaptureFixture
-    ) -> None:
+    def test_logs_exception_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that exception is logged on failure."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError):
