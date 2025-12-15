@@ -1,7 +1,6 @@
 """Tests for stack.security.guards module."""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -54,10 +53,18 @@ class TestGuardPathTraversal:
 
     def test_path_escapes_base_dir(self, tmp_path: Path) -> None:
         """Test that paths escaping base dir are blocked."""
-        with TemporaryDirectory() as other_dir:
-            with pytest.raises(SecurityError) as exc_info:
-                guard_path_traversal(Path(other_dir), tmp_path)
-            assert "escapes base directory" in str(exc_info.value)
+        # Create a separate base directory
+        subdir = tmp_path / "allowed"
+        subdir.mkdir()
+
+        # Try to access a file outside the allowed base
+        outside_file = tmp_path / "outside.txt"
+        outside_file.touch()
+
+        with pytest.raises(SecurityError) as exc_info:
+            guard_path_traversal(outside_file, subdir)
+        # The error should indicate path is not under base dir
+        assert "path_traversal" in str(exc_info.value).lower()
 
 
 class TestGuardCommandInjection:

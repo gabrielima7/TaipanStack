@@ -153,11 +153,12 @@ class TestFilesystemRemainingBranches:
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
 
-    def test_sanitize_path_absolute(self) -> None:
+    def test_sanitize_path_absolute(self, tmp_path: Path) -> None:
         """Test sanitize_path with absolute path."""
         from stack.security.sanitizers import sanitize_path
 
-        result = sanitize_path("/etc/passwd")
+        # Use tmp_path which works cross-platform
+        result = sanitize_path(str(tmp_path / "file.txt"))
         assert result.is_absolute()
 
     def test_sanitize_path_relative(self) -> None:

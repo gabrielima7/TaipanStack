@@ -162,10 +162,13 @@ class TestSanitizePath:
         with pytest.raises(ValueError, match="depth"):
             sanitize_path(deep_path, max_depth=5)
 
-    def test_with_base_dir(self) -> None:
+    def test_with_base_dir(self, tmp_path: Path) -> None:
         """Test path with base directory."""
-        result = sanitize_path("subdir/file.txt", base_dir=Path("/base"))
-        assert str(result).startswith("/base")
+        base = tmp_path / "base"
+        base.mkdir()
+        result = sanitize_path("subdir/file.txt", base_dir=base)
+        # Check result is under base directory using Path comparison
+        assert str(base) in str(result)
 
 
 class TestSanitizeEnvValue:

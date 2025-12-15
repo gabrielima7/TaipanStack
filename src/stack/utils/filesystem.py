@@ -7,7 +7,9 @@ atomic writes, and proper error handling.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
+import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -130,15 +132,21 @@ def safe_write(
             suffix=".tmp",
         )
         try:
+            # Close the file descriptor immediately - required for Windows
+            os.close(_fd)
             temp_file = Path(temp_path)
             temp_file.write_text(content, encoding=encoding)
             # Preserve permissions if original exists
             if path.exists():
                 shutil.copymode(path, temp_file)
+            # On Windows, we need to remove the target first if it exists
+            if path.exists():
+                path.unlink()
             temp_file.rename(path)
         except Exception:
             # Clean up temp file on error
-            Path(temp_path).unlink(missing_ok=True)
+            with contextlib.suppress(OSError):
+                Path(temp_path).unlink(missing_ok=True)
             raise
     else:
         path.write_text(content, encoding=encoding)

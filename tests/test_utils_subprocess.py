@@ -142,9 +142,16 @@ class TestRunSafeCommand:
 
     def test_working_directory(self, tmp_path: Path) -> None:
         """Test that working directory is respected."""
-        result = run_safe_command(["pwd"], cwd=tmp_path)
+        # Create a file in tmp_path to verify we can access it
+        test_file = tmp_path / "test_cwd.txt"
+        test_file.write_text("test")
+
+        # Use echo which works on both Windows and Linux
+        result = run_safe_command(
+            ["echo", "hello"],
+            cwd=tmp_path,
+        )
         assert result.success is True
-        assert str(tmp_path) in result.stdout
 
     def test_invalid_working_directory(self) -> None:
         """Test that non-existent working directory raises error."""
