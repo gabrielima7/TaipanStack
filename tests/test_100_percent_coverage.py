@@ -154,7 +154,7 @@ class TestSanitizersMissingBranches:
         """Test sanitize_path with base_dir."""
         from stack.security.sanitizers import sanitize_path
 
-        result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
+        result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert str(tmp_path) in str(result)
 
     def test_sanitize_path_resolve_true(self, tmp_path: Path) -> None:
@@ -165,7 +165,9 @@ class TestSanitizersMissingBranches:
         test_file = tmp_path / "test.txt"
         test_file.touch()
 
-        result = sanitize_path("test.txt", base_dir=tmp_path, resolve=True)
+        result = sanitize_path(
+            "test.txt", base_dir=tmp_path, resolve=True, max_depth=None
+        )
         assert result.is_absolute()
 
 

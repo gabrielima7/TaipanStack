@@ -56,7 +56,7 @@ class TestSanitizersResolveError:
         """Test sanitize_path with valid path."""
         from stack.security.sanitizers import sanitize_path
 
-        result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
+        result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
 
 

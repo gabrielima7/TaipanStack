@@ -73,7 +73,9 @@ class TestSanitizersMissingBranch:
         from stack.security.sanitizers import sanitize_path
 
         # Test with base_dir that causes issues during resolve
-        result = sanitize_path("subdir/file.txt", base_dir=tmp_path, resolve=False)
+        result = sanitize_path(
+            "subdir/file.txt", base_dir=tmp_path, resolve=False, max_depth=None
+        )
         assert result is not None
 
 

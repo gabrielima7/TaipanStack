@@ -180,7 +180,7 @@ def sanitize_path(
     path: str | Path,
     *,
     base_dir: Path | None = None,
-    max_depth: int = 10,
+    max_depth: int | None = 10,
     resolve: bool = False,
 ) -> Path:
     """Sanitize a path to prevent traversal and normalize it.
@@ -226,9 +226,9 @@ def sanitize_path(
     else:
         sanitized = Path().joinpath(*parts) if parts else Path()
 
-    # Check depth
+    # Check depth (skip if max_depth is None)
     depth = len(sanitized.parts)
-    if depth > max_depth:
+    if max_depth is not None and depth > max_depth:
         msg = f"Path depth {depth} exceeds maximum of {max_depth}"
         raise ValueError(msg)
 
