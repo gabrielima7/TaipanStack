@@ -166,7 +166,8 @@ class TestSanitizePath:
         """Test path with base directory."""
         base = tmp_path / "base"
         base.mkdir()
-        result = sanitize_path("subdir/file.txt", base_dir=base)
+        # max_depth=None to avoid depth check (CI paths can be very long)
+        result = sanitize_path("subdir/file.txt", base_dir=base, max_depth=None)
         # Check result is under base directory using Path comparison
         assert str(base) in str(result)
 

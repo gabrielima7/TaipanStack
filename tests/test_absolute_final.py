@@ -96,7 +96,7 @@ class TestSanitizersEmptyParts:
         from stack.security.sanitizers import sanitize_path
 
         # Should work with relative path
-        result = sanitize_path("new/file.txt", base_dir=tmp_path)
+        result = sanitize_path("new/file.txt", base_dir=tmp_path, max_depth=None)
         assert str(tmp_path) in str(result)
 
 

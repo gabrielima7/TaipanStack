@@ -158,7 +158,8 @@ class TestSanitizersRemainingBranches:
         from stack.security.sanitizers import sanitize_path
 
         # Use tmp_path which works cross-platform
-        result = sanitize_path(str(tmp_path / "file.txt"))
+        # Pass max_depth=None to avoid depth check (CI paths can be very long)
+        result = sanitize_path(str(tmp_path / "file.txt"), max_depth=None)
         assert result.is_absolute()
 
     def test_sanitize_path_relative(self) -> None:
