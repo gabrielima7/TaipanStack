@@ -108,6 +108,9 @@ max-complexity = 10
 "src/stack/security/sanitizers.py" = ["PLR0912"]
 # Decorators: allow inline imports for lazy loading, unused signal args, D401 imperative mood
 "src/stack/security/decorators.py" = ["PLC0415", "ARG001", "D401"]
+# Circuit breaker and metrics: allow D401 for decorator docstrings
+"src/stack/utils/circuit_breaker.py" = ["D401"]
+"src/stack/utils/metrics.py" = ["D401"]
 
 [tool.ruff.format]
 quote-style = "double"
