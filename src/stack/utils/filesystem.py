@@ -61,8 +61,7 @@ class FileTooLargeErr:
         object.__setattr__(
             self,
             "message",
-            self.message
-            or f"File too large: {self.size} bytes (max: {self.max_size})",
+            self.message or f"File too large: {self.size} bytes (max: {self.max_size})",
         )
 
 
