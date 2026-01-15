@@ -49,6 +49,7 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
 
 def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
     """Test user creation failure handled gracefully."""
+
     # Mock repository to raise an error
     class FailingRepository(UserRepository):
         def save(self, user: object) -> None:
