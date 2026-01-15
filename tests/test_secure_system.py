@@ -12,6 +12,7 @@ from app.secure_system import (
     UserNotFoundError,
     UserService,
 )
+from stack.core.result import Err, Ok
 
 
 def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
@@ -31,7 +32,14 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
     assert user.is_active is True
-    assert service.get_user(user.id) == user
+
+    # Test get_user with Result pattern
+    result = service.get_user(user.id)
+    match result:
+        case Ok(found_user):
+            assert found_user == user
+        case Err():
+            pytest.fail("Expected Ok but got Err")
 
     assert f"User created successfully: {user.id}" in caplog.text
 
@@ -57,13 +65,22 @@ def test_create_user_invalid_username() -> None:
 
 
 def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
-    """Test retrieving a non-existent user raises UserNotFoundError."""
+    """Test retrieving a non-existent user returns Err with UserNotFoundError."""
     repository = InMemoryUserRepository()
     service = UserService(repository)
     user_id = uuid4()
-    with caplog.at_level(logging.WARNING):
-        with pytest.raises(UserNotFoundError) as exc_info:
-            service.get_user(user_id)
 
-    assert str(user_id) in str(exc_info.value)
+    with caplog.at_level(logging.WARNING):
+        result = service.get_user(user_id)
+
+    # Verify Result is Err
+    assert result.is_err()
+    match result:
+        case Err(error):
+            assert isinstance(error, UserNotFoundError)
+            assert error.user_id == user_id
+        case Ok():
+            pytest.fail("Expected Err but got Ok")
+
     assert f"User lookup failed for ID: {user_id}" in caplog.text
+
