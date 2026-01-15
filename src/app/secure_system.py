@@ -7,6 +7,7 @@ following strict typing and security guidelines.
 
 import logging
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
@@ -25,6 +26,13 @@ class UserNotFoundError(Exception):
         """Initialize the exception with the user ID."""
         self.user_id = user_id
         super().__init__(f"User with ID {user_id} not found.")
+
+
+@dataclass(frozen=True)
+class UserCreationError(Exception):
+    """Exception class for user creation errors."""
+
+    message: str = "Failed to create user"
 
 
 class UserCreate(BaseModel):
@@ -138,7 +146,7 @@ class UserService:
         """
         self._user_repository = user_repository
 
-    def create_user(self, user_create: UserCreate) -> User:
+    def create_user(self, user_create: UserCreate) -> Result[User, UserCreationError]:
         """
         Create a new user.
 
@@ -146,7 +154,7 @@ class UserService:
             user_create: The user creation data.
 
         Returns:
-            The created User object.
+            Ok(User) on success, Err(UserCreationError) on failure.
 
         """
         # In a real system, we would hash the password here.
@@ -160,9 +168,13 @@ class UserService:
             email=user_create.email,
             is_active=True,
         )
-        self._user_repository.save(user)
-        logger.info("User created successfully: %s", user.id)
-        return user
+        try:
+            self._user_repository.save(user)
+            logger.info("User created successfully: %s", user.id)
+            return Ok(user)
+        except Exception as e:
+            logger.exception("Failed to create user %s", user.id)
+            return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
         """

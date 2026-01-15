@@ -1,7 +1,7 @@
 """Tests for the secure_system module."""
 
 import logging
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from pydantic import SecretStr, ValidationError
@@ -9,7 +9,9 @@ from pydantic import SecretStr, ValidationError
 from app.secure_system import (
     InMemoryUserRepository,
     UserCreate,
+    UserCreationError,
     UserNotFoundError,
+    UserRepository,
     UserService,
 )
 from stack.core.result import Err, Ok
@@ -23,25 +25,52 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
         username="valid_user",
         email="user@example.com",
         password=SecretStr("secure_password"),
-        ip_address="192.168.1.1",
+        ip_address=None,
     )
 
     with caplog.at_level(logging.INFO):
-        user = service.create_user(user_create)
+        result = service.create_user(user_create)
 
+    user = result.unwrap()
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
     assert user.is_active is True
 
     # Test get_user with Result pattern
-    result = service.get_user(user.id)
-    match result:
+    result_get = service.get_user(user.id)
+    match result_get:
         case Ok(found_user):
             assert found_user == user
         case Err():
             pytest.fail("Expected Ok but got Err")
 
     assert f"User created successfully: {user.id}" in caplog.text
+
+
+def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
+    """Test user creation failure handled gracefully."""
+    # Mock repository to raise an error
+    class FailingRepository(UserRepository):
+        def save(self, user: object) -> None:
+            raise ValueError("Database error")
+
+        def get_by_id(self, user_id: UUID) -> None:
+            return None
+
+    service = UserService(FailingRepository())
+    user_create = UserCreate(
+        username="fail_user",
+        email="fail@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    result = service.create_user(user_create)
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "Database error" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")
 
 
 def test_create_user_invalid_email() -> None:
