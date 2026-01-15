@@ -1,0 +1,36 @@
+[importlinter]
+root_package = stack
+include_external_packages = False
+
+# Independence Contract - Utils internal modules should not depend on each other
+# This ensures loose coupling between utility modules
+[importlinter:contract:utils-independence]
+name = Utils Module Independence
+type = independence
+modules =
+    stack.utils.circuit_breaker
+    stack.utils.retry
+    stack.utils.metrics
+
+# Core independence - core module should not import security or utils
+# Core provides foundation types that other modules depend on
+[importlinter:contract:core-isolation]
+name = Core Layer Isolation
+type = forbidden
+source_modules =
+    stack.core
+forbidden_modules =
+    stack.security
+    stack.utils
+    stack.config
+
+# Config generators should not import utils directly
+# Configuration generation should be self-contained
+[importlinter:contract:config-independence]
+name = Config Module Independence
+type = forbidden
+source_modules =
+    stack.config
+forbidden_modules =
+    stack.utils.subprocess
+    stack.utils.filesystem
