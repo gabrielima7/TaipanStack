@@ -12,6 +12,8 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
 
+from stack.core.result import Err, Ok, Result
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
@@ -21,6 +23,7 @@ class UserNotFoundError(Exception):
 
     def __init__(self, user_id: UUID) -> None:
         """Initialize the exception with the user ID."""
+        self.user_id = user_id
         super().__init__(f"User with ID {user_id} not found.")
 
 
@@ -161,22 +164,27 @@ class UserService:
         logger.info("User created successfully: %s", user.id)
         return user
 
-    def get_user(self, user_id: UUID) -> User:
+    def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
         """
-        Retrieve a user by ID.
+        Retrieve a user by ID using Result pattern.
 
         Args:
             user_id: The UUID of the user.
 
         Returns:
-            The User object.
+            Ok(User) if found, Err(UserNotFoundError) if not found.
 
-        Raises:
-            UserNotFoundError: If the user is not found.
+        Example:
+            >>> match service.get_user(some_id):
+            ...     case Ok(user):
+            ...         print(f"Found: {user.username}")
+            ...     case Err(error):
+            ...         print(f"Not found: {error.user_id}")
 
         """
         user = self._user_repository.get_by_id(user_id)
         if user is None:
             logger.warning("User lookup failed for ID: %s", user_id)
-            raise UserNotFoundError(user_id)
-        return user
+            return Err(UserNotFoundError(user_id))
+        return Ok(user)
+
