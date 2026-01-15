@@ -83,4 +83,3 @@ def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
             pytest.fail("Expected Err but got Ok")
 
     assert f"User lookup failed for ID: {user_id}" in caplog.text
-

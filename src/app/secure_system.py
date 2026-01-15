@@ -187,4 +187,3 @@ class UserService:
             logger.warning("User lookup failed for ID: %s", user_id)
             return Err(UserNotFoundError(user_id))
         return Ok(user)
-
