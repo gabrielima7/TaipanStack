@@ -131,35 +131,41 @@ class CircuitBreaker:
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
         with self._state.lock:
-            if self._state.state == CircuitState.CLOSED:
-                return True
-
-            if self._state.state == CircuitState.OPEN:
-                # Check if timeout has passed
-                elapsed = time.monotonic() - self._state.last_failure_time
-                if elapsed >= self.config.timeout:
-                    self._state.state = CircuitState.HALF_OPEN
-                    self._state.success_count = 0
-                    logger.info("Circuit %s entering half-open state", self.name)
+            match self._state.state:
+                case CircuitState.CLOSED:
                     return True
-                return False
 
-            # HALF_OPEN - allow limited attempts
-            return True
+                case CircuitState.OPEN:
+                    # Check if timeout has passed
+                    elapsed = time.monotonic() - self._state.last_failure_time
+                    if elapsed >= self.config.timeout:
+                        self._state.state = CircuitState.HALF_OPEN
+                        self._state.success_count = 0
+                        logger.info("Circuit %s entering half-open state", self.name)
+                        return True
+                    return False
+
+                case CircuitState.HALF_OPEN:
+                    # Allow limited attempts
+                    return True
 
     def _record_success(self) -> None:
         """Record a successful call."""
         with self._state.lock:
-            if self._state.state == CircuitState.HALF_OPEN:
-                self._state.success_count += 1
-                if self._state.success_count >= self.config.success_threshold:
-                    self._state.state = CircuitState.CLOSED
-                    self._state.failure_count = 0
-                    logger.info("Circuit %s closed after recovery", self.name)
+            match self._state.state:
+                case CircuitState.HALF_OPEN:
+                    self._state.success_count += 1
+                    if self._state.success_count >= self.config.success_threshold:
+                        self._state.state = CircuitState.CLOSED
+                        self._state.failure_count = 0
+                        logger.info("Circuit %s closed after recovery", self.name)
 
-            elif self._state.state == CircuitState.CLOSED:
-                # Reset failure count on success
-                self._state.failure_count = 0
+                case CircuitState.CLOSED:
+                    # Reset failure count on success
+                    self._state.failure_count = 0
+
+                case CircuitState.OPEN:
+                    pass  # Should not happen, but handle gracefully
 
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
@@ -171,22 +177,26 @@ class CircuitBreaker:
             self._state.failure_count += 1
             self._state.last_failure_time = time.monotonic()
 
-            if self._state.state == CircuitState.HALF_OPEN:
-                # Any failure in half-open reopens circuit
-                self._state.state = CircuitState.OPEN
-                logger.warning(
-                    "Circuit %s reopened after failure in half-open",
-                    self.name,
-                )
-
-            elif self._state.state == CircuitState.CLOSED:
-                if self._state.failure_count >= self.config.failure_threshold:
+            match self._state.state:
+                case CircuitState.HALF_OPEN:
+                    # Any failure in half-open reopens circuit
                     self._state.state = CircuitState.OPEN
                     logger.warning(
-                        "Circuit %s opened after %d failures",
+                        "Circuit %s reopened after failure in half-open",
                         self.name,
-                        self._state.failure_count,
                     )
+
+                case CircuitState.CLOSED:
+                    if self._state.failure_count >= self.config.failure_threshold:
+                        self._state.state = CircuitState.OPEN
+                        logger.warning(
+                            "Circuit %s opened after %d failures",
+                            self.name,
+                            self._state.failure_count,
+                        )
+
+                case CircuitState.OPEN:
+                    pass  # Already open, nothing to do
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""

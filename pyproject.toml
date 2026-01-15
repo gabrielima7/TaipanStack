@@ -26,6 +26,7 @@ dependencies = [
     "pydantic (>=2.0)",
     "orjson (>=3.9.0)",
     "email-validator (>=2.0.0)",
+    "result (>=0.17.0)",
 ]
 
 [project.optional-dependencies]
@@ -53,6 +54,8 @@ dev = [
     "interrogate (>=1.5.0)",
     "hypothesis (>=6.100.0)",
     "structlog (>=25.5.0,<26.0.0)",
+    "import-linter (>=2.1)",
+    "mutmut (>=3.2.0)",
 ]
 
 
@@ -112,6 +115,8 @@ max-complexity = 10
 # Circuit breaker and metrics: allow D401 for decorator docstrings
 "src/stack/utils/circuit_breaker.py" = ["D401"]
 "src/stack/utils/metrics.py" = ["D401"]
+# Core result: allow D401 for utility function docstrings
+"src/stack/core/result.py" = ["D401"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -184,3 +189,7 @@ ignore-semiprivate = true
 fail-under = 80
 verbose = 1
 
+[tool.mutmut]
+paths_to_mutate = "src/"
+tests_dir = "tests/"
+runner = "python -m pytest -x -q --tb=no --timeout=10"

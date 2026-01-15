@@ -78,3 +78,11 @@ repos:
       - id: interrogate
         args: ["-v", "--fail-under=80", "src/"]
 
+  - repo: local
+    hooks:
+      - id: import-linter
+        name: import-linter
+        entry: poetry run lint-imports
+        language: system
+        types: [python]
+        pass_filenames: false
