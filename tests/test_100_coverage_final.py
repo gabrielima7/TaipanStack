@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING
-from unittest.mock import patch
 
 import pytest
 
@@ -130,7 +129,7 @@ class TestResultModuleBranches:
 
     def test_collect_results_match_patterns(self) -> None:
         """Test all match patterns in collect_results."""
-        from stack.core.result import Err, Ok, collect_results
+        from stack.core.result import Ok, collect_results
 
         # Test with iterator (not list)
         results = iter([Ok(1), Ok(2)])
@@ -171,7 +170,7 @@ class TestGuardsUncovered:
 
     def test_path_traversal_resolution_error(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with resolution error."""
-        from stack.security.guards import SecurityError, guard_path_traversal
+        from stack.security.guards import guard_path_traversal
 
         # Test with path that causes resolution warning
         valid_path = tmp_path / "valid_file.txt"
