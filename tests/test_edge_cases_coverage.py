@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
+from stack.core.result import Err
 from stack.security.guards import SecurityError
 
 
@@ -22,8 +23,12 @@ class TestFilesystemEdgeCases:
         test_file.write_text("content")
 
         # This should fail because .. triggers guard with cwd
-        with pytest.raises(SecurityError):
-            safe_read(tmp_path / ".." / "etc" / "passwd")
+        result = safe_read(tmp_path / ".." / "etc" / "passwd")
+        match result:
+            case Err(SecurityError()):
+                pass
+            case _:
+                pytest.fail("Expected Err(SecurityError)")
 
     def test_safe_write_existing_file_guarded(self, tmp_path: Path) -> None:
         """Test safe_write with existing file and base_dir."""

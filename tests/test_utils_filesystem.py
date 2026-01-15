@@ -6,8 +6,12 @@ from pathlib import Path
 
 import pytest
 
+from stack.core.result import Err, Ok
 from stack.security.guards import SecurityError
 from stack.utils.filesystem import (
+    FileNotFoundErr,
+    FileTooLargeErr,
+    NotAFileErr,
     ensure_dir,
     find_files,
     get_file_hash,
@@ -26,47 +30,76 @@ class TestSafeRead:
         test_file = tmp_path / "test.txt"
         test_file.write_text("Hello, World!", encoding="utf-8")
 
-        content = safe_read(test_file)
-        assert content == "Hello, World!"
+        result = safe_read(test_file)
+        match result:
+            case Ok(content):
+                assert content == "Hello, World!"
+            case Err():
+                pytest.fail("Expected Ok but got Err")
 
     def test_read_with_base_dir(self, tmp_path: Path) -> None:
         """Test reading with base directory constraint."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("content", encoding="utf-8")
 
-        content = safe_read(test_file, base_dir=tmp_path)
-        assert content == "content"
+        result = safe_read(test_file, base_dir=tmp_path)
+        match result:
+            case Ok(content):
+                assert content == "content"
+            case Err():
+                pytest.fail("Expected Ok but got Err")
 
     def test_read_nonexistent_file(self, tmp_path: Path) -> None:
-        """Test reading non-existent file raises FileNotFoundError."""
-        with pytest.raises(FileNotFoundError):
-            safe_read(tmp_path / "nonexistent.txt")
+        """Test reading non-existent file returns Err."""
+        result = safe_read(tmp_path / "nonexistent.txt")
+        match result:
+            case Err(FileNotFoundErr(path=p)):
+                assert "nonexistent.txt" in str(p)
+            case _:
+                pytest.fail("Expected Err(FileNotFoundErr)")
 
     def test_read_directory_fails(self, tmp_path: Path) -> None:
-        """Test reading a directory raises ValueError."""
-        with pytest.raises(ValueError, match="Not a file"):
-            safe_read(tmp_path)
+        """Test reading a directory returns Err."""
+        result = safe_read(tmp_path)
+        match result:
+            case Err(NotAFileErr(path=p)):
+                assert p == tmp_path
+            case _:
+                pytest.fail("Expected Err(NotAFileErr)")
 
     def test_read_file_too_large(self, tmp_path: Path) -> None:
-        """Test reading file exceeding max_size raises ValueError."""
+        """Test reading file exceeding max_size returns Err."""
         test_file = tmp_path / "large.txt"
         test_file.write_text("A" * 1000, encoding="utf-8")
 
-        with pytest.raises(ValueError, match="File too large"):
-            safe_read(test_file, max_size_bytes=100)
+        result = safe_read(test_file, max_size_bytes=100)
+        match result:
+            case Err(FileTooLargeErr(size=s, max_size=m)):
+                assert s >= 1000
+                assert m == 100
+            case _:
+                pytest.fail("Expected Err(FileTooLargeErr)")
 
     def test_read_with_custom_encoding(self, tmp_path: Path) -> None:
         """Test reading with custom encoding."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("ÄÖÅÜ", encoding="utf-8")
 
-        content = safe_read(test_file, encoding="utf-8")
-        assert content == "ÄÖÅÜ"
+        result = safe_read(test_file, encoding="utf-8")
+        match result:
+            case Ok(content):
+                assert content == "ÄÖÅÜ"
+            case Err():
+                pytest.fail("Expected Ok")
 
     def test_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
-        with pytest.raises(SecurityError):
-            safe_read(tmp_path / ".." / "etc" / "passwd", base_dir=tmp_path)
+        result = safe_read(tmp_path / ".." / "etc" / "passwd", base_dir=tmp_path)
+        match result:
+            case Err(SecurityError()):
+                pass  # Expected
+            case _:
+                pytest.fail("Expected Err(SecurityError)")
 
 
 class TestSafeWrite:

@@ -2,7 +2,7 @@
 Safe filesystem operations.
 
 Provides secure wrappers around file operations with path validation,
-atomic writes, and proper error handling.
+atomic writes, and proper error handling using Result types.
 """
 
 from __future__ import annotations
@@ -12,10 +12,64 @@ import hashlib
 import os
 import shutil
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
+from typing import TypeAlias
 
-from stack.security.guards import guard_path_traversal
+from stack.core.result import Err, Ok, Result
+from stack.security.guards import SecurityError, guard_path_traversal
 from stack.security.sanitizers import sanitize_filename
+
+
+@dataclass(frozen=True)
+class FileNotFoundErr:
+    """Error when file is not found."""
+
+    path: Path
+    message: str = ""
+
+    def __post_init__(self) -> None:
+        """Set default message."""
+        object.__setattr__(
+            self, "message", self.message or f"File not found: {self.path}"
+        )
+
+
+@dataclass(frozen=True)
+class NotAFileErr:
+    """Error when path is not a file."""
+
+    path: Path
+    message: str = ""
+
+    def __post_init__(self) -> None:
+        """Set default message."""
+        object.__setattr__(self, "message", self.message or f"Not a file: {self.path}")
+
+
+@dataclass(frozen=True)
+class FileTooLargeErr:
+    """Error when file exceeds size limit."""
+
+    path: Path
+    size: int
+    max_size: int
+    message: str = ""
+
+    def __post_init__(self) -> None:
+        """Set default message."""
+        object.__setattr__(
+            self,
+            "message",
+            self.message
+            or f"File too large: {self.size} bytes (max: {self.max_size})",
+        )
+
+
+# Union type for safe_read errors
+ReadFileError: TypeAlias = (
+    FileNotFoundErr | NotAFileErr | FileTooLargeErr | SecurityError
+)
 
 
 def safe_read(
@@ -24,7 +78,7 @@ def safe_read(
     base_dir: Path | str | None = None,
     encoding: str = "utf-8",
     max_size_bytes: int | None = 10 * 1024 * 1024,  # 10MB default
-) -> str:
+) -> Result[str, ReadFileError]:
     """Read a file safely with path validation.
 
     Args:
@@ -34,38 +88,45 @@ def safe_read(
         max_size_bytes: Maximum file size to read (None for no limit).
 
     Returns:
-        File contents as string.
+        Ok(str): File contents on success.
+        Err(ReadFileError): Error details on failure.
 
-    Raises:
-        SecurityError: If path validation fails.
-        FileNotFoundError: If file doesn't exist.
-        ValueError: If file is too large.
+    Example:
+        >>> match safe_read("config.json"):
+        ...     case Ok(content):
+        ...         data = json.loads(content)
+        ...     case Err(FileNotFoundErr(path=p)):
+        ...         print(f"Missing: {p}")
+        ...     case Err(FileTooLargeErr(size=s)):
+        ...         print(f"Too big: {s} bytes")
 
     """
     path = Path(path)
 
     # Validate path
-    if base_dir is not None:
-        path = guard_path_traversal(path, Path(base_dir))
-    # At minimum, prevent obvious traversal
-    elif ".." in str(path):
-        path = guard_path_traversal(path, Path.cwd())
+    try:
+        if base_dir is not None:
+            path = guard_path_traversal(path, Path(base_dir))
+        elif ".." in str(path):
+            path = guard_path_traversal(path, Path.cwd())
+    except SecurityError as e:
+        return Err(e)
 
     if not path.exists():
-        raise FileNotFoundError(f"File not found: {path}")
+        return Err(FileNotFoundErr(path=path))
 
     if not path.is_file():
-        raise ValueError(f"Not a file: {path}")
+        return Err(NotAFileErr(path=path))
 
     # Check file size
     if max_size_bytes is not None:
         file_size = path.stat().st_size
         if file_size > max_size_bytes:
-            raise ValueError(
-                f"File too large: {file_size} bytes (max: {max_size_bytes})"
+            return Err(
+                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes)
             )
 
-    return path.read_text(encoding=encoding)
+    return Ok(path.read_text(encoding=encoding))
 
 
 def safe_write(

@@ -183,7 +183,7 @@ class TestFilesystemMissingBranches:
 
         # Should work with base_dir
         result = safe_read(test_file, base_dir=tmp_path)
-        assert result == "content"
+        assert result.unwrap() == "content"
 
     def test_ensure_dir_with_base_dir(self, tmp_path: Path) -> None:
         """Test ensure_dir with base_dir constraint."""

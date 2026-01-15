@@ -7,6 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from stack.core.result import Err
+from stack.utils.filesystem import FileTooLargeErr
+
 
 class TestLoggingStructlogBranches:
     """Tests for structlog branches in logging module."""
@@ -196,8 +199,12 @@ class TestFilesystemBranches:
         test_file = tmp_path / "large.txt"
         test_file.write_text("x" * 1000)
 
-        with pytest.raises(ValueError, match="too large"):
-            safe_read(test_file, max_size_bytes=100)
+        result = safe_read(test_file, max_size_bytes=100)
+        match result:
+            case Err(FileTooLargeErr(size=s)):
+                assert s > 100
+            case _:
+                pytest.fail("Expected Err(FileTooLargeErr)")
 
     def test_ensure_dir_already_exists(self, tmp_path: Path) -> None:
         """Test ensure_dir with directory that already exists."""
