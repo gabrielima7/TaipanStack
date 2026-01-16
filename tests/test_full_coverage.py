@@ -207,7 +207,9 @@ class TestSubprocessVersionEmpty:
                 stdout="\n\n\n",
                 stderr="",
             )
-            with mock.patch("stack.utils.subprocess.check_command_exists", return_value=True):
+            with mock.patch(
+                "stack.utils.subprocess.check_command_exists", return_value=True
+            ):
                 result = get_command_version("test")
                 assert result is None
 

@@ -3,8 +3,15 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    open-pull-requests-limit: 10
     groups:
+      production-dependencies:
+        patterns:
+          - "pydantic*"
+          - "structlog"
+          - "python-dotenv"
+          - "packaging"
       dev-dependencies:
         patterns:
           - "ruff"
@@ -15,7 +22,14 @@ updates:
           - "pre-commit"
           - "semgrep"
           - "py-spy"
+          - "coverage*"
+          - "types-*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
