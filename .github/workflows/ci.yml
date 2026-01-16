@@ -88,10 +88,7 @@ jobs:
           - distro: fedora-43
             image: fedora:43
             pkg_manager: dnf
-          # openSUSE versions
-          - distro: opensuse-leap-15.6
-            image: opensuse/leap:15.6
-            pkg_manager: zypper
+          # openSUSE versions (Leap 15.6 excluded - ships Python 3.6, below our 3.11+ requirement)
           - distro: opensuse-tumbleweed
             image: opensuse/tumbleweed
             pkg_manager: zypper
