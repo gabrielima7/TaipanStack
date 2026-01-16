@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/gabrielima7/Stack/main/.github/assets/stack-logo.svg" alt="Stack Logo" width="120" height="120"/>
-
 # ⚡ Stack
 
 ### **The Modern Python Foundation**
