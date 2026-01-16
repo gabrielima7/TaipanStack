@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.11', '3.12', '3.13', '3.14']
 
     steps:
       - name: Check out code
@@ -28,6 +28,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
 
       - name: Install Poetry
         run: pipx install poetry
@@ -57,6 +58,106 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
+
+  # Linux Distribution Testing via Docker containers
+  test-linux-distros:
+    name: Test on ${{ matrix.distro }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Ubuntu versions
+          - distro: ubuntu-22.04
+            image: ubuntu:22.04
+            pkg_manager: apt
+          - distro: ubuntu-24.04
+            image: ubuntu:24.04
+            pkg_manager: apt
+          # Debian versions
+          - distro: debian-12
+            image: debian:12
+            pkg_manager: apt
+          - distro: debian-13
+            image: debian:13
+            pkg_manager: apt
+          # Fedora versions
+          - distro: fedora-42
+            image: fedora:42
+            pkg_manager: dnf
+          - distro: fedora-43
+            image: fedora:43
+            pkg_manager: dnf
+          # openSUSE versions
+          - distro: opensuse-leap-15.6
+            image: opensuse/leap:15.6
+            pkg_manager: zypper
+          - distro: opensuse-tumbleweed
+            image: opensuse/tumbleweed
+            pkg_manager: zypper
+          # Arch Linux
+          - distro: archlinux
+            image: archlinux:latest
+            pkg_manager: pacman
+          # Alpine
+          - distro: alpine-3.20
+            image: alpine:3.20
+            pkg_manager: apk
+
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: Install dependencies (apt-based)
+        if: matrix.pkg_manager == 'apt'
+        run: |
+          apt-get update
+          apt-get install -y python3 python3-pip python3-venv git curl
+
+      - name: Install dependencies (dnf-based)
+        if: matrix.pkg_manager == 'dnf'
+        run: |
+          dnf install -y python3 python3-pip git curl
+
+      - name: Install dependencies (zypper-based)
+        if: matrix.pkg_manager == 'zypper'
+        run: |
+          zypper --non-interactive install python3 python3-pip git curl
+
+      - name: Install dependencies (pacman-based)
+        if: matrix.pkg_manager == 'pacman'
+        run: |
+          pacman -Syu --noconfirm python python-pip git curl
+
+      - name: Install dependencies (apk-based)
+        if: matrix.pkg_manager == 'apk'
+        run: |
+          apk add --no-cache python3 py3-pip git curl
+
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Install pipx and Poetry
+        run: |
+          python3 -m pip install --upgrade pip pipx --break-system-packages || python3 -m pip install --upgrade pip pipx
+          python3 -m pipx ensurepath
+          python3 -m pipx install poetry
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure Poetry
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
+
+      - name: Install project dependencies
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry install --with dev
+
+      - name: Run tests
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry run pytest tests/ -v --timeout=60
 
   lint:
     name: Code Quality Checks
