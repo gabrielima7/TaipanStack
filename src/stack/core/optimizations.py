@@ -42,6 +42,12 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 
 
+# Optimization Levels
+OPT_LEVEL_NONE = 0
+OPT_LEVEL_SAFE = 1
+OPT_LEVEL_AGGRESSIVE = 2
+
+
 @dataclass(frozen=True, slots=True)
 class OptimizationProfile:
     """Version-specific optimization settings.
@@ -195,11 +201,11 @@ def get_optimization_profile() -> OptimizationProfile:
         profile = _PROFILE_311
 
     # Adjust for optimization level
-    if opt_level == 0:
+    if opt_level == OPT_LEVEL_NONE:
         # Minimal optimizations - use 3.11 baseline
         return _PROFILE_311
 
-    if opt_level == 2 and experimental:
+    if opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
         # Aggressive mode - enable experimental features
         return OptimizationProfile(
             gc_threshold_0=profile.gc_threshold_0,
@@ -224,6 +230,65 @@ def get_optimization_profile() -> OptimizationProfile:
 # =============================================================================
 # Apply Optimizations
 # =============================================================================
+
+
+def _apply_gc_tuning(
+    profile: OptimizationProfile,
+    applied: list[str],
+    errors: list[str],
+) -> None:
+    """Apply Garbage Collector tuning."""
+    try:
+        current = gc.get_threshold()
+        gc.set_threshold(
+            profile.gc_threshold_0,
+            profile.gc_threshold_1,
+            profile.gc_threshold_2,
+        )
+        applied.append(
+            f"gc_threshold: {current} -> "
+            f"({profile.gc_threshold_0}, {profile.gc_threshold_1}, "
+            f"{profile.gc_threshold_2})"
+        )
+    except Exception as e:
+        errors.append(f"gc_threshold: {e}")
+
+
+def _apply_gc_freeze(
+    profile: OptimizationProfile,
+    freeze_after: bool,
+    applied: list[str],
+    skipped: list[str],
+    errors: list[str],
+) -> None:
+    """Apply GC freeze if supported."""
+    if profile.gc_freeze_enabled and freeze_after and PY312:
+        try:
+            gc.freeze()
+            applied.append("gc_freeze: enabled")
+        except Exception as e:
+            errors.append(f"gc_freeze: {e}")
+    elif profile.gc_freeze_enabled and not PY312:
+        skipped.append("gc_freeze: requires Python 3.12+")
+
+
+def _apply_experimental(
+    profile: OptimizationProfile,
+    applied: list[str],
+    skipped: list[str],
+) -> None:
+    """Check and log experimental features."""
+    if profile.enable_experimental:
+        features = get_features()
+        if features.has_jit:
+            applied.append("jit: available")
+        if features.has_free_threading:
+            applied.append("free_threading: available")
+        logger.warning(
+            "EXPERIMENTAL FEATURES ENABLED: Stability and security may be affected."
+        )
+    else:
+        skipped.append("experimental: requires STACK_ENABLE_EXPERIMENTAL=1")
 
 
 def apply_optimizations(
@@ -255,32 +320,12 @@ def apply_optimizations(
 
     # GC Tuning
     if apply_gc:
-        try:
-            current = gc.get_threshold()
-            gc.set_threshold(
-                profile.gc_threshold_0,
-                profile.gc_threshold_1,
-                profile.gc_threshold_2,
-            )
-            applied.append(
-                f"gc_threshold: {current} -> "
-                f"({profile.gc_threshold_0}, {profile.gc_threshold_1}, "
-                f"{profile.gc_threshold_2})"
-            )
-        except Exception as e:
-            errors.append(f"gc_threshold: {e}")
+        _apply_gc_tuning(profile, applied, errors)
     else:
         skipped.append("gc_threshold: disabled")
 
     # GC Freeze (3.12+)
-    if profile.gc_freeze_enabled and freeze_after and PY312:
-        try:
-            gc.freeze()
-            applied.append("gc_freeze: enabled")
-        except Exception as e:
-            errors.append(f"gc_freeze: {e}")
-    elif profile.gc_freeze_enabled and not PY312:
-        skipped.append("gc_freeze: requires Python 3.12+")
+    _apply_gc_freeze(profile, freeze_after, applied, skipped, errors)
 
     # Performance hints logging
     if profile.enable_perf_hints:
@@ -289,14 +334,7 @@ def apply_optimizations(
         skipped.append("perf_hints: disabled")
 
     # Experimental features
-    if profile.enable_experimental:
-        features = get_features()
-        if features.has_jit:
-            applied.append("jit: available")
-        if features.has_free_threading:
-            applied.append("free_threading: available")
-    else:
-        skipped.append("experimental: requires STACK_ENABLE_EXPERIMENTAL=1")
+    _apply_experimental(profile, applied, skipped)
 
     # Log summary
     success = len(errors) == 0

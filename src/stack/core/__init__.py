@@ -26,25 +26,23 @@ from stack.core.optimizations import (
 from stack.core.result import Err, Ok, Result
 
 __all__ = [
-    # Result types
-    "Result",
-    "Ok",
-    "Err",
-    # Version detection
-    "PY_VERSION",
     "PY311",
     "PY312",
     "PY313",
     "PY314",
-    "VersionTier",
-    "PythonFeatures",
-    "get_features",
-    "get_python_info",
-    "is_experimental_enabled",
-    # Optimizations
+    "PY_VERSION",
+    "Err",
+    "Ok",
     "OptimizationProfile",
     "OptimizationResult",
-    "get_optimization_profile",
+    "PythonFeatures",
+    "Result",
+    "VersionTier",
     "apply_optimizations",
+    "get_features",
+    "get_optimization_profile",
+    "get_python_info",
     "get_recommended_thread_pool_size",
+    "is_experimental_enabled",
 ]
+

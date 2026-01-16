@@ -8,7 +8,10 @@ Supports Python 3.11+ with version-aware optimizations for 3.13/3.14.
 __version__ = "2.1.0"
 
 from stack.config.models import StackConfig
-from stack.config.version_config import VersionRecommendations, get_version_recommendations
+from stack.config.version_config import (
+    VersionRecommendations,
+    get_version_recommendations,
+)
 from stack.core.compat import (
     PY311,
     PY312,
@@ -30,25 +33,22 @@ from stack.security.validators import (
 )
 
 __all__ = [
-    # Config
-    "StackConfig",
-    "VersionRecommendations",
-    "get_version_recommendations",
-    # Version detection
-    "PY_VERSION",
     "PY311",
     "PY312",
     "PY313",
     "PY314",
-    "get_features",
-    "get_python_info",
-    # Optimizations
+    "PY_VERSION",
+    "StackConfig",
+    "VersionRecommendations",
     "apply_optimizations",
+    "get_features",
     "get_optimization_profile",
-    # Security
+    "get_python_info",
+    "get_version_recommendations",
     "guard_command_injection",
     "guard_path_traversal",
     "validate_email",
     "validate_project_name",
     "validate_python_version",
 ]
+
