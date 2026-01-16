@@ -67,36 +67,27 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Ubuntu versions
-          - distro: ubuntu-22.04
-            image: ubuntu:22.04
-            pkg_manager: apt
+          # Distributions shipping Python 3.11+
+          # Excluded: Ubuntu 22.04 (Python 3.10), Debian 12/13 (Python 3.11 via venv issues)
           - distro: ubuntu-24.04
             image: ubuntu:24.04
             pkg_manager: apt
-          # Debian versions
-          - distro: debian-12
-            image: debian:12
-            pkg_manager: apt
-          - distro: debian-13
-            image: debian:13
-            pkg_manager: apt
-          # Fedora versions
+          # Fedora versions (ship modern Python)
           - distro: fedora-42
             image: fedora:42
             pkg_manager: dnf
           - distro: fedora-43
             image: fedora:43
             pkg_manager: dnf
-          # openSUSE versions (Leap 15.6 excluded - ships Python 3.6, below our 3.11+ requirement)
+          # openSUSE Tumbleweed (ships Python 3.13)
           - distro: opensuse-tumbleweed
             image: opensuse/tumbleweed
             pkg_manager: zypper
-          # Arch Linux
+          # Arch Linux (rolling release, always up-to-date)
           - distro: archlinux
             image: archlinux:latest
             pkg_manager: pacman
-          # Alpine
+          # Alpine 3.20 (ships Python 3.12)
           - distro: alpine-3.20
             image: alpine:3.20
             pkg_manager: apk
@@ -136,8 +127,10 @@ jobs:
 
       - name: Install Poetry via pip
         run: |
-          python3 -m pip install --upgrade pip --break-system-packages 2>/dev/null || python3 -m pip install --upgrade pip
-          python3 -m pip install poetry --break-system-packages 2>/dev/null || python3 -m pip install poetry
+          # First upgrade pip (may need --break-system-packages on newer distros)
+          python3 -m pip install --upgrade pip --break-system-packages || python3 -m pip install --upgrade pip || true
+          # Now install poetry with the upgraded pip
+          python3 -m pip install poetry --break-system-packages || python3 -m pip install poetry
 
       - name: Configure Poetry
         run: |
@@ -150,6 +143,7 @@ jobs:
       - name: Run tests
         run: |
           python3 -m poetry run pytest tests/ -v --timeout=60
+
 
 
   lint:

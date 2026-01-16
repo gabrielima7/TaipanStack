@@ -15,14 +15,13 @@ from unittest import mock
 import pytest
 
 from stack.config.models import StackConfig
-from stack.security.guards import SecurityError, guard_env_variable, guard_path_traversal
+from stack.security.guards import SecurityError, guard_env_variable
 from stack.security.sanitizers import sanitize_filename, sanitize_path
 from stack.security.validators import validate_python_version
 from stack.utils.filesystem import ensure_dir, safe_delete, safe_read
-from stack.utils.logging import HAS_STRUCTLOG, StackLogger, get_logger, setup_logging
+from stack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
 from stack.utils.retry import RetryError, retry
 from stack.utils.subprocess import get_command_version
-
 
 # ============================================================================
 # Logging Coverage - Lines 20-21 (HAS_STRUCTLOG=False branch)
@@ -80,11 +79,11 @@ class TestGuardsPathTraversalOSError:
     """Test path traversal guard OSError handling."""
 
     def test_guard_path_traversal_value_error(self) -> None:
-        """Test guard catches ValueError during resolution."""
-        # Use a real path that would fail resolution - not via mock
-        # The actual code handles OSError and ValueError
-        # This tests the error handling branch
-        pass  # Covered by other tests
+        """Test guard catches ValueError during resolution.
+
+        The actual code handles OSError and ValueError.
+        This is covered by other tests that exercise the error handling branch.
+        """
 
 
 class TestGuardsEnvVariableAllowedBranch:
@@ -134,10 +133,13 @@ class TestSanitizersPathEdgeCases:
     def test_sanitize_path_with_base_dir_relative(self) -> None:
         """Test sanitize_path with base_dir makes path absolute."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            base = Path(tmpdir)
+            base = Path(tmpdir).resolve()
             result = sanitize_path("subdir/file.txt", base_dir=base, resolve=False)
+            # Normalize both paths to handle Windows short name differences
+            result_str = str(Path(result).resolve())
+            base_str = str(base)
             # When resolve=False and not absolute, it's joined with base
-            assert str(base) in str(result)
+            assert base_str in result_str or result_str.startswith(base_str)
 
 
 # ============================================================================
