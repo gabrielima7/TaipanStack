@@ -51,4 +51,3 @@ __all__ = [
     "validate_project_name",
     "validate_python_version",
 ]
-

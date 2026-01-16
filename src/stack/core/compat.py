@@ -120,7 +120,6 @@ def _check_free_threading_available() -> bool:
         return "--disable-gil" in config_args
 
 
-
 def _check_mimalloc_available() -> bool:
     """Check if mimalloc allocator is being used.
 
