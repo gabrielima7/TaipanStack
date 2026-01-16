@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import sys
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 try:
@@ -304,7 +304,7 @@ def log_operation(
         if logger is None:
             logger = get_logger()
 
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         logger.bind(operation=operation)
 
         log_method = getattr(logger, level.lower())
@@ -312,10 +312,10 @@ def log_operation(
 
         try:
             yield logger
-            duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+            duration = (datetime.now(UTC) - start_time).total_seconds()
             log_method(f"Completed: {operation}", duration_seconds=duration)
         except Exception as e:
-            duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+            duration = (datetime.now(UTC) - start_time).total_seconds()
             logger.exception(
                 f"Failed: {operation}",
                 duration_seconds=duration,
