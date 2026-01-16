@@ -122,7 +122,7 @@ jobs:
       - name: Install dependencies (zypper-based)
         if: matrix.pkg_manager == 'zypper'
         run: |
-          zypper --non-interactive install python3 python3-pip git curl
+          zypper --non-interactive install python3 python3-pip git curl bash
 
       - name: Install dependencies (pacman-based)
         if: matrix.pkg_manager == 'pacman'
@@ -132,32 +132,28 @@ jobs:
       - name: Install dependencies (apk-based)
         if: matrix.pkg_manager == 'apk'
         run: |
-          apk add --no-cache python3 py3-pip git curl
+          apk add --no-cache python3 py3-pip py3-virtualenv git curl bash
 
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Install pipx and Poetry
+      - name: Install Poetry via pip
         run: |
-          python3 -m pip install --upgrade pip pipx --break-system-packages || python3 -m pip install --upgrade pip pipx
-          python3 -m pipx ensurepath
-          python3 -m pipx install poetry
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          python3 -m pip install --upgrade pip --break-system-packages 2>/dev/null || python3 -m pip install --upgrade pip
+          python3 -m pip install poetry --break-system-packages 2>/dev/null || python3 -m pip install poetry
 
       - name: Configure Poetry
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry config virtualenvs.in-project true
+          python3 -m poetry config virtualenvs.in-project true
 
       - name: Install project dependencies
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry install --with dev
+          python3 -m poetry install --with dev
 
       - name: Run tests
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry run pytest tests/ -v --timeout=60
+          python3 -m poetry run pytest tests/ -v --timeout=60
+
 
   lint:
     name: Code Quality Checks
