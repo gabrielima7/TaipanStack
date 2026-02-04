@@ -6,7 +6,7 @@ import logging
 
 import pytest
 
-from stack.utils.logging import (
+from taipanstack.utils.logging import (
     DEFAULT_FORMAT,
     JSON_FORMAT,
     StackLogger,

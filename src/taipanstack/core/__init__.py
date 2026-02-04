@@ -4,7 +4,7 @@ Provides core functionality including Result types, version compatibility,
 and optimization utilities.
 """
 
-from stack.core.compat import (
+from taipanstack.core.compat import (
     PY311,
     PY312,
     PY313,
@@ -16,14 +16,14 @@ from stack.core.compat import (
     get_python_info,
     is_experimental_enabled,
 )
-from stack.core.optimizations import (
+from taipanstack.core.optimizations import (
     OptimizationProfile,
     OptimizationResult,
     apply_optimizations,
     get_optimization_profile,
     get_recommended_thread_pool_size,
 )
-from stack.core.result import Err, Ok, Result
+from taipanstack.core.result import Err, Ok, Result
 
 __all__ = [
     "PY311",

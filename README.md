@@ -1,18 +1,19 @@
 <div align="center">
 
-# ⚡ Stack
+# 🐍 TaipanStack
 
 ### **The Modern Python Foundation**
 
 *Launch secure, high-performance Python applications in seconds.*
 
-[![CI](https://github.com/gabrielima7/Stack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/Stack/actions/workflows/ci.yml)
+[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/Coverage-98%25-success?style=flat&logo=codecov)](https://github.com/gabrielima7/Stack)
+[![Coverage](https://img.shields.io/badge/Coverage-98%25-success?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
 [![Type Checked](https://img.shields.io/badge/Type%20Checked-Mypy-blue?style=flat)](http://mypy-lang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Bandit%20%7C%20Semgrep-red?style=flat)](SECURITY.md)
+[![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
 
 ---
 
@@ -22,11 +23,11 @@
 
 ---
 
-## ✨ Why Stack?
+## ✨ Why TaipanStack?
 
 > **"Write less, build better."**
 
-Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
+TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
 <table>
 <tr>
@@ -82,10 +83,18 @@ Stack is a battle-tested foundation for production-grade Python projects that co
 
 ### Installation
 
+#### From PyPI
+
+```bash
+pip install taipanstack
+```
+
+#### From Source
+
 ```bash
 # Clone the repository
-git clone https://github.com/gabrielima7/Stack.git
-cd Stack
+git clone https://github.com/gabrielima7/TaipanStack.git
+cd TaipanStack
 
 # Install dependencies
 poetry install --with dev
@@ -111,7 +120,7 @@ make security
 
 ## 📐 Architecture
 
-Stack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
+TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
 ```
                     ┌─────────────────────────────────────┐
@@ -138,10 +147,10 @@ Stack follows a clean, layered architecture with strict dependency rules enforce
 ### Project Structure
 
 ```text
-Stack/
+TaipanStack/
 ├── src/
 │   ├── app/              # Application entry point
-│   └── stack/
+│   └── taipanstack/
 │       ├── core/         # 🎯 Result types, functional patterns
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
@@ -156,7 +165,7 @@ Stack/
 
 ## 🔐 DevSecOps
 
-Stack integrates security and quality at every level:
+TaipanStack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
@@ -186,7 +195,7 @@ Stack integrates security and quality at every level:
 ### Result Types (Rust-Style Error Handling)
 
 ```python
-from stack.core.result import Result, Ok, Err, safe
+from taipanstack.core.result import Result, Ok, Err, safe
 
 @safe
 def divide(a: int, b: int) -> float:
@@ -203,7 +212,7 @@ match divide(10, 0):
 ### Security Guards
 
 ```python
-from stack.security.guards import guard_path_traversal, guard_command_injection
+from taipanstack.security.guards import guard_path_traversal, guard_command_injection
 
 # Prevent path traversal attacks
 safe_path = guard_path_traversal(user_input, base_dir="/app/data")
@@ -218,7 +227,7 @@ safe_cmd = guard_command_injection(
 ### Retry with Exponential Backoff
 
 ```python
-from stack.utils.retry import retry
+from taipanstack.utils.retry import retry
 
 @retry(max_attempts=3, on=(ConnectionError, TimeoutError))
 async def fetch_data(url: str) -> dict:
@@ -228,7 +237,7 @@ async def fetch_data(url: str) -> dict:
 ### Circuit Breaker
 
 ```python
-from stack.utils.circuit_breaker import circuit_breaker
+from taipanstack.utils.circuit_breaker import circuit_breaker
 
 @circuit_breaker(failure_threshold=5, timeout=30)
 def call_external_service() -> Response:
@@ -299,6 +308,6 @@ This project is open-sourced under the [MIT License](LICENSE).
 
 **Made with ❤️ for the Python community**
 
-[⬆ Back to Top](#-stack)
+[⬆ Back to Top](#-taipanstack)
 
 </div>

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from stack.security.sanitizers import (
+from taipanstack.security.sanitizers import (
     sanitize_env_value,
     sanitize_filename,
     sanitize_path,

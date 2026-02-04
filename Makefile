@@ -1,7 +1,7 @@
-.PHONY: help install test lint format typecheck security clean lint-imports mutate build-exe all
+.PHONY: help install test lint format typecheck security clean lint-imports mutate build-exe context all
 
 help:
-	@echo "Python Stack Bootstrapper - Development Commands"
+	@echo "TaipanStack - Development Commands"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
@@ -15,6 +15,7 @@ help:
 	@echo "  lint-imports Check architecture with import-linter"
 	@echo "  mutate       Run mutation testing with mutmut"
 	@echo "  build-exe    Build standalone executable with PyApp"
+	@echo "  context      Generate project context for AI with gitingest"
 	@echo "  clean        Clean cache and temporary files"
 	@echo "  all          Run all checks (lint, typecheck, security, test)"
 
@@ -25,10 +26,10 @@ test:
 	poetry run pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
 
 lint:
-	poetry run ruff check src/ tests/ stack_bootstrapper.py
+	poetry run ruff check src/ tests/ taipanstack_bootstrapper.py
 
 format:
-	poetry run ruff format src/ tests/ stack_bootstrapper.py
+	poetry run ruff format src/ tests/ taipanstack_bootstrapper.py
 
 typecheck:
 	poetry run mypy src/ --strict
@@ -53,6 +54,10 @@ mutate:
 build-exe:
 	@echo "Building standalone executable..."
 	@cd pyapp && ./build.sh
+
+context:
+	@echo "Generating project context for AI..."
+	poetry run gitingest .
 
 clean:
 	@echo "Cleaning cache and temporary files..."

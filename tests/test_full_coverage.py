@@ -14,14 +14,14 @@ from unittest import mock
 
 import pytest
 
-from stack.config.models import StackConfig
-from stack.security.guards import SecurityError, guard_env_variable
-from stack.security.sanitizers import sanitize_filename, sanitize_path
-from stack.security.validators import validate_python_version
-from stack.utils.filesystem import ensure_dir, safe_delete, safe_read
-from stack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
-from stack.utils.retry import RetryError, retry
-from stack.utils.subprocess import get_command_version
+from taipanstack.config.models import StackConfig
+from taipanstack.security.guards import SecurityError, guard_env_variable
+from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
+from taipanstack.security.validators import validate_python_version
+from taipanstack.utils.filesystem import ensure_dir, safe_delete, safe_read
+from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
+from taipanstack.utils.retry import RetryError, retry
+from taipanstack.utils.subprocess import get_command_version
 
 # ============================================================================
 # Logging Coverage - Lines 20-21 (HAS_STRUCTLOG=False branch)
@@ -198,8 +198,8 @@ class TestSubprocessVersionEmpty:
 
     def test_get_command_version_empty_output(self) -> None:
         """Test version command that returns empty lines."""
-        with mock.patch("stack.utils.subprocess.run_safe_command") as mock_run:
-            from stack.utils.subprocess import SafeCommandResult
+        with mock.patch("taipanstack.utils.subprocess.run_safe_command") as mock_run:
+            from taipanstack.utils.subprocess import SafeCommandResult
 
             mock_run.return_value = SafeCommandResult(
                 command=["test", "--version"],
@@ -208,7 +208,7 @@ class TestSubprocessVersionEmpty:
                 stderr="",
             )
             with mock.patch(
-                "stack.utils.subprocess.check_command_exists", return_value=True
+                "taipanstack.utils.subprocess.check_command_exists", return_value=True
             ):
                 result = get_command_version("test")
                 assert result is None
@@ -267,7 +267,7 @@ class TestResultCoreExits:
 
     def test_result_unwrap_or_default(self) -> None:
         """Test unwrap_or uses default on error."""
-        from stack.core.result import Err, Ok
+        from taipanstack.core.result import Err, Ok
 
         ok_result = Ok(42)
         err_result = Err("error")
@@ -277,7 +277,7 @@ class TestResultCoreExits:
 
     def test_result_map_err(self) -> None:
         """Test map_err transforms error."""
-        from stack.core.result import Err, Ok
+        from taipanstack.core.result import Err, Ok
 
         ok_result: Ok[int] = Ok(42)
         err_result: Err[str] = Err("original")
@@ -297,7 +297,7 @@ class TestCircuitBreakerExits:
 
     def test_circuit_breaker_success(self) -> None:
         """Test circuit breaker with successful operation."""
-        from stack.utils.circuit_breaker import CircuitBreaker
+        from taipanstack.utils.circuit_breaker import CircuitBreaker
 
         cb = CircuitBreaker(failure_threshold=3, timeout=1.0)
 
@@ -320,7 +320,7 @@ class TestDecoratorsPartialBranches:
 
     def test_timeout_decorator_success(self) -> None:
         """Test timeout decorator when function completes in time."""
-        from stack.security.decorators import timeout
+        from taipanstack.security.decorators import timeout
 
         @timeout(seconds=5)
         def quick_func() -> str:
@@ -340,7 +340,7 @@ class TestMetricsPartialBranches:
 
     def test_metrics_record_time(self) -> None:
         """Test record_time with values."""
-        from stack.utils.metrics import MetricsCollector
+        from taipanstack.utils.metrics import MetricsCollector
 
         collector = MetricsCollector()
         collector.reset()  # Reset singleton state

@@ -7,7 +7,7 @@ import warnings
 
 import pytest
 
-from stack.security.decorators import (
+from taipanstack.security.decorators import (
     OperationTimeoutError,
     ValidationError,
     deprecated,
@@ -16,7 +16,7 @@ from stack.security.decorators import (
     timeout,
     validate_inputs,
 )
-from stack.security.guards import SecurityError
+from taipanstack.security.guards import SecurityError
 
 
 class TestValidateInputs:

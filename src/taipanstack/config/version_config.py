@@ -14,14 +14,14 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from stack.core.compat import (
+from taipanstack.core.compat import (
     PY312,
     PY313,
     PY314,
     VersionTier,
     get_features,
 )
-from stack.core.optimizations import get_recommended_thread_pool_size
+from taipanstack.core.optimizations import get_recommended_thread_pool_size
 
 if TYPE_CHECKING:
     pass

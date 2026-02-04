@@ -2,7 +2,7 @@
 
 import pytest
 
-from stack.security.validators import (
+from taipanstack.security.validators import (
     validate_email,
     validate_ip_address,
     validate_port,

@@ -21,12 +21,12 @@ class TestLoggingWithMockedStructlog:
         # Patch both HAS_STRUCTLOG and structlog module
         with (
             patch.dict("sys.modules", {"structlog": mock_structlog}),
-            patch("stack.utils.logging.HAS_STRUCTLOG", True),
-            patch("stack.utils.logging.structlog", mock_structlog, create=True),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
         ):
             # Re-import to get fresh module state
 
-            import stack.utils.logging as logging_module
+            import taipanstack.utils.logging as logging_module
 
             # Create logger with structured=True
             logger = logging_module.StackLogger(use_structured=True)
@@ -47,10 +47,10 @@ class TestLoggingWithMockedStructlog:
 
         with (
             patch.dict("sys.modules", {"structlog": mock_structlog}),
-            patch("stack.utils.logging.HAS_STRUCTLOG", True),
-            patch("stack.utils.logging.structlog", mock_structlog, create=True),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
         ):
-            import stack.utils.logging as logging_module
+            import taipanstack.utils.logging as logging_module
 
             logger = logging_module.StackLogger(use_structured=True)
             logger.bind(user="test")
@@ -64,10 +64,10 @@ class TestLoggingWithMockedStructlog:
 
         with (
             patch.dict("sys.modules", {"structlog": mock_structlog}),
-            patch("stack.utils.logging.HAS_STRUCTLOG", True),
-            patch("stack.utils.logging.structlog", mock_structlog, create=True),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
         ):
-            import stack.utils.logging as logging_module
+            import taipanstack.utils.logging as logging_module
 
             logger = logging_module.StackLogger(use_structured=True)
             logger._context = {"key": "value"}
@@ -83,10 +83,10 @@ class TestSetupLoggingStructlog:
 
         with (
             patch.dict("sys.modules", {"structlog": mock_structlog}),
-            patch("stack.utils.logging.HAS_STRUCTLOG", True),
-            patch("stack.utils.logging.structlog", mock_structlog, create=True),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
         ):
-            import stack.utils.logging as logging_module
+            import taipanstack.utils.logging as logging_module
 
             logging_module.setup_logging(use_structured=True)
 
@@ -99,7 +99,7 @@ class TestSubprocessTimeoutBranches:
 
     def test_run_safe_command_with_failure(self) -> None:
         """Test run_safe_command with failing command."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
             ["python", "-c", "exit(42)"],
@@ -113,7 +113,7 @@ class TestGuardsRemainingBranches:
 
     def test_guard_path_traversal_symlink(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with symlinks."""
-        from stack.security.guards import guard_path_traversal
+        from taipanstack.security.guards import guard_path_traversal
 
         # Create a file and a symlink to it
         target = tmp_path / "target.txt"
@@ -129,7 +129,7 @@ class TestFilesystemRemainingBranches:
 
     def test_safe_write_create_parents(self, tmp_path: Path) -> None:
         """Test safe_write with create_parents=True."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         # Write to nested path that doesn't exist
         nested_file = tmp_path / "a" / "b" / "c" / "file.txt"
@@ -140,7 +140,7 @@ class TestFilesystemRemainingBranches:
 
     def test_safe_write_atomic_with_existing(self, tmp_path: Path) -> None:
         """Test safe_write atomic with existing file copies permissions."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
@@ -155,7 +155,7 @@ class TestSanitizersRemainingBranches:
 
     def test_sanitize_path_absolute(self, tmp_path: Path) -> None:
         """Test sanitize_path with absolute path."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         # Test with relative path that gets joined with base_dir
         # This works cross-platform
@@ -165,7 +165,7 @@ class TestSanitizersRemainingBranches:
 
     def test_sanitize_path_relative(self) -> None:
         """Test sanitize_path with relative path."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("some/relative/path")
         assert not result.is_absolute()
@@ -176,14 +176,14 @@ class TestValidatorsRemainingBranches:
 
     def test_validate_project_name_starts_with_digit(self) -> None:
         """Test validate_project_name starting with digit."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("123project")
 
     def test_validate_project_name_max_length(self) -> None:
         """Test validate_project_name with max_length parameter."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         # Valid name under default max_length
         result = validate_project_name("validproject")
@@ -191,7 +191,7 @@ class TestValidatorsRemainingBranches:
 
     def test_validate_ip_address_ipv6(self) -> None:
         """Test validate_ip_address with IPv6."""
-        from stack.security.validators import validate_ip_address
+        from taipanstack.security.validators import validate_ip_address
 
         result = validate_ip_address("::1", version="6")
         assert result is not None

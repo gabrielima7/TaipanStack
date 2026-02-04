@@ -14,7 +14,7 @@ class TestSubprocessFinalBranches:
 
     def test_run_safe_command_timeout_branch_stdout_bytes(self) -> None:
         """Test timeout exception with stdout as bytes."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         # Create a mock TimeoutExpired with bytes stdout
         mock_exc = sp.TimeoutExpired(
@@ -32,7 +32,7 @@ class TestSubprocessFinalBranches:
 
     def test_run_safe_command_timeout_branch_stdout_str(self) -> None:
         """Test timeout exception with stdout as string."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         mock_exc = sp.TimeoutExpired(cmd=["test"], timeout=1.0)
         mock_exc.stdout = "partial string output"
@@ -45,7 +45,7 @@ class TestSubprocessFinalBranches:
 
     def test_get_command_version_failure_path(self) -> None:
         """Test get_command_version when command fails."""
-        from stack.utils.subprocess import get_command_version
+        from taipanstack.utils.subprocess import get_command_version
 
         # Test with a command that exists - just verify it works
         get_command_version("true", version_arg="--version")
@@ -60,7 +60,7 @@ class TestGuardsFinalBranches:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test guard_env_variable with denied pattern."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         # Set a safe env variable
         monkeypatch.setenv("MY_SAFE_VAR", "safe_value")
@@ -74,21 +74,21 @@ class TestValidatorsFinalBranches:
 
     def test_validate_project_name_starts_with_hyphen(self) -> None:
         """Test validate_project_name starting with hyphen."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("-myproject")
 
     def test_validate_email_invalid_domain(self) -> None:
         """Test validate_email with invalid domain."""
-        from stack.security.validators import validate_email
+        from taipanstack.security.validators import validate_email
 
         with pytest.raises(ValueError):
             validate_email("user@")
 
     def test_validate_url_invalid_protocol(self) -> None:
         """Test validate_url with invalid protocol."""
-        from stack.security.validators import validate_url
+        from taipanstack.security.validators import validate_url
 
         with pytest.raises(ValueError):
             validate_url("ftp://example.com", allowed_schemes=["http", "https"])
@@ -99,7 +99,7 @@ class TestSanitizersFinalBranches:
 
     def test_sanitize_filename_truncation_with_extension(self) -> None:
         """Test sanitize_filename truncation preserving extension."""
-        from stack.security.sanitizers import sanitize_filename
+        from taipanstack.security.sanitizers import sanitize_filename
 
         # Very long name with extension
         long_name = "a" * 300 + ".txt"
@@ -109,7 +109,7 @@ class TestSanitizersFinalBranches:
 
     def test_sanitize_path_empty_parts(self) -> None:
         """Test sanitize_path handles empty parts."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("a//b/c")
         assert "//" not in str(result)
@@ -120,14 +120,14 @@ class TestFilesystemFinalBranches:
 
     def test_safe_delete_not_found_error(self, tmp_path: Path) -> None:
         """Test safe_delete with missing_ok=False."""
-        from stack.utils.filesystem import safe_delete
+        from taipanstack.utils.filesystem import safe_delete
 
         with pytest.raises(FileNotFoundError):
             safe_delete(tmp_path / "nonexistent", missing_ok=False)
 
     def test_find_files_base_dir(self, tmp_path: Path) -> None:
         """Test find_files with base_dir constraint."""
-        from stack.utils.filesystem import find_files
+        from taipanstack.utils.filesystem import find_files
 
         (tmp_path / "file.txt").touch()
 
@@ -140,7 +140,7 @@ class TestLoggingFinalBranches:
 
     def test_log_operation_with_custom_logger(self) -> None:
         """Test log_operation with custom logger."""
-        from stack.utils.logging import StackLogger, log_operation
+        from taipanstack.utils.logging import StackLogger, log_operation
 
         custom_logger = StackLogger(name="custom")
         with log_operation("test_op", logger=custom_logger) as log:
@@ -152,7 +152,7 @@ class TestRetryFinalBranches:
 
     def test_retry_decorator_success_no_retry(self) -> None:
         """Test retry decorator when function succeeds immediately."""
-        from stack.utils.retry import retry
+        from taipanstack.utils.retry import retry
 
         call_count = 0
 
@@ -172,7 +172,7 @@ class TestModelsFinalBranches:
 
     def test_stack_config_with_all_options(self) -> None:
         """Test StackConfig with all options."""
-        from stack.config.models import StackConfig
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(
             project_name="full_test",

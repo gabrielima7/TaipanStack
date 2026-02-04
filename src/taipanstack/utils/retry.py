@@ -19,7 +19,7 @@ from typing import Any, ParamSpec, TypeVar
 P = ParamSpec("P")
 R = TypeVar("R")
 
-logger = logging.getLogger("stack.utils.retry")
+logger = logging.getLogger("taipanstack.utils.retry")
 
 
 @dataclass(frozen=True)

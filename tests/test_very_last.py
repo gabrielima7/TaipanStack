@@ -13,7 +13,7 @@ class TestValidatorsVersionConversion:
 
     def test_validate_python_version_with_letters(self) -> None:
         """Test validate_python_version with letters in version."""
-        from stack.security.validators import validate_python_version
+        from taipanstack.security.validators import validate_python_version
 
         with pytest.raises(ValueError, match="Invalid version"):
             validate_python_version("3.x")
@@ -24,7 +24,7 @@ class TestGuardsOSErrorMocked:
 
     def test_guard_path_basic_works(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with basic case."""
-        from stack.security.guards import guard_path_traversal
+        from taipanstack.security.guards import guard_path_traversal
 
         file = tmp_path / "test.txt"
         file.write_text("test")
@@ -38,7 +38,7 @@ class TestGuardsSymlinkMocked:
 
     def test_guard_path_traversal_symlink_mocked(self, tmp_path: Path) -> None:
         """Test guard_path_traversal symlink detection with mock."""
-        from stack.security.guards import SecurityError, guard_path_traversal
+        from taipanstack.security.guards import SecurityError, guard_path_traversal
 
         target = tmp_path / "real_file.txt"
         target.write_text("content")
@@ -54,7 +54,7 @@ class TestSanitizersResolveError:
 
     def test_sanitize_path_works(self, tmp_path: Path) -> None:
         """Test sanitize_path with valid path."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
@@ -65,7 +65,7 @@ class TestFilesystemWriteError:
 
     def test_safe_write_existing_permissions(self, tmp_path: Path) -> None:
         """Test safe_write preserves permissions on existing file."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
@@ -80,7 +80,7 @@ class TestRetryMaxAttemptsBranch:
 
     def test_retry_exhausts_all_attempts(self) -> None:
         """Test retry when all attempts fail."""
-        from stack.utils.retry import RetryError, retry
+        from taipanstack.utils.retry import RetryError, retry
 
         @retry(max_attempts=2, initial_delay=0.001, on=(ValueError,))
         def always_fails() -> None:
@@ -95,7 +95,7 @@ class TestSubprocessCheckCommand:
 
     def test_check_command_exists_edge(self) -> None:
         """Test check_command_exists with edge cases."""
-        from stack.utils.subprocess import check_command_exists
+        from taipanstack.utils.subprocess import check_command_exists
 
         # Command that definitely doesn't exist
         assert check_command_exists("zzzzz_fake_command") is False
@@ -109,7 +109,7 @@ class TestLoggingStructlogBranches:
 
     def test_logging_with_structlog_real(self) -> None:
         """Test logging with real structlog."""
-        from stack.utils.logging import HAS_STRUCTLOG, StackLogger
+        from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger
 
         assert HAS_STRUCTLOG is True
 

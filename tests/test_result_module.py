@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from stack.core.result import (
+from taipanstack.core.result import (
     Err,
     Ok,
     Result,

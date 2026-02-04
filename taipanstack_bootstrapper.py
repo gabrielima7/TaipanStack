@@ -544,7 +544,7 @@ def main() -> None:
     """Função principal para orquestrar a configuração do ambiente."""
     args = _setup_cli()
 
-    _log(f"\n🚀 Python Stack Bootstrapper v{__version__}", args)
+    _log(f"\n🐍 TaipanStack Bootstrapper v{__version__}", args)
     _log("Iniciando a configuração do ambiente Python de alta performance...\n", args)
 
     # Verificações iniciais

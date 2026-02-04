@@ -1,14 +1,14 @@
 [project]
-name = "stack"
-version = "2.0.0"
-description = "Modular, secure, and scalable Python stack for robust development"
+name = "taipanstack"
+version = "0.2.0"
+description = "TaipanStack - Modular, secure, and scalable Python stack for robust development"
 authors = [
-    {name = "gabrielima7", email = "gabrielima7@users.noreply.github.com"}
+    {name = "gabrielima7", email = "gabrielima.alu.lmb@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4.0"
 license = {text = "MIT"}
-keywords = ["security", "devops", "python", "stack", "bootstrapper"]
+keywords = ["security", "devops", "python", "taipanstack", "bootstrapper", "quality"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -24,10 +24,19 @@ classifiers = [
 ]
 dependencies = [
     "pydantic (>=2.0)",
+    "pydantic-settings (>=2.0.0)",
     "orjson (>=3.9.0)",
     "email-validator (>=2.0.0)",
     "result (>=0.17.0)",
 ]
+
+[project.urls]
+Homepage = "https://github.com/gabrielima7/TaipanStack"
+Documentation = "https://github.com/gabrielima7/TaipanStack#readme"
+Repository = "https://github.com/gabrielima7/TaipanStack"
+Changelog = "https://github.com/gabrielima7/TaipanStack/blob/main/CHANGELOG.md"
+Issues = "https://github.com/gabrielima7/TaipanStack/issues"
+
 
 [project.optional-dependencies]
 runtime = [
@@ -53,13 +62,15 @@ dev = [
     "vulture (>=2.11)",
     "interrogate (>=1.5.0)",
     "hypothesis (>=6.100.0)",
+    "polyfactory (>=2.0.0)",
     "structlog (>=25.5.0,<26.0.0)",
     "import-linter (>=2.1)",
+    "gitingest (>=0.1.0)",
 ]
 
 
 
-# --- Stack v2.0 Quality Configuration ---
+# --- TaipanStack v2.0 Quality Configuration ---
 [tool.ruff]
 line-length = 88
 target-version = "py311"
@@ -101,21 +112,21 @@ max-complexity = 10
 [tool.ruff.lint.per-file-ignores]
 # Tests: allow asserts, skip docs, magic values, unused args, long lines, shadowing builtins
 "tests/**/*.py" = ["S101", "D", "PLR2004", "ARG001", "ARG002", "SIM117", "RUF043", "PLC0415", "E501", "A004", "TRY301", "UP024"]
-# Stack bootstrapper: allow print, long lines, complex branches, docstring style, unused args
-"stack_bootstrapper.py" = ["T201", "E501", "PLR0912", "TRY300", "S603", "D205", "ARG001"]
+# TaipanStack bootstrapper: allow print, long lines, complex branches, docstring style, unused args
+"taipanstack_bootstrapper.py" = ["T201", "E501", "PLR0912", "TRY300", "S603", "D205", "ARG001"]
 # Utils: allow too many args, subprocess, random for jitter
-"src/stack/utils/*.py" = ["PLR0913", "S603", "TRY300", "S311", "TRY400"]
+"src/taipanstack/utils/*.py" = ["PLR0913", "S603", "TRY300", "S311", "TRY400"]
 # Config generators: allow long lines in generated content
-"src/stack/config/generators.py" = ["E501"]
+"src/taipanstack/config/generators.py" = ["E501"]
 # Sanitizers: allow many branches for complex validation logic
-"src/stack/security/sanitizers.py" = ["PLR0912"]
+"src/taipanstack/security/sanitizers.py" = ["PLR0912"]
 # Decorators: allow inline imports for lazy loading, unused signal args, D401 imperative mood
-"src/stack/security/decorators.py" = ["PLC0415", "ARG001", "D401"]
+"src/taipanstack/security/decorators.py" = ["PLC0415", "ARG001", "D401"]
 # Circuit breaker and metrics: allow D401 for decorator docstrings
-"src/stack/utils/circuit_breaker.py" = ["D401"]
-"src/stack/utils/metrics.py" = ["D401"]
+"src/taipanstack/utils/circuit_breaker.py" = ["D401"]
+"src/taipanstack/utils/metrics.py" = ["D401"]
 # Core result: allow D401 for utility function docstrings
-"src/stack/core/result.py" = ["D401"]
+"src/taipanstack/core/result.py" = ["D401"]
 
 [tool.ruff.format]
 quote-style = "double"

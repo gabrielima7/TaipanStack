@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from stack.config.generators import (
+from taipanstack.config.generators import (
     generate_dependabot_config,
     generate_editorconfig,
     generate_pre_commit_config,
@@ -12,7 +12,7 @@ from stack.config.generators import (
     generate_security_policy,
     write_config_file,
 )
-from stack.config.models import StackConfig
+from taipanstack.config.models import StackConfig
 
 
 class TestGeneratePyprojectConfig:

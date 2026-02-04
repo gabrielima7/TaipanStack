@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from stack.utils.retry import (
+from taipanstack.utils.retry import (
     Retrier,
     RetryConfig,
     RetryError,

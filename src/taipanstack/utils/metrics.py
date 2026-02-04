@@ -20,7 +20,7 @@ from typing import Any, ParamSpec, TypeVar
 P = ParamSpec("P")
 R = TypeVar("R")
 
-logger = logging.getLogger("stack.utils.metrics")
+logger = logging.getLogger("taipanstack.utils.metrics")
 
 
 @dataclass

@@ -20,7 +20,7 @@ from typing import ParamSpec, TypeVar
 P = ParamSpec("P")
 R = TypeVar("R")
 
-logger = logging.getLogger("stack.utils.circuit_breaker")
+logger = logging.getLogger("taipanstack.utils.circuit_breaker")
 
 
 class CircuitState(Enum):

@@ -6,7 +6,7 @@ avoiding exceptions for expected failure cases. This promotes safer,
 more predictable code.
 
 Example:
-    >>> from stack.core.result import safe, Ok, Err
+    >>> from taipanstack.core.result import safe, Ok, Err
     >>> @safe
     ... def divide(a: int, b: int) -> float:
     ...     if b == 0:

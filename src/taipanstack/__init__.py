@@ -1,18 +1,18 @@
 """
-Stack - Python Security & Quality Bootstrapper.
+TaipanStack - Python Security & Quality Bootstrapper.
 
 A modular, secure, and scalable Python stack for robust development.
 Supports Python 3.11+ with version-aware optimizations for 3.13/3.14.
 """
 
-__version__ = "2.1.0"
+__version__ = "2.0.0"
 
-from stack.config.models import StackConfig
-from stack.config.version_config import (
+from taipanstack.config.models import StackConfig
+from taipanstack.config.version_config import (
     VersionRecommendations,
     get_version_recommendations,
 )
-from stack.core.compat import (
+from taipanstack.core.compat import (
     PY311,
     PY312,
     PY313,
@@ -21,12 +21,12 @@ from stack.core.compat import (
     get_features,
     get_python_info,
 )
-from stack.core.optimizations import apply_optimizations, get_optimization_profile
-from stack.security.guards import (
+from taipanstack.core.optimizations import apply_optimizations, get_optimization_profile
+from taipanstack.security.guards import (
     guard_command_injection,
     guard_path_traversal,
 )
-from stack.security.validators import (
+from taipanstack.security.validators import (
     validate_email,
     validate_project_name,
     validate_python_version,

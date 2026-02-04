@@ -16,9 +16,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeAlias
 
-from stack.core.result import Err, Ok, Result
-from stack.security.guards import SecurityError, guard_path_traversal
-from stack.security.sanitizers import sanitize_filename
+from taipanstack.core.result import Err, Ok, Result
+from taipanstack.security.guards import SecurityError, guard_path_traversal
+from taipanstack.security.sanitizers import sanitize_filename
 
 
 @dataclass(frozen=True)

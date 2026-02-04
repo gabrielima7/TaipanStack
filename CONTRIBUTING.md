@@ -1,6 +1,6 @@
-# Contributing to Python Stack
+# Contributing to TaipanStack
 
-First off, thank you for considering contributing to Python Stack! It's people like you that make this tool better for everyone.
+First off, thank you for considering contributing to TaipanStack! It's people like you that make this tool better for everyone.
 
 ## Code of Conduct
 
@@ -41,7 +41,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.11 or higher
 - Poetry (install via `pipx install poetry`)
 - Git
 
@@ -49,11 +49,11 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/stack.git
-cd stack
+git clone https://github.com/YOUR-USERNAME/TaipanStack.git
+cd TaipanStack
 
 # Install dependencies
-poetry install
+poetry install --with dev
 
 # Activate virtual environment
 poetry shell
@@ -69,7 +69,7 @@ pre-commit install
 pytest
 
 # Run with coverage
-pytest --cov=. --cov-report=html
+pytest --cov=src --cov-report=html
 
 # View coverage report
 open htmlcov/index.html  # macOS
@@ -80,16 +80,16 @@ xdg-open htmlcov/index.html  # Linux
 
 ```bash
 # Run linter
-ruff check stack.py
+ruff check src/ tests/ taipanstack_bootstrapper.py
 
 # Run formatter
-ruff format stack.py
+ruff format src/ tests/ taipanstack_bootstrapper.py
 
 # Run type checker
-mypy stack.py
+mypy src/ --strict
 
 # Run security scanner
-bandit -r stack.py
+bandit -r src/
 
 # Check dependencies for vulnerabilities
 safety check
@@ -163,10 +163,10 @@ Types:
 
 Examples:
 ```
-feat(cli): add --install-runtime-deps flag
+feat(security): add SQL injection guard
 
-Add optional flag to control installation of runtime dependencies
-like pydantic and orjson, making them opt-in rather than default.
+Add new guard function to prevent SQL injection attacks
+in database queries.
 
 Closes #42
 ```
@@ -174,10 +174,17 @@ Closes #42
 ## Project Structure
 
 ```
-stack/
-├── stack.py              # Main script
+TaipanStack/
+├── taipanstack_bootstrapper.py  # Bootstrapper script
+├── src/
+│   ├── app/                     # Application entry point
+│   └── taipanstack/             # Main package
+│       ├── core/                # Result types, patterns
+│       ├── config/              # Configuration
+│       ├── security/            # Security utilities
+│       └── utils/               # General utilities
 ├── tests/
-│   └── test_stack_script.py
+│   └── *.py                     # Test files
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -190,11 +197,12 @@ stack/
 
 ## Release Process
 
-1. Update version in `stack.py` (`__version__`)
+1. Update version in `pyproject.toml` and `src/taipanstack/__init__.py`
 2. Update `CHANGELOG.md` with release notes
-3. Create a git tag: `git tag -a v1.0.0 -m "Release v1.0.0"`
-4. Push tag: `git push origin v1.0.0`
+3. Create a git tag: `git tag -a v2.0.0 -m "Release v2.0.0"`
+4. Push tag: `git push origin v2.0.0`
 5. GitHub Actions will automatically create a release
+6. Publish to PyPI: `poetry publish --build`
 
 ## Questions?
 

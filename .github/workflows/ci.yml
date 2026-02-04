@@ -1,4 +1,4 @@
-name: Stack CI
+name: TaipanStack CI
 
 on:
   push:
@@ -162,10 +162,10 @@ jobs:
         run: pip install ruff
 
       - name: Run ruff check
-        run: ruff check src/ tests/ stack_bootstrapper.py
+        run: ruff check src/ tests/ taipanstack_bootstrapper.py
 
       - name: Run ruff format check
-        run: ruff format --check src/ tests/ stack_bootstrapper.py
+        run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
 
   typecheck:
     name: Type Checking
@@ -250,8 +250,8 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Run stack_bootstrapper.py in dry-run mode
-        run: python stack_bootstrapper.py --dry-run --verbose
+      - name: Run taipanstack_bootstrapper.py in dry-run mode
+        run: python taipanstack_bootstrapper.py --dry-run --verbose
 
   integration:
     name: Integration Test
@@ -270,11 +270,11 @@ jobs:
         run: pipx install poetry
 
       - name: Create test directory
-        run: mkdir -p /tmp/stack-test && cd /tmp/stack-test
+        run: mkdir -p /tmp/taipanstack-test && cd /tmp/taipanstack-test
 
-      - name: Run stack_bootstrapper.py
-        run: python $GITHUB_WORKSPACE/stack_bootstrapper.py --verbose
-        working-directory: /tmp/stack-test
+      - name: Run taipanstack_bootstrapper.py
+        run: python $GITHUB_WORKSPACE/taipanstack_bootstrapper.py --verbose
+        working-directory: /tmp/taipanstack-test
 
       - name: Verify files created
         run: |
@@ -285,7 +285,7 @@ jobs:
           test -f .github/dependabot.yml
           test -d src
           test -d tests
-        working-directory: /tmp/stack-test
+        working-directory: /tmp/taipanstack-test
 
       - name: Show project structure
         run: |
@@ -293,7 +293,7 @@ jobs:
           find . -type f -name "*.py" | head -20
           echo "=== Configuration Files ==="
           ls -la *.toml *.yaml *.yml 2>/dev/null || true
-        working-directory: /tmp/stack-test
+        working-directory: /tmp/taipanstack-test
 
   docstring-coverage:
     name: Docstring Coverage

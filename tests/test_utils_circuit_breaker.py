@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from stack.utils.circuit_breaker import (
+from taipanstack.utils.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,
     CircuitState,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 
-from stack.utils.metrics import (
+from taipanstack.utils.metrics import (
     Counter,
     MetricsCollector,
     TimingStats,

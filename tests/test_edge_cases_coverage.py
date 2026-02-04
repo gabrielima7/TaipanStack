@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from stack.core.result import Err
-from stack.security.guards import SecurityError
+from taipanstack.core.result import Err
+from taipanstack.security.guards import SecurityError
 
 
 class TestFilesystemEdgeCases:
@@ -16,7 +16,7 @@ class TestFilesystemEdgeCases:
 
     def test_safe_read_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
         """Test safe_read with .. in path but no base_dir uses cwd."""
-        from stack.utils.filesystem import safe_read
+        from taipanstack.utils.filesystem import safe_read
 
         # Create a file in tmp_path
         test_file = tmp_path / "test.txt"
@@ -32,7 +32,7 @@ class TestFilesystemEdgeCases:
 
     def test_safe_write_existing_file_guarded(self, tmp_path: Path) -> None:
         """Test safe_write with existing file and base_dir."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         test_file = tmp_path / "existing.txt"
         test_file.write_text("old content")
@@ -42,14 +42,14 @@ class TestFilesystemEdgeCases:
 
     def test_safe_write_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
         """Test safe_write with .. triggers guard."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         with pytest.raises(SecurityError):
             safe_write(tmp_path / ".." / "bad.txt", "content")
 
     def test_safe_write_atomic_error_cleanup(self, tmp_path: Path) -> None:
         """Test atomic write cleans up temp file on error."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         test_file = tmp_path / "test.txt"
 
@@ -60,7 +60,7 @@ class TestFilesystemEdgeCases:
 
     def test_safe_copy_dst_exists_base_dir(self, tmp_path: Path) -> None:
         """Test safe_copy with existing dst and base_dir."""
-        from stack.utils.filesystem import safe_copy
+        from taipanstack.utils.filesystem import safe_copy
 
         src = tmp_path / "src.txt"
         dst = tmp_path / "dst.txt"
@@ -72,7 +72,7 @@ class TestFilesystemEdgeCases:
 
     def test_safe_copy_dst_parent_guarded(self, tmp_path: Path) -> None:
         """Test safe_copy dst parent is guarded when dst doesn't exist."""
-        from stack.utils.filesystem import safe_copy
+        from taipanstack.utils.filesystem import safe_copy
 
         src = tmp_path / "src.txt"
         dst = tmp_path / "subdir" / "dst.txt"
@@ -84,7 +84,7 @@ class TestFilesystemEdgeCases:
 
     def test_find_files_recursive(self, tmp_path: Path) -> None:
         """Test find_files with recursive search."""
-        from stack.utils.filesystem import find_files
+        from taipanstack.utils.filesystem import find_files
 
         # Create test structure
         (tmp_path / "a.txt").touch()
@@ -98,7 +98,7 @@ class TestFilesystemEdgeCases:
 
     def test_get_file_hash_algorithms(self, tmp_path: Path) -> None:
         """Test get_file_hash with different algorithms."""
-        from stack.utils.filesystem import get_file_hash
+        from taipanstack.utils.filesystem import get_file_hash
 
         test_file = tmp_path / "test.txt"
         test_file.write_text("test content")
@@ -116,7 +116,7 @@ class TestLoggingEdgeCases:
 
     def test_stack_logger_bind_context(self) -> None:
         """Test StackLogger with bind context."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger()
         logger.bind(user="test", request_id="123")
@@ -126,7 +126,7 @@ class TestLoggingEdgeCases:
 
     def test_stack_logger_unbind_context(self) -> None:
         """Test unbinding logger context."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger()
         logger.bind(key="value")
@@ -136,13 +136,13 @@ class TestLoggingEdgeCases:
 
     def test_setup_logging_basic(self) -> None:
         """Test setup_logging basic configuration."""
-        from stack.utils.logging import setup_logging
+        from taipanstack.utils.logging import setup_logging
 
         setup_logging(level="DEBUG")
 
     def test_log_operation_decorator(self) -> None:
         """Test log_operation decorator."""
-        from stack.utils.logging import log_operation
+        from taipanstack.utils.logging import log_operation
 
         @log_operation("test_op")
         def my_func(x: int) -> int:
@@ -153,7 +153,7 @@ class TestLoggingEdgeCases:
 
     def test_log_operation_with_error(self) -> None:
         """Test log_operation decorator with error."""
-        from stack.utils.logging import log_operation
+        from taipanstack.utils.logging import log_operation
 
         @log_operation("failing_op")
         def failing_func() -> None:
@@ -173,7 +173,7 @@ class TestDecoratorsEdgeCases:
         if platform.system() == "Windows":
             pytest.skip("Signal timeout not available on Windows")
 
-        from stack.security.decorators import OperationTimeoutError, timeout
+        from taipanstack.security.decorators import OperationTimeoutError, timeout
 
         @timeout(0.1, use_signal=True)
         def slow_func() -> None:
@@ -190,7 +190,7 @@ class TestGuardsEdgeCases:
 
     def test_guard_command_injection_with_whitelist(self) -> None:
         """Test guard_command_injection with custom whitelist."""
-        from stack.security.guards import guard_command_injection
+        from taipanstack.security.guards import guard_command_injection
 
         cmd = ["python", "--version"]
         result = guard_command_injection(cmd, allowed_commands=["python", "pip"])
@@ -202,14 +202,14 @@ class TestSanitizersEdgeCases:
 
     def test_sanitize_string_with_null_bytes(self) -> None:
         """Test sanitizing string with null bytes."""
-        from stack.security.sanitizers import sanitize_string
+        from taipanstack.security.sanitizers import sanitize_string
 
         result = sanitize_string("hello\x00world")
         assert "\x00" not in result
 
     def test_sanitize_path_with_special_chars(self) -> None:
         """Test sanitizing path with special characters."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("/path/to/../file")
         assert ".." not in str(result)
@@ -220,14 +220,14 @@ class TestValidatorsEdgeCases:
 
     def test_validate_project_name_reserved(self) -> None:
         """Test that reserved names are rejected."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="reserved"):
             validate_project_name("test")
 
     def test_validate_url_with_ip(self) -> None:
         """Test validating URL with IP address."""
-        from stack.security.validators import validate_url
+        from taipanstack.security.validators import validate_url
 
         result = validate_url("http://192.168.1.1:8080", require_tld=False)
         assert "192.168.1.1" in result
@@ -238,7 +238,7 @@ class TestRetryEdgeCases:
 
     def test_retrier_multiple_attempts(self) -> None:
         """Test Retrier with a loop for multiple attempts."""
-        from stack.utils.retry import Retrier
+        from taipanstack.utils.retry import Retrier
 
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
         attempt_count = 0
@@ -262,7 +262,7 @@ class TestSubprocessEdgeCases:
 
     def test_run_safe_command_with_env(self) -> None:
         """Test run_safe_command with custom environment."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
             ["echo", "test"],
@@ -272,7 +272,7 @@ class TestSubprocessEdgeCases:
 
     def test_get_command_version_not_found(self) -> None:
         """Test get_command_version with non-existent command."""
-        from stack.utils.subprocess import get_command_version
+        from taipanstack.utils.subprocess import get_command_version
 
         result = get_command_version("nonexistent_command_xyz")
         assert result is None
@@ -285,7 +285,7 @@ class TestCircuitBreakerEdgeCases:
         """Test circuit transitions from half-open to closed."""
         import time
 
-        from stack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(
             failure_threshold=1,

@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Adiciona o diretório raiz ao path para que o `stack_bootstrapper` possa ser importado
+# Adiciona o diretório raiz ao path para que o `taipanstack_bootstrapper` possa ser importado
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import stack_bootstrapper as stack
+import taipanstack_bootstrapper as taipanstack
 
 
 @pytest.fixture(autouse=True)
@@ -28,8 +28,8 @@ def setup_teardown(tmp_path, monkeypatch):
 
 def run_main_with_args(args):
     """Helper para rodar a função main do script com argumentos específicos."""
-    with patch.object(sys, "argv", ["stack.py", *args]):
-        stack.main()
+    with patch.object(sys, "argv", ["taipanstack_bootstrapper.py", *args]):
+        taipanstack.main()
 
 
 def test_dry_run_does_not_create_files(tmp_path):
@@ -177,7 +177,7 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
 
     # Mock platform.system to avoid subprocess issues on Windows
-    with patch("stack_bootstrapper.platform.system", return_value="Linux"):
+    with patch("taipanstack_bootstrapper.platform.system", return_value="Linux"):
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = subprocess.CompletedProcess([], 0)
             run_main_with_args(["--install-runtime-deps"])

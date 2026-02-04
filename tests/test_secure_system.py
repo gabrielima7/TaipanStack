@@ -14,7 +14,7 @@ from app.secure_system import (
     UserRepository,
     UserService,
 )
-from stack.core.result import Err, Ok
+from taipanstack.core.result import Err, Ok
 
 
 def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:

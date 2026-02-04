@@ -1,6 +1,6 @@
 """Security package for runtime protection."""
 
-from stack.security.decorators import (
+from taipanstack.security.decorators import (
     OperationTimeoutError,
     ValidationError,
     deprecated,
@@ -9,19 +9,19 @@ from stack.security.decorators import (
     timeout,
     validate_inputs,
 )
-from stack.security.guards import (
+from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
     guard_env_variable,
     guard_file_extension,
     guard_path_traversal,
 )
-from stack.security.sanitizers import (
+from taipanstack.security.sanitizers import (
     sanitize_filename,
     sanitize_path,
     sanitize_string,
 )
-from stack.security.validators import (
+from taipanstack.security.validators import (
     validate_email,
     validate_project_name,
     validate_python_version,

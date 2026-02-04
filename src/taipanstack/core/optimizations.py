@@ -15,7 +15,7 @@ import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from stack.core.compat import (
+from taipanstack.core.compat import (
     PY312,
     PY313,
     PY314,
