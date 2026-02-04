@@ -166,13 +166,13 @@ class TestGetVersionRecommendations:
     def test_recommendations_for_314(self) -> None:
         """Test recommendations for Python 3.14."""
         with patch("taipanstack.config.version_config.PY314", True):
-                rec = get_version_recommendations()
-                assert rec.version_tier == VersionTier.CUTTING_EDGE
-                assert rec.min_version == "3.14.0"
-                assert rec.max_version is None  # Latest
-                assert rec.use_mimalloc
-                assert rec.recommended_gc_mode == "incremental"
-                assert len(rec.notes) >= 4  # Should have comprehensive notes
+            rec = get_version_recommendations()
+            assert rec.version_tier == VersionTier.CUTTING_EDGE
+            assert rec.min_version == "3.14.0"
+            assert rec.max_version is None  # Latest
+            assert rec.use_mimalloc
+            assert rec.recommended_gc_mode == "incremental"
+            assert len(rec.notes) >= 4  # Should have comprehensive notes
 
     def test_recommendations_for_314_with_features(self) -> None:
         """Test recommendations for Python 3.14 with experimental features."""
