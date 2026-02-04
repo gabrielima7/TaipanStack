@@ -15,7 +15,7 @@ import threading
 from collections.abc import Callable, Mapping
 from typing import Any, ParamSpec, TypeVar
 
-from stack.security.guards import SecurityError
+from taipanstack.security.guards import SecurityError
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -75,7 +75,7 @@ def validate_inputs(
         Decorated function with input validation.
 
     Example:
-        >>> from stack.security.validators import validate_email, validate_port
+        >>> from taipanstack.security.validators import validate_email, validate_port
         >>> @validate_inputs(email=validate_email, port=validate_port)
         ... def connect(email: str, port: int) -> None:
         ...     pass
@@ -158,7 +158,7 @@ def guard_exceptions(
                 if log_errors:
                     import logging
 
-                    logging.getLogger("stack.security").warning(
+                    logging.getLogger("taipanstack.security").warning(
                         "Exception caught in %s: %s",
                         func.__name__,
                         str(e),

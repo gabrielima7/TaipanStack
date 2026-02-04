@@ -14,7 +14,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from stack.security.guards import SecurityError, guard_command_injection
+from taipanstack.security.guards import SecurityError, guard_command_injection
 
 
 @dataclass(frozen=True)

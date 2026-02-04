@@ -12,13 +12,13 @@ class TestLoggingWithRealStructlog:
 
     def test_has_structlog_true(self) -> None:
         """Verify that HAS_STRUCTLOG is True now."""
-        from stack.utils.logging import HAS_STRUCTLOG
+        from taipanstack.utils.logging import HAS_STRUCTLOG
 
         assert HAS_STRUCTLOG is True
 
     def test_stack_logger_structured_mode(self) -> None:
         """Test StackLogger in structured mode."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger(name="test_structured", use_structured=True)
 
@@ -30,7 +30,7 @@ class TestLoggingWithRealStructlog:
 
     def test_stack_logger_structured_bind(self) -> None:
         """Test StackLogger.bind in structured mode."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger(use_structured=True)
         logger.bind(user="testuser", request_id="123")
@@ -38,7 +38,7 @@ class TestLoggingWithRealStructlog:
 
     def test_stack_logger_structured_unbind(self) -> None:
         """Test StackLogger.unbind in structured mode."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger(use_structured=True)
         logger.bind(key1="value1", key2="value2")
@@ -47,7 +47,7 @@ class TestLoggingWithRealStructlog:
 
     def test_stack_logger_structured_exception(self) -> None:
         """Test StackLogger.exception in structured mode."""
-        from stack.utils.logging import StackLogger
+        from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger(use_structured=True)
         try:
@@ -57,7 +57,7 @@ class TestLoggingWithRealStructlog:
 
     def test_setup_logging_structured(self) -> None:
         """Test setup_logging with use_structured=True."""
-        from stack.utils.logging import setup_logging
+        from taipanstack.utils.logging import setup_logging
 
         setup_logging(level="DEBUG", use_structured=True)
 
@@ -67,7 +67,7 @@ class TestSubprocessTimeoutEdgeCases:
 
     def test_run_safe_command_check_false(self) -> None:
         """Test run_safe_command with check=False."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
             ["python", "-c", "exit(5)"],
@@ -78,7 +78,7 @@ class TestSubprocessTimeoutEdgeCases:
 
     def test_get_command_version_with_version_flag(self) -> None:
         """Test get_command_version with custom version_arg."""
-        from stack.utils.subprocess import get_command_version
+        from taipanstack.utils.subprocess import get_command_version
 
         result = get_command_version("python", version_arg="--version")
         assert result is not None
@@ -90,35 +90,35 @@ class TestValidatorsMissingBranches:
 
     def test_validate_project_name_with_hyphen_false(self) -> None:
         """Test validate_project_name with allow_hyphen=False."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my-project", allow_hyphen=False)
 
     def test_validate_project_name_with_underscore_false(self) -> None:
         """Test validate_project_name with allow_underscore=False."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my_project", allow_underscore=False)
 
     def test_validate_python_version_exact(self) -> None:
         """Test validate_python_version with exact version."""
-        from stack.security.validators import validate_python_version
+        from taipanstack.security.validators import validate_python_version
 
         result = validate_python_version("3.11")
         assert result == "3.11"
 
     def test_validate_email_with_subdomain(self) -> None:
         """Test validate_email with subdomain."""
-        from stack.security.validators import validate_email
+        from taipanstack.security.validators import validate_email
 
         result = validate_email("user@mail.example.com")
         assert "example.com" in result
 
     def test_validate_semver_full(self) -> None:
         """Test validate_semver with full version."""
-        from stack.security.validators import validate_semver
+        from taipanstack.security.validators import validate_semver
 
         result = validate_semver("1.2.3")
         assert result == (1, 2, 3)
@@ -129,7 +129,7 @@ class TestGuardsMissingBranches:
 
     def test_guard_command_injection_allowed(self) -> None:
         """Test guard_command_injection with allowed commands."""
-        from stack.security.guards import guard_command_injection
+        from taipanstack.security.guards import guard_command_injection
 
         # Test allowed command
         result = guard_command_injection(
@@ -144,7 +144,7 @@ class TestSanitizersMissingBranches:
 
     def test_sanitize_filename_preserve_extension_false(self) -> None:
         """Test sanitize_filename with preserve_extension=False."""
-        from stack.security.sanitizers import sanitize_filename
+        from taipanstack.security.sanitizers import sanitize_filename
 
         result = sanitize_filename("file.txt", preserve_extension=False)
         # Should not have the extension
@@ -152,14 +152,14 @@ class TestSanitizersMissingBranches:
 
     def test_sanitize_path_with_base_dir(self, tmp_path: Path) -> None:
         """Test sanitize_path with base_dir."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert str(tmp_path) in str(result)
 
     def test_sanitize_path_resolve_true(self, tmp_path: Path) -> None:
         """Test sanitize_path with resolve=True."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         # Create the file first
         test_file = tmp_path / "test.txt"
@@ -176,7 +176,7 @@ class TestFilesystemMissingBranches:
 
     def test_safe_read_with_base_dir_traversal(self, tmp_path: Path) -> None:
         """Test safe_read when path has .. but base_dir guards it."""
-        from stack.utils.filesystem import safe_read
+        from taipanstack.utils.filesystem import safe_read
 
         test_file = tmp_path / "file.txt"
         test_file.write_text("content")
@@ -187,7 +187,7 @@ class TestFilesystemMissingBranches:
 
     def test_ensure_dir_with_base_dir(self, tmp_path: Path) -> None:
         """Test ensure_dir with base_dir constraint."""
-        from stack.utils.filesystem import ensure_dir
+        from taipanstack.utils.filesystem import ensure_dir
 
         new_dir = tmp_path / "new_subdir"
         result = ensure_dir(new_dir, base_dir=tmp_path)
@@ -195,7 +195,7 @@ class TestFilesystemMissingBranches:
 
     def test_find_files_include_hidden(self, tmp_path: Path) -> None:
         """Test find_files with include_hidden=True."""
-        from stack.utils.filesystem import find_files
+        from taipanstack.utils.filesystem import find_files
 
         # Create hidden file
         hidden = tmp_path / ".hidden"
@@ -212,8 +212,8 @@ class TestGeneratorsBranches:
 
     def test_generate_pre_commit_basic(self) -> None:
         """Test generate_pre_commit_config function."""
-        from stack.config.generators import generate_pre_commit_config
-        from stack.config.models import StackConfig
+        from taipanstack.config.generators import generate_pre_commit_config
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(project_name="testproject")
 
@@ -227,7 +227,7 @@ class TestModelsBranches:
 
     def test_stack_config_to_dict(self) -> None:
         """Test StackConfig.to_dict method if it exists."""
-        from stack.config.models import StackConfig
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(project_name="test", python_version="3.12")
 
@@ -241,7 +241,7 @@ class TestRetryMissingBranches:
 
     def test_retry_with_max_delay(self) -> None:
         """Test retry respects max_delay."""
-        from stack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.utils.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(
             initial_delay=10.0,

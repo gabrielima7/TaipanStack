@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from stack.core.result import Err, Ok
-from stack.security.guards import SecurityError
-from stack.utils.filesystem import (
+from taipanstack.core.result import Err, Ok
+from taipanstack.security.guards import SecurityError
+from taipanstack.utils.filesystem import (
     FileNotFoundErr,
     FileTooLargeErr,
     NotAFileErr,

@@ -29,8 +29,8 @@ class TestConfigGeneratorsBranches:
 
     def test_generate_pre_commit_without_bandit(self) -> None:
         """Test pre-commit config without bandit enabled."""
-        from stack.config.generators import generate_pre_commit_config
-        from stack.config.models import SecurityConfig, StackConfig
+        from taipanstack.config.generators import generate_pre_commit_config
+        from taipanstack.config.models import SecurityConfig, StackConfig
 
         config = StackConfig(
             project_name="testproj",
@@ -46,8 +46,8 @@ class TestConfigGeneratorsBranches:
 
     def test_generate_pre_commit_with_safety_only(self) -> None:
         """Test pre-commit config with safety only."""
-        from stack.config.generators import generate_pre_commit_config
-        from stack.config.models import SecurityConfig, StackConfig
+        from taipanstack.config.generators import generate_pre_commit_config
+        from taipanstack.config.models import SecurityConfig, StackConfig
 
         config = StackConfig(
             project_name="testproj",
@@ -64,8 +64,8 @@ class TestConfigGeneratorsBranches:
 
     def test_generate_pre_commit_with_semgrep_only(self) -> None:
         """Test pre-commit config with semgrep only."""
-        from stack.config.generators import generate_pre_commit_config
-        from stack.config.models import SecurityConfig, StackConfig
+        from taipanstack.config.generators import generate_pre_commit_config
+        from taipanstack.config.models import SecurityConfig, StackConfig
 
         config = StackConfig(
             project_name="testproj",
@@ -81,8 +81,8 @@ class TestConfigGeneratorsBranches:
 
     def test_generate_pre_commit_with_detect_secrets_only(self) -> None:
         """Test pre-commit config with detect-secrets only."""
-        from stack.config.generators import generate_pre_commit_config
-        from stack.config.models import SecurityConfig, StackConfig
+        from taipanstack.config.generators import generate_pre_commit_config
+        from taipanstack.config.models import SecurityConfig, StackConfig
 
         config = StackConfig(
             project_name="testproj",
@@ -102,7 +102,7 @@ class TestCircuitBreakerOpenState:
 
     def test_record_success_in_open_state(self) -> None:
         """Test _record_success when circuit is OPEN (should be no-op)."""
-        from stack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(name="test", failure_threshold=2)
         # Force state to OPEN
@@ -114,7 +114,7 @@ class TestCircuitBreakerOpenState:
 
     def test_record_failure_in_open_state(self) -> None:
         """Test _record_failure when circuit is already OPEN."""
-        from stack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(name="test", failure_threshold=2)
         # Force state to OPEN
@@ -129,7 +129,7 @@ class TestResultModuleBranches:
 
     def test_collect_results_match_patterns(self) -> None:
         """Test all match patterns in collect_results."""
-        from stack.core.result import Ok, collect_results
+        from taipanstack.core.result import Ok, collect_results
 
         # Test with iterator (not list)
         results = iter([Ok(1), Ok(2)])
@@ -138,7 +138,7 @@ class TestResultModuleBranches:
 
     def test_unwrap_or_match_patterns(self) -> None:
         """Test all match patterns in unwrap_or."""
-        from stack.core.result import Err, Ok, unwrap_or
+        from taipanstack.core.result import Err, Ok, unwrap_or
 
         # Ensure both branches covered
         assert unwrap_or(Ok(5), 0) == 5
@@ -146,7 +146,7 @@ class TestResultModuleBranches:
 
     def test_unwrap_or_else_match_patterns(self) -> None:
         """Test all match patterns in unwrap_or_else."""
-        from stack.core.result import Err, Ok, unwrap_or_else
+        from taipanstack.core.result import Err, Ok, unwrap_or_else
 
         # Ensure both branches covered
         assert unwrap_or_else(Ok(5), len) == 5
@@ -158,7 +158,7 @@ class TestConfigModelsUncovered:
 
     def test_security_config_with_level(self) -> None:
         """Test SecurityConfig with explicit level."""
-        from stack.config.models import SecurityConfig
+        from taipanstack.config.models import SecurityConfig
 
         config = SecurityConfig(level="standard")
         assert config.level == "standard"
@@ -170,7 +170,7 @@ class TestGuardsUncovered:
 
     def test_path_traversal_resolution_error(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with resolution error."""
-        from stack.security.guards import guard_path_traversal
+        from taipanstack.security.guards import guard_path_traversal
 
         # Test with path that causes resolution warning
         valid_path = tmp_path / "valid_file.txt"
@@ -180,7 +180,7 @@ class TestGuardsUncovered:
 
     def test_env_variable_not_set(self) -> None:
         """Test guard_env_variable when variable not set."""
-        from stack.security.guards import SecurityError, guard_env_variable
+        from taipanstack.security.guards import SecurityError, guard_env_variable
 
         with pytest.raises(SecurityError, match="is not set"):
             guard_env_variable(
@@ -194,7 +194,7 @@ class TestValidatorsUncovered:
 
     def test_python_version_parse_error(self) -> None:
         """Test validate_python_version with invalid numbers."""
-        from stack.security.validators import validate_python_version
+        from taipanstack.security.validators import validate_python_version
 
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("abc")
@@ -205,7 +205,7 @@ class TestSanitizersUncovered:
 
     def test_sanitize_filename_empty_after_sanitization(self) -> None:
         """Test sanitize_filename with name that becomes empty."""
-        from stack.security.sanitizers import sanitize_filename
+        from taipanstack.security.sanitizers import sanitize_filename
 
         # Name with only invalid chars
         result = sanitize_filename("...")
@@ -213,21 +213,21 @@ class TestSanitizersUncovered:
 
     def test_sanitize_path_with_base_dir_not_absolute(self, tmp_path: Path) -> None:
         """Test sanitize_path with relative path and base_dir."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
         assert tmp_path in result.parents or result.parent == tmp_path
 
     def test_sanitize_env_value_multiline_allowed(self) -> None:
         """Test sanitize_env_value with multiline allowed."""
-        from stack.security.sanitizers import sanitize_env_value
+        from taipanstack.security.sanitizers import sanitize_env_value
 
         result = sanitize_env_value("line1\nline2", allow_multiline=True)
         assert "\n" in result
 
     def test_sanitize_sql_identifier_starts_with_number(self) -> None:
         """Test sanitize_sql_identifier starting with number."""
-        from stack.security.sanitizers import sanitize_sql_identifier
+        from taipanstack.security.sanitizers import sanitize_sql_identifier
 
         result = sanitize_sql_identifier("123abc")
         assert result.startswith("_")
@@ -238,7 +238,7 @@ class TestRetryUncovered:
 
     def test_retry_no_reraise(self) -> None:
         """Test retry with reraise=False still raises RetryError."""
-        from stack.utils.retry import RetryError, retry
+        from taipanstack.utils.retry import RetryError, retry
 
         @retry(max_attempts=1, on=(ValueError,), reraise=True, log_retries=False)
         def failing() -> None:
@@ -249,7 +249,7 @@ class TestRetryUncovered:
 
     def test_retrier_context_wrong_exception(self) -> None:
         """Test Retrier with non-matching exception type."""
-        from stack.utils.retry import Retrier
+        from taipanstack.utils.retry import Retrier
 
         retrier = Retrier(max_attempts=3, on=(ValueError,))
         with pytest.raises(TypeError):
@@ -262,7 +262,7 @@ class TestSubprocessUncovered:
 
     def test_run_safe_command_success(self) -> None:
         """Test run_safe_command with successful command."""
-        from stack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(["echo", "test"], timeout=30.0)
         assert result.success
@@ -274,7 +274,7 @@ class TestFilesystemUncovered:
 
     def test_safe_write_atomic_success(self, tmp_path: Path) -> None:
         """Test atomic write success path."""
-        from stack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import safe_write
 
         target = tmp_path / "test.txt"
         safe_write(target, "content", atomic=True)
@@ -286,7 +286,7 @@ class TestLoggingUncovered:
 
     def test_logging_fallback_branch(self) -> None:
         """Test logging when structlog not available."""
-        from stack.utils.logging import HAS_STRUCTLOG
+        from taipanstack.utils.logging import HAS_STRUCTLOG
 
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
@@ -297,7 +297,7 @@ class TestMetricsBranch:
 
     def test_metrics_counter_increment(self) -> None:
         """Test Counter increment."""
-        from stack.utils.metrics import Counter
+        from taipanstack.utils.metrics import Counter
 
         counter = Counter()
         counter.increment()

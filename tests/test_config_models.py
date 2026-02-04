@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from stack.config.models import (
+from taipanstack.config.models import (
     DependencyConfig,
     LoggingConfig,
     SecurityConfig,

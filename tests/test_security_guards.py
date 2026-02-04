@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from stack.security.guards import (
+from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
     guard_file_extension,
@@ -145,7 +145,7 @@ class TestGuardEnvVariable:
 
     def test_safe_env_variable(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that safe environment variables are returned."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         monkeypatch.setenv("SAFE_VAR", "safe_value")
         result = guard_env_variable("SAFE_VAR")
@@ -153,28 +153,28 @@ class TestGuardEnvVariable:
 
     def test_blocked_default_sensitive(self) -> None:
         """Test that default sensitive variables are blocked."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("AWS_SECRET_ACCESS_KEY")
 
     def test_blocked_password_pattern(self) -> None:
         """Test that PASSWORD pattern is blocked."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("DB_PASSWORD")
 
     def test_blocked_token_pattern(self) -> None:
         """Test that TOKEN pattern is blocked."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("GITHUB_TOKEN")
 
     def test_missing_env_variable(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that missing variables raise error."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         monkeypatch.delenv("NONEXISTENT_VAR", raising=False)
         with pytest.raises(SecurityError, match="not set"):
@@ -182,14 +182,14 @@ class TestGuardEnvVariable:
 
     def test_custom_denied_names(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test custom denied names."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("CUSTOM_SECRET", denied_names=["CUSTOM_SECRET"])
 
     def test_allowed_names_override(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that allowed_names override pattern blocking."""
-        from stack.security.guards import guard_env_variable
+        from taipanstack.security.guards import guard_env_variable
 
         monkeypatch.setenv("MY_TOKEN", "allowed_token")
         result = guard_env_variable("MY_TOKEN", allowed_names=["MY_TOKEN"])

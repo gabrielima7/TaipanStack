@@ -13,7 +13,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
 
-from stack.core.result import Err, Ok, Result
+from taipanstack.core.result import Err, Ok, Result
 
 # Configure logger
 logger = logging.getLogger(__name__)

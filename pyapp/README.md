@@ -1,4 +1,4 @@
-# Stack Standalone Executable Builder
+# TaipanStack Standalone Executable Builder
 
 This directory contains configuration for building standalone executables using [PyApp](https://ofek.dev/pyapp/).
 
@@ -25,15 +25,15 @@ This directory contains configuration for building standalone executables using 
 
 ```bash
 # Set PyApp configuration
-export PYAPP_PROJECT_NAME="stack-bootstrapper"
+export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
 export PYAPP_PROJECT_VERSION="2.0.0"
 export PYAPP_PYTHON_VERSION="3.11"
-export PYAPP_EXEC_SCRIPT="stack_bootstrapper.py"
+export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
 
 # Build with cargo
 cargo build --release
 
-# Output: target/release/stack-bootstrapper
+# Output: target/release/taipanstack-bootstrapper
 ```
 
 ## Configuration Options

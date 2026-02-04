@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-02-03
+
+### Changed
+- **BREAKING**: Renamed project from "Stack" to "TaipanStack"
+- **BREAKING**: All imports changed from `stack.*` to `taipanstack.*`
+- Renamed `stack_bootstrapper.py` to `taipanstack_bootstrapper.py`
+- Updated all documentation with new project name
+- Added PyPI package configuration
+
+### Added
+- PyPI package metadata and URLs
+- Package entry points for distribution
+
 ## [Unreleased]
 
 ### Added
@@ -45,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-11-26
 
 ### Added
-- Initial release of Stack bootstrapper
+- Initial release of TaipanStack bootstrapper
 - Poetry project initialization
 - Ruff, Mypy, Bandit, Safety, Semgrep integration
 - Pre-commit hooks configuration
@@ -54,5 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/stack/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/gabrielima7/stack/releases/tag/v0.1.0
+[2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...HEAD
+[0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0

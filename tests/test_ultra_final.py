@@ -12,7 +12,7 @@ class TestValidators100Percent:
 
     def test_validate_project_name_no_hyphens_no_underscores(self) -> None:
         """Test validate_project_name with both disabled."""
-        from stack.security.validators import validate_project_name
+        from taipanstack.security.validators import validate_project_name
 
         # Should work with just letters and numbers
         result = validate_project_name(
@@ -24,14 +24,14 @@ class TestValidators100Percent:
 
     def test_validate_url_http(self) -> None:
         """Test validate_url with http scheme."""
-        from stack.security.validators import validate_url
+        from taipanstack.security.validators import validate_url
 
         result = validate_url("http://example.com")
         assert "example.com" in result
 
     def test_validate_port_out_of_range(self) -> None:
         """Test validate_port with out of range port."""
-        from stack.security.validators import validate_port
+        from taipanstack.security.validators import validate_port
 
         with pytest.raises(ValueError):
             validate_port(70000)  # > 65535
@@ -42,7 +42,7 @@ class TestGuards100Percent:
 
     def test_guard_path_traversal_resolve_error(self, tmp_path: Path) -> None:
         """Test guard_path_traversal when path resolution fails."""
-        from stack.security.guards import guard_path_traversal
+        from taipanstack.security.guards import guard_path_traversal
 
         # Test with a valid path
         valid_file = tmp_path / "valid.txt"
@@ -53,7 +53,7 @@ class TestGuards100Percent:
 
     def test_guard_file_extension_denied(self) -> None:
         """Test guard_file_extension with denied extension."""
-        from stack.security.guards import SecurityError, guard_file_extension
+        from taipanstack.security.guards import SecurityError, guard_file_extension
 
         with pytest.raises(SecurityError):
             guard_file_extension(
@@ -67,14 +67,14 @@ class TestSanitizers100Percent:
 
     def test_sanitize_string_no_whitespace_strip(self) -> None:
         """Test sanitize_string with strip_whitespace=False."""
-        from stack.security.sanitizers import sanitize_string
+        from taipanstack.security.sanitizers import sanitize_string
 
         result = sanitize_string("  hello  ", strip_whitespace=False)
         assert result == "  hello  "
 
     def test_sanitize_filename_no_replacement(self) -> None:
         """Test sanitize_filename with empty replacement."""
-        from stack.security.sanitizers import sanitize_filename
+        from taipanstack.security.sanitizers import sanitize_filename
 
         result = sanitize_filename("file<>name.txt", replacement="")
         assert "<" not in result
@@ -82,7 +82,7 @@ class TestSanitizers100Percent:
 
     def test_sanitize_path_no_parts(self) -> None:
         """Test sanitize_path with path that results in no parts."""
-        from stack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("./")
         assert result is not None
@@ -93,8 +93,8 @@ class TestGenerators100Percent:
 
     def test_write_config_file_dry_run(self, tmp_path: Path) -> None:
         """Test write_config_file in dry_run mode."""
-        from stack.config.generators import write_config_file
-        from stack.config.models import StackConfig
+        from taipanstack.config.generators import write_config_file
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(project_name="test", dry_run=True)
         target = tmp_path / "test.toml"
@@ -104,8 +104,8 @@ class TestGenerators100Percent:
 
     def test_write_config_file_force(self, tmp_path: Path) -> None:
         """Test write_config_file with force=True overwrites."""
-        from stack.config.generators import write_config_file
-        from stack.config.models import StackConfig
+        from taipanstack.config.generators import write_config_file
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(project_name="test", force=True)
         target = tmp_path / "test.toml"
@@ -121,7 +121,7 @@ class TestFilesystem100Percent:
 
     def test_get_file_hash_with_base_dir(self, tmp_path: Path) -> None:
         """Test get_file_hash with base_dir."""
-        from stack.utils.filesystem import get_file_hash
+        from taipanstack.utils.filesystem import get_file_hash
 
         test_file = tmp_path / "hashfile.txt"
         test_file.write_text("content")
@@ -135,7 +135,7 @@ class TestRetry100Percent:
 
     def test_retry_max_delay_applied(self) -> None:
         """Test that max_delay is actually applied."""
-        from stack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.utils.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(
             initial_delay=1.0,
@@ -154,7 +154,7 @@ class TestModels100Percent:
 
     def test_stack_config_verbose(self) -> None:
         """Test StackConfig with verbose option."""
-        from stack.config.models import StackConfig
+        from taipanstack.config.models import StackConfig
 
         config = StackConfig(
             project_name="test",
@@ -168,7 +168,7 @@ class TestCircuitBreaker100Percent:
 
     def test_circuit_breaker_name(self) -> None:
         """Test CircuitBreaker with custom name."""
-        from stack.utils.circuit_breaker import CircuitBreaker
+        from taipanstack.utils.circuit_breaker import CircuitBreaker
 
         breaker = CircuitBreaker(name="custom_breaker")
 

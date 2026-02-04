@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from stack.config.models import StackConfig
+    from taipanstack.config.models import StackConfig
 
 
 def generate_pyproject_config(config: StackConfig) -> str:

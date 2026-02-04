@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from stack.security.guards import SecurityError
-from stack.utils.subprocess import (
+from taipanstack.security.guards import SecurityError
+from taipanstack.utils.subprocess import (
     DEFAULT_ALLOWED_COMMANDS,
     SafeCommandResult,
     check_command_exists,
@@ -175,7 +175,7 @@ class TestRunSafeCommand:
 class TestRunPoetryCommand:
     """Tests for run_poetry_command function."""
 
-    @patch("stack.utils.subprocess.run_safe_command")
+    @patch("taipanstack.utils.subprocess.run_safe_command")
     def test_calls_poetry_with_args(self, mock_run: MagicMock) -> None:
         """Test that poetry command is called correctly."""
         mock_run.return_value = SafeCommandResult(
@@ -188,7 +188,7 @@ class TestRunPoetryCommand:
         call_args = mock_run.call_args
         assert call_args[0][0] == ["poetry", "version"]
 
-    @patch("stack.utils.subprocess.run_safe_command")
+    @patch("taipanstack.utils.subprocess.run_safe_command")
     def test_dry_run_passed_through(self, mock_run: MagicMock) -> None:
         """Test dry-run is passed to run_safe_command."""
         mock_run.return_value = SafeCommandResult(
@@ -203,7 +203,7 @@ class TestRunPoetryCommand:
 class TestRunGitCommand:
     """Tests for run_git_command function."""
 
-    @patch("stack.utils.subprocess.run_safe_command")
+    @patch("taipanstack.utils.subprocess.run_safe_command")
     def test_calls_git_with_args(self, mock_run: MagicMock) -> None:
         """Test that git command is called correctly."""
         mock_run.return_value = SafeCommandResult(
@@ -216,7 +216,7 @@ class TestRunGitCommand:
         call_args = mock_run.call_args
         assert call_args[0][0] == ["git", "status"]
 
-    @patch("stack.utils.subprocess.run_safe_command")
+    @patch("taipanstack.utils.subprocess.run_safe_command")
     def test_dry_run_passed_through(self, mock_run: MagicMock) -> None:
         """Test dry-run is passed to run_safe_command."""
         mock_run.return_value = SafeCommandResult(
