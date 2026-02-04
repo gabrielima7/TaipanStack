@@ -166,12 +166,12 @@ class TestUnwrapOrElse:
     def test_unwrap_or_else_ok(self) -> None:
         """Test unwrap_or_else returns Ok value."""
         result: Result[int, str] = Ok(42)
-        assert unwrap_or_else(result, lambda e: len(e)) == 42
+        assert unwrap_or_else(result, len) == 42
 
     def test_unwrap_or_else_err(self) -> None:
         """Test unwrap_or_else computes default from error."""
         result: Result[int, str] = Err("error")
-        assert unwrap_or_else(result, lambda e: len(e)) == 5
+        assert unwrap_or_else(result, len) == 5
 
     def test_unwrap_or_else_with_exception(self) -> None:
         """Test unwrap_or_else with exception error type."""

@@ -14,7 +14,7 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ PY314: Final[bool] = PY_VERSION >= (3, 14)
 """True if running Python 3.14 or higher."""
 
 
-class VersionTier(str, Enum):
+class VersionTier(StrEnum):
     """Python version tier for optimization profiles."""
 
     STABLE = "stable"  # 3.11 - fully stable, conservative optimizations
