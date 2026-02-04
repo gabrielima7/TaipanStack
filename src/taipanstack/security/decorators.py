@@ -234,7 +234,7 @@ def _timeout_with_signal(
 ) -> R:
     """Implement timeout using Unix signals."""
 
-    def handler(signum: int, frame: Any) -> None:
+    def handler(_signum: int, _frame: Any) -> None:
         raise OperationTimeoutError(seconds, func.__name__)
 
     # Set up signal handler

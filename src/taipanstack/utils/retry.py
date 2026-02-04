@@ -87,6 +87,8 @@ def calculate_delay(
     delay = min(delay, config.max_delay)
 
     # Add jitter if enabled
+    # Note: Using random for jitter is intentionally non-cryptographic.
+    # Jitter is for load distribution, not security. Using secrets would be overkill.
     if config.jitter:
         jitter_amount = delay * config.jitter_factor
         delay += random.uniform(-jitter_amount, jitter_amount)
@@ -274,7 +276,7 @@ class Retrier:
         self,
         exc_type: type[Exception] | None,
         exc_val: Exception | None,
-        exc_tb: Any,
+        _exc_tb: Any,
     ) -> bool:
         """Exit the retry context.
 

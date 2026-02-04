@@ -9,6 +9,11 @@ scan:
   exclude:
     - path: tests/
     - path: docs/
+  ignore:
+    # py 1.11.0 - CVE-2022-42969 (DISPUTED)
+    # This is a transitive dependency from pytest
+    # The vulnerability is disputed and not confirmed exploitable
+    - 51457
 
 announcements:
   enabled: true
