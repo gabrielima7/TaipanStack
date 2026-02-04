@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION_DEFAULT: '3.11'
+  PYTHON_VERSION_DEFAULT: "3.11"
 
 jobs:
   test:
@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.11', '3.12', '3.13', '3.14']
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Check out code
@@ -40,9 +40,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .venv
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+          key: taipanstack-v2-${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install --with dev --sync
@@ -143,8 +141,6 @@ jobs:
       - name: Run tests
         run: |
           python3 -m poetry run pytest tests/ -v --timeout=60
-
-
 
   lint:
     name: Code Quality Checks
