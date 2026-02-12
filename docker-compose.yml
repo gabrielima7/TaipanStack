@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: invario
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invario-net
+
+  api:
+    build: .
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/invario
+      STORAGE_TYPE: postgres
+    ports:
+      - "8000:8000"
+    command: [ "./entrypoint.sh" ]
+    networks:
+      - invario-net
+
+  prometheus:
+    image: docker.io/prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+      - invario-net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - invario-net
+
+  worker:
+    build: .
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/invario
+      STORAGE_TYPE: postgres
+      REDIS_URL: redis://redis:6379
+    command: [ "arq", "invario.worker.main.WorkerSettings" ]
+    networks:
+      - invario-net
+
+networks:
+  invario-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
