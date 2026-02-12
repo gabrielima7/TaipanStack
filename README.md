@@ -1,313 +1,107 @@
-<div align="center">
+# Invario: Zero-Trust Financial Middleware
 
-# 🐍 TaipanStack
+> **High-Integrity Settlement & Compliance Engine**
 
-### **The Modern Python Foundation**
+Invario is a specialized middleware designed to ingest, validate, and ledger financial transactions with cryptographic integrity. It acts as a Zero-Trust gateway between external partners and core banking systems, ensuring that only 100% compliant and valid data is processed.
 
-*Launch secure, high-performance Python applications in seconds.*
+## 🏗 Architecture
 
-[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/Coverage-98%25-success?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
-[![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
-[![Type Checked](https://img.shields.io/badge/Type%20Checked-Mypy-blue?style=flat)](http://mypy-lang.org/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-Bandit%20%7C%20Semgrep-red?style=flat)](SECURITY.md)
-[![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
+```mermaid
+graph LR
+    Client[External Client] -->|HTTPS + X-API-Key| API[Invario API]
+    API -->|Validation Guards| Pipeline[Ingestion Pipeline]
+    Pipeline -->|Valid Tx| Ledger[Cryptographic Ledger]
+    Ledger -->|Hash Chain| DB[(PostgreSQL)]
 
----
+    subgraph "Zero-Trust Core"
+    Pipeline
+    Ledger
+    end
+```
 
-[**Features**](#-features) • [**Quick Start**](#-quick-start) • [**Architecture**](#-architecture) • [**DevSecOps**](#-devsecops) • [**API**](#-api-highlights) • [**Contributing**](#-contributing)
+- **API Layer**: FastAPI with Async/Await.
+- **Security**: API Key authentication (SHA-256 hashed).
+- **Pipeline**: CNAB/CSV/JSON parsing with strict financial guards (CPF, ISO 4217, Idempotency).
+- **Ledger**: Immutable, hash-chained transaction log (Blockchain-like integrity).
 
-</div>
-
----
-
-## ✨ Why TaipanStack?
-
-> **"Write less, build better."**
-
-TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
-
-<table>
-<tr>
-<td width="50%">
-
-### 🛡️ Security First
-- Path traversal protection
-- Command injection guards
-- Input sanitizers & validators
-- Secret detection integration
-
-</td>
-<td width="50%">
-
-### ⚡ High Performance
-- `uvloop` async event loop
-- `orjson` fast JSON serialization
-- `Pydantic v2` validation
-- Optimized for production
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🎯 Rust-Style Error Handling
-- `Ok`/`Err` Result types
-- Explicit error propagation
-- Pattern matching support
-- No silent failures
-
-</td>
-<td width="50%">
-
-### 🔧 Developer Experience
-- Pre-configured quality tools
-- Comprehensive test suite
-- Architecture enforcement
-- Zero-config setup
-
-</td>
-</tr>
-</table>
-
----
-
-## 🚀 Quick Start
+## 🚀 Quickstart
 
 ### Prerequisites
+- Docker & Docker Compose (or Podman)
+- Python 3.11+ (for local CLI usage)
 
-- **Python 3.11+** (supports 3.11, 3.12, 3.13, 3.14)
-- **Poetry** ([install guide](https://python-poetry.org/docs/#installation))
+### 1. Launch the Stack
+```bash
+docker-compose up -d
+```
+*This starts Postgres, the Invario API (port 8000), and Prometheus.*
 
-### Installation
-
-#### From PyPI
+### 2. Create an API Key
+Generate a key for your local client using the management CLI inside the container:
 
 ```bash
-pip install taipanstack
+docker-compose exec api python manage.py create-key --owner "LocalDev"
 ```
+*> 🔑 Key: inv_live_... (Save this key!)*
 
-#### From Source
-
+### 3. Test the System
+Check health (Public):
 ```bash
-# Clone the repository
-git clone https://github.com/gabrielima7/TaipanStack.git
-cd TaipanStack
-
-# Install dependencies
-poetry install --with dev
-
-# Run quality checks
-make all
+curl http://localhost:8000/health
 ```
 
-### Verify Installation
-
+Ingest a Transaction (Protected):
 ```bash
-# Run tests with coverage (97%+ coverage)
-make test
-
-# Check architecture contracts
-make lint-imports
-
-# Run security scans
-make security
+curl -X POST http://localhost:8000/v1/ingest \
+  -H "X-API-Key: YOUR_KEY_HERE" \
+  -F "file=@./samples/valid_transaction.csv"
 ```
+
+## 📖 API Documentation
+
+The interactive Swagger UI is available at:
+**[http://localhost:8000/docs](http://localhost:8000/docs)**
+
+1. Click **Authorize**.
+2. Paste your API Key.
+3. Try out the `/v1/ingest` or `/v1/ledger/audit` endpoints.
+
+## ⚙️ Operations
+
+### Key Management
+Use the `manage.py` CLI to handle credentials.
+
+**Create a Key**:
+```bash
+# Inside container
+python manage.py create-key --owner "Partner Name" --scopes '{"write": true}'
+
+# Local (requires env var)
+export DATABASE_URL="postgresql+asyncpg://postgres:password@localhost:5432/invario"
+poetry run python manage.py create-key --owner "Partner Name"
+```
+
+**Revoke a Key**:
+```bash
+python manage.py revoke-key --owner "Partner Name"
+```
+
+### Observability
+- **Metrics**: `GET /metrics` (Prometheus format). Critical gauge: `invario_ledger_integrity_status` (1 = Healthy, 0 = Corrupted).
+- **Logs**: JSON formatted structure logs via `structlog`. Look for `correlation_id` to trace requests.
+
+### Disaster Recovery
+If `invario_ledger_integrity_status` drops to `0`, the ledger is cryptographically broken.
+**Procedure**:
+1. Stop ingestion immediately.
+2. Run audit: `curl ... /v1/ledger/audit`.
+3. Check logs for "Hash Mismatch".
+4. Consult `docs/RUNBOOK.md`.
+
+## 🛡 Security
+- **No Plaintext Keys**: Keys are stored as SHA-256 hashes.
+- **Non-Root Containers**: Docker image runs as `invario` user.
+- **Input Validation**: All inputs are treated as hostile until validated by Guards.
 
 ---
-
-## 📐 Architecture
-
-TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
-
-```
-                    ┌─────────────────────────────────────┐
-                    │             Application             │
-                    │          (src/app/main.py)          │
-                    └─────────────────┬───────────────────┘
-                                      │
-          ┌───────────────────────────┼───────────────────────────┐
-          ▼                           ▼                           ▼
-┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-│    Security     │       │     Config      │       │     Utils       │
-│ guards, saniti- │       │    models,      │       │  logging, retry │
-│ zers, validators│       │   generators    │       │ metrics, fs     │
-└────────┬────────┘       └────────┬────────┘       └────────┬────────┘
-         │                         │                         │
-         └─────────────────────────┼─────────────────────────┘
-                                   ▼
-                    ┌─────────────────────────────────────┐
-                    │              Core                   │
-                    │    Result types, base patterns      │
-                    └─────────────────────────────────────┘
-```
-
-### Project Structure
-
-```text
-TaipanStack/
-├── src/
-│   ├── app/              # Application entry point
-│   └── taipanstack/
-│       ├── core/         # 🎯 Result types, functional patterns
-│       ├── config/       # ⚙️ Configuration models & generators
-│       ├── security/     # 🛡️ Guards, sanitizers, validators
-│       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ Comprehensive test suite (97%+ coverage)
-├── pyapp/                # 📦 Standalone executable builder
-├── .github/              # 🔄 CI/CD workflows
-└── pyproject.toml        # 📋 Modern dependency management
-```
-
----
-
-## 🔐 DevSecOps
-
-TaipanStack integrates security and quality at every level:
-
-| Category | Tools | Purpose |
-|----------|-------|---------|
-| **SAST** | Bandit, Semgrep | Static Application Security Testing |
-| **SCA** | Safety | Dependency vulnerability scanning |
-| **Types** | Mypy (strict) | Compile-time type checking |
-| **Lint** | Ruff | Lightning-fast linting & formatting |
-| **Arch** | Import Linter | Dependency rule enforcement |
-| **Test** | Pytest, Hypothesis | Property-based testing |
-
-### CI Pipeline
-
-```yaml
-# Runs on every push/PR
-✓ Test Matrix     → Python 3.11-3.14 × (Ubuntu, macOS, Windows)
-✓ Linux Distros   → Ubuntu, Debian, Fedora, openSUSE, Arch, Alpine
-✓ Code Quality    → Ruff check & format
-✓ Type Check      → Mypy strict mode
-✓ Security        → Bandit + Semgrep
-✓ Architecture    → Import Linter contracts
-```
-
----
-
-## 📚 API Highlights
-
-### Result Types (Rust-Style Error Handling)
-
-```python
-from taipanstack.core.result import Result, Ok, Err, safe
-
-@safe
-def divide(a: int, b: int) -> float:
-    return a / b
-
-# Explicit error handling with pattern matching
-match divide(10, 0):
-    case Ok(value):
-        print(f"Result: {value}")
-    case Err(error):
-        print(f"Error: {error}")
-```
-
-### Security Guards
-
-```python
-from taipanstack.security.guards import guard_path_traversal, guard_command_injection
-
-# Prevent path traversal attacks
-safe_path = guard_path_traversal(user_input, base_dir="/app/data")
-
-# Prevent command injection
-safe_cmd = guard_command_injection(
-    ["git", "clone", repo_url],
-    allowed_commands=["git"]
-)
-```
-
-### Retry with Exponential Backoff
-
-```python
-from taipanstack.utils.retry import retry
-
-@retry(max_attempts=3, on=(ConnectionError, TimeoutError))
-async def fetch_data(url: str) -> dict:
-    return await http_client.get(url)
-```
-
-### Circuit Breaker
-
-```python
-from taipanstack.utils.circuit_breaker import circuit_breaker
-
-@circuit_breaker(failure_threshold=5, timeout=30)
-def call_external_service() -> Response:
-    return service.call()
-```
-
----
-
-## 🛠️ Tech Stack
-
-<table>
-<tr>
-<th>Runtime</th>
-<th>Quality</th>
-<th>DevOps</th>
-</tr>
-<tr>
-<td>
-
-- Pydantic v2
-- Orjson
-- Uvloop
-- Structlog
-- Result
-
-</td>
-<td>
-
-- Ruff
-- Mypy
-- Bandit
-- Pytest
-- Hypothesis
-
-</td>
-<td>
-
-- GitHub Actions
-- Dependabot
-- Pre-commit
-- Poetry
-- Import Linter
-
-</td>
-</tr>
-</table>
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please check our [Contributing Guide](CONTRIBUTING.md) for details on:
-
-- 🐛 Bug reports
-- ✨ Feature requests
-- 📝 Documentation improvements
-- 🔧 Pull requests
-
----
-
-## 📝 License
-
-This project is open-sourced under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-
-**Made with ❤️ for the Python community**
-
-[⬆ Back to Top](#-taipanstack)
-
-</div>
+*Built with ❤️ by the Invario Team.*
