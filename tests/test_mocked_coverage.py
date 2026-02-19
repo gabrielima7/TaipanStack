@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+from urllib.parse import urlparse
 
 import pytest
 
@@ -84,7 +85,8 @@ class TestValidatorsBranches:
         from taipanstack.security.validators import validate_url
 
         result = validate_url("https://example.com:443/path")
-        assert "example.com" in result
+        parsed = urlparse(result)
+        assert parsed.hostname == "example.com"
 
     def test_validate_ip_address_any_version(self) -> None:
         """Test validate_ip_address with any version."""
