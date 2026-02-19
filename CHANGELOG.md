@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2026-02-19
+
+### Fixed
+- CI: Resolved stale venv cache on Windows for Python 3.13/3.14 by using full Python version in cache key
+- CI: Suppressed pip `externally-managed-environment` stderr noise on ubuntu-24.04
+
+### Security
+- Updated `cryptography` 46.0.3 → 46.0.5 (resolves Dependabot security alert)
+
 ## [2.0.0] - 2026-02-03
 
 ### Changed
