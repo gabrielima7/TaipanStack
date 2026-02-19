@@ -25,9 +25,10 @@ class TestValidators100Percent:
     def test_validate_url_http(self) -> None:
         """Test validate_url with http scheme."""
         from taipanstack.security.validators import validate_url
+        from urllib.parse import urlparse
 
         result = validate_url("http://example.com")
-        assert "example.com" in result
+        assert urlparse(result).hostname == "example.com"
 
     def test_validate_port_out_of_range(self) -> None:
         """Test validate_port with out of range port."""
