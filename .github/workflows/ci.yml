@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
+        id: setup-python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
@@ -40,7 +41,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .venv
-          key: taipanstack-v2-${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-
 
       - name: Install dependencies
         run: poetry install --with dev --sync
@@ -126,9 +129,9 @@ jobs:
       - name: Install Poetry via pip
         run: |
           # First upgrade pip (may need --break-system-packages on newer distros)
-          python3 -m pip install --upgrade pip --break-system-packages || python3 -m pip install --upgrade pip || true
+          python3 -m pip install --upgrade pip --break-system-packages 2>/dev/null || python3 -m pip install --upgrade pip || true
           # Now install poetry with the upgraded pip
-          python3 -m pip install poetry --break-system-packages || python3 -m pip install poetry
+          python3 -m pip install poetry --break-system-packages 2>/dev/null || python3 -m pip install poetry
 
       - name: Configure Poetry
         run: |
