@@ -160,9 +160,11 @@ class TestValidatorsComplete:
     def test_validate_url_https(self) -> None:
         """Test validate_url with https."""
         from taipanstack.security.validators import validate_url
+        from urllib.parse import urlparse
 
         result = validate_url("https://secure.example.com/path?query=1")
-        assert "secure.example.com" in result
+        parsed = urlparse(result)
+        assert parsed.hostname == "secure.example.com"
 
 
 class TestFilesystemComplete:
