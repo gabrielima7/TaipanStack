@@ -159,8 +159,9 @@ class TestValidatorsComplete:
 
     def test_validate_url_https(self) -> None:
         """Test validate_url with https."""
-        from taipanstack.security.validators import validate_url
         from urllib.parse import urlparse
+
+        from taipanstack.security.validators import validate_url
 
         result = validate_url("https://secure.example.com/path?query=1")
         parsed = urlparse(result)

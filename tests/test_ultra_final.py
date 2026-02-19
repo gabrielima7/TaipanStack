@@ -24,8 +24,9 @@ class TestValidators100Percent:
 
     def test_validate_url_http(self) -> None:
         """Test validate_url with http scheme."""
-        from taipanstack.security.validators import validate_url
         from urllib.parse import urlparse
+
+        from taipanstack.security.validators import validate_url
 
         result = validate_url("http://example.com")
         assert urlparse(result).hostname == "example.com"
