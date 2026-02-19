@@ -114,7 +114,7 @@ class TestValidatorsMissingBranches:
         from taipanstack.security.validators import validate_email
 
         result = validate_email("user@mail.example.com")
-        assert "example.com" in result
+        assert result == "user@mail.example.com"
 
     def test_validate_semver_full(self) -> None:
         """Test validate_semver with full version."""
