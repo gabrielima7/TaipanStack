@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Adiciona o diretório raiz ao path para que o `taipanstack_bootstrapper` possa ser importado
+# Adds the root directory to the path so `taipanstack_bootstrapper` can be imported
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import taipanstack_bootstrapper as taipanstack
@@ -14,31 +14,31 @@ import taipanstack_bootstrapper as taipanstack
 @pytest.fixture(autouse=True)
 def setup_teardown(tmp_path, monkeypatch):
     """
-    Fixture para isolar cada teste em um diretório temporário
-    e mockar chamadas de sistema perigosas.
+    Fixture to isolate each test in a temporary directory
+    and mock dangerous system calls.
     """
-    # Muda o diretório de trabalho atual para o diretório temporário
+    # Changes the current working directory to the temporary directory
     monkeypatch.chdir(tmp_path)
 
-    # Mocka subprocess.run para evitar execuções de comandos reais (como poetry)
+    # Mocks subprocess.run to avoid executing real commands (like poetry)
     mock_run = MagicMock(return_value=subprocess.CompletedProcess([], 0))
     with patch("subprocess.run", mock_run):
         yield mock_run
 
 
 def run_main_with_args(args):
-    """Helper para rodar a função main do script com argumentos específicos."""
+    """Helper to run the script's main function with specific arguments."""
     with patch.object(sys, "argv", ["taipanstack_bootstrapper.py", *args]):
         taipanstack.main()
 
 
 def test_dry_run_does_not_create_files(tmp_path):
     """
-    Verifica se rodar com --dry-run não cria nenhum arquivo de configuração.
+    Verifies that running with --dry-run does not create any configuration files.
     """
     run_main_with_args(["--dry-run"])
 
-    # Garante que nenhum dos arquivos principais foi criado
+    # Ensures none of the main files were created
     assert not (tmp_path / "pyproject.toml").exists()
     assert not (tmp_path / ".pre-commit-config.yaml").exists()
     assert not (tmp_path / "SECURITY.md").exists()
@@ -47,120 +47,118 @@ def test_dry_run_does_not_create_files(tmp_path):
 
 def test_safe_write_creates_backup(tmp_path):
     """
-    Verifica se o backup (.bak) é criado quando um arquivo de configuração já existe.
+    Verifies that a backup (.bak) is created when a configuration file already exists.
     """
-    # Cria um arquivo dummy para simular uma configuração existente
+    # Creates a dummy file to simulate an existing configuration
     dummy_file = tmp_path / ".pre-commit-config.yaml"
     dummy_file.write_text("old content")
 
-    run_main_with_args([])  # Execução normal, sem flags
+    run_main_with_args([])  # Normal execution, no flags
 
-    # Verifica se o backup foi criado
+    # Verifies if the backup was created
     backup_file = tmp_path / ".pre-commit-config.yaml.bak"
     assert backup_file.exists()
     assert backup_file.read_text() == "old content"
 
-    # Verifica se o novo arquivo também foi criado
+    # Verifies if the new file was also created
     assert dummy_file.exists()
-    assert (
-        "pre-commit-hooks" in dummy_file.read_text()
-    )  # Verifica conteúdo do novo arquivo
+    assert "pre-commit-hooks" in dummy_file.read_text()  # Checks new file content
 
 
 def test_force_mode_overwrites_without_backup(tmp_path):
     """
-    Verifica se a flag --force sobrescreve o arquivo diretamente, sem criar backup.
+    Verifies that the --force flag overwrites the file directly without creating a backup.
     """
     dummy_file = tmp_path / ".pre-commit-config.yaml"
     dummy_file.write_text("old content")
 
     run_main_with_args(["--force"])
 
-    # Garante que o arquivo de backup NÃO foi criado
+    # Ensures that the backup file was NOT created
     backup_file = tmp_path / ".pre-commit-config.yaml.bak"
     assert not backup_file.exists()
 
-    # Garante que o arquivo original foi sobrescrito
+    # Ensures that the original file was overwritten
     assert dummy_file.exists()
     assert "pre-commit-hooks" in dummy_file.read_text()
 
 
 def test_idempotency_for_pyproject_toml(tmp_path):
     """
-    Verifica se rodar o script duas vezes não duplica as seções no pyproject.toml.
+    Verifies that running the script twice does not duplicate sections in pyproject.toml.
     """
-    # Cria um pyproject.toml inicial, como se `poetry init` tivesse rodado
+    # Creates an initial pyproject.toml, as if `poetry init` had run
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
 
-    # Primeira execução
+    # First run
     run_main_with_args([])
     content_after_first_run = pyproject_toml.read_text()
 
-    # Verifica se as seções foram adicionadas
+    # Verifies if the sections were added
     assert "[tool.ruff]" in content_after_first_run
     assert "[tool.mypy]" in content_after_first_run
     assert content_after_first_run.count("[tool.ruff]") == 1
 
-    # Segunda execução
+    # Second run
     run_main_with_args([])
     content_after_second_run = pyproject_toml.read_text()
 
-    # Compara o conteúdo e garante que não houve duplicação
+    # Compares the content and ensures there was no duplication
     assert content_after_first_run == content_after_second_run
     assert content_after_second_run.count("[tool.ruff]") == 1
 
 
 def test_git_initialization(tmp_path):
     """
-    Verifica se o Git é inicializado automaticamente quando não existe.
+    Verifies that Git is initialized automatically when it does not exist.
     """
-    # Garante que .git não existe
+    # Ensures .git does not exist
     assert not (tmp_path / ".git").exists()
 
     run_main_with_args([])
 
-    # Verifica se .git foi criado (se git estiver disponível)
-    # Nota: pode não existir se git não estiver instalado no sistema de teste
+    # Verifies if .git was created (if git is available)
+    # Note: may not exist if git is not installed on the test system
 
 
 def test_project_structure_creation(tmp_path):
     """
-    Verifica se a estrutura de pastas do projeto é criada corretamente.
+    Verifies that the project folder structure is created correctly.
     """
-    # Cria um pyproject.toml com nome de projeto
+    # Creates a pyproject.toml with a project name
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "my_test_project"\n')
 
     run_main_with_args([])
 
-    # Verifica se as pastas foram criadas
+    # Verifies if the folders were created
     assert (tmp_path / "src" / "my_test_project").exists()
     assert (tmp_path / "tests").exists()
     assert (tmp_path / "docs").exists()
 
-    # Verifica se __init__.py foram criados
+    # Verifies if __init__.py files were created
     assert (tmp_path / "src" / "my_test_project" / "__init__.py").exists()
     assert (tmp_path / "tests" / "__init__.py").exists()
 
-    # Verifica se arquivos de exemplo foram criados
+    # Verifies if sample files were created
     assert (tmp_path / "src" / "my_test_project" / "main.py").exists()
     assert (tmp_path / "tests" / "test_example.py").exists()
 
 
 def test_optional_dependencies_flag(tmp_path, monkeypatch):
     """
-    Verifica se a flag --install-runtime-deps controla a instalação de dependências.
+    Verifies that the --install-runtime-deps flag controls dependency installation.
     """
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
 
-    # Sem a flag, não deve instalar dependências de produção
+    # Without the flag, it should not install production dependencies
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = subprocess.CompletedProcess([], 0)
         run_main_with_args([])
 
-        # Verifica que poetry add NÃO foi chamado para produção
+        # Verifies that poetry add was NOT called for production
         poetry_add_calls = [
             call
             for call in mock_run.call_args_list
@@ -171,7 +169,7 @@ def test_optional_dependencies_flag(tmp_path, monkeypatch):
 
 def test_install_runtime_deps_flag(tmp_path, monkeypatch):
     """
-    Verifica se --install-runtime-deps instala as dependências de produção.
+    Verifies that --install-runtime-deps installs the production dependencies.
     """
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
@@ -182,8 +180,8 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
             mock_run.return_value = subprocess.CompletedProcess([], 0)
             run_main_with_args(["--install-runtime-deps"])
 
-            # Verifica que poetry add FOI chamado para produção
-            # Procura por chamadas que incluem 'pydantic' (dependência de produção)
+            # Verifies that poetry add WAS called for production
+            # Looks for calls that include 'pydantic' (production dependency)
             poetry_add_calls = [
                 call
                 for call in mock_run.call_args_list
@@ -199,7 +197,7 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
 
 def test_python_version_detection(tmp_path):
     """
-    Verifica se a versão do Python é detectada dinamicamente.
+    Verifies that the Python version is dynamically detected.
     """
     pyproject_toml = tmp_path / "pyproject.toml"
     pyproject_toml.write_text('[tool.poetry]\nname = "test"\n')
@@ -208,7 +206,7 @@ def test_python_version_detection(tmp_path):
 
     content = pyproject_toml.read_text()
 
-    # Verifica se a versão do Python está na configuração
+    # Verifies if the Python version is in the configuration
     import sys
 
     expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
