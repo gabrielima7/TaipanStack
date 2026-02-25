@@ -1,0 +1,44 @@
+# .github/labeler.yml
+
+core:
+  - any:
+      - "src/taipanstack/core/**/*"
+
+security:
+  - any:
+      - "src/taipanstack/security/**/*"
+      - "SECURITY.md"
+
+utils:
+  - any:
+      - "src/taipanstack/utils/**/*"
+
+config:
+  - any:
+      - "src/taipanstack/config/**/*"
+
+tests:
+  - any:
+      - "tests/**/*"
+
+documentation:
+  - any:
+      - "docs/**/*"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "CHANGELOG.md"
+      - ".github/ISSUE_TEMPLATE/**/*"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+
+ci:
+  - any:
+      - ".github/workflows/**/*"
+      - ".github/dependabot.yml"
+
+infrastructure:
+  - any:
+      - "pyproject.toml"
+      - "poetry.lock"
+      - "Makefile"
+      - "taipanstack_bootstrapper.py"
+      - "pyapp/**/*"
