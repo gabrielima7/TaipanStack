@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.9] - 2026-02-25
+
+### Added
+- GitHub Actions: Publish to PyPI workflow (Trusted Publishing / OIDC)
+- GitHub Actions: Pull Request Labeler workflow with path-based label mapping
+- GitHub Actions: Stale issues and PRs management workflow
+- GitHub Actions: Greetings workflow for first-time contributors
+- `docs/api.md` — API reference documentation for core modules
+- `docs/architecture.md` — Architecture and design philosophy documentation
+
+### Changed
+- Translated `taipanstack_bootstrapper.py` fully to English (strings, comments, docstrings)
+- Translated `tests/test_stack_script.py` fully to English
+- Converted all docstrings to imperative mood for D401 Ruff compliance
+- Fixed deprecated `[project.license]` table format in `pyproject.toml`
+- Updated `Makefile` safety command to ignore disputed CVE-2022-42969 (`py 1.11.0`)
+
+### Security
+- Acknowledged NLTK Zip Slip vulnerability (CVE via `safety` transitive dep) — not exploitable in TaipanStack (nltk is never imported)
+
 ## [0.2.8] - 2026-02-19
 
 ### Fixed
@@ -81,6 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
+[0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...HEAD
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
