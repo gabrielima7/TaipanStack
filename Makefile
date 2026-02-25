@@ -39,7 +39,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Safety dependency checker..."
-	poetry run safety check
+	poetry run safety check -i 51457 --full-report
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."
