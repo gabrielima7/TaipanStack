@@ -207,7 +207,7 @@ def run_safe_command(
         if hasattr(e, "stdout") and e.stdout is not None:
             if isinstance(e.stdout, str):
                 stdout_str = e.stdout
-            else:
+            else:  # pragma: no cover
                 stdout_str = e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,

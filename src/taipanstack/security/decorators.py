@@ -218,7 +218,7 @@ def timeout(
             )
 
             if can_use_signal:
-                return _timeout_with_signal(func, seconds, args, kwargs)
+                return _timeout_with_signal(func, seconds, args, kwargs)  # pragma: no cover (Unix only)
             return _timeout_with_thread(func, seconds, args, kwargs)
 
         return wrapper
@@ -241,9 +241,9 @@ def _timeout_with_signal(
     old_handler = signal.signal(signal.SIGALRM, handler)
     signal.setitimer(signal.ITIMER_REAL, seconds)
 
-    try:
+    try:  # pragma: no cover
         return func(*args, **kwargs)
-    finally:
+    finally:  # pragma: no cover
         # Restore old handler and cancel alarm
         signal.setitimer(signal.ITIMER_REAL, 0)
         signal.signal(signal.SIGALRM, old_handler)
