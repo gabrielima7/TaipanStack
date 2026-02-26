@@ -29,8 +29,8 @@ COPY README.md LICENSE ./
 RUN poetry install --only main
 
 
-# ── Stage 2: Runtime (Alpine — minimal attack surface) ──────────────────────
-FROM python:3.11-alpine AS runtime
+# ── Stage 2: Runtime (Slim — matching glibc for C extensions) ────────────────
+FROM python:3.11-slim AS runtime
 
 # Security labels (OCI Image Spec)
 LABEL org.opencontainers.image.title="TaipanStack" \
@@ -39,15 +39,12 @@ LABEL org.opencontainers.image.title="TaipanStack" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.vendor="gabrielima7"
 
-# Install only runtime system dependencies, then clean up
-RUN apk add --no-cache \
-    libgcc \
-    libstdc++ \
-    && rm -rf /var/cache/apk/*
+# Slim already includes glibc, libgcc, and libstdc++ — no extra packages needed
+RUN rm -rf /var/lib/apt/lists/*
 
 # Create non-root user (UID 1000 — standard unprivileged)
-RUN addgroup -g 1000 appgroup \
-    && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
+RUN groupadd -g 1000 appgroup \
+    && useradd -u 1000 -g appgroup -s /bin/sh -M appuser
 
 # Copy virtualenv from builder (contains all installed packages)
 COPY --chown=appuser:appgroup --from=builder /app/.venv /app/.venv
