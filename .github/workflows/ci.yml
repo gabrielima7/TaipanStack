@@ -354,6 +354,9 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry
 
+      - name: Remove Conflicting System LLVM Packages
+        run: sudo rm -rf /usr/lib/llvm-* || true
+
       - name: Install dependencies
         run: poetry install --with dev
 
