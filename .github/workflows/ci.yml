@@ -337,7 +337,7 @@ jobs:
         run: poetry install --with dev
 
       - name: Run Hypothesis property-based tests
-        run: poetry run pytest tests/test_property_sanitizers.py -v --timeout=300
+        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov --timeout=300
 
   mutation-testing:
     name: Mutation Testing
@@ -382,7 +382,7 @@ jobs:
         run: poetry install --with dev
 
       - name: Run pytest-benchmark
-        run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v
+        run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v --no-cov
 
   docker-build:
     name: Docker Hardened Build Validation
