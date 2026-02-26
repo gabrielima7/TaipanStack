@@ -181,6 +181,29 @@ class TestSanitizeFilenameProperties:
                 f"Reserved char {ch!r} found in stem {stem!r} (full: {result!r})"
             )
 
+    def test_mutmut_boundaries_and_limits(self) -> None:
+        """Strict non-fuzzing bounds to trap and kill Mutmut surviving mutants.
+
+        This tests precise mathematical conditions (e.g. len == max_length)
+        and default arguments that fuzzing might miss structurally.
+        """
+        # 1. Kill 'max_length=255' mutated to 256
+        res_default = sanitize_filename("A" * 300)
+        assert len(res_default) == 255, "Mutant survived: max_length default altered"
+
+        # 2. Kill 'if len(result) > max_length' mutated to '>='
+        res_exact = sanitize_filename("B" * 10, max_length=10)
+        assert len(res_exact) == 10
+        assert res_exact == "B" * 10, "Mutant survived: strict '>' boundary mutated to '>='"
+
+        # 3. Kill 'if available > 0' mutated to '>=' or '-' to '+'
+        # When suffix exactly equals max_length, available == 0.
+        # Original code goes to 'else: result = result[:max_length]' producing "stem.1234"
+        # If mutated to '>= 0', it goes to 'if' block producing "" + ".12345678"
+        exact_suffix = ".12345678"  # exactly 9 chars
+        res_zero = sanitize_filename("stem" + exact_suffix, max_length=9)
+        assert res_zero == "stem.1234", "Mutant survived: available > 0 logic bypassed!"
+
 
 # =============================================================================
 # sanitize_path — Properties
