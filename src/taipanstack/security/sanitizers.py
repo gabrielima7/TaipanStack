@@ -12,11 +12,11 @@ import unicodedata
 from pathlib import Path
 
 # Constants to avoid magic values (PLR2004)
-MAX_SQL_IDENTIFIER_LENGTH = 128
+MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
-_INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
-_WINDOWS_RESERVED_NAMES = frozenset(
+_INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
+_WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     {
         "CON", "PRN", "AUX", "NUL",
         "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",

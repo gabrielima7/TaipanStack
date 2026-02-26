@@ -6,6 +6,8 @@ Run with: pytest tests/test_benchmarks.py --benchmark-only
 
 from __future__ import annotations
 
+from typing import Any
+
 from result import Ok
 
 from taipanstack.core.result import collect_results, safe, unwrap_or
@@ -22,12 +24,12 @@ from taipanstack.security.sanitizers import (
 # =============================================================================
 
 
-def test_bench_sanitize_string_simple(benchmark) -> None:
+def test_bench_sanitize_string_simple(benchmark: Any) -> None:
     """Benchmark sanitize_string with typical input."""
     benchmark(sanitize_string, "Hello, World! This is a normal string.")
 
 
-def test_bench_sanitize_string_xss(benchmark) -> None:
+def test_bench_sanitize_string_xss(benchmark: Any) -> None:
     """Benchmark sanitize_string with XSS payload."""
     benchmark(
         sanitize_string,
@@ -35,7 +37,7 @@ def test_bench_sanitize_string_xss(benchmark) -> None:
     )
 
 
-def test_bench_sanitize_string_unicode(benchmark) -> None:
+def test_bench_sanitize_string_unicode(benchmark: Any) -> None:
     """Benchmark sanitize_string with heavy unicode content."""
     benchmark(
         sanitize_string,
@@ -43,7 +45,7 @@ def test_bench_sanitize_string_unicode(benchmark) -> None:
     )
 
 
-def test_bench_sanitize_filename_complex(benchmark) -> None:
+def test_bench_sanitize_filename_complex(benchmark: Any) -> None:
     """Benchmark sanitize_filename with adversarial input."""
     benchmark(
         sanitize_filename,
@@ -51,22 +53,22 @@ def test_bench_sanitize_filename_complex(benchmark) -> None:
     )
 
 
-def test_bench_sanitize_filename_long(benchmark) -> None:
+def test_bench_sanitize_filename_long(benchmark: Any) -> None:
     """Benchmark sanitize_filename with a very long name."""
     benchmark(sanitize_filename, "a" * 300 + ".txt", max_length=255)
 
 
-def test_bench_sanitize_path_nested(benchmark) -> None:
+def test_bench_sanitize_path_nested(benchmark: Any) -> None:
     """Benchmark sanitize_path with nested directory structure."""
     benchmark(sanitize_path, "a/b/c/d/e/f/g/h/file.txt", max_depth=10)
 
 
-def test_bench_sanitize_path_traversal(benchmark) -> None:
+def test_bench_sanitize_path_traversal(benchmark: Any) -> None:
     """Benchmark sanitize_path with traversal attempts stripped."""
     benchmark(sanitize_path, "safe/../../still/../ok/file.txt", max_depth=None)
 
 
-def test_bench_sanitize_env_value_standard(benchmark) -> None:
+def test_bench_sanitize_env_value_standard(benchmark: Any) -> None:
     """Benchmark sanitize_env_value with typical env content."""
     benchmark(
         sanitize_env_value,
@@ -74,17 +76,17 @@ def test_bench_sanitize_env_value_standard(benchmark) -> None:
     )
 
 
-def test_bench_sanitize_env_value_large(benchmark) -> None:
+def test_bench_sanitize_env_value_large(benchmark: Any) -> None:
     """Benchmark sanitize_env_value with large payload."""
     benchmark(sanitize_env_value, "x" * 4096, max_length=4096)
 
 
-def test_bench_sanitize_sql_identifier(benchmark) -> None:
+def test_bench_sanitize_sql_identifier(benchmark: Any) -> None:
     """Benchmark sanitize_sql_identifier with typical table name."""
     benchmark(sanitize_sql_identifier, "user_accounts_table")
 
 
-def test_bench_sanitize_sql_identifier_dirty(benchmark) -> None:
+def test_bench_sanitize_sql_identifier_dirty(benchmark: Any) -> None:
     """Benchmark sanitize_sql_identifier with injection attempt."""
     benchmark(sanitize_sql_identifier, "users; DROP TABLE users--")
 
@@ -100,23 +102,23 @@ def _divide(a: int, b: int) -> float:
     return a / b
 
 
-def test_bench_safe_decorator_ok(benchmark) -> None:
+def test_bench_safe_decorator_ok(benchmark: Any) -> None:
     """Benchmark @safe decorator on successful call."""
     benchmark(_divide, 10, 2)
 
 
-def test_bench_safe_decorator_err(benchmark) -> None:
+def test_bench_safe_decorator_err(benchmark: Any) -> None:
     """Benchmark @safe decorator on failing call."""
     benchmark(_divide, 10, 0)
 
 
-def test_bench_collect_results_100(benchmark) -> None:
+def test_bench_collect_results_100(benchmark: Any) -> None:
     """Benchmark collect_results with 100 Ok values."""
     results = [Ok(i) for i in range(100)]
     benchmark(collect_results, results)
 
 
-def test_bench_unwrap_or(benchmark) -> None:
+def test_bench_unwrap_or(benchmark: Any) -> None:
     """Benchmark unwrap_or with Ok value."""
     ok = Ok(42)
     benchmark(unwrap_or, ok, 0)
