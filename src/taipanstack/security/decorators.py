@@ -217,9 +217,13 @@ def timeout(
                 and threading.current_thread() is threading.main_thread()
             )
 
-            if can_use_signal:
-                return _timeout_with_signal(func, seconds, args, kwargs)  # pragma: no cover (Unix only)
-            return _timeout_with_thread(func, seconds, args, kwargs)
+            if can_use_signal:  # pragma: no cover
+                return _timeout_with_signal(
+                    func, seconds, args, kwargs,
+                )
+            return _timeout_with_thread(
+                func, seconds, args, kwargs,
+            )
 
         return wrapper
 

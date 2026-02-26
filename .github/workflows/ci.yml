@@ -395,4 +395,4 @@ jobs:
         run: docker build -t taipanstack:ci-test .
 
       - name: Validate Container Run (Healthcheck)
-        run: docker run --rm --read-only taipanstack:ci-test python -c "import taipanstack; print('TaipanStack container OK')"
+        run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"
