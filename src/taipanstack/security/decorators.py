@@ -219,10 +219,16 @@ def timeout(
 
             if can_use_signal:  # pragma: no cover
                 return _timeout_with_signal(
-                    func, seconds, args, kwargs,
+                    func,
+                    seconds,
+                    args,
+                    kwargs,
                 )
             return _timeout_with_thread(
-                func, seconds, args, kwargs,
+                func,
+                seconds,
+                args,
+                kwargs,
             )
 
         return wrapper

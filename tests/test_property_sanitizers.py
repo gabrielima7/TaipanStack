@@ -194,7 +194,9 @@ class TestSanitizeFilenameProperties:
         # 2. Kill 'if len(result) > max_length' mutated to '>='
         res_exact = sanitize_filename("B" * 10, max_length=10)
         assert len(res_exact) == 10
-        assert res_exact == "B" * 10, "Mutant survived: strict '>' boundary mutated to '>='"
+        assert res_exact == "B" * 10, (
+            "Mutant survived: strict '>' boundary mutated to '>='"
+        )
 
         # 3. Kill 'if available > 0' mutated to '>=' or '-' to '+'
         # When suffix exactly equals max_length, available == 0.

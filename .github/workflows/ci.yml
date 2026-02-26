@@ -188,7 +188,7 @@ jobs:
         run: poetry install --with dev
 
       - name: Run mypy
-        run: poetry run mypy -p taipanstack --strict
+        run: poetry run mypy src/ --strict
 
   security:
     name: Security Scanning
@@ -355,7 +355,7 @@ jobs:
         run: pipx install poetry
 
       - name: Remove Conflicting System LLVM Packages
-        run: sudo rm -rf /usr/lib/llvm-* /usr/lib/clang-* || true
+        run: sudo rm -rf /usr/lib/llvm-* /usr/lib/clang-* /usr/lib/clang || true
 
       - name: Install dependencies
         run: poetry install --with dev
