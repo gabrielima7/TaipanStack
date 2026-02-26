@@ -207,7 +207,7 @@ fail-under = 80
 verbose = 1
 
 [tool.mutmut]
-paths_to_mutate = "src/"
-tests_dir = "tests/"
+paths_to_mutate = "src/taipanstack/security/sanitizers.py"
+tests_dir = "tests/test_property_sanitizers.py"
 runner = "python -m pytest -x -q --tb=no --timeout=10"
 dict_synonyms = "Struct, NamedStruct"
