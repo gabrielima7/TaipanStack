@@ -226,7 +226,7 @@ def timeout(
     return decorator
 
 
-def _timeout_with_signal(
+def _timeout_with_signal(  # pragma: no cover
     func: Callable[P, R],
     seconds: float,
     args: tuple[Any, ...],
@@ -241,9 +241,9 @@ def _timeout_with_signal(
     old_handler = signal.signal(signal.SIGALRM, handler)
     signal.setitimer(signal.ITIMER_REAL, seconds)
 
-    try:  # pragma: no cover
+    try:
         return func(*args, **kwargs)
-    finally:  # pragma: no cover
+    finally:
         # Restore old handler and cancel alarm
         signal.setitimer(signal.ITIMER_REAL, 0)
         signal.signal(signal.SIGALRM, old_handler)

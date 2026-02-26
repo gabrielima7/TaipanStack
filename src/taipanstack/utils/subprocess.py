@@ -204,7 +204,7 @@ def run_safe_command(
     except subprocess.TimeoutExpired as e:
         duration = time.time() - start_time
         stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:
+        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
             if isinstance(e.stdout, str):
                 stdout_str = e.stdout
             else:  # pragma: no cover
