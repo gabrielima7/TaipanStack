@@ -85,7 +85,7 @@ def _check_jit_available() -> bool:
 
     JIT is available in Python 3.13+ when built with --enable-experimental-jit.
     """
-    if not PY313:
+    if not PY313:  # pragma: no cover
         return False
 
     try:
@@ -101,7 +101,7 @@ def _check_free_threading_available() -> bool:
 
     Free-threading is available in Python 3.13+ experimental builds.
     """
-    if not PY313:
+    if not PY313:  # pragma: no cover
         return False
 
     try:

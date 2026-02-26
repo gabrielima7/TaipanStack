@@ -52,7 +52,7 @@ jobs:
         run: poetry install --with dev --sync
 
       - name: Run tests with pytest
-        run: poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=term --timeout=60
+        run: poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --cov=src --cov-report=xml --cov-report=term --timeout=60
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
@@ -146,7 +146,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python3 -m poetry run pytest tests/ -v --timeout=60
+          python3 -m poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
 
   lint:
     name: Code Quality Checks
@@ -317,3 +317,82 @@ jobs:
       - name: Check docstring coverage
         run: interrogate -v --fail-under=70 src/
         continue-on-error: true
+
+  property-testing:
+    name: Property-Based Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Run Hypothesis property-based tests
+        run: poetry run pytest tests/test_property_sanitizers.py -v --timeout=300
+
+  mutation-testing:
+    name: Mutation Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Run Mutmut
+        run: |
+          poetry run mutmut run
+          poetry run mutmut results
+        continue-on-error: true
+
+  benchmark:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Run pytest-benchmark
+        run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v
+
+  docker-build:
+    name: Docker Hardened Build Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Build Hardened Docker Image
+        run: docker build -t taipanstack:ci-test .
+
+      - name: Validate Container Run (Healthcheck)
+        run: docker run --rm --read-only taipanstack:ci-test python -c "import taipanstack; print('TaipanStack container OK')"

@@ -269,6 +269,12 @@ class TestLoggingStructlogBranches:
             content = Path(log_path).read_text()
             assert "Test message to file" in content
         finally:
+            # Close handlers so Windows can delete the file
+            root_logger = logging.getLogger()
+            for handler in root_logger.handlers[:]:
+                handler.close()
+                root_logger.removeHandler(handler)
+
             Path(log_path).unlink(missing_ok=True)
             # Reset logging to avoid polluting other tests
             setup_logging(level="INFO")
