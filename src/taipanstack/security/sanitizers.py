@@ -14,6 +14,16 @@ from pathlib import Path
 # Constants to avoid magic values (PLR2004)
 MAX_SQL_IDENTIFIER_LENGTH = 128
 
+# Pre-compiled regex and sets for Performance Benchmarks
+_INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+_WINDOWS_RESERVED_NAMES = frozenset(
+    {
+        "CON", "PRN", "AUX", "NUL",
+        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+    }
+)
+
 
 def sanitize_string(
     value: str,
@@ -110,11 +120,8 @@ def sanitize_filename(
     stem = original_path.stem
     suffix = original_path.suffix if preserve_extension else ""
 
-    # Characters not allowed in filenames (Windows + Unix)
-    invalid_chars = r'[<>:"/\\|?*\x00-\x1f]'
-
-    # Remove invalid characters
-    safe_stem = re.sub(invalid_chars, replacement, stem)
+    # Remove invalid characters using precompiled regex for performance
+    safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
 
     # Remove leading/trailing dots and spaces (Windows issues)
     safe_stem = safe_stem.strip(". ")
@@ -129,32 +136,7 @@ def sanitize_filename(
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
-    reserved_names = {
-        "CON",
-        "PRN",
-        "AUX",
-        "NUL",
-        "COM1",
-        "COM2",
-        "COM3",
-        "COM4",
-        "COM5",
-        "COM6",
-        "COM7",
-        "COM8",
-        "COM9",
-        "LPT1",
-        "LPT2",
-        "LPT3",
-        "LPT4",
-        "LPT5",
-        "LPT6",
-        "LPT7",
-        "LPT8",
-        "LPT9",
-    }
-
-    if safe_stem.upper() in reserved_names:
+    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
         safe_stem = f"{replacement}{safe_stem}"
 
     # Handle empty result
