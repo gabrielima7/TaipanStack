@@ -57,6 +57,16 @@ jobs:
             --no-cov \
             -v
 
+      # ── Bootstrap gh-pages if it doesn't exist ─────────────────────
+      - name: Create gh-pages branch if missing
+        run: |
+          if ! git rev-parse --verify gh-pages >/dev/null 2>&1; then
+            git checkout --orphan gh-pages
+            git reset --hard
+            git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
+            git checkout -
+          fi
+
       # ── Compare & Store ──────────────────────────────────────────────
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
