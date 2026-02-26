@@ -145,7 +145,7 @@ class CircuitBreaker:
                         return True
                     return False
 
-                case CircuitState.HALF_OPEN:
+                case CircuitState.HALF_OPEN:  # pragma: no branch
                     # Allow limited attempts
                     return True
 
@@ -164,7 +164,7 @@ class CircuitBreaker:
                     # Reset failure count on success
                     self._state.failure_count = 0
 
-                case CircuitState.OPEN:
+                case CircuitState.OPEN:  # pragma: no branch
                     pass  # Should not happen, but handle gracefully
 
     def _record_failure(self, exc: Exception) -> None:
@@ -195,7 +195,7 @@ class CircuitBreaker:
                             self._state.failure_count,
                         )
 
-                case CircuitState.OPEN:
+                case CircuitState.OPEN:  # pragma: no branch
                     pass  # Already open, nothing to do
 
     def reset(self) -> None:

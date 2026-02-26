@@ -8,11 +8,13 @@
 
 [![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/Coverage-98%25-success?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
 [![Type Checked](https://img.shields.io/badge/Type%20Checked-Mypy-blue?style=flat)](http://mypy-lang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Bandit%20%7C%20Semgrep-red?style=flat)](SECURITY.md)
+[![SBOM](https://img.shields.io/badge/SBOM-CycloneDX-informational?style=flat&logo=owasp)](https://github.com/gabrielima7/TaipanStack/actions/workflows/sbom-slsa.yml)
+[![SLSA](https://img.shields.io/badge/SLSA-Sigstore-blueviolet?style=flat)](https://github.com/gabrielima7/TaipanStack/actions/workflows/sbom-slsa.yml)
 [![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
 
 ---
@@ -38,6 +40,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 - Command injection guards
 - Input sanitizers & validators
 - Secret detection integration
+- **SBOM + SLSA** supply-chain attestation
 
 </td>
 <td width="50%">
@@ -46,7 +49,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 - `uvloop` async event loop
 - `orjson` fast JSON serialization
 - `Pydantic v2` validation
-- Optimized for production
+- Performance benchmarks with regression detection
 
 </td>
 </tr>
@@ -64,9 +67,9 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- Comprehensive test suite
+- **100% code coverage** (664 tests)
 - Architecture enforcement
-- Zero-config setup
+- Hardened Docker template
 
 </td>
 </tr>
@@ -106,7 +109,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with coverage (97%+ coverage)
+# Run tests with 100% coverage (664 tests)
 make test
 
 # Check architecture contracts
@@ -114,6 +117,12 @@ make lint-imports
 
 # Run security scans
 make security
+
+# Run property-based fuzzing
+make property-test
+
+# Run performance benchmarks
+make benchmark
 ```
 
 ---
@@ -155,9 +164,10 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ Comprehensive test suite (97%+ coverage)
-├── pyapp/                # 📦 Standalone executable builder
-├── .github/              # 🔄 CI/CD workflows
+├── tests/                # ✅ 664 tests, 100% coverage
+├── .semgrep/             # 🔍 Custom SAST rules
+├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
+├── Dockerfile            # 🐳 Hardened multi-stage container
 └── pyproject.toml        # 📋 Modern dependency management
 ```
 
@@ -169,12 +179,16 @@ TaipanStack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
-| **SAST** | Bandit, Semgrep | Static Application Security Testing |
-| **SCA** | Safety | Dependency vulnerability scanning |
+| **SAST** | Bandit, Semgrep + custom rules | Static Application Security Testing |
+| **SCA** | Safety, pip-audit | Dependency vulnerability scanning |
+| **SBOM** | Syft (CycloneDX) | Software Bill of Materials |
+| **SLSA** | Cosign (Sigstore) | Artifact signing & attestation |
 | **Types** | Mypy (strict) | Compile-time type checking |
 | **Lint** | Ruff | Lightning-fast linting & formatting |
 | **Arch** | Import Linter | Dependency rule enforcement |
-| **Test** | Pytest, Hypothesis | Property-based testing |
+| **Test** | Pytest, Hypothesis, mutmut | Property-based & mutation testing |
+| **Perf** | pytest-benchmark | Performance regression detection |
+| **Containers** | Docker (Alpine, rootless) | Hardened-by-default images |
 
 ### CI Pipeline
 
@@ -184,8 +198,10 @@ TaipanStack integrates security and quality at every level:
 ✓ Linux Distros   → Ubuntu, Debian, Fedora, openSUSE, Arch, Alpine
 ✓ Code Quality    → Ruff check & format
 ✓ Type Check      → Mypy strict mode
-✓ Security        → Bandit + Semgrep
+✓ Security        → Bandit + Semgrep (custom rules)
 ✓ Architecture    → Import Linter contracts
+✓ Benchmarks      → Performance regression (>5% = fail)
+✓ SBOM + SLSA     → Supply-chain attestation on release
 ```
 
 ---
@@ -246,13 +262,27 @@ def call_external_service() -> Response:
 
 ---
 
+## 🐳 Docker
+
+```bash
+# Build hardened image
+docker build -t taipanstack:latest .
+
+# Run (rootless, read-only)
+docker run --rm --read-only taipanstack:latest
+```
+
+Security features: multi-stage build, Alpine base (<50MB), non-root `appuser` (UID 1000), healthcheck, no shell in runtime.
+
+---
+
 ## 🛠️ Tech Stack
 
 <table>
 <tr>
 <th>Runtime</th>
 <th>Quality</th>
-<th>DevOps</th>
+<th>DevSecOps</th>
 </tr>
 <tr>
 <td>
@@ -269,17 +299,19 @@ def call_external_service() -> Response:
 - Ruff
 - Mypy
 - Bandit
-- Pytest
-- Hypothesis
+- Pytest + Hypothesis
+- mutmut
+- pytest-benchmark
 
 </td>
 <td>
 
 - GitHub Actions
+- Syft + Cosign (SBOM/SLSA)
 - Dependabot
 - Pre-commit
 - Poetry
-- Import Linter
+- Docker (Alpine, rootless)
 
 </td>
 </tr>

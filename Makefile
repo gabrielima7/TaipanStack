@@ -1,4 +1,4 @@
-.PHONY: help install test lint format typecheck security clean lint-imports mutate build-exe context all
+.PHONY: help install test lint format typecheck security clean lint-imports mutate build-exe context benchmark property-test all
 
 help:
 	@echo "TaipanStack - Development Commands"
@@ -16,6 +16,8 @@ help:
 	@echo "  mutate       Run mutation testing with mutmut"
 	@echo "  build-exe    Build standalone executable with PyApp"
 	@echo "  context      Generate project context for AI with gitingest"
+	@echo "  benchmark    Run performance benchmarks with pytest-benchmark"
+	@echo "  property-test Run property-based fuzz tests with Hypothesis"
 	@echo "  clean        Clean cache and temporary files"
 	@echo "  all          Run all checks (lint, typecheck, security, test)"
 
@@ -71,6 +73,14 @@ clean:
 	find . -type f -name "*.bak" -delete 2>/dev/null || true
 	rm -rf htmlcov/ .coverage 2>/dev/null || true
 	@echo "Clean complete!"
+
+benchmark:
+	@echo "Running performance benchmarks..."
+	poetry run pytest tests/test_benchmarks.py --benchmark-only -v
+
+property-test:
+	@echo "Running property-based fuzz tests..."
+	poetry run pytest tests/test_property_sanitizers.py -v
 
 all: lint typecheck security lint-imports test
 	@echo ""

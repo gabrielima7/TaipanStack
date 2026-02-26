@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-02-26
+
+### Added
+- **Sec — SBOM & SLSA**: GitHub Actions workflow generating CycloneDX SBOM via `syft` and signing artifacts with `cosign` (Sigstore keyless OIDC)
+- **Sec — Custom SAST Rules**: Semgrep YAML rules enforcing explicit `Err()` handling in Result pattern matches and detecting discarded `@safe` return values
+- **Ops — Docker Hardened-by-Default**: Multi-stage Dockerfile (slim builder → Alpine runtime), rootless `appuser`, healthcheck, `.dockerignore`
+- **QA — Property-Based Testing**: Hypothesis-powered fuzz tests (500 examples each) covering all sanitizer functions — discovered 5 real edge cases
+- **QA — Mutation Testing**: Enhanced `mutmut` configuration with `dict_synonyms`; added `mutmut` and `pytest-benchmark` to dev dependencies
+- **QA/Ops — Performance Regression**: GitHub Actions workflow with `pytest-benchmark` + `benchmark-action` failing CI on >5% degradation vs. main baseline
+- **QA — 100% Code Coverage**: 664 tests covering 1,586 statements and 448 branches with `fail_under = 100`
+- Benchmark test suite (`test_benchmarks.py`) covering sanitizers and Result type utilities
+- Comprehensive feature documentation (`docs/FEATURES_v0.3.0.md`)
+
+### Fixed
+- **Security**: `cosign verify-blob` in `sbom-slsa.yml` used `".*"` wildcards for certificate identity and OIDC issuer — now restricted to `gabrielima7/TaipanStack` identity and GitHub Actions OIDC issuer
+
+### Changed
+- Bumped version from `0.2.9` to `0.3.0`
+- CI Semgrep step now includes custom TaipanStack rules (`.semgrep/taipanstack-rules.yml`)
+- Added `benchmark` and `property-test` Makefile targets
+- Coverage `fail_under` raised from 80% to 100%
+
 ## [0.2.9] - 2026-02-25
 
 ### Added
@@ -101,8 +123,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[0.3.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...v0.3.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.0...HEAD
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0

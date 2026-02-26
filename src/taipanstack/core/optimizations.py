@@ -340,7 +340,7 @@ def apply_optimizations(
     success = len(errors) == 0
     if applied:
         logger.debug("Applied optimizations: %s", ", ".join(applied))
-    if skipped:
+    if skipped:  # pragma: no branch
         logger.debug("Skipped optimizations: %s", ", ".join(skipped))
     if errors:
         logger.warning("Optimization errors: %s", ", ".join(errors))

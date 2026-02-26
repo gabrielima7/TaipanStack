@@ -1,0 +1,101 @@
+# =============================================================================
+# TaipanStack — Custom Semgrep Rules
+# =============================================================================
+# Enforces proper error handling when using TaipanStack's Result types.
+# Developers MUST handle the Err() branch when matching on Result values.
+# =============================================================================
+
+rules:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 1: Match on Result must include `case Err(...)`
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.result-err-not-handled
+    languages: [python]
+    severity: WARNING
+    message: >
+      Missing `case Err(...)` branch in Result pattern match.
+      TaipanStack requires explicit error handling for all Result values.
+      Add a `case Err(error):` branch to handle the failure case.
+      See: https://github.com/gabrielima7/TaipanStack#error-handling
+    metadata:
+      category: correctness
+      confidence: HIGH
+      technology:
+        - taipanstack
+      references:
+        - https://github.com/gabrielima7/TaipanStack
+    patterns:
+      - pattern: |
+          match $RESULT:
+              case Ok($VAL):
+                  ...
+      - pattern-not: |
+          match $RESULT:
+              case Ok($VAL):
+                  ...
+              case Err($ERR):
+                  ...
+      - pattern-not: |
+          match $RESULT:
+              case Err($ERR):
+                  ...
+              case Ok($VAL):
+                  ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 2: Do not discard the return value of @safe-decorated functions
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.result-value-discarded
+    languages: [python]
+    severity: WARNING
+    message: >
+      Return value of a function decorated with `@safe` or `@safe_from` is
+      being discarded. This silently swallows potential errors. Assign the
+      result to a variable and handle both Ok and Err cases.
+    metadata:
+      category: correctness
+      confidence: MEDIUM
+      technology:
+        - taipanstack
+    pattern-either:
+      - patterns:
+          - pattern: |
+              @safe
+              def $FUNC(...):
+                  ...
+
+              ...
+
+              $FUNC(...)
+          - pattern-not: $X = $FUNC(...)
+          - pattern-not: return $FUNC(...)
+          - pattern-not: yield $FUNC(...)
+      - patterns:
+          - pattern: |
+              @safe_from(...)
+              def $FUNC(...):
+                  ...
+
+              ...
+
+              $FUNC(...)
+          - pattern-not: $X = $FUNC(...)
+          - pattern-not: return $FUNC(...)
+          - pattern-not: yield $FUNC(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 3: Do not use bare `unwrap()` on Result without prior check
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.result-unsafe-unwrap
+    languages: [python]
+    severity: WARNING
+    message: >
+      Calling `.unwrap()` on a Result without checking `is_ok()` first can
+      raise an UnwrapError at runtime. Prefer `match` with explicit
+      `Ok`/`Err` handling, or use `unwrap_or()` / `unwrap_or_else()`.
+    metadata:
+      category: correctness
+      confidence: HIGH
+      technology:
+        - taipanstack
+    pattern: $RESULT.unwrap()
