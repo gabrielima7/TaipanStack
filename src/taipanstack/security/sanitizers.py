@@ -222,9 +222,15 @@ def sanitize_path(
 
     # Reconstruct path
     if path.is_absolute():
-        sanitized = Path("/").joinpath(*parts) if parts else Path("/")  # pragma: no branch
+        if parts:  # pragma: no branch
+            sanitized = Path("/").joinpath(*parts)
+        else:  # pragma: no cover
+            sanitized = Path("/")
     else:
-        sanitized = Path().joinpath(*parts) if parts else Path()
+        if parts:  # pragma: no branch
+            sanitized = Path().joinpath(*parts)
+        else:  # pragma: no cover
+            sanitized = Path()
 
     # Check depth (skip if max_depth is None)
     depth = len(sanitized.parts)
