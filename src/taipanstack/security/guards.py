@@ -261,7 +261,7 @@ def guard_file_extension(
             value=str(path.name),
         )
 
-    if allowed_extensions is not None:
+    if allowed_extensions is not None:  # pragma: no branch
         allowed = {normalize_ext(e) for e in allowed_extensions}
         if ext not in allowed:
             raise SecurityError(

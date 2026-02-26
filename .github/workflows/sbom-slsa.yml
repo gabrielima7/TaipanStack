@@ -1,0 +1,117 @@
+# =============================================================================
+# TaipanStack — SBOM Generation & SLSA Artifact Signing
+# =============================================================================
+# Generates a CycloneDX SBOM via syft and signs artifacts with cosign/Sigstore.
+# Triggered on every published release.
+# =============================================================================
+
+name: SBOM & SLSA
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write # upload release assets
+  id-token: write # Sigstore OIDC keyless signing
+
+jobs:
+  sbom-and-sign:
+    name: Generate SBOM & Sign Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      # ── Python + Build ────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Build distribution
+        run: poetry build
+
+      # ── SBOM Generation (syft → CycloneDX JSON) ──────────────────────
+      - name: Install syft
+        uses: anchore/sbom-action/download-syft@v0
+        id: syft-install
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          WHEEL=$(ls dist/*.whl | head -1)
+          syft "${WHEEL}" -o cyclonedx-json=sbom.cdx.json
+          echo "Generated SBOM for ${WHEEL}"
+          echo "wheel_path=${WHEEL}" >> "$GITHUB_ENV"
+          echo "wheel_name=$(basename ${WHEEL})" >> "$GITHUB_ENV"
+
+      # ── Artifact Signing (cosign / Sigstore keyless) ──────────────────
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the wheel
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature "${wheel_name}.sig" \
+            --output-certificate "${wheel_name}.crt" \
+            "${wheel_path}"
+
+      - name: Sign the SBOM
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature sbom.cdx.json.sig \
+            --output-certificate sbom.cdx.json.crt \
+            sbom.cdx.json
+
+      # ── Verification (sanity check) ──────────────────────────────────
+      - name: Verify wheel signature
+        run: |
+          cosign verify-blob \
+            --signature "${wheel_name}.sig" \
+            --certificate "${wheel_name}.crt" \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${wheel_path}"
+
+      - name: Verify SBOM signature
+        run: |
+          cosign verify-blob \
+            --signature sbom.cdx.json.sig \
+            --certificate sbom.cdx.json.crt \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            sbom.cdx.json
+
+      # ── Upload to Release ─────────────────────────────────────────────
+      - name: Upload artifacts to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+            sbom.cdx.json.crt
+            ${{ env.wheel_name }}.sig
+            ${{ env.wheel_name }}.crt
+
+      # ── Upload as workflow artifacts (for manual runs) ────────────────
+      - name: Upload workflow artifacts
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-slsa-artifacts
+          path: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+            sbom.cdx.json.crt
+            ${{ env.wheel_name }}.sig
+            ${{ env.wheel_name }}.crt
+          retention-days: 30

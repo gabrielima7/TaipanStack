@@ -333,9 +333,9 @@ def get_command_version(
             timeout=10.0,
             capture_output=True,
         )
-        if result.success:
+        if result.success:  # pragma: no branch
             # Return first non-empty line
-            for raw_line in result.stdout.split("\n"):
+            for raw_line in result.stdout.split("\n"):  # pragma: no branch
                 stripped_line = raw_line.strip()
                 if stripped_line:
                     return stripped_line

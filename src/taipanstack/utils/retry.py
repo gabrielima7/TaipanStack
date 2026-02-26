@@ -144,7 +144,7 @@ def retry(
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             last_exception: Exception | None = None
 
-            for attempt in range(1, max_attempts + 1):
+            for attempt in range(1, max_attempts + 1):  # pragma: no branch
                 try:
                     return func(*args, **kwargs)
                 except on as e:

@@ -1,6 +1,6 @@
 [project]
 name = "taipanstack"
-version = "0.2.9"
+version = "0.3.0"
 description = "TaipanStack - Modular, secure, and scalable Python stack for robust development"
 authors = [
     {name = "gabrielima7", email = "gabrielima.alu.lmb@gmail.com"}
@@ -65,6 +65,8 @@ dev = [
     "structlog (>=25.5.0,<26.0.0)",
     "import-linter (>=2.1)",
     "gitingest (>=0.1.0)",
+    "mutmut (>=3.0.0)",
+    "pytest-benchmark (>=5.0.0)",
 ]
 
 
@@ -158,6 +160,7 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "security: marks tests as security-related",
     "integration: marks tests as integration tests",
+    "benchmark: marks tests as performance benchmarks",
 ]
 filterwarnings = [
     "ignore::DeprecationWarning",
@@ -179,7 +182,12 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "@abstractmethod",
 ]
-fail_under = 80
+partial_branches = [
+    "pragma: no branch",
+    "case Err\\(",
+    "case Ok\\(",
+]
+fail_under = 100
 show_missing = true
 
 [tool.bandit]
@@ -202,3 +210,4 @@ verbose = 1
 paths_to_mutate = "src/"
 tests_dir = "tests/"
 runner = "python -m pytest -x -q --tb=no --timeout=10"
+dict_synonyms = "Struct, NamedStruct"

@@ -125,7 +125,7 @@ def validate_python_version(version: str) -> str:
 
     try:
         major, minor = map(int, version.split("."))
-    except ValueError as e:
+    except ValueError as e:  # pragma: no cover — regex already validates digits
         msg = f"Invalid version numbers in '{version}'"
         raise ValueError(msg) from e
 

@@ -1,0 +1,53 @@
+# =============================================================================
+# TaipanStack — Docker Build Context Exclusions
+# =============================================================================
+
+# Version control
+.git
+.gitignore
+
+# Virtual environments
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+
+# Testing & coverage
+tests/
+htmlcov/
+.coverage
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.mutmut-cache
+.import_linter_cache
+
+# Build artifacts
+dist/
+*.egg-info
+
+# CI/CD & editor configs
+.github/
+.vscode/
+.editorconfig
+
+# Logs & temp files
+logs/
+*.log
+*.bak
+
+# Secrets
+.env
+.env.*
+!.env.example
+.secrets.baseline
+
+# Documentation (not needed in image)
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+SECURITY.md
+
+# PyApp builder
+pyapp/

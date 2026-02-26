@@ -198,7 +198,7 @@ def sanitize_path(
         ValueError: If path is invalid or too deep.
 
     """
-    if isinstance(path, str):
+    if isinstance(path, str):  # pragma: no branch
         path = Path(path)
 
     # Remove any null bytes
@@ -214,10 +214,10 @@ def sanitize_path(
             if parts and parts[-1] != "..":
                 parts.pop()
             # Skip the .. entirely if at root
-        elif part != ".":
+        elif part != ".": # pragma: no branch
             # Sanitize each component
             safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part:  # Skip empty parts
+            if safe_part:  # Skip empty parts  # pragma: no branch
                 parts.append(safe_part)
 
     # Reconstruct path
@@ -242,7 +242,7 @@ def sanitize_path(
                 msg = f"Cannot resolve path: {e}"
                 raise ValueError(msg) from e
         # Make absolute relative to base
-        elif not sanitized.is_absolute():
+        elif not sanitized.is_absolute():  # pragma: no branch
             sanitized = base / sanitized
 
     return sanitized

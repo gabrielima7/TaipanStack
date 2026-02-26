@@ -17,7 +17,7 @@ try:
     import structlog
 
     HAS_STRUCTLOG = True
-except ImportError:
+except ImportError:  # pragma: no cover — structlog is optional
     HAS_STRUCTLOG = False
 
 

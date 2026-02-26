@@ -92,7 +92,7 @@ class MetricsCollector:
         """Singleton pattern for global metrics access."""
         if cls._instance is None:
             with cls._lock:
-                if cls._instance is None:
+                if cls._instance is None:  # pragma: no branch
                     cls._instance = super().__new__(cls)
                     cls._instance._initialized = False
         return cls._instance

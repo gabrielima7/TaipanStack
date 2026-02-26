@@ -1,0 +1,77 @@
+# =============================================================================
+# TaipanStack — Performance Regression Guard
+# =============================================================================
+# Runs pytest-benchmark on every push/PR and fails CI if any benchmark
+# degrades more than 5% compared to the main branch baseline.
+# =============================================================================
+
+name: Performance Regression
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: write # needed to push benchmark data to gh-pages
+    pull-requests: write # needed to comment on PRs
+
+jobs:
+    benchmark:
+        name: Run Benchmarks
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v6
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.11"
+
+            - name: Install Poetry
+              run: pipx install poetry
+
+            - name: Configure Poetry
+              run: poetry config virtualenvs.in-project true
+
+            - name: Cache dependencies
+              uses: actions/cache@v5
+              with:
+                  path: .venv
+                  key: bench-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+                  restore-keys: |
+                      bench-${{ runner.os }}-poetry-
+
+            - name: Install dependencies
+              run: poetry install --with dev --sync
+
+            - name: Run benchmarks
+              run: |
+                  poetry run pytest tests/test_benchmarks.py \
+                    --benchmark-only \
+                    --benchmark-json=benchmark-result.json \
+                    --benchmark-min-rounds=10 \
+                    -v
+
+            # ── Compare & Store ──────────────────────────────────────────────
+            - name: Store benchmark result
+              uses: benchmark-action/github-action-benchmark@v1
+              with:
+                  name: TaipanStack Performance
+                  tool: pytest
+                  output-file-path: benchmark-result.json
+                  # Push baseline data to gh-pages on main branch pushes
+                  auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+                  gh-pages-branch: gh-pages
+                  benchmark-data-dir-path: dev/bench
+                  # Fail CI if performance degrades more than 5%
+                  alert-threshold: "105%"
+                  fail-on-alert: true
+                  # Comment on PR with comparison
+                  comment-on-alert: true
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  # Alert when threshold exceeded
+                  alert-comment-cc-users: "@gabrielima7"
