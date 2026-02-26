@@ -214,7 +214,7 @@ def sanitize_path(
             if parts and parts[-1] != "..":
                 parts.pop()
             # Skip the .. entirely if at root
-        elif part != ".": # pragma: no branch
+        elif part != ".":  # pragma: no branch
             # Sanitize each component
             safe_part = sanitize_filename(part, preserve_extension=True)
             if safe_part:  # Skip empty parts  # pragma: no branch
