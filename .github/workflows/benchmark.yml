@@ -66,7 +66,7 @@ jobs:
             git checkout --orphan gh-pages
             git reset --hard
             git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
-            git checkout -
+            git checkout main
           fi
 
       # ── Compare & Store ──────────────────────────────────────────────
