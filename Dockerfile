@@ -7,7 +7,7 @@
 # ── Stage 1: Builder ────────────────────────────────────────────────────────
 FROM python:3.11-slim AS builder
 
-WORKDIR /build
+WORKDIR /app
 
 # Install Poetry (pinned version for reproducibility)
 ENV POETRY_VERSION=2.1.1 \
@@ -34,15 +34,15 @@ FROM python:3.11-alpine AS runtime
 
 # Security labels (OCI Image Spec)
 LABEL org.opencontainers.image.title="TaipanStack" \
-      org.opencontainers.image.description="Modular, secure, and scalable Python stack" \
-      org.opencontainers.image.source="https://github.com/gabrielima7/TaipanStack" \
-      org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.vendor="gabrielima7"
+    org.opencontainers.image.description="Modular, secure, and scalable Python stack" \
+    org.opencontainers.image.source="https://github.com/gabrielima7/TaipanStack" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.vendor="gabrielima7"
 
 # Install only runtime system dependencies, then clean up
 RUN apk add --no-cache \
-        libgcc \
-        libstdc++ \
+    libgcc \
+    libstdc++ \
     && rm -rf /var/cache/apk/*
 
 # Create non-root user (UID 1000 — standard unprivileged)
@@ -50,10 +50,10 @@ RUN addgroup -g 1000 appgroup \
     && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
 
 # Copy virtualenv from builder (contains all installed packages)
-COPY --from=builder /build/.venv /app/.venv
+COPY --chown=appuser:appgroup --from=builder /app/.venv /app/.venv
 
 # Copy application source
-COPY --from=builder /build/src /app/src
+COPY --chown=appuser:appgroup --from=builder /app/src /app/src
 
 WORKDIR /app
 
@@ -65,6 +65,8 @@ ENV PATH="/app/.venv/bin:${PATH}" \
 
 # Drop to non-root user
 USER appuser
+
+EXPOSE 8080
 
 # Healthcheck — verify the library imports correctly
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
