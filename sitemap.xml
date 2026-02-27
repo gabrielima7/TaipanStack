@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/architecture/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/api/core/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/api/security/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/api/utils/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/releases/v0.3.0/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+    <url>
+         <loc>https://gabrielima7.github.io/TaipanStack/releases/v0.3.1/</loc>
+         <lastmod>2026-02-27</lastmod>
+    </url>
+</urlset>
