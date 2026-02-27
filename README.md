@@ -260,6 +260,49 @@ def call_external_service() -> Response:
     return service.call()
 ```
 
+### 🔗 Combining Result + Circuit Breaker
+
+```python
+from taipanstack.core.result import safe, Ok, Err
+from taipanstack.utils.circuit_breaker import CircuitBreaker
+
+breaker = CircuitBreaker(failure_threshold=3, timeout=60, name="payments")
+
+@breaker
+@safe
+def charge_customer(customer_id: str, amount: float) -> dict:
+    return payment_gateway.charge(customer_id, amount)
+
+# Both circuit protection AND explicit error handling
+result = charge_customer("cust_123", 49.99)
+match result:
+    case Ok(receipt):
+        print(f"Payment successful: {receipt}")
+    case Err(error):
+        print(f"Payment failed safely: {error}")
+```
+
+### 🔗 Combining Result + Retry with Monitoring
+
+```python
+from taipanstack.core.result import safe, unwrap_or
+from taipanstack.utils.retry import retry
+
+@retry(
+    max_attempts=3,
+    on=(ConnectionError, TimeoutError),
+    on_retry=lambda attempt, max_a, exc, delay: print(
+        f"⚠️  Attempt {attempt}/{max_a} failed, retrying in {delay:.1f}s..."
+    ),
+)
+@safe
+def fetch_user_profile(user_id: str) -> dict:
+    return api_client.get(f"/users/{user_id}")
+
+# Retry handles transient failures, Result handles business errors
+profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
+```
+
 ---
 
 ## 🐳 Docker

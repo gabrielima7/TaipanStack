@@ -70,6 +70,8 @@ def guard_path_traversal(
         SecurityError: [path_traversal] Path escapes base directory
 
     """
+    if not isinstance(path, (str, Path)):
+        raise TypeError(f"path must be str or Path, got {type(path).__name__}")
     path = Path(path) if isinstance(path, str) else path
     base_dir = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
 
@@ -156,6 +158,14 @@ def guard_command_injection(
         )
 
     cmd_list = list(command)
+
+    # Validate all items are strings
+    for i, arg in enumerate(cmd_list):
+        if not isinstance(arg, str):
+            raise TypeError(
+                f"All command arguments must be strings, "
+                f"got {type(arg).__name__} at index {i}"
+            )
 
     # Dangerous shell metacharacters
     dangerous_patterns: list[tuple[str, str]] = [
@@ -308,6 +318,17 @@ def guard_env_variable(
         "API_KEY",
         "API_SECRET",
     }
+
+    # Validate input type
+    if not isinstance(name, str):
+        raise TypeError(f"Variable name must be str, got {type(name).__name__}")
+
+    # Reject empty/whitespace-only variable names
+    if not name or not name.strip():
+        raise SecurityError(
+            "Environment variable name cannot be empty or whitespace",
+            guard_name="env_variable",
+        )
 
     name_upper = name.upper()
 

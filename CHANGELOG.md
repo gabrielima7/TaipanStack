@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-27
+
+### Added
+- **Type Hinting**: `@overload` signatures for `unwrap_or` and `unwrap_or_else` in `result.py` — enables precise type narrowing in mypy/pyright strict mode
+- **Observability**: Optional `on_retry` callback parameter for the `retry()` decorator — receives `(attempt, max_attempts, exception, delay)` on each retry
+- **Observability**: Optional `on_state_change` callback for `CircuitBreaker` and `circuit_breaker()` decorator — receives `(old_state, new_state)` on every state transition
+- **Security**: Runtime `TypeError` guards in all security functions (`guard_path_traversal`, `guard_command_injection`, `guard_env_variable`, `sanitize_string`, `sanitize_filename`, `validate_project_name`, `validate_email`, `validate_url`, `validate_python_version`)
+- **Security**: `guard_env_variable` now rejects empty/whitespace-only variable names with `SecurityError`
+- **Security**: `guard_command_injection` validates all items in the command sequence are strings
+- Practical usage examples in README combining Result types with Circuit Breaker and Retry
+
+### Changed
+- Enriched circuit breaker log messages with failure count, elapsed time, and threshold context
+- `Retrier.__exit__` now uses proper `type[BaseException]` and `TracebackType` annotations per Python data model
+- `CircuitBreaker._should_attempt()` has explicit return on all code paths for strict type checker compliance
+
+### Fixed
+- **Version mismatch**: `__init__.py` had `__version__ = "2.0.0"` (legacy from project rename) — now aligned to `"0.3.1"` matching `pyproject.toml`
+
 ## [0.3.0] - 2026-02-26
 
 ### Added
@@ -123,9 +142,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[0.3.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...v0.3.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.1...HEAD
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0

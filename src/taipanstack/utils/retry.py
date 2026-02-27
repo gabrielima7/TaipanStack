@@ -14,7 +14,8 @@ import random
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, ParamSpec, TypeVar
+from types import TracebackType
+from typing import ParamSpec, TypeVar
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -106,6 +107,7 @@ def retry(
     on: tuple[type[Exception], ...] = (Exception,),
     reraise: bool = True,
     log_retries: bool = True,
+    on_retry: Callable[[int, int, Exception, float], None] | None = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Retry a function with exponential backoff.
 
@@ -121,6 +123,9 @@ def retry(
         on: Exception types to retry on.
         reraise: Whether to reraise the last exception on failure.
         log_retries: Whether to log retry attempts.
+        on_retry: Optional callback invoked on each retry with
+            (attempt, max_attempts, exception, delay). Useful for
+            custom monitoring or metrics collection.
 
     Returns:
         Decorated function with retry logic.
@@ -129,6 +134,10 @@ def retry(
         >>> @retry(max_attempts=3, on=(ConnectionError, TimeoutError))
         ... def fetch_data(url: str) -> dict:
         ...     return requests.get(url).json()
+
+        >>> @retry(max_attempts=3, on_retry=lambda a, m, e, d: print(f"Retry {a}/{m}"))
+        ... def fragile_operation() -> str:
+        ...     return do_something()
 
     """
     config = RetryConfig(
@@ -174,6 +183,10 @@ def retry(
                             str(e),
                             delay,
                         )
+
+                    # Invoke callback if provided
+                    if on_retry is not None:
+                        on_retry(attempt, max_attempts, e, delay)
 
                     time.sleep(delay)
 
@@ -274,9 +287,9 @@ class Retrier:
 
     def __exit__(
         self,
-        exc_type: type[Exception] | None,
-        exc_val: Exception | None,
-        _exc_tb: Any,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
     ) -> bool:
         """Exit the retry context.
 
@@ -289,7 +302,8 @@ class Retrier:
         if not issubclass(exc_type, self.exception_types):
             return False  # Exception type not in retry list
 
-        self.last_exception = exc_val
+        # Safe cast: issubclass guard above ensures exc_val is Exception
+        self.last_exception = exc_val if isinstance(exc_val, Exception) else None
         self.attempt += 1
 
         if self.attempt >= self.config.max_attempts:

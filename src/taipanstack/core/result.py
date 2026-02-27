@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import functools
 from collections.abc import Callable, Iterable
-from typing import ParamSpec, TypeVar
+from typing import ParamSpec, TypeVar, overload
 
 from result import Err, Ok, Result
 
@@ -148,7 +148,19 @@ def collect_results(
     return Ok(values)
 
 
-def unwrap_or(result: Result[T, E], default: T) -> T:
+@overload
+def unwrap_or(result: Ok[T], default: U) -> T: ...  # pragma: no cover
+
+
+@overload
+def unwrap_or(result: Err[E], default: U) -> U: ...  # pragma: no cover
+
+
+@overload
+def unwrap_or(result: Result[T, E], default: U) -> T | U: ...  # pragma: no cover
+
+
+def unwrap_or(result: Result[T, E], default: U) -> T | U:
     """Extract value from Result or return default.
 
     Args:
@@ -172,10 +184,31 @@ def unwrap_or(result: Result[T, E], default: T) -> T:
             return default
 
 
+@overload
+def unwrap_or_else(
+    result: Ok[T],
+    default_fn: Callable[[E], U],
+) -> T: ...  # pragma: no cover
+
+
+@overload
+def unwrap_or_else(
+    result: Err[E],
+    default_fn: Callable[[E], U],
+) -> U: ...  # pragma: no cover
+
+
+@overload
 def unwrap_or_else(
     result: Result[T, E],
-    default_fn: Callable[[E], T],
-) -> T:
+    default_fn: Callable[[E], U],
+) -> T | U: ...  # pragma: no cover
+
+
+def unwrap_or_else(
+    result: Result[T, E],
+    default_fn: Callable[[E], U],
+) -> T | U:
     """Extract value from Result or compute default from error.
 
     Args:

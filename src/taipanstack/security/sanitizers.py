@@ -69,6 +69,9 @@ def sanitize_string(
         "scriptalert('xss')/scriptHello"
 
     """
+    if not isinstance(value, str):
+        raise TypeError(f"value must be str, got {type(value).__name__}")
+
     if not value:
         return ""
 
@@ -131,6 +134,9 @@ def sanitize_filename(
         'my_file_name.txt'
 
     """
+    if not isinstance(filename, str):
+        raise TypeError(f"filename must be str, got {type(filename).__name__}")
+
     if not filename:
         return "unnamed"
 
