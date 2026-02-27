@@ -57,15 +57,21 @@ jobs:
             --no-cov \
             -v
 
-      # ── Bootstrap gh-pages if it doesn't exist ─────────────────────
-      - name: Create gh-pages branch if missing
+      # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
+      - name: Ensure gh-pages branch exists
         run: |
-          if ! git rev-parse --verify gh-pages >/dev/null 2>&1; then
+          # Check if gh-pages exists on the REMOTE (not locally)
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            echo "✅ Remote gh-pages branch already exists, fetching..."
+            git fetch origin gh-pages:gh-pages
+          else
+            echo "🆕 Creating gh-pages branch for the first time..."
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git checkout --orphan gh-pages
             git reset --hard
             git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
+            git push origin gh-pages
             git checkout main
           fi
 
