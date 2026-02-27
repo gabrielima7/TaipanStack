@@ -76,8 +76,8 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal">
   
     
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off" aria-label="Open navigation">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off" aria-label="Open search">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
@@ -1365,16 +1365,16 @@
 </tbody>
 </table>
 <h3 id="before-after">Before / After<a class="headerlink" href="#before-after" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># BEFORE: mypy cannot narrow the return type</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Ok</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>  <span class="c1"># type: int | str</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># AFTER: mypy narrows correctly based on the Result variant</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Ok</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>         <span class="c1"># type: int ✅</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Err</span><span class="p">(</span><span class="s2">&quot;fail&quot;</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>     <span class="c1"># type: str ✅</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="c1"># BEFORE: mypy cannot narrow the return type</span>
+</span><span id="__span-0-2"><span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Ok</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>  <span class="c1"># type: int | str</span>
+</span><span id="__span-0-3">
+</span><span id="__span-0-4"><span class="c1"># AFTER: mypy narrows correctly based on the Result variant</span>
+</span><span id="__span-0-5"><span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Ok</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>         <span class="c1"># type: int ✅</span>
+</span><span id="__span-0-6"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">Err</span><span class="p">(</span><span class="s2">&quot;fail&quot;</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>     <span class="c1"># type: str ✅</span>
 </span></code></pre></div>
 <h3 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Passes with zero errors on all 24 source files</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>src/<span class="w"> </span>--strict
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><span class="c1"># Passes with zero errors on all 24 source files</span>
+</span><span id="__span-1-2">poetry<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>src/<span class="w"> </span>--strict
 </span></code></pre></div>
 <hr />
 <h2 id="2-observability-monitoring-callbacks">2. Observability &amp; Monitoring Callbacks<a class="headerlink" href="#2-observability-monitoring-callbacks" title="Permanent link">&para;</a></h2>
@@ -1401,18 +1401,18 @@
 </tr>
 </tbody>
 </table>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_to_datadog</span><span class="p">(</span><span class="n">attempt</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">statsd</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="s2">&quot;retry.attempt&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;attempt:</span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nd">@retry</span><span class="p">(</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,),</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">on_retry</span><span class="o">=</span><span class="n">log_to_datadog</span><span class="p">,</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
+</span><span id="__span-2-2">
+</span><span id="__span-2-3"><span class="k">def</span><span class="w"> </span><span class="nf">log_to_datadog</span><span class="p">(</span><span class="n">attempt</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-2-4">    <span class="n">statsd</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="s2">&quot;retry.attempt&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;attempt:</span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+</span><span id="__span-2-5">
+</span><span id="__span-2-6"><span class="nd">@retry</span><span class="p">(</span>
+</span><span id="__span-2-7">    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-2-8">    <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,),</span>
+</span><span id="__span-2-9">    <span class="n">on_retry</span><span class="o">=</span><span class="n">log_to_datadog</span><span class="p">,</span>
+</span><span id="__span-2-10"><span class="p">)</span>
+</span><span id="__span-2-11"><span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-2-12">    <span class="k">return</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </span></code></pre></div>
 <h3 id="circuit-breaker-on_state_change-callback">Circuit Breaker: <code>on_state_change</code> Callback<a class="headerlink" href="#circuit-breaker-on_state_change-callback" title="Permanent link">&para;</a></h3>
 <table>
@@ -1433,19 +1433,19 @@
 </tr>
 </tbody>
 </table>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span><span class="p">,</span> <span class="n">CircuitState</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">alert_on_open</span><span class="p">(</span><span class="n">old</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">if</span> <span class="n">new</span> <span class="o">==</span> <span class="n">CircuitState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="n">slack</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚨 Circuit opened! </span><span class="si">{</span><span class="n">old</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">new</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nd">@circuit_breaker</span><span class="p">(</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">failure_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">on_state_change</span><span class="o">=</span><span class="n">alert_on_open</span><span class="p">,</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">)</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">call_payment_api</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="k">return</span> <span class="n">gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span><span class="p">,</span> <span class="n">CircuitState</span>
+</span><span id="__span-3-2">
+</span><span id="__span-3-3"><span class="k">def</span><span class="w"> </span><span class="nf">alert_on_open</span><span class="p">(</span><span class="n">old</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-4">    <span class="k">if</span> <span class="n">new</span> <span class="o">==</span> <span class="n">CircuitState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
+</span><span id="__span-3-5">        <span class="n">slack</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚨 Circuit opened! </span><span class="si">{</span><span class="n">old</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">new</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-3-6">
+</span><span id="__span-3-7"><span class="nd">@circuit_breaker</span><span class="p">(</span>
+</span><span id="__span-3-8">    <span class="n">failure_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-3-9">    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+</span><span id="__span-3-10">    <span class="n">on_state_change</span><span class="o">=</span><span class="n">alert_on_open</span><span class="p">,</span>
+</span><span id="__span-3-11"><span class="p">)</span>
+</span><span id="__span-3-12"><span class="k">def</span><span class="w"> </span><span class="nf">call_payment_api</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-3-13">    <span class="k">return</span> <span class="n">gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="enriched-log-messages">Enriched Log Messages<a class="headerlink" href="#enriched-log-messages" title="Permanent link">&para;</a></h3>
 <table>
@@ -1539,21 +1539,21 @@
 </tbody>
 </table>
 <h3 id="error-message-quality">Error Message Quality<a class="headerlink" href="#error-message-quality" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># BEFORE: Cryptic error</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">sanitize_string</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># AttributeError: &#39;NoneType&#39; object has no attribute &#39;strip&#39;</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># AFTER: Clear TaipanStack error</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">sanitize_string</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># TypeError: value must be str, got NoneType</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># Command injection with index context</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">guard_command_injection</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">,</span> <span class="mi">123</span><span class="p">])</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># TypeError: All command arguments must be strings, got int at index 2</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="c1"># Empty env variable name</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="n">guard_env_variable</span><span class="p">(</span><span class="s2">&quot;   &quot;</span><span class="p">)</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="c1"># SecurityError: [env_variable] Environment variable name cannot be empty or whitespace</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><span class="c1"># BEFORE: Cryptic error</span>
+</span><span id="__span-4-2"><span class="n">sanitize_string</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-4-3"><span class="c1"># AttributeError: &#39;NoneType&#39; object has no attribute &#39;strip&#39;</span>
+</span><span id="__span-4-4">
+</span><span id="__span-4-5"><span class="c1"># AFTER: Clear TaipanStack error</span>
+</span><span id="__span-4-6"><span class="n">sanitize_string</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-4-7"><span class="c1"># TypeError: value must be str, got NoneType</span>
+</span><span id="__span-4-8">
+</span><span id="__span-4-9"><span class="c1"># Command injection with index context</span>
+</span><span id="__span-4-10"><span class="n">guard_command_injection</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">,</span> <span class="mi">123</span><span class="p">])</span>
+</span><span id="__span-4-11"><span class="c1"># TypeError: All command arguments must be strings, got int at index 2</span>
+</span><span id="__span-4-12">
+</span><span id="__span-4-13"><span class="c1"># Empty env variable name</span>
+</span><span id="__span-4-14"><span class="n">guard_env_variable</span><span class="p">(</span><span class="s2">&quot;   &quot;</span><span class="p">)</span>
+</span><span id="__span-4-15"><span class="c1"># SecurityError: [env_variable] Environment variable name cannot be empty or whitespace</span>
 </span></code></pre></div>
 <hr />
 <h2 id="4-version-alignment-cicd">4. Version Alignment &amp; CI/CD<a class="headerlink" href="#4-version-alignment-cicd" title="Permanent link">&para;</a></h2>
@@ -1587,18 +1587,18 @@
 </blockquote>
 <h3 id="ci-pipeline-status">CI Pipeline Status<a class="headerlink" href="#ci-pipeline-status" title="Permanent link">&para;</a></h3>
 <p>The existing CI workflow (<code>ci.yml</code>) with its <strong>12 jobs</strong> was reviewed and requires no changes:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>✓ Test Matrix        → Python 3.11–3.14 × (Ubuntu, macOS, Windows)
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>✓ Linux Distros      → Ubuntu, Fedora, openSUSE, Arch, Alpine
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>✓ Code Quality       → Ruff check &amp; format
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>✓ Type Check         → Mypy --strict
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>✓ Security           → Bandit + Semgrep (custom rules)
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>✓ Architecture       → Import Linter contracts
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>✓ Property Testing   → Hypothesis fuzzing
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>✓ Mutation Testing   → mutmut
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>✓ Benchmarks         → pytest-benchmark regression
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>✓ Docker Build       → Hardened container validation
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>✓ Docstring Coverage → interrogate
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>✓ Dry Run + Integration
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1">✓ Test Matrix        → Python 3.11–3.14 × (Ubuntu, macOS, Windows)
+</span><span id="__span-5-2">✓ Linux Distros      → Ubuntu, Fedora, openSUSE, Arch, Alpine
+</span><span id="__span-5-3">✓ Code Quality       → Ruff check &amp; format
+</span><span id="__span-5-4">✓ Type Check         → Mypy --strict
+</span><span id="__span-5-5">✓ Security           → Bandit + Semgrep (custom rules)
+</span><span id="__span-5-6">✓ Architecture       → Import Linter contracts
+</span><span id="__span-5-7">✓ Property Testing   → Hypothesis fuzzing
+</span><span id="__span-5-8">✓ Mutation Testing   → mutmut
+</span><span id="__span-5-9">✓ Benchmarks         → pytest-benchmark regression
+</span><span id="__span-5-10">✓ Docker Build       → Hardened container validation
+</span><span id="__span-5-11">✓ Docstring Coverage → interrogate
+</span><span id="__span-5-12">✓ Dry Run + Integration
 </span></code></pre></div>
 <hr />
 <h2 id="5-documentation-developer-experience">5. Documentation &amp; Developer Experience<a class="headerlink" href="#5-documentation-developer-experience" title="Permanent link">&para;</a></h2>
@@ -1608,39 +1608,39 @@
 <h3 id="new-readme-examples">New README Examples<a class="headerlink" href="#new-readme-examples" title="Permanent link">&para;</a></h3>
 <p>Two practical examples were added showing how to combine TaipanStack primitives:</p>
 <h4 id="result-circuit-breaker">Result + Circuit Breaker<a class="headerlink" href="#result-circuit-breaker" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;payments&quot;</span><span class="p">)</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nd">@breaker</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nd">@safe</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">charge_customer</span><span class="p">(</span><span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="k">return</span> <span class="n">payment_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">result</span> <span class="o">=</span> <span class="n">charge_customer</span><span class="p">(</span><span class="s2">&quot;cust_123&quot;</span><span class="p">,</span> <span class="mf">49.99</span><span class="p">)</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="k">match</span> <span class="n">result</span><span class="p">:</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="k">case</span> <span class="n">Ok</span><span class="p">(</span><span class="n">receipt</span><span class="p">):</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment successful: </span><span class="si">{</span><span class="n">receipt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="k">case</span> <span class="n">Err</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment failed safely: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
+</span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
+</span><span id="__span-6-3">
+</span><span id="__span-6-4"><span class="n">breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;payments&quot;</span><span class="p">)</span>
+</span><span id="__span-6-5">
+</span><span id="__span-6-6"><span class="nd">@breaker</span>
+</span><span id="__span-6-7"><span class="nd">@safe</span>
+</span><span id="__span-6-8"><span class="k">def</span><span class="w"> </span><span class="nf">charge_customer</span><span class="p">(</span><span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-6-9">    <span class="k">return</span> <span class="n">payment_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
+</span><span id="__span-6-10">
+</span><span id="__span-6-11"><span class="n">result</span> <span class="o">=</span> <span class="n">charge_customer</span><span class="p">(</span><span class="s2">&quot;cust_123&quot;</span><span class="p">,</span> <span class="mf">49.99</span><span class="p">)</span>
+</span><span id="__span-6-12"><span class="k">match</span> <span class="n">result</span><span class="p">:</span>
+</span><span id="__span-6-13">    <span class="k">case</span> <span class="n">Ok</span><span class="p">(</span><span class="n">receipt</span><span class="p">):</span>
+</span><span id="__span-6-14">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment successful: </span><span class="si">{</span><span class="n">receipt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-6-15">    <span class="k">case</span> <span class="n">Err</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+</span><span id="__span-6-16">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment failed safely: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="result-retry-with-monitoring">Result + Retry with Monitoring<a class="headerlink" href="#result-retry-with-monitoring" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">unwrap_or</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nd">@retry</span><span class="p">(</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">),</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">on_retry</span><span class="o">=</span><span class="k">lambda</span> <span class="n">attempt</span><span class="p">,</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>        <span class="sa">f</span><span class="s2">&quot;⚠️  Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_a</span><span class="si">}</span><span class="s2"> failed, retrying in </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s...&quot;</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="p">),</span>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="p">)</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="nd">@safe</span>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">fetch_user_profile</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="k">return</span> <span class="n">api_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">profile</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">fetch_user_profile</span><span class="p">(</span><span class="s2">&quot;usr_456&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">})</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">unwrap_or</span>
+</span><span id="__span-7-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
+</span><span id="__span-7-3">
+</span><span id="__span-7-4"><span class="nd">@retry</span><span class="p">(</span>
+</span><span id="__span-7-5">    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-7-6">    <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">),</span>
+</span><span id="__span-7-7">    <span class="n">on_retry</span><span class="o">=</span><span class="k">lambda</span> <span class="n">attempt</span><span class="p">,</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span>
+</span><span id="__span-7-8">        <span class="sa">f</span><span class="s2">&quot;⚠️  Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_a</span><span class="si">}</span><span class="s2"> failed, retrying in </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s...&quot;</span>
+</span><span id="__span-7-9">    <span class="p">),</span>
+</span><span id="__span-7-10"><span class="p">)</span>
+</span><span id="__span-7-11"><span class="nd">@safe</span>
+</span><span id="__span-7-12"><span class="k">def</span><span class="w"> </span><span class="nf">fetch_user_profile</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-7-13">    <span class="k">return</span> <span class="n">api_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-7-14">
+</span><span id="__span-7-15"><span class="n">profile</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">fetch_user_profile</span><span class="p">(</span><span class="s2">&quot;usr_456&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">})</span>
 </span></code></pre></div>
 <hr />
 <h2 id="quality-summary">Quality Summary<a class="headerlink" href="#quality-summary" title="Permanent link">&para;</a></h2>

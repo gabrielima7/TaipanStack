@@ -76,8 +76,8 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal">
   
     
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off" aria-label="Open navigation">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off" aria-label="Open search">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
@@ -982,65 +982,65 @@
 </table>
 <hr />
 <h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>TaipanStack/
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── src/
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   └── taipanstack/
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│       ├── __init__.py       # Public API surface
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│       ├── core/             # 🎯 Result types, compat, optimizations
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       │   ├── compat.py     #    Python version feature flags
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│       │   └── optimizations.py # uvloop / orjson bootstrap
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│       ├── config/           # ⚙️ Configuration models &amp; generators
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       │   ├── models.py     #    StackConfig (Pydantic v2)
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│       │   ├── generators.py #    Project scaffolding templates
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       │   └── version_config.py # Version-aware recommendations
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│       ├── security/         # 🛡️ Guards, sanitizers, validators
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│       │   ├── guards.py     #    Path traversal, command injection, env guards
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│       │   ├── sanitizers.py #    XSS, filename, SQL, env value sanitization
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│       │   ├── validators.py #    Email, URL, project name, Python version
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       │   └── decorators.py #    @safe_path, @safe_env wrappers
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│       └── utils/            # 🔧 Resilience &amp; observability utilities
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│           ├── circuit_breaker.py # Circuit breaker with on_state_change callback
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│           ├── retry.py           # Exponential backoff with on_retry callback
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│           ├── metrics.py         # @timed, @counted decorators
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│           ├── logging.py         # Structured logging (structlog)
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│           ├── filesystem.py      # Safe file operations
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│           └── subprocess.py      # Sandboxed subprocess execution
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>├── tests/                    # ✅ 683 tests, 100% coverage
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│   ├── test_benchmarks.py    # pytest-benchmark performance suite
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│   ├── test_property_sanitizers.py # Hypothesis fuzzing
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│   └── test_v031_features.py # v0.3.1 specific new behaviors
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── docs/                     # 📖 MkDocs Material documentation
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>├── .semgrep/                 # 🔍 Custom SAST rules
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>├── .github/                  # 🔄 CI/CD + SBOM/SLSA + Docs workflows
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>├── Dockerfile                # 🐳 Hardened multi-stage container
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>└── pyproject.toml            # 📋 Modern dependency management (Poetry)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1">TaipanStack/
+</span><span id="__span-0-2">├── src/
+</span><span id="__span-0-3">│   └── taipanstack/
+</span><span id="__span-0-4">│       ├── __init__.py       # Public API surface
+</span><span id="__span-0-5">│       ├── core/             # 🎯 Result types, compat, optimizations
+</span><span id="__span-0-6">│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
+</span><span id="__span-0-7">│       │   ├── compat.py     #    Python version feature flags
+</span><span id="__span-0-8">│       │   └── optimizations.py # uvloop / orjson bootstrap
+</span><span id="__span-0-9">│       ├── config/           # ⚙️ Configuration models &amp; generators
+</span><span id="__span-0-10">│       │   ├── models.py     #    StackConfig (Pydantic v2)
+</span><span id="__span-0-11">│       │   ├── generators.py #    Project scaffolding templates
+</span><span id="__span-0-12">│       │   └── version_config.py # Version-aware recommendations
+</span><span id="__span-0-13">│       ├── security/         # 🛡️ Guards, sanitizers, validators
+</span><span id="__span-0-14">│       │   ├── guards.py     #    Path traversal, command injection, env guards
+</span><span id="__span-0-15">│       │   ├── sanitizers.py #    XSS, filename, SQL, env value sanitization
+</span><span id="__span-0-16">│       │   ├── validators.py #    Email, URL, project name, Python version
+</span><span id="__span-0-17">│       │   └── decorators.py #    @safe_path, @safe_env wrappers
+</span><span id="__span-0-18">│       └── utils/            # 🔧 Resilience &amp; observability utilities
+</span><span id="__span-0-19">│           ├── circuit_breaker.py # Circuit breaker with on_state_change callback
+</span><span id="__span-0-20">│           ├── retry.py           # Exponential backoff with on_retry callback
+</span><span id="__span-0-21">│           ├── metrics.py         # @timed, @counted decorators
+</span><span id="__span-0-22">│           ├── logging.py         # Structured logging (structlog)
+</span><span id="__span-0-23">│           ├── filesystem.py      # Safe file operations
+</span><span id="__span-0-24">│           └── subprocess.py      # Sandboxed subprocess execution
+</span><span id="__span-0-25">├── tests/                    # ✅ 683 tests, 100% coverage
+</span><span id="__span-0-26">│   ├── test_benchmarks.py    # pytest-benchmark performance suite
+</span><span id="__span-0-27">│   ├── test_property_sanitizers.py # Hypothesis fuzzing
+</span><span id="__span-0-28">│   └── test_v031_features.py # v0.3.1 specific new behaviors
+</span><span id="__span-0-29">├── docs/                     # 📖 MkDocs Material documentation
+</span><span id="__span-0-30">├── .semgrep/                 # 🔍 Custom SAST rules
+</span><span id="__span-0-31">├── .github/                  # 🔄 CI/CD + SBOM/SLSA + Docs workflows
+</span><span id="__span-0-32">├── Dockerfile                # 🐳 Hardened multi-stage container
+</span><span id="__span-0-33">└── pyproject.toml            # 📋 Modern dependency management (Poetry)
 </span></code></pre></div>
 <hr />
 <h2 id="concurrency-model">Concurrency Model<a class="headerlink" href="#concurrency-model" title="Permanent link">&para;</a></h2>
 <p>When production dependencies are installed (<code>uvloop</code> group), TaipanStack bootstraps <code>uvloop</code> as the asyncio event loop, providing a <strong>2–4× throughput improvement</strong> over the standard <code>asyncio</code> loop on Linux/macOS.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.optimizations</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_optimizations</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">apply_optimizations</span><span class="p">()</span>  <span class="c1"># Auto-installs uvloop + orjson if available</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.optimizations</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_optimizations</span>
+</span><span id="__span-1-2">
+</span><span id="__span-1-3"><span class="n">apply_optimizations</span><span class="p">()</span>  <span class="c1"># Auto-installs uvloop + orjson if available</span>
 </span></code></pre></div>
 <p>Python version detection is performed at import time via <code>taipanstack.core.compat</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack</span><span class="w"> </span><span class="kn">import</span> <span class="n">PY313</span><span class="p">,</span> <span class="n">get_features</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">if</span> <span class="n">PY313</span><span class="p">:</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">get_features</span><span class="p">())</span>  <span class="c1"># Reports 3.13-specific optimizations</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack</span><span class="w"> </span><span class="kn">import</span> <span class="n">PY313</span><span class="p">,</span> <span class="n">get_features</span>
+</span><span id="__span-2-2">
+</span><span id="__span-2-3"><span class="k">if</span> <span class="n">PY313</span><span class="p">:</span>
+</span><span id="__span-2-4">    <span class="nb">print</span><span class="p">(</span><span class="n">get_features</span><span class="p">())</span>  <span class="c1"># Reports 3.13-specific optimizations</span>
 </span></code></pre></div>
 <hr />
 <h2 id="error-handling-philosophy">Error Handling Philosophy<a class="headerlink" href="#error-handling-philosophy" title="Permanent link">&para;</a></h2>
 <p>Exceptions represent <strong>unrecoverable panics</strong>. For standard, expected failures (network errors, validation failures, missing data), TaipanStack uses the <code>Result</code> monad:</p>
 <div class="admonition success">
 <p class="admonition-title">Rule: Never raise to communicate a business failure</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># ❌ DO NOT: leaks exception semantics into caller</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="k">raise</span> <span class="n">UserNotFoundError</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># ✅ DO: encode failure in the return type</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">UserNotFoundError</span><span class="p">]:</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="k">return</span> <span class="n">Err</span><span class="p">(</span><span class="n">UserNotFoundError</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="c1"># ❌ DO NOT: leaks exception semantics into caller</span>
+</span><span id="__span-3-2"><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span id="__span-3-3">    <span class="k">raise</span> <span class="n">UserNotFoundError</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span><span id="__span-3-4">
+</span><span id="__span-3-5"><span class="c1"># ✅ DO: encode failure in the return type</span>
+</span><span id="__span-3-6"><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">UserNotFoundError</span><span class="p">]:</span>
+</span><span id="__span-3-7">    <span class="k">return</span> <span class="n">Err</span><span class="p">(</span><span class="n">UserNotFoundError</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span>
 </span></code></pre></div>
 </div>
 <p><strong>Benefits enforced by Mypy strict:</strong></p>

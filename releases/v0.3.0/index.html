@@ -74,8 +74,8 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal">
   
     
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off" aria-label="Open navigation">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off" aria-label="Open search">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
@@ -1452,11 +1452,11 @@
 </tbody>
 </table>
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Run locally</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>semgrep<span class="w"> </span>--config<span class="w"> </span>.semgrep/taipanstack-rules.yml<span class="w"> </span>src/
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># In CI (automatic via pre-commit)</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>pre-commit<span class="w"> </span>run<span class="w"> </span>semgrep<span class="w"> </span>--all-files
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><span class="c1"># Run locally</span>
+</span><span id="__span-0-2">semgrep<span class="w"> </span>--config<span class="w"> </span>.semgrep/taipanstack-rules.yml<span class="w"> </span>src/
+</span><span id="__span-0-3">
+</span><span id="__span-0-4"><span class="c1"># In CI (automatic via pre-commit)</span>
+</span><span id="__span-0-5">pre-commit<span class="w"> </span>run<span class="w"> </span>semgrep<span class="w"> </span>--all-files
 </span></code></pre></div>
 <hr />
 <h2 id="3-docker-hardened-by-default">3. Docker Hardened-by-Default<a class="headerlink" href="#3-docker-hardened-by-default" title="Permanent link">&para;</a></h2>
@@ -1498,22 +1498,22 @@
 </tbody>
 </table>
 <h3 id="build-run">Build &amp; Run<a class="headerlink" href="#build-run" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>taipanstack:latest<span class="w"> </span>.
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--read-only<span class="w"> </span>taipanstack:latest
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1">docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>taipanstack:latest<span class="w"> </span>.
+</span><span id="__span-1-2">docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--read-only<span class="w"> </span>taipanstack:latest
 </span></code></pre></div>
 <hr />
 <h2 id="4-property-based-testing-hypothesis">4. Property-Based Testing (Hypothesis)<a class="headerlink" href="#4-property-based-testing-hypothesis" title="Permanent link">&para;</a></h2>
 <p><strong>File</strong>: <a href="https://github.com/gabrielima7/TaipanStack/blob/main/tests/test_property_sanitizers.py"><code>tests/test_property_sanitizers.py</code></a></p>
 <p>22 property-based tests using Hypothesis to fuzz all 4 sanitizer functions with adversarial inputs.</p>
 <h3 id="strategy-design">Strategy Design<a class="headerlink" href="#strategy-design" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Custom strategy: generates filenames with path traversal, Unicode, control chars</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">nasty_filename</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">alphabet</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">characters</span><span class="p">(</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="n">whitelist_categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="n">whitelist_characters</span><span class="o">=</span><span class="s2">&quot;/</span><span class="se">\\</span><span class="s2">..~%</span><span class="se">\x00</span><span class="s2">&lt;&gt;|*?</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\n\r\t</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="p">),</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="c1"># Custom strategy: generates filenames with path traversal, Unicode, control chars</span>
+</span><span id="__span-2-2"><span class="n">nasty_filename</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+</span><span id="__span-2-3">    <span class="n">alphabet</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">characters</span><span class="p">(</span>
+</span><span id="__span-2-4">        <span class="n">whitelist_categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+</span><span id="__span-2-5">        <span class="n">whitelist_characters</span><span class="o">=</span><span class="s2">&quot;/</span><span class="se">\\</span><span class="s2">..~%</span><span class="se">\x00</span><span class="s2">&lt;&gt;|*?</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\n\r\t</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span id="__span-2-6">    <span class="p">),</span>
+</span><span id="__span-2-7">    <span class="n">min_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+</span><span id="__span-2-8"><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="edge-cases-discovered">Edge Cases Discovered<a class="headerlink" href="#edge-cases-discovered" title="Permanent link">&para;</a></h3>
 <table>
@@ -1569,14 +1569,14 @@
 <p><strong>Configuration</strong>: <code>pyproject.toml</code> <code>[tool.mutmut]</code></p>
 <p>Mutation testing validates that tests are actually meaningful — not just achieving coverage but detecting real bugs.</p>
 <h3 id="how-to-run">How to Run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Full mutation run</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>run<span class="w"> </span>--paths-to-mutate<span class="o">=</span>src/taipanstack/security/sanitizers.py
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># View results</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>results
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Show specific mutant</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>show<span class="w"> </span>&lt;id&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><span class="c1"># Full mutation run</span>
+</span><span id="__span-3-2">poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>run<span class="w"> </span>--paths-to-mutate<span class="o">=</span>src/taipanstack/security/sanitizers.py
+</span><span id="__span-3-3">
+</span><span id="__span-3-4"><span class="c1"># View results</span>
+</span><span id="__span-3-5">poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>results
+</span><span id="__span-3-6">
+</span><span id="__span-3-7"><span class="c1"># Show specific mutant</span>
+</span><span id="__span-3-8">poetry<span class="w"> </span>run<span class="w"> </span>mutmut<span class="w"> </span>show<span class="w"> </span>&lt;id&gt;
 </span></code></pre></div>
 <h3 id="what-it-measures">What It Measures<a class="headerlink" href="#what-it-measures" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1618,14 +1618,14 @@
 </tbody>
 </table>
 <h3 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Run benchmarks locally</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-only<span class="w"> </span>-v
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Compare against saved baseline</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-compare
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Save as baseline</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-save<span class="o">=</span>baseline
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><span class="c1"># Run benchmarks locally</span>
+</span><span id="__span-4-2">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-only<span class="w"> </span>-v
+</span><span id="__span-4-3">
+</span><span id="__span-4-4"><span class="c1"># Compare against saved baseline</span>
+</span><span id="__span-4-5">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-compare
+</span><span id="__span-4-6">
+</span><span id="__span-4-7"><span class="c1"># Save as baseline</span>
+</span><span id="__span-4-8">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-save<span class="o">=</span>baseline
 </span></code></pre></div>
 <h3 id="ci-integration">CI Integration<a class="headerlink" href="#ci-integration" title="Permanent link">&para;</a></h3>
 <p>The benchmark workflow runs on every push to <code>main</code> and stores results in the <code>gh-pages</code> branch for historical tracking.</p>
