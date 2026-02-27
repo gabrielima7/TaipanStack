@@ -442,10 +442,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layered-design" class="md-nav__link">
+  <a href="#layered-dependency-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layered Design
+        Layered Dependency Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Layered Dependency Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-contracts-import-linter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Contracts (Import Linter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
       
     </span>
   </a>
@@ -562,6 +590,34 @@
     
   
     Core (Result)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
   
 
     
@@ -782,10 +838,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layered-design" class="md-nav__link">
+  <a href="#layered-dependency-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layered Design
+        Layered Dependency Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Layered Dependency Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-contracts-import-linter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Contracts (Import Linter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
       
     </span>
   </a>
@@ -846,28 +930,158 @@
 
 
 <h1 id="taipanstack-architecture">TaipanStack Architecture<a class="headerlink" href="#taipanstack-architecture" title="Permanent link">&para;</a></h1>
-<p>TaipanStack is built on the philosophy of maximum safety by default, combined with blazing fast asynchronous programming. The internal architecture favors a strict layered dependency map which is enforced statically.</p>
-<h2 id="layered-design">Layered Design<a class="headerlink" href="#layered-design" title="Permanent link">&para;</a></h2>
-<p>The architecture enforces unidirectional data flow and strict dependency boundaries.
-1. <strong>Application Layer (<code>app/</code>)</strong>: Where the business logic resides. This layer is allowed to import from <code>taipanstack/</code>, but <code>taipanstack/</code> may NEVER import from <code>app/</code>.
-2. <strong>Utilities &amp; Adapters (<code>utils/</code>, <code>config/</code>)</strong>: Contains pure Python utilities, file handlers, logging pipelines, and configuration management wrappers.
-3. <strong>Core Layer (<code>core/</code>)</strong>: Holds the <code>Result</code> pattern bindings, performance optimizations (like <code>uvloop</code>, <code>orjson</code>), and primitive aliases that form the base of the framework mapping.
-4. <strong>Security Layer (<code>security/</code>)</strong>: Sits orthogonally to the framework and provides decorators and validators (<code>@safe_xyz</code>) intended to wrap edge boundaries.</p>
+<p>TaipanStack is built on the philosophy of <strong>maximum safety by default</strong>, combined with blazing-fast asynchronous programming. The internal architecture enforces a strict layered dependency map, statically verified on every commit.</p>
+<h2 id="layered-dependency-model">Layered Dependency Model<a class="headerlink" href="#layered-dependency-model" title="Permanent link">&para;</a></h2>
+<p>The architecture enforces unidirectional data flow. Upper layers may import from lower layers; lower layers may <strong>never</strong> import upward.</p>
+<pre class="mermaid"><code>graph TD
+    A["🏢 Application Layer&lt;br/&gt;(your business logic)"]
+    B["🛡️ Security Layer&lt;br/&gt;guards · sanitizers · validators · decorators"]
+    C["⚙️ Config Layer&lt;br/&gt;models · generators · version_config"]
+    D["🔧 Utils Layer&lt;br/&gt;retry · circuit_breaker · metrics · logging · filesystem"]
+    E["🎯 Core Layer&lt;br/&gt;result · compat · optimizations"]
+
+    A --&gt; B
+    A --&gt; C
+    A --&gt; D
+    B --&gt; E
+    C --&gt; E
+    D --&gt; E
+
+    style A fill:#4A148C,color:#fff
+    style B fill:#880E4F,color:#fff
+    style C fill:#1A237E,color:#fff
+    style D fill:#004D40,color:#fff
+    style E fill:#BF360C,color:#fff</code></pre>
+<h3 id="dependency-contracts-import-linter">Dependency Contracts (Import Linter)<a class="headerlink" href="#dependency-contracts-import-linter" title="Permanent link">&para;</a></h3>
+<p>These contracts are <strong>enforced statically in CI</strong> via <a href="https://github.com/seddonym/import-linter">Import Linter</a>. Any violation fails the build immediately.</p>
+<table>
+<thead>
+<tr>
+<th>Contract</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core</code> is independent</td>
+<td><code>taipanstack.core</code> cannot import from <code>security</code>, <code>utils</code>, or <code>config</code></td>
+</tr>
+<tr>
+<td><code>security</code> is independent</td>
+<td><code>taipanstack.security</code> cannot import from <code>utils</code> or <code>config</code></td>
+</tr>
+<tr>
+<td><code>utils</code> is independent</td>
+<td><code>taipanstack.utils</code> cannot import from <code>security</code> or <code>config</code></td>
+</tr>
+<tr>
+<td><code>config</code> only uses <code>core</code></td>
+<td><code>taipanstack.config</code> cannot import from <code>security</code> or <code>utils</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>TaipanStack/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── src/
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   └── taipanstack/
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│       ├── __init__.py       # Public API surface
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│       ├── core/             # 🎯 Result types, compat, optimizations
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       │   ├── compat.py     #    Python version feature flags
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│       │   └── optimizations.py # uvloop / orjson bootstrap
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│       ├── config/           # ⚙️ Configuration models &amp; generators
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       │   ├── models.py     #    StackConfig (Pydantic v2)
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│       │   ├── generators.py #    Project scaffolding templates
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       │   └── version_config.py # Version-aware recommendations
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│       ├── security/         # 🛡️ Guards, sanitizers, validators
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│       │   ├── guards.py     #    Path traversal, command injection, env guards
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│       │   ├── sanitizers.py #    XSS, filename, SQL, env value sanitization
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│       │   ├── validators.py #    Email, URL, project name, Python version
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       │   └── decorators.py #    @safe_path, @safe_env wrappers
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│       └── utils/            # 🔧 Resilience &amp; observability utilities
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│           ├── circuit_breaker.py # Circuit breaker with on_state_change callback
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│           ├── retry.py           # Exponential backoff with on_retry callback
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│           ├── metrics.py         # @timed, @counted decorators
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│           ├── logging.py         # Structured logging (structlog)
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│           ├── filesystem.py      # Safe file operations
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│           └── subprocess.py      # Sandboxed subprocess execution
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>├── tests/                    # ✅ 683 tests, 100% coverage
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│   ├── test_benchmarks.py    # pytest-benchmark performance suite
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│   ├── test_property_sanitizers.py # Hypothesis fuzzing
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│   └── test_v031_features.py # v0.3.1 specific new behaviors
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>├── docs/                     # 📖 MkDocs Material documentation
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>├── .semgrep/                 # 🔍 Custom SAST rules
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>├── .github/                  # 🔄 CI/CD + SBOM/SLSA + Docs workflows
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>├── Dockerfile                # 🐳 Hardened multi-stage container
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>└── pyproject.toml            # 📋 Modern dependency management (Poetry)
+</span></code></pre></div>
+<hr />
 <h2 id="concurrency-model">Concurrency Model<a class="headerlink" href="#concurrency-model" title="Permanent link">&para;</a></h2>
-<p>When used with production dependencies (<code>--install-runtime-deps</code>), TaipanStack opts-in to <code>uvloop</code> for asyncio execution. This provides a 2-4x speedup over the standard <code>asyncio</code> loop. <code>TaipanStack</code> detects this implicitly and bootstraps the loop on <code>main()</code> invocation.</p>
+<p>When production dependencies are installed (<code>uvloop</code> group), TaipanStack bootstraps <code>uvloop</code> as the asyncio event loop, providing a <strong>2–4× throughput improvement</strong> over the standard <code>asyncio</code> loop on Linux/macOS.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.optimizations</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_optimizations</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">apply_optimizations</span><span class="p">()</span>  <span class="c1"># Auto-installs uvloop + orjson if available</span>
+</span></code></pre></div>
+<p>Python version detection is performed at import time via <code>taipanstack.core.compat</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack</span><span class="w"> </span><span class="kn">import</span> <span class="n">PY313</span><span class="p">,</span> <span class="n">get_features</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">if</span> <span class="n">PY313</span><span class="p">:</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">get_features</span><span class="p">())</span>  <span class="c1"># Reports 3.13-specific optimizations</span>
+</span></code></pre></div>
+<hr />
 <h2 id="error-handling-philosophy">Error Handling Philosophy<a class="headerlink" href="#error-handling-philosophy" title="Permanent link">&para;</a></h2>
-<p>Exceptions represent unrecoverable panics in runtime. For standard failures—such as network loss, missing rows, validation errors—TaipanStack uses the <strong>Result</strong> monad.</p>
+<p>Exceptions represent <strong>unrecoverable panics</strong>. For standard, expected failures (network errors, validation failures, missing data), TaipanStack uses the <code>Result</code> monad:</p>
+<div class="admonition success">
+<p class="admonition-title">Rule: Never raise to communicate a business failure</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># ❌ DO NOT: leaks exception semantics into caller</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="k">raise</span> <span class="n">UserNotFoundError</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># ✅ DO: encode failure in the return type</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">UserNotFoundError</span><span class="p">]:</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="k">return</span> <span class="n">Err</span><span class="p">(</span><span class="n">UserNotFoundError</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span>
+</span></code></pre></div>
+</div>
+<p><strong>Benefits enforced by Mypy strict:</strong></p>
 <ul>
-<li>Never use <code>raise ValueError(...)</code> to return to a caller.</li>
-<li>Methods should strongly type their possible failures via <code>Err[MyCustomError]</code>.</li>
-<li>Pattern matching (<code>match</code> / <code>case</code>) leverages Python 3.10+ to unpack results safely.</li>
+<li>You <strong>cannot forget</strong> to handle an <code>Err</code> — the type checker forces it</li>
+<li>Pattern matching (<code>match</code>/<code>case</code>) gives exhaustive, safe unpacking</li>
+<li>The <code>@safe</code> decorator wraps any raising function into a <code>Result</code> automatically</li>
 </ul>
-<p>This ensures you cannot deploy a bug where you "forgot" to catch a standard exception—Mypy handles it statically!</p>
+<hr />
 <h2 id="security-strategy">Security Strategy<a class="headerlink" href="#security-strategy" title="Permanent link">&para;</a></h2>
-<p>The core framework exposes <code>taipanstack.security</code> heavily inspired by security best practices.
-1. <strong>No Silent Failures</strong>: Malformed configuration immediately faults with a clear exception during startup.
-2. <strong>Boundary Validation</strong>: Data coming from API/users is validated immediately using <code>pydantic</code>.
-3. <strong>AST Scanning</strong>: Every build verifies the project with both <code>bandit</code> and <code>semgrep</code>. Over time, we embed custom <code>semgrep</code> definitions to detect and ban bad practices in TaipanStack explicitly.</p>
+<p>TaipanStack's security layer is <strong>fail-closed by design</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No silent failures</strong></td>
+<td>Malformed input raises <code>SecurityError</code> or <code>TypeError</code> immediately</td>
+</tr>
+<tr>
+<td><strong>Boundary validation</strong></td>
+<td>All external data validated at entry via <code>pydantic</code> + guards</td>
+</tr>
+<tr>
+<td><strong>Runtime type guards</strong></td>
+<td>Every public security function validates input types at v0.3.1+</td>
+</tr>
+<tr>
+<td><strong>AST scanning</strong></td>
+<td>Bandit + Semgrep (custom rules) runs on every CI push</td>
+</tr>
+<tr>
+<td><strong>Supply chain</strong></td>
+<td>SBOM (CycloneDX via Syft) + SLSA attestation (Cosign/Sigstore) on every release</td>
+</tr>
+</tbody>
+</table>
 
 
 
