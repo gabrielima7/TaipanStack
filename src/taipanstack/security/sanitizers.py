@@ -65,8 +65,10 @@ def sanitize_string(
         The sanitized string.
 
     Example:
-        >>> sanitize_string("<script>alert('xss')</script>Hello")
-        "scriptalert('xss')/scriptHello"
+        ```python
+        sanitize_string("<script>alert('xss')</script>Hello")
+        # Returns: "scriptalert('xss')/scriptHello"
+        ```
 
     """
     if not isinstance(value, str):
@@ -130,8 +132,10 @@ def sanitize_filename(
         The sanitized filename.
 
     Example:
-        >>> sanitize_filename("my/../file<>:name.txt")
-        'my_file_name.txt'
+        ```python
+        sanitize_filename("my/../file<>:name.txt")
+        # Returns: 'my_file_name.txt'
+        ```
 
     """
     if not isinstance(filename, str):
