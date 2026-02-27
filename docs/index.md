@@ -166,6 +166,15 @@ def call_external_service() -> dict:
 
 ---
 
+## 📊 Live Reports
+
+| Report | Description |
+|--------|-------------|
+| [🧪 Coverage Report](htmlcov/) | Full HTML coverage report — 100% (683 tests) |
+| [⚡ Benchmark Dashboard](dev/bench/) | Performance history & regression graphs |
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! See the [Contributing Guide](https://github.com/gabrielima7/TaipanStack/blob/main/CONTRIBUTING.md) for details.

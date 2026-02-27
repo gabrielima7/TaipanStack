@@ -8,62 +8,76 @@
 name: Documentation
 
 on:
-    push:
-        branches: [main]
-        paths:
-            - "docs/**"
-            - "mkdocs.yml"
-            - "src/**/*.py"
-            - ".github/workflows/docs.yml"
-    workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - "src/**/*.py"
+      - ".github/workflows/docs.yml"
+  workflow_run:
+    workflows: ["TaipanStack CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
-    contents: write
+  contents: write
+  actions: read # needed to download artifacts from CI
 
 jobs:
-    deploy:
-        name: Build & Deploy Docs
-        runs-on: ubuntu-latest
+  deploy:
+    name: Build & Deploy Docs
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Check out code
-              uses: actions/checkout@v6
-              with:
-                  fetch-depth: 0
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-            - name: Set up Python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.12"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
 
-            - name: Install Poetry
-              run: pipx install poetry
+      - name: Install Poetry
+        run: pipx install poetry
 
-            - name: Configure Poetry
-              run: poetry config virtualenvs.in-project true
+      - name: Configure Poetry
+        run: poetry config virtualenvs.in-project true
 
-            - name: Cache dependencies
-              uses: actions/cache@v5
-              with:
-                  path: .venv
-                  key: docs-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-                  restore-keys: |
-                      docs-${{ runner.os }}-poetry-
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: .venv
+          key: docs-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            docs-${{ runner.os }}-poetry-
 
-            - name: Install dependencies
-              run: poetry install --with docs --sync
+      - name: Install dependencies
+        run: poetry install --with docs --sync
 
-            - name: Build documentation
-              run: poetry run mkdocs build
+      - name: Build documentation
+        run: poetry run mkdocs build
 
-            - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./site
-                  publish_branch: gh-pages
-                  # CRITICAL: Preserve existing benchmark results and coverage reports
-                  keep_files: true
-                  user_name: "github-actions[bot]"
-                  user_email: "github-actions[bot]@users.noreply.github.com"
-                  commit_message: "docs: deploy MkDocs for ${{ github.sha }}"
+      - name: Download coverage HTML report from latest CI
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          name: htmlcov
+          path: site/htmlcov/
+          workflow: ci.yml
+          branch: main
+          if_no_artifact_found: warn
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          # CRITICAL: Preserve existing benchmark results and coverage reports
+          keep_files: true
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: "docs: deploy MkDocs for ${{ github.sha }}"
