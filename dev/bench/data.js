@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772218547541,
+  "lastUpdate": 1772224046732,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -645,6 +645,135 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 4.2832555922875785e-8",
             "extra": "mean: 403.1932548941407 nsec\nrounds: 104965"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "distinct": true,
+          "id": "6a739d6b3737802c853dcff995ad6e70f1dd608c",
+          "message": "fix(docs): extend accessibility patches for strict linters\n\n1. Added title attributes to badge links (img alt isn't always recognized by IDE linters as discernible text for the parent anchor).\n\n2. Added title attributes alongside aria-labels for Material hidden toggles.\n\n3. Hooked into on_page_context and on_post_build to ensure the 404 page gets patched too, as on_post_page misses it.",
+          "timestamp": "2026-02-27T17:26:36-03:00",
+          "tree_id": "e213efd87fa1e8da422ff41ebd6869ed7f5f0da3",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/6a739d6b3737802c853dcff995ad6e70f1dd608c"
+        },
+        "date": 1772224046168,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 163491.50946780219,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000021614065617377557",
+            "extra": "mean: 6.11652558139075 usec\nrounds: 215"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 153863.482219348,
+            "unit": "iter/sec",
+            "range": "stddev: 7.745560045354294e-7",
+            "extra": "mean: 6.499267958685601 usec\nrounds: 70537"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 53009.40021524703,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000014567824138548725",
+            "extra": "mean: 18.86457865849181 usec\nrounds: 28236"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 164913.4085627002,
+            "unit": "iter/sec",
+            "range": "stddev: 9.436961969255168e-7",
+            "extra": "mean: 6.063788316034953 usec\nrounds: 11229"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 110200.51018856489,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000010461314686891636",
+            "extra": "mean: 9.074368152097415 usec\nrounds: 45598"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 19866.726238885793,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000037193400009843852",
+            "extra": "mean: 50.33541953392741 usec\nrounds: 10986"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 33613.64477173872,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000016402588604036862",
+            "extra": "mean: 29.74982352525984 usec\nrounds: 13815"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4469523.744396359,
+            "unit": "iter/sec",
+            "range": "stddev: 2.9186638898499896e-8",
+            "extra": "mean: 223.7374846152857 nsec\nrounds: 153563"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 589636.791156914,
+            "unit": "iter/sec",
+            "range": "stddev: 2.8108629884220476e-7",
+            "extra": "mean: 1.6959593007042946 usec\nrounds: 189430"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 1077305.041686027,
+            "unit": "iter/sec",
+            "range": "stddev: 2.731407133872823e-7",
+            "extra": "mean: 928.242198175327 nsec\nrounds: 10190"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 580381.6542703871,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002087405687208473",
+            "extra": "mean: 1.7230041519095327 usec\nrounds: 162576"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2178106.527994129,
+            "unit": "iter/sec",
+            "range": "stddev: 1.9008922974733213e-7",
+            "extra": "mean: 459.11436706492236 nsec\nrounds: 179501"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1117879.5497035247,
+            "unit": "iter/sec",
+            "range": "stddev: 2.8360777583787224e-7",
+            "extra": "mean: 894.5507593060561 nsec\nrounds: 166334"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 30113.1454019939,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000019963002229435096",
+            "extra": "mean: 33.208088582263684 usec\nrounds: 15003"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 2489389.115960731,
+            "unit": "iter/sec",
+            "range": "stddev: 4.2030758166541894e-8",
+            "extra": "mean: 401.7049779757529 nsec\nrounds: 76959"
           }
         ]
       }
