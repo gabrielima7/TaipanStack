@@ -96,6 +96,7 @@ nav:
   - Architecture: architecture.md
   - API Reference:
       - Core (Result): api/core.md
+      - Config: api/config.md
       - Security: api/security.md
       - Utilities: api/utils.md
   - Release Notes:
