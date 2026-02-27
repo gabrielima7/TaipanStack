@@ -31,7 +31,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/gabrielima7/TaipanStack"
-Documentation = "https://github.com/gabrielima7/TaipanStack#readme"
+Documentation = "https://gabrielima7.github.io/TaipanStack/"
 Repository = "https://github.com/gabrielima7/TaipanStack"
 Changelog = "https://github.com/gabrielima7/TaipanStack/blob/main/CHANGELOG.md"
 Issues = "https://github.com/gabrielima7/TaipanStack/issues"
@@ -71,7 +71,12 @@ dev = [
 
 
 
+
 # --- TaipanStack v2.0 Quality Configuration ---
+docs = [
+    "mkdocs-material (>=9.7.3,<10.0.0)",
+    "mkdocstrings[python] (>=1.0.3,<2.0.0)"
+]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
