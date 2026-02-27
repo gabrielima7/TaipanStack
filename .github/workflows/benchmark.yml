@@ -80,8 +80,7 @@ jobs:
           auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: dev/bench
-          # Do not fetch gh-pages (creates it on first push)
-          skip-fetch-gh-pages: true
+          # Fetch gh-pages before push to avoid conflicts with remote
           # Fail CI if performance degrades more than 5%
           alert-threshold: "105%"
           fail-on-alert: true
