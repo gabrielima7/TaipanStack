@@ -50,6 +50,9 @@ def validate_project_name(
         ValueError: Project name must start with a letter
 
     """
+    if not isinstance(name, str):
+        raise TypeError(f"Project name must be str, got {type(name).__name__}")
+
     if not name:
         msg = "Project name cannot be empty"
         raise ValueError(msg)
@@ -117,6 +120,9 @@ def validate_python_version(version: str) -> str:
         ValueError: If version format is invalid or unsupported.
 
     """
+    if not isinstance(version, str):
+        raise TypeError(f"Version must be str, got {type(version).__name__}")
+
     pattern = r"^\d+\.\d+$"
 
     if not re.match(pattern, version):
@@ -159,6 +165,9 @@ def validate_email(email: str) -> str:
         ValueError: If email format is invalid.
 
     """
+    if not isinstance(email, str):
+        raise TypeError(f"Email must be str, got {type(email).__name__}")
+
     if not email:
         msg = "Email cannot be empty"
         raise ValueError(msg)
@@ -204,6 +213,9 @@ def validate_url(
         ValueError: If URL format is invalid.
 
     """
+    if not isinstance(url, str):
+        raise TypeError(f"URL must be str, got {type(url).__name__}")
+
     if not url:
         msg = "URL cannot be empty"
         raise ValueError(msg)

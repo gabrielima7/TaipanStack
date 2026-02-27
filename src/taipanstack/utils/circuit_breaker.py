@@ -98,6 +98,7 @@ class CircuitBreaker:
         timeout: float = 30.0,
         excluded_exceptions: tuple[type[Exception], ...] = (),
         name: str = "default",
+        on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
     ) -> None:
         """Initialize CircuitBreaker.
 
@@ -107,6 +108,8 @@ class CircuitBreaker:
             timeout: Seconds before attempting half-open.
             excluded_exceptions: Exceptions that don't trip circuit.
             name: Name for logging/identification.
+            on_state_change: Optional callback invoked on state transitions
+                with (old_state, new_state). Useful for custom monitoring.
 
         """
         self.config = CircuitBreakerConfig(
@@ -117,6 +120,7 @@ class CircuitBreaker:
         )
         self.name = name
         self._state = CircuitBreakerState()
+        self._on_state_change = on_state_change
 
     @property
     def state(self) -> CircuitState:
@@ -127,6 +131,15 @@ class CircuitBreaker:
     def failure_count(self) -> int:
         """Get current failure count."""
         return self._state.failure_count
+
+    def _notify_state_change(
+        self,
+        old_state: CircuitState,
+        new_state: CircuitState,
+    ) -> None:
+        """Notify callback of state transition if registered."""
+        if self._on_state_change is not None:
+            self._on_state_change(old_state, new_state)
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
@@ -141,13 +154,25 @@ class CircuitBreaker:
                     if elapsed >= self.config.timeout:
                         self._state.state = CircuitState.HALF_OPEN
                         self._state.success_count = 0
-                        logger.info("Circuit %s entering half-open state", self.name)
+                        logger.info(
+                            "Circuit %s entering half-open state "
+                            "(was open for %.1fs, failures=%d)",
+                            self.name,
+                            elapsed,
+                            self._state.failure_count,
+                        )
+                        self._notify_state_change(
+                            CircuitState.OPEN,
+                            CircuitState.HALF_OPEN,
+                        )
                         return True
                     return False
 
                 case CircuitState.HALF_OPEN:  # pragma: no branch
                     # Allow limited attempts
                     return True
+
+        return False  # pragma: no cover — unreachable, satisfies type checker
 
     def _record_success(self) -> None:
         """Record a successful call."""
@@ -158,7 +183,16 @@ class CircuitBreaker:
                     if self._state.success_count >= self.config.success_threshold:
                         self._state.state = CircuitState.CLOSED
                         self._state.failure_count = 0
-                        logger.info("Circuit %s closed after recovery", self.name)
+                        logger.info(
+                            "Circuit %s closed after recovery "
+                            "(%d consecutive successes)",
+                            self.name,
+                            self._state.success_count,
+                        )
+                        self._notify_state_change(
+                            CircuitState.HALF_OPEN,
+                            CircuitState.CLOSED,
+                        )
 
                 case CircuitState.CLOSED:
                     # Reset failure count on success
@@ -182,17 +216,28 @@ class CircuitBreaker:
                     # Any failure in half-open reopens circuit
                     self._state.state = CircuitState.OPEN
                     logger.warning(
-                        "Circuit %s reopened after failure in half-open",
+                        "Circuit %s reopened after failure in half-open "
+                        "(total failures=%d)",
                         self.name,
+                        self._state.failure_count,
+                    )
+                    self._notify_state_change(
+                        CircuitState.HALF_OPEN,
+                        CircuitState.OPEN,
                     )
 
                 case CircuitState.CLOSED:
                     if self._state.failure_count >= self.config.failure_threshold:
                         self._state.state = CircuitState.OPEN
                         logger.warning(
-                            "Circuit %s opened after %d failures",
+                            "Circuit %s opened after %d failures (threshold=%d)",
                             self.name,
                             self._state.failure_count,
+                            self.config.failure_threshold,
+                        )
+                        self._notify_state_change(
+                            CircuitState.CLOSED,
+                            CircuitState.OPEN,
                         )
 
                 case CircuitState.OPEN:  # pragma: no branch
@@ -235,6 +280,7 @@ def circuit_breaker(
     timeout: float = 30.0,
     excluded_exceptions: tuple[type[Exception], ...] = (),
     name: str | None = None,
+    on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to apply circuit breaker pattern.
 
@@ -244,6 +290,8 @@ def circuit_breaker(
         timeout: Seconds before attempting half-open.
         excluded_exceptions: Exceptions that don't trip circuit.
         name: Optional name for the circuit.
+        on_state_change: Optional callback invoked on state transitions
+            with (old_state, new_state).
 
     Returns:
         Decorated function with circuit breaker protection.
@@ -252,6 +300,13 @@ def circuit_breaker(
         >>> @circuit_breaker(failure_threshold=3, timeout=60)
         ... def call_api(endpoint: str) -> dict:
         ...     return requests.get(endpoint).json()
+
+        >>> @circuit_breaker(
+        ...     failure_threshold=3,
+        ...     on_state_change=lambda old, new: print(f"{old} -> {new}"),
+        ... )
+        ... def monitored_call() -> str:
+        ...     return service.call()
 
     """
 
@@ -262,6 +317,7 @@ def circuit_breaker(
             timeout=timeout,
             excluded_exceptions=excluded_exceptions,
             name=name or func.__name__,
+            on_state_change=on_state_change,
         )
         return breaker(func)
 
