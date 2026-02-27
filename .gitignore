@@ -112,3 +112,4 @@ dmypy.json
 # GitHub Actions logs (local only)
 logs/
 
+site/

@@ -1,0 +1,112 @@
+# =============================================================================
+# TaipanStack — MkDocs Material Configuration
+# =============================================================================
+
+site_name: TaipanStack
+site_url: https://gabrielima7.github.io/TaipanStack/
+site_description: "Modular, secure, and scalable Python stack for robust development"
+site_author: gabrielima7
+repo_url: https://github.com/gabrielima7/TaipanStack
+repo_name: gabrielima7/TaipanStack
+edit_uri: edit/main/docs/
+
+# ── Theme ────────────────────────────────────────────────────────────────────
+theme:
+  name: material
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Light mode
+    - scheme: default
+      primary: deep purple
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+# ── Plugins ──────────────────────────────────────────────────────────────────
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            docstring_style: google
+            docstring_section_style: spacy
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            signature_crossrefs: true
+            members_order: source
+
+# ── Markdown Extensions ─────────────────────────────────────────────────────
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+# ── Navigation ───────────────────────────────────────────────────────────────
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - API Reference:
+      - Core (Result): api/core.md
+      - Security: api/security.md
+      - Utilities: api/utils.md
+  - Release Notes:
+      - v0.3.1: releases/v0.3.1.md
+      - v0.3.0: releases/v0.3.0.md
+
+# ── Extra ────────────────────────────────────────────────────────────────────
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gabrielima7/TaipanStack
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/taipanstack/
+  generator: false
