@@ -267,12 +267,12 @@ def _timeout_with_thread(
 ) -> R:
     """Implement timeout using a separate thread."""
     result: list[R] = []
-    exception: list[Exception] = []
+    exception: list[BaseException] = []
 
     def target() -> None:
         try:
             result.append(func(*args, **kwargs))
-        except Exception as e:
+        except BaseException as e:
             exception.append(e)
 
     thread = threading.Thread(target=target)

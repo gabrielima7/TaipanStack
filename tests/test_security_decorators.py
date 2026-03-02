@@ -185,6 +185,17 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
+    def test_thread_catches_base_exception(self) -> None:
+        """Test that thread-based timeout catches and re-raises BaseException."""
+
+        @timeout(1.0, use_signal=False)
+        def sys_exit_func() -> None:
+            import sys
+            sys.exit(1)
+
+        with pytest.raises(SystemExit):
+            sys_exit_func()
+
 
 class TestDeprecated:
     """Tests for @deprecated decorator."""
