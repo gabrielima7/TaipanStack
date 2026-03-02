@@ -13,7 +13,6 @@ from taipanstack.config.version_config import (
     get_version_recommendations,
 )
 from taipanstack.core.compat import (
-    PY311,
     PY312,
     PY313,
     PY314,
@@ -33,7 +32,6 @@ from taipanstack.security.validators import (
 )
 
 __all__ = [
-    "PY311",
     "PY312",
     "PY313",
     "PY314",
