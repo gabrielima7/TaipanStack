@@ -13,6 +13,14 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
+_TRAVERSAL_PATTERNS: tuple[str, ...] = (
+    "..",
+    "~",
+    r"\.\.",
+    "%2e%2e",  # URL encoded ..
+    "%252e%252e",  # Double URL encoded
+)
+
 
 class SecurityError(Exception):
     """Raised when a security guard detects a violation.
@@ -77,15 +85,8 @@ def guard_path_traversal(
 
     # Check for explicit traversal patterns before resolution
     path_str = str(path)
-    traversal_patterns = [
-        "..",
-        "~",
-        r"\.\.",
-        "%2e%2e",  # URL encoded ..
-        "%252e%252e",  # Double URL encoded
-    ]
 
-    for pattern in traversal_patterns:
+    for pattern in _TRAVERSAL_PATTERNS:
         if pattern.lower() in path_str.lower():
             raise SecurityError(
                 f"Path traversal pattern detected: {pattern}",
