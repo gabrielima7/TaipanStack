@@ -14,22 +14,17 @@ if TYPE_CHECKING:
     from taipanstack.config.models import StackConfig
 
 
-def generate_pyproject_config(config: StackConfig) -> str:
-    """Generate Ruff, Mypy, and Pytest configuration for pyproject.toml.
+def _generate_ruff_config(target_version: str) -> str:
+    """Generate Ruff configuration.
 
     Args:
-        config: The Stack configuration.
+        target_version: The target Python version.
 
     Returns:
-        Configuration string to append to pyproject.toml.
+        Ruff configuration string.
 
     """
-    target_version = config.to_target_version()
-    python_version = config.python_version
-
-    return f"""
-# --- Stack v2.0 Quality Configuration ---
-[tool.ruff]
+    return f"""[tool.ruff]
 line-length = 88
 target-version = "{target_version}"
 
@@ -72,8 +67,20 @@ max-complexity = 10
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+"""
 
-[tool.mypy]
+
+def _generate_mypy_config(python_version: str) -> str:
+    """Generate Mypy configuration.
+
+    Args:
+        python_version: The target Python version.
+
+    Returns:
+        Mypy configuration string.
+
+    """
+    return f"""[tool.mypy]
 python_version = "{python_version}"
 warn_return_any = true
 warn_unused_configs = true
@@ -86,16 +93,34 @@ strict_equality = true
 ignore_missing_imports = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-cast", "truthy-bool"]
+"""
 
-[tool.pytest.ini_options]
+
+def _generate_pytest_config() -> str:
+    """Generate Pytest configuration.
+
+    Returns:
+        Pytest configuration string.
+
+    """
+    return """[tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80 --strict-markers"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "security: marks tests as security-related",
 ]
+"""
 
-[tool.coverage.run]
+
+def _generate_coverage_config() -> str:
+    """Generate Coverage configuration.
+
+    Returns:
+        Coverage configuration string.
+
+    """
+    return """[tool.coverage.run]
 branch = true
 source = ["src"]
 omit = ["*/tests/*", "*/__pycache__/*"]
@@ -109,6 +134,27 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 """
+
+
+def generate_pyproject_config(config: StackConfig) -> str:
+    """Generate Ruff, Mypy, and Pytest configuration for pyproject.toml.
+
+    Args:
+        config: The Stack configuration.
+
+    Returns:
+        Configuration string to append to pyproject.toml.
+
+    """
+    target_version = config.to_target_version()
+    python_version = config.python_version
+
+    return f"""
+# --- Stack v2.0 Quality Configuration ---
+{_generate_ruff_config(target_version)}
+{_generate_mypy_config(python_version)}
+{_generate_pytest_config()}
+{_generate_coverage_config()}"""
 
 
 def generate_pre_commit_config(config: StackConfig) -> str:
