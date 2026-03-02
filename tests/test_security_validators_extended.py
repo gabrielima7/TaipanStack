@@ -63,6 +63,12 @@ class TestValidatePythonVersionEdgeCases:
         with pytest.raises(ValueError, match="3.10"):
             validate_python_version("3.9")
 
+    def test_version_number_conversion_error(self) -> None:
+        """Test that extremely long version numbers are rejected."""
+        # This triggers the except ValueError block due to integer string conversion limit
+        with pytest.raises(ValueError, match="Invalid version numbers"):
+            validate_python_version("1." + "9" * 5000)
+
 
 class TestValidateEmailEdgeCases:
     """Additional tests for validate_email."""
@@ -114,8 +120,11 @@ class TestValidateIpAddress:
 
     def test_invalid_ip(self) -> None:
         """Test invalid IP address."""
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid IP address"):
             validate_ip_address("not.an.ip.address")
+
+        with pytest.raises(ValueError, match="Invalid IP address"):
+            validate_ip_address("999.999.999.999")
 
     def test_ipv4_only(self) -> None:
         """Test that v4-only mode rejects IPv6."""
