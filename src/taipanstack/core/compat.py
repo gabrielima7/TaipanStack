@@ -8,17 +8,12 @@ maintaining compatibility with Python 3.11+.
 Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
 """
 
-from __future__ import annotations
-
 import logging
 import os
 import sys
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Final
+from typing import Final
 
 __all__ = [
     "PY311",
