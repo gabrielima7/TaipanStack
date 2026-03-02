@@ -125,8 +125,11 @@ class TestStackConfig:
 
     def test_invalid_python_version_rejected(self) -> None:
         """Test invalid Python versions are rejected."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match="not supported"):
             StackConfig(python_version="2.7")
+
+        with pytest.raises(ValidationError, match="is invalid. Use format 'X.Y'"):
+            StackConfig(python_version="invalid")
 
     def test_path_traversal_rejected(self, tmp_path: Path) -> None:
         """Test path traversal in project_dir is rejected."""
@@ -142,6 +145,35 @@ class TestStackConfig:
                     enable_bandit=False,
                 )
             )
+
+    def test_validate_config_consistency(self) -> None:
+        """Test validate_config_consistency directly with mocked inconsistent data."""
+        # Success: Paranoid with all tools enabled
+        security_paranoid = SecurityConfig(level="paranoid")
+        config = StackConfig.model_construct(security=security_paranoid)
+        assert config.validate_config_consistency() == config
+
+        # Success: Not paranoid, tools can be disabled
+        security_standard = SecurityConfig(level="standard", enable_bandit=False)
+        config = StackConfig.model_construct(security=security_standard)
+        assert config.validate_config_consistency() == config
+
+        # Failures: Paranoid with any tool disabled
+        tools_to_disable = [
+            "enable_bandit",
+            "enable_safety",
+            "enable_semgrep",
+            "enable_detect_secrets",
+        ]
+
+        for tool in tools_to_disable:
+            # Create a security config with all tools enabled by default
+            kwargs = {"level": "paranoid", tool: False}
+            security_inconsistent = SecurityConfig(**kwargs)
+            config = StackConfig.model_construct(security=security_inconsistent)
+
+            with pytest.raises(ValueError, match="Paranoid security level requires all security tools enabled"):
+                config.validate_config_consistency()
 
     def test_to_target_version(self) -> None:
         """Test target version conversion."""
