@@ -8,7 +8,6 @@ Supports Python 3.11+ with version-aware optimizations for 3.13/3.14.
 __version__ = "0.3.1"
 
 from taipanstack.config.version_config import (
-    VersionRecommendations,
     get_version_recommendations,
 )
 from taipanstack.core.compat import (
@@ -35,7 +34,6 @@ __all__ = [
     "PY313",
     "PY314",
     "PY_VERSION",
-    "VersionRecommendations",
     "apply_optimizations",
     "get_features",
     "get_optimization_profile",
