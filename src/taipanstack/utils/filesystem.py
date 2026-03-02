@@ -203,7 +203,7 @@ def safe_write(
             if path.exists():
                 path.unlink()
             temp_file.rename(path)
-        except Exception:
+        except OSError:
             # Clean up temp file on error
             with contextlib.suppress(OSError):
                 Path(temp_path).unlink(missing_ok=True)
