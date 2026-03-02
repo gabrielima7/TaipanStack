@@ -13,16 +13,7 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
-_TRAVERSAL_PATTERNS: tuple[str, ...] = (
-    "..",
-    "~",
-    r"\.\.",
-    "%2e%2e",  # URL encoded ..
-    "%252e%252e",  # Double URL encoded
-)
-
-
-_TRAVERSAL_PATTERNS = frozenset(
+_TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
     [
         "..",
         "~",
