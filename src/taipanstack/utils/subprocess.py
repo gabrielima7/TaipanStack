@@ -100,6 +100,98 @@ DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
 )
 
 
+
+def _validate_command(
+    cmd_list: list[str],
+    allowed_commands: Sequence[str] | None,
+) -> list[str]:
+    """Validate a command against security guards."""
+    if not cmd_list:
+        raise SecurityError(
+            "Empty command is not allowed",
+            guard_name="safe_command",
+        )
+
+    if allowed_commands is not None:
+        whitelist = list(allowed_commands)
+    else:
+        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
+
+    validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
+
+    base_command = validated_cmd[0]
+    if not shutil.which(base_command):
+        raise SecurityError(
+            f"Command not found: {base_command}",
+            guard_name="safe_command",
+            value=base_command,
+        )
+
+    return validated_cmd
+
+
+def _resolve_cwd(cwd: Path | str | None) -> Path | None:
+    """Resolve and validate working directory."""
+    if cwd is None:
+        return None
+
+    resolved_cwd = Path(cwd).resolve()
+    if not resolved_cwd.exists():
+        raise SecurityError(
+            f"Working directory does not exist: {resolved_cwd}",
+            guard_name="safe_command",
+        )
+    return resolved_cwd
+
+
+def _execute_command(
+    validated_cmd: list[str],
+    cwd: Path | None,
+    timeout: float,
+    capture_output: bool,
+    env: dict[str, str] | None,
+) -> SafeCommandResult:
+    """Execute a validated command and handle timeouts."""
+    start_time = time.time()
+
+    try:
+        result = subprocess.run(
+            validated_cmd,
+            cwd=cwd,
+            timeout=timeout,
+            capture_output=capture_output,
+            text=True,
+            encoding="utf-8",
+            env=env,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as e:
+        duration = time.time() - start_time
+        stdout_str = ""
+        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
+            if isinstance(e.stdout, str):
+                stdout_str = e.stdout
+            else:  # pragma: no cover
+                stdout_str = e.stdout.decode("utf-8", errors="replace")
+        return SafeCommandResult(
+            command=validated_cmd,
+            returncode=-1,
+            stdout=stdout_str,
+            stderr=f"Command timed out after {timeout}s",
+            duration_seconds=duration,
+        )
+
+    duration = time.time() - start_time
+
+    return SafeCommandResult(
+        command=validated_cmd,
+        returncode=result.returncode,
+        stdout=result.stdout or "",
+        stderr=result.stderr or "",
+        duration_seconds=duration,
+    )
+
+
 def run_safe_command(
     command: Sequence[str],
     *,
@@ -141,34 +233,8 @@ def run_safe_command(
         ...     print("Installation complete!")
 
     """
-    # Convert to list
-    cmd_list = list(command)
+    validated_cmd = _validate_command(list(command), allowed_commands)
 
-    if not cmd_list:
-        raise SecurityError(
-            "Empty command is not allowed",
-            guard_name="safe_command",
-        )
-
-    # Get command whitelist
-    if allowed_commands is not None:
-        whitelist = list(allowed_commands)
-    else:
-        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
-
-    # Validate command against guards
-    validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
-
-    # Verify command exists
-    base_command = validated_cmd[0]
-    if not shutil.which(base_command):
-        raise SecurityError(
-            f"Command not found: {base_command}",
-            guard_name="safe_command",
-            value=base_command,
-        )
-
-    # Handle dry run
     if dry_run:
         return SafeCommandResult(
             command=validated_cmd,
@@ -178,53 +244,14 @@ def run_safe_command(
             duration_seconds=0.0,
         )
 
-    # Resolve working directory
-    if cwd is not None:
-        cwd = Path(cwd).resolve()
-        if not cwd.exists():
-            raise SecurityError(
-                f"Working directory does not exist: {cwd}",
-                guard_name="safe_command",
-            )
+    resolved_cwd = _resolve_cwd(cwd)
 
-    # Execute command
-    start_time = time.time()
-
-    try:
-        result = subprocess.run(
-            validated_cmd,
-            cwd=cwd,
-            timeout=timeout,
-            capture_output=capture_output,
-            text=True,
-            encoding="utf-8",
-            env=env,
-            check=False,  # We handle check ourselves
-        )
-    except subprocess.TimeoutExpired as e:
-        duration = time.time() - start_time
-        stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
-            if isinstance(e.stdout, str):
-                stdout_str = e.stdout
-            else:  # pragma: no cover
-                stdout_str = e.stdout.decode("utf-8", errors="replace")
-        return SafeCommandResult(
-            command=validated_cmd,
-            returncode=-1,
-            stdout=stdout_str,
-            stderr=f"Command timed out after {timeout}s",
-            duration_seconds=duration,
-        )
-
-    duration = time.time() - start_time
-
-    safe_result = SafeCommandResult(
-        command=validated_cmd,
-        returncode=result.returncode,
-        stdout=result.stdout or "",
-        stderr=result.stderr or "",
-        duration_seconds=duration,
+    safe_result = _execute_command(
+        validated_cmd=validated_cmd,
+        cwd=resolved_cwd,
+        timeout=timeout,
+        capture_output=capture_output,
+        env=env,
     )
 
     if check:
