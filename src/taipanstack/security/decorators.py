@@ -272,7 +272,7 @@ def _timeout_with_thread(
     def target() -> None:
         try:
             result.append(func(*args, **kwargs))
-        except Exception as e:
+        except BaseException as e:
             exception.append(e)
 
     thread = threading.Thread(target=target)
