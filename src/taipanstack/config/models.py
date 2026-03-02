@@ -5,8 +5,6 @@ This module provides type-safe configuration models that validate
 all inputs at runtime, preventing errors and AI hallucinations.
 """
 
-from __future__ import annotations
-
 import re
 import sys
 from pathlib import Path
@@ -281,7 +279,7 @@ class StackConfig(BaseModel):
         return resolved
 
     @model_validator(mode="after")
-    def validate_config_consistency(self) -> StackConfig:
+    def validate_config_consistency(self) -> "StackConfig":
         """Validate configuration consistency.
 
         Returns:
