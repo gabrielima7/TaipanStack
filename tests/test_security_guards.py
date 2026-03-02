@@ -6,6 +6,7 @@ import pytest
 
 from taipanstack.security.guards import (
     SecurityError,
+    _normalize_ext,
     guard_command_injection,
     guard_file_extension,
     guard_path_traversal,
@@ -113,6 +114,34 @@ class TestGuardCommandInjection:
         with pytest.raises(SecurityError) as exc_info:
             guard_command_injection(["rm", "-rf", "/"], allowed_commands=["python"])
         assert "not in allowed list" in str(exc_info.value)
+
+
+class TestNormalizeExt:
+    """Tests for _normalize_ext function."""
+
+    def test_normalize_ext_no_dot(self) -> None:
+        """Test extension without dot."""
+        assert _normalize_ext("txt") == "txt"
+
+    def test_normalize_ext_with_dot(self) -> None:
+        """Test extension with dot."""
+        assert _normalize_ext(".txt") == "txt"
+
+    def test_normalize_ext_uppercase(self) -> None:
+        """Test uppercase extension."""
+        assert _normalize_ext("TXT") == "txt"
+
+    def test_normalize_ext_uppercase_with_dot(self) -> None:
+        """Test uppercase extension with dot."""
+        assert _normalize_ext(".TXT") == "txt"
+
+    def test_normalize_ext_mixed_case(self) -> None:
+        """Test mixed case extension."""
+        assert _normalize_ext(".TxT") == "txt"
+
+    def test_normalize_ext_multiple_dots(self) -> None:
+        """Test extension with multiple dots."""
+        assert _normalize_ext("..txt") == "txt"
 
 
 class TestGuardFileExtension:
