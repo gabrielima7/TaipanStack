@@ -120,6 +120,11 @@ class TestValidateUrl:
         with pytest.raises(ValueError, match="not allowed"):
             validate_url("ftp://example.com")
 
+    def test_invalid_format_parsing_error(self) -> None:
+        """Test URL parsing ValueError is caught and re-raised."""
+        with pytest.raises(ValueError, match="Invalid URL format: Invalid IPv6 URL"):
+            validate_url("http://[::1")
+
 
 class TestValidateIpAddress:
     """Tests for validate_ip_address function."""
