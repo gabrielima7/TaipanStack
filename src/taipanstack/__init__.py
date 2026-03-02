@@ -9,7 +9,6 @@ __version__ = "0.3.1"
 
 from taipanstack.config.models import StackConfig
 from taipanstack.config.version_config import (
-    VersionRecommendations,
     get_version_recommendations,
 )
 from taipanstack.core.compat import (
@@ -39,7 +38,6 @@ __all__ = [
     "PY314",
     "PY_VERSION",
     "StackConfig",
-    "VersionRecommendations",
     "apply_optimizations",
     "get_features",
     "get_optimization_profile",
