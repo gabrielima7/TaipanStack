@@ -55,6 +55,7 @@ class CircuitBreakerConfig:
         success_threshold: Successes needed in half-open to close.
         timeout: Seconds before trying half-open after open.
         excluded_exceptions: Exceptions that don't count as failures.
+        failure_exceptions: Exceptions that count as failures.
 
     """
 
@@ -62,6 +63,7 @@ class CircuitBreakerConfig:
     success_threshold: int = 2
     timeout: float = 30.0
     excluded_exceptions: tuple[type[Exception], ...] = ()
+    failure_exceptions: tuple[type[Exception], ...] = (Exception,)
 
 
 @dataclass
@@ -97,6 +99,7 @@ class CircuitBreaker:
         success_threshold: int = 2,
         timeout: float = 30.0,
         excluded_exceptions: tuple[type[Exception], ...] = (),
+        failure_exceptions: tuple[type[Exception], ...] = (Exception,),
         name: str = "default",
         on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
     ) -> None:
@@ -107,6 +110,7 @@ class CircuitBreaker:
             success_threshold: Successes to close from half-open.
             timeout: Seconds before attempting half-open.
             excluded_exceptions: Exceptions that don't trip circuit.
+            failure_exceptions: Exceptions that count as failures.
             name: Name for logging/identification.
             on_state_change: Optional callback invoked on state transitions
                 with (old_state, new_state). Useful for custom monitoring.
@@ -117,6 +121,7 @@ class CircuitBreaker:
             success_threshold=success_threshold,
             timeout=timeout,
             excluded_exceptions=excluded_exceptions,
+            failure_exceptions=failure_exceptions,
         )
         self.name = name
         self._state = CircuitBreakerState()
@@ -266,7 +271,7 @@ class CircuitBreaker:
                 result = func(*args, **kwargs)
                 self._record_success()
                 return result
-            except Exception as e:
+            except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
 
@@ -279,6 +284,7 @@ def circuit_breaker(
     success_threshold: int = 2,
     timeout: float = 30.0,
     excluded_exceptions: tuple[type[Exception], ...] = (),
+    failure_exceptions: tuple[type[Exception], ...] = (Exception,),
     name: str | None = None,
     on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
@@ -289,6 +295,7 @@ def circuit_breaker(
         success_threshold: Successes to close from half-open.
         timeout: Seconds before attempting half-open.
         excluded_exceptions: Exceptions that don't trip circuit.
+        failure_exceptions: Exceptions that count as failures.
         name: Optional name for the circuit.
         on_state_change: Optional callback invoked on state transitions
             with (old_state, new_state).
@@ -316,6 +323,7 @@ def circuit_breaker(
             success_threshold=success_threshold,
             timeout=timeout,
             excluded_exceptions=excluded_exceptions,
+            failure_exceptions=failure_exceptions,
             name=name or func.__name__,
             on_state_change=on_state_change,
         )
