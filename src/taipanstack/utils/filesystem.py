@@ -5,8 +5,6 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-from __future__ import annotations
-
 import contextlib
 import hashlib
 import os
