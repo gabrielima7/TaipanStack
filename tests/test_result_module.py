@@ -71,6 +71,22 @@ class TestSafeDecorator:
         assert my_function.__name__ == "my_function"
         assert my_function.__doc__ == "My docstring."
 
+    def test_safe_with_expected_exceptions(self) -> None:
+        """Test safe decorator with expected_exceptions."""
+
+        @safe(expected_exceptions=(ValueError,))
+        def parse_int(s: str) -> int:
+            return int(s)
+
+        # Expected error
+        result = parse_int("invalid")
+        assert result.is_err()
+        assert isinstance(result.err(), ValueError)
+
+        # Unexpected error
+        with pytest.raises(TypeError):
+            parse_int(None)  # type: ignore[arg-type]
+
 
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""

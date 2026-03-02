@@ -47,16 +47,37 @@ E = TypeVar("E", bound=Exception)
 U = TypeVar("U")
 
 
+@overload
 def safe(
     func: Callable[P, T],
-) -> Callable[P, Result[T, Exception]]:
+) -> Callable[P, Result[T, Exception]]: ...
+
+
+@overload
+def safe(
+    *,
+    expected_exceptions: tuple[type[Exception], ...] = (Exception,),
+) -> Callable[[Callable[P, T]], Callable[P, Result[T, Exception]]]: ...
+
+
+def safe(
+    func: Callable[P, T] | None = None,
+    *,
+    expected_exceptions: tuple[type[Exception], ...] = (Exception,),
+) -> (
+    Callable[P, Result[T, Exception]]
+    | Callable[[Callable[P, T]], Callable[P, Result[T, Exception]]]
+):
     """Decorator to convert exceptions into Err results.
 
     Wraps a function so that any exception raised becomes an Err,
-    while successful returns become Ok.
+    while successful returns become Ok. Can be used with or without
+    the `expected_exceptions` argument.
 
     Args:
         func: The function to wrap.
+        expected_exceptions: A tuple of exception types to catch and
+            convert to Err. Defaults to (Exception,).
 
     Returns:
         A wrapped function that returns Result[T, Exception].
@@ -71,12 +92,22 @@ def safe(
         Err(ValueError("invalid literal for int()..."))
 
     """
+    if func is None:
+
+        def decorator(
+            f: Callable[P, T],
+        ) -> Callable[P, Result[T, Exception]]:
+            # We must use type: ignore because mypy complains about the overload match
+            # and returning Any.
+            return safe(f, expected_exceptions=expected_exceptions)  # type: ignore[call-overload, no-any-return, return-value]
+
+        return decorator
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
             return Ok(func(*args, **kwargs))
-        except Exception as e:
+        except expected_exceptions as e:
             return Err(e)
 
     return wrapper
