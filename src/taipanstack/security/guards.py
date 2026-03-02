@@ -283,6 +283,32 @@ def guard_file_extension(
     return path
 
 
+# Default sensitive variables
+_DEFAULT_DENIED = {
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN",
+    "GITHUB_TOKEN",
+    "GH_TOKEN",
+    "GITLAB_TOKEN",
+    "DATABASE_URL",
+    "DB_PASSWORD",
+    "PASSWORD",
+    "SECRET_KEY",
+    "PRIVATE_KEY",
+    "API_KEY",
+    "API_SECRET",
+}
+
+# Pre-compiled sensitive patterns for better performance
+_SENSITIVE_PATTERNS = [
+    re.compile(r".*SECRET.*", re.IGNORECASE),
+    re.compile(r".*PASSWORD.*", re.IGNORECASE),
+    re.compile(r".*TOKEN.*", re.IGNORECASE),
+    re.compile(r".*PRIVATE.*KEY.*", re.IGNORECASE),
+    re.compile(r".*API.*KEY.*", re.IGNORECASE),
+]
+
+
 def guard_env_variable(
     name: str,
     *,
@@ -303,22 +329,6 @@ def guard_env_variable(
         SecurityError: If variable access is not allowed.
 
     """
-    # Default sensitive variables
-    default_denied = {
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_SESSION_TOKEN",
-        "GITHUB_TOKEN",
-        "GH_TOKEN",
-        "GITLAB_TOKEN",
-        "DATABASE_URL",
-        "DB_PASSWORD",
-        "PASSWORD",
-        "SECRET_KEY",
-        "PRIVATE_KEY",
-        "API_KEY",
-        "API_SECRET",
-    }
-
     # Validate input type
     if not isinstance(name, str):
         raise TypeError(f"Variable name must be str, got {type(name).__name__}")
@@ -335,16 +345,7 @@ def guard_env_variable(
     if denied_names is not None:
         denied = {n.upper() for n in denied_names}
     else:
-        denied = default_denied
-
-    # Check against patterns
-    sensitive_patterns = [
-        r".*SECRET.*",
-        r".*PASSWORD.*",
-        r".*TOKEN.*",
-        r".*PRIVATE.*KEY.*",
-        r".*API.*KEY.*",
-    ]
+        denied = _DEFAULT_DENIED
 
     if name_upper in denied:
         raise SecurityError(
@@ -353,8 +354,9 @@ def guard_env_variable(
             value=name,
         )
 
-    for pattern in sensitive_patterns:
-        if re.match(pattern, name_upper):
+    # Check against patterns
+    for pattern in _SENSITIVE_PATTERNS:
+        if pattern.match(name_upper):
             # Only block if not explicitly allowed
             if allowed_names is not None:
                 allowed = {n.upper() for n in allowed_names}
