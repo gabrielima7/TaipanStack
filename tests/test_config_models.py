@@ -36,12 +36,12 @@ class TestSecurityConfig:
         """Test that config is immutable."""
         config = SecurityConfig()
         with pytest.raises(ValidationError):
-            config.level = "standard"  # type: ignore
+            config.level = "standard"  # type: ignore[misc]
 
     def test_extra_fields_forbidden(self) -> None:
         """Test that extra fields are not allowed."""
         with pytest.raises(ValidationError):
-            SecurityConfig(invalid_field="value")
+            SecurityConfig(invalid_field="value")  # type: ignore[call-arg]
 
 
 class TestDependencyConfig:
@@ -81,13 +81,13 @@ class TestLoggingConfig:
     def test_valid_levels(self) -> None:
         """Test all valid log levels."""
         for level in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-            config = LoggingConfig(level=level)
+            config = LoggingConfig(level=level)  # type: ignore[arg-type]
             assert config.level == level
 
     def test_invalid_level_rejected(self) -> None:
         """Test invalid log level is rejected."""
         with pytest.raises(ValidationError):
-            LoggingConfig(level="INVALID")
+            LoggingConfig(level="INVALID")  # type: ignore[arg-type]
 
 
 class TestStackConfig:
@@ -127,6 +127,14 @@ class TestStackConfig:
         """Test invalid Python versions are rejected."""
         with pytest.raises(ValidationError):
             StackConfig(python_version="2.7")
+
+        with pytest.raises(ValidationError, match="invalid"):
+            StackConfig(python_version="invalid")
+
+    def test_valid_project_dir(self, tmp_path: Path) -> None:
+        """Test valid project directory is resolved."""
+        config = StackConfig(project_dir=tmp_path)
+        assert config.project_dir == tmp_path.resolve()
 
     def test_path_traversal_rejected(self, tmp_path: Path) -> None:
         """Test path traversal in project_dir is rejected."""
