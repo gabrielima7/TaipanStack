@@ -281,6 +281,7 @@ def log_operation(
     *,
     logger: StackLogger | None = None,
     level: str = "INFO",
+    expected_errors: tuple[type[Exception], ...] = (Exception,),
 ) -> Any:
     """Context manager for logging operations.
 
@@ -288,6 +289,7 @@ def log_operation(
         operation: Name of the operation.
         logger: Logger to use (creates one if not provided).
         level: Log level for messages.
+        expected_errors: Tuple of exceptions that should be logged as failures.
 
     Yields:
         The logger instance.
@@ -314,7 +316,7 @@ def log_operation(
             yield logger
             duration = (datetime.now(UTC) - start_time).total_seconds()
             log_method(f"Completed: {operation}", duration_seconds=duration)
-        except Exception as e:
+        except expected_errors as e:
             duration = (datetime.now(UTC) - start_time).total_seconds()
             logger.exception(
                 f"Failed: {operation}",
