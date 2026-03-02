@@ -214,6 +214,25 @@ def guard_command_injection(
     return cmd_list
 
 
+# Default dangerous extensions
+DEFAULT_DENIED_EXTENSIONS = frozenset({
+    "exe",
+    "dll",
+    "so",
+    "dylib",  # Executables
+    "sh",
+    "bash",
+    "zsh",
+    "ps1",
+    "bat",
+    "cmd",  # Scripts
+    "php",
+    "jsp",
+    "asp",
+    "aspx",  # Server-side scripts
+})
+
+
 def guard_file_extension(
     filename: str | Path,
     *,
@@ -237,24 +256,6 @@ def guard_file_extension(
     path = Path(filename)
     ext = path.suffix.lower().lstrip(".")
 
-    # Default dangerous extensions
-    default_denied = {
-        "exe",
-        "dll",
-        "so",
-        "dylib",  # Executables
-        "sh",
-        "bash",
-        "zsh",
-        "ps1",
-        "bat",
-        "cmd",  # Scripts
-        "php",
-        "jsp",
-        "asp",
-        "aspx",  # Server-side scripts
-    }
-
     # Normalize extension lists
     def normalize_ext(e: str) -> str:
         return e.lower().lstrip(".")
@@ -262,7 +263,7 @@ def guard_file_extension(
     if denied_extensions is not None:
         denied = {normalize_ext(e) for e in denied_extensions}
     else:
-        denied = default_denied
+        denied = DEFAULT_DENIED_EXTENSIONS
 
     if ext in denied:
         raise SecurityError(
@@ -281,6 +282,31 @@ def guard_file_extension(
             )
 
     return path
+
+
+# Default sensitive variables
+DEFAULT_DENIED_ENV_VARS = frozenset({
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN",
+    "GITHUB_TOKEN",
+    "GH_TOKEN",
+    "GITLAB_TOKEN",
+    "DATABASE_URL",
+    "DB_PASSWORD",
+    "PASSWORD",
+    "SECRET_KEY",
+    "PRIVATE_KEY",
+    "API_KEY",
+    "API_SECRET",
+})
+
+SENSITIVE_ENV_PATTERNS = [
+    re.compile(r".*SECRET.*"),
+    re.compile(r".*PASSWORD.*"),
+    re.compile(r".*TOKEN.*"),
+    re.compile(r".*PRIVATE.*KEY.*"),
+    re.compile(r".*API.*KEY.*"),
+]
 
 
 def guard_env_variable(
@@ -303,21 +329,6 @@ def guard_env_variable(
         SecurityError: If variable access is not allowed.
 
     """
-    # Default sensitive variables
-    default_denied = {
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_SESSION_TOKEN",
-        "GITHUB_TOKEN",
-        "GH_TOKEN",
-        "GITLAB_TOKEN",
-        "DATABASE_URL",
-        "DB_PASSWORD",
-        "PASSWORD",
-        "SECRET_KEY",
-        "PRIVATE_KEY",
-        "API_KEY",
-        "API_SECRET",
-    }
 
     # Validate input type
     if not isinstance(name, str):
@@ -335,16 +346,7 @@ def guard_env_variable(
     if denied_names is not None:
         denied = {n.upper() for n in denied_names}
     else:
-        denied = default_denied
-
-    # Check against patterns
-    sensitive_patterns = [
-        r".*SECRET.*",
-        r".*PASSWORD.*",
-        r".*TOKEN.*",
-        r".*PRIVATE.*KEY.*",
-        r".*API.*KEY.*",
-    ]
+        denied = DEFAULT_DENIED_ENV_VARS
 
     if name_upper in denied:
         raise SecurityError(
@@ -353,8 +355,8 @@ def guard_env_variable(
             value=name,
         )
 
-    for pattern in sensitive_patterns:
-        if re.match(pattern, name_upper):
+    for pattern in SENSITIVE_ENV_PATTERNS:
+        if pattern.match(name_upper):
             # Only block if not explicitly allowed
             if allowed_names is not None:
                 allowed = {n.upper() for n in allowed_names}
