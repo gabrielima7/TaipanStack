@@ -1,7 +1,6 @@
 """Security package for runtime protection."""
 
 from taipanstack.security.decorators import (
-    OperationTimeoutError,
     ValidationError,
     deprecated,
     guard_exceptions,
@@ -30,7 +29,6 @@ from taipanstack.security.validators import (
 
 __all__ = [
     # Decorators
-    "OperationTimeoutError",
     # Guards
     "SecurityError",
     "ValidationError",
