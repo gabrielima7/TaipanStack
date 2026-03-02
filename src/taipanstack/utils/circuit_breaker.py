@@ -271,6 +271,8 @@ class CircuitBreaker:
                 result = func(*args, **kwargs)
                 self._record_success()
                 return result
+            # Restrict to configured exceptions (which subclass Exception)
+            # to avoid catching BaseException variants like SystemExit.
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
