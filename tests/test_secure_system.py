@@ -8,6 +8,7 @@ from pydantic import SecretStr, ValidationError
 
 from app.secure_system import (
     InMemoryUserRepository,
+    UserAlreadyExistsError,
     UserCreate,
     UserCreationError,
     UserNotFoundError,
@@ -53,7 +54,7 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
     # Mock repository to raise an error
     class FailingRepository(UserRepository):
         def save(self, user: object) -> None:
-            raise ValueError("Database error")
+            raise UserAlreadyExistsError("Database error")
 
         def get_by_id(self, user_id: UUID) -> None:
             return None
