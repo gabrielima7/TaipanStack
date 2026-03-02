@@ -5,7 +5,6 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-import contextlib
 import hashlib
 import os
 import shutil
