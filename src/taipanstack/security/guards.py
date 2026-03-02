@@ -283,6 +283,78 @@ def guard_file_extension(
     return path
 
 
+_DEFAULT_DENIED_ENV_VARS = frozenset({
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_SESSION_TOKEN",
+    "GITHUB_TOKEN",
+    "GH_TOKEN",
+    "GITLAB_TOKEN",
+    "DATABASE_URL",
+    "DB_PASSWORD",
+    "PASSWORD",
+    "SECRET_KEY",
+    "PRIVATE_KEY",
+    "API_KEY",
+    "API_SECRET",
+})
+
+_SENSITIVE_ENV_PATTERNS = (
+    re.compile(r".*SECRET.*"),
+    re.compile(r".*PASSWORD.*"),
+    re.compile(r".*TOKEN.*"),
+    re.compile(r".*PRIVATE.*KEY.*"),
+    re.compile(r".*API.*KEY.*"),
+)
+
+def _validate_env_var_name(name: str) -> None:
+    """Validate environment variable name type and content."""
+    if not isinstance(name, str):
+        raise TypeError(f"Variable name must be str, got {type(name).__name__}")
+
+    if not name or not name.strip():
+        raise SecurityError(
+            "Environment variable name cannot be empty or whitespace",
+            guard_name="env_variable",
+        )
+
+def _check_denied_env_var(
+    name: str, name_upper: str, denied_names: Sequence[str] | None
+) -> None:
+    """Check if environment variable name is in denied list."""
+    if denied_names is not None:
+        denied = {n.upper() for n in denied_names}
+    else:
+        denied = set(_DEFAULT_DENIED_ENV_VARS)
+
+    if name_upper in denied:
+        raise SecurityError(
+            f"Access to sensitive variable '{name}' is denied",
+            guard_name="env_variable",
+            value=name,
+        )
+
+def _check_sensitive_env_var(
+    name: str, name_upper: str, allowed_names: Sequence[str] | None
+) -> None:
+    """Check if environment variable name matches sensitive patterns."""
+    for pattern in _SENSITIVE_ENV_PATTERNS:
+        if pattern.match(name_upper):
+            # Only block if not explicitly allowed
+            if allowed_names is not None:
+                allowed = {n.upper() for n in allowed_names}
+                if name_upper not in allowed:
+                    raise SecurityError(
+                        f"Access to potentially sensitive variable '{name}' is denied",
+                        guard_name="env_variable",
+                        value=name,
+                    )
+            else:
+                raise SecurityError(
+                    f"Access to potentially sensitive variable '{name}' is denied",
+                    guard_name="env_variable",
+                    value=name,
+                )
+
 def guard_env_variable(
     name: str,
     *,
@@ -303,73 +375,11 @@ def guard_env_variable(
         SecurityError: If variable access is not allowed.
 
     """
-    # Default sensitive variables
-    default_denied = {
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_SESSION_TOKEN",
-        "GITHUB_TOKEN",
-        "GH_TOKEN",
-        "GITLAB_TOKEN",
-        "DATABASE_URL",
-        "DB_PASSWORD",
-        "PASSWORD",
-        "SECRET_KEY",
-        "PRIVATE_KEY",
-        "API_KEY",
-        "API_SECRET",
-    }
-
-    # Validate input type
-    if not isinstance(name, str):
-        raise TypeError(f"Variable name must be str, got {type(name).__name__}")
-
-    # Reject empty/whitespace-only variable names
-    if not name or not name.strip():
-        raise SecurityError(
-            "Environment variable name cannot be empty or whitespace",
-            guard_name="env_variable",
-        )
-
+    _validate_env_var_name(name)
     name_upper = name.upper()
 
-    if denied_names is not None:
-        denied = {n.upper() for n in denied_names}
-    else:
-        denied = default_denied
-
-    # Check against patterns
-    sensitive_patterns = [
-        r".*SECRET.*",
-        r".*PASSWORD.*",
-        r".*TOKEN.*",
-        r".*PRIVATE.*KEY.*",
-        r".*API.*KEY.*",
-    ]
-
-    if name_upper in denied:
-        raise SecurityError(
-            f"Access to sensitive variable '{name}' is denied",
-            guard_name="env_variable",
-            value=name,
-        )
-
-    for pattern in sensitive_patterns:
-        if re.match(pattern, name_upper):
-            # Only block if not explicitly allowed
-            if allowed_names is not None:
-                allowed = {n.upper() for n in allowed_names}
-                if name_upper not in allowed:
-                    raise SecurityError(
-                        f"Access to potentially sensitive variable '{name}' is denied",
-                        guard_name="env_variable",
-                        value=name,
-                    )
-            else:
-                raise SecurityError(
-                    f"Access to potentially sensitive variable '{name}' is denied",
-                    guard_name="env_variable",
-                    value=name,
-                )
+    _check_denied_env_var(name, name_upper, denied_names)
+    _check_sensitive_env_var(name, name_upper, allowed_names)
 
     # Get the variable
     value = os.environ.get(name)
