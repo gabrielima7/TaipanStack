@@ -77,6 +77,8 @@ def safe(
         try:
             return Ok(func(*args, **kwargs))
         except Exception as e:
+            if e.__class__.__name__ in ("HTTPException", "WebSocketException"):
+                raise
             return Err(e)
 
     return wrapper

@@ -202,3 +202,25 @@ class TestMatchCase:
                 pytest.fail("Should not match Ok")
             case Err(error):
                 assert error == "error"
+
+    def test_safe_propagates_framework_exceptions(self) -> None:
+        """Test safe decorator lets framework exceptions like HTTPException propagate."""
+        class HTTPException(Exception):  # noqa: N818
+            pass
+
+        class WebSocketException(Exception):  # noqa: N818
+            pass
+
+        @safe
+        def raise_http_error() -> int:
+            raise HTTPException("mock http exception")
+
+        @safe
+        def raise_ws_error() -> int:
+            raise WebSocketException("mock ws exception")
+
+        with pytest.raises(HTTPException):
+            raise_http_error()
+
+        with pytest.raises(WebSocketException):
+            raise_ws_error()
