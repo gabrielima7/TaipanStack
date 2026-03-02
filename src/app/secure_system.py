@@ -28,6 +28,15 @@ class UserNotFoundError(Exception):
         super().__init__(f"User with ID {user_id} not found.")
 
 
+class UserAlreadyExistsError(Exception):
+    """Exception raised when a user already exists."""
+
+    def __init__(self, message: str) -> None:
+        """Initialize the exception with a message."""
+        self.message = message
+        super().__init__(message)
+
+
 @dataclass(frozen=True)
 class UserCreationError(Exception):
     """Exception class for user creation errors."""
@@ -172,7 +181,7 @@ class UserService:
             self._user_repository.save(user)
             logger.info("User created successfully: %s", user.id)
             return Ok(user)
-        except Exception as e:
+        except UserAlreadyExistsError as e:
             logger.exception("Failed to create user %s", user.id)
             return Err(UserCreationError(message=str(e)))
 
