@@ -36,12 +36,12 @@ class TestSecurityConfig:
         """Test that config is immutable."""
         config = SecurityConfig()
         with pytest.raises(ValidationError):
-            config.level = "standard"  # type: ignore
+            config.level = "standard"  # type: ignore[misc]
 
     def test_extra_fields_forbidden(self) -> None:
         """Test that extra fields are not allowed."""
         with pytest.raises(ValidationError):
-            SecurityConfig(invalid_field="value")
+            SecurityConfig(invalid_field="value")  # type: ignore[call-arg]
 
 
 class TestDependencyConfig:
@@ -81,13 +81,13 @@ class TestLoggingConfig:
     def test_valid_levels(self) -> None:
         """Test all valid log levels."""
         for level in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-            config = LoggingConfig(level=level)
+            config = LoggingConfig(level=level)  # type: ignore[arg-type]
             assert config.level == level
 
     def test_invalid_level_rejected(self) -> None:
         """Test invalid log level is rejected."""
         with pytest.raises(ValidationError):
-            LoggingConfig(level="INVALID")
+            LoggingConfig(level="INVALID")  # type: ignore[arg-type]
 
 
 class TestStackConfig:
@@ -128,6 +128,11 @@ class TestStackConfig:
         with pytest.raises(ValidationError):
             StackConfig(python_version="2.7")
 
+    def test_invalid_python_version_format_rejected(self) -> None:
+        """Test invalid Python version formats are rejected."""
+        with pytest.raises(ValidationError, match="invalid"):
+            StackConfig(python_version="3")
+
     def test_path_traversal_rejected(self, tmp_path: Path) -> None:
         """Test path traversal in project_dir is rejected."""
         with pytest.raises(ValidationError, match="Path traversal"):
@@ -142,6 +147,43 @@ class TestStackConfig:
                     enable_bandit=False,
                 )
             )
+
+        with pytest.raises(ValidationError, match="requires all security tools"):
+            StackConfig(
+                security=SecurityConfig(
+                    level="paranoid",
+                    enable_safety=False,
+                )
+            )
+
+        with pytest.raises(ValidationError, match="requires all security tools"):
+            StackConfig(
+                security=SecurityConfig(
+                    level="paranoid",
+                    enable_semgrep=False,
+                )
+            )
+
+        with pytest.raises(ValidationError, match="requires all security tools"):
+            StackConfig(
+                security=SecurityConfig(
+                    level="paranoid",
+                    enable_detect_secrets=False,
+                )
+            )
+
+    def test_paranoid_with_all_tools_accepted(self) -> None:
+        """Test paranoid mode accepted when all security tools are enabled."""
+        config = StackConfig(
+            security=SecurityConfig(
+                level="paranoid",
+                enable_bandit=True,
+                enable_safety=True,
+                enable_semgrep=True,
+                enable_detect_secrets=True,
+            )
+        )
+        assert config.security.level == "paranoid"
 
     def test_to_target_version(self) -> None:
         """Test target version conversion."""
