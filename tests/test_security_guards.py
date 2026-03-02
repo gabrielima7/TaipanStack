@@ -9,7 +9,46 @@ from taipanstack.security.guards import (
     guard_command_injection,
     guard_file_extension,
     guard_path_traversal,
+    normalize_ext,
 )
+
+
+class TestNormalizeExt:
+    """Tests for normalize_ext function."""
+
+    def test_normalize_ext_no_dot_lowercase(self) -> None:
+        """Test normalization of simple lowercase extension."""
+        assert normalize_ext("txt") == "txt"
+
+    def test_normalize_ext_with_dot(self) -> None:
+        """Test normalization removes leading dot."""
+        assert normalize_ext(".txt") == "txt"
+
+    def test_normalize_ext_uppercase(self) -> None:
+        """Test normalization converts to lowercase."""
+        assert normalize_ext("TXT") == "txt"
+
+    def test_normalize_ext_uppercase_with_dot(self) -> None:
+        """Test normalization handles both dot and uppercase."""
+        assert normalize_ext(".TXT") == "txt"
+
+    def test_normalize_ext_mixed_case(self) -> None:
+        """Test normalization handles mixed case."""
+        assert normalize_ext("tXt") == "txt"
+        assert normalize_ext(".TxT") == "txt"
+
+    def test_normalize_ext_multiple_dots(self) -> None:
+        """Test normalization with multiple leading dots."""
+        assert normalize_ext("..txt") == "txt"
+
+    def test_normalize_ext_empty(self) -> None:
+        """Test normalization of empty string."""
+        assert normalize_ext("") == ""
+
+    def test_normalize_ext_only_dots(self) -> None:
+        """Test normalization of string with only dots."""
+        assert normalize_ext(".") == ""
+        assert normalize_ext("...") == ""
 
 
 class TestGuardPathTraversal:

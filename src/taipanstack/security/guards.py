@@ -214,6 +214,19 @@ def guard_command_injection(
     return cmd_list
 
 
+def normalize_ext(e: str) -> str:
+    """Normalize file extension by converting to lowercase and stripping leading dot.
+
+    Args:
+        e: The extension to normalize.
+
+    Returns:
+        The normalized extension.
+
+    """
+    return e.lower().lstrip(".")
+
+
 def guard_file_extension(
     filename: str | Path,
     *,
@@ -254,10 +267,6 @@ def guard_file_extension(
         "asp",
         "aspx",  # Server-side scripts
     }
-
-    # Normalize extension lists
-    def normalize_ext(e: str) -> str:
-        return e.lower().lstrip(".")
 
     if denied_extensions is not None:
         denied = {normalize_ext(e) for e in denied_extensions}
