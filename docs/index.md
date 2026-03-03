@@ -45,7 +45,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
     ---
 
-    Pre-configured quality tools, **100% code coverage** (683 tests), architecture enforcement, hardened Docker template.
+    Pre-configured quality tools, **100% code coverage** (761 tests), architecture enforcement, hardened Docker template.
 
 </div>
 
@@ -170,7 +170,7 @@ def call_external_service() -> dict:
 
 | Report | Description |
 |--------|-------------|
-| [🧪 Coverage Report](htmlcov/) | Full HTML coverage report — 100% (683 tests) |
+| [🧪 Coverage Report](htmlcov/) | Full HTML coverage report — 100% (761 tests) |
 | [⚡ Benchmark Dashboard](dev/bench/) | Performance history & regression graphs |
 
 ---
