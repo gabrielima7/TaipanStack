@@ -102,7 +102,7 @@ class TestSubprocessTimeoutBranches:
         from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
-            [vars(__import__("sys"))["executable"], "-c", "exit(42)"],
+            ["python", "-c", "exit(42)"],
         )
         assert not result.success
         assert result.returncode == 42

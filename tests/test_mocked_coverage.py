@@ -179,7 +179,7 @@ class TestSubprocessBranches:
         from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
-            [vars(__import__("sys"))["executable"], "-c", "exit(1)"]
+            ["python", "-c", "exit(1)"]
         )
         assert not result.success
         assert result.returncode == 1
@@ -188,7 +188,7 @@ class TestSubprocessBranches:
         """Test get_command_version with existing command."""
         from taipanstack.utils.subprocess import get_command_version
 
-        result = get_command_version(vars(__import__("sys"))["executable"])
+        result = get_command_version("python")
         assert result is not None
         assert "Python" in result or "python" in result.lower() or "." in result
 

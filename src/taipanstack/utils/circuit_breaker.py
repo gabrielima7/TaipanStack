@@ -28,7 +28,7 @@ try:
     _structlog_logger = _structlog.get_logger("taipanstack.utils.circuit_breaker")
     _HAS_STRUCTLOG = True
 except ImportError:  # pragma: no cover — structlog is optional
-    _structlog_logger = None  # type: ignore[assignment]
+    _structlog_logger = None
     _HAS_STRUCTLOG = False
 
 

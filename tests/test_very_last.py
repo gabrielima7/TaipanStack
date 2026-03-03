@@ -222,7 +222,7 @@ class TestSubprocessCheckCommand:
 
         with pytest.raises(subprocess.CalledProcessError):
             run_safe_command(
-                [vars(__import__("sys"))["executable"], "-c", "raise SystemExit(1)"],
+                ["python", "-c", "raise SystemExit(1)"],
                 check=True,
             )
 

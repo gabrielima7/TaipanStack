@@ -72,7 +72,7 @@ class TestGuardCommandInjection:
 
     def test_safe_command_passes(self) -> None:
         """Test that safe commands pass validation."""
-        cmd = [vars(__import__("sys"))["executable"], "-m", "pytest", "-v"]
+        cmd = ["python", "-m", "pytest", "-v"]
         result = guard_command_injection(cmd)
         assert result == cmd
 
@@ -104,9 +104,9 @@ class TestGuardCommandInjection:
 
     def test_allowed_commands_whitelist(self) -> None:
         """Test command whitelist functionality."""
-        cmd = [vars(__import__("sys"))["executable"], "-c", "print('hello')"]
+        cmd = ["python", "-c", "print('hello')"]
         result = guard_command_injection(
-            cmd, allowed_commands=[vars(__import__("sys"))["executable"]]
+            cmd, allowed_commands=["python"]
         )
         assert result == cmd
 
@@ -115,7 +115,7 @@ class TestGuardCommandInjection:
         with pytest.raises(SecurityError) as exc_info:
             guard_command_injection(
                 ["rm", "-rf", "/"],
-                allowed_commands=[vars(__import__("sys"))["executable"]],
+                allowed_commands=["python"],
             )
         assert "not in allowed list" in str(exc_info.value)
 
