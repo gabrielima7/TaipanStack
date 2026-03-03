@@ -291,7 +291,27 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../releases/v0.3.2/" class="md-tabs__link">
+        <a href="../../patterns/security/" class="md-tabs__link">
+          
+  
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/v0.3.3/" class="md-tabs__link">
           
   
   
@@ -734,7 +754,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes
+    Patterns
   
 
     
@@ -750,11 +770,128 @@
             <span class="md-nav__icon md-icon"></span>
             
   
+    Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
     Release Notes
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/v0.3.3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.3.3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1038,16 +1175,33 @@ Error: division by zero</p>
 
 
 <a href="#taipanstack.core.result.safe" class="headerlink" title="Permanent link">&para;</a></h2>
+          <div class="doc-overloads">
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">safe</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span>
 </span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]]</span>
+</span></code></pre></div><div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">safe</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">]],</span>
+</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-4">    <span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]]</span>
+</span><span id="__span-0-5"><span class="p">]</span>
+</span></code></pre></div>          </div>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">safe</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">]</span>
+</span><span id="__span-0-3">    <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+</span><span id="__span-0-5">    <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]]</span>
+</span><span id="__span-0-6">    <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-7">        <span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]]</span>
+</span><span id="__span-0-8">    <span class="p">]</span>
+</span><span id="__span-0-9"><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Decorator to convert exceptions into Err results.</p>
-<p>Wraps a function so that any exception raised becomes an Err,
-while successful returns become Ok.</p>
+        <p>Wrap a sync or async function to convert exceptions into Err results.</p>
+<p>Detect whether <em>func</em> is a coroutine function and choose the
+appropriate wrapper so that <code>await</code>-able functions remain
+<code>await</code>-able and synchronous functions stay synchronous.</p>
 
 
 <table>
@@ -1064,12 +1218,12 @@ while successful returns become Ok.</p>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>The function to wrap.</p>
+                <p>The sync or async function to wrap.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="taipanstack.core.result.T">T</span>]</code>
+                      <code><span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="taipanstack.core.result.T">T</span>] | <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="collections.abc.Coroutine">Coroutine</span>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>, <span title="taipanstack.core.result.T">T</span>]]</code>
                   </span>
               </p>
             </td>
@@ -1089,12 +1243,24 @@ while successful returns become Ok.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="Exception">Exception</span>]]</code>
+                    <code><span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="Exception">Exception</span>]] | <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="collections.abc.Coroutine">Coroutine</span>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="Exception">Exception</span>]]]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>A wrapped function that returns Result[T, Exception].</p>
+                <p>A wrapped function that returns <code>Result[T, Exception]</code></p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="Exception">Exception</span>]] | <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="collections.abc.Coroutine">Coroutine</span>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="Exception">Exception</span>]]]</code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>(or a coroutine resolving to one).</p>
               </div>
             </td>
           </tr>
