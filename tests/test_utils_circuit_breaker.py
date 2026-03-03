@@ -145,6 +145,103 @@ class TestCircuitBreaker:
         breaker.reset()
         assert breaker.state == CircuitState.CLOSED
 
+    def test_wrapper_preserves_metadata(self) -> None:
+        """Test that wrapper preserves function metadata."""
+        breaker = CircuitBreaker()
+
+        @breaker
+        def my_func(a: int) -> int:
+            """My docstring."""
+            return a
+
+        assert my_func.__name__ == "my_func"
+        assert my_func.__doc__ == "My docstring."
+
+    def test_wrapper_passes_arguments(self) -> None:
+        """Test that wrapper passes arguments correctly."""
+        breaker = CircuitBreaker()
+
+        @breaker
+        def add(a: int, b: int = 1) -> int:
+            return a + b
+
+        assert add(10) == 11
+        assert add(10, b=5) == 15
+        assert add(a=20, b=20) == 40
+
+    def test_on_state_change_callback(self) -> None:
+        """Test that on_state_change callback is invoked."""
+        history: list[tuple[CircuitState, CircuitState]] = []
+
+        def callback(old: CircuitState, new: CircuitState) -> None:
+            history.append((old, new))
+
+        breaker = CircuitBreaker(
+            failure_threshold=1,
+            success_threshold=1,
+            timeout=0.01,
+            on_state_change=callback,
+        )
+
+        @breaker
+        def failing_func() -> None:
+            raise ValueError("fail")
+
+        # CLOSED -> OPEN
+        with pytest.raises(ValueError):
+            failing_func()
+        assert (CircuitState.CLOSED, CircuitState.OPEN) in history
+
+        # Wait for timeout
+        time.sleep(0.02)
+
+        # OPEN -> HALF_OPEN (on next call attempt)
+        # then HALF_OPEN -> OPEN (on failure)
+        with pytest.raises(ValueError):
+            failing_func()
+        assert (CircuitState.OPEN, CircuitState.HALF_OPEN) in history
+        assert (CircuitState.HALF_OPEN, CircuitState.OPEN) in history
+
+        # Test HALF_OPEN -> CLOSED
+        breaker.reset()
+        history.clear()
+        # Force to OPEN
+        with pytest.raises(ValueError):
+            failing_func()
+        time.sleep(0.02)
+
+        @breaker
+        def success_func() -> str:
+            return "ok"
+
+        # OPEN -> HALF_OPEN
+        assert success_func() == "ok"
+        assert (CircuitState.OPEN, CircuitState.HALF_OPEN) in history
+        # HALF_OPEN -> CLOSED
+        assert success_func() == "ok"
+        assert (CircuitState.HALF_OPEN, CircuitState.CLOSED) in history
+
+    def test_failure_exceptions(self) -> None:
+        """Test that only specified failure exceptions trip circuit."""
+        breaker = CircuitBreaker(
+            failure_threshold=1,
+            failure_exceptions=(TypeError,),
+        )
+
+        @breaker
+        def failing_func(exc: type[Exception]) -> None:
+            raise exc("fail")
+
+        # ValueError should not trip it
+        with pytest.raises(ValueError):
+            failing_func(ValueError)
+        assert breaker.state == CircuitState.CLOSED
+
+        # TypeError should trip it
+        with pytest.raises(TypeError):
+            failing_func(TypeError)
+        assert breaker.state == CircuitState.OPEN
+
     def test_excluded_exceptions_dont_trip(self) -> None:
         """Test that excluded exceptions don't trip circuit."""
         breaker = CircuitBreaker(
