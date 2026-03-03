@@ -16,8 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docs**: New `docs/patterns/security.md` — practical guide combining `@safe`, `@guard_ssrf`, `@guard_path_traversal`, and `@retry` in a FastAPI endpoint example.
 
 ### Changed
+- **Performance**: Optimized `guard_command_injection` by combining string type validation and dangerous pattern check into a single loop, improving execution time by ~5% (PR #80).
+- **Refactoring**: Simplified `validate_project_name` by decomposing complex logic into smaller, independent private helpers (`_validate_type`, `_check_project_name_chars`, etc.) (PR #79).
 - **QA/Mutation**: `[tool.mutmut]` `paths_to_mutate` expanded to include `security/validators.py` and `security/guards.py`; `tests_dir` updated correspondingly.
-
 ## [0.3.2] - 2026-03-02
 
 ### Added
