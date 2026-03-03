@@ -958,6 +958,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#7-ci-cross-platform-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. CI / Cross-Platform Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quality-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1245,6 +1256,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#7-ci-cross-platform-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. CI / Cross-Platform Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quality-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1406,6 +1428,35 @@
 <li><strong>Performance (#80)</strong>: Optimized <code>guard_command_injection</code> by combining string type validation and dangerous pattern check into a single loop, reducing CPU overhead by ~5%.</li>
 <li><strong>Maintainability (#79)</strong>: Refactored <code>validate_project_name</code> to dramatically reduce complexity. The single large method was decomposed into smaller, independent validation helpers, significantly improving code health and readability.</li>
 </ul>
+<hr />
+<h2 id="7-ci-cross-platform-fixes">7. CI / Cross-Platform Fixes<a class="headerlink" href="#7-ci-cross-platform-fixes" title="Permanent link">&para;</a></h2>
+<p>Several fixes were applied to ensure the CI pipeline passes on <strong>all platforms</strong> (Ubuntu, macOS, Windows, Alpine, Arch, Fedora, openSUSE) and <strong>all Python versions</strong> (3.11–3.14):</p>
+<table>
+<thead>
+<tr>
+<th>Fix</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Windows <code>sys.executable</code></strong></td>
+<td>Tests that called <code>get_command_version(sys.executable)</code> failed on Windows because the absolute path is not in the security whitelist. Changed to use command name <code>"python"</code>.</td>
+</tr>
+<tr>
+<td><strong>Mypy strict</strong></td>
+<td>Reordered <code>@overload</code> signatures in <code>result.py</code>, removed stale <code># type: ignore</code> comments in <code>circuit_breaker.py</code> and <code>retry.py</code>.</td>
+</tr>
+<tr>
+<td><strong>Ruff lint</strong></td>
+<td>Fixed <code>ARG001</code>, <code>D401</code>, <code>PLC0415</code> in <code>docs/overrides/hooks.py</code>. Removed loose benchmark scripts from project root.</td>
+</tr>
+<tr>
+<td><strong>Ruff format</strong></td>
+<td>Applied auto-format to 4 test files with inconsistent line wrapping.</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="quality-summary">Quality Summary<a class="headerlink" href="#quality-summary" title="Permanent link">&para;</a></h2>
 <table>
