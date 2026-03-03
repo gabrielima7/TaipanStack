@@ -20,6 +20,119 @@ MAX_EMAIL_DOMAIN_LENGTH = 255
 MAX_PORT_NUMBER = 65535
 MIN_PRIVILEGED_PORT = 1024
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
+PROJECT_NAME_RESERVED = frozenset(
+    {
+        "test",
+        "tests",
+        "src",
+        "lib",
+        "bin",
+        "build",
+        "dist",
+        "setup",
+        "config",
+        "settings",
+        "core",
+        "main",
+        "app",
+        "site-packages",
+    }
+)
+
+
+def _validate_type(
+    value: object, expected_type: type | tuple[type, ...], name: str
+) -> None:
+    """Validate input type.
+
+    Args:
+        value: The value to check.
+        expected_type: The expected type(s).
+        name: Name of the variable for the error message.
+
+    Raises:
+        TypeError: If value is not of the expected type.
+
+    """
+    if not isinstance(value, expected_type):
+        type_name = (
+            expected_type.__name__
+            if isinstance(expected_type, type)
+            else " | ".join(t.__name__ for t in expected_type)
+        )
+        msg = f"{name} must be {type_name}, got {type(value).__name__}"
+        raise TypeError(msg)
+
+
+def _check_project_name_length(name: str, max_length: int) -> None:
+    """Check project name length.
+
+    Args:
+        name: The project name.
+        max_length: Maximum allowed length.
+
+    Raises:
+        ValueError: If length is invalid.
+
+    """
+    if not name:
+        msg = "Project name cannot be empty"
+        raise ValueError(msg)
+
+    if len(name) > max_length:
+        msg = f"Project name exceeds maximum length of {max_length}"
+        raise ValueError(msg)
+
+
+def _check_project_name_chars(
+    name: str, allow_hyphen: bool, allow_underscore: bool
+) -> None:
+    """Check project name characters.
+
+    Args:
+        name: The project name.
+        allow_hyphen: Whether to allow hyphens.
+        allow_underscore: Whether to allow underscores.
+
+    Raises:
+        ValueError: If name contains invalid characters.
+
+    """
+    # Build allowed characters
+    allowed = r"a-zA-Z0-9"
+    if allow_hyphen:
+        allowed += r"-"
+    if allow_underscore:
+        allowed += r"_"
+
+    pattern = f"^[a-zA-Z][{allowed}]*$"
+
+    if not re.match(pattern, name):
+        if not name[0].isalpha():
+            msg = "Project name must start with a letter"
+            raise ValueError(msg)
+        hyphen_msg = ", hyphens" if allow_hyphen else ""
+        underscore_msg = ", underscores" if allow_underscore else ""
+        msg = (
+            f"Project name contains invalid characters. "
+            f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
+        )
+        raise ValueError(msg)
+
+
+def _check_project_name_reserved(name: str) -> None:
+    """Check if project name is reserved.
+
+    Args:
+        name: The project name.
+
+    Raises:
+        ValueError: If name is reserved.
+
+    """
+    if name.lower() in PROJECT_NAME_RESERVED:
+        msg = f"Project name '{name}' is reserved"
+        raise ValueError(msg)
 
 
 def validate_project_name(
@@ -50,59 +163,10 @@ def validate_project_name(
         ValueError: Project name must start with a letter
 
     """
-    if not isinstance(name, str):
-        raise TypeError(f"Project name must be str, got {type(name).__name__}")
-
-    if not name:
-        msg = "Project name cannot be empty"
-        raise ValueError(msg)
-
-    if len(name) > max_length:
-        msg = f"Project name exceeds maximum length of {max_length}"
-        raise ValueError(msg)
-
-    # Build allowed characters
-    allowed = r"a-zA-Z0-9"
-    if allow_hyphen:
-        allowed += r"-"
-    if allow_underscore:
-        allowed += r"_"
-
-    pattern = f"^[a-zA-Z][{allowed}]*$"
-
-    if not re.match(pattern, name):
-        if not name[0].isalpha():
-            msg = "Project name must start with a letter"
-            raise ValueError(msg)
-        hyphen_msg = ", hyphens" if allow_hyphen else ""
-        underscore_msg = ", underscores" if allow_underscore else ""
-        msg = (
-            f"Project name contains invalid characters. "
-            f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
-        )
-        raise ValueError(msg)
-
-    # Check for reserved names
-    reserved = {
-        "test",
-        "tests",
-        "src",
-        "lib",
-        "bin",
-        "build",
-        "dist",
-        "setup",
-        "config",
-        "settings",
-        "core",
-        "main",
-        "app",
-        "site-packages",
-    }
-
-    if name.lower() in reserved:
-        msg = f"Project name '{name}' is reserved"
-        raise ValueError(msg)
+    _validate_type(name, str, "Project name")
+    _check_project_name_length(name, max_length)
+    _check_project_name_chars(name, allow_hyphen, allow_underscore)
+    _check_project_name_reserved(name)
 
     return name
 
@@ -120,8 +184,7 @@ def validate_python_version(version: str) -> str:
         ValueError: If version format is invalid or unsupported.
 
     """
-    if not isinstance(version, str):
-        raise TypeError(f"Version must be str, got {type(version).__name__}")
+    _validate_type(version, str, "Version")
 
     pattern = r"^\d+\.\d+$"
 
@@ -165,8 +228,7 @@ def validate_email(email: str) -> str:
         ValueError: If email format is invalid.
 
     """
-    if not isinstance(email, str):
-        raise TypeError(f"Email must be str, got {type(email).__name__}")
+    _validate_type(email, str, "Email")
 
     if not email:
         msg = "Email cannot be empty"
@@ -213,8 +275,7 @@ def validate_url(
         ValueError: If URL format is invalid.
 
     """
-    if not isinstance(url, str):
-        raise TypeError(f"URL must be str, got {type(url).__name__}")
+    _validate_type(url, str, "URL")
 
     if not url:
         msg = "URL cannot be empty"
@@ -270,6 +331,8 @@ def validate_ip_address(
         ValueError: If IP address is invalid.
 
     """
+    _validate_type(ip, str, "IP address")
+
     try:
         addr = ip_address(ip)
     except ValueError as e:
@@ -309,6 +372,8 @@ def validate_port(
         ValueError: If port is invalid.
 
     """
+    _validate_type(port, (int, str), "Port")
+
     try:
         port_int = int(port)
     except ValueError as e:
@@ -339,6 +404,8 @@ def validate_semver(version: str) -> tuple[int, int, int]:
         ValueError: If version format is invalid.
 
     """
+    _validate_type(version, str, "Version")
+
     # Remove leading 'v' if present
     version = version.lstrip("vV")
 
