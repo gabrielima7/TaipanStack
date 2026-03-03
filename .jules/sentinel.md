@@ -1,0 +1,4 @@
+## 2023-10-27 - Secure Jitter Implementation
+**Vulnerability:** Standard pseudo-random generators (`random.uniform`) used for retry jitter.
+**Learning:** Even though retry jitter is intentionally non-cryptographic (for load distribution, not security), using standard `random` flags a B311 warning in security linters like Bandit. The "Sentinel" philosophy mandates a strict security baseline where standard `random` modules are prohibited to maintain a clean bill of health. We learned that to suppress these tool warnings without compromising the strict policy, we should use `secrets.SystemRandom().uniform()` as a drop-in replacement.
+**Prevention:** For any randomization task (even non-cryptographic like backoff jitter), use `secrets.SystemRandom` to avoid static analysis security warnings and adhere to strict security policies.

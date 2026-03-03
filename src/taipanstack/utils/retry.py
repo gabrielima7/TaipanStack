@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import functools
 import logging
-import random
+import secrets
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -89,10 +89,11 @@ def calculate_delay(
 
     # Add jitter if enabled
     # Note: Using random for jitter is intentionally non-cryptographic.
-    # Jitter is for load distribution, not security. Using secrets would be overkill.
+    # However, to maintain a clean security baseline and satisfy Bandit,
+    # we use secrets.SystemRandom() which provides cryptographically secure random numbers.
     if config.jitter:
         jitter_amount = delay * config.jitter_factor
-        delay += random.uniform(-jitter_amount, jitter_amount)
+        delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
 
     return max(0, delay)
 
