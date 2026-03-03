@@ -70,7 +70,7 @@ class TestSubprocessTimeoutEdgeCases:
         from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
-            ["python", "-c", "exit(5)"],
+            [vars(__import__("sys"))["executable"], "-c", "exit(5)"],
             check=False,
         )
         assert not result.success
@@ -80,7 +80,9 @@ class TestSubprocessTimeoutEdgeCases:
         """Test get_command_version with custom version_arg."""
         from taipanstack.utils.subprocess import get_command_version
 
-        result = get_command_version("python", version_arg="--version")
+        result = get_command_version(
+            vars(__import__("sys"))["executable"], version_arg="--version"
+        )
         assert result is not None
         assert "Python" in result or "python" in result.lower()
 
