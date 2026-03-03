@@ -11,6 +11,7 @@ Fixes:
 
 from __future__ import annotations
 
+import pathlib
 import re
 
 
@@ -55,22 +56,20 @@ def _patch_html(html: str) -> str:
     return html
 
 
-def on_post_page(output: str, **kwargs: object) -> str:
+def on_post_page(output: str, **kwargs: object) -> str:  # noqa: ARG001
     """Post-process every page's full HTML output."""
     return _patch_html(output)
 
 
 def on_page_context(context: dict[str, object], **kwargs: object) -> None:  # type: ignore[return]
-    """Called for 404 and special pages — patch them via the page object."""
+    """Call for 404 and special pages — patch them via the page object."""
     # on_post_page is NOT called for the 404 error page.
     # We use on_page_context as an opportunity to mark the page for patching.
     # The actual patching happens via a custom approach: we hook on_env instead.
 
 
-def on_post_build(config: dict[str, object], **kwargs: object) -> None:
+def on_post_build(config: dict[str, object], **kwargs: object) -> None:  # noqa: ARG001
     """Post-build hook: patch the 404.html which on_post_page misses."""
-    import pathlib
-
     site_dir = str(config.get("site_dir", "site"))
     error_page = pathlib.Path(site_dir) / "404.html"
     if error_page.exists():

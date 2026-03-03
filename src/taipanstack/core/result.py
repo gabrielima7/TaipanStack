@@ -50,14 +50,14 @@ U = TypeVar("U")
 
 @overload
 def safe(
-    func: Callable[P, Coroutine[Any, Any, T]],
-) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...  # pragma: no cover
+    func: Callable[P, T],
+) -> Callable[P, Result[T, Exception]]: ...  # pragma: no cover
 
 
 @overload
 def safe(
-    func: Callable[P, T],
-) -> Callable[P, Result[T, Exception]]: ...  # pragma: no cover
+    func: Callable[P, Coroutine[Any, Any, T]],
+) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...  # pragma: no cover
 
 
 def safe(
@@ -101,16 +101,16 @@ def safe(
             except Exception as e:
                 return Err(e)
 
-        return async_wrapper  # type: ignore[return-value]
+        return async_wrapper
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
-            return Ok(func(*args, **kwargs))
+            return Ok(func(*args, **kwargs))  # type: ignore[arg-type]
         except Exception as e:
             return Err(e)
 
-    return wrapper  # type: ignore[return-value]
+    return wrapper
 
 
 def safe_from(

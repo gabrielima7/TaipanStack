@@ -192,9 +192,9 @@ class TestGuardsEdgeCases:
         """Test guard_command_injection with custom whitelist."""
         from taipanstack.security.guards import guard_command_injection
 
-        cmd = [vars(__import__("sys"))["executable"], "--version"]
+        cmd = ["python", "--version"]
         result = guard_command_injection(
-            cmd, allowed_commands=[vars(__import__("sys"))["executable"], "pip"]
+            cmd, allowed_commands=["python", "pip"]
         )
         assert result == cmd
 
