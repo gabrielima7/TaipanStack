@@ -105,9 +105,7 @@ class TestGuardCommandInjection:
     def test_allowed_commands_whitelist(self) -> None:
         """Test command whitelist functionality."""
         cmd = ["python", "-c", "print('hello')"]
-        result = guard_command_injection(
-            cmd, allowed_commands=["python"]
-        )
+        result = guard_command_injection(cmd, allowed_commands=["python"])
         assert result == cmd
 
     def test_command_not_in_whitelist_blocked(self) -> None:
