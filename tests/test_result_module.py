@@ -207,6 +207,7 @@ class TestMatchCase:
 class TestSafeAsyncDecorator:
     """Tests for the @safe decorator with async functions."""
 
+    @pytest.mark.asyncio
     async def test_safe_async_success(self) -> None:
         """Test safe decorator returns Ok on async success."""
 
@@ -218,6 +219,7 @@ class TestSafeAsyncDecorator:
         assert result.is_ok()
         assert result.ok() == 5
 
+    @pytest.mark.asyncio
     async def test_safe_async_exception(self) -> None:
         """Test safe decorator returns Err on async exception."""
 
@@ -229,6 +231,7 @@ class TestSafeAsyncDecorator:
         assert result.is_err()
         assert isinstance(result.err(), ZeroDivisionError)
 
+    @pytest.mark.asyncio
     async def test_safe_async_preserves_metadata(self) -> None:
         """Test safe decorator preserves async function name and docstring."""
 
@@ -240,6 +243,7 @@ class TestSafeAsyncDecorator:
         assert my_async_function.__name__ == "my_async_function"
         assert my_async_function.__doc__ == "Async docstring."
 
+    @pytest.mark.asyncio
     async def test_safe_async_runtime_error(self) -> None:
         """Test safe decorator catches RuntimeError in async function."""
 

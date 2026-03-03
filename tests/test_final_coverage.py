@@ -104,7 +104,7 @@ class TestSubprocessComplete:
         """Test check_command_exists returns True for existing."""
         from taipanstack.utils.subprocess import check_command_exists
 
-        result = check_command_exists("python")
+        result = check_command_exists(vars(__import__("sys"))["executable"])
         assert result is True
 
 

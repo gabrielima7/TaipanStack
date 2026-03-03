@@ -233,7 +233,10 @@ class TestCheckCommandExists:
 
     def test_python_exists(self) -> None:
         """Test that python command is found."""
-        assert check_command_exists("python") is True
+        import sys
+
+        # We check sys.executable to ensure we use the current interpreter
+        assert check_command_exists(sys.executable) is True
 
     def test_nonexistent_command(self) -> None:
         """Test that nonexistent command returns False."""
@@ -251,7 +254,9 @@ class TestGetCommandVersion:
 
     def test_python_version(self) -> None:
         """Test getting Python version."""
-        version = get_command_version("python")
+        import sys
+
+        version = get_command_version(sys.executable)
         assert version is not None
         assert "Python" in version or "python" in version.lower()
 

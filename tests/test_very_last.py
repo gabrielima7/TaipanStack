@@ -221,7 +221,10 @@ class TestSubprocessCheckCommand:
         from taipanstack.utils.subprocess import run_safe_command
 
         with pytest.raises(subprocess.CalledProcessError):
-            run_safe_command(["python", "-c", "raise SystemExit(1)"], check=True)
+            run_safe_command(
+                [vars(__import__("sys"))["executable"], "-c", "raise SystemExit(1)"],
+                check=True,
+            )
 
 
 # =============================================================================
