@@ -229,7 +229,7 @@ def guard_command_injection(
 
     cmd_list = list(command)
 
-    # Validate all items are strings
+    # Validate all items are strings and check for dangerous patterns
     for i, arg in enumerate(cmd_list):
         if not isinstance(arg, str):
             raise TypeError(
@@ -237,7 +237,6 @@ def guard_command_injection(
                 f"got {type(arg).__name__} at index {i}"
             )
 
-    for arg in cmd_list:
         for pattern, description in _DANGEROUS_COMMAND_PATTERNS:
             if pattern in arg:
                 raise SecurityError(
