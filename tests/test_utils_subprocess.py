@@ -253,10 +253,13 @@ class TestGetCommandVersion:
     """Tests for get_command_version function."""
 
     def test_python_version(self) -> None:
-        """Test getting Python version."""
-        import sys
+        """Test getting Python version.
 
-        version = get_command_version(sys.executable)
+        Uses the command name "python" (present in DEFAULT_ALLOWED_COMMANDS)
+        so that the security guard passes on all platforms. sys.executable
+        returns an absolute path on Windows which is not in the whitelist.
+        """
+        version = get_command_version("python")
         assert version is not None
         assert "Python" in version or "python" in version.lower()
 
