@@ -100,7 +100,10 @@ nav:
       - Config: api/config.md
       - Security: api/security.md
       - Utilities: api/utils.md
+  - Patterns:
+      - Security Patterns: patterns/security.md
   - Release Notes:
+      - v0.3.3: releases/v0.3.3.md
       - v0.3.2: releases/v0.3.2.md
       - v0.3.1: releases/v0.3.1.md
       - v0.3.0: releases/v0.3.0.md

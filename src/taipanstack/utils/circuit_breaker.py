@@ -22,6 +22,15 @@ R = TypeVar("R")
 
 logger = logging.getLogger("taipanstack.utils.circuit_breaker")
 
+try:
+    import structlog as _structlog
+
+    _structlog_logger = _structlog.get_logger("taipanstack.utils.circuit_breaker")
+    _HAS_STRUCTLOG = True
+except ImportError:  # pragma: no cover — structlog is optional
+    _structlog_logger = None  # type: ignore[assignment]
+    _HAS_STRUCTLOG = False
+
 
 class CircuitState(Enum):
     """States of the circuit breaker."""
@@ -142,9 +151,21 @@ class CircuitBreaker:
         old_state: CircuitState,
         new_state: CircuitState,
     ) -> None:
-        """Notify callback of state transition if registered."""
+        """Notify callback of state transition if registered.
+
+        Emit a structured log via structlog when no callback is provided
+        and structlog is available.
+        """
         if self._on_state_change is not None:
             self._on_state_change(old_state, new_state)
+        elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
+            _structlog_logger.warning(
+                "circuit_state_changed",
+                circuit=self.name,
+                old_state=old_state.value,
+                new_state=new_state.value,
+                failure_count=self._state.failure_count,
+            )
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""

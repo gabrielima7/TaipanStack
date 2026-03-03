@@ -14,6 +14,7 @@ from taipanstack.security.guards import (
     guard_env_variable,
     guard_file_extension,
     guard_path_traversal,
+    guard_ssrf,
 )
 from taipanstack.security.sanitizers import (
     sanitize_filename,
@@ -38,6 +39,7 @@ __all__ = [
     "guard_exceptions",
     "guard_file_extension",
     "guard_path_traversal",
+    "guard_ssrf",
     "require_type",
     # Sanitizers
     "sanitize_filename",

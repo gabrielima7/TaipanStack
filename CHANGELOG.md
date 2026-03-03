@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-03-03
+
+### Added
+- **Core/Result**: `@safe` decorator now supports `async def` functions — wraps coroutines so that `await safe_fn()` returns `Result[T, Exception]` instead of raising. Uses `inspect.iscoroutinefunction` internally and two `@overload` signatures to preserve precise type narrowing in mypy/pyright strict mode.
+- **Security**: `guard_ssrf(url)` function in `security.guards` — parses the URL, resolves the hostname via DNS, and blocks requests to private/loopback/link-local/reserved IP ranges (RFC-1918, `127.0.0.0/8`, `169.254.0.0/16` AWS metadata, IPv6 ULA/loopback). Returns `Err(SecurityError)` on SSRF detection; raises `TypeError` on non-string input.
+- **Resilience**: `@retry` now emits a structured `structlog.warning("retry_attempted", ...)` automatically on each retry attempt when no `on_retry` callback is provided and `structlog` is installed. Degrades gracefully to nothing when structlog is absent.
+- **Resilience**: `CircuitBreaker._notify_state_change` now emits a structured `structlog.warning("circuit_state_changed", ...)` automatically on every state transition when no `on_state_change` callback is set and `structlog` is installed.
+- **QA**: `pytest-asyncio` added to dev dependencies (`asyncio_mode = "auto"` configured in `pyproject.toml`).
+- **Docs**: New `docs/patterns/security.md` — practical guide combining `@safe`, `@guard_ssrf`, `@guard_path_traversal`, and `@retry` in a FastAPI endpoint example.
+
+### Changed
+- **QA/Mutation**: `[tool.mutmut]` `paths_to_mutate` expanded to include `security/validators.py` and `security/guards.py`; `tests_dir` updated correspondingly.
+
 ## [0.3.2] - 2026-03-02
 
 ### Added
@@ -162,5 +175,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.2...v0.3.3
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0

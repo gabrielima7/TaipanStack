@@ -22,6 +22,15 @@ R = TypeVar("R")
 
 logger = logging.getLogger("taipanstack.utils.retry")
 
+try:
+    import structlog as _structlog
+
+    _structlog_logger = _structlog.get_logger("taipanstack.utils.retry")
+    _HAS_STRUCTLOG = True
+except ImportError:  # pragma: no cover — structlog is optional
+    _structlog_logger = None  # type: ignore[assignment]
+    _HAS_STRUCTLOG = False
+
 
 @dataclass(frozen=True)
 class RetryConfig:
@@ -186,9 +195,20 @@ def retry(
                             delay,
                         )
 
-                    # Invoke callback if provided
+                    # Invoke callback or emit structured log if no callback set
                     if on_retry is not None:
                         on_retry(attempt, max_attempts, e, delay)
+                    elif (
+                        _HAS_STRUCTLOG and _structlog_logger is not None
+                    ):  # pragma: no branch
+                        _structlog_logger.warning(
+                            "retry_attempted",
+                            function=func.__name__,
+                            attempt=attempt,
+                            max_attempts=max_attempts,
+                            error=str(e),
+                            delay_seconds=round(delay, 3),
+                        )
 
                     time.sleep(delay)
 
