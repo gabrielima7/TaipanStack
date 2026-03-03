@@ -12,6 +12,6 @@ jobs:
         steps:
             - uses: actions/first-interaction@v3
               with:
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  issue-message: "Welcome to the TaipanStack project! 🎉 Thank you for taking the time to open your first issue. We will review it as soon as possible."
-                  pr-message: "Welcome to the TaipanStack project! 🎉 Thank you for your first pull request! We truly appreciate your contribution to the codebase."
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  issue_message: "Welcome to the TaipanStack project! 🎉 Thank you for taking the time to open your first issue. We will review it as soon as possible."
+                  pr_message: "Welcome to the TaipanStack project! 🎉 Thank you for your first pull request! We truly appreciate your contribution to the codebase."

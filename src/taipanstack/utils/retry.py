@@ -90,7 +90,8 @@ def calculate_delay(
     # Add jitter if enabled
     # Note: Using random for jitter is intentionally non-cryptographic.
     # However, to maintain a clean security baseline and satisfy Bandit,
-    # we use secrets.SystemRandom() which provides cryptographically secure random numbers.
+    # we use secrets.SystemRandom() which provides cryptographically
+    # secure random numbers.
     if config.jitter:
         jitter_amount = delay * config.jitter_factor
         delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
