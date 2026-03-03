@@ -28,6 +28,7 @@ def _patch_html(html: str) -> str:
         r'\1 aria-label="Open search" title="Open search"\2',
         html,
     )
+
     # Patch 3: <a href="..."><img alt="TEXT" ...></a> badge links
     # The VS Code linter requires the <a> itself to have discernible text
     # or a title attribute — img alt alone is not recognized by some linters.
@@ -37,17 +38,17 @@ def _patch_html(html: str) -> str:
         img_tag = match.group(2)
         rest = match.group(3)
         # Only patch if <a> has no title yet
-        if 'title=' in a_open:
+        if "title=" in a_open:
             return match.group(0)
         # Extract alt from <img>
         alt_match = re.search(r'alt="([^"]*)"', img_tag)
         if alt_match and alt_match.group(1):
             alt_text = alt_match.group(1)
-            a_open = a_open.rstrip('>') + f' title="{alt_text}">'
+            a_open = a_open.rstrip(">") + f' title="{alt_text}">'
         return a_open + img_tag + rest
 
     html = re.sub(
-        r'(<a\s[^>]*href=[^>]+>)(<img\s[^>]+>)(</a>)',
+        r"(<a\s[^>]*href=[^>]+>)(<img\s[^>]+>)(</a>)",
         _add_title_from_img_alt,
         html,
     )
@@ -64,7 +65,6 @@ def on_page_context(context: dict[str, object], **kwargs: object) -> None:  # ty
     # on_post_page is NOT called for the 404 error page.
     # We use on_page_context as an opportunity to mark the page for patching.
     # The actual patching happens via a custom approach: we hook on_env instead.
-    pass
 
 
 def on_post_build(config: dict[str, object], **kwargs: object) -> None:
@@ -78,4 +78,3 @@ def on_post_build(config: dict[str, object], **kwargs: object) -> None:
         patched = _patch_html(original)
         if patched != original:
             error_page.write_text(patched, encoding="utf-8")
-

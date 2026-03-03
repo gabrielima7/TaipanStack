@@ -25,8 +25,9 @@ Example:
 from __future__ import annotations
 
 import functools
-from collections.abc import Callable, Iterable
-from typing import ParamSpec, TypeVar, overload
+import inspect
+from collections.abc import Callable, Coroutine, Iterable
+from typing import Any, ParamSpec, TypeVar, overload
 
 from result import Err, Ok, Result
 
@@ -47,19 +48,36 @@ E = TypeVar("E", bound=Exception)
 U = TypeVar("U")
 
 
+@overload
+def safe(
+    func: Callable[P, Coroutine[Any, Any, T]],
+) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...  # pragma: no cover
+
+
+@overload
 def safe(
     func: Callable[P, T],
-) -> Callable[P, Result[T, Exception]]:
-    """Decorator to convert exceptions into Err results.
+) -> Callable[P, Result[T, Exception]]: ...  # pragma: no cover
 
-    Wraps a function so that any exception raised becomes an Err,
-    while successful returns become Ok.
+
+def safe(
+    func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+) -> (
+    Callable[P, Result[T, Exception]]
+    | Callable[P, Coroutine[Any, Any, Result[T, Exception]]]
+):
+    """Wrap a sync or async function to convert exceptions into Err results.
+
+    Detect whether *func* is a coroutine function and choose the
+    appropriate wrapper so that ``await``-able functions remain
+    ``await``-able and synchronous functions stay synchronous.
 
     Args:
-        func: The function to wrap.
+        func: The sync or async function to wrap.
 
     Returns:
-        A wrapped function that returns Result[T, Exception].
+        A wrapped function that returns ``Result[T, Exception]``
+        (or a coroutine resolving to one).
 
     Example:
         >>> @safe
@@ -71,6 +89,19 @@ def safe(
         Err(ValueError("invalid literal for int()..."))
 
     """
+    if inspect.iscoroutinefunction(func):
+
+        @functools.wraps(func)
+        async def async_wrapper(
+            *args: P.args,
+            **kwargs: P.kwargs,
+        ) -> Result[T, Exception]:
+            try:
+                return Ok(await func(*args, **kwargs))
+            except Exception as e:
+                return Err(e)
+
+        return async_wrapper  # type: ignore[return-value]
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
@@ -79,7 +110,7 @@ def safe(
         except Exception as e:
             return Err(e)
 
-    return wrapper
+    return wrapper  # type: ignore[return-value]
 
 
 def safe_from(

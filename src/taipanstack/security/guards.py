@@ -8,10 +8,15 @@ All guards raise SecurityError on violation.
 
 from __future__ import annotations
 
+import ipaddress
 import os
 import re
+import socket
 from collections.abc import Sequence
 from pathlib import Path
+from urllib.parse import urlparse
+
+from result import Err, Ok, Result
 
 _TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
     [
@@ -384,3 +389,138 @@ def guard_env_variable(
         )
 
     return value
+
+
+# ── SSRF Private-Range Constants ─────────────────────────────────────────────
+_PRIVATE_NETWORKS: tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...] = (
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("169.254.0.0/16"),  # Link-local / AWS metadata
+    ipaddress.ip_network("127.0.0.0/8"),  # Loopback
+    ipaddress.ip_network("::1/128"),  # IPv6 loopback
+    ipaddress.ip_network("fc00::/7"),  # IPv6 unique local
+    ipaddress.ip_network("fe80::/10"),  # IPv6 link-local
+)
+
+_ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
+
+
+def guard_ssrf(  # noqa: PLR0911
+    url: str,
+    *,
+    allowed_schemes: frozenset[str] = _ALLOWED_SSRF_SCHEMES,
+) -> Result[str, SecurityError]:
+    """Validate a URL against Server-Side Request Forgery (SSRF) attacks.
+
+    Parse the URL, resolve its hostname via DNS, and reject it when the
+    resulting IP address falls inside a private, loopback, link-local, or
+    otherwise reserved network range.
+
+    Args:
+        url: The URL string to validate.
+        allowed_schemes: Set of URL schemes considered safe.
+            Defaults to ``{"http", "https"}``.
+
+    Returns:
+        ``Ok(url)`` when the URL is safe to fetch.
+        ``Err(SecurityError)`` when an SSRF risk is detected.
+
+    Raises:
+        TypeError: If *url* is not a :class:`str`.
+
+    Example:
+        >>> guard_ssrf("https://example.com")
+        Ok('https://example.com')
+        >>> guard_ssrf("http://169.254.169.254/metadata")
+        Err(SecurityError('[ssrf] ...))
+
+    """
+    if not isinstance(url, str):
+        raise TypeError(f"URL must be str, got {type(url).__name__}")
+
+    if not url:
+        return Err(
+            SecurityError(
+                "URL cannot be empty",
+                guard_name="ssrf",
+            )
+        )
+
+    try:
+        parsed = urlparse(url)
+    except ValueError as exc:  # pragma: no cover — urlparse rarely raises
+        return Err(
+            SecurityError(
+                f"Malformed URL: {exc}",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+
+    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
+        return Err(
+            SecurityError(
+                f"URL scheme '{parsed.scheme}' is not allowed",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+
+    hostname = parsed.hostname
+    if not hostname:
+        return Err(
+            SecurityError(
+                "URL has no resolvable hostname",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+
+    # Resolve hostname → list of IP addresses via DNS
+    try:
+        addr_infos = socket.getaddrinfo(hostname, None)
+    except socket.gaierror as exc:
+        return Err(
+            SecurityError(
+                f"Hostname could not be resolved: {exc}",
+                guard_name="ssrf",
+                value=hostname[:80],
+            )
+        )
+
+    for addr_info in addr_infos:
+        raw_ip = addr_info[4][0]
+        try:
+            addr = ipaddress.ip_address(raw_ip)
+        except ValueError:
+            continue
+
+        for network in _PRIVATE_NETWORKS:
+            if addr in network:
+                return Err(
+                    SecurityError(
+                        f"SSRF detected: hostname '{hostname}' resolves to "
+                        f"private/reserved address {addr}",
+                        guard_name="ssrf",
+                        value=str(addr),
+                    )
+                )
+
+        # Catch-all for remaining special addresses not in the explicit list
+        if (
+            addr.is_private
+            or addr.is_loopback
+            or addr.is_link_local
+            or addr.is_reserved
+        ):
+            return Err(
+                SecurityError(
+                    f"SSRF detected: '{hostname}' resolves to a reserved "
+                    f"address {addr}",
+                    guard_name="ssrf",
+                    value=str(addr),
+                )
+            )
+
+    return Ok(url)

@@ -202,3 +202,52 @@ class TestMatchCase:
                 pytest.fail("Should not match Ok")
             case Err(error):
                 assert error == "error"
+
+
+class TestSafeAsyncDecorator:
+    """Tests for the @safe decorator with async functions."""
+
+    async def test_safe_async_success(self) -> None:
+        """Test safe decorator returns Ok on async success."""
+
+        @safe
+        async def async_add(a: int, b: int) -> int:
+            return a + b
+
+        result = await async_add(2, 3)
+        assert result.is_ok()
+        assert result.ok() == 5
+
+    async def test_safe_async_exception(self) -> None:
+        """Test safe decorator returns Err on async exception."""
+
+        @safe
+        async def async_divide(a: int, b: int) -> float:
+            return a / b
+
+        result = await async_divide(10, 0)
+        assert result.is_err()
+        assert isinstance(result.err(), ZeroDivisionError)
+
+    async def test_safe_async_preserves_metadata(self) -> None:
+        """Test safe decorator preserves async function name and docstring."""
+
+        @safe
+        async def my_async_function() -> int:
+            """Async docstring."""
+            return 42
+
+        assert my_async_function.__name__ == "my_async_function"
+        assert my_async_function.__doc__ == "Async docstring."
+
+    async def test_safe_async_runtime_error(self) -> None:
+        """Test safe decorator catches RuntimeError in async function."""
+
+        @safe
+        async def async_fail() -> str:
+            msg = "something went wrong"
+            raise RuntimeError(msg)
+
+        result = await async_fail()
+        assert result.is_err()
+        assert isinstance(result.err(), RuntimeError)
