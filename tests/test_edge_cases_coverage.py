@@ -193,9 +193,7 @@ class TestGuardsEdgeCases:
         from taipanstack.security.guards import guard_command_injection
 
         cmd = ["python", "--version"]
-        result = guard_command_injection(
-            cmd, allowed_commands=["python", "pip"]
-        )
+        result = guard_command_injection(cmd, allowed_commands=["python", "pip"])
         assert result == cmd
 
 
