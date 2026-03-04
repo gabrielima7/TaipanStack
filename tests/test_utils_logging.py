@@ -1,6 +1,5 @@
 """Tests for structured logging utilities."""
 
-
 import logging
 
 import pytest
@@ -166,8 +165,12 @@ class TestSetupLogging:
 
 class TestLogOperation:
     """Tests for log_operation context manager."""
-    def test_expected_exceptions_handling(self, caplog: pytest.LogCaptureFixture) -> None:
+
+    def test_expected_exceptions_handling(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that only expected_exceptions are caught and logged as failures."""
+
         class ExpectedError(Exception):
             pass
 
@@ -191,7 +194,6 @@ class TestLogOperation:
                     raise UnexpectedError("This is unexpected")
 
         assert "Failed: unexpected_op" not in caplog.text
-
 
     def test_logs_start_and_end(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that operation start and end are logged."""

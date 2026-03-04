@@ -5,7 +5,6 @@ This module generates configuration files (pyproject.toml, pre-commit, etc.)
 with proper validation and templating.
 """
 
-
 from pathlib import Path
 
 from taipanstack.config.models import StackConfig

@@ -11,6 +11,7 @@ from typing import Annotated
 
 from pydantic.functional_validators import AfterValidator
 
+from taipanstack.core.result import Err, Ok
 from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
@@ -36,12 +37,10 @@ def _validate_safe_url(url: str) -> str:
         ValueError: If the URL fails SSRF validation.
 
     """
-    result = guard_ssrf(url)
-    match result:
-        case _ if result.is_ok():
-            return result.unwrap()
-        case _:
-            err = result.unwrap_err()
+    match guard_ssrf(url):
+        case Ok(val):
+            return val
+        case Err(err):
             raise ValueError(str(err)) from err
 
 

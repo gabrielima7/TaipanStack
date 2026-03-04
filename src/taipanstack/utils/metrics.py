@@ -6,7 +6,6 @@ application performance and health. Compatible with any
 Python framework.
 """
 
-
 import functools
 import logging
 import threading

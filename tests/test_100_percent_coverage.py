@@ -1,6 +1,5 @@
 """Tests with real structlog for 100% coverage."""
 
-
 from pathlib import Path
 
 import pytest

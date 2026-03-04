@@ -4,7 +4,6 @@ Covers edge cases, error branches, and version-specific code paths
 that are not exercised by the main test suite.
 """
 
-
 import gc
 import logging
 import subprocess

@@ -1,6 +1,5 @@
 """Final tests to reach 100% coverage."""
 
-
 from pathlib import Path
 
 import pytest

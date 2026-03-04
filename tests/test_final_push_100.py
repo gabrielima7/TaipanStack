@@ -1,6 +1,5 @@
 """Final tests to reach 100% coverage - pushing to the limit."""
 
-
 import subprocess as sp
 from pathlib import Path
 from unittest.mock import patch

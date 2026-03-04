@@ -6,7 +6,6 @@ with configurable backoff strategies. Compatible with any
 Python framework (sync and async).
 """
 
-
 import asyncio
 import functools
 import inspect
@@ -133,8 +132,7 @@ def _log_retry_attempt(
     """
     if log_retries:
         logger.info(
-            "Attempt %d/%d failed for %s: %s. "
-            "Retrying in %.2f seconds...",
+            "Attempt %d/%d failed for %s: %s. Retrying in %.2f seconds...",
             attempt,
             max_attempts,
             func_name,
@@ -145,9 +143,7 @@ def _log_retry_attempt(
     # Invoke callback or emit structured log if no callback set
     if on_retry is not None:
         on_retry(attempt, max_attempts, exc, delay)
-    elif (
-        _HAS_STRUCTLOG and _structlog_logger is not None
-    ):  # pragma: no branch
+    elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
         _structlog_logger.warning(
             "retry_attempted",
             function=func_name,
@@ -238,9 +234,7 @@ def retry(
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
-            async def async_wrapper(
-                *args: Any, **kwargs: Any
-            ) -> Any:
+            async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
                 last_exception: Exception | None = None
 
                 for attempt in range(1, max_attempts + 1):  # pragma: no branch

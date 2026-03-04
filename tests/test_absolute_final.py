@@ -1,6 +1,5 @@
 """Absolute final tests to hit every remaining line."""
 
-
 from pathlib import Path
 from unittest.mock import patch
 

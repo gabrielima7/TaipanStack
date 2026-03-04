@@ -1,6 +1,5 @@
 """Tests for metrics module."""
 
-
 import time
 
 from taipanstack.utils.metrics import (

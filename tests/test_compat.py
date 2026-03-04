@@ -1,6 +1,5 @@
 """Comprehensive tests for core.compat module (Python version compatibility)."""
 
-
 import os
 import sys
 from unittest.mock import patch

@@ -5,7 +5,6 @@ Provides validation functions for common input types like email,
 project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
-
 import re
 from ipaddress import IPv4Address, IPv6Address, ip_address
 from typing import Literal

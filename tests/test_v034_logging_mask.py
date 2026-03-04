@@ -1,6 +1,5 @@
 """Tests for the mask_sensitive_data_processor structlog processor."""
 
-
 from taipanstack.utils.logging import (
     REDACTED_VALUE,
     SENSITIVE_KEY_PATTERNS,
@@ -117,9 +116,7 @@ class TestMaskSensitiveDataProcessor:
         event_dict = {"event": "check", "secret": "val"}
         result1 = mask_sensitive_data_processor(None, "info", event_dict)
         event_dict2 = {"event": "check2", "secret": "val2"}
-        result2 = mask_sensitive_data_processor(
-            object(), "warning", event_dict2
-        )
+        result2 = mask_sensitive_data_processor(object(), "warning", event_dict2)
         assert result1["secret"] == REDACTED_VALUE
         assert result2["secret"] == REDACTED_VALUE
 
@@ -135,9 +132,7 @@ class TestSensitiveKeyPatternsConstant:
     def test_patterns_are_lowercase(self) -> None:
         """All SENSITIVE_KEY_PATTERNS entries are lower-case for case-folding."""
         for pattern in SENSITIVE_KEY_PATTERNS:
-            assert pattern == pattern.lower(), (
-                f"Pattern '{pattern}' is not lowercase"
-            )
+            assert pattern == pattern.lower(), f"Pattern '{pattern}' is not lowercase"
 
 
 # ---------------------------------------------------------------------------

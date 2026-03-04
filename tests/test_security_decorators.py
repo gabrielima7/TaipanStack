@@ -1,6 +1,5 @@
 """Tests for security decorators."""
 
-
 import time
 import warnings
 

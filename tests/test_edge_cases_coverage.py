@@ -1,6 +1,5 @@
 """Additional tests for filesystem, logging, and other modules for 100% coverage."""
 
-
 from pathlib import Path
 from unittest.mock import patch
 

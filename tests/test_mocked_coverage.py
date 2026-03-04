@@ -1,6 +1,5 @@
 """Tests with mocks to achieve 100% coverage."""
 
-
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse

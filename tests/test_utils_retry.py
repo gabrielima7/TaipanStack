@@ -1,6 +1,5 @@
 """Tests for retry utilities."""
 
-
 import pytest
 
 from taipanstack.utils.retry import (

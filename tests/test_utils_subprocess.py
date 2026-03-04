@@ -1,6 +1,5 @@
 """Tests for safe subprocess execution utilities."""
 
-
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch

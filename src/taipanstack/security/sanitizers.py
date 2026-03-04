@@ -5,7 +5,6 @@ Provides functions to sanitize strings, filenames, and paths
 to remove potentially dangerous characters.
 """
 
-
 import re
 import unicodedata
 from pathlib import Path
