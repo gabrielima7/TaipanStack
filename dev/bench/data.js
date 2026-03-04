@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772638663153,
+  "lastUpdate": 1772640197415,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -3096,6 +3096,135 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 6.983609461198775e-8",
             "extra": "mean: 407.00473607803747 nsec\nrounds: 76424"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "distinct": true,
+          "id": "3bd9376ac884e14dbeb758f1a31f848e05c7a58e",
+          "message": "release: bump version to v0.3.4\n\n- Bump version to 0.3.4 in pyproject.toml and __init__.py\n- Add CHANGELOG.md entry for v0.3.4 with full list of changes\n- Add docs/releases/v0.3.4.md release notes document\n- Update mkdocs.yml navigation to include v0.3.4 release notes\n\nChanges since v0.3.3:\n- Security: fix plaintext password storage in UserService (#93)\n- Security: new password module with hash_password, verify_password, generate_secure_token\n- Test: CVE-2020-10735 coverage in get_optimization_level (#129)\n- Test: validate_url lazy port evaluation fix and tests (#115, #126)\n- Test: validate_ip_address exception chaining (#128)\n- Test: validate_port string and large-int edge cases (#114)\n- Test: @safe/@safe_from base Exception coverage (#127, #117, #119)\n- Test: log_operation expected_exceptions coverage (#116)\n- Test: path traversal SecurityError without base_dir (#120)\n- Test: SSRF DNS resolution platform-independent mocking (#122)\n- Perf: optimize string concatenation in generate_pre_commit_config (#130)\n- Refactor: remove unused compat imports from core public API (#99)\n- Refactor: remove unused imports from root __init__.py (#100)\n- Refactor: define __all__ in utils/__init__.py (#98)\n- Refactor: remove redundant __future__ import annotations (#112)\n- Refactor: preserve config package public API (#102)\n- CI: openSUSE Leap repo fix (#116)\n- Deps: bump GitHub Actions group (#95)",
+          "timestamp": "2026-03-04T13:01:00-03:00",
+          "tree_id": "47caa82e80eebb11b7df3f2a00c5e96a11c33f4e",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/3bd9376ac884e14dbeb758f1a31f848e05c7a58e"
+        },
+        "date": 1772640197154,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 200005.66056437284,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000019238059508167785",
+            "extra": "mean: 4.999858489895814 usec\nrounds: 212"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 156720.1921201915,
+            "unit": "iter/sec",
+            "range": "stddev: 9.155701493011605e-7",
+            "extra": "mean: 6.380798711841052 usec\nrounds: 65364"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 53499.98057305416,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00000194374351143312",
+            "extra": "mean: 18.69159557234794 usec\nrounds: 31348"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 161539.50703402754,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000010662614772202972",
+            "extra": "mean: 6.190436125259159 usec\nrounds: 11820"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 109170.66093091642,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000012396196142767803",
+            "extra": "mean: 9.1599701922919 usec\nrounds: 44049"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 19214.608675271098,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000003771788816572465",
+            "extra": "mean: 52.04373489463693 usec\nrounds: 8838"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 33382.638494422674,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000014518781510976019",
+            "extra": "mean: 29.95569089504632 usec\nrounds: 16881"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4427446.316498875,
+            "unit": "iter/sec",
+            "range": "stddev: 3.276466561868681e-8",
+            "extra": "mean: 225.86383402855313 nsec\nrounds: 152161"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 591946.7195866142,
+            "unit": "iter/sec",
+            "range": "stddev: 2.4186954600506666e-7",
+            "extra": "mean: 1.689341231079803 usec\nrounds: 193051"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 1080779.365862173,
+            "unit": "iter/sec",
+            "range": "stddev: 4.464522340485032e-7",
+            "extra": "mean: 925.2582271519102 nsec\nrounds: 10119"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 615979.4015710774,
+            "unit": "iter/sec",
+            "range": "stddev: 4.076754352175533e-7",
+            "extra": "mean: 1.6234309092957724 usec\nrounds: 138832"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2970946.1429512305,
+            "unit": "iter/sec",
+            "range": "stddev: 3.854387948994337e-8",
+            "extra": "mean: 336.5931093609902 nsec\nrounds: 109939"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1137039.2795752934,
+            "unit": "iter/sec",
+            "range": "stddev: 2.93672278581414e-7",
+            "extra": "mean: 879.4770927997489 nsec\nrounds: 162023"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 29548.398295234365,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000038318481188203156",
+            "extra": "mean: 33.84278193384453 usec\nrounds: 19329"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 2512067.2554874886,
+            "unit": "iter/sec",
+            "range": "stddev: 5.4288404419873464e-8",
+            "extra": "mean: 398.078513947251 nsec\nrounds: 102271"
           }
         ]
       }
