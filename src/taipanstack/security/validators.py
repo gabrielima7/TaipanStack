@@ -283,6 +283,9 @@ def validate_url(
 
     try:
         parsed = urlparse(url)
+        # urlparse does not evaluate properties strictly until accessed
+        # access port to trigger ValueError if port is out of range
+        _ = parsed.port
     except ValueError as e:
         msg = f"Invalid URL format: {e}"
         raise ValueError(msg) from e
