@@ -1,6 +1,5 @@
 """Tests for the password hashing utilities."""
 
-import pytest
 from pydantic import SecretStr
 
 from taipanstack.security.password import hash_password, verify_password
@@ -8,7 +7,7 @@ from taipanstack.security.password import hash_password, verify_password
 
 def test_hash_password() -> None:
     """Test that hashing a password produces a valid-looking hash."""
-    password = "secure_password"
+    password = "secure_password"  # noqa: S105
     pwd_hash = hash_password(password)
 
     assert pwd_hash.startswith("pbkdf2_sha256$600000$")
@@ -26,7 +25,7 @@ def test_hash_password_secret_str() -> None:
 
 def test_verify_password_success() -> None:
     """Test that a correct password verifies successfully."""
-    password = "my_password"
+    password = "my_password"  # noqa: S105
     pwd_hash = hash_password(password)
 
     assert verify_password(password, pwd_hash) is True
@@ -35,7 +34,7 @@ def test_verify_password_success() -> None:
 
 def test_verify_password_failure() -> None:
     """Test that an incorrect password fails verification."""
-    password = "my_password"
+    password = "my_password"  # noqa: S105
     pwd_hash = hash_password(password)
 
     assert verify_password("wrong_password", pwd_hash) is False
@@ -43,7 +42,7 @@ def test_verify_password_failure() -> None:
 
 def test_verify_password_invalid_hash() -> None:
     """Test that invalid hash formats are handled gracefully."""
-    password = "my_password"
+    password = "my_password"  # noqa: S105
 
     assert verify_password(password, "invalid_hash") is False
     assert verify_password(password, "alg$100$salt$hash") is False  # Wrong algorithm
@@ -54,7 +53,7 @@ def test_verify_password_invalid_hash() -> None:
 
 def test_hash_password_is_random() -> None:
     """Test that hashing the same password twice produces different hashes due to salt."""
-    password = "my_password"
+    password = "my_password"  # noqa: S105
     hash1 = hash_password(password)
     hash2 = hash_password(password)
 

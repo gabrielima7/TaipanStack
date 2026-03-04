@@ -22,6 +22,12 @@ from taipanstack.security.sanitizers import (
     sanitize_path,
     sanitize_string,
 )
+from taipanstack.security.types import (
+    SafeCommand,
+    SafePath,
+    SafeProjectName,
+    SafeUrl,
+)
 from taipanstack.security.validators import (
     validate_email,
     validate_project_name,
@@ -32,6 +38,10 @@ from taipanstack.security.validators import (
 __all__ = [
     # Decorators
     # Guards
+    "SafeCommand",
+    "SafePath",
+    "SafeProjectName",
+    "SafeUrl",
     "SecurityError",
     "ValidationError",
     "deprecated",
@@ -43,7 +53,6 @@ __all__ = [
     "guard_ssrf",
     "hash_password",
     "require_type",
-    "verify_password",
     # Sanitizers
     "sanitize_filename",
     "sanitize_path",
@@ -55,4 +64,5 @@ __all__ = [
     "validate_project_name",
     "validate_python_version",
     "validate_url",
+    "verify_password",
 ]
