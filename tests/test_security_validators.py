@@ -144,6 +144,27 @@ class TestValidateIpAddress:
         with pytest.raises(ValueError, match="Invalid IP address"):
             validate_ip_address("not.an.ip")
 
+        with pytest.raises(ValueError, match="Invalid IP address"):
+            validate_ip_address("256.256.256.256")
+
+    def test_version_v4_with_ipv6_rejected(self) -> None:
+        """Test IPv6 address rejected when version='v4'."""
+        with pytest.raises(ValueError, match="Expected IPv4 address, got IPv6"):
+            validate_ip_address("::1", version="v4")
+
+    def test_version_v6_with_ipv4_rejected(self) -> None:
+        """Test IPv4 address rejected when version='v6'."""
+        with pytest.raises(ValueError, match="Expected IPv6 address, got IPv4"):
+            validate_ip_address("192.168.1.1", version="v6")
+
+    def test_private_ip_rejected_when_not_allowed(self) -> None:
+        """Test private IP addresses are rejected when allow_private=False."""
+        with pytest.raises(ValueError, match="Private IP addresses are not allowed"):
+            validate_ip_address("192.168.1.1", allow_private=False)
+
+        with pytest.raises(ValueError, match="Private IP addresses are not allowed"):
+            validate_ip_address("10.0.0.1", allow_private=False)
+
 
 class TestValidatePort:
     """Tests for validate_port function."""
