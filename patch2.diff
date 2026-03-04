@@ -1,0 +1,14 @@
+--- tests/test_security_validators.py
++++ tests/test_security_validators.py
+@@ -203,6 +203,11 @@
+         with pytest.raises(ValueError, match="Invalid port number: not_a_port"):
+             validate_port("not_a_port")
+
++    def test_large_integer_string_port_rejected(self) -> None:
++        """Test string that exceeds Python's default integer string conversion limit."""
++        with pytest.raises(ValueError, match="Invalid port number: 9"):
++            validate_port("9" * 4301)
++
+     def test_privileged_ports_blocked(self) -> None:
+         """Test privileged ports are blocked by default."""
+         with pytest.raises(ValueError, match="Privileged ports"):
