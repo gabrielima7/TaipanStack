@@ -125,6 +125,7 @@ class TestSafeFromDecorator:
         assert isinstance(result.err(), ValueError)
         assert str(result.err()) == "explicitly raised"
 
+
 class TestCollectResults:
     """Tests for collect_results function."""
 
