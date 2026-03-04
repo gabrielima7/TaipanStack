@@ -113,6 +113,29 @@ class TestSafeFromDecorator:
         assert result2.is_err()
         assert isinstance(result2.err(), TypeError)
 
+    def test_safe_from_success(self) -> None:
+        """Test safe_from returns Ok on success."""
+
+        @safe_from(ValueError)
+        def parse(s: str) -> int:
+            return int(s)
+
+        result = parse("42")
+        assert result.is_ok()
+        assert result.ok() == 42
+
+    def test_safe_from_explicit_raise(self) -> None:
+        """Test safe_from catches explicitly raised specified exception."""
+
+        @safe_from(ValueError)
+        def failing_func() -> int:
+            raise ValueError("Explicit error")
+
+        result = failing_func()
+        assert result.is_err()
+        assert isinstance(result.err(), ValueError)
+        assert str(result.err()) == "Explicit error"
+
 
 class TestCollectResults:
     """Tests for collect_results function."""
