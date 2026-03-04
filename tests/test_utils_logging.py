@@ -197,6 +197,48 @@ class TestLogOperation:
             with log_operation("test"):
                 raise ValueError("original")
 
+    def test_expected_exceptions_caught_and_logged(
+        self,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Test that explicitly expected exceptions are caught and logged."""
+        class CustomError(Exception):
+            pass
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(CustomError, match="expected error"):
+                with log_operation(
+                    "custom_op",
+                    expected_exceptions=CustomError,
+                ):
+                    raise CustomError("expected error")
+
+        assert "Failed: custom_op" in caplog.text
+
+    def test_unexpected_exceptions_not_logged_as_failed(
+        self,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Test that unexpected exceptions bypass the log operation catch block."""
+        class ExpectedError(Exception):
+            pass
+
+        class UnexpectedError(Exception):
+            pass
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(UnexpectedError, match="unexpected error"):
+                with log_operation(
+                    "custom_op",
+                    expected_exceptions=ExpectedError,
+                ):
+                    raise UnexpectedError("unexpected error")
+
+        # The exception was not expected, so it should not be caught by
+        # the `except expected_exceptions:` block, thus "Failed: custom_op"
+        # should NOT be in the log.
+        assert "Failed: custom_op" not in caplog.text
+
 
 class TestFormatConstants:
     """Tests for format string constants."""
