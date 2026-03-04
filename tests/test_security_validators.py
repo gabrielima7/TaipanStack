@@ -125,6 +125,11 @@ class TestValidateUrl:
         with pytest.raises(ValueError, match="Invalid URL format: Invalid IPv6 URL"):
             validate_url("http://[::1")
 
+    def test_invalid_format_port_out_of_range(self) -> None:
+        """Test URL parsing ValueError for out-of-range port is caught and re-raised."""
+        with pytest.raises(ValueError, match="Invalid URL format: Port out of range"):
+            validate_url("http://example.com:9999999999999999999")
+
 
 class TestValidateIpAddress:
     """Tests for validate_ip_address function."""

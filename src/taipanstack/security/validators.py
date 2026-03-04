@@ -283,6 +283,7 @@ def validate_url(
 
     try:
         parsed = urlparse(url)
+        _ = parsed.port  # Trigger lazy evaluation to catch out-of-range ports
     except ValueError as e:
         msg = f"Invalid URL format: {e}"
         raise ValueError(msg) from e
