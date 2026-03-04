@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.5] - 2026-03-04
+
+### Changed
+- **Release**: Re-release of `v0.3.4` contents as `v0.3.5` — the original `v0.3.4` tag was accidentally published to PyPI in an incomplete state. Since PyPI does not allow overwriting existing versions, this patch release contains the exact same intended changes as `v0.3.4`.
+
 ## [0.3.4] - 2026-03-04
 
 ### Security
@@ -205,6 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[0.3.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.1...v0.3.2
@@ -213,5 +219,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.4...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.5...HEAD
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
