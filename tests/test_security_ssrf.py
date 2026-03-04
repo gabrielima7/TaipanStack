@@ -71,6 +71,40 @@ class TestGuardSsrfEmptyAndMalformed:
         err = result.err()
         assert isinstance(err, SecurityError)
         assert "could not be resolved" in str(err)
+        # Note: Specific error message content (e.g. 'Name or service not known')
+        # is platform-dependent, so we only check the common prefix.
+        assert err.value == "this.host.does.not.exist.invalid"
+
+    def test_dns_resolution_hostname_truncation(self) -> None:
+        """Verify that long hostnames are truncated in SecurityError."""
+        long_hostname = "a" * 100 + ".com"
+        url = f"https://{long_hostname}/path"
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            side_effect=socket.gaierror("DNS failure"),
+        ):
+            result = guard_ssrf(url)
+
+        assert result.is_err()
+        err = result.err()
+        assert len(err.value) == 80
+        assert err.value == long_hostname[:80]
+
+    def test_multiple_ips_one_private_blocked(self) -> None:
+        """If any resolved IP is private, the URL must be blocked."""
+        # One public, one private IP
+        addr_infos = [
+            (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 0)),
+            (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("192.168.1.1", 0)),
+        ]
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=addr_infos,
+        ):
+            result = guard_ssrf("https://example.com/")
+
+        assert result.is_err()
+        assert "SSRF detected" in str(result.err())
 
 
 class TestGuardSsrfPrivateIpv4:
