@@ -118,7 +118,7 @@ class TestSafeFromDecorator:
 
         @safe_from(Exception)
         def raise_base_exception() -> int:
-            raise Exception("Base exception raised")
+            raise Exception("Base exception raised")  # noqa: TRY002
 
         result = raise_base_exception()
         assert result.is_err()
