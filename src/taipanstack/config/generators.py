@@ -167,48 +167,48 @@ def generate_pre_commit_config(config: StackConfig) -> str:
         Pre-commit configuration YAML string.
 
     """
-    security_hooks = ""
+    security_hooks = []
 
     if config.security.enable_bandit:
         severity = config.security.bandit_severity[0].upper()
-        security_hooks += f"""
+        security_hooks.append(f"""
   - repo: https://github.com/PyCQA/bandit
     rev: '1.8.0'
     hooks:
       - id: bandit
         args: ["-r", ".", "-l{severity}"]
-"""
+""")
 
     if config.security.enable_safety:
-        security_hooks += """
+        security_hooks.append("""
   - repo: https://github.com/pyupio/safety
     rev: '3.2.11'
     hooks:
       - id: safety
         args: ["check", "--json"]
-"""
+""")
 
     if config.security.enable_semgrep:
-        security_hooks += """
+        security_hooks.append("""
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
     hooks:
       - id: semgrep
         args: ['--config=auto']
-"""
+""")
 
     if config.security.enable_detect_secrets:
-        security_hooks += """
+        security_hooks.append("""
   - repo: https://github.com/Yelp/detect-secrets
     rev: 'v1.5.0'
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-"""
+""")
 
     # Add pip-audit for paranoid mode
     if config.security.level == "paranoid":
-        security_hooks += """
+        security_hooks.append("""
   - repo: https://github.com/trailofbits/pip-audit
     rev: 'v2.7.3'
     hooks:
@@ -223,7 +223,9 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     rev: 'v2.3.3'
     hooks:
       - id: tryceratops
-"""
+""")
+
+    security_hooks_str = "".join(security_hooks)
 
     return f"""# Stack v2.0 Pre-commit Configuration
 # Security Level: {config.security.level}
@@ -251,7 +253,7 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-all, pydantic]
-{security_hooks}"""
+{security_hooks_str}"""
 
 
 def generate_dependabot_config() -> str:
