@@ -138,6 +138,17 @@ class TestOptimizationLevel:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid"}):
             assert get_optimization_level() == 1
 
+    def test_optimization_level_value_error(self) -> None:
+        """Test ValueError when optimization level is an invalid string."""
+        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid_int"}):
+            assert get_optimization_level() == 1
+
+    def test_optimization_level_value_error_too_large(self) -> None:
+        """Test ValueError when optimization level integer parsing triggers ValueError limit."""
+        # Python has a limit for integer parsing (e.g. 4300 digits, CVE-2020-10735)
+        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "9" * 5000}):
+            assert get_optimization_level() == 1
+
 
 class TestPythonFeatures:
     """Test PythonFeatures dataclass."""
