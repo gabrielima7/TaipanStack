@@ -197,6 +197,23 @@ class TestLogOperation:
             with log_operation("test"):
                 raise ValueError("original")
 
+    def test_logs_expected_exception_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test that expected exception is logged on failure."""
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(ValueError, match="expected error"):
+                with log_operation("expected_failing_operation", expected_exceptions=(ValueError,)):
+                    raise ValueError("expected error")
+        assert "Failed: expected_failing_operation" in caplog.text
+        assert "error" in caplog.text
+
+    def test_bypasses_unexpected_exception(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test that unexpected exception is not logged as failure."""
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(TypeError, match="unexpected error"):
+                with log_operation("unexpected_failing_operation", expected_exceptions=(ValueError,)):
+                    raise TypeError("unexpected error")
+        assert "Failed: unexpected_failing_operation" not in caplog.text
+
 
 class TestFormatConstants:
     """Tests for format string constants."""
