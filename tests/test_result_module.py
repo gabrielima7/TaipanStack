@@ -1,6 +1,5 @@
 """Tests for the Result module (functional error handling)."""
 
-from __future__ import annotations
 
 import pytest
 

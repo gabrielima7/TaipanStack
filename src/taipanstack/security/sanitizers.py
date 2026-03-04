@@ -5,7 +5,6 @@ Provides functions to sanitize strings, filenames, and paths
 to remove potentially dangerous characters.
 """
 
-from __future__ import annotations
 
 import re
 import unicodedata

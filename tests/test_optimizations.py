@@ -1,6 +1,5 @@
 """Comprehensive tests for core.optimizations module."""
 
-from __future__ import annotations
 
 import gc
 import os

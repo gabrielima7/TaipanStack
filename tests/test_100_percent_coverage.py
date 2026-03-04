@@ -1,6 +1,5 @@
 """Tests with real structlog for 100% coverage."""
 
-from __future__ import annotations
 
 from pathlib import Path
 

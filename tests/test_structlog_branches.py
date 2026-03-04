@@ -1,6 +1,5 @@
 """Tests with mocked structlog for 100% logging.py coverage."""
 
-from __future__ import annotations
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch

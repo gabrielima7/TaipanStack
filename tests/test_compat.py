@@ -1,6 +1,5 @@
 """Comprehensive tests for core.compat module (Python version compatibility)."""
 
-from __future__ import annotations
 
 import os
 import sys

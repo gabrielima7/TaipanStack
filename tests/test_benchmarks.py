@@ -4,7 +4,6 @@ Used by pytest-benchmark to detect performance regressions (>5%).
 Run with: pytest tests/test_benchmarks.py --benchmark-only
 """
 
-from __future__ import annotations
 
 from pytest_benchmark.fixture import BenchmarkFixture
 from result import Ok

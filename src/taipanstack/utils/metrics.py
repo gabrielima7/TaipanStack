@@ -6,7 +6,6 @@ application performance and health. Compatible with any
 Python framework.
 """
 
-from __future__ import annotations
 
 import functools
 import logging
@@ -84,11 +83,11 @@ class MetricsCollector:
 
     """
 
-    _instance: MetricsCollector | None = None
+    _instance: "MetricsCollector | None" = None
     _lock = threading.Lock()
     _initialized: bool
 
-    def __new__(cls) -> MetricsCollector:
+    def __new__(cls) -> "MetricsCollector":
         """Singleton pattern for global metrics access."""
         if cls._instance is None:
             with cls._lock:
@@ -130,7 +129,7 @@ class MetricsCollector:
         """Record a timing measurement."""
         self._timers[name].record(duration)
 
-    def timer(self, name: str) -> Timer:
+    def timer(self, name: str) -> "Timer":
         """Create a context manager timer."""
         return Timer(name, self)
 
@@ -183,7 +182,7 @@ class Timer:
         self.collector = collector
         self.start_time: float = 0.0
 
-    def __enter__(self) -> Timer:
+    def __enter__(self) -> "Timer":
         """Start the timer."""
         self.start_time = time.perf_counter()
         return self
