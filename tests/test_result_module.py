@@ -60,6 +60,19 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err(), ZeroDivisionError)
 
+    def test_safe_basic_exception(self) -> None:
+        """Test safe decorator returns Err on base Exception."""
+
+        @safe
+        def raise_exception() -> None:
+            raise Exception("Basic exception occurred")  # noqa: TRY002
+
+        result = raise_exception()
+        assert result.is_err()
+        err = result.err()
+        assert type(err) is Exception
+        assert str(err) == "Basic exception occurred"
+
     def test_safe_preserves_function_metadata(self) -> None:
         """Test safe decorator preserves function name and docstring."""
 
