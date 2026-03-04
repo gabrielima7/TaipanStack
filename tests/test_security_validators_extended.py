@@ -120,11 +120,13 @@ class TestValidateIpAddress:
 
     def test_invalid_ip(self) -> None:
         """Test invalid IP address."""
-        with pytest.raises(ValueError, match="Invalid IP address"):
+        with pytest.raises(ValueError, match="Invalid IP address: not.an.ip.address") as exc_info1:
             validate_ip_address("not.an.ip.address")
+        assert isinstance(exc_info1.value.__cause__, ValueError)
 
-        with pytest.raises(ValueError, match="Invalid IP address"):
+        with pytest.raises(ValueError, match="Invalid IP address: 999.999.999.999") as exc_info2:
             validate_ip_address("999.999.999.999")
+        assert isinstance(exc_info2.value.__cause__, ValueError)
 
     def test_ipv4_only(self) -> None:
         """Test that v4-only mode rejects IPv6."""
