@@ -9,12 +9,8 @@ from taipanstack.security.decorators import (
     validate_inputs,
 )
 from taipanstack.security.guards import (
-    SecurityError,
     guard_command_injection,
-    guard_env_variable,
-    guard_file_extension,
     guard_path_traversal,
-    guard_ssrf,
 )
 from taipanstack.security.sanitizers import (
     sanitize_filename,
@@ -31,15 +27,11 @@ from taipanstack.security.validators import (
 __all__ = [
     # Decorators
     # Guards
-    "SecurityError",
     "ValidationError",
     "deprecated",
     "guard_command_injection",
-    "guard_env_variable",
     "guard_exceptions",
-    "guard_file_extension",
     "guard_path_traversal",
-    "guard_ssrf",
     "require_type",
     # Sanitizers
     "sanitize_filename",
