@@ -60,19 +60,6 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err(), ZeroDivisionError)
 
-    def test_safe_basic_exception(self) -> None:
-        """Test safe decorator returns Err on base Exception."""
-
-        @safe
-        def raise_exception() -> None:
-            raise Exception("Basic exception occurred")  # noqa: TRY002
-
-        result = raise_exception()
-        assert result.is_err()
-        err = result.err()
-        assert type(err) is Exception
-        assert str(err) == "Basic exception occurred"
-
     def test_safe_preserves_function_metadata(self) -> None:
         """Test safe decorator preserves function name and docstring."""
 
@@ -125,18 +112,6 @@ class TestSafeFromDecorator:
         result2 = process(123)
         assert result2.is_err()
         assert isinstance(result2.err(), TypeError)
-
-    def test_safe_from_explicit_raise(self) -> None:
-        """Test safe_from decorator catching explicitly raised exception."""
-
-        @safe_from(ValueError)
-        def process(data: str) -> int:
-            raise ValueError("explicitly raised")
-
-        result = process("abc")
-        assert result.is_err()
-        assert isinstance(result.err(), ValueError)
-        assert str(result.err()) == "explicitly raised"
 
 
 class TestCollectResults:
