@@ -141,8 +141,34 @@ class TestValidateIpAddress:
 
     def test_invalid_ip_rejected(self) -> None:
         """Test invalid IPs are rejected."""
-        with pytest.raises(ValueError, match="Invalid IP address"):
+        with pytest.raises(ValueError, match="Invalid IP address: not.an.ip"):
             validate_ip_address("not.an.ip")
+
+        with pytest.raises(ValueError, match="Invalid IP address: 256.256.256.256"):
+            validate_ip_address("256.256.256.256")
+
+    def test_ipv4_version_enforced(self) -> None:
+        """Test IPv4 version requirement is enforced."""
+        with pytest.raises(ValueError, match="Expected IPv4 address, got IPv6"):
+            validate_ip_address("::1", version="v4")
+
+    def test_ipv6_version_enforced(self) -> None:
+        """Test IPv6 version requirement is enforced."""
+        with pytest.raises(ValueError, match="Expected IPv6 address, got IPv4"):
+            validate_ip_address("192.168.1.1", version="v6")
+
+    def test_private_ip_rejected(self) -> None:
+        """Test private IPs are rejected when allow_private=False."""
+        with pytest.raises(ValueError, match="Private IP addresses are not allowed: 192.168.1.1"):
+            validate_ip_address("192.168.1.1", allow_private=False)
+
+        with pytest.raises(ValueError, match="Private IP addresses are not allowed: ::1"):
+            validate_ip_address("::1", allow_private=False)
+
+    def test_public_ip_allowed_with_private_disabled(self) -> None:
+        """Test public IPs are allowed when allow_private=False."""
+        result = validate_ip_address("8.8.8.8", allow_private=False)
+        assert str(result) == "8.8.8.8"
 
 
 class TestValidatePort:
