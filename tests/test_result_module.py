@@ -60,6 +60,18 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err(), ZeroDivisionError)
 
+    def test_safe_basic_exception(self) -> None:
+        """Test safe decorator returns Err on a basic Exception."""
+
+        @safe
+        def fail() -> None:
+            raise Exception("basic exception")
+
+        result = fail()
+        assert result.is_err()
+        assert type(result.err()) is Exception
+        assert str(result.err()) == "basic exception"
+
     def test_safe_preserves_function_metadata(self) -> None:
         """Test safe decorator preserves function name and docstring."""
 
@@ -230,6 +242,19 @@ class TestSafeAsyncDecorator:
         result = await async_divide(10, 0)
         assert result.is_err()
         assert isinstance(result.err(), ZeroDivisionError)
+
+    @pytest.mark.asyncio
+    async def test_safe_async_basic_exception(self) -> None:
+        """Test safe decorator returns Err on a basic Exception in async."""
+
+        @safe
+        async def async_fail() -> None:
+            raise Exception("basic async exception")
+
+        result = await async_fail()
+        assert result.is_err()
+        assert type(result.err()) is Exception
+        assert str(result.err()) == "basic async exception"
 
     @pytest.mark.asyncio
     async def test_safe_async_preserves_metadata(self) -> None:
