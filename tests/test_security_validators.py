@@ -144,6 +144,11 @@ class TestValidateIpAddress:
         with pytest.raises(ValueError, match="Invalid IP address"):
             validate_ip_address("not.an.ip")
 
+    def test_out_of_range_ip_rejected(self) -> None:
+        """Test out of range IPs are rejected with ValueError via ipaddress."""
+        with pytest.raises(ValueError, match="Invalid IP address"):
+            validate_ip_address("256.256.256.256")
+
 
 class TestValidatePort:
     """Tests for validate_port function."""
