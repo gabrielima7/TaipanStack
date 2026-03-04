@@ -3,18 +3,19 @@ Circuit Breaker pattern implementation.
 
 Provides protection against cascading failures by temporarily
 blocking calls to a failing service. Compatible with any
-Python framework.
+Python framework (sync and async).
 """
 
 
 import functools
+import inspect
 import logging
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -90,7 +91,7 @@ class CircuitBreaker:
 
     Monitors function calls and opens the circuit when too many
     failures occur, preventing further calls until the service
-    recovers.
+    recovers. Supports both sync and async functions.
 
     Example:
         >>> breaker = CircuitBreaker(failure_threshold=3)
@@ -276,8 +277,44 @@ class CircuitBreaker:
             self._state.success_count = 0
             logger.info("Circuit %s manually reset", self.name)
 
-    def __call__(self, func: Callable[P, R]) -> Callable[P, R]:
-        """Decorate a function with circuit breaker protection."""
+    @overload
+    def __call__(
+        self,
+        func: Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, Coroutine[Any, Any, R]]: ...  # pragma: no cover
+
+    @overload
+    def __call__(
+        self,
+        func: Callable[P, R],
+    ) -> Callable[P, R]: ...  # pragma: no cover
+
+    def __call__(
+        self,
+        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+        """Decorate a sync or async function with circuit breaker protection."""
+        if inspect.iscoroutinefunction(func):
+
+            @functools.wraps(func)
+            async def async_wrapper(
+                *args: P.args, **kwargs: P.kwargs
+            ) -> R:
+                if not self._should_attempt():
+                    raise CircuitBreakerError(
+                        f"Circuit {self.name} is open",
+                        state=self._state.state,
+                    )
+
+                try:
+                    result = await func(*args, **kwargs)  # type: ignore[misc]
+                    self._record_success()
+                    return result  # type: ignore[return-value]
+                except self.config.failure_exceptions as e:
+                    self._record_failure(e)
+                    raise
+
+            return async_wrapper  # type: ignore[return-value]
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -288,14 +325,45 @@ class CircuitBreaker:
                 )
 
             try:
-                result = func(*args, **kwargs)
+                result = func(*args, **kwargs)  # type: ignore[misc]
                 self._record_success()
-                return result
+                return result  # type: ignore[return-value]
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
+
+
+@overload
+def circuit_breaker(
+    *,
+    failure_threshold: int = 5,
+    success_threshold: int = 2,
+    timeout: float = 30.0,
+    excluded_exceptions: tuple[type[Exception], ...] = (),
+    failure_exceptions: tuple[type[Exception], ...] = (Exception,),
+    name: str | None = None,
+    on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
+) -> Callable[
+    [Callable[P, Coroutine[Any, Any, R]]],
+    Callable[P, Coroutine[Any, Any, R]],
+]: ...  # pragma: no cover
+
+
+@overload
+def circuit_breaker(
+    *,
+    failure_threshold: int = 5,
+    success_threshold: int = 2,
+    timeout: float = 30.0,
+    excluded_exceptions: tuple[type[Exception], ...] = (),
+    failure_exceptions: tuple[type[Exception], ...] = (Exception,),
+    name: str | None = None,
+    on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
+) -> Callable[
+    [Callable[P, R]], Callable[P, R]
+]: ...  # pragma: no cover
 
 
 def circuit_breaker(
@@ -307,8 +375,14 @@ def circuit_breaker(
     failure_exceptions: tuple[type[Exception], ...] = (Exception,),
     name: str | None = None,
     on_state_change: Callable[[CircuitState, CircuitState], None] | None = None,
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """Decorator to apply circuit breaker pattern.
+) -> (
+    Callable[
+        [Callable[P, Coroutine[Any, Any, R]]],
+        Callable[P, Coroutine[Any, Any, R]],
+    ]
+    | Callable[[Callable[P, R]], Callable[P, R]]
+):
+    """Decorate a sync or async function with circuit breaker pattern.
 
     Args:
         failure_threshold: Failures before opening circuit.
@@ -337,7 +411,9 @@ def circuit_breaker(
 
     """
 
-    def decorator(func: Callable[P, R]) -> Callable[P, R]:
+    def decorator(
+        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
         breaker = CircuitBreaker(
             failure_threshold=failure_threshold,
             success_threshold=success_threshold,
@@ -349,4 +425,4 @@ def circuit_breaker(
         )
         return breaker(func)
 
-    return decorator
+    return decorator  # type: ignore[return-value]

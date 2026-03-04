@@ -7,14 +7,16 @@ Python framework (sync and async).
 """
 
 
+import asyncio
 import functools
+import inspect
 import logging
 import secrets
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from types import TracebackType
-from typing import ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -107,6 +109,79 @@ def calculate_delay(
     return max(0, delay)
 
 
+def _log_retry_attempt(
+    func_name: str,
+    attempt: int,
+    max_attempts: int,
+    exc: Exception,
+    delay: float,
+    log_retries: bool,
+    on_retry: Callable[[int, int, Exception, float], None] | None,
+) -> None:
+    """Log a retry attempt via callback, structlog, or stdlib logger.
+
+    Args:
+        func_name: Name of the retried function.
+        attempt: Current attempt number.
+        max_attempts: Maximum number of attempts.
+        exc: The exception that triggered the retry.
+        delay: Delay in seconds before the next attempt.
+        log_retries: Whether to emit standard log messages.
+        on_retry: Optional user callback.
+
+    """
+    if log_retries:
+        logger.info(
+            "Attempt %d/%d failed for %s: %s. "
+            "Retrying in %.2f seconds...",
+            attempt,
+            max_attempts,
+            func_name,
+            str(exc),
+            delay,
+        )
+
+    # Invoke callback or emit structured log if no callback set
+    if on_retry is not None:
+        on_retry(attempt, max_attempts, exc, delay)
+    elif (
+        _HAS_STRUCTLOG and _structlog_logger is not None
+    ):  # pragma: no branch
+        _structlog_logger.warning(
+            "retry_attempted",
+            function=func_name,
+            attempt=attempt,
+            max_attempts=max_attempts,
+            error=str(exc),
+            delay_seconds=round(delay, 3),
+        )
+
+
+def _log_all_failed(
+    func_name: str,
+    max_attempts: int,
+    exc: Exception,
+    log_retries: bool,
+) -> None:
+    """Log when all retry attempts have been exhausted.
+
+    Args:
+        func_name: Name of the retried function.
+        max_attempts: Maximum number of attempts.
+        exc: The last exception raised.
+        log_retries: Whether to emit standard log messages.
+
+    """
+    if log_retries:
+        logger.warning(
+            "All %d attempts failed for %s: %s",
+            max_attempts,
+            func_name,
+            str(exc),
+        )
+
+
+@overload
 def retry(
     *,
     max_attempts: int = 3,
@@ -118,11 +193,50 @@ def retry(
     reraise: bool = True,
     log_retries: bool = True,
     on_retry: Callable[[int, int, Exception, float], None] | None = None,
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """Retry a function with exponential backoff.
+) -> Callable[
+    [Callable[P, Coroutine[Any, Any, R]]],
+    Callable[P, Coroutine[Any, Any, R]],
+]: ...  # pragma: no cover
+
+
+@overload
+def retry(
+    *,
+    max_attempts: int = 3,
+    initial_delay: float = 1.0,
+    max_delay: float = 60.0,
+    exponential_base: float = 2.0,
+    jitter: bool = True,
+    on: tuple[type[Exception], ...] = (Exception,),
+    reraise: bool = True,
+    log_retries: bool = True,
+    on_retry: Callable[[int, int, Exception, float], None] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # pragma: no cover
+
+
+def retry(
+    *,
+    max_attempts: int = 3,
+    initial_delay: float = 1.0,
+    max_delay: float = 60.0,
+    exponential_base: float = 2.0,
+    jitter: bool = True,
+    on: tuple[type[Exception], ...] = (Exception,),
+    reraise: bool = True,
+    log_retries: bool = True,
+    on_retry: Callable[[int, int, Exception, float], None] | None = None,
+) -> (
+    Callable[
+        [Callable[P, Coroutine[Any, Any, R]]],
+        Callable[P, Coroutine[Any, Any, R]],
+    ]
+    | Callable[[Callable[P, R]], Callable[P, R]]
+):
+    """Retry a sync or async function with exponential backoff.
 
     Automatically retries the decorated function when specified
     exceptions are raised, with configurable backoff strategy.
+    Detects coroutine functions and preserves their async nature.
 
     Args:
         max_attempts: Maximum number of retry attempts.
@@ -158,57 +272,91 @@ def retry(
         jitter=jitter,
     )
 
-    def decorator(func: Callable[P, R]) -> Callable[P, R]:
+    def decorator(
+        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+        if inspect.iscoroutinefunction(func):
+
+            @functools.wraps(func)
+            async def async_wrapper(
+                *args: P.args, **kwargs: P.kwargs
+            ) -> R:
+                last_exception: Exception | None = None
+
+                for attempt in range(1, max_attempts + 1):  # pragma: no branch
+                    try:
+                        return await func(*args, **kwargs)  # type: ignore[misc]
+                    except on as e:
+                        last_exception = e
+
+                        if attempt == max_attempts:
+                            _log_all_failed(
+                                func.__name__,
+                                max_attempts,
+                                e,
+                                log_retries,
+                            )
+                            break
+
+                        delay = calculate_delay(attempt, config)
+                        _log_retry_attempt(
+                            func.__name__,
+                            attempt,
+                            max_attempts,
+                            e,
+                            delay,
+                            log_retries,
+                            on_retry,
+                        )
+                        await asyncio.sleep(delay)
+
+                # All attempts failed
+                if reraise and last_exception is not None:
+                    raise RetryError(
+                        f"All {max_attempts} attempts failed for {func.__name__}",
+                        attempts=max_attempts,
+                        last_exception=last_exception,
+                    ) from last_exception
+
+                # Should never reach here if reraise=True
+                raise RetryError(
+                    f"All {max_attempts} attempts failed for {func.__name__}",
+                    attempts=max_attempts,
+                    last_exception=last_exception,
+                )
+
+            return async_wrapper  # type: ignore[return-value]
+
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             last_exception: Exception | None = None
 
             for attempt in range(1, max_attempts + 1):  # pragma: no branch
                 try:
-                    return func(*args, **kwargs)
+                    return func(*args, **kwargs)  # type: ignore[return-value]
                 except on as e:
                     last_exception = e
 
                     if attempt == max_attempts:
-                        # Last attempt failed
-                        if log_retries:
-                            logger.warning(
-                                "All %d attempts failed for %s: %s",
-                                max_attempts,
-                                func.__name__,
-                                str(e),
-                            )
+                        _log_all_failed(
+                            func.__name__,
+                            max_attempts,
+                            e,
+                            log_retries,
+                        )
                         break
 
                     # Calculate delay and wait
                     delay = calculate_delay(attempt, config)
-
-                    if log_retries:
-                        logger.info(
-                            "Attempt %d/%d failed for %s: %s. "
-                            "Retrying in %.2f seconds...",
-                            attempt,
-                            max_attempts,
-                            func.__name__,
-                            str(e),
-                            delay,
-                        )
-
-                    # Invoke callback or emit structured log if no callback set
-                    if on_retry is not None:
-                        on_retry(attempt, max_attempts, e, delay)
-                    elif (
-                        _HAS_STRUCTLOG and _structlog_logger is not None
-                    ):  # pragma: no branch
-                        _structlog_logger.warning(
-                            "retry_attempted",
-                            function=func.__name__,
-                            attempt=attempt,
-                            max_attempts=max_attempts,
-                            error=str(e),
-                            delay_seconds=round(delay, 3),
-                        )
-
+                    _log_retry_attempt(
+                        func.__name__,
+                        attempt,
+                        max_attempts,
+                        e,
+                        delay,
+                        log_retries,
+                        on_retry,
+                    )
                     time.sleep(delay)
 
             # All attempts failed
@@ -226,9 +374,9 @@ def retry(
                 last_exception=last_exception,
             )
 
-        return wrapper
+        return wrapper  # type: ignore[return-value]
 
-    return decorator
+    return decorator  # type: ignore[return-value]
 
 
 def retry_on_exception(

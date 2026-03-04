@@ -1,6 +1,6 @@
 [project]
 name = "taipanstack"
-version = "0.3.3"
+version = "0.3.4"
 description = "TaipanStack - Modular, secure, and scalable Python stack for robust development"
 authors = [
     {name = "gabrielima7", email = "gabrielima.alu.lmb@gmail.com"}
@@ -224,7 +224,8 @@ fail-under = 80
 verbose = 1
 
 [tool.mutmut]
-paths_to_mutate = "src/taipanstack/security/sanitizers.py,src/taipanstack/security/validators.py,src/taipanstack/security/guards.py"
-tests_dir = "tests/test_property_sanitizers.py,tests/test_security_validators.py,tests/test_security_guards.py,tests/test_security_ssrf.py"
+paths_to_mutate = "src/taipanstack/security/sanitizers.py,src/taipanstack/security/validators.py,src/taipanstack/security/guards.py,src/taipanstack/utils/retry.py,src/taipanstack/utils/circuit_breaker.py"
+tests_dir = "tests/test_property_sanitizers.py,tests/test_security_validators.py,tests/test_security_guards.py,tests/test_security_ssrf.py,tests/test_utils_retry.py,tests/test_utils_circuit_breaker.py"
 runner = "python -m pytest -x -q --tb=no --timeout=10 --no-cov"
 dict_synonyms = "Struct, NamedStruct"
+

@@ -27,6 +27,45 @@ JSON_FORMAT = (
     '"logger": "%(name)s", "message": "%(message)s"}'
 )
 
+SENSITIVE_KEY_PATTERNS: tuple[str, ...] = (
+    "password",
+    "secret",
+    "token",
+    "authorization",
+    "api_key",
+)
+
+REDACTED_VALUE = "***REDACTED***"
+
+
+def mask_sensitive_data_processor(
+    logger: Any,  # noqa: ARG001
+    method: str,  # noqa: ARG001
+    event_dict: dict[str, Any],
+) -> dict[str, Any]:
+    """Mask sensitive data in structlog event dictionaries.
+
+    Intercept the *event_dict* produced by structlog and replace the
+    value of any key whose name contains a sensitive substring with
+    ``"***REDACTED***"``.  Matching is case-insensitive.
+
+    Args:
+        logger: The wrapped logger object (unused, required by structlog).
+        method: The name of the log method called (unused, required by structlog).
+        event_dict: The structured event dictionary.
+
+    Returns:
+        The event dictionary with sensitive values masked.
+
+    """
+    for key in event_dict:
+        key_lower = key.lower()
+        for pattern in SENSITIVE_KEY_PATTERNS:
+            if pattern in key_lower:
+                event_dict[key] = REDACTED_VALUE
+                break
+    return event_dict
+
 
 class StackLogger:
     """Enhanced logger with context support.

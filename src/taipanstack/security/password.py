@@ -64,7 +64,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
 
     try:
         parts = password_hash.split("$")
-        if len(parts) != 4:
+        if len(parts) != 4:  # noqa: PLR2004
             return False
 
         algorithm, iterations_str, salt_hex, hash_hex = parts
