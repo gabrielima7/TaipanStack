@@ -140,9 +140,20 @@ class TestValidateIpAddress:
         assert str(result) == "::1"
 
     def test_invalid_ip_rejected(self) -> None:
-        """Test invalid IPs are rejected."""
-        with pytest.raises(ValueError, match="Invalid IP address"):
-            validate_ip_address("not.an.ip")
+        """Test invalid IPs are rejected and original exception is chained."""
+        with pytest.raises(ValueError, match="Invalid IP address: not-an-ip") as exc_info:
+            validate_ip_address("not-an-ip")
+
+        # Verify the original ValueError from ipaddress module is chained
+        assert isinstance(exc_info.value.__cause__, ValueError)
+
+    def test_out_of_range_ip_rejected(self) -> None:
+        """Test out of range IPs are rejected and original exception is chained."""
+        with pytest.raises(ValueError, match="Invalid IP address: 256.256.256.256") as exc_info:
+            validate_ip_address("256.256.256.256")
+
+        # Verify the original ValueError from ipaddress module is chained
+        assert isinstance(exc_info.value.__cause__, ValueError)
 
 
 class TestValidatePort:
