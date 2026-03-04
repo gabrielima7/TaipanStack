@@ -1,6 +1,5 @@
 """Tests for configuration generators."""
 
-
 from pathlib import Path
 
 from taipanstack.config.generators import (

@@ -1,6 +1,5 @@
 """Additional tests for validators to achieve 100% coverage."""
 
-
 import pytest
 
 from taipanstack.security.validators import (

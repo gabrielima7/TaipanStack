@@ -5,7 +5,6 @@ This module provides targeted tests for all uncovered lines and branches
 identified in the coverage report.
 """
 
-
 import os
 import tempfile
 from pathlib import Path

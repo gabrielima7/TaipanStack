@@ -6,7 +6,6 @@ blocking calls to a failing service. Compatible with any
 Python framework (sync and async).
 """
 
-
 import functools
 import inspect
 import logging
@@ -283,9 +282,7 @@ class CircuitBreaker:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
-            async def async_wrapper(
-                *args: Any, **kwargs: Any
-            ) -> Any:
+            async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
                 if not self._should_attempt():
                     raise CircuitBreakerError(
                         f"Circuit {self.name} is open",

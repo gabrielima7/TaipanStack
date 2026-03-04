@@ -1,6 +1,5 @@
 """Comprehensive tests for config.version_config module."""
 
-
 from unittest.mock import patch
 
 from taipanstack.config.version_config import (

@@ -1,6 +1,5 @@
 """Tests to achieve 100% code coverage."""
 
-
 import logging
 from pathlib import Path
 

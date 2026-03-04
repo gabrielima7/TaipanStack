@@ -1,6 +1,5 @@
 """Tests for safe filesystem operations."""
 
-
 from pathlib import Path
 
 import pytest

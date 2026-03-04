@@ -22,7 +22,6 @@ Example:
 
 """
 
-
 import functools
 import inspect
 from collections.abc import Callable, Coroutine, Iterable

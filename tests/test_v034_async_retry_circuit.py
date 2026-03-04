@@ -356,9 +356,7 @@ class TestCircuitBreakerAsyncSupport:
             raise RuntimeError("x")
 
         with (
-            patch(
-                "taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True
-            ),
+            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True),
             patch(
                 "taipanstack.utils.circuit_breaker._structlog_logger",
                 mock_structlog_logger,

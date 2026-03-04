@@ -1,6 +1,5 @@
 """Tests for input sanitizers."""
 
-
 from pathlib import Path
 
 import pytest

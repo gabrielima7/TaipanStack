@@ -4,7 +4,6 @@ Generates thousands of mutant inputs to verify sanitizer invariants
 hold under adversarial conditions.
 """
 
-
 import string
 from pathlib import Path
 

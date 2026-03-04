@@ -1,6 +1,5 @@
 """Comprehensive tests for core.optimizations module."""
 
-
 import gc
 import os
 from unittest.mock import patch

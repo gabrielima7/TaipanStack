@@ -1,6 +1,5 @@
 """Tests for the Result module (functional error handling)."""
 
-
 import pytest
 
 from taipanstack.core.result import (

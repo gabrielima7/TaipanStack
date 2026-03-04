@@ -46,9 +46,15 @@ def test_verify_password_invalid_hash() -> None:
 
     assert verify_password(password, "invalid_hash") is False
     assert verify_password(password, "alg$100$salt$hash") is False  # Wrong algorithm
-    assert verify_password(password, "pbkdf2_sha256$nan$salt$hash") is False  # Invalid iterations
-    assert verify_password(password, "pbkdf2_sha256$100$nothex$hash") is False  # Invalid salt hex
-    assert verify_password(password, "pbkdf2_sha256$100$salt$nothex") is False  # Invalid hash hex
+    assert (
+        verify_password(password, "pbkdf2_sha256$nan$salt$hash") is False
+    )  # Invalid iterations
+    assert (
+        verify_password(password, "pbkdf2_sha256$100$nothex$hash") is False
+    )  # Invalid salt hex
+    assert (
+        verify_password(password, "pbkdf2_sha256$100$salt$nothex") is False
+    )  # Invalid hash hex
 
 
 def test_hash_password_is_random() -> None:

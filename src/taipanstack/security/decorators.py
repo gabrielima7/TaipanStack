@@ -6,7 +6,6 @@ timeout control, and other security patterns. Compatible with
 any Python framework (Flask, FastAPI, Django, etc.).
 """
 
-
 import functools
 import signal
 import sys

@@ -1,6 +1,5 @@
 """Targeted tests for specific uncovered lines."""
 
-
 from pathlib import Path
 
 import pytest

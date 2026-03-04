@@ -5,7 +5,6 @@ Provides a configured logger with support for structured output,
 context propagation, and proper formatting.
 """
 
-
 import logging
 import sys
 from contextlib import contextmanager
