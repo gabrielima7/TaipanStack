@@ -69,6 +69,11 @@ class TestValidatePythonVersion:
         with pytest.raises(ValueError, match="Only Python 3.x"):
             validate_python_version("2.7")
 
+    def test_int_conversion_limit_rejected(self) -> None:
+        """Test version string exceeding int conversion limit is rejected."""
+        with pytest.raises(ValueError, match="Invalid version numbers in"):
+            validate_python_version("3." + "1" * 5000)
+
 
 class TestValidateEmail:
     """Tests for validate_email function."""
