@@ -13,13 +13,14 @@ import inspect
 import logging
 import secrets
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, ParamSpec, TypeVar, overload
+from typing import Any, ParamSpec, TypeVar, cast
 
 P = ParamSpec("P")
 R = TypeVar("R")
+F = TypeVar("F", bound=Callable[..., Any])
 
 logger = logging.getLogger("taipanstack.utils.retry")
 
@@ -181,7 +182,6 @@ def _log_all_failed(
         )
 
 
-@overload
 def retry(
     *,
     max_attempts: int = 3,
@@ -193,45 +193,7 @@ def retry(
     reraise: bool = True,
     log_retries: bool = True,
     on_retry: Callable[[int, int, Exception, float], None] | None = None,
-) -> Callable[
-    [Callable[P, Coroutine[Any, Any, R]]],
-    Callable[P, Coroutine[Any, Any, R]],
-]: ...  # pragma: no cover
-
-
-@overload
-def retry(
-    *,
-    max_attempts: int = 3,
-    initial_delay: float = 1.0,
-    max_delay: float = 60.0,
-    exponential_base: float = 2.0,
-    jitter: bool = True,
-    on: tuple[type[Exception], ...] = (Exception,),
-    reraise: bool = True,
-    log_retries: bool = True,
-    on_retry: Callable[[int, int, Exception, float], None] | None = None,
-) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # pragma: no cover
-
-
-def retry(
-    *,
-    max_attempts: int = 3,
-    initial_delay: float = 1.0,
-    max_delay: float = 60.0,
-    exponential_base: float = 2.0,
-    jitter: bool = True,
-    on: tuple[type[Exception], ...] = (Exception,),
-    reraise: bool = True,
-    log_retries: bool = True,
-    on_retry: Callable[[int, int, Exception, float], None] | None = None,
-) -> (
-    Callable[
-        [Callable[P, Coroutine[Any, Any, R]]],
-        Callable[P, Coroutine[Any, Any, R]],
-    ]
-    | Callable[[Callable[P, R]], Callable[P, R]]
-):
+) -> Callable[[F], F]:
     """Retry a sync or async function with exponential backoff.
 
     Automatically retries the decorated function when specified
@@ -272,20 +234,18 @@ def retry(
         jitter=jitter,
     )
 
-    def decorator(
-        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
-    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+    def decorator(func: F) -> F:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
             async def async_wrapper(
-                *args: P.args, **kwargs: P.kwargs
-            ) -> R:
+                *args: Any, **kwargs: Any
+            ) -> Any:
                 last_exception: Exception | None = None
 
                 for attempt in range(1, max_attempts + 1):  # pragma: no branch
                     try:
-                        return await func(*args, **kwargs)  # type: ignore[misc]
+                        return await func(*args, **kwargs)
                     except on as e:
                         last_exception = e
 
@@ -325,15 +285,15 @@ def retry(
                     last_exception=last_exception,
                 )
 
-            return async_wrapper  # type: ignore[return-value]
+            return cast(F, async_wrapper)
 
         @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             last_exception: Exception | None = None
 
             for attempt in range(1, max_attempts + 1):  # pragma: no branch
                 try:
-                    return func(*args, **kwargs)  # type: ignore[return-value]
+                    return func(*args, **kwargs)
                 except on as e:
                     last_exception = e
 
@@ -374,9 +334,9 @@ def retry(
                 last_exception=last_exception,
             )
 
-        return wrapper  # type: ignore[return-value]
+        return cast(F, wrapper)
 
-    return decorator  # type: ignore[return-value]
+    return decorator
 
 
 def retry_on_exception(
