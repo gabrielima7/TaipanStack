@@ -1,6 +1,6 @@
 """Example test module for app."""
 
-from src.app.main import greet
+from app.main import greet
 
 
 def test_greet() -> None:
