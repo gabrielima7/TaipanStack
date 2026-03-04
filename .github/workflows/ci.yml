@@ -122,6 +122,7 @@ jobs:
       - name: Install dependencies (zypper-based)
         if: matrix.pkg_manager == 'zypper'
         run: |
+          zypper --non-interactive removerepo repo-openh264 || true
           zypper --non-interactive install python3 python3-pip git curl bash
 
       - name: Install dependencies (pacman-based)
