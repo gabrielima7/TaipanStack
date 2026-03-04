@@ -75,6 +75,36 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
             pytest.fail("Expected Err(UserCreationError)")
 
 
+def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
+    """Test creating a user that already exists raises UserAlreadyExistsError."""
+
+    class AlreadyExistsRepository(UserRepository):
+        def save(self, user: object) -> None:
+            raise UserAlreadyExistsError("User already exists")
+
+        def get_by_id(self, user_id: UUID) -> None:
+            return None
+
+    service = UserService(AlreadyExistsRepository())
+    user_create = UserCreate(
+        username="existing_user",
+        email="existing@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    with caplog.at_level(logging.ERROR):
+        result = service.create_user(user_create)
+
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "User already exists" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")
+
+    assert "Failed to create user" in caplog.text
+
+
 def test_create_user_invalid_email() -> None:
     """Test creating a user with an invalid email raises ValidationError."""
     with pytest.raises(ValidationError):
