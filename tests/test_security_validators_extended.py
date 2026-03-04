@@ -69,6 +69,15 @@ class TestValidatePythonVersionEdgeCases:
         with pytest.raises(ValueError, match="Invalid version numbers"):
             validate_python_version("1." + "9" * 5000)
 
+    def test_non_numeric_version_mock(self) -> None:
+        """Test that a non-numeric version string correctly raises ValueError during integer conversion when bypassing regex."""
+        from unittest.mock import patch
+
+        with patch("taipanstack.security.validators.re.match") as mock_match:
+            mock_match.return_value = True
+            with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
+                validate_python_version("a.b")
+
 
 class TestValidateEmailEdgeCases:
     """Additional tests for validate_email."""
