@@ -101,6 +101,15 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
+    def test_path_traversal_without_base_dir_blocked(self) -> None:
+        """Test that path traversal is blocked when no base_dir is provided."""
+        result = safe_read("../etc/passwd")
+        match result:
+            case Err(SecurityError()):
+                pass  # Expected
+            case _:
+                pytest.fail("Expected Err(SecurityError)")
+
 
 class TestSafeWrite:
     """Tests for safe_write function."""
@@ -164,6 +173,11 @@ class TestSafeWrite:
                 base_dir=tmp_path,
             )
 
+    def test_path_traversal_without_base_dir_blocked(self) -> None:
+        """Test that path traversal is blocked when no base_dir is provided."""
+        with pytest.raises(SecurityError):
+            safe_write("../etc/evil.txt", "malicious")
+
 
 class TestEnsureDir:
     """Tests for ensure_dir function."""
@@ -188,6 +202,11 @@ class TestEnsureDir:
 
         assert result.exists()
         assert result.is_dir()
+
+    def test_path_traversal_without_base_dir_blocked(self) -> None:
+        """Test that path traversal is blocked when no base_dir is provided."""
+        with pytest.raises(SecurityError):
+            ensure_dir("../etc/evil_dir")
 
 
 class TestSafeCopy:
@@ -289,6 +308,11 @@ class TestSafeDelete:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
             safe_delete(tmp_path / ".." / "etc" / "passwd", base_dir=tmp_path)
+
+    def test_path_traversal_without_base_dir_blocked(self) -> None:
+        """Test that path traversal is blocked when no base_dir is provided."""
+        with pytest.raises(SecurityError):
+            safe_delete("../etc/passwd")
 
 
 class TestGetFileHash:
