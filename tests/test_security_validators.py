@@ -178,6 +178,11 @@ class TestValidatePort:
         with pytest.raises(ValueError, match="must be between"):
             validate_port(70000)
 
+    def test_invalid_string_rejected(self) -> None:
+        """Test string that cannot be cast to int is rejected."""
+        with pytest.raises(ValueError, match="Invalid port number: not-a-port"):
+            validate_port("not-a-port")
+
     def test_privileged_ports_blocked(self) -> None:
         """Test privileged ports are blocked by default."""
         with pytest.raises(ValueError, match="Privileged ports"):
