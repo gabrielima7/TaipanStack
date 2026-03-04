@@ -101,6 +101,15 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
+    def test_path_traversal_blocked_no_base_dir(self, tmp_path: Path) -> None:
+        """Test that path traversal is blocked when no base_dir is provided but path contains '..'"""
+        result = safe_read(tmp_path / ".." / "etc" / "passwd")
+        match result:
+            case Err(SecurityError()):
+                pass  # Expected
+            case _:
+                pytest.fail("Expected Err(SecurityError)")
+
 
 class TestSafeWrite:
     """Tests for safe_write function."""
