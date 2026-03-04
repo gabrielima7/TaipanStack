@@ -160,6 +160,11 @@ class TestValidatePort:
         result = validate_port("8080")
         assert result == 8080
 
+    def test_port_invalid_string(self) -> None:
+        """Test port as an invalid string."""
+        with pytest.raises(ValueError, match="Invalid port number: not_a_port"):
+            validate_port("not_a_port")
+
     def test_port_zero(self) -> None:
         """Test port zero is invalid."""
         with pytest.raises(ValueError):
