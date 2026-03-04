@@ -60,17 +60,22 @@ class TestGuardSsrfEmptyAndMalformed:
         assert result.is_err()
 
     def test_unresolvable_hostname_returns_err(self) -> None:
-        """Hostname that cannot be resolved returns Err."""
-        # Use a hostname that will always fail DNS resolution
+        """Hostname that cannot be resolved returns Err. Verifies platform-independent error and truncation."""
+        long_hostname = "a" * 100 + ".invalid"
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
-            side_effect=socket.gaierror("Name or service not known"),
+            side_effect=socket.gaierror("mocked error"),
         ):
-            result = guard_ssrf("https://this.host.does.not.exist.invalid")
+            result = guard_ssrf(f"https://{long_hostname}/path")
+
         assert result.is_err()
         err = result.err()
         assert isinstance(err, SecurityError)
-        assert "could not be resolved" in str(err)
+        assert err.guard_name == "ssrf"
+        # Verify the exception message prefix without asserting on platform-specific gaierror strings
+        assert "Hostname could not be resolved:" in str(err)
+        # Verify the value attribute contains the hostname truncated to 80 characters
+        assert err.value == long_hostname[:80]
 
 
 class TestGuardSsrfPrivateIpv4:
