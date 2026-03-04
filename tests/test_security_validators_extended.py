@@ -204,6 +204,11 @@ class TestValidatePort:
         with pytest.raises(ValueError):
             validate_port(-1)
 
+    def test_invalid_port_string(self) -> None:
+        """Test port as invalid string."""
+        with pytest.raises(ValueError, match="Invalid port number: not_a_port"):
+            validate_port("not_a_port")
+
 
 class TestValidateSemver:
     """Tests for validate_semver function."""
