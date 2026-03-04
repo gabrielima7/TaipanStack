@@ -65,7 +65,7 @@ class TestSafeDecorator:
 
         @safe
         def raise_exception() -> None:
-            raise Exception("Basic exception occurred")
+            raise Exception("Basic exception occurred")  # noqa: TRY002
 
         result = raise_exception()
         assert result.is_err()
