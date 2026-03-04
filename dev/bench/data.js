@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772637639901,
+  "lastUpdate": 1772637792737,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -1548,6 +1548,135 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 4.289462191902224e-8",
             "extra": "mean: 403.98200663308245 nsec\nrounds: 78101"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e54df65f9c348b591c554c890282b7de9ae057bc",
+          "message": "🧪 test: add coverage for log_operation expected_exceptions handling (#116)\n\n* test: improve testing coverage of log_operation expected_exceptions\n\nAdded explicit unit tests to ensure that `expected_exceptions` inside the `log_operation` context manager correctly captures and logs expected exceptions while allowing unexpected exceptions to bypass logging and bubble up.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: format test_utils_logging.py with ruff\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* ci: remove openh264 repo on openSUSE Tumbleweed before installing dependencies\n\nThe `repo-openh264` repository periodically fails on `codecs.opensuse.org`,\ncausing zypper to fail its refresh and abort dependency installation for\nthe openSUSE container CI job. Removing this problematic repo allows zypper\nto proceed with installing the required system packages.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-04T15:14:24Z",
+          "tree_id": "394ae1ed45a116ecde2cf8a77d82242b326b374b",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/e54df65f9c348b591c554c890282b7de9ae057bc"
+        },
+        "date": 1772637792327,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 201653.8938634806,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000001648606363611644",
+            "extra": "mean: 4.9589917697150865 usec\nrounds: 243"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 161320.25060777497,
+            "unit": "iter/sec",
+            "range": "stddev: 8.52598230850578e-7",
+            "extra": "mean: 6.198849780064774 usec\nrounds: 66609"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 56086.8186629075,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000016642856785464773",
+            "extra": "mean: 17.82950118833074 usec\nrounds: 31136"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 164147.24614306653,
+            "unit": "iter/sec",
+            "range": "stddev: 9.134760727792517e-7",
+            "extra": "mean: 6.092091238182733 usec\nrounds: 11048"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 115250.17112885795,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00000111288796506437",
+            "extra": "mean: 8.676776704148477 usec\nrounds: 45742"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 20149.182733586535,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000033902151122933706",
+            "extra": "mean: 49.629804504830204 usec\nrounds: 10522"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 35338.82449988975,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000153560940544443",
+            "extra": "mean: 28.297489069086602 usec\nrounds: 17885"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4059109.0728853364,
+            "unit": "iter/sec",
+            "range": "stddev: 4.160551814572577e-8",
+            "extra": "mean: 246.35947988705124 nsec\nrounds: 146199"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 539670.0947326489,
+            "unit": "iter/sec",
+            "range": "stddev: 4.0464286093480885e-7",
+            "extra": "mean: 1.8529839058346622 usec\nrounds: 175778"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 1141530.588175217,
+            "unit": "iter/sec",
+            "range": "stddev: 3.968370175772056e-7",
+            "extra": "mean: 876.0168236915497 nsec\nrounds: 10402"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 630040.3886350112,
+            "unit": "iter/sec",
+            "range": "stddev: 3.9861635320750387e-7",
+            "extra": "mean: 1.587199833595605 usec\nrounds: 156250"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2317495.463891638,
+            "unit": "iter/sec",
+            "range": "stddev: 2.2354854132828704e-7",
+            "extra": "mean: 431.5003052134381 nsec\nrounds: 188395"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1152730.67271377,
+            "unit": "iter/sec",
+            "range": "stddev: 3.03530214681904e-7",
+            "extra": "mean: 867.5053277152676 nsec\nrounds: 149032"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 33675.13825746754,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002245413292640217",
+            "extra": "mean: 29.69549797700527 usec\nrounds: 15077"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 2787738.5033250237,
+            "unit": "iter/sec",
+            "range": "stddev: 4.8290462051359796e-8",
+            "extra": "mean: 358.71370245348675 nsec\nrounds: 111075"
           }
         ]
       }
