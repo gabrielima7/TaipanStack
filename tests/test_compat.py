@@ -138,6 +138,23 @@ class TestOptimizationLevel:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid"}):
             assert get_optimization_level() == 1
 
+    def test_optimization_level_exceeds_int_limit(self) -> None:
+        """Test ValueError from exceeding integer string conversion limit (CVE-2020-10735)."""
+        # Create a string of digits exceeding the default limit (4300 digits)
+        huge_int_str = "9" * 4500
+
+        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": huge_int_str}):
+            try:
+                # Test if the current environment enforces the string conversion limit.
+                # If it raises a ValueError, get_optimization_level() must catch it and return 1.
+                int(huge_int_str)
+            except ValueError:
+                assert get_optimization_level() == 1
+            else:
+                # If the environment lacks the limit (e.g. sys.set_int_max_str_digits(0) was called),
+                # int() successfully parses the huge integer, so the function clamps it to 2.
+                assert get_optimization_level() == 2
+
 
 class TestPythonFeatures:
     """Test PythonFeatures dataclass."""
