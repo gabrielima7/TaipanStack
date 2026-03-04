@@ -197,7 +197,9 @@ class TestLogOperation:
             with log_operation("test"):
                 raise ValueError("original")
 
-    def test_expected_exceptions_caught_and_logged(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_expected_exceptions_caught_and_logged(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that specified expected exceptions are caught and logged."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError, match="expected"):
@@ -205,7 +207,9 @@ class TestLogOperation:
                     raise ValueError("expected")
         assert "Failed: test_expected" in caplog.text
 
-    def test_unexpected_exceptions_bypass_catch(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_unexpected_exceptions_bypass_catch(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that unexpected exceptions bypass the catch block and are not logged."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(TypeError, match="unexpected"):
