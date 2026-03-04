@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
 
 from taipanstack.core.result import Err, Ok, Result
+from taipanstack.security import hash_password
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ class User(BaseModel):
     id: UUID
     username: str
     email: EmailStr
+    password_hash: str
     is_active: bool = True
 
     model_config = ConfigDict(frozen=True)
@@ -166,15 +168,15 @@ class UserService:
             Ok(User) on success, Err(UserCreationError) on failure.
 
         """
-        # In a real system, we would hash the password here.
-        # Since strict typing forbids unused variables, we explicitly acknowledge it.
-        _ = user_create.password
+        # Hash the password securely using the security module
+        pwd_hash = hash_password(user_create.password)
 
         user_id = uuid4()
         user = User(
             id=user_id,
             username=user_create.username,
             email=user_create.email,
+            password_hash=pwd_hash,
             is_active=True,
         )
         try:
