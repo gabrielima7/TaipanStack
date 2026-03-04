@@ -167,6 +167,32 @@ class TestSetupLogging:
 
 class TestLogOperation:
     """Tests for log_operation context manager."""
+    def test_expected_exceptions_handling(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test that only expected_exceptions are caught and logged as failures."""
+        class ExpectedError(Exception):
+            pass
+
+        class UnexpectedError(Exception):
+            pass
+
+        # 1. Expected exception should be caught, logged as failure, and re-raised
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(ExpectedError):
+                with log_operation("expected_op", expected_exceptions=ExpectedError):
+                    raise ExpectedError("This is expected")
+
+        assert "Failed: expected_op" in caplog.text
+
+        caplog.clear()
+
+        # 2. Unexpected exception should NOT be caught by log_operation and thus not logged as failure
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(UnexpectedError):
+                with log_operation("unexpected_op", expected_exceptions=ExpectedError):
+                    raise UnexpectedError("This is unexpected")
+
+        assert "Failed: unexpected_op" not in caplog.text
+
 
     def test_logs_start_and_end(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that operation start and end are logged."""
