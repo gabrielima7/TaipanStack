@@ -69,6 +69,15 @@ class TestValidatePythonVersion:
         with pytest.raises(ValueError, match="Only Python 3.x"):
             validate_python_version("2.7")
 
+    def test_invalid_version_numbers_value_error(self) -> None:
+        """Test ValueError is raised when version numbers are invalid."""
+        from unittest.mock import patch
+
+        with patch("taipanstack.security.validators.re.match") as mock_match:
+            mock_match.return_value = True
+            with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
+                validate_python_version("a.b")
+
 
 class TestValidateEmail:
     """Tests for validate_email function."""
