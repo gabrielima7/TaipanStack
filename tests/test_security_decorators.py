@@ -1,6 +1,5 @@
 """Tests for security decorators."""
 
-from __future__ import annotations
 
 import time
 import warnings

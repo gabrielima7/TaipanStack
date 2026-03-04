@@ -4,7 +4,6 @@ Covers: TypeError guards, SecurityError edge cases, on_retry callback,
 and on_state_change callback.
 """
 
-from __future__ import annotations
 
 import time
 

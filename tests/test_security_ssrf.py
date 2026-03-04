@@ -1,6 +1,5 @@
 """Tests for guard_ssrf — SSRF protection guard."""
 
-from __future__ import annotations
 
 import ipaddress
 import socket

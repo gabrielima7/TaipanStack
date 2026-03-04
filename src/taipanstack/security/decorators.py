@@ -6,7 +6,6 @@ timeout control, and other security patterns. Compatible with
 any Python framework (Flask, FastAPI, Django, etc.).
 """
 
-from __future__ import annotations
 
 import functools
 import signal

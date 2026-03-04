@@ -6,7 +6,6 @@ blocking calls to a failing service. Compatible with any
 Python framework.
 """
 
-from __future__ import annotations
 
 import functools
 import logging
