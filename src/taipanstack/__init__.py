@@ -19,11 +19,6 @@ from taipanstack.core.compat import (
     get_features,
     get_python_info,
 )
-from taipanstack.core.optimizations import apply_optimizations, get_optimization_profile
-from taipanstack.security.guards import (
-    guard_command_injection,
-    guard_path_traversal,
-)
 from taipanstack.security.validators import (
     validate_email,
     validate_project_name,
@@ -36,13 +31,9 @@ __all__ = [
     "PY314",
     "PY_VERSION",
     "VersionRecommendations",
-    "apply_optimizations",
     "get_features",
-    "get_optimization_profile",
     "get_python_info",
     "get_version_recommendations",
-    "guard_command_injection",
-    "guard_path_traversal",
     "validate_email",
     "validate_project_name",
     "validate_python_version",
