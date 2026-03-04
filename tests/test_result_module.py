@@ -113,6 +113,19 @@ class TestSafeFromDecorator:
         assert result2.is_err()
         assert isinstance(result2.err(), TypeError)
 
+    def test_safe_from_specific_exception(self) -> None:
+        """Test safe_from catching specific base Exception."""
+
+        @safe_from(Exception)
+        def raise_base_exception() -> int:
+            raise Exception("Base exception raised")
+
+        result = raise_base_exception()
+        assert result.is_err()
+        err = result.err()
+        assert type(err) is Exception
+        assert str(err) == "Base exception raised"
+
 
 class TestCollectResults:
     """Tests for collect_results function."""
