@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.3.4/">
       
       
+        <link rel="prev" href="../../patterns/security/">
+      
+      
+        <link rel="next" href="../v0.3.3/">
       
       
         
@@ -25,7 +29,7 @@
     
     
       
-        <title>TaipanStack v0.3.4 — Quality, Security Hardening & Code Health - TaipanStack</title>
+        <title>v0.3.4 - TaipanStack</title>
       
     
     
@@ -112,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              TaipanStack v0.3.4 — Quality, Security Hardening &amp; Code Health
+              v0.3.4
             
           </span>
         </div>
@@ -301,11 +305,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../v0.3.3/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -682,28 +688,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -721,7 +730,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -731,6 +740,241 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.3.4
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.3.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-security-fix-plaintext-password-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 🔒 Security Fix — Plaintext Password Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-new-password-security-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 🔐 New password Security Module
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-async-resilience-retry-circuit_breaker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 🚀 Async Resilience (@retry &amp; @circuit_breaker)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-pydantic-security-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 🛡️ Pydantic Security Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-structlog-data-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 🕵️ Structlog Data Masking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-test-coverage-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 🧪 Test Coverage Improvements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 🧪 Test Coverage Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notable-cve-2020-10735-test-coverage-pr-129" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notable: CVE-2020-10735 Test Coverage (PR #129)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-port-lazy-evaluation-fix-pr-130-126" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL Port Lazy Evaluation Fix (PR #130 / #126)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-code-health-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 🧹 Code Health &amp; Refactoring
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ⚡ Performance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-ci-devops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 🔧 CI / DevOps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qa-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q&amp;A Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
             
               
                 

@@ -311,7 +311,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../releases/v0.3.3/" class="md-tabs__link">
+        <a href="../../releases/v0.3.4/" class="md-tabs__link">
           
   
   
@@ -1351,6 +1351,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/v0.3.4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.3.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -2718,14 +2746,15 @@ False to let it propagate.</p>
 </span><span id="__span-0-10">    <span class="n">log_retries</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-11">    <span class="n">on_retry</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
 </span><span id="__span-0-12">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.retry.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.retry.R">R</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.retry.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.retry.R">R</span></span><span class="p">]]</span>
+</span><span id="__span-0-13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.utils.retry.F">F</span></span><span class="p">],</span> <span class="n"><span title="taipanstack.utils.retry.F">F</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Retry a function with exponential backoff.</p>
+        <p>Retry a sync or async function with exponential backoff.</p>
 <p>Automatically retries the decorated function when specified
-exceptions are raised, with configurable backoff strategy.</p>
+exceptions are raised, with configurable backoff strategy.
+Detects coroutine functions and preserves their async nature.</p>
 
 
 <table>
@@ -2933,7 +2962,7 @@ custom monitoring or metrics collection.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.retry.P">P</span>, <span title="taipanstack.utils.retry.R">R</span>]], <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.retry.P">P</span>, <span title="taipanstack.utils.retry.R">R</span>]]</code>
+                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.utils.retry.F">F</span>], <span title="taipanstack.utils.retry.F">F</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -3096,7 +3125,7 @@ just need basic retry functionality.</p>
         <p>Circuit Breaker pattern implementation.</p>
 <p>Provides protection against cascading failures by temporarily
 blocking calls to a failing service. Compatible with any
-Python framework.</p>
+Python framework (sync and async).</p>
 
 
 
@@ -3491,7 +3520,7 @@ Python framework.</p>
         <p>Circuit breaker implementation.</p>
 <p>Monitors function calls and opens the circuit when too many
 failures occur, preventing further calls until the service
-recovers.</p>
+recovers. Supports both sync and async functions.</p>
 
 
 <details class="example" open>
@@ -3759,12 +3788,12 @@ with (old_state, new_state). Useful for custom monitoring.</p>
 
 
 <a href="#taipanstack.utils.circuit_breaker.CircuitBreaker.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__call__</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__call__</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Decorate a function with circuit breaker protection.</p>
+        <p>Decorate a sync or async function with circuit breaker protection.</p>
 
 
     </div>
@@ -3802,12 +3831,12 @@ with (old_state, new_state). Useful for custom monitoring.</p>
 </span><span id="__span-0-12">        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.utils.circuit_breaker.CircuitState)" href="#taipanstack.utils.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.utils.circuit_breaker.CircuitState)" href="#taipanstack.utils.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">],</span> <span class="kc">None</span>
 </span><span id="__span-0-13">    <span class="p">]</span>
 </span><span id="__span-0-14">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-15"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]]</span>
+</span><span id="__span-0-15"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">],</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Decorator to apply circuit breaker pattern.</p>
+        <p>Decorate a sync or async function with circuit breaker pattern.</p>
 
 
 <table>
@@ -3974,7 +4003,7 @@ with (old_state, new_state).</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.circuit_breaker.P">P</span>, <span title="taipanstack.utils.circuit_breaker.R">R</span>]], <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.circuit_breaker.P">P</span>, <span title="taipanstack.utils.circuit_breaker.R">R</span>]]</code>
+                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.utils.circuit_breaker.F">F</span>], <span title="taipanstack.utils.circuit_breaker.F">F</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
