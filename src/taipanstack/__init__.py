@@ -5,7 +5,7 @@ A modular, secure, and scalable Python stack for robust development.
 Supports Python 3.11+ with version-aware optimizations for 3.13/3.14.
 """
 
-__version__ = "0.3.4"
+__version__ = "0.3.3"
 
 from taipanstack.config.version_config import (
     VersionRecommendations,
