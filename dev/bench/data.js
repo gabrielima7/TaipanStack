@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772638032624,
+  "lastUpdate": 1772638109059,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -2193,6 +2193,135 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 4.8237163625432955e-8",
             "extra": "mean: 398.00234371272876 nsec\nrounds: 105175"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "563fe0e9bae199891787de18fc8078b30f5647fe",
+          "message": "Fix unused imports by defining __all__ in utils/__init__.py (#98)\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-04T15:16:09Z",
+          "tree_id": "f3fca0eced5e735b8423bf8d0e28ea0b4e5ac8f3",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/563fe0e9bae199891787de18fc8078b30f5647fe"
+        },
+        "date": 1772638108405,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 175017.4191831604,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002143733489919329",
+            "extra": "mean: 5.713716981242155 usec\nrounds: 212"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 154632.03940514367,
+            "unit": "iter/sec",
+            "range": "stddev: 7.964717002793705e-7",
+            "extra": "mean: 6.466965085935069 usec\nrounds: 68597"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 53568.13176353483,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000016110958669655495",
+            "extra": "mean: 18.667815491760813 usec\nrounds: 29435"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 163176.72957584262,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000012282212824328949",
+            "extra": "mean: 6.128324808319018 usec\nrounds: 1564"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 109262.03595589132,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000011378466738824982",
+            "extra": "mean: 9.152309777603781 usec\nrounds: 41278"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 19084.04156601256,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000003988665995406375",
+            "extra": "mean: 52.399802030453294 usec\nrounds: 10047"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 33805.23506504316,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000015397982537657143",
+            "extra": "mean: 29.581217171717462 usec\nrounds: 17028"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4408098.598661699,
+            "unit": "iter/sec",
+            "range": "stddev: 3.777351616643994e-8",
+            "extra": "mean: 226.85517976028626 nsec\nrounds: 147864"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 569106.2298652929,
+            "unit": "iter/sec",
+            "range": "stddev: 4.997995354046358e-7",
+            "extra": "mean: 1.7571411935461652 usec\nrounds: 186916"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 871200.2464724476,
+            "unit": "iter/sec",
+            "range": "stddev: 7.546675244645617e-7",
+            "extra": "mean: 1.147841732195407 usec\nrounds: 7759"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 465591.31407081237,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000010691282536178362",
+            "extra": "mean: 2.147806391095837 usec\nrounds: 114065"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2922696.2748522973,
+            "unit": "iter/sec",
+            "range": "stddev: 4.193521434901039e-8",
+            "extra": "mean: 342.1498185096067 nsec\nrounds: 111025"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1135062.7807579383,
+            "unit": "iter/sec",
+            "range": "stddev: 2.837710042005142e-7",
+            "extra": "mean: 881.0085371068637 nsec\nrounds: 176992"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 29099.070033179767,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000004646750699584163",
+            "extra": "mean: 34.36535940357425 usec\nrounds: 16967"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 2342486.230998411,
+            "unit": "iter/sec",
+            "range": "stddev: 8.654463949021778e-8",
+            "extra": "mean: 426.896852910742 nsec\nrounds: 174521"
           }
         ]
       }
