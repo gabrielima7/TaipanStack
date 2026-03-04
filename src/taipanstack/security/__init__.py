@@ -16,6 +16,7 @@ from taipanstack.security.guards import (
     guard_path_traversal,
     guard_ssrf,
 )
+from taipanstack.security.password import hash_password, verify_password
 from taipanstack.security.sanitizers import (
     sanitize_filename,
     sanitize_path,
@@ -40,7 +41,9 @@ __all__ = [
     "guard_file_extension",
     "guard_path_traversal",
     "guard_ssrf",
+    "hash_password",
     "require_type",
+    "verify_password",
     # Sanitizers
     "sanitize_filename",
     "sanitize_path",

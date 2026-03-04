@@ -16,6 +16,7 @@ from app.secure_system import (
     UserService,
 )
 from taipanstack.core.result import Err, Ok
+from taipanstack.security import verify_password
 
 
 def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
@@ -36,6 +37,7 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
     assert user.is_active is True
+    assert verify_password("secure_password", user.password_hash)
 
     # Test get_user with Result pattern
     result_get = service.get_user(user.id)
