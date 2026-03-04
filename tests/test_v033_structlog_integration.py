@@ -1,6 +1,5 @@
 """Tests for native structlog integration in retry.py and circuit_breaker.py."""
 
-from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 

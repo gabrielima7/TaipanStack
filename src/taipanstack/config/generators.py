@@ -5,13 +5,10 @@ This module generates configuration files (pyproject.toml, pre-commit, etc.)
 with proper validation and templating.
 """
 
-from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from taipanstack.config.models import StackConfig
+from taipanstack.config.models import StackConfig
 
 
 def _generate_ruff_config(target_version: str) -> str:

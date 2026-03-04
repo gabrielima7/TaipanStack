@@ -5,7 +5,6 @@ Provides secure wrappers around subprocess execution with
 command validation, timeout handling, and retry logic.
 """
 
-from __future__ import annotations
 
 import shutil
 import subprocess
@@ -42,7 +41,7 @@ class SafeCommandResult:
         """Check if command succeeded."""
         return self.returncode == 0
 
-    def raise_on_error(self) -> SafeCommandResult:
+    def raise_on_error(self) -> "SafeCommandResult":
         """Raise an exception if command failed.
 
         Returns:

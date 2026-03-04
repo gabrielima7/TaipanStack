@@ -1,6 +1,5 @@
 """Final tests to reach 100% coverage - pushing to the limit."""
 
-from __future__ import annotations
 
 import subprocess as sp
 from pathlib import Path

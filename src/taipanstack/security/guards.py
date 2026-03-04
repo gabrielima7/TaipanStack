@@ -6,7 +6,6 @@ and programming errors that can occur from incorrect AI-generated code.
 All guards raise SecurityError on violation.
 """
 
-from __future__ import annotations
 
 import ipaddress
 import os

@@ -7,7 +7,6 @@ versions, enabling performance improvements while maintaining stability.
 Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
 """
 
-from __future__ import annotations
 
 import gc
 import logging

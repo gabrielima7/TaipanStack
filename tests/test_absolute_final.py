@@ -1,6 +1,5 @@
 """Absolute final tests to hit every remaining line."""
 
-from __future__ import annotations
 
 from pathlib import Path
 from unittest.mock import patch

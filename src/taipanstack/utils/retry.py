@@ -6,7 +6,6 @@ with configurable backoff strategies. Compatible with any
 Python framework (sync and async).
 """
 
-from __future__ import annotations
 
 import functools
 import logging
@@ -301,7 +300,7 @@ class Retrier:
         self.attempt = 0
         self.last_exception: Exception | None = None
 
-    def __enter__(self) -> Retrier:
+    def __enter__(self) -> "Retrier":
         """Enter the retry context."""
         self.attempt = 0
         self.last_exception = None

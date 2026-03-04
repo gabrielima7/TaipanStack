@@ -1,14 +1,10 @@
 """Tests to achieve 100% code coverage."""
 
-from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class TestAppMain:

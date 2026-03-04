@@ -1,6 +1,5 @@
 """Targeted tests for specific uncovered lines."""
 
-from __future__ import annotations
 
 from pathlib import Path
 

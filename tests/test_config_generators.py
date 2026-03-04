@@ -1,6 +1,5 @@
 """Tests for configuration generators."""
 
-from __future__ import annotations
 
 from pathlib import Path
 
