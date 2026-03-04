@@ -141,8 +141,13 @@ class TestValidateIpAddress:
 
     def test_invalid_ip_rejected(self) -> None:
         """Test invalid IPs are rejected."""
-        with pytest.raises(ValueError, match="Invalid IP address"):
+        with pytest.raises(
+            ValueError, match="Invalid IP address: not.an.ip"
+        ) as exc_info:
             validate_ip_address("not.an.ip")
+
+        # Verify that the original ipaddress ValueError was chained
+        assert isinstance(exc_info.value.__cause__, ValueError)
 
 
 class TestValidatePort:
