@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772743546476,
+  "lastUpdate": 1772743667923,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -4644,6 +4644,135 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 6.106857195598814e-8",
             "extra": "mean: 407.38765484538465 nsec\nrounds: 103328"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1ca6263417c5b93e7186415ace8f77ad4eab2492",
+          "message": "Add test for `async_wrapper` missing base Exception catch in `taipanstack/core/result.py` (#134)\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-05T20:45:57Z",
+          "tree_id": "89d840ba78342501f96e510d082c31deeb549c3e",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/1ca6263417c5b93e7186415ace8f77ad4eab2492"
+        },
+        "date": 1772743667251,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 189630.9781182774,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000013194343446666646",
+            "extra": "mean: 5.27339999995294 usec\nrounds: 220"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 156658.97750399628,
+            "unit": "iter/sec",
+            "range": "stddev: 8.581837727082163e-7",
+            "extra": "mean: 6.383292013855322 usec\nrounds: 59165"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 54317.81292089492,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000015616151964548726",
+            "extra": "mean: 18.410166872078186 usec\nrounds: 26775"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 163757.26161172483,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000010908418364898876",
+            "extra": "mean: 6.106599427456481 usec\nrounds: 10480"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 109189.65349444933,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000001242288973532951",
+            "extra": "mean: 9.158376897412127 usec\nrounds: 41043"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 16912.573782827658,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00001911148974349218",
+            "extra": "mean: 59.12760605457695 usec\nrounds: 10042"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 33926.24686746281,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000014677075533104707",
+            "extra": "mean: 29.475703690615322 usec\nrounds: 17016"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4505782.914506766,
+            "unit": "iter/sec",
+            "range": "stddev: 3.373334446883271e-8",
+            "extra": "mean: 221.93701271736805 nsec\nrounds: 154274"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 586469.327002173,
+            "unit": "iter/sec",
+            "range": "stddev: 2.967936873023603e-7",
+            "extra": "mean: 1.7051190129782534 usec\nrounds: 188324"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 1097028.0608627773,
+            "unit": "iter/sec",
+            "range": "stddev: 3.781278509170287e-7",
+            "extra": "mean: 911.5537110450321 nsec\nrounds: 10361"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 612576.5661970703,
+            "unit": "iter/sec",
+            "range": "stddev: 4.012386730784626e-7",
+            "extra": "mean: 1.6324489952465677 usec\nrounds: 148545"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2916307.015248125,
+            "unit": "iter/sec",
+            "range": "stddev: 4.1618341288798407e-8",
+            "extra": "mean: 342.89942546220846 nsec\nrounds: 108261"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1142056.3603125117,
+            "unit": "iter/sec",
+            "range": "stddev: 2.8912838478001455e-7",
+            "extra": "mean: 875.613529026151 nsec\nrounds: 173612"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 29001.94334495643,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000006484912664818558",
+            "extra": "mean: 34.48044802052565 usec\nrounds: 17555"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 2519542.5594097185,
+            "unit": "iter/sec",
+            "range": "stddev: 4.900507197398944e-8",
+            "extra": "mean: 396.89744325440074 nsec\nrounds: 105955"
           }
         ]
       }
