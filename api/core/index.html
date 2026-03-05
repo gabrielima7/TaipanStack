@@ -622,6 +622,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#taipanstack.core.result.map_async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;map_async
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.core.result.and_then_async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;and_then_async
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1137,6 +1159,28 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;unwrap_or_else
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.core.result.map_async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;map_async
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.core.result.and_then_async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;and_then_async
       
     </span>
   </a>
@@ -1744,6 +1788,271 @@ unwrap_or(Err("error"), 0)
 42
 unwrap_or_else(Err(ValueError("x")), lambda e: len(str(e)))
 1</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="taipanstack.core.result.map_async" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">map_async</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#taipanstack.core.result.map_async" class="headerlink" title="Permanent link">&para;</a></h2>
+          <div class="doc-overloads">
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">map_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Ok">Ok</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div><div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">map_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Err">Err</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Err">Err</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div><div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">map_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div>          </div>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">map_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Asynchronously apply a function to the value of an Ok result.</p>
+<p>If the result is Err, returns it unchanged.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>result</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>The Result to process.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="taipanstack.core.result.E">E</span>]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>func</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Coroutine function to apply to the Ok value.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.core.result.T">T</span>], <span title="collections.abc.Coroutine">Coroutine</span>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>, <span title="taipanstack.core.result.U">U</span>]]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="result.Result">Result</span>[<span title="taipanstack.core.result.U">U</span>, <span title="taipanstack.core.result.E">E</span>]</code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>New Result containing the processed value or original error.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>async def process(x: int) -&gt; str:
+...     return str(x * 2)
+await map_async(Ok(5), process)
+Ok('10')
+await map_async(Err("fail"), process)
+Err('fail')</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="taipanstack.core.result.and_then_async" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">and_then_async</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#taipanstack.core.result.and_then_async" class="headerlink" title="Permanent link">&para;</a></h2>
+          <div class="doc-overloads">
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">and_then_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Ok">Ok</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-4">        <span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]]</span>
+</span><span id="__span-0-5">    <span class="p">],</span>
+</span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div><div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">and_then_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Err">Err</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-4">        <span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]]</span>
+</span><span id="__span-0-5">    <span class="p">],</span>
+</span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Err">Err</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div><div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">and_then_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-4">        <span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]]</span>
+</span><span id="__span-0-5">    <span class="p">],</span>
+</span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div>          </div>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">and_then_async</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">result</span><span class="p">:</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
+</span><span id="__span-0-3">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
+</span><span id="__span-0-4">        <span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]]</span>
+</span><span id="__span-0-5">    <span class="p">],</span>
+</span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.U">U</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Asynchronously chain operations that return Results.</p>
+<p>If the result is Ok, asynchronously applies <code>func</code> and returns its Result.
+If the result is Err, returns it unchanged.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>result</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>The Result to process.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="taipanstack.core.result.E">E</span>]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>func</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Coroutine function taking the Ok value and returning a new Result.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.core.result.T">T</span>], <span title="collections.abc.Coroutine">Coroutine</span>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.U">U</span>, <span title="taipanstack.core.result.E">E</span>]]]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="result.Result">Result</span>[<span title="taipanstack.core.result.U">U</span>, <span title="taipanstack.core.result.E">E</span>]</code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>The new Result from <code>func</code> or the original error.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <blockquote>
+<blockquote>
+<blockquote>
+<p>async def fetch_user(uid: int) -&gt; Result[str, ValueError]:
+...     if uid == 1:
+...         return Ok("Alice")
+...     return Err(ValueError("User not found"))
+await and_then_async(Ok(1), fetch_user)
+Ok('Alice')
+await and_then_async(Ok(2), fetch_user)
+Err(ValueError('User not found'))
+await and_then_async(Err(ValueError("No DB")), fetch_user)
+Err(ValueError('No DB'))</p>
 </blockquote>
 </blockquote>
 </blockquote>
