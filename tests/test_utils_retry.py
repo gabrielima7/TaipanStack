@@ -149,6 +149,76 @@ class TestRetryDecorator:
         assert "Original error" in str(exc_info.value.last_exception)
 
 
+class TestAsyncRetryDecorator:
+    """Tests for @retry decorator on async functions."""
+
+    @pytest.mark.asyncio
+    async def test_success_no_retry(self) -> None:
+        """Test successful async function doesn't retry."""
+        call_count = 0
+
+        @retry(max_attempts=3)
+        async def success_func() -> str:
+            nonlocal call_count
+            call_count += 1
+            return "success"
+
+        result = await success_func()
+        assert result == "success"
+        assert call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_retry_on_failure(self) -> None:
+        """Test async function retries on failure."""
+        call_count = 0
+
+        @retry(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+        async def failing_then_success() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise ValueError("Not yet")
+            return "success"
+
+        result = await failing_then_success()
+        assert result == "success"
+        assert call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_max_attempts_exceeded(self) -> None:
+        """Test RetryError when max attempts exceeded for async function."""
+        @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
+        async def always_fail() -> None:
+            raise ValueError("Always fails")
+
+        with pytest.raises(RetryError) as exc_info:
+            await always_fail()
+        assert exc_info.value.attempts == 2
+
+    @pytest.mark.asyncio
+    async def test_only_catches_specified_exceptions(self) -> None:
+        """Test that only specified exceptions trigger retry for async function."""
+        @retry(max_attempts=3, on=(ValueError,))
+        async def raise_type_error() -> None:
+            raise TypeError("Wrong type")
+
+        # TypeError should not be caught
+        with pytest.raises(TypeError):
+            await raise_type_error()
+
+    @pytest.mark.asyncio
+    async def test_last_exception_preserved(self) -> None:
+        """Test that last exception is preserved in RetryError for async function."""
+        @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
+        async def failing_func() -> None:
+            raise ValueError("Original error")
+
+        with pytest.raises(RetryError) as exc_info:
+            await failing_func()
+        assert exc_info.value.last_exception is not None
+        assert "Original error" in str(exc_info.value.last_exception)
+
+
 class TestRetryOnException:
     """Tests for retry_on_exception decorator."""
 
