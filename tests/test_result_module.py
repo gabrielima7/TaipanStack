@@ -284,7 +284,6 @@ class TestSafeAsyncDecorator:
         assert result.is_err()
         assert isinstance(result.err(), RuntimeError)
 
-<<<<<<< HEAD
     @pytest.mark.asyncio
     async def test_safe_async_basic_exception(self) -> None:
         """Test safe decorator returns Err on base Exception in async function."""
@@ -298,7 +297,6 @@ class TestSafeAsyncDecorator:
         err = result.err()
         assert type(err) is Exception
         assert str(err) == "Basic async exception occurred"
-=======
 
 class TestMapAsync:
     """Tests for map_async function."""
@@ -371,4 +369,3 @@ class TestAndThenAsync:
         assert chained.is_err()
         assert isinstance(chained.err(), ValueError)
         assert not executed
->>>>>>> main
