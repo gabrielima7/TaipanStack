@@ -1,6 +1,5 @@
 """Tests for rate limiting utils."""
 
-
 import pytest
 
 from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
