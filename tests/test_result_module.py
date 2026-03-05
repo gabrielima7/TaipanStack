@@ -6,7 +6,9 @@ from taipanstack.core.result import (
     Err,
     Ok,
     Result,
+    and_then_async,
     collect_results,
+    map_async,
     safe,
     safe_from,
     unwrap_or,
@@ -142,31 +144,33 @@ class TestCollectResults:
 
     def test_collect_all_ok(self) -> None:
         """Test collect_results with all Ok values."""
-        results: list[Result[int, str]] = [Ok(1), Ok(2), Ok(3)]
+        results: list[Result[int, ValueError]] = [Ok(1), Ok(2), Ok(3)]
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok() == [1, 2, 3]
 
     def test_collect_with_err(self) -> None:
         """Test collect_results stops at first Err."""
-        results: list[Result[int, str]] = [Ok(1), Err("error"), Ok(3)]
+        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("error")), Ok(3)]
         collected = collect_results(results)
         assert collected.is_err()
-        assert collected.err() == "error"
+        assert isinstance(collected.err(), ValueError)
+        assert str(collected.err()) == "error"
 
     def test_collect_empty(self) -> None:
         """Test collect_results with empty list."""
-        results: list[Result[int, str]] = []
+        results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok() == []
 
     def test_collect_first_err_returned(self) -> None:
         """Test collect_results returns first Err encountered."""
-        results: list[Result[int, str]] = [Ok(1), Err("first"), Err("second")]
+        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("first")), Err(ValueError("second"))]
         collected = collect_results(results)
         assert collected.is_err()
-        assert collected.err() == "first"
+        assert isinstance(collected.err(), ValueError)
+        assert str(collected.err()) == "first"
 
 
 class TestUnwrapOr:
@@ -174,12 +178,12 @@ class TestUnwrapOr:
 
     def test_unwrap_or_ok(self) -> None:
         """Test unwrap_or returns Ok value."""
-        result: Result[int, str] = Ok(42)
+        result: Result[int, ValueError] = Ok(42)
         assert unwrap_or(result, 0) == 42
 
     def test_unwrap_or_err(self) -> None:
         """Test unwrap_or returns default on Err."""
-        result: Result[int, str] = Err("error")
+        result: Result[int, ValueError] = Err(ValueError("error"))
         assert unwrap_or(result, 0) == 0
 
 
@@ -188,13 +192,13 @@ class TestUnwrapOrElse:
 
     def test_unwrap_or_else_ok(self) -> None:
         """Test unwrap_or_else returns Ok value."""
-        result: Result[int, str] = Ok(42)
+        result: Result[int, ValueError] = Ok(42)
         assert unwrap_or_else(result, len) == 42
 
     def test_unwrap_or_else_err(self) -> None:
         """Test unwrap_or_else computes default from error."""
-        result: Result[int, str] = Err("error")
-        assert unwrap_or_else(result, len) == 5
+        result: Result[int, ValueError] = Err(ValueError("error"))
+        assert unwrap_or_else(result, lambda e: len(str(e))) == 5
 
     def test_unwrap_or_else_with_exception(self) -> None:
         """Test unwrap_or_else with exception error type."""
@@ -210,7 +214,7 @@ class TestMatchCase:
 
     def test_match_ok(self) -> None:
         """Test match/case with Ok value."""
-        result: Result[int, str] = Ok(42)
+        result: Result[int, ValueError] = Ok(42)
         match result:
             case Ok(value):
                 assert value == 42
@@ -219,12 +223,13 @@ class TestMatchCase:
 
     def test_match_err(self) -> None:
         """Test match/case with Err value."""
-        result: Result[int, str] = Err("error")
+        result: Result[int, ValueError] = Err(ValueError("error"))
         match result:
             case Ok():
                 pytest.fail("Should not match Ok")
             case Err(error):
-                assert error == "error"
+                assert isinstance(error, ValueError)
+                assert str(error) == "error"
 
 
 class TestSafeAsyncDecorator:
@@ -279,6 +284,7 @@ class TestSafeAsyncDecorator:
         assert result.is_err()
         assert isinstance(result.err(), RuntimeError)
 
+<<<<<<< HEAD
     @pytest.mark.asyncio
     async def test_safe_async_basic_exception(self) -> None:
         """Test safe decorator returns Err on base Exception in async function."""
@@ -292,3 +298,77 @@ class TestSafeAsyncDecorator:
         err = result.err()
         assert type(err) is Exception
         assert str(err) == "Basic async exception occurred"
+=======
+
+class TestMapAsync:
+    """Tests for map_async function."""
+
+    @pytest.mark.asyncio
+    async def test_map_async_ok(self) -> None:
+        """Test map_async with Ok value."""
+
+        async def double(x: int) -> int:
+            return x * 2
+
+        result: Result[int, ValueError] = Ok(21)
+        mapped = await map_async(result, double)
+        assert mapped.is_ok()
+        assert mapped.ok() == 42
+
+    @pytest.mark.asyncio
+    async def test_map_async_err(self) -> None:
+        """Test map_async with Err value."""
+
+        async def double(x: int) -> int:
+            return x * 2
+
+        result: Result[int, ValueError] = Err(ValueError("error"))
+        mapped: Result[int, ValueError] = await map_async(result, double)
+        assert mapped.is_err()
+        assert isinstance(mapped.err(), ValueError)
+
+
+class TestAndThenAsync:
+    """Tests for and_then_async function."""
+
+    @pytest.mark.asyncio
+    async def test_and_then_async_ok_to_ok(self) -> None:
+        """Test and_then_async mapping Ok to Ok."""
+
+        async def process(x: int) -> Result[str, ValueError]:
+            return Ok(str(x * 2))
+
+        result: Result[int, ValueError] = Ok(21)
+        chained = await and_then_async(result, process)
+        assert chained.is_ok()
+        assert chained.ok() == "42"
+
+    @pytest.mark.asyncio
+    async def test_and_then_async_ok_to_err(self) -> None:
+        """Test and_then_async mapping Ok to Err."""
+
+        async def process(x: int) -> Result[str, ValueError]:
+            return Err(ValueError("validation failed"))
+
+        result: Result[int, ValueError] = Ok(21)
+        chained = await and_then_async(result, process)
+        assert chained.is_err()
+        assert isinstance(chained.err(), ValueError)
+
+    @pytest.mark.asyncio
+    async def test_and_then_async_err(self) -> None:
+        """Test and_then_async with Err value skips execution."""
+
+        executed = False
+
+        async def process(x: int) -> Result[str, ValueError]:
+            nonlocal executed
+            executed = True
+            return Ok(str(x))
+
+        result: Result[int, ValueError] = Err(ValueError("initial error"))
+        chained: Result[str, ValueError] = await and_then_async(result, process)
+        assert chained.is_err()
+        assert isinstance(chained.err(), ValueError)
+        assert not executed
+>>>>>>> main
