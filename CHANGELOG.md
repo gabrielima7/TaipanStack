@@ -3,7 +3,19 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).## [0.3.6] - 2026-03-05
+
+### QA / Testing
+- **Async Wrapper**: Comprehensive `pytest.mark.asyncio` testing for `@retry`, `circuit_breaker`, and `@safe` with 100% coverage guarantees.
+- **Validations**: Added tests for inner guards logic (`normalize_ext`) and configuration validations (`validate_project_dir`).
+
+### Security
+- **Critical Fix**: Patched critical symlink path traversal bypass in `guard_path_traversal`.
+- **JWT**: Resolved `InsecureKeyLengthWarning` in JWT test suites with upgraded 32-byte minimum limits.
+
+### Code Health & Refactoring
+- **Lint & Types**: Resolved MyPy strict typing (`overload` protocols), Bandit security warnings (`B404`, `B603`), and Ruff lintings (`E501`, `F811`).
+- **Maintainability**: Unified test suite retry logging parameter scopes into a resilient testing environment.
 
 ## [0.3.5] - 2026-03-04
 
@@ -210,6 +222,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[0.3.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.2...v0.3.3
@@ -219,5 +232,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.5...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...HEAD
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
