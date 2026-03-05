@@ -53,10 +53,12 @@ class TestGuardsOSErrorMocked:
         mock_path = MagicMock(spec=Path)
         mock_path.__str__ = MagicMock(return_value="safe_file.txt")
         mock_path.is_absolute.return_value = False
+        mock_path.is_symlink.return_value = False
 
         # The (base_dir / path).resolve() call raises ValueError
         mock_joined = MagicMock(spec=Path)
         mock_joined.resolve.side_effect = ValueError("embedded null byte")
+        mock_joined.is_symlink.return_value = False
 
         with (
             patch.object(Path, "__truediv__", return_value=mock_joined),

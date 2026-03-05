@@ -161,6 +161,37 @@ def guard_path_traversal(
                 value=path_str[:50],  # Truncate for safety
             )
 
+    # Check for symlinks if not allowed
+    # We must check this before resolution, because resolve() evaluates symlinks
+    if not allow_symlinks:
+        full_path = path if path.is_absolute() else base_dir / path
+
+        # Only check components derived from the user input (relative to base_dir)
+        # to prevent false positives when base_dir itself is in a symlinked path.
+        current_check = base_dir
+        path_has_symlink = False
+
+        if path.is_absolute():
+            # If absolute, check all parts of the user-provided path
+            current_check = Path(path.anchor)
+            parts_to_check = path.parts[1:]
+        else:
+            # If relative, check parts starting from base_dir
+            parts_to_check = path.parts
+
+        for part in parts_to_check:
+            current_check = current_check / part
+            if current_check.is_symlink():
+                path_has_symlink = True
+                break
+
+        if path_has_symlink:
+            raise SecurityError(
+                "Symlinks are not allowed",
+                guard_name="path_traversal",
+                value=str(full_path),
+            )
+
     # Resolve the path
     try:
         resolved = path.resolve() if path.is_absolute() else (base_dir / path).resolve()
@@ -179,17 +210,6 @@ def guard_path_traversal(
             guard_name="path_traversal",
             value=str(resolved)[:100],
         ) from e
-
-    # Check for symlinks if not allowed
-    is_existing_symlink = (
-        not allow_symlinks and resolved.exists() and resolved.is_symlink()
-    )
-    if is_existing_symlink:
-        raise SecurityError(
-            "Symlinks are not allowed",
-            guard_name="path_traversal",
-            value=str(resolved),
-        )
 
     return resolved
 

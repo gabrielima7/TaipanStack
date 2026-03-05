@@ -66,6 +66,43 @@ class TestGuardPathTraversal:
         # The error should indicate path is not under base dir
         assert "path_traversal" in str(exc_info.value).lower()
 
+    def test_symlink_blocked(self, tmp_path: Path) -> None:
+        """Test that symlinks are blocked when allow_symlinks=False."""
+        target = tmp_path / "target.txt"
+        target.touch()
+
+        link = tmp_path / "link.txt"
+        link.symlink_to("target.txt")
+
+        with pytest.raises(SecurityError) as exc_info:
+            guard_path_traversal(link, tmp_path, allow_symlinks=False)
+        assert "Symlinks are not allowed" in str(exc_info.value)
+        assert "path_traversal" in str(exc_info.value)
+
+    def test_symlink_blocked_relative(self, tmp_path: Path) -> None:
+        """Test that relative symlinks are blocked when allow_symlinks=False."""
+        target = tmp_path / "target.txt"
+        target.touch()
+
+        link = tmp_path / "link.txt"
+        link.symlink_to("target.txt")
+
+        # Pass a relative path
+        with pytest.raises(SecurityError) as exc_info:
+            guard_path_traversal(Path("link.txt"), tmp_path, allow_symlinks=False)
+        assert "Symlinks are not allowed" in str(exc_info.value)
+
+    def test_symlink_allowed(self, tmp_path: Path) -> None:
+        """Test that symlinks are allowed when allow_symlinks=True."""
+        target = tmp_path / "target.txt"
+        target.touch()
+
+        link = tmp_path / "link.txt"
+        link.symlink_to("target.txt")
+
+        result = guard_path_traversal(link, tmp_path, allow_symlinks=True)
+        assert result == target.resolve()
+
 
 class TestGuardCommandInjection:
     """Tests for guard_command_injection function."""
