@@ -142,6 +142,18 @@ class TestGuardFileExtension:
         result = guard_file_extension("file.txt", allowed_extensions=[".txt"])
         assert result == Path("file.txt")
 
+    def test_normalize_ext_in_denied(self) -> None:
+        """Test that denied_extensions are normalized correctly."""
+        with pytest.raises(SecurityError, match="not allowed"):
+            # Should deny 'file.yaml' even if denied list is uppercase and has dots
+            guard_file_extension("file.yaml", denied_extensions=[".YAML"])
+
+    def test_normalize_ext_in_allowed(self) -> None:
+        """Test that allowed_extensions are normalized correctly."""
+        # Should allow 'file.txt' even if allowed list is uppercase and has dots
+        result = guard_file_extension("file.txt", allowed_extensions=[".TXT"])
+        assert result == Path("file.txt")
+
 
 class TestGuardEnvVariable:
     """Tests for guard_env_variable function."""
