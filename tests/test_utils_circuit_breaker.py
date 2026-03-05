@@ -183,6 +183,33 @@ class TestCircuitBreakerDecorator:
 
         assert my_func() == "ok"
 
+    async def test_decorator_async_success(self) -> None:
+        """Test that decorator works with async functions."""
+
+        @circuit_breaker(failure_threshold=2)
+        async def my_async_func() -> str:
+            return "async_ok"
+
+        assert await my_async_func() == "async_ok"
+
+    async def test_decorator_async_failure_opens_circuit(self) -> None:
+        """Test that failures in async functions open the circuit."""
+
+        @circuit_breaker(failure_threshold=2)
+        async def my_async_func() -> None:
+            raise ValueError("async_fail")
+
+        # Trip the circuit
+        for _ in range(2):
+            with pytest.raises(ValueError):
+                await my_async_func()
+
+        # Circuit should now be open, raising CircuitBreakerError
+        with pytest.raises(CircuitBreakerError) as exc_info:
+            await my_async_func()
+
+        assert exc_info.value.state == CircuitState.OPEN
+
 
 class TestCircuitBreakerError:
     """Tests for CircuitBreakerError."""
