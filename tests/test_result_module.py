@@ -278,3 +278,17 @@ class TestSafeAsyncDecorator:
         result = await async_fail()
         assert result.is_err()
         assert isinstance(result.err(), RuntimeError)
+
+    @pytest.mark.asyncio
+    async def test_safe_async_basic_exception(self) -> None:
+        """Test safe decorator returns Err on base Exception in async function."""
+
+        @safe
+        async def async_raise_exception() -> None:
+            raise Exception("Basic async exception occurred")  # noqa: TRY002
+
+        result = await async_raise_exception()
+        assert result.is_err()
+        err = result.err()
+        assert type(err) is Exception
+        assert str(err) == "Basic async exception occurred"
