@@ -187,6 +187,7 @@ class TestAsyncRetryDecorator:
     @pytest.mark.asyncio
     async def test_max_attempts_exceeded(self) -> None:
         """Test RetryError when max attempts exceeded for async function."""
+
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         async def always_fail() -> None:
             raise ValueError("Always fails")
@@ -198,6 +199,7 @@ class TestAsyncRetryDecorator:
     @pytest.mark.asyncio
     async def test_only_catches_specified_exceptions(self) -> None:
         """Test that only specified exceptions trigger retry for async function."""
+
         @retry(max_attempts=3, on=(ValueError,))
         async def raise_type_error() -> None:
             raise TypeError("Wrong type")
@@ -209,6 +211,7 @@ class TestAsyncRetryDecorator:
     @pytest.mark.asyncio
     async def test_last_exception_preserved(self) -> None:
         """Test that last exception is preserved in RetryError for async function."""
+
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         async def failing_func() -> None:
             raise ValueError("Original error")
