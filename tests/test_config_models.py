@@ -141,6 +141,43 @@ class TestStackConfig:
         with pytest.raises(ValidationError, match="Path traversal"):
             StackConfig(project_dir=Path("../../../etc"))
 
+    def test_absolute_path_accepted(self, tmp_path: Path) -> None:
+        """Test absolute path is accepted and resolved."""
+        abs_path = tmp_path.resolve()
+        config = StackConfig(project_dir=abs_path)
+        assert config.project_dir == abs_path
+
+    def test_path_with_dots_not_traversal_accepted(self, tmp_path: Path) -> None:
+        """Test paths with dots that are not traversal are accepted."""
+        dot_path = tmp_path / "my.project.dir"
+        config = StackConfig(project_dir=dot_path)
+        assert config.project_dir == dot_path.resolve()
+
+    def test_non_existent_path_accepted(self, tmp_path: Path) -> None:
+        """Test non-existent path is accepted (resolve handles it)."""
+        non_existent = tmp_path / "new_project_dir"
+        config = StackConfig(project_dir=non_existent)
+        assert config.project_dir == non_existent.resolve()
+
+    def test_direct_validate_project_dir_call(self) -> None:
+        """Test direct call to validate_project_dir classmethod."""
+        test_path = Path("some/path")
+        resolved = StackConfig.validate_project_dir(test_path)
+        assert resolved == test_path.resolve()
+
+    def test_validate_project_dir_traversal_direct_call(self) -> None:
+        """Test direct call to validate_project_dir with traversal."""
+        with pytest.raises(ValueError, match="Path traversal"):
+            StackConfig.validate_project_dir(Path("safe/../unsafe"))
+
+    def test_path_with_double_dots_in_name_rejected(self) -> None:
+        """Test that paths with '..' in the name are currently rejected.
+
+        Note: This is current behavior due to simple string check.
+        """
+        with pytest.raises(ValidationError, match="Path traversal"):
+            StackConfig(project_dir=Path("dir_with..dots"))
+
     def test_paranoid_requires_all_tools(self) -> None:
         """Test paranoid mode requires all security tools."""
         with pytest.raises(ValidationError, match="requires all security tools"):
