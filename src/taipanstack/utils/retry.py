@@ -44,6 +44,8 @@ class RetryConfig:
         exponential_base: Base for exponential backoff (2 = double each time).
         jitter: Whether to add random jitter to delays.
         jitter_factor: Maximum jitter as fraction of delay (0.1 = 10%).
+        log_retries: Whether to emit standard log messages.
+        on_retry: Optional callback invoked on each retry.
 
     """
 
@@ -53,6 +55,8 @@ class RetryConfig:
     exponential_base: float = 2.0
     jitter: bool = True
     jitter_factor: float = 0.1
+    log_retries: bool = True
+    on_retry: Callable[[int, int, Exception, float], None] | None = None
 
 
 class RetryError(Exception):
@@ -112,43 +116,39 @@ def calculate_delay(
 def _log_retry_attempt(
     func_name: str,
     attempt: int,
-    max_attempts: int,
     exc: Exception,
     delay: float,
-    log_retries: bool,
-    on_retry: Callable[[int, int, Exception, float], None] | None,
+    config: RetryConfig,
 ) -> None:
     """Log a retry attempt via callback, structlog, or stdlib logger.
 
     Args:
         func_name: Name of the retried function.
         attempt: Current attempt number.
-        max_attempts: Maximum number of attempts.
         exc: The exception that triggered the retry.
         delay: Delay in seconds before the next attempt.
-        log_retries: Whether to emit standard log messages.
-        on_retry: Optional user callback.
+        config: Retry configuration.
 
     """
-    if log_retries:
+    if config.log_retries:
         logger.info(
             "Attempt %d/%d failed for %s: %s. Retrying in %.2f seconds...",
             attempt,
-            max_attempts,
+            config.max_attempts,
             func_name,
             str(exc),
             delay,
         )
 
     # Invoke callback or emit structured log if no callback set
-    if on_retry is not None:
-        on_retry(attempt, max_attempts, exc, delay)
+    if config.on_retry is not None:
+        config.on_retry(attempt, config.max_attempts, exc, delay)
     elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
         _structlog_logger.warning(
             "retry_attempted",
             function=func_name,
             attempt=attempt,
-            max_attempts=max_attempts,
+            max_attempts=config.max_attempts,
             error=str(exc),
             delay_seconds=round(delay, 3),
         )
@@ -156,23 +156,21 @@ def _log_retry_attempt(
 
 def _log_all_failed(
     func_name: str,
-    max_attempts: int,
     exc: Exception,
-    log_retries: bool,
+    config: RetryConfig,
 ) -> None:
     """Log when all retry attempts have been exhausted.
 
     Args:
         func_name: Name of the retried function.
-        max_attempts: Maximum number of attempts.
         exc: The last exception raised.
-        log_retries: Whether to emit standard log messages.
+        config: Retry configuration.
 
     """
-    if log_retries:
+    if config.log_retries:
         logger.warning(
             "All %d attempts failed for %s: %s",
-            max_attempts,
+            config.max_attempts,
             func_name,
             str(exc),
         )
@@ -228,6 +226,8 @@ def retry(
         max_delay=max_delay,
         exponential_base=exponential_base,
         jitter=jitter,
+        log_retries=log_retries,
+        on_retry=on_retry,
     )
 
     def decorator(func: F) -> F:
@@ -246,9 +246,8 @@ def retry(
                         if attempt == max_attempts:
                             _log_all_failed(
                                 func.__name__,
-                                max_attempts,
                                 e,
-                                log_retries,
+                                config,
                             )
                             break
 
@@ -256,11 +255,9 @@ def retry(
                         _log_retry_attempt(
                             func.__name__,
                             attempt,
-                            max_attempts,
                             e,
                             delay,
-                            log_retries,
-                            on_retry,
+                            config,
                         )
                         await asyncio.sleep(delay)
 
@@ -294,9 +291,8 @@ def retry(
                     if attempt == max_attempts:
                         _log_all_failed(
                             func.__name__,
-                            max_attempts,
                             e,
-                            log_retries,
+                            config,
                         )
                         break
 
@@ -305,11 +301,9 @@ def retry(
                     _log_retry_attempt(
                         func.__name__,
                         attempt,
-                        max_attempts,
                         e,
                         delay,
-                        log_retries,
-                        on_retry,
+                        config,
                     )
                     time.sleep(delay)
 
