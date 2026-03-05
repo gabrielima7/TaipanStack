@@ -33,7 +33,9 @@ __all__ = [
     "Err",
     "Ok",
     "Result",
+    "and_then_async",
     "collect_results",
+    "map_async",
     "safe",
     "safe_from",
     "unwrap_or",
@@ -259,3 +261,112 @@ def unwrap_or_else(
             return value
         case Err(error):
             return default_fn(error)
+
+
+@overload
+async def map_async(
+    result: Ok[T],
+    func: Callable[[T], Coroutine[Any, Any, U]],
+) -> Result[U, E]: ...  # pragma: no cover
+
+
+@overload
+async def map_async(
+    result: Err[E],
+    func: Callable[[T], Coroutine[Any, Any, U]],
+) -> Err[E]: ...  # pragma: no cover
+
+
+@overload
+async def map_async(
+    result: Result[T, E],
+    func: Callable[[T], Coroutine[Any, Any, U]],
+) -> Result[U, E]: ...  # pragma: no cover
+
+
+async def map_async(
+    result: Result[T, E],
+    func: Callable[[T], Coroutine[Any, Any, U]],
+) -> Result[U, E]:
+    """Asynchronously apply a function to the value of an Ok result.
+
+    If the result is Err, returns it unchanged.
+
+    Args:
+        result: The Result to process.
+        func: Coroutine function to apply to the Ok value.
+
+    Returns:
+        New Result containing the processed value or original error.
+
+    Example:
+        >>> async def process(x: int) -> str:
+        ...     return str(x * 2)
+        >>> await map_async(Ok(5), process)
+        Ok('10')
+        >>> await map_async(Err("fail"), process)
+        Err('fail')
+
+    """
+    match result:
+        case Ok(value):
+            return Ok(await func(value))
+        case Err() as err:
+            return err
+
+
+@overload
+async def and_then_async(
+    result: Ok[T],
+    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+) -> Result[U, E]: ...  # pragma: no cover
+
+
+@overload
+async def and_then_async(
+    result: Err[E],
+    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+) -> Err[E]: ...  # pragma: no cover
+
+
+@overload
+async def and_then_async(
+    result: Result[T, E],
+    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+) -> Result[U, E]: ...  # pragma: no cover
+
+
+async def and_then_async(
+    result: Result[T, E],
+    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+) -> Result[U, E]:
+    """Asynchronously chain operations that return Results.
+
+    If the result is Ok, asynchronously applies `func` and returns its Result.
+    If the result is Err, returns it unchanged.
+
+    Args:
+        result: The Result to process.
+        func: Coroutine function taking the Ok value and returning a new Result.
+
+    Returns:
+        The new Result from `func` or the original error.
+
+    Example:
+        >>> async def fetch_user(uid: int) -> Result[str, ValueError]:
+        ...     if uid == 1:
+        ...         return Ok("Alice")
+        ...     return Err(ValueError("User not found"))
+        >>> await and_then_async(Ok(1), fetch_user)
+        Ok('Alice')
+        >>> await and_then_async(Ok(2), fetch_user)
+        Err(ValueError('User not found'))
+        >>> await and_then_async(Err(ValueError("No DB")), fetch_user)
+        Err(ValueError('No DB'))
+
+    """
+    match result:
+        case Ok(value):
+            return await func(value)
+        case Err() as err:
+            return err

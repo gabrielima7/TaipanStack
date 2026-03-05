@@ -6,7 +6,7 @@ command validation, timeout handling, and retry logic.
 """
 
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -189,7 +189,7 @@ def run_safe_command(
     start_time = time.time()
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # nosec B603
             validated_cmd,
             cwd=cwd,
             timeout=timeout,

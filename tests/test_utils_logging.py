@@ -1,15 +1,23 @@
 """Tests for structured logging utilities."""
 
+import asyncio
 import logging
+from pathlib import Path
+from typing import Any
 
 import pytest
 
 from taipanstack.utils.logging import (
     DEFAULT_FORMAT,
     JSON_FORMAT,
+    REDACTED_VALUE,
     StackLogger,
+    correlation_id_processor,
+    get_correlation_id,
     get_logger,
     log_operation,
+    mask_sensitive_data_processor,
+    set_correlation_id,
     setup_logging,
 )
 
@@ -119,6 +127,73 @@ class TestStackLogger:
         assert "request_id=abc123" in caplog.text
 
 
+class TestStackLoggerStructured:
+    """Tests for StackLogger with structlog enabled."""
+
+    @pytest.fixture
+    def structured_logger(self) -> StackLogger:
+        """Return a structured StackLogger instance."""
+        return StackLogger("test_struct", use_structured=True)
+
+    def test_structured_init(self, structured_logger: StackLogger) -> None:
+        assert structured_logger.name == "test_struct"
+        assert structured_logger._structured
+
+    def test_structured_bind_unbind(self, structured_logger: StackLogger) -> None:
+        structured_logger.bind(test_key="test_val")
+        assert structured_logger._context["test_key"] == "test_val"
+
+        structured_logger.unbind("test_key")
+        assert "test_key" not in structured_logger._context
+
+    def test_structured_logging_methods(self, structured_logger: StackLogger) -> None:
+        # Just verifying they don't break.
+        # Actual structlog output capture can be tricky without heavily mocking structlog,
+        # but calling them gives us coverage.
+        structured_logger.debug("debug message", extra="info")
+        structured_logger.info("info message", extra="info")
+        structured_logger.warning("warning message", extra="info")
+        structured_logger.error("error message", extra="info")
+        structured_logger.critical("critical message", extra="info")
+        try:
+            raise ValueError("Test error")
+        except ValueError:
+            structured_logger.exception("exception message", extra="info")
+
+    def test_setup_logging_structured(self) -> None:
+        """Test setup_logging with structlog."""
+        setup_logging(use_structured=True)
+        # Verify it doesn't break
+
+    def test_get_logger_structured(self) -> None:
+        """Test get_logger with structlog."""
+        logger = get_logger("test", use_structured=True)
+        assert logger._structured
+
+
+class TestMaskSensitiveDataProcessor:
+    """Tests for mask_sensitive_data_processor."""
+
+    def test_mask_sensitive_data(self) -> None:
+        event_dict = {
+            "message": "User login",
+            "password": "my_secret_password",
+            "API_KEY": "12345ABC",
+            "user_token": "tokenStringABC",
+            "safe_field": "safe_value",
+            "Authorization": "Bearer 1234",
+        }
+
+        result = mask_sensitive_data_processor(None, "info", event_dict)
+
+        assert result["message"] == "User login"
+        assert result["password"] == REDACTED_VALUE
+        assert result["API_KEY"] == REDACTED_VALUE
+        assert result["user_token"] == REDACTED_VALUE
+        assert result["Authorization"] == REDACTED_VALUE
+        assert result["safe_field"] == "safe_value"
+
+
 class TestGetLogger:
     """Tests for get_logger function."""
 
@@ -161,6 +236,12 @@ class TestSetupLogging:
     def test_setup_with_detailed_format(self) -> None:
         """Test setup with detailed format."""
         setup_logging(format_type="detailed")
+
+    def test_setup_with_log_file(self, tmp_path: Path) -> None:
+        """Test setup with a log file."""
+        log_file = tmp_path / "test.log"
+        setup_logging(log_file=str(log_file))
+        assert log_file.exists()
 
 
 class TestLogOperation:
@@ -209,6 +290,15 @@ class TestLogOperation:
             with log_operation("test_operation"):
                 pass
         assert "duration_seconds" in caplog.text
+
+    def test_custom_logger(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test that log_operation uses the provided custom logger."""
+        custom_logger = get_logger("custom_op_logger")
+        with caplog.at_level(logging.INFO):
+            with log_operation("custom_op", logger=custom_logger):
+                pass
+        assert "custom_op" in caplog.text
+        assert "custom_op_logger" in caplog.text
 
     def test_logs_exception_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that exception is logged on failure."""
@@ -261,3 +351,59 @@ class TestFormatConstants:
         assert "level" in JSON_FORMAT
         assert "logger" in JSON_FORMAT
         assert "message" in JSON_FORMAT
+
+
+class TestCorrelationId:
+    """Tests for correlation_id contextvars."""
+
+    def test_set_and_get_correlation_id(self) -> None:
+        """Test basic set and get of correlation ID."""
+        set_correlation_id("test-corr-id")
+        assert get_correlation_id() == "test-corr-id"
+
+        # Cleanup for other tests
+        set_correlation_id(None)
+
+    @pytest.mark.asyncio
+    async def test_async_isolation_correlation_id(self) -> None:
+        """Test that correlation IDs are isolated across async tasks."""
+
+        async def task_a() -> str | None:
+            set_correlation_id("task-a-id")
+            await asyncio.sleep(0.01)
+            return get_correlation_id()
+
+        async def task_b() -> str | None:
+            set_correlation_id("task-b-id")
+            await asyncio.sleep(0.02)
+            return get_correlation_id()
+
+        # Before any task runs, it should be None
+        set_correlation_id(None)
+
+        results = await asyncio.gather(task_a(), task_b())
+
+        assert list(results) == ["task-a-id", "task-b-id"]
+        assert get_correlation_id() is None
+
+    def test_correlation_id_processor_with_id(self) -> None:
+        """Test processor injects ID when set."""
+        set_correlation_id("injected-id")
+
+        event_dict: dict[str, Any] = {"message": "test msg"}
+        new_dict = correlation_id_processor(None, "info", event_dict)
+
+        assert new_dict["correlation_id"] == "injected-id"
+        assert new_dict["message"] == "test msg"
+
+        set_correlation_id(None)
+
+    def test_correlation_id_processor_without_id(self) -> None:
+        """Test processor does not inject ID when not set."""
+        set_correlation_id(None)
+
+        event_dict: dict[str, Any] = {"message": "test msg"}
+        new_dict = correlation_id_processor(None, "info", event_dict)
+
+        assert "correlation_id" not in new_dict
+        assert new_dict["message"] == "test msg"

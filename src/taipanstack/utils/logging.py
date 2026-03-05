@@ -7,7 +7,9 @@ context propagation, and proper formatting.
 
 import logging
 import sys
+from collections.abc import MutableMapping
 from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -63,6 +65,55 @@ def mask_sensitive_data_processor(
             if pattern in key_lower:
                 event_dict[key] = REDACTED_VALUE
                 break
+    return event_dict
+
+
+# Context variables for observability
+correlation_id_var: ContextVar[str | None] = ContextVar(
+    "correlation_id",
+    default=None,
+)
+
+
+def get_correlation_id() -> str | None:
+    """Get the current correlation ID.
+
+    Returns:
+        The correlation ID if set, otherwise None.
+
+    """
+    return correlation_id_var.get()
+
+
+def set_correlation_id(correlation_id: str | None) -> None:
+    """Set the correlation ID for the current context.
+
+    Args:
+        correlation_id: The correlation ID string, or None to clear.
+
+    """
+    correlation_id_var.set(correlation_id)
+
+
+def correlation_id_processor(
+    logger: Any,  # noqa: ARG001
+    method: str,  # noqa: ARG001
+    event_dict: MutableMapping[str, Any],
+) -> MutableMapping[str, Any]:
+    """Structlog processor to inject correlation ID into events.
+
+    Args:
+        logger: The wrapped logger object.
+        method: The name of the log method called.
+        event_dict: The structured event dictionary.
+
+    Returns:
+        The event dictionary with correlation_id injected if sets.
+
+    """
+    correlation_id = get_correlation_id()
+    if correlation_id is not None:
+        event_dict["correlation_id"] = correlation_id
     return event_dict
 
 
@@ -257,6 +308,7 @@ def setup_logging(
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
                 structlog.processors.TimeStamper(fmt="iso"),
+                correlation_id_processor,
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.processors.UnicodeDecoder(),
