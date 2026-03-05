@@ -6,6 +6,7 @@ context propagation, and proper formatting.
 """
 
 import logging
+import re
 import sys
 from contextlib import contextmanager
 from datetime import UTC, datetime
@@ -36,6 +37,15 @@ SENSITIVE_KEY_PATTERNS: tuple[str, ...] = (
 
 REDACTED_VALUE = "***REDACTED***"
 
+# Pre-compiled regex for sensitive key matching to optimize performance.
+# We escape each pattern to treat it as a literal substring and guard against
+# empty patterns which would otherwise redact every key.
+_SENSITIVE_RE = (
+    re.compile("|".join(map(re.escape, SENSITIVE_KEY_PATTERNS)), re.IGNORECASE)
+    if SENSITIVE_KEY_PATTERNS
+    else None
+)
+
 
 def mask_sensitive_data_processor(
     logger: Any,  # noqa: ARG001
@@ -57,12 +67,14 @@ def mask_sensitive_data_processor(
         The event dictionary with sensitive values masked.
 
     """
+    if not _SENSITIVE_RE:
+        return event_dict
+
+    # Use cached search method for a minor speed boost in the loop
+    search = _SENSITIVE_RE.search
     for key in event_dict:
-        key_lower = key.lower()
-        for pattern in SENSITIVE_KEY_PATTERNS:
-            if pattern in key_lower:
-                event_dict[key] = REDACTED_VALUE
-                break
+        if search(key):
+            event_dict[key] = REDACTED_VALUE
     return event_dict
 
 
