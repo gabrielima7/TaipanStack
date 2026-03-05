@@ -120,6 +120,19 @@ class TestMaskSensitiveDataProcessor:
         assert result1["secret"] == REDACTED_VALUE
         assert result2["secret"] == REDACTED_VALUE
 
+    def test_no_regex_returns_unchanged(self, monkeypatch: Any) -> None:
+        """If _SENSITIVE_RE is None (e.g. empty patterns), dict is unchanged."""
+        import taipanstack.utils.logging as logging_mod
+
+        # Temporarily clear the compiled regex to test the guard branch
+        monkeypatch.setattr(logging_mod, "_SENSITIVE_RE", None)
+
+        event_dict = {"password": "secret", "event": "test"}
+        result = mask_sensitive_data_processor(None, "info", event_dict)
+
+        assert result["password"] == "secret"
+        assert result is event_dict
+
 
 class TestSensitiveKeyPatternsConstant:
     """Tests for the SENSITIVE_KEY_PATTERNS constant."""
