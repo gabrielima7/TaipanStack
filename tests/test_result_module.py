@@ -151,7 +151,11 @@ class TestCollectResults:
 
     def test_collect_with_err(self) -> None:
         """Test collect_results stops at first Err."""
-        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("error")), Ok(3)]
+        results: list[Result[int, ValueError]] = [
+            Ok(1),
+            Err(ValueError("error")),
+            Ok(3),
+        ]
         collected = collect_results(results)
         assert collected.is_err()
         assert isinstance(collected.err(), ValueError)
@@ -166,7 +170,11 @@ class TestCollectResults:
 
     def test_collect_first_err_returned(self) -> None:
         """Test collect_results returns first Err encountered."""
-        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("first")), Err(ValueError("second"))]
+        results: list[Result[int, ValueError]] = [
+            Ok(1),
+            Err(ValueError("first")),
+            Err(ValueError("second")),
+        ]
         collected = collect_results(results)
         assert collected.is_err()
         assert isinstance(collected.err(), ValueError)
@@ -297,6 +305,7 @@ class TestSafeAsyncDecorator:
         err = result.err()
         assert type(err) is Exception
         assert str(err) == "Basic async exception occurred"
+
 
 class TestMapAsync:
     """Tests for map_async function."""
