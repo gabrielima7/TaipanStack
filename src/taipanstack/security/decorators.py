@@ -7,6 +7,7 @@ any Python framework (Flask, FastAPI, Django, etc.).
 """
 
 import functools
+import inspect
 import signal
 import sys
 import threading
@@ -83,12 +84,11 @@ def validate_inputs(
     """
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
+        sig = inspect.signature(func)
+
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            # Get function's parameter names
-            import inspect
-
-            sig = inspect.signature(func)
+            # Bind and apply defaults on each call
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
@@ -353,11 +353,10 @@ def require_type(
     """
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
+        sig = inspect.signature(func)
+
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            import inspect
-
-            sig = inspect.signature(func)
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
