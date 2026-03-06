@@ -21,8 +21,8 @@ _TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
         "..",
         "~",
         r"\.\.",
-        "%2e%2e",  # URL encoded ..
-        "%252e%252e",  # Double URL encoded
+        "%2e%2e",
+        "%252e%252e",
     ]
 )
 
@@ -152,9 +152,10 @@ def guard_path_traversal(
 
     # Check for explicit traversal patterns before resolution
     path_str = str(path)
+    path_str_lower = path_str.lower()
 
     for pattern in _TRAVERSAL_PATTERNS:
-        if pattern.lower() in path_str.lower():
+        if pattern in path_str_lower:
             raise SecurityError(
                 f"Path traversal pattern detected: {pattern}",
                 guard_name="path_traversal",
