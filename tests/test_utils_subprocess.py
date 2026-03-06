@@ -246,6 +246,14 @@ class TestCheckCommandExists:
         result = check_command_exists("git")
         assert isinstance(result, bool)
 
+    def test_empty_command_string_returns_false(self) -> None:
+        """Test that empty string returns False."""
+        assert check_command_exists("") is False
+
+    def test_none_command_returns_false(self) -> None:
+        """Test that None returns False."""
+        assert check_command_exists(None) is False
+
 
 class TestGetCommandVersion:
     """Tests for get_command_version function."""

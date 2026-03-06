@@ -295,7 +295,7 @@ def run_git_command(
     )
 
 
-def check_command_exists(command: str) -> bool:
+def check_command_exists(command: str | None) -> bool:
     """Check if a command exists in PATH.
 
     Args:
@@ -305,6 +305,8 @@ def check_command_exists(command: str) -> bool:
         True if command exists, False otherwise.
 
     """
+    if not command:
+        return False
     return shutil.which(command) is not None
 
 
