@@ -152,9 +152,10 @@ def guard_path_traversal(
 
     # Check for explicit traversal patterns before resolution
     path_str = str(path)
+    path_str_lower = path_str.lower()
 
     for pattern in _TRAVERSAL_PATTERNS:
-        if pattern.lower() in path_str.lower():
+        if pattern in path_str_lower:
             raise SecurityError(
                 f"Path traversal pattern detected: {pattern}",
                 guard_name="path_traversal",
