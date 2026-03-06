@@ -154,6 +154,14 @@ class TestGuardFileExtension:
         result = guard_file_extension("file.txt", allowed_extensions=[".TXT"])
         assert result == Path("file.txt")
 
+    def test_extension_not_in_allowed_list_blocked(self) -> None:
+        """Test that extensions not in allowed_extensions are blocked."""
+        # Testing normalization of input extension vs allowed extensions
+        with pytest.raises(SecurityError, match="not in allowed list"):
+            guard_file_extension(
+                "file.CSV", allowed_extensions=["txt", ".json", "YAML"]
+            )
+
 
 class TestGuardEnvVariable:
     """Tests for guard_env_variable function."""
