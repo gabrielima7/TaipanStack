@@ -15,7 +15,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, ParamSpec, TypeVar, cast
+from typing import Any, NoReturn, ParamSpec, TypeVar, cast
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -176,6 +176,38 @@ def _log_all_failed(
         )
 
 
+def _raise_retry_error(
+    func_name: str,
+    max_attempts: int,
+    reraise: bool,
+    last_exception: Exception | None,
+) -> NoReturn:
+    """Raise a RetryError after all attempts fail.
+
+    Args:
+        func_name: Name of the retried function.
+        max_attempts: Number of attempts made.
+        reraise: Whether to reraise the original exception.
+        last_exception: The last exception that was raised.
+
+    Raises:
+        RetryError: The wrapped or unwrapped exception.
+
+    """
+    if reraise and last_exception is not None:
+        raise RetryError(
+            f"All {max_attempts} attempts failed for {func_name}",
+            attempts=max_attempts,
+            last_exception=last_exception,
+        ) from last_exception
+
+    raise RetryError(
+        f"All {max_attempts} attempts failed for {func_name}",
+        attempts=max_attempts,
+        last_exception=last_exception,
+    )
+
+
 def retry(
     *,
     max_attempts: int = 3,
@@ -261,19 +293,11 @@ def retry(
                         )
                         await asyncio.sleep(delay)
 
-                # All attempts failed
-                if reraise and last_exception is not None:
-                    raise RetryError(
-                        f"All {max_attempts} attempts failed for {func.__name__}",
-                        attempts=max_attempts,
-                        last_exception=last_exception,
-                    ) from last_exception
-
-                # Should never reach here if reraise=True
-                raise RetryError(
-                    f"All {max_attempts} attempts failed for {func.__name__}",
-                    attempts=max_attempts,
-                    last_exception=last_exception,
+                _raise_retry_error(
+                    func.__name__,
+                    max_attempts,
+                    reraise,
+                    last_exception,
                 )
 
             return cast(F, async_wrapper)
@@ -307,19 +331,11 @@ def retry(
                     )
                     time.sleep(delay)
 
-            # All attempts failed
-            if reraise and last_exception is not None:
-                raise RetryError(
-                    f"All {max_attempts} attempts failed for {func.__name__}",
-                    attempts=max_attempts,
-                    last_exception=last_exception,
-                ) from last_exception
-
-            # Should never reach here if reraise=True
-            raise RetryError(
-                f"All {max_attempts} attempts failed for {func.__name__}",
-                attempts=max_attempts,
-                last_exception=last_exception,
+            _raise_retry_error(
+                func.__name__,
+                max_attempts,
+                reraise,
+                last_exception,
             )
 
         return cast(F, wrapper)
