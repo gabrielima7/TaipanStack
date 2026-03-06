@@ -419,7 +419,6 @@ class Retrier:
         if not issubclass(exc_type, self.exception_types):
             return False  # Exception type not in retry list
 
-        # Safe cast: issubclass guard above ensures exc_val is Exception
         self.last_exception = exc_val if isinstance(exc_val, Exception) else None
         self.attempt += 1
 
