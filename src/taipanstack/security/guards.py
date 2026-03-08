@@ -183,15 +183,20 @@ def guard_path_traversal(
         ) from e
 
     # Check for symlinks if not allowed
-    is_existing_symlink = (
-        not allow_symlinks and resolved.exists() and resolved.is_symlink()
-    )
-    if is_existing_symlink:
-        raise SecurityError(
-            "Symlinks are not allowed",
-            guard_name="path_traversal",
-            value=str(resolved),
-        )
+    if not allow_symlinks:
+        # We must check the unresolved components relative to base_dir
+        # because resolve() eliminates symlinks.
+        full_path = path if path.is_absolute() else base_dir / path
+        # Check if the full path or any parent (down to base_dir) is a symlink
+        current = full_path
+        while current != base_dir and current.name:
+            if current.is_symlink():
+                raise SecurityError(
+                    "Symlinks are not allowed",
+                    guard_name="path_traversal",
+                    value=str(current),
+                )
+            current = current.parent
 
     return resolved
 
