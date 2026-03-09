@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.7] - 2026-03-09
+
+### Security
+- **Critical**: Patched path traversal bypass via symlink resolution in `guard_path_traversal` (PR #150).
+
+### Performance
+- **Security Guards**: Optimized `guard_path_traversal` by pre-computing lowercase path strings and refactoring traversal pattern lookups (PR #145).
+- **Decorators**: Implemented `inspect.signature` caching in `@validate_inputs` and `@require_type` decorators to reduce overhead on frequent calls (PR #143).
+
+### QA / Testing
+- **Coverage**: Added rigorous test cases for `normalize_ext` in `guard_file_extension` to ensure secure handling of mixed-case extensions (PR #147).
+- **Robustness**: Enhanced `check_command_exists` to gracefully handle `None` or empty string inputs with automated test verification (PR #146).
+
+### Refactoring
+- **Resilience**: Unified `RetryError` escalation logic into a centralized internal helper to improve maintainability of retry decorators (PR #141).
+
 ## [0.3.6] - 2026-03-05
 
 ### QA / Testing
