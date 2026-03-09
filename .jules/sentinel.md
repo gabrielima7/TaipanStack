@@ -1,4 +1,4 @@
-## 2023-10-27 - Secure Jitter Implementation
-**Vulnerability:** Standard pseudo-random generators (`random.uniform`) used for retry jitter.
-**Learning:** Even though retry jitter is intentionally non-cryptographic (for load distribution, not security), using standard `random` flags a B311 warning in security linters like Bandit. The "Sentinel" philosophy mandates a strict security baseline where standard `random` modules are prohibited to maintain a clean bill of health. We learned that to suppress these tool warnings without compromising the strict policy, we should use `secrets.SystemRandom().uniform()` as a drop-in replacement.
-**Prevention:** For any randomization task (even non-cryptographic like backoff jitter), use `secrets.SystemRandom` to avoid static analysis security warnings and adhere to strict security policies.
+## 2026-03-09 - Path Traversal bypass via Symlinks checking with `.resolve()`
+**Vulnerability:** The path traversal guard logic `is_symlink()` check always evaluates to `False` because `path.resolve()` resolves the entire path natively, following symlinks and stripping them away. This means that a symlink pointing to an unauthorized directory could effectively bypass the `allow_symlinks=False` check.
+**Learning:** `path.resolve()` on a `pathlib.Path` follows symlinks intrinsically, therefore applying `.is_symlink()` directly to the `resolved` path guarantees a `False` result, making the security mechanism fail silently.
+**Prevention:** Iteratively loop through all parts of the *unresolved* path components upwards using `.parent` up until the base directory to properly call `.is_symlink()` and check for user-supplied symlinks correctly before attempting to resolve the file.
