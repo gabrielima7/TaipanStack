@@ -61,9 +61,44 @@ class TestGuardPathTraversal:
         outside_file = tmp_path / "outside.txt"
         outside_file.touch()
 
+        with pytest.raises(SecurityError):
+            guard_path_traversal(outside_file, subdir)
+
+    def test_symlinks_blocked_by_default(self, tmp_path: Path) -> None:
+        """Test that symlinks are blocked by default."""
+        real_file = tmp_path / "real.txt"
+        real_file.touch()
+
+        symlink_path = tmp_path / "link.txt"
+        symlink_path.symlink_to("real.txt")
+
+        with pytest.raises(SecurityError) as exc_info:
+            guard_path_traversal(symlink_path, tmp_path)
+
+        assert "Symlinks are not allowed" in str(exc_info.value)
+        assert exc_info.value.guard_name == "path_traversal"
+
+    def test_symlinks_allowed_when_enabled(self, tmp_path: Path) -> None:
+        """Test that symlinks are allowed when allow_symlinks=True."""
+        real_file = tmp_path / "real.txt"
+        real_file.touch()
+
+        symlink_path = tmp_path / "link.txt"
+        symlink_path.symlink_to("real.txt")
+
+        result = guard_path_traversal(symlink_path, tmp_path, allow_symlinks=True)
+        assert result == real_file.resolve()
+
+    def test_path_escapes_base_dir_msg(self, tmp_path: Path) -> None:
+        """Test the exact error msg for path escape."""
+        subdir = tmp_path / "allowed"
+        subdir.mkdir()
+        outside_file = tmp_path / "outside.txt"
+        outside_file.touch()
+
         with pytest.raises(SecurityError) as exc_info:
             guard_path_traversal(outside_file, subdir)
-        # The error should indicate path is not under base dir
+
         assert "path_traversal" in str(exc_info.value).lower()
 
 
