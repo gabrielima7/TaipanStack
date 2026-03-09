@@ -8,18 +8,15 @@
 name: Documentation
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "src/**/*.py"
-      - ".github/workflows/docs.yml"
   workflow_run:
     workflows: ["TaipanStack CI"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
 
 permissions:
   contents: write
