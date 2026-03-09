@@ -165,7 +165,8 @@ def guard_path_traversal(
 
     # Resolve the path
     try:
-        resolved = path.resolve() if path.is_absolute() else (base_dir / path).resolve()
+        full_path = path if path.is_absolute() else (base_dir / path)
+        resolved = full_path.resolve()
     except (OSError, ValueError) as e:
         raise SecurityError(
             f"Invalid path: {e}",
@@ -183,15 +184,18 @@ def guard_path_traversal(
         ) from e
 
     # Check for symlinks if not allowed
-    is_existing_symlink = (
-        not allow_symlinks and resolved.exists() and resolved.is_symlink()
-    )
-    if is_existing_symlink:
-        raise SecurityError(
-            "Symlinks are not allowed",
-            guard_name="path_traversal",
-            value=str(resolved),
-        )
+    if not allow_symlinks:
+        current = full_path
+        # Only check components from the user-provided path, not the base_dir
+        while current not in (base_dir, current.parent):
+            # We don't check .exists() because it returns False for broken symlinks
+            if current.is_symlink():
+                raise SecurityError(
+                    "Symlinks are not allowed",
+                    guard_name="path_traversal",
+                    value=str(current),
+                )
+            current = current.parent
 
     return resolved
 
