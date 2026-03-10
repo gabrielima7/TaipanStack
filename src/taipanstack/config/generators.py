@@ -153,58 +153,82 @@ def generate_pyproject_config(config: StackConfig) -> str:
 {_generate_coverage_config()}"""
 
 
-def generate_pre_commit_config(config: StackConfig) -> str:
-    """Generate .pre-commit-config.yaml content.
+def _generate_bandit_hook(severity: str) -> str:
+    """Generate Bandit pre-commit hook.
 
     Args:
-        config: The Stack configuration.
+        severity: Bandit severity level.
 
     Returns:
-        Pre-commit configuration YAML string.
+        Bandit hook YAML string.
 
     """
-    security_hooks: list[str] = []
-
-    if config.security.enable_bandit:
-        severity = config.security.bandit_severity[0].upper()
-        security_hooks.append(f"""
+    sev_char = severity[0].upper()
+    return f"""
   - repo: https://github.com/PyCQA/bandit
     rev: '1.8.0'
     hooks:
       - id: bandit
-        args: ["-r", ".", "-l{severity}"]
-""")
+        args: ["-r", ".", "-l{sev_char}"]
+"""
 
-    if config.security.enable_safety:
-        security_hooks.append("""
+
+def _generate_safety_hook() -> str:
+    """Generate Safety pre-commit hook.
+
+    Returns:
+        Safety hook YAML string.
+
+    """
+    return """
   - repo: https://github.com/pyupio/safety
     rev: '3.2.11'
     hooks:
       - id: safety
         args: ["check", "--json"]
-""")
+"""
 
-    if config.security.enable_semgrep:
-        security_hooks.append("""
+
+def _generate_semgrep_hook() -> str:
+    """Generate Semgrep pre-commit hook.
+
+    Returns:
+        Semgrep hook YAML string.
+
+    """
+    return """
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
     hooks:
       - id: semgrep
         args: ['--config=auto']
-""")
+"""
 
-    if config.security.enable_detect_secrets:
-        security_hooks.append("""
+
+def _generate_detect_secrets_hook() -> str:
+    """Generate detect-secrets pre-commit hook.
+
+    Returns:
+        Detect-secrets hook YAML string.
+
+    """
+    return """
   - repo: https://github.com/Yelp/detect-secrets
     rev: 'v1.5.0'
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-""")
+"""
 
-    # Add pip-audit for paranoid mode
-    if config.security.level == "paranoid":
-        security_hooks.append("""
+
+def _generate_paranoid_hooks() -> str:
+    """Generate extra security hooks for paranoid mode.
+
+    Returns:
+        Paranoid hooks YAML string.
+
+    """
+    return """
   - repo: https://github.com/trailofbits/pip-audit
     rev: 'v2.7.3'
     hooks:
@@ -219,7 +243,36 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     rev: 'v2.3.3'
     hooks:
       - id: tryceratops
-""")
+"""
+
+
+def generate_pre_commit_config(config: StackConfig) -> str:
+    """Generate .pre-commit-config.yaml content.
+
+    Args:
+        config: The Stack configuration.
+
+    Returns:
+        Pre-commit configuration YAML string.
+
+    """
+    security_hooks: list[str] = []
+
+    if config.security.enable_bandit:
+        security_hooks.append(_generate_bandit_hook(config.security.bandit_severity))
+
+    if config.security.enable_safety:
+        security_hooks.append(_generate_safety_hook())
+
+    if config.security.enable_semgrep:
+        security_hooks.append(_generate_semgrep_hook())
+
+    if config.security.enable_detect_secrets:
+        security_hooks.append(_generate_detect_secrets_hook())
+
+    # Add extra hooks for paranoid mode
+    if config.security.level == "paranoid":
+        security_hooks.append(_generate_paranoid_hooks())
 
     return f"""# Stack v2.0 Pre-commit Configuration
 # Security Level: {config.security.level}
