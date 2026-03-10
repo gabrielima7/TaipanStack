@@ -45,6 +45,8 @@ _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
     ("\x00", "null byte"),
 )
 
+_DANGEROUS_COMMAND_CHARS: frozenset[str] = frozenset(";|&$`><\n\r\x00")
+
 _DEFAULT_DENIED_EXTENSIONS = frozenset(
     [
         "exe",
@@ -241,13 +243,17 @@ def guard_command_injection(
                 f"got {type(arg).__name__} at index {i}"
             )
 
-        for pattern, description in _DANGEROUS_COMMAND_PATTERNS:
-            if pattern in arg:
-                raise SecurityError(
-                    f"Dangerous shell character detected: {description}",
-                    guard_name="command_injection",
-                    value=arg[:50],
-                )
+        # Performance optimization: fast path for safe strings.
+        # Most arguments won't contain any dangerous characters.
+        # We use set intersection (via isdisjoint) which is very fast in Python.
+        if not _DANGEROUS_COMMAND_CHARS.isdisjoint(arg):
+            for pattern, description in _DANGEROUS_COMMAND_PATTERNS:
+                if pattern in arg:
+                    raise SecurityError(
+                        f"Dangerous shell character detected: {description}",
+                        guard_name="command_injection",
+                        value=arg[:50],
+                    )
 
     # Check against allowed commands whitelist
     if allowed_commands is not None:
