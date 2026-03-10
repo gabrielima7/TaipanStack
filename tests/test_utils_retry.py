@@ -241,6 +241,38 @@ class TestRetryOnException:
         assert result == "success"
         assert call_count == 2
 
+    def test_max_attempts_exceeded(self) -> None:
+        """Test RetryError is raised when max attempts are exceeded."""
+        call_count = 0
+
+        @retry_on_exception((ValueError,), max_attempts=3)
+        def always_fail() -> None:
+            nonlocal call_count
+            call_count += 1
+            raise ValueError("Always fails")
+
+        with pytest.raises(RetryError) as exc_info:
+            always_fail()
+
+        assert exc_info.value.attempts == 3
+        assert call_count == 3
+        assert isinstance(exc_info.value.last_exception, ValueError)
+
+    def test_other_exceptions_not_caught(self) -> None:
+        """Test that unlisted exceptions are not caught and bubble up immediately."""
+        call_count = 0
+
+        @retry_on_exception((ValueError,), max_attempts=3)
+        def raise_type_error() -> None:
+            nonlocal call_count
+            call_count += 1
+            raise TypeError("Wrong type")
+
+        with pytest.raises(TypeError):
+            raise_type_error()
+
+        assert call_count == 1
+
 
 class TestRetrier:
     """Tests for Retrier context manager."""
