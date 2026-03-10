@@ -6,6 +6,7 @@ context propagation, and proper formatting.
 """
 
 import logging
+import re
 import sys
 from collections.abc import MutableMapping
 from contextlib import contextmanager
@@ -36,6 +37,13 @@ SENSITIVE_KEY_PATTERNS: tuple[str, ...] = (
     "api_key",
 )
 
+# Pre-compile the regex for O(1) checks per key instead of O(N*M)
+_SENSITIVE_KEY_REGEX = (
+    re.compile("|".join(map(re.escape, SENSITIVE_KEY_PATTERNS)), re.IGNORECASE)
+    if SENSITIVE_KEY_PATTERNS
+    else None
+)
+
 REDACTED_VALUE = "***REDACTED***"
 
 
@@ -59,12 +67,12 @@ def mask_sensitive_data_processor(
         The event dictionary with sensitive values masked.
 
     """
+    if _SENSITIVE_KEY_REGEX is None:
+        return event_dict
+
     for key in event_dict:
-        key_lower = key.lower()
-        for pattern in SENSITIVE_KEY_PATTERNS:
-            if pattern in key_lower:
-                event_dict[key] = REDACTED_VALUE
-                break
+        if _SENSITIVE_KEY_REGEX.search(key):
+            event_dict[key] = REDACTED_VALUE
     return event_dict
 
 
