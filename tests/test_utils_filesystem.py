@@ -201,6 +201,11 @@ class TestEnsureDir:
         assert result.exists()
         assert result.is_dir()
 
+    def test_path_traversal_blocked(self, tmp_path: Path) -> None:
+        """Test that path traversal is blocked."""
+        with pytest.raises(SecurityError):
+            ensure_dir(tmp_path / ".." / "etc" / "evil_dir", base_dir=tmp_path)
+
     def test_path_traversal_without_base_dir_blocked(self) -> None:
         """Test that path traversal is blocked when no base_dir is provided."""
         with pytest.raises(SecurityError):
