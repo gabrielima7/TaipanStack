@@ -28,7 +28,7 @@ _TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
 )
 
 _TRAVERSAL_REGEX = re.compile(
-    "|".join(re.escape(p) for p in _TRAVERSAL_PATTERNS)
+    "|".join(re.escape(p) for p in sorted(_TRAVERSAL_PATTERNS, key=len, reverse=True))
 )
 
 _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
