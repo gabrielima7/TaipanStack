@@ -162,6 +162,17 @@ class TestSafeWrite:
 
         assert test_file.read_text() == "direct content"
 
+    def test_write_with_custom_encoding(self, tmp_path: Path) -> None:
+        """Test writing with custom encoding."""
+        test_file = tmp_path / "encoding.txt"
+        content = "ÄÖÅ - Custom Encoding"
+        encoding = "utf-16"
+
+        safe_write(test_file, content, encoding=encoding)
+
+        # Verify it can be read back with the same encoding
+        assert test_file.read_text(encoding=encoding) == content
+
     def test_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
