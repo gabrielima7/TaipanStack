@@ -347,6 +347,14 @@ class TestGetFileHash:
 
         assert get_file_hash(file1) == get_file_hash(file2)
 
+    def test_path_traversal_blocked(self, tmp_path: Path) -> None:
+        """Test that path traversal is blocked."""
+        with pytest.raises(SecurityError):
+            get_file_hash(
+                tmp_path / ".." / "etc" / "passwd",
+                base_dir=tmp_path,
+            )
+
 
 class TestFindFiles:
     """Tests for find_files function."""
