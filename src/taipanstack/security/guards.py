@@ -27,6 +27,10 @@ _TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
     ]
 )
 
+_TRAVERSAL_REGEX = re.compile(
+    "|".join(re.escape(p) for p in sorted(_TRAVERSAL_PATTERNS, key=len, reverse=True))
+)
+
 _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
     (";", "command separator"),
     ("|", "pipe"),
@@ -155,13 +159,14 @@ def guard_path_traversal(
     path_str = str(path)
     path_str_lower = path_str.lower()
 
-    for pattern in _TRAVERSAL_PATTERNS:
-        if pattern in path_str_lower:
-            raise SecurityError(
-                f"Path traversal pattern detected: {pattern}",
-                guard_name="path_traversal",
-                value=path_str[:50],  # Truncate for safety
-            )
+    match = _TRAVERSAL_REGEX.search(path_str_lower)
+    if match:
+        pattern = match.group(0)
+        raise SecurityError(
+            f"Path traversal pattern detected: {pattern}",
+            guard_name="path_traversal",
+            value=path_str[:50],  # Truncate for safety
+        )
 
     # Resolve the path
     try:
