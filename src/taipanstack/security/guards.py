@@ -247,7 +247,7 @@ def guard_command_injection(
         # Most arguments won't contain any dangerous characters.
         # We use set intersection (via isdisjoint) which is very fast in Python.
         if not _DANGEROUS_COMMAND_CHARS.isdisjoint(arg):
-            for pattern, description in _DANGEROUS_COMMAND_PATTERNS:
+            for pattern, description in _DANGEROUS_COMMAND_PATTERNS:  # pragma: no branch
                 if pattern in arg:
                     raise SecurityError(
                         f"Dangerous shell character detected: {description}",
