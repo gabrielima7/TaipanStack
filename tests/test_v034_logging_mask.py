@@ -162,7 +162,7 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         )
 
         log = structlog.get_logger()
-        log.info("user_login", password="hunter2", username="alice")  # noqa: S106
+        log.info("user_login", password="hunter2", username="alice")
 
         captured = output.getvalue()
         assert "hunter2" not in captured, "Raw password must not appear in log output"
@@ -262,7 +262,7 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         )
 
         log = structlog.get_logger()
-        log.debug("token_refresh", token="eyJhbGciOiJIUzI1NiJ9.payload")  # noqa: S106
+        log.debug("token_refresh", token="eyJhbGciOiJIUzI1NiJ9.payload")
 
         captured = output.getvalue()
         assert "eyJhbGciOiJIUzI1NiJ9.payload" not in captured

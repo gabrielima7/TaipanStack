@@ -1,6 +1,6 @@
 [project]
 name = "taipanstack"
-version = "0.3.7"
+version = "0.3.8"
 description = "TaipanStack - Modular, secure, and scalable Python stack for robust development"
 authors = [
     {name = "gabrielima7", email = "gabrielima.alu.lmb@gmail.com"}
@@ -119,7 +119,7 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 # Tests: allow asserts, skip docs, magic values, unused args, long lines, shadowing builtins
-"tests/**/*.py" = ["S101", "D", "PLR2004", "ARG001", "ARG002", "SIM117", "RUF043", "PLC0415", "E501", "A004", "TRY301", "UP024"]
+"tests/**/*.py" = ["S101", "S105", "S106", "D", "PLR2004", "ARG001", "ARG002", "SIM117", "RUF043", "PLC0415", "E501", "A004", "TRY301", "UP024"]
 # TaipanStack bootstrapper: allow print, long lines, complex branches, docstring style, unused args
 "taipanstack_bootstrapper.py" = ["T201", "E501", "PLR0912", "TRY300", "S603", "D205", "ARG001"]
 # Utils: allow too many args, subprocess, random for jitter

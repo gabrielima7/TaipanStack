@@ -17,6 +17,7 @@ from taipanstack.security.guards import (
     guard_ssrf,
 )
 from taipanstack.security.jwt import decode_jwt, encode_jwt
+from taipanstack.security.models import SecureBaseModel
 from taipanstack.security.password import hash_password, verify_password
 from taipanstack.security.sanitizers import (
     sanitize_filename,
@@ -43,6 +44,7 @@ __all__ = [
     "SafePath",
     "SafeProjectName",
     "SafeUrl",
+    "SecureBaseModel",
     "SecurityError",
     "ValidationError",
     "decode_jwt",
