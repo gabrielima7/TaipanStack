@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.8] - 2026-03-10
+
+### Added
+- **Resilience**: New Bulkhead Pattern decorator `@limit_concurrency` using thread and async semaphores with timeouts avoiding overload cascades.
+- **Security/Observability**: Native integration of `SecureBaseModel` built on top of Pydantic v2 and `structlog` automatically redacting internal model sensitive data upon dumping logic.
+- **Serialization**: Native `orjson` default encoding via `default_encoder` directly translating `<Ok/Err>` outputs natively to optimized JSON.
+- **Resilience**: Complete strict-typed First-Class Native Async (`async def`) execution coverage inside the `@rate_limit` token-bucket decorator.
+
+### Performance
+- **Security Guards**: Implemented O(N) regex evaluation for path traversal patterns, replacing sequential loop checks for better throughput (#156).
+- **Logging**: Optimized sensitive key masking in structured logs with pre-compiled regex mapping (#157).
+
+### Refactoring
+- **Pre-commit**: Modularized the pre-commit configuration generator with better isolation and dedicated unit tests (#158).
+
+### QA / Testing
+- **Filesystem**: Expanded security coverage for `get_file_hash` and `ensure_dir` path traversal guards (#153, #154).
+- **Resilience**: Added explicit edge-case validation for `retry_on_exception` wrapper (#155).
+
 ## [0.3.7] - 2026-03-09
 
 ### Security
@@ -250,5 +269,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...HEAD
+[0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8
+[0.3.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...v0.3.7
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
