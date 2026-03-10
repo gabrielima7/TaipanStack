@@ -65,6 +65,55 @@ class TestGeneratePreCommitConfig:
 
         assert "mypy" in result.lower()
 
+    def test_bandit_severity_mapping(self) -> None:
+        """Test that Bandit severity levels are correctly mapped."""
+        for level, expected_arg in [
+            ("low", "-lL"),
+            ("medium", "-lM"),
+            ("high", "-lH"),
+        ]:
+            config = StackConfig(
+                project_name="test-project",
+                security={"bandit_severity": level},
+            )
+            result = generate_pre_commit_config(config)
+            assert expected_arg in result
+
+    def test_paranoid_security_hooks_inclusion(self) -> None:
+        """Test that paranoid security hooks are included."""
+        config = StackConfig(
+            project_name="test-project",
+            security={"level": "paranoid"},
+        )
+        result = generate_pre_commit_config(config)
+
+        assert "pip-audit" in result
+        assert "vulture" in result
+        assert "tryceratops" in result
+
+    def test_security_hooks_toggling(self) -> None:
+        """Test that individual security hooks can be disabled."""
+        tools = [
+            ("enable_bandit", "bandit"),
+            ("enable_safety", "safety"),
+            ("enable_semgrep", "semgrep"),
+            ("enable_detect_secrets", "detect-secrets"),
+        ]
+
+        for flag, hook_id in tools:
+            # Test enabled (default)
+            config_enabled = StackConfig(project_name="test-project")
+            result_enabled = generate_pre_commit_config(config_enabled)
+            assert hook_id in result_enabled
+
+            # Test disabled
+            config_disabled = StackConfig(
+                project_name="test-project",
+                security={flag: False, "level": "standard"},
+            )
+            result_disabled = generate_pre_commit_config(config_disabled)
+            assert hook_id not in result_disabled
+
 
 class TestGenerateDependabotConfig:
     """Tests for generate_dependabot_config function."""
