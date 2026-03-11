@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_3f522a09208f6d6e_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-03-10 15:06 +0000
+            created at 2026-03-11 16:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -156,7 +156,7 @@
     <p class="pln"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="str">        PyJWTError: If the token is invalid, expired, or has incorrect claims.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">    <span class="key">if</span> <span class="str">"none"</span> <span class="key">in</span> <span class="op">[</span><span class="nam">str</span><span class="op">(</span><span class="nam">alg</span><span class="op">)</span><span class="op">.</span><span class="nam">strip</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="key">for</span> <span class="nam">alg</span> <span class="key">in</span> <span class="nam">algorithms</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">    <span class="key">if</span> <span class="nam">any</span><span class="op">(</span><span class="nam">str</span><span class="op">(</span><span class="nam">alg</span><span class="op">)</span><span class="op">.</span><span class="nam">strip</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="str">"none"</span> <span class="key">for</span> <span class="nam">alg</span> <span class="key">in</span> <span class="nam">algorithms</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">        <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">'Algorithm "none" is explicitly disallowed for decoding.'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">    <span class="com"># We enforce 'exp' and 'aud' through PyJWT's options parameter</span>&nbsp;</span><span class="r"></span></p>
@@ -183,7 +183,7 @@
             <a class="nav" href="z_3f522a09208f6d6e_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-03-10 15:06 +0000
+            created at 2026-03-11 16:13 +0000
         </p>
     </div>
 </footer>
