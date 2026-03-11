@@ -23,8 +23,10 @@ def setup_teardown(tmp_path, monkeypatch):
     # Mocks subprocess.run to avoid executing real commands (like poetry)
     # Mocks connectivity check to avoid network errors
     mock_run = MagicMock(return_value=subprocess.CompletedProcess([], 0))
-    with patch("subprocess.run", mock_run), \
-            patch("taipanstack_bootstrapper._check_connectivity", return_value=None):
+    with (
+        patch("subprocess.run", mock_run),
+        patch("taipanstack_bootstrapper._check_connectivity", return_value=None),
+    ):
         yield mock_run
 
 
