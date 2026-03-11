@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.9] - 2026-03-11
+
+### Security
+- **Critical**: Patched path traversal vulnerabilities in filesystem utilities (#160).
+- **Masking**: Added automatic sensitive data masking in structured logs (#162).
+- **Types**: Implemented `SafeHtml` and `SafeSqlIdentifier` natively compatible with FastAPI/Pydantic schemas.
+- **JWT**: Disallowed 'none' algorithm in JWT decoding (#169).
+- **Optimization**: Unified sensitive environment variable patterns (#167).
+
+### Core Features
+- **Observability**: Added `correlation_id` tracking via `contextvars` integrating distributed tracing into `structlog`.
+- **Resilience**: New `@fallback` and `@timeout` decorators for safe error interception and execution timeouts.
+- **Cache**: New `@cached(ttl)` decorator that memoizes only successful results (`Ok`).
+
+### QA / Testing
+- **Robustness**: Stabilized concurrency tests using event-based synchronization (#165).
+- **Coverage**: Added new test cases for path sanitization, SQL identifiers, and long file extensions (#168, #166, #163, #159).
+
+### Performance
+- **Hashing**: Optimized file hashing chunk iteration using `functools.partial` (#164).
+
+### Refactoring
+- **Chore**: Removed unnecessary elif branches (#161).
+- **Observability**: Padronized logging infrastructure using internal utilities (#162).
+
 ## [0.3.8] - 2026-03-10
 
 ### Added
@@ -269,7 +294,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
 [2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...HEAD
+[0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8
 [0.3.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...v0.3.7
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
