@@ -14,6 +14,7 @@ MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
+_SQL_IDENTIFIER_DENY_RE = re.compile(r"[^a-zA-Z0-9_]")  # pragma: no mutate
 _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     {
         "CON",
@@ -317,7 +318,11 @@ def sanitize_sql_identifier(identifier: str) -> str:
         raise ValueError(msg)
 
     # Only allow alphanumeric and underscore
-    result = re.sub(r"[^a-zA-Z0-9_]", "", identifier)
+    # Fast path: if already clean, skip sub
+    if _SQL_IDENTIFIER_DENY_RE.search(identifier):
+        result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
+    else:
+        result = identifier
 
     # Must start with letter or underscore
     if result and not (result[0].isalpha() or result[0] == "_"):
