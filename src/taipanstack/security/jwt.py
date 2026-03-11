@@ -72,7 +72,7 @@ def decode_jwt(
         PyJWTError: If the token is invalid, expired, or has incorrect claims.
 
     """
-    if "none" in [str(alg).strip().lower() for alg in algorithms]:
+    if any(str(alg).strip().lower() == "none" for alg in algorithms):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
 
     # We enforce 'exp' and 'aud' through PyJWT's options parameter
