@@ -21,8 +21,10 @@ def setup_teardown(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Mocks subprocess.run to avoid executing real commands (like poetry)
+    # Mocks connectivity check to avoid network errors
     mock_run = MagicMock(return_value=subprocess.CompletedProcess([], 0))
-    with patch("subprocess.run", mock_run):
+    with patch("subprocess.run", mock_run), \
+            patch("taipanstack_bootstrapper._check_connectivity", return_value=None):
         yield mock_run
 
 
@@ -211,3 +213,27 @@ def test_python_version_detection(tmp_path):
 
     expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     assert f'python_version = "{expected_version}"' in content
+
+
+def test_setup_pre_commit():
+    """
+    Verifies that the pre-commit configuration file is generated with correct content.
+    """
+    args = MagicMock()
+    args.dry_run = False
+    args.verbose = False
+
+    with patch("taipanstack_bootstrapper._safe_write") as mock_safe_write:
+        taipanstack._setup_pre_commit(args)
+
+        mock_safe_write.assert_called_once()
+        path, content, passed_args = mock_safe_write.call_args[0]
+        assert path == taipanstack.PRE_COMMIT_CONFIG_PATH
+        assert "repos:" in content
+        assert "https://github.com/pre-commit/pre-commit-hooks" in content
+        assert "ruff" in content
+        assert "mypy" in content
+        assert "bandit" in content
+        assert "safety" in content
+        assert "semgrep" in content
+        assert "detect-secrets" in content
