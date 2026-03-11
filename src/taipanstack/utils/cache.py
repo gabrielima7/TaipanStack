@@ -29,7 +29,9 @@ class CacheDecorator(Protocol):
     @overload
     def __call__(
         self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E]]]: ...  # pragma: no cover
+    ) -> Callable[
+        P, Coroutine[Any, Any, Result[T, E]]
+    ]: ...  # pragma: no cover
 
 
 def cached(ttl: float) -> CacheDecorator:
@@ -54,9 +56,13 @@ def cached(ttl: float) -> CacheDecorator:
 
     def decorator(
         func: (
-            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+            Callable[P, Result[T, E]]
+            | Callable[P, Coroutine[Any, Any, Result[T, E]]]
         ),
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+    ) -> (
+        Callable[P, Result[T, E]]
+        | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+    ):
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)

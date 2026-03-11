@@ -32,3 +32,12 @@ TaipanStack's security layer provides input validation, sanitization, and securi
     options:
       show_root_heading: false
       members_order: source
+
+---
+
+## Types
+
+::: taipanstack.security.types
+    options:
+      show_root_heading: false
+      members_order: source

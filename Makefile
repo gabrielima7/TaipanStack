@@ -41,7 +41,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Safety dependency checker..."
-	poetry run safety check -i 51457 --full-report
+	bash -c 'set -o pipefail; poetry run safety check -i 51457 --full-report 2>&1 | grep -v "DEPRECATED"'
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."

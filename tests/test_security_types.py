@@ -298,3 +298,5 @@ class TestSafeSqlIdentifier:
         else:
             with pytest.raises(ValidationError):
                 SqlModel(column=text)
+
+
