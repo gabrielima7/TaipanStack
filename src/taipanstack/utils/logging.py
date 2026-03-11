@@ -48,10 +48,10 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 def mask_sensitive_data_processor(
-    _logger: Any,
-    _method: str,
-    event_dict: dict[str, Any],
-) -> dict[str, Any]:
+    logger: Any,  # noqa: ARG001
+    method: str,  # noqa: ARG001
+    event_dict: MutableMapping[str, Any],
+) -> MutableMapping[str, Any]:
     """Mask sensitive data in structlog event dictionaries.
 
     Intercept the *event_dict* produced by structlog and replace the
