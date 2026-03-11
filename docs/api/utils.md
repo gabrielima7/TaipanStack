@@ -32,3 +32,30 @@ TaipanStack provides resilience and observability utilities for production appli
     options:
       show_root_heading: false
       members_order: source
+
+---
+
+## Resilience
+
+::: taipanstack.utils.resilience
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Cache
+
+::: taipanstack.utils.cache
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Context
+
+::: taipanstack.utils.context
+    options:
+      show_root_heading: false
+      members_order: source

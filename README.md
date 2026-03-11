@@ -303,6 +303,29 @@ def fetch_user_profile(user_id: str) -> dict:
 profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
 ```
 
+### Intelligent Caching
+
+```python
+from taipanstack.utils.cache import cached
+from taipanstack.core.result import Result
+
+@cached(ttl=60)
+async def get_user_data(user_id: int) -> Result[dict, Exception]:
+    return await db.fetch(user_id) # Only Ok() results are cached
+```
+
+### Fallbacks & Timeouts
+
+```python
+from taipanstack.utils.resilience import fallback, timeout
+from taipanstack.core.result import Result
+
+@fallback(fallback_value={"status": "offline"}, exceptions=(TimeoutError,))
+@timeout(seconds=5.0)
+async def fetch_remote_status() -> Result[dict, Exception]:
+    return await api.get_status()
+```
+
 ---
 
 ## 🐳 Docker

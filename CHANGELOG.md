@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.9] - 2026-03-11
 
+### Added
+- **Observability**: New `taipanstack.utils.context` module with `correlation_id_var` and `correlation_scope` integrated into `structlog` for distributed tracing.
+- **Resilience**: New decorators `@fallback` and `@timeout` in `taipanstack.utils.resilience` supporting both sync and async functions rigorously typed with the `Result` monad and `ParamSpec`.
+- **Caching**: Intelligent caching decorator `@cached` with TTL support that seamlessly ignores `Err()` results while caching only `Ok()` outcomes.
+- **Security**: New Pydantic v2 compatible security types `SafeHtml` and `SafeSqlIdentifier` in `taipanstack.security.types`.
+
 ### Security
 - **Critical**: Patched path traversal vulnerabilities in filesystem utilities (#160).
 - **Masking**: Added automatic sensitive data masking in structured logs (#162).
