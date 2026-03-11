@@ -184,14 +184,27 @@ class TestSanitizePath:
 
     def test_handles_empty_parts(self) -> None:
         """Test path with empty parts after sanitization."""
-        # / combined with '..' leads to empty parts list for an absolute path
-        # which triggers the else block in absolute path reconstruction
-        result = sanitize_path("/../")
-        assert str(result) == "/"
+        # To trigger an absolute path traversal resulting in empty parts cross-platform,
+        # we resolve the root path (so it gets C:/ on Windows) and append ..
+        abs_root = Path("/").resolve()
+        abs_traversal = abs_root / ".."
+        result = sanitize_path(abs_traversal)
+
+        # When `sanitize_path` reconstructs an absolute path that's empty, it hardcodes `Path("/")`.
+        # On Windows, `Path("/")` evaluates to `\` without a drive letter.
+        assert result == Path("/")
 
         # relative path with just traversal leads to empty path "."
         result = sanitize_path("foo/../")
-        assert str(result) == "."
+        assert result == Path()
+
+    def test_handles_invalid_character_parts(self) -> None:
+        """Test path with parts that become unnamed due to invalid characters."""
+        # `sanitize_filename` of `<>:*?` results in `unnamed`
+        result = sanitize_path("foo/<>:*?/bar")
+        assert "foo" in result.parts
+        assert "unnamed" in result.parts
+        assert "bar" in result.parts
 
     def test_resolve_with_base_dir_success(self, tmp_path: Path) -> None:
         """Test resolving path with base directory."""
@@ -199,15 +212,20 @@ class TestSanitizePath:
         base.mkdir()
         subdir = tmp_path / "subdir"
         subdir.mkdir()
-        result = sanitize_path(subdir.name, base_dir=tmp_path, max_depth=None, resolve=True)
+        result = sanitize_path(
+            subdir.name, base_dir=tmp_path, max_depth=None, resolve=True
+        )
         assert isinstance(result, Path)
 
-    def test_resolve_with_base_dir_error(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_resolve_with_base_dir_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test resolving path with base directory raises ValueError on error."""
         base = tmp_path / "base"
         base.mkdir()
 
         original_resolve = Path.resolve
+
         def mock_resolve(self, *args, **kwargs):
             if "subdir" in str(self):
                 raise OSError("Mocked error")
