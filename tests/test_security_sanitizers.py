@@ -226,6 +226,11 @@ class TestSanitizeSqlIdentifier:
         result = sanitize_sql_identifier("123column")
         assert result.startswith("_")
 
+    def test_only_numbers(self) -> None:
+        """Test identifier with only numbers adds underscore prefix."""
+        result = sanitize_sql_identifier("12345")
+        assert result == "_12345"
+
     def test_truncates_long_identifier(self) -> None:
         """Test long identifier is truncated."""
         long_name = "a" * 200
