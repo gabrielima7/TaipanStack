@@ -47,7 +47,8 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
         case Err():
             pytest.fail("Expected Ok but got Err")
 
-    assert f"User created successfully: {user.id}" in caplog.text
+    assert "User created successfully" in caplog.text
+    assert f"user_id={user.id}" in caplog.text
 
 
 def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
@@ -145,4 +146,5 @@ def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
         case Ok():
             pytest.fail("Expected Err but got Ok")
 
-    assert f"User lookup failed for ID: {user_id}" in caplog.text
+    assert "User lookup failed" in caplog.text
+    assert f"user_id={user_id}" in caplog.text

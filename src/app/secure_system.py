@@ -181,10 +181,10 @@ class UserService:
         )
         try:
             self._user_repository.save(user)
-            logger.info(f"User created successfully: {user.id}")
+            logger.info("User created successfully", user_id=user.id)
             return Ok(user)
         except UserAlreadyExistsError as e:
-            logger.exception(f"Failed to create user {user.id}")
+            logger.exception("Failed to create user", user_id=user.id)
             return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
@@ -207,6 +207,6 @@ class UserService:
         """
         user = self._user_repository.get_by_id(user_id)
         if user is None:
-            logger.warning(f"User lookup failed for ID: {user_id}")
+            logger.warning("User lookup failed", user_id=user_id)
             return Err(UserNotFoundError(user_id))
         return Ok(user)
