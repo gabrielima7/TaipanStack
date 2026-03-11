@@ -85,12 +85,8 @@ _DEFAULT_DENIED_ENV_VARS = frozenset(
     ]
 )
 
-_SENSITIVE_ENV_VAR_PATTERNS = (
-    re.compile(r".*SECRET.*"),
-    re.compile(r".*PASSWORD.*"),
-    re.compile(r".*TOKEN.*"),
-    re.compile(r".*PRIVATE.*KEY.*"),
-    re.compile(r".*API.*KEY.*"),
+_SENSITIVE_ENV_VAR_PATTERN = re.compile(
+    r".*SECRET.*|.*PASSWORD.*|.*TOKEN.*|.*PRIVATE.*KEY.*|.*API.*KEY.*"
 )
 
 
@@ -369,23 +365,22 @@ def guard_env_variable(
             value=name,
         )
 
-    for pattern in _SENSITIVE_ENV_VAR_PATTERNS:
-        if pattern.match(name_upper):
-            # Only block if not explicitly allowed
-            if allowed_names is not None:
-                allowed = {n.upper() for n in allowed_names}
-                if name_upper not in allowed:
-                    raise SecurityError(
-                        f"Access to potentially sensitive variable '{name}' is denied",
-                        guard_name="env_variable",
-                        value=name,
-                    )
-            else:
+    if _SENSITIVE_ENV_VAR_PATTERN.match(name_upper):
+        # Only block if not explicitly allowed
+        if allowed_names is not None:
+            allowed = {n.upper() for n in allowed_names}
+            if name_upper not in allowed:
                 raise SecurityError(
                     f"Access to potentially sensitive variable '{name}' is denied",
                     guard_name="env_variable",
                     value=name,
                 )
+        else:
+            raise SecurityError(
+                f"Access to potentially sensitive variable '{name}' is denied",
+                guard_name="env_variable",
+                value=name,
+            )
 
     # Get the variable
     value = os.environ.get(name)
