@@ -28,6 +28,26 @@ class TestSanitizeString:
         """Test whitespace is stripped by default."""
         assert sanitize_string("  hello  ") == "hello"
 
+    @pytest.mark.parametrize(
+        "whitespace",
+        [
+            " ",  # Space
+            "\t",  # Tab
+            "\n",  # Newline
+            "\r",  # Carriage return
+            "\v",  # Vertical tab
+            "\f",  # Form feed
+            "\xa0",  # Non-breaking space
+            " \t\n\r ",  # Mixed whitespace
+        ],
+    )
+    def test_strips_various_whitespace(self, whitespace: str) -> None:
+        """Test various whitespace characters are stripped correctly."""
+        # Test leading/trailing whitespace
+        assert sanitize_string(f"{whitespace}hello{whitespace}") == "hello"
+        # Test string with only whitespace (should become empty)
+        assert sanitize_string(whitespace) == ""
+
     def test_no_strip_whitespace(self) -> None:
         """Test whitespace preserved when disabled."""
         result = sanitize_string("  hello  ", strip_whitespace=False)
