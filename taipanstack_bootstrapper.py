@@ -178,7 +178,7 @@ addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-u
         )
 
 
-def _generate_pre_commit_config(args: argparse.Namespace) -> None:
+def _setup_pre_commit(args: argparse.Namespace) -> None:
     """Generate and write the .pre-commit-config.yaml file."""
     _log("📝 Generating .pre-commit-config.yaml file...", args)
     config_content = """repos:
@@ -566,7 +566,7 @@ def main() -> None:
 
     # Generation of configuration files
     _generate_pyproject_config(args)
-    _generate_pre_commit_config(args)
+    _setup_pre_commit(args)
     _generate_dependabot_config(args)
     _generate_security_policy(args)
 
