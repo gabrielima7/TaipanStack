@@ -31,15 +31,15 @@ class TestSanitizeString:
     @pytest.mark.parametrize(
         "whitespace",
         [
-            " ",        # Space
-            "\t",       # Tab
-            "\n",       # Newline
-            "\r",       # Carriage return
-            "\v",       # Vertical tab
-            "\f",       # Form feed
-            "\xa0",     # Non-breaking space
-            " \t\n\r ", # Mixed whitespace
-        ]
+            " ",  # Space
+            "\t",  # Tab
+            "\n",  # Newline
+            "\r",  # Carriage return
+            "\v",  # Vertical tab
+            "\f",  # Form feed
+            "\xa0",  # Non-breaking space
+            " \t\n\r ",  # Mixed whitespace
+        ],
     )
     def test_strips_various_whitespace(self, whitespace: str) -> None:
         """Test various whitespace characters are stripped correctly."""
