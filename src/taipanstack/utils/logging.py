@@ -48,8 +48,8 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 def mask_sensitive_data_processor(
-    logger: Any,  # noqa: ARG001
-    method: str,  # noqa: ARG001
+    _logger: Any,
+    _method: str,
     event_dict: dict[str, Any],
 ) -> dict[str, Any]:
     """Mask sensitive data in structlog event dictionaries.
@@ -59,8 +59,8 @@ def mask_sensitive_data_processor(
     ``"***REDACTED***"``.  Matching is case-insensitive.
 
     Args:
-        logger: The wrapped logger object (unused, required by structlog).
-        method: The name of the log method called (unused, required by structlog).
+        _logger: The wrapped logger object (unused, required by structlog).
+        _method: The name of the log method called (unused, required by structlog).
         event_dict: The structured event dictionary.
 
     Returns:
@@ -104,15 +104,15 @@ def set_correlation_id(correlation_id: str | None) -> None:
 
 
 def correlation_id_processor(
-    logger: Any,  # noqa: ARG001
-    method: str,  # noqa: ARG001
+    _logger: Any,
+    _method: str,
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
     """Structlog processor to inject correlation ID into events.
 
     Args:
-        logger: The wrapped logger object.
-        method: The name of the log method called.
+        _logger: The wrapped logger object.
+        _method: The name of the log method called.
         event_dict: The structured event dictionary.
 
     Returns:
