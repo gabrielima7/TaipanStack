@@ -1,10 +1,10 @@
 """Main module for app."""
 
-import logging
+from taipanstack.utils.logging import get_logger, setup_logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+setup_logging(level="INFO")
+logger = get_logger(__name__)
 
 
 def greet(name: str) -> str:

@@ -210,6 +210,10 @@ class StackLogger:
             return message
 
         context = {**self._context, **kwargs}
+        if _SENSITIVE_KEY_REGEX is not None:
+            for key in context:
+                if _SENSITIVE_KEY_REGEX.search(key):
+                    context[key] = REDACTED_VALUE
         context_str = " ".join(f"{k}={v}" for k, v in context.items())
         return f"{message} | {context_str}"
 
@@ -317,6 +321,7 @@ def setup_logging(
                 structlog.stdlib.add_log_level,
                 structlog.processors.TimeStamper(fmt="iso"),
                 correlation_id_processor,
+                mask_sensitive_data_processor,
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.processors.UnicodeDecoder(),

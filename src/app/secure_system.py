@@ -5,7 +5,6 @@ This module demonstrates a secure implementation of a user management service
 following strict typing and security guidelines.
 """
 
-import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from uuid import UUID, uuid4
@@ -15,9 +14,10 @@ from pydantic.networks import IPvAnyAddress
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security import hash_password
+from taipanstack.utils.logging import get_logger
 
 # Configure logger
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class UserNotFoundError(Exception):
@@ -181,10 +181,10 @@ class UserService:
         )
         try:
             self._user_repository.save(user)
-            logger.info("User created successfully: %s", user.id)
+            logger.info(f"User created successfully: {user.id}")
             return Ok(user)
         except UserAlreadyExistsError as e:
-            logger.exception("Failed to create user %s", user.id)
+            logger.exception(f"Failed to create user {user.id}")
             return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
@@ -207,6 +207,6 @@ class UserService:
         """
         user = self._user_repository.get_by_id(user_id)
         if user is None:
-            logger.warning("User lookup failed for ID: %s", user_id)
+            logger.warning(f"User lookup failed for ID: {user_id}")
             return Err(UserNotFoundError(user_id))
         return Ok(user)
