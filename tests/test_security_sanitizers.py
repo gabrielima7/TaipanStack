@@ -169,6 +169,54 @@ class TestSanitizePath:
         # Check result is under base directory using Path comparison
         assert str(base) in str(result)
 
+    def test_removes_parent_traversal(self) -> None:
+        """Test path traversal with parent directory is resolved."""
+        result = sanitize_path("foo/../bar")
+        assert "bar" in str(result)
+        assert "foo" not in str(result)
+
+    def test_removes_multiple_parent_traversals(self) -> None:
+        """Test path traversal with multiple parent directories."""
+        result = sanitize_path("foo/bar/../../baz")
+        assert "baz" in str(result)
+        assert "foo" not in str(result)
+        assert "bar" not in str(result)
+
+    def test_handles_empty_parts(self) -> None:
+        """Test path with empty parts after sanitization."""
+        # / combined with '..' leads to empty parts list for an absolute path
+        # which triggers the else block in absolute path reconstruction
+        result = sanitize_path("/../")
+        assert str(result) == "/"
+
+        # relative path with just traversal leads to empty path "."
+        result = sanitize_path("foo/../")
+        assert str(result) == "."
+
+    def test_resolve_with_base_dir_success(self, tmp_path: Path) -> None:
+        """Test resolving path with base directory."""
+        base = tmp_path / "base"
+        base.mkdir()
+        subdir = tmp_path / "subdir"
+        subdir.mkdir()
+        result = sanitize_path(subdir.name, base_dir=tmp_path, max_depth=None, resolve=True)
+        assert isinstance(result, Path)
+
+    def test_resolve_with_base_dir_error(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test resolving path with base directory raises ValueError on error."""
+        base = tmp_path / "base"
+        base.mkdir()
+
+        original_resolve = Path.resolve
+        def mock_resolve(self, *args, **kwargs):
+            if "subdir" in str(self):
+                raise OSError("Mocked error")
+            return original_resolve(self, *args, **kwargs)
+
+        monkeypatch.setattr("pathlib.Path.resolve", mock_resolve)
+        with pytest.raises(ValueError, match="Cannot resolve path"):
+            sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
+
 
 class TestSanitizeEnvValue:
     """Tests for sanitize_env_value function."""
