@@ -1,12 +1,16 @@
 """Tests for Pydantic v2 security type aliases (security/types.py)."""
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 from pydantic import BaseModel, ValidationError
 
 from taipanstack.security.types import (
     SafeCommand,
+    SafeHtml,
     SafePath,
     SafeProjectName,
+    SafeSqlIdentifier,
     SafeUrl,
 )
 
@@ -219,3 +223,79 @@ class TestSafeProjectName:
         """Project name exceeding max length raises ValidationError."""
         with pytest.raises(ValidationError):
             ProjectModel(name="a" * 101)
+
+
+# ---------------------------------------------------------------------------
+# SafeHtml
+# ---------------------------------------------------------------------------
+
+
+class HtmlModel(BaseModel):
+    """Model using SafeHtml."""
+
+    content: SafeHtml
+
+
+class TestSafeHtml:
+    """Tests for SafeHtml Pydantic type."""
+
+    def test_basic_escape(self) -> None:
+        """Basic HTML strings are escaped properly."""
+        m = HtmlModel(content="<script>alert(1)</script>")
+        assert m.content == "&lt;script&gt;alert(1)&lt;/script&gt;"
+
+    @given(st.text())
+    def test_property_all_strings_escaped(self, text: str) -> None:
+        """All arbitrary text is safely processed."""
+        # Using html.escape, the characters <, >, &, ", ' are escaped
+        # unless quote=False is passed (we use default quote=True)
+        m = HtmlModel(content=text)
+        assert "<" not in m.content
+        assert ">" not in m.content
+
+
+# ---------------------------------------------------------------------------
+# SafeSqlIdentifier
+# ---------------------------------------------------------------------------
+
+
+class SqlModel(BaseModel):
+    """Model using SafeSqlIdentifier."""
+
+    column: SafeSqlIdentifier
+
+
+class TestSafeSqlIdentifier:
+    """Tests for SafeSqlIdentifier Pydantic type."""
+
+    def test_valid_identifier_passes(self) -> None:
+        """Valid SQL identifiers pass validation."""
+        assert SqlModel(column="users_table").column == "users_table"
+        assert SqlModel(column="_private1").column == "_private1"
+
+    def test_invalid_identifier_raises(self) -> None:
+        """Invalid SQL identifiers raise ValidationError."""
+        with pytest.raises(ValidationError):
+            SqlModel(column="user table")
+        with pytest.raises(ValidationError):
+            SqlModel(column="1table")
+        with pytest.raises(ValidationError):
+            SqlModel(column="users; DROP TABLE users")
+
+    @given(st.from_regex(r"^[a-zA-Z_][a-zA-Z0-9_]*$", fullmatch=True))
+    def test_property_valid_identifiers_pass(self, text: str) -> None:
+        """Valid generated identifiers pass."""
+        assert SqlModel(column=text).column == text
+
+    @given(st.text())
+    def test_property_any_string_validation(self, text: str) -> None:
+        """Arbitrary strings are correctly accepted or rejected based on regex."""
+        import re
+
+        is_valid = bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", text))
+        if is_valid:
+            assert SqlModel(column=text).column == text
+        else:
+            with pytest.raises(ValidationError):
+                SqlModel(column=text)
+

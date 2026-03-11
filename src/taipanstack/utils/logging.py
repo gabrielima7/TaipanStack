@@ -10,9 +10,10 @@ import re
 import sys
 from collections.abc import MutableMapping
 from contextlib import contextmanager
-from contextvars import ContextVar
 from datetime import UTC, datetime
 from typing import Any, Literal
+
+from taipanstack.utils.context import get_correlation_id
 
 try:
     import structlog
@@ -59,8 +60,8 @@ def mask_sensitive_data_processor(
     ``"***REDACTED***"``.  Matching is case-insensitive.
 
     Args:
-        _logger: The wrapped logger object (unused, required by structlog).
-        _method: The name of the log method called (unused, required by structlog).
+        logger: The wrapped logger object (unused, required by structlog).
+        method: The name of the log method called (unused, required by structlog).
         event_dict: The structured event dictionary.
 
     Returns:
@@ -76,43 +77,17 @@ def mask_sensitive_data_processor(
     return event_dict
 
 
-# Context variables for observability
-correlation_id_var: ContextVar[str | None] = ContextVar(
-    "correlation_id",
-    default=None,
-)
-
-
-def get_correlation_id() -> str | None:
-    """Get the current correlation ID.
-
-    Returns:
-        The correlation ID if set, otherwise None.
-
-    """
-    return correlation_id_var.get()
-
-
-def set_correlation_id(correlation_id: str | None) -> None:
-    """Set the correlation ID for the current context.
-
-    Args:
-        correlation_id: The correlation ID string, or None to clear.
-
-    """
-    correlation_id_var.set(correlation_id)
-
 
 def correlation_id_processor(
-    _logger: Any,
-    _method: str,
+    logger: Any,  # noqa: ARG001
+    method: str,  # noqa: ARG001
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
     """Structlog processor to inject correlation ID into events.
 
     Args:
-        _logger: The wrapped logger object.
-        _method: The name of the log method called.
+        logger: The wrapped logger object.
+        method: The name of the log method called.
         event_dict: The structured event dictionary.
 
     Returns:
