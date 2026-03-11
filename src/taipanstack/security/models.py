@@ -30,7 +30,7 @@ def _mask_data(data: Any) -> Any:
             else:
                 masked[k] = _mask_data(v)
         return masked
-    elif isinstance(data, list):
+    if isinstance(data, list):
         return [_mask_data(item) for item in data]
     return data
 
