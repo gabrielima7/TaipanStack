@@ -44,11 +44,11 @@ class TestConcurrencyLimiter:
         """Test sync limit_concurrency blocking immediately (no timeout)."""
         import threading
 
-        started_event = threading.Event()
+        start_event = threading.Event()
 
         @limit_concurrency(max_tasks=1)
         def slow_process() -> str:
-            started_event.set()
+            start_event.set()
             time.sleep(0.1)
             return "done"
 
@@ -56,8 +56,9 @@ class TestConcurrencyLimiter:
         t = threading.Thread(target=slow_process)
         t.start()
 
-        # Wait definitively for the thread to acquire the lock and set the event
-        started_event.wait(timeout=2.0)
+        # Wait for the thread to actually enter slow_process and acquire the semaphore
+        if not start_event.wait(timeout=2.0):
+            pytest.fail("Thread failed to start in time")
 
         # This should fail immediately because max_tasks is 1 and no timeout is set
         res = slow_process()
@@ -72,19 +73,20 @@ class TestConcurrencyLimiter:
         """Test sync limit_concurrency blocking and failing after timeout."""
         import threading
 
-        started_event = threading.Event()
+        start_event = threading.Event()
 
         @limit_concurrency(max_tasks=1, timeout=0.05)
         def slow_process() -> str:
-            started_event.set()
+            start_event.set()
             time.sleep(0.2)
             return "done"
 
         t = threading.Thread(target=slow_process)
         t.start()
 
-        # Wait definitively for the thread to start and acquire the lock
-        started_event.wait(timeout=2.0)
+        # Wait for the thread to actually enter slow_process and acquire the semaphore
+        if not start_event.wait(timeout=2.0):
+            pytest.fail("Thread failed to start in time")
 
         res = slow_process()
         t.join()
