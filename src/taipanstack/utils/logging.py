@@ -77,7 +77,6 @@ def mask_sensitive_data_processor(
     return event_dict
 
 
-
 def correlation_id_processor(
     logger: Any,  # noqa: ARG001
     method: str,  # noqa: ARG001

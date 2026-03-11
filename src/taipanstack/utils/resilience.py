@@ -29,9 +29,7 @@ class FallbackDecorator(Protocol):
     @overload
     def __call__(
         self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ) -> Callable[
-        P, Coroutine[Any, Any, Result[T, E]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Coroutine[Any, Any, Result[T, E]]]: ...  # pragma: no cover
 
 
 def fallback(
@@ -54,13 +52,9 @@ def fallback(
 
     def decorator(
         func: (
-            Callable[P, Result[T, E]]
-            | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
         ),
-    ) -> (
-        Callable[P, Result[T, E]]
-        | Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ):
+    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
@@ -133,8 +127,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
 
     def decorator(
         func: (
-            Callable[P, Result[T, E]]
-            | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
         ),
     ) -> (
         Callable[P, Result[T, TimeoutError | E]]
