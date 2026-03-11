@@ -363,6 +363,8 @@ def get_file_hash(
     # Validate path
     if base_dir is not None:
         path = guard_path_traversal(path, Path(base_dir))
+    elif ".." in str(path):
+        path = guard_path_traversal(path, Path.cwd())
 
     hasher = hashlib.new(algorithm)
 
@@ -399,6 +401,8 @@ def find_files(
     # Validate path
     if base_dir is not None:
         directory = guard_path_traversal(directory, Path(base_dir))
+    elif ".." in str(directory):
+        directory = guard_path_traversal(directory, Path.cwd())
 
     if not directory.exists():
         return []
