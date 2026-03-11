@@ -123,6 +123,13 @@ class TestSanitizeFilename:
         assert len(result) <= 10
         assert result.endswith(".txt")
 
+    def test_max_length_with_long_extension(self) -> None:
+        """Test max length when extension is longer than max_length."""
+        # Extension is ".extension" (10 chars), max_length is 5
+        result = sanitize_filename("file.extension", max_length=5)
+        assert len(result) == 5
+        assert result == "file."
+
     def test_custom_replacement(self) -> None:
         """Test custom replacement character."""
         result = sanitize_filename("bad:name.txt", replacement="-")
