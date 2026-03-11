@@ -1,23 +1,21 @@
 """Tests for structured logging utilities."""
 
-import asyncio
 import logging
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from taipanstack.utils.context import set_correlation_id
 from taipanstack.utils.logging import (
     DEFAULT_FORMAT,
     JSON_FORMAT,
     REDACTED_VALUE,
     StackLogger,
     correlation_id_processor,
-    get_correlation_id,
     get_logger,
     log_operation,
     mask_sensitive_data_processor,
-    set_correlation_id,
     setup_logging,
 )
 
@@ -355,36 +353,6 @@ class TestFormatConstants:
 
 class TestCorrelationId:
     """Tests for correlation_id contextvars."""
-
-    def test_set_and_get_correlation_id(self) -> None:
-        """Test basic set and get of correlation ID."""
-        set_correlation_id("test-corr-id")
-        assert get_correlation_id() == "test-corr-id"
-
-        # Cleanup for other tests
-        set_correlation_id(None)
-
-    @pytest.mark.asyncio
-    async def test_async_isolation_correlation_id(self) -> None:
-        """Test that correlation IDs are isolated across async tasks."""
-
-        async def task_a() -> str | None:
-            set_correlation_id("task-a-id")
-            await asyncio.sleep(0.01)
-            return get_correlation_id()
-
-        async def task_b() -> str | None:
-            set_correlation_id("task-b-id")
-            await asyncio.sleep(0.02)
-            return get_correlation_id()
-
-        # Before any task runs, it should be None
-        set_correlation_id(None)
-
-        results = await asyncio.gather(task_a(), task_b())
-
-        assert list(results) == ["task-a-id", "task-b-id"]
-        assert get_correlation_id() is None
 
     def test_correlation_id_processor_with_id(self) -> None:
         """Test processor injects ID when set."""
