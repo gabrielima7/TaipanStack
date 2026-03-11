@@ -44,8 +44,11 @@ class TestConcurrencyLimiter:
         """Test sync limit_concurrency blocking immediately (no timeout)."""
         import threading
 
+        started_event = threading.Event()
+
         @limit_concurrency(max_tasks=1)
         def slow_process() -> str:
+            started_event.set()
             time.sleep(0.1)
             return "done"
 
@@ -53,8 +56,8 @@ class TestConcurrencyLimiter:
         t = threading.Thread(target=slow_process)
         t.start()
 
-        # Give the thread a moment to acquire the semaphore
-        time.sleep(0.01)
+        # Wait definitively for the thread to acquire the lock and set the event
+        started_event.wait(timeout=2.0)
 
         # This should fail immediately because max_tasks is 1 and no timeout is set
         res = slow_process()
@@ -69,14 +72,19 @@ class TestConcurrencyLimiter:
         """Test sync limit_concurrency blocking and failing after timeout."""
         import threading
 
+        started_event = threading.Event()
+
         @limit_concurrency(max_tasks=1, timeout=0.05)
         def slow_process() -> str:
+            started_event.set()
             time.sleep(0.2)
             return "done"
 
         t = threading.Thread(target=slow_process)
         t.start()
-        time.sleep(0.01)
+
+        # Wait definitively for the thread to start and acquire the lock
+        started_event.wait(timeout=2.0)
 
         res = slow_process()
         t.join()
@@ -111,15 +119,19 @@ class TestConcurrencyLimiter:
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_no_timeout_failure(self) -> None:
         """Test async limit_concurrency failure without timeout."""
+        started_event = asyncio.Event()
 
         @limit_concurrency(max_tasks=1)
         async def slow_fetch() -> str:
+            started_event.set()
             await asyncio.sleep(0.1)
             return "done"
 
         # Start a task that holds the semaphore
         task = asyncio.create_task(slow_fetch())
-        await asyncio.sleep(0.01)
+
+        # Wait for the task to actually start and acquire the lock
+        await asyncio.wait_for(started_event.wait(), timeout=2.0)
 
         # This should fail immediately since the lock is held
         res = await slow_fetch()
@@ -131,14 +143,18 @@ class TestConcurrencyLimiter:
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_with_timeout_failure(self) -> None:
         """Test async limit_concurrency failure with timeout."""
+        started_event = asyncio.Event()
 
         @limit_concurrency(max_tasks=1, timeout=0.05)
         async def slow_fetch() -> str:
+            started_event.set()
             await asyncio.sleep(0.2)
             return "done"
 
         task = asyncio.create_task(slow_fetch())
-        await asyncio.sleep(0.01)
+
+        # Wait definitively for task to start
+        await asyncio.wait_for(started_event.wait(), timeout=2.0)
 
         res = await slow_fetch()
         await task
