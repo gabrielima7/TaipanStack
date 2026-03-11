@@ -227,7 +227,7 @@ def test_setup_pre_commit():
         taipanstack._setup_pre_commit(args)
 
         mock_safe_write.assert_called_once()
-        path, content, passed_args = mock_safe_write.call_args[0]
+        path, content, _passed_args = mock_safe_write.call_args[0]
         assert path == taipanstack.PRE_COMMIT_CONFIG_PATH
         assert "repos:" in content
         assert "https://github.com/pre-commit/pre-commit-hooks" in content
