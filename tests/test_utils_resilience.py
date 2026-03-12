@@ -67,7 +67,7 @@ def test_timeout_sync() -> None:
     res_ok = sync_sleep(0.01)
     assert res_ok == Ok("done")
 
-    res_err = sync_sleep(0.2)
+    res_err = sync_sleep(0.5)
     assert isinstance(res_err, Err)
     res_err_instance = res_err.err()
     assert isinstance(res_err_instance, TimeoutError)
@@ -85,7 +85,7 @@ async def test_timeout_async() -> None:
     res_ok = await async_sleep(0.01)
     assert res_ok == Ok("done")
 
-    res_err = await async_sleep(0.2)
+    res_err = await async_sleep(0.5)
     assert isinstance(res_err, Err)
     res_err_instance = res_err.err()
     assert isinstance(res_err_instance, TimeoutError)

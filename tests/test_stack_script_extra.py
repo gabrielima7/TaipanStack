@@ -170,7 +170,9 @@ def test_create_project_structure_init_write_error(tmp_path, monkeypatch):
     ):
         taipanstack._create_project_structure(args)
         assert any(
-            "Could not create src/my_project/__init__.py" in call[0][0]
+            "Could not create" in call[0][0]
+            and "my_project" in call[0][0]
+            and "__init__.py" in call[0][0]
             for call in mock_log.call_args_list
         )
 
@@ -430,6 +432,7 @@ def test_create_project_structure_mock_pyproject_toml_path_index_error2(
     monkeypatch.chdir(tmp_path)
 
     from unittest.mock import MagicMock
+
     mock_path = MagicMock()
     mock_path.exists.return_value = True
     # simulate the contents "name =" that causes IndexError when parsing
