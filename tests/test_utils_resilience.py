@@ -72,6 +72,14 @@ def test_timeout_sync() -> None:
     res_err_instance = res_err.err()
     assert isinstance(res_err_instance, TimeoutError)
 
+    # Test exception propagation
+    @timeout(0.1)
+    def sync_raise() -> Result[str, ValueError]:
+        raise ValueError("crashed")
+
+    with pytest.raises(ValueError, match="crashed"):
+        sync_raise()
+
 
 @pytest.mark.asyncio
 async def test_timeout_async() -> None:
