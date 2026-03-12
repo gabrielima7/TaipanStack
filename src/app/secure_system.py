@@ -9,11 +9,11 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
+from pydantic import ConfigDict, EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
 
 from taipanstack.core.result import Err, Ok, Result
-from taipanstack.security import hash_password
+from taipanstack.security import SecureBaseModel, hash_password
 from taipanstack.utils.logging import get_logger
 
 # Configure logger
@@ -45,7 +45,7 @@ class UserCreationError(Exception):
     message: str = "Failed to create user"
 
 
-class UserCreate(BaseModel):
+class UserCreate(SecureBaseModel):
     """
     Model for creating a new user.
 
@@ -65,7 +65,7 @@ class UserCreate(BaseModel):
     model_config = ConfigDict(frozen=True)
 
 
-class User(BaseModel):
+class User(SecureBaseModel):
     """
     Model representing a registered user.
 

@@ -8,6 +8,7 @@ from pydantic import SecretStr, ValidationError
 
 from app.secure_system import (
     InMemoryUserRepository,
+    User,
     UserAlreadyExistsError,
     UserCreate,
     UserCreationError,
@@ -148,3 +149,36 @@ def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
 
     assert "User lookup failed" in caplog.text
     assert f"user_id={user_id}" in caplog.text
+
+
+def test_models_redaction() -> None:
+    """Test that UserCreate and User models redact sensitive fields."""
+    user_create = UserCreate(
+        username="testuser",
+        email="test@example.com",
+        password=SecretStr("my_secret_password"),
+    )
+
+    dumped_create = user_create.model_dump()
+    assert dumped_create["password"] == "***REDACTED***"
+    assert "my_secret_password" not in str(dumped_create)
+
+    json_create = user_create.model_dump_json()
+    assert "***REDACTED***" in json_create
+    assert "my_secret_password" not in json_create
+
+    user = User(
+        id=uuid4(),
+        username="testuser",
+        email="test@example.com",
+        password_hash="some_hashed_value",
+        is_active=True,
+    )
+
+    dumped_user = user.model_dump()
+    assert dumped_user["password_hash"] == "***REDACTED***"
+    assert "some_hashed_value" not in str(dumped_user)
+
+    json_user = user.model_dump_json()
+    assert "***REDACTED***" in json_user
+    assert "some_hashed_value" not in json_user
