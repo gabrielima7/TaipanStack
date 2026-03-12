@@ -8,6 +8,7 @@ from pytest_benchmark.fixture import BenchmarkFixture
 from result import Ok
 
 from taipanstack.core.result import collect_results, safe, unwrap_or
+from taipanstack.security.guards import guard_ssrf
 from taipanstack.security.sanitizers import (
     sanitize_env_value,
     sanitize_filename,
@@ -119,3 +120,37 @@ def test_bench_unwrap_or(benchmark: BenchmarkFixture) -> None:
     """Benchmark unwrap_or with Ok value."""
     ok = Ok(42)
     benchmark(unwrap_or, ok, 0)
+
+
+# =============================================================================
+# Guard Benchmarks
+# =============================================================================
+
+
+def test_bench_guard_ssrf_public(benchmark: BenchmarkFixture) -> None:
+    """Benchmark guard_ssrf with public hostname."""
+    # We mock getaddrinfo to avoid network I/O and measure only the guard logic
+    import socket
+    from unittest.mock import patch
+
+    public_ip = [
+        (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 80)),
+    ]
+
+    with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=public_ip):
+        benchmark(guard_ssrf, "https://example.com")
+
+
+def test_bench_guard_ssrf_private(benchmark: BenchmarkFixture) -> None:
+    """Benchmark guard_ssrf with private hostname."""
+    import socket
+    from unittest.mock import patch
+
+    private_ip = [
+        (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("10.0.0.1", 80)),
+    ]
+
+    with patch(
+        "taipanstack.security.guards.socket.getaddrinfo", return_value=private_ip
+    ):
+        benchmark(guard_ssrf, "http://internal.local")
