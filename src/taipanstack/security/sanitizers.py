@@ -6,6 +6,7 @@ to remove potentially dangerous characters.
 """
 
 import re
+import sys
 import unicodedata
 from pathlib import Path
 
@@ -15,6 +16,12 @@ MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
 _SQL_IDENTIFIER_DENY_RE = re.compile(r"[^a-zA-Z0-9_]")  # pragma: no mutate
+_HTML_TAGS_RE = re.compile(r"<[^>]+>")  # pragma: no mutate
+_CONTROL_CHARS_TRANS = {
+    i: None
+    for i in range(sys.maxunicode)
+    if unicodedata.category(chr(i)) == "Cc" and chr(i) not in "\n\r\t"
+}  # pragma: no mutate
 _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     {
         "CON",
@@ -83,15 +90,12 @@ def sanitize_string(
         result = result.strip()
 
     # Remove null bytes and control characters
-    result = result.replace("\x00", "")
-    result = "".join(
-        c for c in result if unicodedata.category(c) != "Cc" or c in "\n\r\t"
-    )
+    result = result.translate(_CONTROL_CHARS_TRANS)
 
     # Handle HTML
     if not allow_html:
         # Remove HTML tags
-        result = re.sub(r"<[^>]+>", "", result)
+        result = _HTML_TAGS_RE.sub("", result)
         # Escape HTML entities
         result = result.replace("&", "&amp;")
         result = result.replace("<", "&lt;")
