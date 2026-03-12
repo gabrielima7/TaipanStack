@@ -137,7 +137,9 @@ def test_bench_guard_ssrf_public(benchmark: BenchmarkFixture) -> None:
         (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 80)),
     ]
 
-    with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=public_ip):
+    with patch(
+        "taipanstack.security.guards.socket.getaddrinfo", return_value=public_ip
+    ):
         benchmark(guard_ssrf, "https://example.com")
 
 
