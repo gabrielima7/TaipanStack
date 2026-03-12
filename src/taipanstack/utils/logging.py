@@ -49,8 +49,8 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 def mask_sensitive_data_processor(
-    logger: Any,  # noqa: ARG001
-    method: str,  # noqa: ARG001
+    _logger: Any,
+    _method: str,
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
     """Mask sensitive data in structlog event dictionaries.
@@ -78,8 +78,8 @@ def mask_sensitive_data_processor(
 
 
 def correlation_id_processor(
-    logger: Any,  # noqa: ARG001
-    method: str,  # noqa: ARG001
+    _logger: Any,
+    _method: str,
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
     """Structlog processor to inject correlation ID into events.
