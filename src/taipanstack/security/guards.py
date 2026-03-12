@@ -16,19 +16,12 @@ from urllib.parse import urlparse
 
 from result import Err, Ok, Result
 
-_TRAVERSAL_PATTERNS: frozenset[str] = frozenset(
-    p.lower()
-    for p in [
-        "..",
-        "~",
-        r"\.\.",
-        "%2e%2e",  # URL encoded ..
-        "%252e%252e",  # Double URL encoded
-    ]
-)
-
-_TRAVERSAL_REGEX = re.compile(
-    "|".join(re.escape(p) for p in sorted(_TRAVERSAL_PATTERNS, key=len, reverse=True))
+# Build regex for traversal patterns.
+# Note: we handle ~ specially to only match at start of path or after a separator
+# to avoid false positives with Windows short paths (e.g., RUNNER~1).
+TRAVERSAL_REGEX = re.compile(
+    r"(?:\.\.|%2e%2e|%252e%252e)|(?:^|[\\/])~",
+    re.IGNORECASE,
 )
 
 _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
@@ -155,7 +148,7 @@ def guard_path_traversal(
     path_str = str(path)
     path_str_lower = path_str.lower()
 
-    match = _TRAVERSAL_REGEX.search(path_str_lower)
+    match = TRAVERSAL_REGEX.search(path_str_lower)
     if match:
         pattern = match.group(0)
         raise SecurityError(

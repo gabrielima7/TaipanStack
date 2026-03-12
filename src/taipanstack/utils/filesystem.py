@@ -9,15 +9,18 @@ import contextlib
 import functools
 import hashlib
 import os
-import re
 import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TypeAlias
+from typing import Any, TypeAlias
 
 from taipanstack.core.result import Err, Ok, Result
-from taipanstack.security.guards import SecurityError, guard_path_traversal
+from taipanstack.security.guards import (
+    TRAVERSAL_REGEX,
+    SecurityError,
+    guard_path_traversal,
+)
 from taipanstack.security.sanitizers import sanitize_filename
 
 
@@ -47,14 +50,8 @@ class NotAFileErr:
         object.__setattr__(self, "message", self.message or f"Not a file: {self.path}")
 
 
-_TRAVERSAL_REGEX = re.compile(
-    r"\.\.|~|%2e%2e|%252e%252e",
-    re.IGNORECASE,
-)
-
-
 def _validate_path(
-    path: Path | str, base_dir: Path | str | None = None, **kwargs
+    path: Path | str, base_dir: Path | str | None = None, **kwargs: Any
 ) -> Path:
     """Validate path for traversal.
 
@@ -68,7 +65,7 @@ def _validate_path(
 
     # Check for explicit traversal patterns
     path_str = str(path).lower()
-    if _TRAVERSAL_REGEX.search(path_str):
+    if TRAVERSAL_REGEX.search(path_str):
         raise SecurityError(
             "Path traversal pattern detected",
             guard_name="path_traversal",

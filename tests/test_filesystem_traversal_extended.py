@@ -80,3 +80,11 @@ class TestFilesystemTraversalExtended:
         """Test ensure_dir with base_dir and encoded traversal."""
         with pytest.raises(SecurityError):
             ensure_dir("%2e%2e/evil", base_dir=tmp_path)
+
+    def test_tilde_in_middle_not_blocked(self, tmp_path: Path):
+        """Test that tilde in the middle of a component (like Windows short paths) is not blocked."""
+        # This simulates a Windows short path like RUNNER~1
+        path = tmp_path / "RUNNER~1"
+        result = ensure_dir(path)
+        assert result.exists()
+        assert "RUNNER~1" in str(result)
