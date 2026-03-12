@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
-from pydantic import ConfigDict, EmailStr, Field, SecretStr
+from pydantic import EmailStr, Field, SecretStr
 from pydantic.networks import IPvAnyAddress
 
 from taipanstack.core.result import Err, Ok, Result
@@ -61,8 +61,6 @@ class UserCreate(SecureBaseModel):
     email: EmailStr
     password: SecretStr
     ip_address: IPvAnyAddress | None = None
-
-    model_config = ConfigDict(frozen=True)
 
 
 class User(SecureBaseModel):

@@ -294,6 +294,23 @@ class TestSanitizeEnvValue:
         result = sanitize_env_value(long_value, max_length=100)
         assert len(result) == 100
 
+    def test_sanitize_env_value_fast_path(self) -> None:
+        """Test sanitize_env_value fast path for coverage."""
+        # Triggers the fast path return
+        assert sanitize_env_value("hello", max_length=10) == "hello"
+        assert sanitize_env_value("line1\nline2", allow_multiline=True) == "line1\nline2"
+
+    def test_sanitize_env_value_slow_path(self) -> None:
+        """Test sanitize_env_value slow path for coverage."""
+        # 1. Triggers "\x00" not in value == False
+        assert sanitize_env_value("hel\x00lo", max_length=10) == "hello"
+        # 2. Triggers ("\n" not in value and "\r" not in value) == False
+        assert sanitize_env_value("line1\nline2", max_length=20, allow_multiline=False) == "line1 line2"
+        # 3. Triggers len(value) <= max_length == False
+        assert sanitize_env_value("a" * 15, max_length=10) == "a" * 10
+        # 4. Triggers allow_multiline=True with slow path (due to length)
+        assert sanitize_env_value("line1\nline2", max_length=5, allow_multiline=True) == "line1"
+
 
 class TestSanitizeSqlIdentifier:
     """Tests for sanitize_sql_identifier function."""
