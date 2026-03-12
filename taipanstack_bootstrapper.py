@@ -171,7 +171,7 @@ addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-u
             args,
             is_verbose=True,
         )
-    elif not config_to_add:
+    else:
         _log(
             "✅ Configurations for Ruff, Mypy, and Pytest already exist in pyproject.toml.",
             args,
@@ -442,10 +442,14 @@ def _validate_setup(args: argparse.Namespace) -> None:
 
     # Checks if pre-commit is installed
     if shutil.which("poetry"):
-        result = _run_command(
-            ["poetry", "run", "pre-commit", "--version"], args, capture_output=True
-        )
-        if result.returncode != 0:
+        try:
+            result = _run_command(
+                ["poetry", "run", "pre-commit", "--version"], args, capture_output=True
+            )
+            if result.returncode != 0:
+                issues.append("Pre-commit is not installed correctly")
+        except SystemExit:
+            # _run_command calls _handle_error which calls sys.exit(1) on failure
             issues.append("Pre-commit is not installed correctly")
 
     if issues:

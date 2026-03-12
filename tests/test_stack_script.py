@@ -239,3 +239,21 @@ def test_setup_pre_commit():
         assert "safety" in content
         assert "semgrep" in content
         assert "detect-secrets" in content
+
+
+def test_setup_pre_commit_dry_run():
+    """
+    Verifies that _setup_pre_commit handles the args correctly for dry-run.
+    """
+    args = MagicMock()
+    args.dry_run = True
+    args.verbose = True
+
+    with patch("taipanstack_bootstrapper._safe_write") as mock_safe_write:
+        taipanstack._setup_pre_commit(args)
+
+        mock_safe_write.assert_called_once()
+        path, content, passed_args = mock_safe_write.call_args[0]
+        assert path == taipanstack.PRE_COMMIT_CONFIG_PATH
+        assert "repos:" in content
+        assert passed_args == args
