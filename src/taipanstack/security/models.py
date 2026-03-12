@@ -38,6 +38,22 @@ def _mask_data(data: Any) -> Any:
 class SecureBaseModel(BaseModel):
     """Secure base model that redacts sensitive fields when dumped."""
 
+    def __str__(self) -> str:
+        """Return a string representation with sensitive fields redacted."""
+        return self.__repr__()
+
+    def __repr_args__(self) -> Any:
+        """Provide arguments for string representation, redacting sensitive fields."""
+        for k, v in super().__repr_args__():
+            if (
+                isinstance(k, str)
+                and _SENSITIVE_KEY_REGEX is not None
+                and _SENSITIVE_KEY_REGEX.search(k)
+            ):
+                yield k, REDACTED_VALUE
+            else:
+                yield k, v
+
     def model_dump(
         self,
         **kwargs: Any,

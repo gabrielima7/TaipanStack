@@ -84,6 +84,26 @@ class TestSecureBaseModel:
         assert "{\n" in json_str
         assert REDACTED_VALUE in json_str
 
+    def test_str_and_repr_mask_sensitive_fields(self) -> None:
+        """Test that str() and repr() redact sensitive keys."""
+
+        class User(SecureBaseModel):
+            username: str
+            password: str
+
+        user = User(username="admin", password="super_secret_password")
+
+        user_str = str(user)
+        user_repr = repr(user)
+
+        assert "admin" in user_str
+        assert "super_secret_password" not in user_str
+        assert REDACTED_VALUE in user_str
+
+        assert "admin" in user_repr
+        assert "super_secret_password" not in user_repr
+        assert REDACTED_VALUE in user_repr
+
     def test_masking_disabled_when_no_regex(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
