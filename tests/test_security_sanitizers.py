@@ -339,15 +339,21 @@ class TestSanitizeSqlIdentifier:
         """Test underscores are allowed."""
         result = sanitize_sql_identifier("user_name")
         assert result == "user_name"
+
+
 def test_sanitize_string_value_error():
     import pytest
+
     with pytest.raises(TypeError):
         sanitize_string(123)
 
+
 def test_sanitize_filename_value_error():
     import pytest
+
     with pytest.raises(TypeError):
         sanitize_filename(123)
+
 
 def test_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
