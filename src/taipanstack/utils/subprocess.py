@@ -5,6 +5,7 @@ Provides secure wrappers around subprocess execution with
 command validation, timeout handling, and retry logic.
 """
 
+import os
 import shutil
 import subprocess  # nosec B404
 import time
@@ -12,7 +13,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from taipanstack.security.guards import SecurityError, guard_command_injection
+from taipanstack.security.guards import (
+    _DEFAULT_DENIED_ENV_VARS,
+    _SENSITIVE_ENV_VAR_PATTERN,
+    SecurityError,
+    guard_command_injection,
+)
 
 
 @dataclass(frozen=True)
@@ -98,7 +104,7 @@ DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
 )
 
 
-def run_safe_command(
+def run_safe_command(  # noqa: PLR0912
     command: Sequence[str],
     *,
     cwd: Path | str | None = None,
@@ -157,6 +163,21 @@ def run_safe_command(
     # Validate command against guards
     validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
 
+    # Validate and filter environment variables
+    # If env is not provided, subprocess.run inherits os.environ by default.
+    # To prevent leaking sensitive secrets to child processes, we explicitly
+    # filter the environment.
+    safe_env: dict[str, str] = {}
+    env_to_filter = env if env is not None else dict(os.environ)
+
+    for env_key, env_val in env_to_filter.items():
+        name_upper = env_key.upper()
+        if (
+            name_upper not in _DEFAULT_DENIED_ENV_VARS
+            and not _SENSITIVE_ENV_VAR_PATTERN.match(name_upper)
+        ):
+            safe_env[env_key] = str(env_val)
+
     # Verify command exists
     base_command = validated_cmd[0]
     if not shutil.which(base_command):
@@ -196,7 +217,7 @@ def run_safe_command(
             capture_output=capture_output,
             text=True,
             encoding="utf-8",
-            env=env,
+            env=safe_env,
             check=False,  # We handle check ourselves
         )
     except subprocess.TimeoutExpired as e:
