@@ -9,6 +9,7 @@ import contextlib
 import functools
 import hashlib
 import os
+import re
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -44,6 +45,36 @@ class NotAFileErr:
     def __post_init__(self) -> None:
         """Set default message."""
         object.__setattr__(self, "message", self.message or f"Not a file: {self.path}")
+
+
+_TRAVERSAL_REGEX = re.compile(
+    r"\.\.|~|%2e%2e|%252e%252e",
+    re.IGNORECASE,
+)
+
+
+def _validate_path(
+    path: Path | str, base_dir: Path | str | None = None, **kwargs
+) -> Path:
+    """Validate path for traversal.
+
+    If base_dir is None, we only check for explicit traversal patterns
+    to allow absolute paths (required for tests and some use cases),
+    but still prevent '..' attacks.
+    """
+    path = Path(path)
+    if base_dir is not None:
+        return guard_path_traversal(path, base_dir, **kwargs)
+
+    # Check for explicit traversal patterns
+    path_str = str(path).lower()
+    if _TRAVERSAL_REGEX.search(path_str):
+        raise SecurityError(
+            "Path traversal pattern detected",
+            guard_name="path_traversal",
+            value=path_str[:50],
+        )
+    return path
 
 
 @dataclass(frozen=True)
@@ -103,10 +134,7 @@ def safe_read(
 
     # Validate path
     try:
-        if base_dir is not None:
-            path = guard_path_traversal(path, Path(base_dir))
-        elif ".." in str(path):
-            path = guard_path_traversal(path, Path.cwd())
+        path = _validate_path(path, base_dir)
     except SecurityError as e:
         return Err(e)
 
@@ -166,8 +194,8 @@ def safe_write(
             guard_path_traversal(parent, base)
         else:
             guard_path_traversal(path, base)
-    elif ".." in str(path):
-        guard_path_traversal(path, Path.cwd())
+    else:
+        _validate_path(path)
 
     # Sanitize filename
     safe_name = sanitize_filename(path.name)
@@ -236,10 +264,7 @@ def ensure_dir(
     path = Path(path)
 
     # Validate path
-    if base_dir is not None:
-        path = guard_path_traversal(path, Path(base_dir), allow_symlinks=True)
-    elif ".." in str(path):
-        path = guard_path_traversal(path, Path.cwd())
+    path = _validate_path(path, base_dir, allow_symlinks=True)
 
     path.mkdir(parents=True, exist_ok=True, mode=mode)
     return path.resolve()
@@ -280,6 +305,9 @@ def safe_copy(
             dst = guard_path_traversal(dst, base)
         else:
             guard_path_traversal(dst.parent, base)
+    else:
+        src = _validate_path(src)
+        _validate_path(dst.parent if not dst.exists() else dst)
 
     if not src.exists():
         raise FileNotFoundError(f"Source file not found: {src}")
@@ -320,10 +348,7 @@ def safe_delete(
     path = Path(path)
 
     # Validate path
-    if base_dir is not None:
-        path = guard_path_traversal(path, Path(base_dir))
-    elif ".." in str(path):
-        path = guard_path_traversal(path, Path.cwd())
+    path = _validate_path(path, base_dir)
 
     if not path.exists():
         if missing_ok:
@@ -361,10 +386,7 @@ def get_file_hash(
     path = Path(path)
 
     # Validate path
-    if base_dir is not None:
-        path = guard_path_traversal(path, Path(base_dir))
-    elif ".." in str(path):
-        path = guard_path_traversal(path, Path.cwd())
+    path = _validate_path(path, base_dir)
 
     hasher = hashlib.new(algorithm)
 
@@ -399,10 +421,7 @@ def find_files(
     directory = Path(directory)
 
     # Validate path
-    if base_dir is not None:
-        directory = guard_path_traversal(directory, Path(base_dir))
-    elif ".." in str(directory):
-        directory = guard_path_traversal(directory, Path.cwd())
+    directory = _validate_path(directory, base_dir)
 
     if not directory.exists():
         return []
