@@ -15,6 +15,7 @@ def test_run_safe_command_filters_sensitive_env_vars() -> None:
     result = run_safe_command(["echo", "hello"], allowed_commands=["echo"], env=env)
     assert result.success
 
+
 def test_run_safe_command_filters_default_env() -> None:
     """Test that run_safe_command filters os.environ by default."""
     os.environ["SUPER_SECRET_TOKEN"] = "hidden"
