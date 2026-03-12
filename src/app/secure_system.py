@@ -83,8 +83,6 @@ class User(SecureBaseModel):
     password_hash: str
     is_active: bool = True
 
-    model_config = ConfigDict(frozen=True)
-
 
 class UserRepository(ABC):
     """Abstract base class for user data access."""
