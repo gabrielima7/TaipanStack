@@ -239,3 +239,23 @@ def test_setup_pre_commit():
         assert "safety" in content
         assert "semgrep" in content
         assert "detect-secrets" in content
+
+
+def test_generate_security_policy():
+    """
+    Verifies that the SECURITY.md file is generated with correct content.
+    """
+    args = MagicMock()
+    args.dry_run = False
+    args.verbose = False
+
+    with patch("taipanstack_bootstrapper._safe_write") as mock_safe_write:
+        taipanstack._generate_security_policy(args)
+
+        mock_safe_write.assert_called_once()
+        path, content, _passed_args = mock_safe_write.call_args[0]
+        assert path == taipanstack.SECURITY_MD_PATH
+        assert "# Security Policy" in content
+        assert "## Supported Versions" in content
+        assert "## Reporting a Vulnerability" in content
+        assert "| Version | Supported          |" in content
