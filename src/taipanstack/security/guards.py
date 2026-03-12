@@ -388,17 +388,6 @@ def guard_env_variable(
 
 
 # ── SSRF Private-Range Constants ─────────────────────────────────────────────
-_PRIVATE_NETWORKS: tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...] = (
-    ipaddress.ip_network("10.0.0.0/8"),
-    ipaddress.ip_network("172.16.0.0/12"),
-    ipaddress.ip_network("192.168.0.0/16"),
-    ipaddress.ip_network("169.254.0.0/16"),  # Link-local / AWS metadata
-    ipaddress.ip_network("127.0.0.0/8"),  # Loopback
-    ipaddress.ip_network("::1/128"),  # IPv6 loopback
-    ipaddress.ip_network("fc00::/7"),  # IPv6 unique local
-    ipaddress.ip_network("fe80::/10"),  # IPv6 link-local
-)
-
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
@@ -492,18 +481,6 @@ def guard_ssrf(  # noqa: PLR0911
         except ValueError:
             continue
 
-        for network in _PRIVATE_NETWORKS:
-            if addr in network:
-                return Err(
-                    SecurityError(
-                        f"SSRF detected: hostname '{hostname}' resolves to "
-                        f"private/reserved address {addr}",
-                        guard_name="ssrf",
-                        value=str(addr),
-                    )
-                )
-
-        # Catch-all for remaining special addresses not in the explicit list
         if (
             addr.is_private
             or addr.is_loopback
@@ -512,8 +489,8 @@ def guard_ssrf(  # noqa: PLR0911
         ):
             return Err(
                 SecurityError(
-                    f"SSRF detected: '{hostname}' resolves to a reserved "
-                    f"address {addr}",
+                    f"SSRF detected: hostname '{hostname}' resolves to "
+                    f"private/reserved address {addr}",
                     guard_name="ssrf",
                     value=str(addr),
                 )
