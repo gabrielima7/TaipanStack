@@ -424,8 +424,9 @@ def guard_hash_algorithm(
 
     algo_lower = algorithm.lower().replace("-", "")
 
+    allowed: frozenset[str]
     if allowed_algorithms is not None:
-        allowed = {a.lower().replace("-", "") for a in allowed_algorithms}
+        allowed = frozenset(a.lower().replace("-", "") for a in allowed_algorithms)
     else:
         allowed = _SAFE_HASH_ALGORITHMS
 

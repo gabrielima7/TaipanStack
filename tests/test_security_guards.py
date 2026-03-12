@@ -258,6 +258,11 @@ class TestGuardEnvVariable:
 class TestGuardHashAlgorithm:
     """Tests for guard_hash_algorithm function."""
 
+    def test_invalid_input_type(self) -> None:
+        """Test that non-string input raises TypeError."""
+        with pytest.raises(TypeError, match="Algorithm name must be str"):
+            guard_hash_algorithm(123)  # type: ignore
+
     def test_safe_algorithms(self) -> None:
         """Test that safe algorithms pass."""
         assert guard_hash_algorithm("sha256") == "sha256"
