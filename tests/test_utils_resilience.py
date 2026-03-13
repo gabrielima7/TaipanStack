@@ -55,6 +55,12 @@ async def test_fallback_async() -> None:
 
     assert await async_raise() == Ok("safe_async")
 
+    @fallback(fallback_value="safe_async", exceptions=(ValueError,))
+    async def async_raise_handled() -> Result[str, ValueError]:
+        raise ValueError("crashed")
+
+    assert await async_raise_handled() == Ok("safe_async")
+
 
 def test_timeout_sync() -> None:
     """Test standard timeout."""
