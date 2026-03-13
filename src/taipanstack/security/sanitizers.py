@@ -287,8 +287,10 @@ def sanitize_env_value(
         return ""
 
     # Fast path: if no sensitive characters and within length, return as is
-    if len(value) <= max_length and "\x00" not in value and (
-        allow_multiline or ("\n" not in value and "\r" not in value)
+    if (
+        len(value) <= max_length
+        and "\x00" not in value
+        and (allow_multiline or ("\n" not in value and "\r" not in value))
     ):
         return value
 
