@@ -332,16 +332,16 @@ class TestGetFileHash:
         expected = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
         assert file_hash == expected
 
-    def test_md5_hash(self, tmp_path: Path) -> None:
-        """Test MD5 hash computation."""
+    def test_md5_hash_blocked(self, tmp_path: Path) -> None:
+        """Test that MD5 hash computation is blocked by guard."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("hello")
 
-        file_hash = get_file_hash(test_file, algorithm="md5")
+        with pytest.raises(SecurityError) as exc_info:
+            get_file_hash(test_file, algorithm="md5")
 
-        # Known MD5 hash of "hello"
-        expected = "5d41402abc4b2a76b9719d911017c592"
-        assert file_hash == expected
+        assert "not considered secure or allowed" in str(exc_info.value)
+        assert exc_info.value.guard_name == "hash_algorithm"
 
     def test_same_content_same_hash(self, tmp_path: Path) -> None:
         """Test that same content produces same hash."""

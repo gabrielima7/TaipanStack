@@ -83,6 +83,20 @@ _SENSITIVE_ENV_VAR_PATTERN = re.compile(
 )
 
 
+_DEFAULT_SECURE_HASH_ALGORITHMS = frozenset(
+    [
+        "sha256",
+        "sha384",
+        "sha512",
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+        "blake2b",
+        "blake2s",
+    ]
+)
+
+
 class SecurityError(Exception):
     """Raised when a security guard detects a violation.
 
@@ -385,6 +399,34 @@ def guard_env_variable(
         )
 
     return value
+
+
+def guard_hash_algorithm(
+    algorithm: str,
+    *,
+    allowed_algorithms: frozenset[str] = _DEFAULT_SECURE_HASH_ALGORITHMS,
+) -> str:
+    """Validate hash algorithm against a whitelist of secure defaults.
+
+    Args:
+        algorithm: The hash algorithm string to validate.
+        allowed_algorithms: Whitelist of allowed secure algorithms.
+
+    Returns:
+        The normalized (lowercased, dashes removed) algorithm string if safe.
+
+    Raises:
+        SecurityError: If algorithm is not in the allowed list.
+
+    """
+    normalized = algorithm.lower().replace("-", "")
+    if normalized not in allowed_algorithms:
+        raise SecurityError(
+            f"Hash algorithm '{algorithm}' is not considered secure or allowed",
+            guard_name="hash_algorithm",
+            value=algorithm,
+        )
+    return normalized
 
 
 # ── SSRF Private-Range Constants ─────────────────────────────────────────────

@@ -252,3 +252,39 @@ class TestGuardEnvVariable:
         monkeypatch.setenv("MY_TOKEN", "allowed_token")
         result = guard_env_variable("MY_TOKEN", allowed_names=["MY_TOKEN"])
         assert result == "allowed_token"
+
+
+class TestGuardHashAlgorithm:
+    """Tests for guard_hash_algorithm function."""
+
+    def test_safe_algorithm_passes(self) -> None:
+        """Test that safe hash algorithms pass validation."""
+        from taipanstack.security.guards import guard_hash_algorithm
+
+        assert guard_hash_algorithm("sha256") == "sha256"
+        assert guard_hash_algorithm("SHA-512") == "sha512"
+        assert guard_hash_algorithm("blake2b") == "blake2b"
+
+    def test_unsafe_algorithm_blocked(self) -> None:
+        """Test that unsafe algorithms are blocked."""
+        from taipanstack.security.guards import guard_hash_algorithm
+
+        with pytest.raises(SecurityError) as exc_info:
+            guard_hash_algorithm("md5")
+
+        assert "not considered secure or allowed" in str(exc_info.value)
+        assert exc_info.value.guard_name == "hash_algorithm"
+
+        with pytest.raises(SecurityError) as exc_info:
+            guard_hash_algorithm("sha1")
+
+        assert "not considered secure or allowed" in str(exc_info.value)
+        assert exc_info.value.guard_name == "hash_algorithm"
+
+    def test_custom_algorithm_allowed(self) -> None:
+        """Test that custom algorithms are allowed if provided."""
+        from taipanstack.security.guards import guard_hash_algorithm
+
+        assert (
+            guard_hash_algorithm("md5", allowed_algorithms=frozenset(["md5"])) == "md5"
+        )

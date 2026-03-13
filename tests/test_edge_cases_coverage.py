@@ -102,11 +102,11 @@ class TestFilesystemEdgeCases:
         test_file.write_text("test content")
 
         sha256_hash = get_file_hash(test_file, algorithm="sha256")
-        md5_hash = get_file_hash(test_file, algorithm="md5")
+        blake2b_hash = get_file_hash(test_file, algorithm="blake2b")
 
-        assert sha256_hash != md5_hash
+        assert sha256_hash != blake2b_hash
         assert len(sha256_hash) == 64  # SHA256 hex length
-        assert len(md5_hash) == 32  # MD5 hex length
+        assert len(blake2b_hash) == 128  # BLAKE2B hex length
 
 
 class TestLoggingEdgeCases:
