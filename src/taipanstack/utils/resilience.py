@@ -5,9 +5,9 @@ Provides tools for graceful fallback and timeouts using the Result monad.
 """
 
 import asyncio
-import concurrent.futures
 import functools
 import inspect
+import threading
 from collections.abc import Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
@@ -159,15 +159,30 @@ def timeout(seconds: float) -> TimeoutDecorator:
         def sync_wrapper(
             *args: P.args, **kwargs: P.kwargs
         ) -> Result[T, TimeoutError | E]:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-                func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
-                future = executor.submit(func_sync, *args, **kwargs)
+            result: list[Result[T, TimeoutError | E]] = []
+            exception_list: list[Exception] = []
+
+            def worker() -> None:
                 try:
-                    return future.result(timeout=seconds)
-                except concurrent.futures.TimeoutError:
-                    return Err(
-                        TimeoutError(f"Execution timed out after {seconds} seconds.")
-                    )
+                    func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
+                    result.append(func_sync(*args, **kwargs))
+                except Exception as e:
+                    exception_list.append(e)
+
+            thread = threading.Thread(target=worker)
+            thread.daemon = True
+            thread.start()
+            thread.join(timeout=seconds)
+
+            if thread.is_alive():
+                return Err(
+                    TimeoutError(f"Execution timed out after {seconds} seconds.")
+                )
+
+            if exception_list:
+                raise exception_list[0]
+
+            return result[0]
 
         return sync_wrapper
 
