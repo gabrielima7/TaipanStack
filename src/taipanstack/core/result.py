@@ -171,11 +171,10 @@ def collect_results(
     """
     values: list[T] = []
     for result in results:
-        match result:
-            case Ok(value):
-                values.append(value)
-            case Err() as err:
-                return err
+        if isinstance(result, Ok):
+            values.append(result.ok_value)
+        else:
+            return result
     return Ok(values)
 
 
@@ -208,11 +207,9 @@ def unwrap_or(result: Result[T, E], default: U) -> T | U:
         0
 
     """
-    match result:
-        case Ok(value):
-            return value
-        case Err():
-            return default
+    if isinstance(result, Ok):
+        return result.ok_value
+    return default
 
 
 @overload
@@ -256,11 +253,9 @@ def unwrap_or_else(
         1
 
     """
-    match result:
-        case Ok(value):
-            return value
-        case Err(error):
-            return default_fn(error)
+    if isinstance(result, Ok):
+        return result.ok_value
+    return default_fn(result.err_value)
 
 
 @overload
@@ -308,11 +303,9 @@ async def map_async(
         Err('fail')
 
     """
-    match result:
-        case Ok(value):
-            return Ok(await func(value))
-        case Err() as err:
-            return err
+    if isinstance(result, Ok):
+        return Ok(await func(result.ok_value))
+    return result
 
 
 @overload
@@ -365,8 +358,6 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    match result:
-        case Ok(value):
-            return await func(value)
-        case Err() as err:
-            return err
+    if isinstance(result, Ok):
+        return await func(result.ok_value)
+    return result
