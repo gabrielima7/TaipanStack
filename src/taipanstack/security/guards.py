@@ -82,6 +82,19 @@ _SENSITIVE_ENV_VAR_PATTERN = re.compile(
     r".*SECRET.*|.*PASSWORD.*|.*TOKEN.*|.*PRIVATE.*KEY.*|.*API.*KEY.*"
 )
 
+_SAFE_HASH_ALGORITHMS = frozenset(
+    [
+        "sha256",
+        "sha384",
+        "sha512",
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+        "blake2b",
+        "blake2s",
+    ]
+)
+
 
 class SecurityError(Exception):
     """Raised when a security guard detects a violation.
@@ -385,6 +398,46 @@ def guard_env_variable(
         )
 
     return value
+
+
+def guard_hash_algorithm(
+    algorithm: str,
+    *,
+    allowed_algorithms: Sequence[str] | None = None,
+) -> str:
+    """Validate hash algorithm against a whitelist of secure ones.
+
+    Args:
+        algorithm: The name of the hash algorithm to validate.
+        allowed_algorithms: Optional whitelist of allowed algorithms.
+            Defaults to a secure set (SHA-256, SHA-512, etc.).
+
+    Returns:
+        The normalized (lowercase) algorithm name.
+
+    Raises:
+        SecurityError: If the algorithm is potentially weak or not allowed.
+
+    """
+    if not isinstance(algorithm, str):
+        raise TypeError(f"Algorithm name must be str, got {type(algorithm).__name__}")
+
+    algo_lower = algorithm.lower().replace("-", "")
+
+    allowed: frozenset[str]
+    if allowed_algorithms is not None:
+        allowed = frozenset(a.lower().replace("-", "") for a in allowed_algorithms)
+    else:
+        allowed = _SAFE_HASH_ALGORITHMS
+
+    if algo_lower not in allowed:
+        raise SecurityError(
+            f"Hash algorithm '{algorithm}' is considered weak or is not allowed",
+            guard_name="hash_algorithm",
+            value=algorithm,
+        )
+
+    return algo_lower
 
 
 # ── SSRF Private-Range Constants ─────────────────────────────────────────────

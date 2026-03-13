@@ -102,11 +102,14 @@ class TestFilesystemEdgeCases:
         test_file.write_text("test content")
 
         sha256_hash = get_file_hash(test_file, algorithm="sha256")
-        md5_hash = get_file_hash(test_file, algorithm="md5")
+        sha512_hash = get_file_hash(test_file, algorithm="sha512")
 
-        assert sha256_hash != md5_hash
+        assert sha256_hash != sha512_hash
         assert len(sha256_hash) == 64  # SHA256 hex length
-        assert len(md5_hash) == 32  # MD5 hex length
+        assert len(sha512_hash) == 128  # SHA512 hex length
+
+        with pytest.raises(SecurityError, match="weak"):
+            get_file_hash(test_file, algorithm="md5")
 
 
 class TestLoggingEdgeCases:
