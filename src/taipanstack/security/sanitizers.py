@@ -22,6 +22,9 @@ _CONTROL_CHARS_TRANS = {
     for i in range(sys.maxunicode)
     if unicodedata.category(chr(i)) == "Cc" and chr(i) not in "\n\r\t"
 }  # pragma: no mutate
+_VALID_SQL_PREFIX = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+)  # pragma: no mutate
 _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     {
         "CON",
@@ -329,15 +332,20 @@ def sanitize_sql_identifier(identifier: str) -> str:
         msg = "SQL identifier cannot be empty"
         raise ValueError(msg)
 
-    # Only allow alphanumeric and underscore
-    # Fast path: if already clean, skip sub
-    if _SQL_IDENTIFIER_DENY_RE.search(identifier):
-        result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
-    else:
+    # Fast path: already clean and valid
+    if not _SQL_IDENTIFIER_DENY_RE.search(identifier):
+        if (
+            identifier[0] in _VALID_SQL_PREFIX
+            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+        ):
+            return identifier
         result = identifier
+    else:
+        # Only allow alphanumeric and underscore
+        result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
 
     # Must start with letter or underscore
-    if result and not (result[0].isalpha() or result[0] == "_"):
+    if result and result[0] not in _VALID_SQL_PREFIX:
         result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
