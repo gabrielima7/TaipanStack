@@ -11,3 +11,8 @@
 **Vulnerability:** Models representing users (`UserCreate` and `User`) inherited from Pydantic's `BaseModel` instead of `SecureBaseModel`. This allowed sensitive fields like `password` and `password_hash` to be included in plaintext when dumping the model to a dictionary or JSON, leading to potential credential leakage in logs or API responses.
 **Learning:** Standard Pydantic models do not provide automated redaction for sensitive keys. Even when using `SecretStr`, calling `.model_dump()` or `.model_dump_json()` on a `BaseModel` can still expose sensitive values depending on the configuration and usage.
 **Prevention:** Always use `SecureBaseModel` for any data models that handle Pydantic's `SecretStr` or contain fields with sensitive names (like `password`, `token`, `secret`, `api_key`). `SecureBaseModel` provides an extra layer of defense-in-depth by automatically masking these fields during serialization.
+
+## 2026-03-13 - Use of Weak Hash Algorithms in Filesystem Utilities
+**Vulnerability:** The `get_file_hash` function allowed any algorithm supported by `hashlib.new()`, including cryptographically weak ones like MD5 and SHA-1.
+**Learning:** Defaulting to arbitrary user-supplied strings for cryptographic primitives without validation can lead to the use of insecure or deprecated algorithms.
+**Prevention:** Implement a dedicated security guard (whitelist) for cryptographic algorithms and apply it consistently across all utilities that perform hashing or encryption.

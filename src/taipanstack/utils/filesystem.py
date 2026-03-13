@@ -19,6 +19,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security.guards import (
     TRAVERSAL_REGEX,
     SecurityError,
+    guard_hash_algorithm,
     guard_path_traversal,
 )
 from taipanstack.security.sanitizers import sanitize_filename
@@ -373,7 +374,7 @@ def get_file_hash(
 
     Args:
         path: Path to the file.
-        algorithm: Hash algorithm (sha256, md5, etc).
+        algorithm: Hash algorithm (sha256, sha512, etc).
         base_dir: Base directory to constrain to.
 
     Returns:
@@ -384,6 +385,9 @@ def get_file_hash(
 
     # Validate path
     path = _validate_path(path, base_dir)
+
+    # Validate algorithm
+    algorithm = guard_hash_algorithm(algorithm)
 
     hasher = hashlib.new(algorithm)
 

@@ -8,6 +8,7 @@ from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
     guard_file_extension,
+    guard_hash_algorithm,
     guard_path_traversal,
 )
 
@@ -252,3 +253,32 @@ class TestGuardEnvVariable:
         monkeypatch.setenv("MY_TOKEN", "allowed_token")
         result = guard_env_variable("MY_TOKEN", allowed_names=["MY_TOKEN"])
         assert result == "allowed_token"
+
+
+class TestGuardHashAlgorithm:
+    """Tests for guard_hash_algorithm function."""
+
+    def test_invalid_input_type(self) -> None:
+        """Test that non-string input raises TypeError."""
+        with pytest.raises(TypeError, match="Algorithm name must be str"):
+            guard_hash_algorithm(123)  # type: ignore
+
+    def test_safe_algorithms(self) -> None:
+        """Test that safe algorithms pass."""
+        assert guard_hash_algorithm("sha256") == "sha256"
+        assert guard_hash_algorithm("SHA-256") == "sha256"
+        assert guard_hash_algorithm("sha512") == "sha512"
+        assert guard_hash_algorithm("blake2b") == "blake2b"
+
+    def test_weak_algorithms_blocked(self) -> None:
+        """Test that weak algorithms are blocked."""
+        with pytest.raises(SecurityError, match="weak"):
+            guard_hash_algorithm("md5")
+        with pytest.raises(SecurityError, match="weak"):
+            guard_hash_algorithm("sha1")
+
+    def test_custom_allowed_algorithms(self) -> None:
+        """Test custom allowed algorithms."""
+        assert guard_hash_algorithm("md5", allowed_algorithms=["md5"]) == "md5"
+        with pytest.raises(SecurityError):
+            guard_hash_algorithm("sha256", allowed_algorithms=["md5"])
