@@ -79,6 +79,8 @@ def test_timeout_sync() -> None:
 
     with pytest.raises(ValueError, match="crashed"):
         sync_raise()
+
+
 @pytest.mark.asyncio
 async def test_timeout_async() -> None:
     """Test async timeout."""
@@ -95,4 +97,3 @@ async def test_timeout_async() -> None:
     assert isinstance(res_err, Err)
     res_err_instance = res_err.err()
     assert isinstance(res_err_instance, TimeoutError)
-
