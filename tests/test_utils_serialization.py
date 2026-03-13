@@ -54,3 +54,21 @@ class TestDefaultEncoder:
             orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"
         ):
             orjson.dumps(CustomObj(), default=default_encoder)
+
+    def test_default_encoder_direct_type_error(self) -> None:
+        """Test calling default_encoder directly with unsupported types."""
+        with pytest.raises(TypeError, match="Type str is not JSON serializable"):
+            default_encoder("string")
+
+        with pytest.raises(TypeError, match="Type int is not JSON serializable"):
+            default_encoder(42)
+
+        with pytest.raises(TypeError, match="Type list is not JSON serializable"):
+            default_encoder([1, 2, 3])
+
+    def test_encode_ok_with_status_override(self) -> None:
+        """Test encoding Ok where dict contains 'status' key."""
+        # The 'status' key in the dict will override the default 'success'
+        res = Ok({"status": "overridden", "data": 1})
+        encoded = orjson.dumps(res, default=default_encoder)
+        assert encoded == b'{"status":"overridden","data":1}'
