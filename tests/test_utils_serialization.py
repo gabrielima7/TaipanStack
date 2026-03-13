@@ -66,6 +66,12 @@ class TestDefaultEncoder:
         with pytest.raises(TypeError, match="Type list is not JSON serializable"):
             default_encoder([1, 2, 3])
 
+        with pytest.raises(TypeError, match="Type KeyError is not JSON serializable"):
+            default_encoder(KeyError("missing key"))
+
+        with pytest.raises(TypeError, match="Type TypeError is not JSON serializable"):
+            default_encoder(TypeError("type error"))
+
     def test_encode_ok_with_status_override(self) -> None:
         """Test encoding Ok where dict contains 'status' key."""
         # The 'status' key in the dict will override the default 'success'
