@@ -1,3 +1,7 @@
+---
+description: "API reference for TaipanStack's security guards, input sanitizers, and validators against common attacks."
+---
+
 # Security — Guards, Sanitizers & Validators
 
 TaipanStack's security layer provides input validation, sanitization, and security guards to prevent common attack vectors.

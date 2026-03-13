@@ -1,3 +1,7 @@
+---
+description: "TaipanStack layered architecture: dependency contracts, concurrency model, error handling, and security strategy."
+---
+
 # TaipanStack Architecture
 
 TaipanStack is built on the philosophy of **maximum safety by default**, combined with blazing-fast asynchronous programming. The internal architecture enforces a strict layered dependency map, statically verified on every commit.

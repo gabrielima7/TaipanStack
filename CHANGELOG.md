@@ -222,7 +222,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - Updated `cryptography` 46.0.3 → 46.0.5 (resolves Dependabot security alert)
 
-## [2.0.0] - 2026-02-03
+## [0.2.6] - 2026-02-17
+
+### Security
+- Prefixed unused signal handler params with underscore (`_signum`, `_frame`)
+- Prefixed unused context manager param with underscore (`_exc_tb`)
+- Added security comment for safe `random.uniform` usage (non-cryptographic jitter)
+- Updated safety policy to ignore disputed CVE-2022-42969 (`py 1.11.0`)
+
+## [0.2.5] - 2026-02-16
+
+### Fixed
+- CI: Invalidated stale CI cache with `taipanstack-v2` prefix
+- Removed `restore-keys` fallback that caused stale cache restore from old "Stack" project caches
+- Regenerated `poetry.lock` to ensure clean state
+
+## [0.2.4] - 2026-02-15
+
+### Fixed
+- CI: Added `--sync` flag to `poetry install` to fix stale virtualenv cache missing pytest
+- All Linux container tests pass (Alpine, Fedora, Arch, openSUSE)
+
+## [0.2.3] - 2026-02-14
+
+### Fixed
+- Regenerated `poetry.lock` to fix CI `pytest not found` error
+- Poetry lock was out of sync causing CI to install only 8 packages instead of full dev dependencies
+
+## [0.2.2] - 2026-02-13
+
+### Changed
+- Improved test coverage from 89% to 96.62% with polyfactory integration
+- Enhanced test coverage using polyfactory for test data generation
+- Achieved 642 passing tests
+
+## [0.2.1] - 2026-02-12
+
+### Fixed
+- Fixed UP042: Changed `VersionTier` to inherit from `StrEnum`
+- Fixed PLW0108: Inlined lambdas in `test_result_module.py`
+
+### Changed
+- Added comprehensive tests for `core.compat` (85% coverage)
+- Added comprehensive tests for `core.optimizations` (91% coverage)
+- Added comprehensive tests for `config.version_config` (100% coverage)
+- Test coverage improved from 89.01% to 96.62% (642 tests)
+
+## [0.2.0] - 2026-02-03
 
 ### Changed
 - **BREAKING**: Renamed project from "Stack" to "TaipanStack"
@@ -234,6 +280,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - PyPI package metadata and URLs
 - Package entry points for distribution
+- `polyfactory` (>=2.0.0) for test data generation
+- `pydantic-settings` (>=2.0.0) for configuration management
+- Python version-aware optimization system
+- 569 tests passing with 89% coverage
 
 ## [Unreleased]
 
@@ -292,8 +342,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...v0.3.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
-[0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v2.0.0...v0.2.8
-[2.0.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v2.0.0
+[0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.7...v0.2.8
+[0.2.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.6...v0.2.7
+[0.2.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.5...v0.2.6
+[0.2.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.4...v0.2.5
+[0.2.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v0.2.0
 [Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...HEAD
 [0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8

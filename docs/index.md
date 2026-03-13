@@ -1,4 +1,5 @@
 ---
+description: "TaipanStack — modern, secure Python foundation with Result types, security guards, and DevSecOps tooling."
 hide:
   - navigation
 ---

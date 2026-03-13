@@ -1,3 +1,7 @@
+---
+description: "Practical guide to combining @safe, guard_ssrf, guard_path_traversal, and @retry for defence-in-depth."
+---
+
 # Security Patterns — Practical Guide
 
 > This guide demonstrates how to combine `@safe`, `guard_ssrf`, `guard_path_traversal`, and `@retry` in a real-world FastAPI endpoint. The examples use FastAPI syntax purely for illustration; all utilities are framework-agnostic.
