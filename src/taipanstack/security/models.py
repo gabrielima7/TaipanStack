@@ -4,7 +4,7 @@ import json
 import re
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 
@@ -37,6 +37,8 @@ def _mask_data(data: Any) -> Any:
 
 class SecureBaseModel(BaseModel):
     """Secure base model that redacts sensitive fields when dumped."""
+
+    model_config = ConfigDict(frozen=True)
 
     def __str__(self) -> str:
         """Return a string representation with sensitive fields redacted."""
