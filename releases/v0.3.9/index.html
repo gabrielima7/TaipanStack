@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Modular, secure, and scalable Python stack for robust development">
+        <meta name="description" content="TaipanStack v0.3.9: path traversal fix, fallback/timeout decorators, intelligent cache, and SafeHtml/SafeSql types.">
       
       
         <meta name="author" content="gabrielima7">
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#release-notes-taipanstack-v039" class="md-skip">
+        <a href="#release-notes-taipanstack-v039-2026-03-11" class="md-skip">
           Skip to content
         </a>
       
@@ -808,22 +808,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#039-2026-03-11" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        [0.3.9] - 2026-03-11
+        Overview
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[0.3.9] - 2026-03-11">
+    <nav class="md-nav" aria-label="Overview">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
+  <a href="#security-observability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Security
+        🛡️ Security &amp; Observability
       
     </span>
   </a>
@@ -831,10 +831,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#core-features-observability-resilience-and-cache" class="md-nav__link">
+  <a href="#core-features-resilience-and-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧩 Core Features (Observability, Resilience, and Cache)
+        🧩 Core Features (Resilience, and Cache)
       
     </span>
   </a>
@@ -842,10 +842,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#quality-and-testing-qa" class="md-nav__link">
+  <a href="#qa-test-stability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧪 Quality and Testing (QA)
+        🧪 QA &amp; Test Stability
       
     </span>
   </a>
@@ -864,10 +864,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chore" class="md-nav__link">
+  <a href="#refactoring-chore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧹 Chore
+        🧹 Refactoring &amp; Chore
       
     </span>
   </a>
@@ -876,6 +876,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Details
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1140,6 +1151,314 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.9
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.8
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.2.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../v0.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1174,22 +1493,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#039-2026-03-11" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        [0.3.9] - 2026-03-11
+        Overview
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[0.3.9] - 2026-03-11">
+    <nav class="md-nav" aria-label="Overview">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
+  <a href="#security-observability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Security
+        🛡️ Security &amp; Observability
       
     </span>
   </a>
@@ -1197,10 +1516,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#core-features-observability-resilience-and-cache" class="md-nav__link">
+  <a href="#core-features-resilience-and-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧩 Core Features (Observability, Resilience, and Cache)
+        🧩 Core Features (Resilience, and Cache)
       
     </span>
   </a>
@@ -1208,10 +1527,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#quality-and-testing-qa" class="md-nav__link">
+  <a href="#qa-test-stability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧪 Quality and Testing (QA)
+        🧪 QA &amp; Test Stability
       
     </span>
   </a>
@@ -1230,10 +1549,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chore" class="md-nav__link">
+  <a href="#refactoring-chore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧹 Chore
+        🧹 Refactoring &amp; Chore
       
     </span>
   </a>
@@ -1242,6 +1561,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Details
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1265,55 +1595,68 @@
   
 
 
-<h1 id="release-notes-taipanstack-v039">Release Notes - TaipanStack v0.3.9<a class="headerlink" href="#release-notes-taipanstack-v039" title="Permanent link">&para;</a></h1>
-<h2 id="039-2026-03-11">[0.3.9] - 2026-03-11<a class="headerlink" href="#039-2026-03-11" title="Permanent link">&para;</a></h2>
-<p>This release focuses on security robustness, performance optimizations, and test suite stabilization.</p>
-<h3 id="security">🛡️ Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
+<h1 id="release-notes-taipanstack-v039-2026-03-11">Release Notes - TaipanStack v0.3.9 (2026-03-11)<a class="headerlink" href="#release-notes-taipanstack-v039-2026-03-11" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>TaipanStack v0.3.9 focuses on reinforcing security boundaries, optimizing core performance primitives, and stabilizing the test suite. This release introduces critical path traversal protections in filesystem utilities and automated sensitive data masking for structured logging pipelines.</p>
+<h3 id="security-observability">🛡️ Security &amp; Observability<a class="headerlink" href="#security-observability" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Critical Path Traversal Fix</strong>: Added rigorous protections in filesystem utilities (<code>find_files</code>, <code>get_file_hash</code>) to prevent access outside the base directory. (#160)</li>
-<li><strong>Sensitive Data Masking</strong>: Implemented automatic masking of secrets (passwords, tokens, keys) in the structured logging system. (#162)</li>
+<li><strong>Critical Path Traversal Fix</strong>: Added rigorous protections in filesystem utilities (<code>find_files</code>, <code>get_file_hash</code>, <code>ensure_dir</code>) to prevent access outside the base directory. (#160)</li>
+<li><strong>Sensitive Data Masking</strong>: Integrated automated masking for secrets (passwords, tokens, keys) within the structured logging system via <code>mask_sensitive_data_processor</code>. (#162)</li>
 <li><strong>New Security Types (Pydantic v2)</strong>: Implemented <code>SafeHtml</code> and <code>SafeSqlIdentifier</code> natively compatible with FastAPI/Pydantic schemas, protecting against XSS and SQL Injection.</li>
-<li><strong>JWT Decode Improvement</strong>: The "none" algorithm is now explicitly rejected before processing, mitigating signature bypass attacks. (#169)</li>
-<li><strong>Guards Optimization</strong>: Unified regex patterns for verifying sensitive environment variables, increasing runtime protection efficiency. (#167)</li>
+<li><strong>JWT Decode Security</strong>: Explicitly rejected the "none" algorithm in JWT decoding to mitigate signature bypass vulnerabilities. (#169)</li>
+<li><strong>Guard Pattern Optimization</strong>: Unified regex patterns for sensitive environment variable validation, improving runtime protection efficiency. (#167)</li>
 </ul>
-<h3 id="core-features-observability-resilience-and-cache">🧩 Core Features (Observability, Resilience, and Cache)<a class="headerlink" href="#core-features-observability-resilience-and-cache" title="Permanent link">&para;</a></h3>
+<h3 id="core-features-resilience-and-cache">🧩 Core Features (Resilience, and Cache)<a class="headerlink" href="#core-features-resilience-and-cache" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Observability Module (<code>context</code>)</strong>: Added <code>correlation_id</code> tracking via <code>contextvars</code> integrating distributed tracing into <code>structlog</code> with automatic scope limits.</li>
 <li><strong>Resilience Decorators (<code>resilience</code>)</strong>:<ul>
 <li><code>@fallback</code>: Intercepts exceptions and business errors, returning safe fallback values.</li>
-<li><code>@timeout</code>: Manages maximum execution time in synchronous and asynchronous functions, preventing eternal locks.</li>
+<li><code>@timeout</code>: Manages maximum execution time in synchronous and asynchronous functions using <code>ThreadPoolExecutor</code>, preventing eternal locks.</li>
 </ul>
 </li>
 <li><strong>Intelligent Cache (<code>cache</code>)</strong>: New <code>@cached(ttl)</code> decorator that memoizes only successful results (<code>Ok</code>), automatically ignoring and recomputing failures (<code>Err</code>).</li>
 </ul>
-<h3 id="quality-and-testing-qa">🧪 Quality and Testing (QA)<a class="headerlink" href="#quality-and-testing-qa" title="Permanent link">&para;</a></h3>
+<h3 id="qa-test-stability">🧪 QA &amp; Test Stability<a class="headerlink" href="#qa-test-stability" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Concurrency Tests Stabilization</strong>: Resolved flakiness issues in synchronous and asynchronous execution limit tests using event-based synchronization. (#165)</li>
-<li><strong>Coverage Increase</strong>:<ul>
-<li>New tests for path sanitization and directory traversal handling. (#168)</li>
-<li>Tests for purely numeric SQL identifiers. (#166)</li>
-<li>Edge case coverage for excessively long file extensions. (#163)</li>
-<li>Unit tests for the main module (<code>app.main</code>). (#159)</li>
+<li><strong>Concurrency Test Stabilization</strong>: Resolved intermittent flakiness in synchronous and asynchronous execution limiters using event-based synchronization. (#165)</li>
+<li><strong>Expanded Coverage</strong>:<ul>
+<li>New test cases for path sanitization and directory traversal guards. (#168)</li>
+<li>Specific validation for numeric-only SQL identifiers. (#166)</li>
+<li>Edge-case coverage for excessively long file extensions. (#163)</li>
+<li>Unit test suite for the main entrypoint (<code>app.main</code>). (#159, #171)</li>
 </ul>
 </li>
 </ul>
 <h3 id="performance">⚡ Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Hashing Optimization</strong>: Refactored chunk iteration in large files to use <code>functools.partial</code>, reducing lambda call overhead. (#164)</li>
-<li><strong>JWT Performance</strong>: Micro-optimization in the validation of allowed algorithms. (#169)</li>
+<li><strong>Hashing Optimization</strong>: Refactored file hashing chunk iteration to use <code>functools.partial</code>, minimizing lambda call overhead during I/O operations. (#164)</li>
+<li><strong>JWT Validation speedup</strong>: Micro-optimized the validation of permitted algorithms during token decoding. (#169)</li>
 </ul>
-<h3 id="chore">🧹 Chore<a class="headerlink" href="#chore" title="Permanent link">&para;</a></h3>
+<h3 id="refactoring-chore">🧹 Refactoring &amp; Chore<a class="headerlink" href="#refactoring-chore" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Refactoring</strong>: Removed syntax redundancies (unnecessary <code>elif</code> statements). (#161)</li>
-<li><strong>Refactoring</strong>: Updated logging infrastructure to use standardized internal utilities. (#162)</li>
+<li><strong>Code Cleanup</strong>: Removed redundant syntax patterns (unnecessary <code>elif</code> branches) for better readability. (#161)</li>
+<li><strong>Logging Standardization</strong>: Standardized internal logging infrastructure and renamed unused parameters in structlog processors for consistency (#162, #170).</li>
 <li><strong>Linting</strong>: Restored Ruff standard formatting across all module files.</li>
 </ul>
+<h2 id="verification-details">Verification Details<a class="headerlink" href="#verification-details" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Test Suite</strong>: Critical maintenance tests for concurrency and security guards passed with 100% reliability.</li>
+<li><strong>Security</strong>: Validated via consolidated regex guards and expanded regression testing.</li>
+<li><strong>Coverage</strong>: Maintained 100% statement and branch coverage.</li>
+</ul>
+<blockquote>
+<p>[!TIP]
+This release is highly recommended for users handling sensitive logging data or complex filesystem operations. It maintains full backward compatibility with the <code>v0.3.x</code> series.</p>
+</blockquote>
 
 
 
 
 
 
+
+  
+  
 
 
 

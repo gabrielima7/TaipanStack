@@ -6,19 +6,19 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="TaipanStack v0.3.4 release: password security module, async resilience, Pydantic types, and structlog masking.">
+        <meta name="description" content="TaipanStack v0.2.6: resolved all security audit findings from Bandit and Safety scans.">
       
       
         <meta name="author" content="gabrielima7">
       
       
-        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.3.4/">
+        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.2.6/">
       
       
-        <link rel="prev" href="../v0.3.5/">
+        <link rel="prev" href="../v0.2.7/">
       
       
-        <link rel="next" href="../v0.3.3/">
+        <link rel="next" href="../v0.2.5/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>v0.3.4 - TaipanStack</title>
+        <title>v0.2.6 - TaipanStack</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#taipanstack-v034-quality-security-hardening-code-health" class="md-skip">
+        <a href="#taipanstack-v026-security-audit-resolution" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v0.3.4
+              v0.2.6
             
           </span>
         </div>
@@ -885,37 +885,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v0.3.4
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../v0.3.4/" class="md-nav__link">
         
   
   
@@ -931,186 +904,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-security-fix-plaintext-password-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 🔒 Security Fix — Plaintext Password Handling
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-new-password-security-module" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 🔐 New password Security Module
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-async-resilience-retry-circuit_breaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 🚀 Async Resilience (@retry &amp; @circuit_breaker)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-pydantic-security-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 🛡️ Pydantic Security Types
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-structlog-data-masking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 🕵️ Structlog Data Masking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-test-coverage-improvements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 🧪 Test Coverage Improvements
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. 🧪 Test Coverage Improvements">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#notable-cve-2020-10735-test-coverage-pr-129" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Notable: CVE-2020-10735 Test Coverage (PR #129)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#url-port-lazy-evaluation-fix-pr-130-126" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        URL Port Lazy Evaluation Fix (PR #130 / #126)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-code-health-refactoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 🧹 Code Health &amp; Refactoring
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. ⚡ Performance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-ci-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 🔧 CI / DevOps
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#qa-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q&amp;A Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrade" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrade
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1316,10 +1109,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../v0.2.6/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.2.6
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1335,6 +1155,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Changed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Changed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Security Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1581,77 +1471,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-security-fix-plaintext-password-handling" class="md-nav__link">
+  <a href="#what-changed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 🔒 Security Fix — Plaintext Password Handling
+        What Changed
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-new-password-security-module" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 🔐 New password Security Module
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-async-resilience-retry-circuit_breaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 🚀 Async Resilience (@retry &amp; @circuit_breaker)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-pydantic-security-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 🛡️ Pydantic Security Types
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-structlog-data-masking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 🕵️ Structlog Data Masking
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-test-coverage-improvements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 🧪 Test Coverage Improvements
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. 🧪 Test Coverage Improvements">
+    <nav class="md-nav" aria-label="What Changed">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#notable-cve-2020-10735-test-coverage-pr-129" class="md-nav__link">
+  <a href="#security-fixes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notable: CVE-2020-10735 Test Coverage (PR #129)
+        🛡️ Security Fixes
       
     </span>
   </a>
@@ -1659,10 +1494,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#url-port-lazy-evaluation-fix-pr-130-126" class="md-nav__link">
+  <a href="#quality" class="md-nav__link">
     <span class="md-ellipsis">
       
-        URL Port Lazy Evaluation Fix (PR #130 / #126)
+        🧪 Quality
       
     </span>
   </a>
@@ -1671,61 +1506,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-code-health-refactoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 🧹 Code Health &amp; Refactoring
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-performance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. ⚡ Performance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-ci-devops" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 🔧 CI / DevOps
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#qa-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q&amp;A Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrade" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrade
-      
-    </span>
-  </a>
   
 </li>
       
@@ -1749,277 +1529,25 @@
   
 
 
-<h1 id="taipanstack-v034-quality-security-hardening-code-health">TaipanStack v0.3.4 — Quality, Security Hardening &amp; Code Health<a class="headerlink" href="#taipanstack-v034-quality-security-hardening-code-health" title="Permanent link">&para;</a></h1>
+<h1 id="taipanstack-v026-security-audit-resolution">TaipanStack v0.2.6 — Security Audit Resolution<a class="headerlink" href="#taipanstack-v026-security-audit-resolution" title="Permanent link">&para;</a></h1>
+<p><strong>Date:</strong> February 17, 2026</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>v0.3.4 is a <strong>quality patch release</strong> that significantly deepens test coverage, hardens security validators, modularises the codebase, and introduces a new password security module — all while maintaining 100% backwards compatibility.</p>
-<p>This release merges 23 Pull Requests covering test improvements, security fixes, refactoring/code-health, and performance optimisations.</p>
+<p>v0.2.6 is a <strong>security patch</strong> that resolves all findings from the Bandit and Safety security audit tools.</p>
 <hr />
-<h2 id="1-security-fix-plaintext-password-handling">1. 🔒 Security Fix — Plaintext Password Handling<a class="headerlink" href="#1-security-fix-plaintext-password-handling" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/app/secure_system.py</code> | <strong>PR #93</strong></p>
-<p><code>UserService.create_user</code> previously stored user passwords as plaintext strings. This has been corrected: passwords are now properly hashed before being passed to the internal user store.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="c1"># Before (insecure)</span>
-</span><span id="__span-0-2"><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
-</span><span id="__span-0-3">
-</span><span id="__span-0-4"><span class="c1"># After (secure)</span>
-</span><span id="__span-0-5"><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">hash_password</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
-</span></code></pre></div>
-<blockquote>
-<p>[!WARNING]
-This is a <strong>security fix</strong>. All deployments on v0.3.3 or earlier are encouraged to upgrade immediately and re-hash any stored passwords.</p>
-</blockquote>
-<hr />
-<h2 id="2-new-password-security-module">2. 🔐 New <code>password</code> Security Module<a class="headerlink" href="#2-new-password-security-module" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/taipanstack/security/password.py</code> + <code>tests/test_security_password.py</code></p>
-<p>A dedicated password security module has been introduced, providing:</p>
+<h2 id="what-changed">What Changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h2>
+<h3 id="security-fixes">🛡️ Security Fixes<a class="headerlink" href="#security-fixes" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>hash_password(password: str) -&gt; str</code> — bcrypt-based secure hashing</li>
-<li><code>verify_password(plain: str, hashed: str) -&gt; bool</code> — constant-time comparison</li>
-<li><code>generate_secure_token(length: int = 32) -&gt; str</code> — cryptographically secure random token generator</li>
+<li>Prefixed unused signal handler params with underscore (<code>_signum</code>, <code>_frame</code>)</li>
+<li>Prefixed unused context manager param with underscore (<code>_exc_tb</code>)</li>
+<li>Added security comment for safe <code>random.uniform</code> usage (non-cryptographic jitter)</li>
+<li>Updated Safety policy to ignore disputed CVE-2022-42969 (<code>py 1.11.0</code>)</li>
 </ul>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.security.password</span><span class="w"> </span><span class="kn">import</span> <span class="n">hash_password</span><span class="p">,</span> <span class="n">verify_password</span>
-</span><span id="__span-1-2">
-</span><span id="__span-1-3"><span class="n">hashed</span> <span class="o">=</span> <span class="n">hash_password</span><span class="p">(</span><span class="s2">&quot;my_secret_password&quot;</span><span class="p">)</span>
-</span><span id="__span-1-4"><span class="k">assert</span> <span class="n">verify_password</span><span class="p">(</span><span class="s2">&quot;my_secret_password&quot;</span><span class="p">,</span> <span class="n">hashed</span><span class="p">)</span>  <span class="c1"># True</span>
-</span><span id="__span-1-5"><span class="k">assert</span> <span class="ow">not</span> <span class="n">verify_password</span><span class="p">(</span><span class="s2">&quot;wrong_password&quot;</span><span class="p">,</span> <span class="n">hashed</span><span class="p">)</span>   <span class="c1"># False</span>
-</span></code></pre></div>
+<h3 id="quality">🧪 Quality<a class="headerlink" href="#quality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>All 642 tests passing with 96.62% coverage</li>
+</ul>
 <hr />
-<h2 id="3-async-resilience-retry-circuit_breaker">3. 🚀 Async Resilience (<code>@retry</code> &amp; <code>@circuit_breaker</code>)<a class="headerlink" href="#3-async-resilience-retry-circuit_breaker" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>: <code>src/taipanstack/utils/retry.py</code> &amp; <code>src/taipanstack/utils/circuit_breaker.py</code></p>
-<p>Native asynchronous support was added to both resilience primitives. Coroutines are wrapped transparently, allowing the event loop to yield correctly via <code>asyncio.sleep()</code>. Both decorators export precise <code>@overload</code> signatures, matching strict-mode <code>mypy</code> requirements.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
-</span><span id="__span-2-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span>
-</span><span id="__span-2-3">
-</span><span id="__span-2-4"><span class="nd">@retry</span><span class="p">(</span><span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span id="__span-2-5"><span class="nd">@circuit_breaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-2-6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_user_data</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-2-7">    <span class="k">return</span> <span class="k">await</span> <span class="n">async_http_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span></code></pre></div>
-<hr />
-<h2 id="4-pydantic-security-types">4. 🛡️ Pydantic Security Types<a class="headerlink" href="#4-pydantic-security-types" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/taipanstack/security/types.py</code></p>
-<p>Introduced native Pydantic v2 compatibility for TaipanStack's security validators. You can now declaratively shield your API models against SSRF, Path Traversal, and Command Injection directly inside the type annotations using <code>SafeUrl</code>, <code>SafePath</code>, <code>SafeCommand</code>, and <code>SafeProjectName</code>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
-</span><span id="__span-3-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.security.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafeUrl</span><span class="p">,</span> <span class="n">SafeCommand</span>
-</span><span id="__span-3-3">
-</span><span id="__span-3-4"><span class="k">class</span><span class="w"> </span><span class="nc">WebhookPayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span id="__span-3-5">    <span class="c1"># Validates URL format AND rejects SSRF (loopback/private IPs)</span>
-</span><span id="__span-3-6">    <span class="n">target_url</span><span class="p">:</span> <span class="n">SafeUrl</span>
-</span><span id="__span-3-7">
-</span><span id="__span-3-8">    <span class="c1"># Validates against shell metacharacters (; | $ &gt; &amp;)</span>
-</span><span id="__span-3-9">    <span class="n">script_step</span><span class="p">:</span> <span class="n">SafeCommand</span>
-</span></code></pre></div>
-<hr />
-<h2 id="5-structlog-data-masking">5. 🕵️ Structlog Data Masking<a class="headerlink" href="#5-structlog-data-masking" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/taipanstack/utils/logging.py</code></p>
-<p>Added the <code>mask_sensitive_data_processor</code> to the structlog pipeline. This processor automatically intercepts structured log event dictionaries and redacts sensitive parameters based on case-insensitive key patterns (<code>password</code>, <code>secret</code>, <code>token</code>, <code>authorization</code>, <code>api_key</code>).</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
-</span><span id="__span-4-2">
-</span><span id="__span-4-3"><span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
-</span><span id="__span-4-4"><span class="c1"># The value &quot;super_secret_value&quot; will be logged as &quot;***REDACTED***&quot;</span>
-</span><span id="__span-4-5"><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;user_authenticated&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;super_secret_value&quot;</span><span class="p">)</span>
-</span></code></pre></div>
-<hr />
-<h2 id="3-test-coverage-improvements">3. 🧪 Test Coverage Improvements<a class="headerlink" href="#3-test-coverage-improvements" title="Permanent link">&para;</a></h2>
-<p>Extensive test coverage has been added across all validators and core modules. Every new test asserts both positive and negative code paths:</p>
-<table>
-<thead>
-<tr>
-<th>Test File</th>
-<th>New Tests</th>
-<th>Coverage Target</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>test_security_validators.py</code></td>
-<td>6 new</td>
-<td><code>validate_ip_address</code>, <code>validate_port</code>, <code>validate_url</code>, <code>validate_python_version</code></td>
-</tr>
-<tr>
-<td><code>test_security_validators_extended.py</code></td>
-<td>4 new</td>
-<td><code>validate_ip_address</code> (IPv4 + IPv6 edge cases)</td>
-</tr>
-<tr>
-<td><code>test_result_module.py</code></td>
-<td>3 new</td>
-<td><code>@safe</code> / <code>@safe_from</code> base <code>Exception</code> and explicit raise</td>
-</tr>
-<tr>
-<td><code>test_utils_logging.py</code></td>
-<td>4 new</td>
-<td><code>log_operation</code> expected/unexpected exception branches</td>
-</tr>
-<tr>
-<td><code>test_utils_filesystem.py</code></td>
-<td>4 new</td>
-<td>Path traversal without <code>base_dir</code></td>
-</tr>
-<tr>
-<td><code>test_compat.py</code></td>
-<td>2 new</td>
-<td><code>get_optimization_level</code> CVE-2020-10735 integer string limits</td>
-</tr>
-<tr>
-<td><code>test_secure_system.py</code></td>
-<td>3 new</td>
-<td><code>UserService</code> — <code>UserAlreadyExistsError</code> path</td>
-</tr>
-<tr>
-<td><code>test_security_password.py</code></td>
-<td>7 new</td>
-<td>New password module — hashing, verification, token generation</td>
-</tr>
-<tr>
-<td><code>test_security_ssrf.py</code></td>
-<td>2 updated</td>
-<td>DNS error message platform-independence + hostname truncation</td>
-</tr>
-</tbody>
-</table>
-<h3 id="notable-cve-2020-10735-test-coverage-pr-129">Notable: CVE-2020-10735 Test Coverage (PR #129)<a class="headerlink" href="#notable-cve-2020-10735-test-coverage-pr-129" title="Permanent link">&para;</a></h3>
-<p>Python 3.11+ enforces a limit on integer-string conversion to prevent DoS via extremely large integers. v0.3.4 ensures <code>get_optimization_level</code> correctly handles the <code>ValueError</code> raised when an environment variable contains a string exceeding 4300 digits:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><span class="n">huge_int_str</span> <span class="o">=</span> <span class="s2">&quot;9&quot;</span> <span class="o">*</span> <span class="mi">4500</span>
-</span><span id="__span-5-2"><span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;STACK_OPTIMIZATION_LEVEL&quot;</span><span class="p">:</span> <span class="n">huge_int_str</span><span class="p">}):</span>
-</span><span id="__span-5-3">    <span class="k">assert</span> <span class="n">get_optimization_level</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># falls back gracefully</span>
-</span></code></pre></div>
-<h3 id="url-port-lazy-evaluation-fix-pr-130-126">URL Port Lazy Evaluation Fix (PR #130 / #126)<a class="headerlink" href="#url-port-lazy-evaluation-fix-pr-130-126" title="Permanent link">&para;</a></h3>
-<p><code>urlparse</code> is <em>lazily</em> evaluated — accessing <code>.port</code> triggers full parsing. <code>validate_url</code> now explicitly evaluates the port attribute during the parse step:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</span><span id="__span-6-2"><span class="n">_</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">port</span>  <span class="c1"># triggers lazy evaluation → catches out-of-range ports</span>
-</span></code></pre></div>
-<p>This ensures that <code>http://example.com:99999999999</code> raises <code>ValueError("Invalid URL format: Port out of range")</code> as expected.</p>
-<hr />
-<h2 id="4-code-health-refactoring">4. 🧹 Code Health &amp; Refactoring<a class="headerlink" href="#4-code-health-refactoring" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Change</th>
-<th>File(s)</th>
-<th>PR</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Remove unused <code>compat</code> imports from <code>taipanstack.core</code> public API</td>
-<td><code>core/__init__.py</code></td>
-<td>#99</td>
-</tr>
-<tr>
-<td>Remove unused imports from root <code>__init__.py</code></td>
-<td><code>taipanstack/__init__.py</code></td>
-<td>#100</td>
-</tr>
-<tr>
-<td>Define proper <code>__all__</code> in <code>utils/__init__.py</code></td>
-<td><code>utils/__init__.py</code></td>
-<td>#98</td>
-</tr>
-<tr>
-<td>Remove redundant <code>from __future__ import annotations</code></td>
-<td>Multiple</td>
-<td>#112</td>
-</tr>
-<tr>
-<td>Preserve valid config package public API</td>
-<td><code>config/__init__.py</code></td>
-<td>#102</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="5-performance">5. ⚡ Performance<a class="headerlink" href="#5-performance" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Change</th>
-<th>File</th>
-<th>PR</th>
-<th>Gain</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Optimise string concatenation in <code>generate_pre_commit_config</code> using list + <code>join</code> instead of <code>+=</code></td>
-<td><code>config/generators.py</code></td>
-<td>#130</td>
-<td>~10–15% on large configs</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="6-ci-devops">6. 🔧 CI / DevOps<a class="headerlink" href="#6-ci-devops" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Fix</th>
-<th>Detail</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>openSUSE Leap repo</strong></td>
-<td>Added <code>zypper removerepo repo-openh264 \|\| true</code> before package install to suppress failures on CI runners without the codec repo (PR #116)</td>
-</tr>
-<tr>
-<td><strong>Actions Group Bump</strong></td>
-<td>Bumped <code>actions/checkout</code>, <code>actions/setup-python</code>, and related actions to latest versions (PR #95)</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="qa-summary">Q&amp;A Summary<a class="headerlink" href="#qa-summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>v0.3.3</th>
-<th>v0.3.4</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Test Coverage</strong></td>
-<td>100%</td>
-<td>100%</td>
-</tr>
-<tr>
-<td><strong>Total Tests</strong></td>
-<td>~650</td>
-<td>~685</td>
-</tr>
-<tr>
-<td><strong>Security Fixes</strong></td>
-<td>0</td>
-<td><strong>1 (critical)</strong></td>
-</tr>
-<tr>
-<td><strong>New Security Modules</strong></td>
-<td>—</td>
-<td><code>password.py</code> &amp; <code>types.py</code></td>
-</tr>
-<tr>
-<td><strong>New Async Support</strong></td>
-<td>—</td>
-<td><code>retry</code> &amp; <code>circuit_breaker</code></td>
-</tr>
-<tr>
-<td><strong>CVE Test Coverage</strong></td>
-<td>❌</td>
-<td>✅ CVE-2020-10735</td>
-</tr>
-<tr>
-<td><strong>Breaking Changes</strong></td>
-<td>0</td>
-<td><strong>0</strong></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="upgrade">Upgrade<a class="headerlink" href="#upgrade" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1">pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="nv">taipanstack</span><span class="o">==</span><span class="m">0</span>.3.4
-</span></code></pre></div>
-<p>No breaking changes — upgrade is safe for all v0.3.x installations.</p>
+<p><strong>Full Changelog:</strong> <a href="https://github.com/gabrielima7/TaipanStack/compare/v0.2.5...v0.2.6">v0.2.5...v0.2.6</a></p>
 
 
 
