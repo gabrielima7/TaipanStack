@@ -109,8 +109,9 @@ def sanitize_string(
         result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
-    if max_length is not None and len(result) > max_length:
-        result = result[:max_length]
+    if max_length is not None:  # noqa: SIM102 - nested if required for type narrowing
+        if len(result) > max_length:
+            result = result[:max_length]
 
     return result
 
