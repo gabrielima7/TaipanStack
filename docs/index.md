@@ -194,8 +194,8 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 
 | Report | Description |
 |--------|-------------|
-| [🧪 Coverage Report](htmlcov/) | Full HTML coverage report — 100% (761 tests) |
-| [⚡ Benchmark Dashboard](dev/bench/) | Performance history & regression graphs |
+| [🧪 Coverage Report](https://gabrielima7.github.io/TaipanStack/htmlcov/) | Full HTML coverage report — 100% (761 tests) |
+| [⚡ Benchmark Dashboard](https://gabrielima7.github.io/TaipanStack/dev/bench/) | Performance history & regression graphs |
 
 ---
 
