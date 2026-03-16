@@ -70,37 +70,37 @@ class TestExperimentalFeatures:
     def test_experimental_disabled_by_default(self) -> None:
         """Test experimental features disabled by default."""
         with patch.dict(os.environ, {}, clear=True):
-            assert not is_experimental_enabled()
+            assert not is_experimental_enabled(force_refresh=True)
 
     def test_experimental_enabled_with_1(self) -> None:
         """Test experimental enabled with value '1'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
-            assert is_experimental_enabled()
+            assert is_experimental_enabled(force_refresh=True)
 
     def test_experimental_enabled_with_true(self) -> None:
         """Test experimental enabled with value 'true'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "true"}):
-            assert is_experimental_enabled()
+            assert is_experimental_enabled(force_refresh=True)
 
     def test_experimental_enabled_with_yes(self) -> None:
         """Test experimental enabled with value 'yes'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "yes"}):
-            assert is_experimental_enabled()
+            assert is_experimental_enabled(force_refresh=True)
 
     def test_experimental_enabled_with_on(self) -> None:
         """Test experimental enabled with value 'on'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "on"}):
-            assert is_experimental_enabled()
+            assert is_experimental_enabled(force_refresh=True)
 
     def test_experimental_disabled_with_0(self) -> None:
         """Test experimental disabled with value '0'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "0"}):
-            assert not is_experimental_enabled()
+            assert not is_experimental_enabled(force_refresh=True)
 
     def test_experimental_case_insensitive(self) -> None:
         """Test experimental check is case-insensitive."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "TRUE"}):
-            assert is_experimental_enabled()
+            assert is_experimental_enabled(force_refresh=True)
 
 
 class TestOptimizationLevel:
@@ -109,32 +109,32 @@ class TestOptimizationLevel:
     def test_default_optimization_level(self) -> None:
         """Test default optimization level is 1."""
         with patch.dict(os.environ, {}, clear=True):
-            assert get_optimization_level() == 1
+            assert get_optimization_level(force_refresh=True) == 1
 
     def test_optimization_level_0(self) -> None:
         """Test optimization level can be set to 0."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
-            assert get_optimization_level() == 0
+            assert get_optimization_level(force_refresh=True) == 0
 
     def test_optimization_level_2(self) -> None:
         """Test optimization level can be set to 2."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
-            assert get_optimization_level() == 2
+            assert get_optimization_level(force_refresh=True) == 2
 
     def test_optimization_level_clamped_low(self) -> None:
         """Test optimization level is clamped to minimum 0."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "-5"}):
-            assert get_optimization_level() == 0
+            assert get_optimization_level(force_refresh=True) == 0
 
     def test_optimization_level_clamped_high(self) -> None:
         """Test optimization level is clamped to maximum 2."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "99"}):
-            assert get_optimization_level() == 2
+            assert get_optimization_level(force_refresh=True) == 2
 
     def test_optimization_level_invalid(self) -> None:
         """Test invalid optimization level defaults to 1."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid"}):
-            assert get_optimization_level() == 1
+            assert get_optimization_level(force_refresh=True) == 1
 
     def test_optimization_level_exceeds_int_limit(self) -> None:
         """Test ValueError from exceeding integer string conversion limit (CVE-2020-10735)."""
@@ -147,11 +147,11 @@ class TestOptimizationLevel:
                 # If it raises a ValueError, get_optimization_level() must catch it and return 1.
                 int(huge_int_str)
             except ValueError:
-                assert get_optimization_level() == 1
+                assert get_optimization_level(force_refresh=True) == 1
             else:
                 # If the environment lacks the limit (e.g. sys.set_int_max_str_digits(0) was called),
                 # int() successfully parses the huge integer, so the function clamps it to 2.
-                assert get_optimization_level() == 2
+                assert get_optimization_level(force_refresh=True) == 2
 
 
 class TestPythonFeatures:
@@ -240,7 +240,7 @@ class TestPythonFeatures:
 
     def test_features_to_dict(self) -> None:
         """Test features can be converted to dictionary."""
-        features = get_features()
+        features = get_features(force_refresh=True)
         data = features.to_dict()
 
         assert isinstance(data, dict)
@@ -252,13 +252,13 @@ class TestPythonFeatures:
 
     def test_features_cached(self) -> None:
         """Test features are cached after first call."""
-        features1 = get_features()
+        features1 = get_features(force_refresh=True)
         features2 = get_features()
         assert features1 is features2
 
     def test_features_force_refresh(self) -> None:
         """Test force_refresh bypasses cache."""
-        features1 = get_features()
+        features1 = get_features(force_refresh=True)
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             features2 = get_features(force_refresh=True)
             # Should have different experimental status

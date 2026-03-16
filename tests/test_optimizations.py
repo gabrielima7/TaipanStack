@@ -114,14 +114,14 @@ class TestGetOptimizationProfile:
     def test_profile_opt_level_none(self) -> None:
         """Test profile with OPT_LEVEL_NONE uses minimal settings."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             # Should return 3.11 baseline
             assert profile.gc_threshold_0 == 700
 
     def test_profile_opt_level_aggressive_without_experimental(self) -> None:
         """Test aggressive level without experimental returns normal profile."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             assert not profile.enable_experimental
 
     def test_profile_opt_level_aggressive_with_experimental(self) -> None:
@@ -130,7 +130,7 @@ class TestGetOptimizationProfile:
             os.environ,
             {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"},
         ):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             assert profile.enable_experimental
 
 

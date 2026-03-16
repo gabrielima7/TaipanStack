@@ -177,16 +177,19 @@ _PROFILE_314 = OptimizationProfile(
 )
 
 
-def get_optimization_profile() -> OptimizationProfile:
+def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProfile:
     """Get the optimization profile for the current Python version.
+
+    Args:
+        force_refresh: If True, re-detect features instead of using cache.
 
     Returns:
         OptimizationProfile suitable for the runtime environment.
 
     """
-    _ = get_features()  # Warm up cache, validate version
-    experimental = is_experimental_enabled()
-    opt_level = get_optimization_level()
+    _ = get_features(force_refresh=force_refresh)  # Warm up cache, validate version
+    experimental = is_experimental_enabled(force_refresh=force_refresh)
+    opt_level = get_optimization_level(force_refresh=force_refresh)
 
     # Select base profile by version
     if PY314:
@@ -294,6 +297,7 @@ def apply_optimizations(
     profile: OptimizationProfile | None = None,
     apply_gc: bool = True,
     freeze_after: bool = False,
+    force_refresh: bool = False,
 ) -> OptimizationResult:
     """Apply runtime optimizations based on profile.
 
@@ -304,13 +308,14 @@ def apply_optimizations(
         profile: Optimization profile to use (auto-detected if None).
         apply_gc: Whether to apply GC tuning.
         freeze_after: Whether to freeze objects after applying.
+        force_refresh: Whether to force refresh of the optimization profile.
 
     Returns:
         OptimizationResult with details of what was applied.
 
     """
     if profile is None:
-        profile = get_optimization_profile()
+        profile = get_optimization_profile(force_refresh=force_refresh)
 
     applied: list[str] = []
     skipped: list[str] = []
