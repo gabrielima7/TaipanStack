@@ -292,10 +292,11 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
 
     # Log detected features at DEBUG level
     logger.debug(
-        "Python %s detected (tier=%s, experimental=%s)",
+        "Python %s detected (tier=%s, experimental=%s): %r",
         features.version_string,
         tier.value,
         experimental,
+        features,
     )
 
     return features
