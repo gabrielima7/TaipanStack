@@ -42,6 +42,12 @@ _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
     ("\x00", "null byte"),
 )
 
+# Pre-compiled regex and lookup map for fast-path command injection detection
+_DANGEROUS_COMMAND_RE = re.compile(
+    "|".join(re.escape(p) for p, _ in _DANGEROUS_COMMAND_PATTERNS)
+)
+_DANGEROUS_COMMAND_LOOKUP = dict(_DANGEROUS_COMMAND_PATTERNS)
+
 _DEFAULT_DENIED_EXTENSIONS = frozenset(
     [
         "exe",
@@ -246,13 +252,18 @@ def guard_command_injection(
                 f"got {type(arg).__name__} at index {i}"
             )
 
-        for pattern, description in _DANGEROUS_COMMAND_PATTERNS:
-            if pattern in arg:
-                raise SecurityError(
-                    f"Dangerous shell character detected: {description}",
-                    guard_name="command_injection",
-                    value=arg[:50],
-                )
+        match = _DANGEROUS_COMMAND_RE.search(arg)
+        if match:
+            # We use the matched substring to look up the description.
+            # Because the regex is an alternation of the patterns in order,
+            # this preserves the existing behavior where earlier patterns
+            # in the list take precedence (e.g. '>' matches before '>>').
+            description = _DANGEROUS_COMMAND_LOOKUP[match.group(0)]
+            raise SecurityError(
+                f"Dangerous shell character detected: {description}",
+                guard_name="command_injection",
+                value=arg[:50],
+            )
 
     # Check against allowed commands whitelist
     if allowed_commands is not None:
