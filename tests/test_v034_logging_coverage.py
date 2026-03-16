@@ -11,6 +11,9 @@ def test_coverage():
     try:
         res = mask_sensitive_data_processor(None, None, {"test": "val"})
         assert res == {"test": "val"}
+
+        # Hitting _is_sensitive(key, None)
+        assert my_logging._is_sensitive("any", None) is False
     finally:
         my_logging._SENSITIVE_KEY_REGEX = old_regex
 
