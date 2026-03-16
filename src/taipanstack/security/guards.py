@@ -181,14 +181,12 @@ def guard_path_traversal(
         ) from e
 
     # Check if resolved path is within base_dir
-    try:
-        resolved.relative_to(base_dir)
-    except ValueError as e:
+    if not resolved.is_relative_to(base_dir):
         raise SecurityError(
             f"Path escapes base directory: {resolved} is not under {base_dir}",
             guard_name="path_traversal",
             value=str(resolved)[:100],
-        ) from e
+        )
 
     # Check for symlinks if not allowed
     if not allow_symlinks:
