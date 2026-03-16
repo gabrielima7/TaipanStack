@@ -103,7 +103,7 @@ def _handle_sync_concurrency(
                 return Err(OverloadError())
 
         try:
-            return Ok(func(*args, **kwargs))  # type: ignore[arg-type]
+            return Ok(func(*args, **kwargs))
         finally:
             sync_semaphore.release()
 
@@ -148,7 +148,7 @@ def limit_concurrency(
     ):
         if inspect.iscoroutinefunction(func):
             return _handle_async_concurrency(
-                func,  # type: ignore[arg-type]
+                func,
                 max_tasks,
                 timeout,
             )
