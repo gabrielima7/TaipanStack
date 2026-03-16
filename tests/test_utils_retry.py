@@ -152,7 +152,9 @@ class TestRetryDecorator:
         """Test that on_retry callback is called."""
         retries = []
 
-        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def on_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             retries.append((attempt, max_attempts, exc, delay))
 
         @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
@@ -269,7 +271,9 @@ class TestAsyncRetryDecorator:
         """Test that on_retry callback is called for async function."""
         retries = []
 
-        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def on_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             retries.append((attempt, max_attempts, exc, delay))
 
         @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
@@ -281,6 +285,8 @@ class TestAsyncRetryDecorator:
         result = await flaky()
         assert result == "ok"
         assert len(retries) == 2
+        assert retries[0][0] == 1
+        assert retries[1][0] == 2
 
     @pytest.mark.asyncio
     async def test_reraise_false(self) -> None:
@@ -409,11 +415,6 @@ class TestRetrier:
         assert retrier.attempt == 1
         assert isinstance(retrier.last_exception, ValueError)
 
-        # Second attempt - should also be suppressed (if we don't re-enter)
-        # Note: In real usage you'd loop, but here we can just call __exit__
-        # or just know that it worked once.
-        # Let's use a loop for a better test.
-
     def test_retrier_manual_loop(self) -> None:
         """Test Retrier in a manual retry loop."""
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
@@ -421,8 +422,9 @@ class TestRetrier:
 
         while True:
             try:
-                # We don't use 'with retrier' inside the loop if we want to preserve 'attempt'
-                # because __enter__ resets it.
+                # Use 'with retrier' inside the loop to handle each attempt.
+                # Note: __enter__ resets retrier.attempt to 0, but __exit__
+                # will set it correctly for the current attempt if it fails.
                 with retrier:
                     attempts += 1
                     if attempts < 3:
