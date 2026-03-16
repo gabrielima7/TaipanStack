@@ -11,7 +11,6 @@ import gc
 import logging
 import os
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from taipanstack.core.compat import (
     PY312,
@@ -21,9 +20,6 @@ from taipanstack.core.compat import (
     get_optimization_level,
     is_experimental_enabled,
 )
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = [
     "OptimizationProfile",
