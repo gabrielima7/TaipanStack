@@ -37,7 +37,6 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     user = result.unwrap()
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
-    assert user.is_active is True
     assert verify_password("secure_password", user.password_hash)
 
     # Test get_user with Result pattern
@@ -172,7 +171,6 @@ def test_models_redaction() -> None:
         username="testuser",
         email="test@example.com",
         password_hash="some_hashed_value",
-        is_active=True,
     )
 
     dumped_user = user.model_dump()
