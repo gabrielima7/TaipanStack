@@ -251,7 +251,6 @@ class TestLoggingStructlogBranches:
             logger.exception("Exception message", key="value")
         logger.unbind("test_key")
 
-
     def test_logging_without_structlog(self) -> None:
         """Test the HAS_STRUCTLOG=False branch (L20-21)."""
         # We can't truly un-import structlog, but we can test that the
