@@ -126,7 +126,7 @@ select = [
     "F", "E", "W", "I", "N", "D", "Q", "S", "B", "A", "C4", "T20", "SIM", "PTH",
     "TID", "ARG", "PIE", "PLC", "PLE", "PLR", "PLW", "RUF"
 ]
-ignore = ["D203", "D212", "D213", "D416", "D417", "B905"]
+ignore = ["D203", "D212", "D213", "D416", "D417"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
