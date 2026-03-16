@@ -239,7 +239,17 @@ class TestLoggingStructlogBranches:
 
         # Use structured mode
         logger = StackLogger(use_structured=True)
+        logger.bind(test_key="test_value")
+        logger.debug("Debug message", key="value")
         logger.info("Structured log message", key="value")
+        logger.warning("Warning message", key="value")
+        logger.error("Error message", key="value")
+        logger.critical("Critical message", key="value")
+        try:
+            raise ValueError("Test error")
+        except ValueError:
+            logger.exception("Exception message", key="value")
+        logger.unbind("test_key")
 
     def test_logging_without_structlog(self) -> None:
         """Test the HAS_STRUCTLOG=False branch (L20-21)."""
@@ -248,11 +258,17 @@ class TestLoggingStructlogBranches:
         from taipanstack.utils.logging import StackLogger
 
         logger = StackLogger(use_structured=False)
-        logger.debug("Should use standard logging")
-        logger.info("Info message")
-        logger.warning("Warning message")
-        logger.error("Error message")
-        logger.critical("Critical message")
+        logger.bind(test_key="test_value")
+        logger.debug("Should use standard logging", key="value")
+        logger.info("Info message", key="value")
+        logger.warning("Warning message", key="value")
+        logger.error("Error message", key="value")
+        logger.critical("Critical message", key="value")
+        try:
+            raise ValueError("Test error")
+        except ValueError:
+            logger.exception("Exception message", key="value")
+        logger.unbind("test_key")
 
     def test_setup_logging_with_log_file(self) -> None:
         """Test setup_logging with a log_file parameter (L245)."""
