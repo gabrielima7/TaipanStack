@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_28918b2ff2e1b93c_optimizations_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-03-16 16:28 +0000
+            created at 2026-03-16 16:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -376,36 +376,37 @@
     <p class="pln"><span class="n"><a id="t292" href="#t292">292</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t293" href="#t293">293</a></span><span class="t">    <span class="com"># Log detected features at DEBUG level</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t294" href="#t294">294</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t295" href="#t295">295</a></span><span class="t">        <span class="str">"Python %s detected (tier=%s, experimental=%s)"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t295" href="#t295">295</a></span><span class="t">        <span class="str">"Python %s detected (tier=%s, experimental=%s): %r"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t296" href="#t296">296</a></span><span class="t">        <span class="nam">features</span><span class="op">.</span><span class="nam">version_string</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t297" href="#t297">297</a></span><span class="t">        <span class="nam">tier</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t298" href="#t298">298</a></span><span class="t">        <span class="nam">experimental</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t299" href="#t299">299</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t300" href="#t300">300</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t">    <span class="key">return</span> <span class="nam">features</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t299" href="#t299">299</a></span><span class="t">        <span class="nam">features</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t300" href="#t300">300</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t">    <span class="key">return</span> <span class="nam">features</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t"><span class="key">def</span> <span class="nam">get_python_info</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="nam">dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">object</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t">    <span class="str">"""Get comprehensive Python runtime information.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t"><span class="str">    Returns:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t308" href="#t308">308</a></span><span class="t"><span class="str">        Dictionary with version, platform, and feature information.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t310" href="#t310">310</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t311" href="#t311">311</a></span><span class="t">    <span class="key">import</span> <span class="nam">platform</span>  <span class="com"># noqa: PLC0415 - lazy import for optional module</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t312" href="#t312">312</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t313" href="#t313">313</a></span><span class="t">    <span class="nam">features</span> <span class="op">=</span> <span class="nam">get_features</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t314" href="#t314">314</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t315" href="#t315">315</a></span><span class="t">    <span class="key">return</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t316" href="#t316">316</a></span><span class="t">        <span class="str">"version"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">version_string</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t317" href="#t317">317</a></span><span class="t">        <span class="str">"version_tuple"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">version</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t318" href="#t318">318</a></span><span class="t">        <span class="str">"tier"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">tier</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t319" href="#t319">319</a></span><span class="t">        <span class="str">"implementation"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">python_implementation</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t320" href="#t320">320</a></span><span class="t">        <span class="str">"platform"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">platform</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t321" href="#t321">321</a></span><span class="t">        <span class="str">"compiler"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">python_compiler</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t322" href="#t322">322</a></span><span class="t">        <span class="str">"features"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">to_dict</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t323" href="#t323">323</a></span><span class="t">        <span class="str">"optimization_level"</span><span class="op">:</span> <span class="nam">get_optimization_level</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t324" href="#t324">324</a></span><span class="t">    <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t"><span class="key">def</span> <span class="nam">get_python_info</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="nam">dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">object</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t">    <span class="str">"""Get comprehensive Python runtime information.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t308" href="#t308">308</a></span><span class="t"><span class="str">    Returns:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t"><span class="str">        Dictionary with version, platform, and feature information.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t310" href="#t310">310</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t311" href="#t311">311</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t312" href="#t312">312</a></span><span class="t">    <span class="key">import</span> <span class="nam">platform</span>  <span class="com"># noqa: PLC0415 - lazy import for optional module</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t313" href="#t313">313</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t314" href="#t314">314</a></span><span class="t">    <span class="nam">features</span> <span class="op">=</span> <span class="nam">get_features</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t315" href="#t315">315</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t316" href="#t316">316</a></span><span class="t">    <span class="key">return</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t317" href="#t317">317</a></span><span class="t">        <span class="str">"version"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">version_string</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t318" href="#t318">318</a></span><span class="t">        <span class="str">"version_tuple"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">version</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t319" href="#t319">319</a></span><span class="t">        <span class="str">"tier"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">tier</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t320" href="#t320">320</a></span><span class="t">        <span class="str">"implementation"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">python_implementation</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t321" href="#t321">321</a></span><span class="t">        <span class="str">"platform"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">platform</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t322" href="#t322">322</a></span><span class="t">        <span class="str">"compiler"</span><span class="op">:</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">python_compiler</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t323" href="#t323">323</a></span><span class="t">        <span class="str">"features"</span><span class="op">:</span> <span class="nam">features</span><span class="op">.</span><span class="nam">to_dict</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t324" href="#t324">324</a></span><span class="t">        <span class="str">"optimization_level"</span><span class="op">:</span> <span class="nam">get_optimization_level</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t325" href="#t325">325</a></span><span class="t">    <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -415,7 +416,7 @@
             <a class="nav" href="z_28918b2ff2e1b93c_optimizations_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-03-16 16:28 +0000
+            created at 2026-03-16 16:46 +0000
         </p>
     </div>
 </footer>
