@@ -11,6 +11,7 @@ import sys
 from collections.abc import MutableMapping
 from contextlib import contextmanager
 from datetime import UTC, datetime
+from functools import lru_cache
 from typing import Any, Literal
 
 from taipanstack.utils.context import get_correlation_id
@@ -48,6 +49,35 @@ _SENSITIVE_KEY_REGEX = (
 REDACTED_VALUE = "***REDACTED***"
 
 
+@lru_cache(maxsize=1024)
+def _is_sensitive(key: str, regex: re.Pattern | None) -> bool:
+    """Check if a key is sensitive using cached regex matching.
+
+    Args:
+        key: The key to check.
+        regex: The regex pattern to use for matching.
+
+    Returns:
+        True if the key is sensitive, False otherwise.
+
+    """
+    if regex is None:
+        return False
+    return bool(regex.search(key))
+
+
+def _redact_dict(d: MutableMapping[str, Any]) -> None:
+    """Redact sensitive keys in a dictionary in-place.
+
+    Args:
+        d: The dictionary to redact.
+
+    """
+    for key in d:
+        if _is_sensitive(key, _SENSITIVE_KEY_REGEX):
+            d[key] = REDACTED_VALUE
+
+
 def mask_sensitive_data_processor(
     _logger: Any,
     _method: str,
@@ -68,12 +98,7 @@ def mask_sensitive_data_processor(
         The event dictionary with sensitive values masked.
 
     """
-    if _SENSITIVE_KEY_REGEX is None:
-        return event_dict
-
-    for key in event_dict:
-        if _SENSITIVE_KEY_REGEX.search(key):
-            event_dict[key] = REDACTED_VALUE
+    _redact_dict(event_dict)
     return event_dict
 
 
@@ -148,6 +173,7 @@ class StackLogger:
             Self for chaining.
 
         """
+        _redact_dict(context)
         self._context.update(context)
         if self._structured and HAS_STRUCTLOG:
             self._logger = self._logger.bind(**context)
@@ -183,11 +209,12 @@ class StackLogger:
         if not kwargs and not self._context:
             return message
 
-        context = {**self._context, **kwargs}
-        if _SENSITIVE_KEY_REGEX is not None:
-            for key in context:
-                if _SENSITIVE_KEY_REGEX.search(key):
-                    context[key] = REDACTED_VALUE
+        if kwargs:
+            _redact_dict(kwargs)
+            context = {**self._context, **kwargs}
+        else:
+            context = self._context
+
         context_str = " ".join(f"{k}={v}" for k, v in context.items())
         return f"{message} | {context_str}"
 
