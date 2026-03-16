@@ -79,7 +79,6 @@ class User(SecureBaseModel):
     username: str
     email: EmailStr
     password_hash: str
-    is_active: bool = True
 
 
 class UserRepository(ABC):
@@ -173,7 +172,6 @@ class UserService:
             username=user_create.username,
             email=user_create.email,
             password_hash=pwd_hash,
-            is_active=True,
         )
         try:
             self._user_repository.save(user)
