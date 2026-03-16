@@ -138,6 +138,21 @@ class TestSafeFromDecorator:
         assert isinstance(result.err(), ValueError)
         assert str(result.err()) == "explicitly raised"
 
+    def test_safe_from_inheritance(self) -> None:
+        """Test safe_from catches subclasses of specified exceptions."""
+
+        class SubValueError(ValueError):
+            pass
+
+        @safe_from(ValueError)
+        def fail() -> None:
+            raise SubValueError("subclass error")
+
+        result = fail()
+        assert result.is_err()
+        assert isinstance(result.err(), SubValueError)
+        assert str(result.err()) == "subclass error"
+
 
 class TestCollectResults:
     """Tests for collect_results function."""
