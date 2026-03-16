@@ -149,7 +149,7 @@ def is_experimental_enabled() -> bool:
 
     """
     value = os.environ.get(ENV_ENABLE_EXPERIMENTAL, "").lower()
-    return value in ("1", "true", "yes", "on")
+    return value in {"1", "true", "yes", "on"}
 
 
 def get_optimization_level() -> int:
