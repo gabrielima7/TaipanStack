@@ -148,6 +148,49 @@ class TestRetryDecorator:
         assert exc_info.value.last_exception is not None
         assert "Original error" in str(exc_info.value.last_exception)
 
+    def test_on_retry_callback(self) -> None:
+        """Test that on_retry callback is called."""
+        retries = []
+
+        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+            retries.append((attempt, max_attempts, exc, delay))
+
+        @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
+        def flaky() -> str:
+            if len(retries) < 2:
+                raise ValueError("fail")
+            return "ok"
+
+        result = flaky()
+        assert result == "ok"
+        assert len(retries) == 2
+        assert retries[0][0] == 1
+        assert retries[1][0] == 2
+
+    def test_reraise_false(self) -> None:
+        """Test reraise=False option."""
+
+        @retry(max_attempts=2, initial_delay=0.01, reraise=False)
+        def always_fail() -> None:
+            raise ValueError("original")
+
+        with pytest.raises(RetryError) as exc_info:
+            always_fail()
+        assert exc_info.value.__cause__ is None
+        assert exc_info.value.last_exception is not None
+
+    def test_max_attempts_zero(self) -> None:
+        """Test max_attempts=0."""
+
+        @retry(max_attempts=0)
+        def never_runs() -> str:
+            return "ok"
+
+        with pytest.raises(RetryError) as exc_info:
+            never_runs()
+        assert exc_info.value.attempts == 0
+        assert exc_info.value.last_exception is None
+
 
 class TestAsyncRetryDecorator:
     """Tests for @retry decorator on async functions."""
@@ -220,6 +263,36 @@ class TestAsyncRetryDecorator:
             await failing_func()
         assert exc_info.value.last_exception is not None
         assert "Original error" in str(exc_info.value.last_exception)
+
+    @pytest.mark.asyncio
+    async def test_on_retry_callback(self) -> None:
+        """Test that on_retry callback is called for async function."""
+        retries = []
+
+        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+            retries.append((attempt, max_attempts, exc, delay))
+
+        @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
+        async def flaky() -> str:
+            if len(retries) < 2:
+                raise ValueError("fail")
+            return "ok"
+
+        result = await flaky()
+        assert result == "ok"
+        assert len(retries) == 2
+
+    @pytest.mark.asyncio
+    async def test_reraise_false(self) -> None:
+        """Test reraise=False option for async function."""
+
+        @retry(max_attempts=2, initial_delay=0.01, reraise=False)
+        async def always_fail() -> None:
+            raise ValueError("original")
+
+        with pytest.raises(RetryError) as exc_info:
+            await always_fail()
+        assert exc_info.value.__cause__ is None
 
 
 class TestRetryOnException:
@@ -314,6 +387,52 @@ class TestRetrier:
                 raise ValueError("stored error")
 
         assert retrier.last_exception is not None
+
+    def test_retrier_unhandled_exception(self) -> None:
+        """Test that Retrier doesn't catch unhandled exceptions."""
+        retrier = Retrier(max_attempts=3, on=(ValueError,))
+
+        with pytest.raises(TypeError):
+            with retrier:
+                raise TypeError("wrong")
+
+        assert retrier.attempt == 0
+
+    def test_retrier_suppression(self) -> None:
+        """Test that Retrier suppresses exception and sleeps."""
+        retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+
+        # First attempt - should be suppressed
+        with retrier:
+            raise ValueError("first")
+
+        assert retrier.attempt == 1
+        assert isinstance(retrier.last_exception, ValueError)
+
+        # Second attempt - should also be suppressed (if we don't re-enter)
+        # Note: In real usage you'd loop, but here we can just call __exit__
+        # or just know that it worked once.
+        # Let's use a loop for a better test.
+
+    def test_retrier_manual_loop(self) -> None:
+        """Test Retrier in a manual retry loop."""
+        retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+        attempts = 0
+
+        while True:
+            try:
+                # We don't use 'with retrier' inside the loop if we want to preserve 'attempt'
+                # because __enter__ resets it.
+                with retrier:
+                    attempts += 1
+                    if attempts < 3:
+                        raise ValueError("fail")
+                    break
+            except ValueError:
+                if attempts >= 3:
+                    raise
+
+        assert attempts == 3
 
 
 class TestRetryError:
