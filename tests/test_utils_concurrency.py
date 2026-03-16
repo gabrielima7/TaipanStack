@@ -74,11 +74,12 @@ class TestConcurrencyLimiter:
         import threading
 
         start_event = threading.Event()
+        finish_event = threading.Event()
 
         @limit_concurrency(max_tasks=1, timeout=0.05)
         def slow_process() -> str:
             start_event.set()
-            time.sleep(0.2)
+            finish_event.wait(timeout=2.0)
             return "done"
 
         t = threading.Thread(target=slow_process)
@@ -89,6 +90,7 @@ class TestConcurrencyLimiter:
             pytest.fail("Thread failed to start in time")
 
         res = slow_process()
+        finish_event.set()
         t.join()
 
         assert res.is_err()
