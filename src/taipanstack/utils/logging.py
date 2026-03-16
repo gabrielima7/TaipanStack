@@ -50,7 +50,7 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 @lru_cache(maxsize=1024)
-def _is_sensitive(key: str, regex: re.Pattern | None) -> bool:
+def _is_sensitive(key: str, regex: re.Pattern[str] | None) -> bool:
     """Check if a key is sensitive using cached regex matching.
 
     Args:
@@ -73,6 +73,9 @@ def _redact_dict(d: MutableMapping[str, Any]) -> None:
         d: The dictionary to redact.
 
     """
+    if _SENSITIVE_KEY_REGEX is None:
+        return
+
     for key in d:
         if _is_sensitive(key, _SENSITIVE_KEY_REGEX):
             d[key] = REDACTED_VALUE
@@ -173,7 +176,6 @@ class StackLogger:
             Self for chaining.
 
         """
-        _redact_dict(context)
         self._context.update(context)
         if self._structured and HAS_STRUCTLOG:
             self._logger = self._logger.bind(**context)
@@ -209,11 +211,8 @@ class StackLogger:
         if not kwargs and not self._context:
             return message
 
-        if kwargs:
-            _redact_dict(kwargs)
-            context = {**self._context, **kwargs}
-        else:
-            context = self._context
+        context = {**self._context, **kwargs}
+        _redact_dict(context)
 
         context_str = " ".join(f"{k}={v}" for k, v in context.items())
         return f"{message} | {context_str}"
