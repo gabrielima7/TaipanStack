@@ -166,7 +166,9 @@ class TestRetryDecorator:
         """Test that on_retry callback is invoked."""
         callback_calls = []
 
-        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def on_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             callback_calls.append((attempt, max_attempts, exc, delay))
 
         @retry(max_attempts=2, initial_delay=0.01, on_retry=on_retry)
