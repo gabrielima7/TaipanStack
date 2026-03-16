@@ -96,7 +96,9 @@ def calculate_delay(
 
     """
     # Exponential backoff
-    delay = config.initial_delay * (config.exponential_base ** (attempt - 1))
+    # Ensure attempt is at least 1 to avoid fractional delays for negative attempts
+    safe_attempt = max(1, attempt)
+    delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
 
     # Cap at max delay
     delay = min(delay, config.max_delay)

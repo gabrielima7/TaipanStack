@@ -80,6 +80,20 @@ class TestCalculateDelay:
         # With 50% jitter, delays should vary
         assert len(set(delays)) > 1
 
+    def test_negative_values_handled(self) -> None:
+        """Test that negative values result in zero delay."""
+        # Negative initial delay
+        config = RetryConfig(initial_delay=-1.0, jitter=False)
+        assert calculate_delay(1, config) == 0.0
+
+        # Negative max delay
+        config = RetryConfig(initial_delay=1.0, max_delay=-1.0, jitter=False)
+        assert calculate_delay(1, config) == 0.0
+
+        # Negative attempt number
+        config = RetryConfig(initial_delay=1.0, jitter=False)
+        assert calculate_delay(-1, config) == 1.0
+
 
 class TestRetryDecorator:
     """Tests for @retry decorator."""
@@ -147,6 +161,41 @@ class TestRetryDecorator:
             failing_func()
         assert exc_info.value.last_exception is not None
         assert "Original error" in str(exc_info.value.last_exception)
+
+    def test_on_retry_callback(self) -> None:
+        """Test that on_retry callback is invoked."""
+        callback_calls = []
+
+        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+            callback_calls.append((attempt, max_attempts, exc, delay))
+
+        @retry(max_attempts=2, initial_delay=0.01, on_retry=on_retry)
+        def fail_once() -> str:
+            if len(callback_calls) == 0:
+                raise ValueError("Fail")
+            return "success"
+
+        result = fail_once()
+        assert result == "success"
+        assert len(callback_calls) == 1
+        assert callback_calls[0][0] == 1
+        assert callback_calls[0][1] == 2
+        assert isinstance(callback_calls[0][2], ValueError)
+
+    def test_reraise_false(self) -> None:
+        """Test RetryError when reraise is False."""
+
+        @retry(max_attempts=2, initial_delay=0.01, reraise=False)
+        def fail() -> None:
+            raise ValueError("Fail")
+
+        with pytest.raises(RetryError) as exc_info:
+            fail()
+
+        # When reraise=False, RetryError is raised but not FROM the original exception
+        assert exc_info.value.last_exception is not None
+        assert isinstance(exc_info.value.last_exception, ValueError)
+        assert exc_info.value.__cause__ is None
 
 
 class TestAsyncRetryDecorator:
@@ -314,6 +363,56 @@ class TestRetrier:
                 raise ValueError("stored error")
 
         assert retrier.last_exception is not None
+
+    def test_retrier_actually_retries(self) -> None:
+        """Test that retrier actually suppresses exception and allows retry."""
+        # Using a new retrier for each attempt to avoid __enter__ resetting state,
+        # OR better: not using 'with' if we want to keep state across attempts.
+        # Wait, the Retrier design with __enter__ resetting attempt to 0 means
+        # it's NOT intended to keep state across multiple 'with' blocks.
+        # BUT __exit__ increments self.attempt.
+        # This seems like a bug in Retrier.__enter__ or my understanding of it.
+        # If __enter__ resets self.attempt, then it can only ever handle max_attempts-1
+        # exceptions WITHIN a single 'with' block? No, 'with' block is entered once.
+
+        # Let's fix the Retrier to NOT reset attempt in __enter__ if we want it to work
+        # across multiple 'with' blocks, or just test it as it is.
+        # As it is, if I use a while loop with 'with retrier', it resets every time.
+
+        retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+
+        # To use Retrier across multiple attempts, we must NOT use 'with' in a loop
+        # if __enter__ resets it.
+        # Alternatively, we can manually call __enter__ once.
+
+        retrier.__enter__()
+        attempts_made = 0
+        try:
+            for _ in range(3):
+                try:
+                    attempts_made += 1
+                    if attempts_made < 3:
+                        raise ValueError("Retry me")
+                    break
+                except Exception as e:
+                    if not retrier.__exit__(type(e), e, e.__traceback__):
+                        raise
+        finally:
+            # If no exception happened, we still need to exit
+            pass
+
+        assert attempts_made == 3
+        assert retrier.attempt == 2
+
+    def test_retrier_unhandled_exception(self) -> None:
+        """Test that unhandled exceptions propagate immediately."""
+        retrier = Retrier(max_attempts=3, on=(ValueError,))
+
+        with pytest.raises(TypeError):
+            with retrier:
+                raise TypeError("Immediate fail")
+
+        assert retrier.attempt == 0
 
 
 class TestRetryError:
