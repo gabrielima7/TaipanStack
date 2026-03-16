@@ -51,6 +51,65 @@ class ConcurrencyLimitDecorator(Protocol):
     ]: ...  # pragma: no cover
 
 
+def _handle_async_concurrency(
+    func: Callable[P, Coroutine[Any, Any, T]],
+    max_tasks: int,
+    timeout: float,
+) -> Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]:
+    """Handle asynchronous concurrency limiting."""
+    async_semaphore = asyncio.Semaphore(max_tasks)
+
+    @functools.wraps(func)
+    async def async_wrapper(
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, OverloadError]:
+        if timeout > 0.0:
+            try:
+                async with asyncio.timeout(timeout):
+                    await async_semaphore.acquire()
+            except TimeoutError:
+                return Err(OverloadError())
+        else:
+            if async_semaphore.locked():
+                return Err(OverloadError())
+            await async_semaphore.acquire()
+
+        try:
+            return Ok(await func(*args, **kwargs))
+        finally:
+            async_semaphore.release()
+
+    return async_wrapper
+
+
+def _handle_sync_concurrency(
+    func: Callable[P, T],
+    max_tasks: int,
+    timeout: float,
+) -> Callable[P, Result[T, OverloadError]]:
+    """Handle synchronous concurrency limiting."""
+    sync_semaphore = threading.Semaphore(max_tasks)
+
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
+        if timeout > 0.0:
+            acquired = sync_semaphore.acquire(timeout=timeout)
+            if not acquired:
+                return Err(OverloadError())
+        else:
+            acquired = sync_semaphore.acquire(blocking=False)
+            if not acquired:
+                return Err(OverloadError())
+
+        try:
+            return Ok(func(*args, **kwargs))
+        finally:
+            sync_semaphore.release()
+
+    return wrapper
+
+
 def limit_concurrency(
     max_tasks: int,
     timeout: float = 0.0,
@@ -88,49 +147,16 @@ def limit_concurrency(
         | Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]
     ):
         if inspect.iscoroutinefunction(func):
-            async_semaphore = asyncio.Semaphore(max_tasks)
+            return _handle_async_concurrency(
+                func,
+                max_tasks,
+                timeout,
+            )
 
-            @functools.wraps(func)
-            async def async_wrapper(
-                *args: P.args,
-                **kwargs: P.kwargs,
-            ) -> Result[T, OverloadError]:
-                if timeout > 0.0:
-                    try:
-                        async with asyncio.timeout(timeout):
-                            await async_semaphore.acquire()
-                    except TimeoutError:
-                        return Err(OverloadError())
-                else:
-                    if async_semaphore.locked():
-                        return Err(OverloadError())
-                    await async_semaphore.acquire()
-
-                try:
-                    return Ok(await func(*args, **kwargs))
-                finally:
-                    async_semaphore.release()
-
-            return async_wrapper
-
-        sync_semaphore = threading.Semaphore(max_tasks)
-
-        @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
-            if timeout > 0.0:
-                acquired = sync_semaphore.acquire(timeout=timeout)
-                if not acquired:
-                    return Err(OverloadError())
-            else:
-                acquired = sync_semaphore.acquire(blocking=False)
-                if not acquired:
-                    return Err(OverloadError())
-
-            try:
-                return Ok(func(*args, **kwargs))  # type: ignore[arg-type]
-            finally:
-                sync_semaphore.release()
-
-        return wrapper
+        return _handle_sync_concurrency(
+            func,  # type: ignore[arg-type]
+            max_tasks,
+            timeout,
+        )
 
     return decorator  # type: ignore[return-value]
