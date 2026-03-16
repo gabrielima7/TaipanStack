@@ -153,6 +153,15 @@ class TestGuardCommandInjection:
             )
         assert "not in allowed list" in str(exc_info.value)
 
+    def test_empty_allowed_commands_whitelist_blocks_all(self) -> None:
+        """Test that empty whitelist blocks all commands."""
+        with pytest.raises(SecurityError) as exc_info:
+            guard_command_injection(
+                ["ls"],
+                allowed_commands=[],
+            )
+        assert "not in allowed list" in str(exc_info.value)
+
 
 class TestGuardFileExtension:
     """Tests for guard_file_extension function."""
