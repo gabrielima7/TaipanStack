@@ -10,7 +10,7 @@ FROM python:3.11-slim AS builder
 WORKDIR /app
 
 # Install Poetry (pinned version for reproducibility)
-ENV POETRY_VERSION=2.1.1 \
+ENV POETRY_VERSION=2.3.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1
