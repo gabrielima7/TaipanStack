@@ -245,7 +245,7 @@ def retry(
     Example:
         >>> @retry(max_attempts=3, on=(ConnectionError, TimeoutError))
         ... def fetch_data(url: str) -> dict:
-        ...     return requests.get(url).json()
+        ...     return requests.get(url, timeout=10).json()
 
         >>> @retry(max_attempts=3, on_retry=lambda a, m, e, d: print(f"Retry {a}/{m}"))
         ... def fragile_operation() -> str:

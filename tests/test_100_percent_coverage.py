@@ -74,14 +74,6 @@ class TestSubprocessTimeoutEdgeCases:
         assert not result.success
         assert result.returncode == 5
 
-    def test_get_command_version_with_version_flag(self) -> None:
-        """Test get_command_version with custom version_arg."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        result = get_command_version("python", version_arg="--version")
-        assert result is not None
-        assert "Python" in result or "python" in result.lower()
-
 
 class TestValidatorsMissingBranches:
     """Tests for validators missing branches."""

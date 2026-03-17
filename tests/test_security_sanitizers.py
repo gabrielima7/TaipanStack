@@ -266,6 +266,11 @@ class TestSanitizePath:
 class TestSanitizeEnvValue:
     """Tests for sanitize_env_value function."""
 
+    def test_type_error(self) -> None:
+        """Test non-string value raises TypeError."""
+        with pytest.raises(TypeError, match="Expected string, got int"):
+            sanitize_env_value(123)  # type: ignore[arg-type]
+
     def test_empty_value(self) -> None:
         """Test empty value returns empty."""
         assert sanitize_env_value("") == ""
@@ -322,6 +327,11 @@ class TestSanitizeEnvValue:
 
 class TestSanitizeSqlIdentifier:
     """Tests for sanitize_sql_identifier function."""
+
+    def test_type_error(self) -> None:
+        """Test non-string identifier raises TypeError."""
+        with pytest.raises(TypeError, match="Expected string, got float"):
+            sanitize_sql_identifier(3.14)  # type: ignore[arg-type]
 
     def test_empty_identifier_raises(self) -> None:
         """Test empty identifier raises ValueError."""

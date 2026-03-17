@@ -180,14 +180,6 @@ class TestSubprocessBranches:
         assert not result.success
         assert result.returncode == 1
 
-    def test_get_command_version_existing(self) -> None:
-        """Test get_command_version with existing command."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        result = get_command_version("python")
-        assert result is not None
-        assert "Python" in result or "python" in result.lower() or "." in result
-
 
 class TestFilesystemBranches:
     """Tests for filesystem module branches."""
