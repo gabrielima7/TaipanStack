@@ -20,7 +20,7 @@ from .rate_limit import RateLimiter, RateLimitError, rate_limit
 from .resilience import fallback, timeout
 from .retry import Retrier, RetryConfig, RetryError, retry
 from .serialization import default_encoder
-from .subprocess import SafeCommandResult, run_safe_command
+from .subprocess import SafeCommandResult, run_safe_command  # nosec B404
 
 __all__ = (
     "REDACTED_VALUE",
