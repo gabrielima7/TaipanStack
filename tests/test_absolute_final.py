@@ -110,5 +110,3 @@ class TestFilesystemLine175:
 
         result = safe_write(test_file, content, encoding="utf-8")
         assert result.read_text(encoding="utf-8") == content
-
-

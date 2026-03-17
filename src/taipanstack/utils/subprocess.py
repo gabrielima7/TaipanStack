@@ -250,5 +250,3 @@ def run_safe_command(  # noqa: PLR0912
         safe_result.raise_on_error()
 
     return safe_result
-
-
