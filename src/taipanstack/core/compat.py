@@ -141,19 +141,41 @@ def _check_tail_call_interpreter() -> bool:
     return PY314
 
 
-def is_experimental_enabled() -> bool:
+_cached_experimental_enabled: bool | None = None
+
+
+def is_experimental_enabled(*, force_refresh: bool = False) -> bool:
     """Check if experimental features are explicitly enabled.
+
+    Features are cached after first detection for performance.
+
+    Args:
+        force_refresh: If True, re-detect instead of using cache.
 
     Returns:
         True if STACK_ENABLE_EXPERIMENTAL=1 is set.
 
     """
+    global _cached_experimental_enabled  # noqa: PLW0603
+
+    if _cached_experimental_enabled is not None and not force_refresh:
+        return _cached_experimental_enabled
+
     value = os.environ.get(ENV_ENABLE_EXPERIMENTAL, "").lower()
-    return value in {"1", "true", "yes", "on"}
+    _cached_experimental_enabled = value in {"1", "true", "yes", "on"}
+    return _cached_experimental_enabled
 
 
-def get_optimization_level() -> int:
+_cached_optimization_level: int | None = None
+
+
+def get_optimization_level(*, force_refresh: bool = False) -> int:
     """Get the configured optimization level.
+
+    Features are cached after first detection for performance.
+
+    Args:
+        force_refresh: If True, re-detect instead of using cache.
 
     Returns:
         0 = No optimizations
@@ -161,11 +183,18 @@ def get_optimization_level() -> int:
         2 = Aggressive optimizations (requires experimental)
 
     """
+    global _cached_optimization_level  # noqa: PLW0603
+
+    if _cached_optimization_level is not None and not force_refresh:
+        return _cached_optimization_level
+
     try:
         level = int(os.environ.get(ENV_OPTIMIZATION_LEVEL, "1"))
-        return max(0, min(2, level))  # Clamp to 0-2
+        _cached_optimization_level = max(0, min(2, level))  # Clamp to 0-2
     except ValueError:
-        return 1
+        _cached_optimization_level = 1
+
+    return _cached_optimization_level
 
 
 # =============================================================================
@@ -260,7 +289,7 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
     else:
         tier = VersionTier.STABLE
 
-    experimental = is_experimental_enabled()
+    experimental = is_experimental_enabled(force_refresh=force_refresh)
 
     # Build features (only if experimental is enabled for safety)
     has_jit = _check_jit_available() if experimental else False
