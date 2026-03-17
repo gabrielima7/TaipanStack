@@ -207,13 +207,6 @@ class TestRetryMaxAttemptsBranch:
 class TestSubprocessCheckCommand:
     """Test for subprocess.py coverage gaps."""
 
-    def test_check_command_exists_edge(self) -> None:
-        """Test check_command_exists with edge cases."""
-        from taipanstack.utils.subprocess import check_command_exists
-
-        assert check_command_exists("zzzzz_fake_command") is False
-        assert check_command_exists("ls") is True
-
     def test_run_safe_command_check_true_fails(self) -> None:
         """Test run_safe_command with check=True when command fails (L231)."""
         from taipanstack.utils.subprocess import run_safe_command

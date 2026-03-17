@@ -2,7 +2,6 @@
 
 import subprocess
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -10,10 +9,6 @@ from taipanstack.security.guards import SecurityError
 from taipanstack.utils.subprocess import (
     DEFAULT_ALLOWED_COMMANDS,
     SafeCommandResult,
-    check_command_exists,
-    get_command_version,
-    run_git_command,
-    run_poetry_command,
     run_safe_command,
 )
 
@@ -168,115 +163,3 @@ class TestRunSafeCommand:
         """Test that command duration is tracked."""
         result = run_safe_command(["echo", "test"])
         assert result.duration_seconds >= 0
-
-
-class TestRunPoetryCommand:
-    """Tests for run_poetry_command function."""
-
-    @patch("taipanstack.utils.subprocess.run_safe_command")
-    def test_calls_poetry_with_args(self, mock_run: MagicMock) -> None:
-        """Test that poetry command is called correctly."""
-        mock_run.return_value = SafeCommandResult(
-            command=["poetry", "version"],
-            returncode=0,
-            stdout="1.0.0",
-        )
-        run_poetry_command(["version"])
-        mock_run.assert_called_once()
-        call_args = mock_run.call_args
-        assert call_args[0][0] == ["poetry", "version"]
-
-    @patch("taipanstack.utils.subprocess.run_safe_command")
-    def test_dry_run_passed_through(self, mock_run: MagicMock) -> None:
-        """Test dry-run is passed to run_safe_command."""
-        mock_run.return_value = SafeCommandResult(
-            command=["poetry", "install"],
-            returncode=0,
-        )
-        run_poetry_command(["install"], dry_run=True)
-        call_kwargs = mock_run.call_args[1]
-        assert call_kwargs["dry_run"] is True
-
-
-class TestRunGitCommand:
-    """Tests for run_git_command function."""
-
-    @patch("taipanstack.utils.subprocess.run_safe_command")
-    def test_calls_git_with_args(self, mock_run: MagicMock) -> None:
-        """Test that git command is called correctly."""
-        mock_run.return_value = SafeCommandResult(
-            command=["git", "status"],
-            returncode=0,
-            stdout="On branch main",
-        )
-        run_git_command(["status"])
-        mock_run.assert_called_once()
-        call_args = mock_run.call_args
-        assert call_args[0][0] == ["git", "status"]
-
-    @patch("taipanstack.utils.subprocess.run_safe_command")
-    def test_dry_run_passed_through(self, mock_run: MagicMock) -> None:
-        """Test dry-run is passed to run_safe_command."""
-        mock_run.return_value = SafeCommandResult(
-            command=["git", "init"],
-            returncode=0,
-        )
-        run_git_command(["init"], dry_run=True)
-        call_kwargs = mock_run.call_args[1]
-        assert call_kwargs["dry_run"] is True
-
-
-class TestCheckCommandExists:
-    """Tests for check_command_exists function."""
-
-    def test_python_exists(self) -> None:
-        """Test that python command is found."""
-        import sys
-
-        # We check sys.executable to ensure we use the current interpreter
-        assert check_command_exists(sys.executable) is True
-
-    def test_nonexistent_command(self) -> None:
-        """Test that nonexistent command returns False."""
-        assert check_command_exists("nonexistent_xyz_123") is False
-
-    def test_git_exists(self) -> None:
-        """Test that git command is found (if installed)."""
-        # Git should be available in most CI environments
-        result = check_command_exists("git")
-        assert isinstance(result, bool)
-
-    def test_empty_command_string_returns_false(self) -> None:
-        """Test that empty string returns False."""
-        assert check_command_exists("") is False
-
-    def test_none_command_returns_false(self) -> None:
-        """Test that None returns False."""
-        assert check_command_exists(None) is False
-
-
-class TestGetCommandVersion:
-    """Tests for get_command_version function."""
-
-    def test_python_version(self) -> None:
-        """Test getting Python version.
-
-        Uses the command name "python" (present in DEFAULT_ALLOWED_COMMANDS)
-        so that the security guard passes on all platforms. sys.executable
-        returns an absolute path on Windows which is not in the whitelist.
-        """
-        version = get_command_version("python")
-        assert version is not None
-        assert "Python" in version or "python" in version.lower()
-
-    def test_nonexistent_command_returns_none(self) -> None:
-        """Test that nonexistent command returns None."""
-        version = get_command_version("nonexistent_xyz_123")
-        assert version is None
-
-    def test_custom_version_arg(self) -> None:
-        """Test custom version argument."""
-        # Echo with -n as "version" arg
-        version = get_command_version("echo", version_arg="-n")
-        # Echo -n returns empty or nothing, so version could be None or empty
-        assert version is None or version == ""

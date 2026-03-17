@@ -44,7 +44,7 @@ class ValidationError(Exception):
         self,
         message: str,
         param_name: str | None = None,
-        value: Any = None,
+        value: object = None,
     ) -> None:
         """Initialize ValidationError.
 
@@ -60,7 +60,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: Callable[[Any], Any],
+    **validators: Callable[[Any], object],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
@@ -121,9 +121,9 @@ def guard_exceptions(
     *,
     catch: tuple[type[Exception], ...] = (Exception,),
     reraise_as: type[Exception] | None = None,
-    default: Any = None,
+    default: T | None = None,
     log_errors: bool = True,
-) -> Callable[[Callable[P, R]], Callable[P, R | Any]]:
+) -> Callable[[Callable[P, R]], Callable[P, R | T | None]]:
     """Decorator to safely handle exceptions.
 
     Catches exceptions and optionally re-raises as a different type
@@ -147,9 +147,9 @@ def guard_exceptions(
 
     """
 
-    def decorator(func: Callable[P, R]) -> Callable[P, R | Any]:
+    def decorator(func: Callable[P, R]) -> Callable[P, R | T | None]:
         @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | Any:
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | T | None:
             try:
                 return func(*args, **kwargs)
             except catch as e:

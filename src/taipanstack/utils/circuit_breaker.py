@@ -97,7 +97,7 @@ class CircuitBreaker:
         >>> breaker = CircuitBreaker(failure_threshold=3)
         >>> @breaker
         ... def call_external_api():
-        ...     return requests.get("https://api.example.com")
+        ...     return requests.get("https://api.example.com", timeout=10)
 
     """
 
@@ -346,7 +346,7 @@ def circuit_breaker(
     Example:
         >>> @circuit_breaker(failure_threshold=3, timeout=60)
         ... def call_api(endpoint: str) -> dict:
-        ...     return requests.get(endpoint).json()
+        ...     return requests.get(endpoint, timeout=10).json()
 
         >>> @circuit_breaker(
         ...     failure_threshold=3,

@@ -10,8 +10,7 @@ def test_hash_password() -> None:
     password = "secure_password"
     pwd_hash = hash_password(password)
 
-    assert pwd_hash.startswith("pbkdf2_sha256$600000$")
-    assert len(pwd_hash.split("$")) == 4
+    assert pwd_hash.startswith("$argon2")
 
 
 def test_hash_password_secret_str() -> None:
@@ -19,7 +18,7 @@ def test_hash_password_secret_str() -> None:
     password = SecretStr("secure_password")
     pwd_hash = hash_password(password)
 
-    assert pwd_hash.startswith("pbkdf2_sha256$600000$")
+    assert pwd_hash.startswith("$argon2")
     assert verify_password(password, pwd_hash)
 
 
@@ -45,6 +44,7 @@ def test_verify_password_invalid_hash() -> None:
     password = "my_password"
 
     assert verify_password(password, "invalid_hash") is False
+    assert verify_password(password, "$argon2$invalid$hash") is False
     assert verify_password(password, "alg$100$salt$hash") is False  # Wrong algorithm
     assert (
         verify_password(password, "pbkdf2_sha256$nan$salt$hash") is False
@@ -55,6 +55,32 @@ def test_verify_password_invalid_hash() -> None:
     assert (
         verify_password(password, "pbkdf2_sha256$100$salt$nothex") is False
     )  # Invalid hash hex
+    assert (
+        verify_password(password, "pbkdf2_sha256$100$salt") is False
+    )  # Invalid parts length
+
+
+def test_verify_legacy_password() -> None:
+    """Test that legacy PBKDF2 hashes are still verifiable."""
+    password = "my_password"
+    # This is a pre-generated PBKDF2 hash of "my_password"
+    # Format: pbkdf2_sha256$600000$salt$hash
+    # Salt and hash need to be valid hex strings for verify_password.
+    # We will compute a valid one manually to verify verification logic.
+    import hashlib
+
+    salt = b"1234567890123456"
+    iterations = 600000
+    hash_bytes = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        iterations,
+    )
+    pwd_hash = f"pbkdf2_sha256${iterations}${salt.hex()}${hash_bytes.hex()}"
+
+    assert verify_password(password, pwd_hash) is True
+    assert verify_password("wrong_password", pwd_hash) is False
 
 
 def test_hash_password_is_random() -> None:

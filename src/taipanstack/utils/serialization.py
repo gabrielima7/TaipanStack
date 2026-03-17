@@ -4,14 +4,12 @@ Serialization utilities.
 Provides an optimized default encoder for use with ``orjson.dumps``.
 """
 
-from typing import Any
-
 from taipanstack.core.result import Err, Ok
 
 __all__ = ["default_encoder"]
 
 
-def default_encoder(obj: Any) -> dict[str, Any]:
+def default_encoder(obj: object) -> dict[str, object]:
     """Default encoder for orjson.dumps handling Result types.
 
     Intercepts objects of type ``Ok`` and ``Err``:
@@ -37,11 +35,11 @@ def default_encoder(obj: Any) -> dict[str, Any]:
 
     """
     if isinstance(obj, Ok):
-        if isinstance(obj.value, dict):
-            return {"status": "success", **obj.value}
-        return {"status": "success", "data": obj.value}
+        if isinstance(obj.ok_value, dict):
+            return {"status": "success", **obj.ok_value}
+        return {"status": "success", "data": obj.ok_value}
 
     if isinstance(obj, Err):
-        return {"status": "error", "message": str(obj.value)}
+        return {"status": "error", "message": str(obj.err_value)}
 
     raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
