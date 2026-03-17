@@ -112,5 +112,3 @@ class TestFilesystemLine175And259:
 
         safe_delete(test_dir, recursive=True)
         assert not test_dir.exists()
-
-
