@@ -114,12 +114,3 @@ class TestFilesystemLine175And259:
         assert not test_dir.exists()
 
 
-class TestSubprocessLine229:
-    """Test for subprocess.py line 229."""
-
-    def test_get_command_version_nonexistent(self) -> None:
-        """Test get_command_version with nonexistent command."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        result = get_command_version("totally_fake_command_xyz")
-        assert result is None

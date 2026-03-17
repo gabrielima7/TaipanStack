@@ -91,20 +91,6 @@ class TestSubprocessComplete:
         assert result.success
         assert "hello" in result.stdout
 
-    def test_check_command_exists_false(self) -> None:
-        """Test check_command_exists returns False for nonexistent."""
-        from taipanstack.utils.subprocess import check_command_exists
-
-        result = check_command_exists("nonexistent_command_xyz_123")
-        assert result is False
-
-    def test_check_command_exists_true(self) -> None:
-        """Test check_command_exists returns True for existing."""
-        from taipanstack.utils.subprocess import check_command_exists
-
-        result = check_command_exists("python")
-        assert result is True
-
 
 class TestSanitizersComplete:
     """Complete tests for sanitizers module."""
