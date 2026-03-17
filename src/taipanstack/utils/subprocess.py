@@ -104,7 +104,134 @@ DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
 )
 
 
-def run_safe_command(  # noqa: PLR0912
+def _validate_and_resolve_command(
+    command: Sequence[str],
+    allowed_commands: Sequence[str] | None,
+) -> list[str]:
+    """Validate and resolve a command.
+
+    Args:
+        command: Command and arguments as a sequence.
+        allowed_commands: Whitelist of allowed commands.
+
+    Returns:
+        The validated command as a list.
+
+    Raises:
+        SecurityError: If validation fails.
+
+    """
+    cmd_list = list(command)
+
+    if not cmd_list:
+        raise SecurityError(
+            "Empty command is not allowed",
+            guard_name="safe_command",
+        )
+
+    if allowed_commands is not None:
+        whitelist = list(allowed_commands)
+    else:
+        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
+
+    validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
+
+    base_command = validated_cmd[0]
+    if not shutil.which(base_command):
+        raise SecurityError(
+            f"Command not found: {base_command}",
+            guard_name="safe_command",
+            value=base_command,
+        )
+
+    return validated_cmd
+
+
+def _filter_environment(env: dict[str, str] | None) -> dict[str, str]:
+    """Filter environment variables for safe execution.
+
+    Args:
+        env: Environment variables to filter.
+
+    Returns:
+        Filtered environment variables.
+
+    """
+    safe_env: dict[str, str] = {}
+    env_to_filter = env if env is not None else dict(os.environ)
+
+    for env_key, env_val in env_to_filter.items():
+        name_upper = env_key.upper()
+        if (
+            name_upper not in _DEFAULT_DENIED_ENV_VARS
+            and not _SENSITIVE_ENV_VAR_PATTERN.match(name_upper)
+        ):
+            safe_env[env_key] = str(env_val)
+
+    return safe_env
+
+
+def _execute_command(
+    validated_cmd: list[str],
+    cwd: Path | None,
+    timeout: float,
+    capture_output: bool,
+    safe_env: dict[str, str],
+) -> SafeCommandResult:
+    """Execute the command and handle TimeoutExpired.
+
+    Args:
+        validated_cmd: Validated command list.
+        cwd: Resolved working directory.
+        timeout: Execution timeout.
+        capture_output: Capture stdout/stderr.
+        safe_env: Filtered environment variables.
+
+    Returns:
+        The execution result.
+
+    """
+    start_time = time.time()
+
+    try:
+        result = subprocess.run(  # nosec B603
+            validated_cmd,
+            cwd=cwd,
+            timeout=timeout,
+            capture_output=capture_output,
+            text=True,
+            encoding="utf-8",
+            env=safe_env,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as e:
+        duration = time.time() - start_time
+        stdout_str = ""
+        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
+            if isinstance(e.stdout, str):
+                stdout_str = e.stdout
+            else:  # pragma: no cover
+                stdout_str = e.stdout.decode("utf-8", errors="replace")
+        return SafeCommandResult(
+            command=validated_cmd,
+            returncode=-1,
+            stdout=stdout_str,
+            stderr=f"Command timed out after {timeout}s",
+            duration_seconds=duration,
+        )
+
+    duration = time.time() - start_time
+
+    return SafeCommandResult(
+        command=validated_cmd,
+        returncode=result.returncode,
+        stdout=result.stdout or "",
+        stderr=result.stderr or "",
+        duration_seconds=duration,
+    )
+
+
+def run_safe_command(
     command: Sequence[str],
     *,
     cwd: Path | str | None = None,
@@ -145,49 +272,9 @@ def run_safe_command(  # noqa: PLR0912
         ...     print("Installation complete!")
 
     """
-    # Convert to list
-    cmd_list = list(command)
+    validated_cmd = _validate_and_resolve_command(command, allowed_commands)
+    safe_env = _filter_environment(env)
 
-    if not cmd_list:
-        raise SecurityError(
-            "Empty command is not allowed",
-            guard_name="safe_command",
-        )
-
-    # Get command whitelist
-    if allowed_commands is not None:
-        whitelist = list(allowed_commands)
-    else:
-        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
-
-    # Validate command against guards
-    validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
-
-    # Validate and filter environment variables
-    # If env is not provided, subprocess.run inherits os.environ by default.
-    # To prevent leaking sensitive secrets to child processes, we explicitly
-    # filter the environment.
-    safe_env: dict[str, str] = {}
-    env_to_filter = env if env is not None else dict(os.environ)
-
-    for env_key, env_val in env_to_filter.items():
-        name_upper = env_key.upper()
-        if (
-            name_upper not in _DEFAULT_DENIED_ENV_VARS
-            and not _SENSITIVE_ENV_VAR_PATTERN.match(name_upper)
-        ):
-            safe_env[env_key] = str(env_val)
-
-    # Verify command exists
-    base_command = validated_cmd[0]
-    if not shutil.which(base_command):
-        raise SecurityError(
-            f"Command not found: {base_command}",
-            guard_name="safe_command",
-            value=base_command,
-        )
-
-    # Handle dry run
     if dry_run:
         return SafeCommandResult(
             command=validated_cmd,
@@ -197,53 +284,21 @@ def run_safe_command(  # noqa: PLR0912
             duration_seconds=0.0,
         )
 
-    # Resolve working directory
+    resolved_cwd: Path | None = None
     if cwd is not None:
-        cwd = Path(cwd).resolve()
-        if not cwd.exists():
+        resolved_cwd = Path(cwd).resolve()
+        if not resolved_cwd.exists():
             raise SecurityError(
                 f"Working directory does not exist: {cwd}",
                 guard_name="safe_command",
             )
 
-    # Execute command
-    start_time = time.time()
-
-    try:
-        result = subprocess.run(  # nosec B603
-            validated_cmd,
-            cwd=cwd,
-            timeout=timeout,
-            capture_output=capture_output,
-            text=True,
-            encoding="utf-8",
-            env=safe_env,
-            check=False,  # We handle check ourselves
-        )
-    except subprocess.TimeoutExpired as e:
-        duration = time.time() - start_time
-        stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
-            if isinstance(e.stdout, str):
-                stdout_str = e.stdout
-            else:  # pragma: no cover
-                stdout_str = e.stdout.decode("utf-8", errors="replace")
-        return SafeCommandResult(
-            command=validated_cmd,
-            returncode=-1,
-            stdout=stdout_str,
-            stderr=f"Command timed out after {timeout}s",
-            duration_seconds=duration,
-        )
-
-    duration = time.time() - start_time
-
-    safe_result = SafeCommandResult(
-        command=validated_cmd,
-        returncode=result.returncode,
-        stdout=result.stdout or "",
-        stderr=result.stderr or "",
-        duration_seconds=duration,
+    safe_result = _execute_command(
+        validated_cmd,
+        resolved_cwd,
+        timeout,
+        capture_output,
+        safe_env,
     )
 
     if check:
