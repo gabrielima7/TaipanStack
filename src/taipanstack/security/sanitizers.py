@@ -290,7 +290,7 @@ def sanitize_env_value(
 
     """
     if not isinstance(value, str):
-        raise TypeError(f"Expected string, got {type(value).__name__}")
+        raise TypeError(f"value must be str, got {type(value).__name__}")
 
     if not value:
         return ""
@@ -336,7 +336,7 @@ def sanitize_sql_identifier(identifier: str) -> str:
 
     """
     if not isinstance(identifier, str):
-        raise TypeError(f"Expected string, got {type(identifier).__name__}")
+        raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
 
     if not identifier:
         msg = "SQL identifier cannot be empty"
