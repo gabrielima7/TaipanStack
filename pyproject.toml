@@ -69,7 +69,6 @@ dev = [
     "mutmut (>=3.0.0)",
     "pytest-benchmark (>=5.0.0)",
     "pytest-asyncio (>=0.23.0)",
-    "semgrep (>=1.155.0,<2.0.0)",
 ]
 
 
