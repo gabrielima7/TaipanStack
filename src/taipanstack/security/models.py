@@ -2,11 +2,16 @@
 
 import json
 import re
-from typing import Any
+from collections.abc import Iterator
+from typing import Any, TypeAlias
 
 from pydantic import BaseModel, ConfigDict
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
+
+JSONValue: TypeAlias = (
+    dict[str, "JSONValue"] | list["JSONValue"] | str | int | float | bool | None
+)
 
 __all__ = ["SecureBaseModel"]
 
@@ -17,13 +22,13 @@ _SENSITIVE_KEY_REGEX = (
 )
 
 
-def _mask_data(data: Any) -> Any:
+def _mask_data(data: JSONValue) -> JSONValue:
     """Recursively mask sensitive keys in data."""
     if _SENSITIVE_KEY_REGEX is None:
         return data
 
     if isinstance(data, dict):
-        masked = {}
+        masked: dict[str, JSONValue] = {}
         for k, v in data.items():
             if isinstance(k, str) and _SENSITIVE_KEY_REGEX.search(k):
                 masked[k] = REDACTED_VALUE
@@ -44,7 +49,7 @@ class SecureBaseModel(BaseModel):
         """Return a string representation with sensitive fields redacted."""
         return self.__repr__()
 
-    def __repr_args__(self) -> Any:
+    def __repr_args__(self) -> Iterator[tuple[str | None, object]]:
         """Provide arguments for string representation, redacting sensitive fields."""
         for k, v in super().__repr_args__():
             if (
@@ -70,7 +75,7 @@ class SecureBaseModel(BaseModel):
 
         """
         data = super().model_dump(**kwargs)
-        return _mask_data(data)  # type: ignore[no-any-return]
+        return _mask_data(data)  # type: ignore[return-value]
 
     def model_dump_json(
         self,

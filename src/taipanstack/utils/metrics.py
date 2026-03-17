@@ -13,7 +13,7 @@ import time
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, ParamSpec, TypeVar
+from typing import ParamSpec, TypedDict, TypeVar
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -43,12 +43,31 @@ class TimingStats:
         self.max_time = max(self.max_time, duration)
 
 
-@dataclass
+class TimerStats(TypedDict):
+    """Statistics dictionary for timing measurements."""
+
+    count: int
+    avg: float
+    min: float
+    max: float
+    total: float
+
+
+class MetricsSnapshot(TypedDict):
+    """Snapshot of all collected metrics."""
+
+    counters: dict[str, int]
+    timers: dict[str, TimerStats]
+    gauges: dict[str, float]
+
+
 class Counter:
     """Simple counter metric."""
 
-    value: int = 0
-    lock: threading.Lock = field(default_factory=threading.Lock)
+    def __init__(self) -> None:
+        """Initialize the counter."""
+        self.value: int = 0
+        self.lock: threading.Lock = threading.Lock()
 
     def increment(self, amount: int = 1) -> int:
         """Increment counter and return new value."""
@@ -140,7 +159,7 @@ class MetricsCollector:
         """Get timing statistics for a named timer."""
         return self._timers.get(name)
 
-    def get_all_metrics(self) -> dict[str, Any]:
+    def get_all_metrics(self) -> MetricsSnapshot:
         """Get all metrics as a dictionary."""
         with self._data_lock:
             return {
@@ -186,7 +205,7 @@ class Timer:
         self.start_time = time.perf_counter()
         return self
 
-    def __exit__(self, *args: Any) -> None:
+    def __exit__(self, *args: object) -> None:
         """Stop timer and record duration."""
         duration = time.perf_counter() - self.start_time
         self.collector.record_time(self.name, duration)
