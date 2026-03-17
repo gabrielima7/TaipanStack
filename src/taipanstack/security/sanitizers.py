@@ -81,7 +81,7 @@ def sanitize_string(
 
     """
     if not isinstance(value, str):
-        raise TypeError(f"value must be str, got {type(value).__name__}")
+        raise TypeError(f"Expected string, got {type(value).__name__}")
 
     if not value:
         return ""
@@ -145,7 +145,7 @@ def sanitize_filename(
 
     """
     if not isinstance(filename, str):
-        raise TypeError(f"filename must be str, got {type(filename).__name__}")
+        raise TypeError(f"Expected string, got {type(filename).__name__}")
 
     if not filename:
         return "unnamed"

@@ -78,7 +78,7 @@ class TestSanitizeStringTypeCheck:
     """Tests for sanitize_string input type validation."""
 
     def test_rejects_none(self) -> None:
-        with pytest.raises(TypeError, match="value must be str, got NoneType"):
+        with pytest.raises(TypeError, match="Expected string, got NoneType"):
             sanitize_string(None)  # type: ignore[arg-type]
 
     def test_rejects_int(self) -> None:
@@ -90,7 +90,7 @@ class TestSanitizeFilenameTypeCheck:
     """Tests for sanitize_filename input type validation."""
 
     def test_rejects_none(self) -> None:
-        with pytest.raises(TypeError, match="filename must be str, got NoneType"):
+        with pytest.raises(TypeError, match="Expected string, got NoneType"):
             sanitize_filename(None)  # type: ignore[arg-type]
 
     def test_rejects_int(self) -> None:
