@@ -209,7 +209,7 @@ def timed(
     Example:
         >>> @timed("api_call_duration")
         ... def call_api(endpoint: str) -> dict:
-        ...     return requests.get(endpoint).json()
+        ...     return requests.get(endpoint, timeout=10).json()
 
     """
 
