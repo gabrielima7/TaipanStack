@@ -79,7 +79,7 @@ class TestGetOptimizationProfile:
             with patch("taipanstack.core.optimizations.PY313", False):
                 with patch("taipanstack.core.optimizations.PY314", False):
                     with patch.dict(os.environ, {}, clear=True):
-                        profile = get_optimization_profile()
+                        profile = get_optimization_profile(force_refresh=True)
                         assert isinstance(profile, OptimizationProfile)
                         assert profile.prefer_exception_groups
                         assert not profile.prefer_type_params
@@ -90,7 +90,7 @@ class TestGetOptimizationProfile:
             with patch("taipanstack.core.optimizations.PY313", False):
                 with patch("taipanstack.core.optimizations.PY314", False):
                     with patch.dict(os.environ, {}, clear=True):
-                        profile = get_optimization_profile()
+                        profile = get_optimization_profile(force_refresh=True)
                         assert profile.prefer_type_params
                         assert profile.gc_freeze_enabled
 
@@ -99,7 +99,7 @@ class TestGetOptimizationProfile:
         with patch("taipanstack.core.optimizations.PY313", True):
             with patch("taipanstack.core.optimizations.PY314", False):
                 with patch.dict(os.environ, {}, clear=True):
-                    profile = get_optimization_profile()
+                    profile = get_optimization_profile(force_refresh=True)
                     assert profile.enable_perf_hints
                     assert profile.thread_pool_multiplier == 1.5
 
@@ -107,21 +107,21 @@ class TestGetOptimizationProfile:
         """Test profile selection for Python 3.14."""
         with patch("taipanstack.core.optimizations.PY314", True):
             with patch.dict(os.environ, {}, clear=True):
-                profile = get_optimization_profile()
+                profile = get_optimization_profile(force_refresh=True)
                 assert profile.aggressive_inlining
                 assert profile.thread_pool_multiplier == 2.0
 
     def test_profile_opt_level_none(self) -> None:
         """Test profile with OPT_LEVEL_NONE uses minimal settings."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             # Should return 3.11 baseline
             assert profile.gc_threshold_0 == 700
 
     def test_profile_opt_level_aggressive_without_experimental(self) -> None:
         """Test aggressive level without experimental returns normal profile."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             assert not profile.enable_experimental
 
     def test_profile_opt_level_aggressive_with_experimental(self) -> None:
@@ -130,7 +130,7 @@ class TestGetOptimizationProfile:
             os.environ,
             {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"},
         ):
-            profile = get_optimization_profile()
+            profile = get_optimization_profile(force_refresh=True)
             assert profile.enable_experimental
 
 
@@ -199,7 +199,7 @@ class TestUtilityFunctions:
 
     def test_get_recommended_thread_pool_size(self) -> None:
         """Test thread pool size calculation."""
-        size = get_recommended_thread_pool_size()
+        size = get_recommended_thread_pool_size(force_refresh=True)
         assert isinstance(size, int)
         assert size > 0
         assert size <= 64  # Maximum from 3.14 profile
@@ -208,7 +208,7 @@ class TestUtilityFunctions:
         """Test thread pool size uses profile multiplier."""
         with patch("taipanstack.core.optimizations.PY314", True):
             with patch("os.cpu_count", return_value=8):
-                size = get_recommended_thread_pool_size()
+                size = get_recommended_thread_pool_size(force_refresh=True)
                 # 3.14 has multiplier of 2.0, so 8 * 2.0 = 16
                 assert size == 16
 
@@ -216,14 +216,14 @@ class TestUtilityFunctions:
         """Test thread pool size doesn't exceed maximum."""
         with patch("taipanstack.core.optimizations.PY314", True):
             with patch("os.cpu_count", return_value=100):
-                size = get_recommended_thread_pool_size()
+                size = get_recommended_thread_pool_size(force_refresh=True)
                 # Should be capped at max_thread_pool_size (64 for 3.14)
                 assert size == 64
 
     def test_thread_pool_size_with_none_cpu_count(self) -> None:
         """Test thread pool size when cpu_count returns None."""
         with patch("os.cpu_count", return_value=None):
-            size = get_recommended_thread_pool_size()
+            size = get_recommended_thread_pool_size(force_refresh=True)
             # Should default to 4 CPUs
             assert size >= 4
 
@@ -240,3 +240,18 @@ class TestUtilityFunctions:
         assert isinstance(result, bool)
         # All profiles recommend frozen dataclasses
         assert result is True
+
+    def test_optimization_profile_cached(self) -> None:
+        """Test get_optimization_profile is cached."""
+        with patch.dict(
+            os.environ,
+            {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"},
+        ):
+            prof1 = get_optimization_profile(force_refresh=True)
+            prof2 = get_optimization_profile()
+            assert prof1 is prof2
+            assert prof1.enable_experimental is True
+
+        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
+            prof3 = get_optimization_profile()
+            assert prof3.enable_experimental is True

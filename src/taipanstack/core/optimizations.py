@@ -173,16 +173,27 @@ _PROFILE_314 = OptimizationProfile(
 )
 
 
-def get_optimization_profile() -> OptimizationProfile:
+_cached_optimization_profile: OptimizationProfile | None = None
+
+
+def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProfile:
     """Get the optimization profile for the current Python version.
+
+    Args:
+        force_refresh: If True, re-detect instead of using cache.
 
     Returns:
         OptimizationProfile suitable for the runtime environment.
 
     """
-    _ = get_features()  # Warm up cache, validate version
-    experimental = is_experimental_enabled()
-    opt_level = get_optimization_level()
+    global _cached_optimization_profile  # noqa: PLW0603
+
+    if _cached_optimization_profile is not None and not force_refresh:
+        return _cached_optimization_profile
+
+    _ = get_features(force_refresh=force_refresh)  # Warm up cache, validate version
+    experimental = is_experimental_enabled(force_refresh=force_refresh)
+    opt_level = get_optimization_level(force_refresh=force_refresh)
 
     # Select base profile by version
     if PY314:
@@ -197,11 +208,12 @@ def get_optimization_profile() -> OptimizationProfile:
     # Adjust for optimization level
     if opt_level == OPT_LEVEL_NONE:
         # Minimal optimizations - use 3.11 baseline
-        return _PROFILE_311
+        _cached_optimization_profile = _PROFILE_311
+        return _cached_optimization_profile
 
     if opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
         # Aggressive mode - enable experimental features
-        return OptimizationProfile(
+        _cached_optimization_profile = OptimizationProfile(
             gc_threshold_0=profile.gc_threshold_0,
             gc_threshold_1=profile.gc_threshold_1,
             gc_threshold_2=profile.gc_threshold_2,
@@ -217,8 +229,10 @@ def get_optimization_profile() -> OptimizationProfile:
             aggressive_inlining=profile.aggressive_inlining,
             enable_experimental=True,
         )
+        return _cached_optimization_profile
 
-    return profile
+    _cached_optimization_profile = profile
+    return _cached_optimization_profile
 
 
 # =============================================================================
@@ -290,6 +304,7 @@ def apply_optimizations(
     profile: OptimizationProfile | None = None,
     apply_gc: bool = True,
     freeze_after: bool = False,
+    force_refresh: bool = False,
 ) -> OptimizationResult:
     """Apply runtime optimizations based on profile.
 
@@ -300,13 +315,14 @@ def apply_optimizations(
         profile: Optimization profile to use (auto-detected if None).
         apply_gc: Whether to apply GC tuning.
         freeze_after: Whether to freeze objects after applying.
+        force_refresh: Whether to force re-detection of profile if none is provided.
 
     Returns:
         OptimizationResult with details of what was applied.
 
     """
     if profile is None:
-        profile = get_optimization_profile()
+        profile = get_optimization_profile(force_refresh=force_refresh)
 
     applied: list[str] = []
     skipped: list[str] = []
@@ -352,14 +368,17 @@ def apply_optimizations(
 # =============================================================================
 
 
-def get_recommended_thread_pool_size() -> int:
+def get_recommended_thread_pool_size(*, force_refresh: bool = False) -> int:
     """Get recommended thread pool size based on version and features.
+
+    Args:
+        force_refresh: If True, re-detect instead of using cache.
 
     Returns:
         Recommended number of threads for ThreadPoolExecutor.
 
     """
-    profile = get_optimization_profile()
+    profile = get_optimization_profile(force_refresh=force_refresh)
     cpu_count = os.cpu_count() or 4
 
     size = int(cpu_count * profile.thread_pool_multiplier)
