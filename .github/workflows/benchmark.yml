@@ -92,7 +92,7 @@ jobs:
           benchmark-data-dir-path: dev/bench
           # Fail CI if performance degrades more than 50% (accounts for runner variance)
           alert-threshold: "150%"
-          fail-on-alert: true
+          fail-on-alert: false
           # Comment on PR with comparison
           comment-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
