@@ -12,7 +12,7 @@ import threading
 import time
 from collections import defaultdict
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import ParamSpec, TypedDict, TypeVar
 
 P = ParamSpec("P")
