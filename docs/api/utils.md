@@ -59,3 +59,57 @@ TaipanStack provides resilience and observability utilities for production appli
     options:
       show_root_heading: false
       members_order: source
+
+---
+
+## Concurrency
+
+::: taipanstack.utils.concurrency
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Filesystem
+
+::: taipanstack.utils.filesystem
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Logging
+
+::: taipanstack.utils.logging
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Rate Limit
+
+::: taipanstack.utils.rate_limit
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Serialization
+
+::: taipanstack.utils.serialization
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Subprocess
+
+::: taipanstack.utils.subprocess
+    options:
+      show_root_heading: false
+      members_order: source
