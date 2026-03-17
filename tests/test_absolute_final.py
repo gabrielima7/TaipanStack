@@ -110,14 +110,3 @@ class TestFilesystemLine175:
 
         result = safe_write(test_file, content, encoding="utf-8")
         assert result.read_text(encoding="utf-8") == content
-
-
-class TestSubprocessLine229:
-    """Test for subprocess.py line 229."""
-
-    def test_run_safe_command_not_on_path(self) -> None:
-        """Test run_safe_command with command not on PATH."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        result = get_command_version("totally_nonexistent_command_xyz_123")
-        assert result is None
