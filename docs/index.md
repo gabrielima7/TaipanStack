@@ -46,7 +46,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
     ---
 
-    Pre-configured quality tools, **100% code coverage** (761 tests), architecture enforcement, hardened Docker template.
+    Pre-configured quality tools, **100% code coverage** (1043 tests), architecture enforcement, hardened Docker template.
 
 </div>
 
@@ -194,7 +194,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 
 | Report | Description |
 |--------|-------------|
-| [🧪 Coverage Report](https://gabrielima7.github.io/TaipanStack/htmlcov/) | Full HTML coverage report — 100% (761 tests) |
+| [🧪 Coverage Report](https://gabrielima7.github.io/TaipanStack/htmlcov/) | Full HTML coverage report — 100% (1043 tests) |
 | [⚡ Benchmark Dashboard](https://gabrielima7.github.io/TaipanStack/dev/bench/) | Performance history & regression graphs |
 
 ---
