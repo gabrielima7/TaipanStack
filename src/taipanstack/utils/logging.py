@@ -334,12 +334,13 @@ def setup_logging(
         return
 
     # Standard logging configuration
-    if format_type == "simple":
-        log_format = "%(levelname)s: %(message)s"
-    elif format_type == "json":
-        log_format = JSON_FORMAT
-    else:
-        log_format = DEFAULT_FORMAT
+    match format_type:
+        case "simple":
+            log_format = "%(levelname)s: %(message)s"
+        case "json":
+            log_format = JSON_FORMAT
+        case _:
+            log_format = DEFAULT_FORMAT
 
     handlers: list[logging.Handler] = [logging.StreamHandler(sys.stdout)]
 
