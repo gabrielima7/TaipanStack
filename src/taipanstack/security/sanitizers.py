@@ -285,6 +285,9 @@ def sanitize_env_value(
     Returns:
         The sanitized value.
 
+    Raises:
+        TypeError: If value is not a string.
+
     """
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
@@ -328,6 +331,7 @@ def sanitize_sql_identifier(identifier: str) -> str:
         The sanitized identifier.
 
     Raises:
+        TypeError: If identifier is not a string.
         ValueError: If identifier is empty or too long.
 
     """
