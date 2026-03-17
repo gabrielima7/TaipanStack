@@ -43,6 +43,13 @@ class TestValidateProjectName:
         with pytest.raises(ValueError, match="exceeds maximum length"):
             validate_project_name("a" * 101)
 
+    def test_regex_range_bug_fix(self) -> None:
+        """Test that the regex range bug (9-_) is fixed."""
+        # Character ':' (ASCII 58) is between '9' (57) and '_' (95)
+        # It should be rejected even if underscore is allowed.
+        with pytest.raises(ValueError, match="contains invalid characters"):
+            validate_project_name("project:name", allow_underscore=True)
+
 
 class TestValidatePythonVersion:
     """Tests for validate_python_version function."""

@@ -37,6 +37,15 @@ PROJECT_NAME_RESERVED = frozenset(
     }
 )
 
+# Pre-compiled regex patterns for project name validation to improve performance.
+# Map of (allow_hyphen, allow_underscore) to the corresponding regex pattern.
+_PROJECT_NAME_PATTERNS = {
+    (False, False): re.compile(r"^[a-zA-Z][a-zA-Z0-9]*$"),
+    (True, False): re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*$"),
+    (False, True): re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*$"),
+    (True, True): re.compile(r"^[a-zA-Z][a-zA-Z0-9_-]*$"),
+}
+
 
 def _validate_type(
     value: object, expected_type: type | tuple[type, ...], name: str
@@ -96,16 +105,9 @@ def _check_project_name_chars(
         ValueError: If name contains invalid characters.
 
     """
-    # Build allowed characters
-    allowed = r"a-zA-Z0-9"
-    if allow_hyphen:
-        allowed += r"-"
-    if allow_underscore:
-        allowed += r"_"
+    pattern = _PROJECT_NAME_PATTERNS[(allow_hyphen, allow_underscore)]
 
-    pattern = f"^[a-zA-Z][{allowed}]*$"
-
-    if not re.match(pattern, name):
+    if not pattern.match(name):
         if not name[0].isalpha():
             msg = "Project name must start with a letter"
             raise ValueError(msg)
