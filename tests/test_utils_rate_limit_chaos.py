@@ -5,6 +5,7 @@ import time
 
 from taipanstack.utils.rate_limit import RateLimiter
 
+
 def test_rate_limiter_chaos_race_condition() -> None:
     """Simulate a severe race condition in RateLimiter.consume.
 
@@ -12,9 +13,12 @@ def test_rate_limiter_chaos_race_condition() -> None:
     an artificial context switch right after the token count check, we
     expose the lack of thread-safety in the token deduction.
     """
+
     class ChaosLimiter(RateLimiter):
         def consume(self) -> bool:
-            now = 100.0  # Static time to avoid actual time-based refills during the test
+            now = (
+                100.0  # Static time to avoid actual time-based refills during the test
+            )
 
             # The lock is added in the base class later, we simulate race in the original logic
             if hasattr(self, "_lock"):
@@ -56,5 +60,7 @@ def test_rate_limiter_chaos_race_condition() -> None:
         t.join()
 
     # The rate limiter MUST only allow 1 success, regardless of thread interleaving
-    assert successes == 1, f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    assert successes == 1, (
+        f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    )
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
