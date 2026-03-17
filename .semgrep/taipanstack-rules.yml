@@ -99,3 +99,32 @@ rules:
       technology:
         - taipanstack
     pattern: $RESULT.unwrap()
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 4: Enforce timeout on requests
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.requests-missing-timeout
+    languages: [python]
+    severity: ERROR
+    message: >
+      A `requests` call was made without a `timeout` argument.
+      This can lead to a hanging process if the server never responds, causing Denial of Service.
+      Always specify a `timeout` argument (e.g., `timeout=10`).
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      owasp: "A06:2021 - Vulnerable and Outdated Components"
+      technology:
+        - requests
+    patterns:
+      - pattern-either:
+          - pattern: requests.get(...)
+          - pattern: requests.post(...)
+          - pattern: requests.put(...)
+          - pattern: requests.delete(...)
+          - pattern: requests.patch(...)
+          - pattern: requests.head(...)
+          - pattern: requests.options(...)
+          - pattern: requests.request(...)
+      - pattern-not: requests.$METHOD(..., timeout=$TIMEOUT, ...)
