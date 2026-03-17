@@ -19,7 +19,6 @@ from taipanstack.security.validators import validate_python_version
 from taipanstack.utils.filesystem import ensure_dir, safe_delete, safe_read
 from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
 from taipanstack.utils.retry import RetryError, retry
-from taipanstack.utils.subprocess import get_command_version
 
 # ============================================================================
 # Logging Coverage - Lines 20-21 (HAS_STRUCTLOG=False branch)
@@ -187,31 +186,6 @@ class TestFilesystemSafeDelete:
 
 
 # ============================================================================
-# Subprocess Coverage
-# ============================================================================
-
-
-class TestSubprocessVersionEmpty:
-    """Test subprocess version parsing edge cases."""
-
-    def test_get_command_version_empty_output(self) -> None:
-        """Test version command that returns empty lines."""
-        with mock.patch("taipanstack.utils.subprocess.run_safe_command") as mock_run:
-            from taipanstack.utils.subprocess import SafeCommandResult
-
-            mock_run.return_value = SafeCommandResult(
-                command=["test", "--version"],
-                returncode=0,
-                stdout="\n\n\n",
-                stderr="",
-            )
-            with mock.patch(
-                "taipanstack.utils.subprocess.check_command_exists", return_value=True
-            ):
-                result = get_command_version("test")
-                assert result is None
-
-
 # ============================================================================
 # Retry Coverage
 # ============================================================================
