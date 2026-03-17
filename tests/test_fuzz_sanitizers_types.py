@@ -1,6 +1,9 @@
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from taipanstack.security.sanitizers import sanitize_env_value, sanitize_sql_identifier
+
 
 @given(st.one_of(st.integers(), st.floats(), st.none(), st.lists(st.text()), st.dictionaries(st.text(), st.text())))
 @settings(max_examples=100)
