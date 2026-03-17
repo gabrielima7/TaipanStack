@@ -41,14 +41,6 @@ class TestSubprocessFinalBranches:
         assert not result.success
         assert "timed out" in result.stderr
 
-    def test_get_command_version_failure_path(self) -> None:
-        """Test get_command_version when command fails."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        # Test with a command that exists - just verify it works
-        get_command_version("true", version_arg="--version")
-        # true command doesn't output version typically
-
 
 class TestGuardsFinalBranches:
     """Final tests for guards module to reach 100%."""

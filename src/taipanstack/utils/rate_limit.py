@@ -9,6 +9,7 @@ or a ``RateLimitError`` error.
 
 import functools
 import inspect
+import threading
 import time
 from collections.abc import Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, overload
@@ -51,6 +52,7 @@ class RateLimiter:
         self.time_window: float = float(time_window)
         self.tokens: float = self.capacity
         self.last_update: float = time.monotonic()
+        self._lock = threading.Lock()
 
     def consume(self) -> bool:
         """Try to consume a single token.
@@ -59,18 +61,19 @@ class RateLimiter:
             True if a token was consumed (allow), False otherwise (limit exceeded).
 
         """
-        now = time.monotonic()
-        elapsed = now - self.last_update
-        self.last_update = now
+        with self._lock:
+            now = time.monotonic()
+            elapsed = now - self.last_update
+            self.last_update = now
 
-        # Add tokens for elapsed time based on fill rate
-        self.tokens += elapsed * (self.capacity / self.time_window)
-        self.tokens = min(self.tokens, self.capacity)
+            # Add tokens for elapsed time based on fill rate
+            self.tokens += elapsed * (self.capacity / self.time_window)
+            self.tokens = min(self.tokens, self.capacity)
 
-        if self.tokens >= 1.0:
-            self.tokens -= 1.0
-            return True
-        return False
+            if self.tokens >= 1.0:
+                self.tokens -= 1.0
+                return True
+            return False
 
 
 class RateLimitDecorator(Protocol):
