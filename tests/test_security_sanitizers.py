@@ -268,7 +268,7 @@ class TestSanitizeEnvValue:
 
     def test_type_error(self) -> None:
         """Test non-string value raises TypeError."""
-        with pytest.raises(TypeError, match="Expected string, got int"):
+        with pytest.raises(TypeError, match="value must be str, got int"):
             sanitize_env_value(123)  # type: ignore[arg-type]
 
     def test_empty_value(self) -> None:
@@ -330,7 +330,7 @@ class TestSanitizeSqlIdentifier:
 
     def test_type_error(self) -> None:
         """Test non-string identifier raises TypeError."""
-        with pytest.raises(TypeError, match="Expected string, got float"):
+        with pytest.raises(TypeError, match="identifier must be str, got float"):
             sanitize_sql_identifier(3.14)  # type: ignore[arg-type]
 
     def test_empty_identifier_raises(self) -> None:
