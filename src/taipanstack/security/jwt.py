@@ -7,7 +7,7 @@ All operations return ``Result`` types.
 """
 
 from collections.abc import Iterable
-from typing import Any
+from typing import TypeAlias
 
 import jwt
 from jwt.exceptions import PyJWTError
@@ -16,10 +16,12 @@ from taipanstack.core.result import safe_from
 
 __all__ = ["decode_jwt", "encode_jwt"]
 
+JWTPayload: TypeAlias = dict[str, object]
+
 
 @safe_from(PyJWTError, ValueError)
 def encode_jwt(
-    payload: dict[str, Any],
+    payload: JWTPayload,
     secret_key: str,
     algorithm: str = "HS256",
 ) -> str:
@@ -52,7 +54,7 @@ def decode_jwt(
     secret_key: str,
     algorithms: list[str],
     audience: str | Iterable[str],
-) -> dict[str, Any]:
+) -> JWTPayload:
     """Decode a JWT securely with strict claim validation.
 
     Enforces that 'exp' (expiration) and 'aud' (audience) claims are present
