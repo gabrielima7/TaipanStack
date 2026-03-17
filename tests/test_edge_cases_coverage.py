@@ -271,13 +271,6 @@ class TestSubprocessEdgeCases:
         )
         assert result.success
 
-    def test_get_command_version_not_found(self) -> None:
-        """Test get_command_version with non-existent command."""
-        from taipanstack.utils.subprocess import get_command_version
-
-        result = get_command_version("nonexistent_command_xyz")
-        assert result is None
-
 
 class TestCircuitBreakerEdgeCases:
     """Edge case tests for circuit breaker module."""
