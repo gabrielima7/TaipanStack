@@ -8,11 +8,11 @@ context propagation, and proper formatting.
 import logging
 import re
 import sys
-from collections.abc import MutableMapping
-from contextlib import contextmanager
+from collections.abc import Iterator, MutableMapping
+from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, ContextManager, Literal
 
 from taipanstack.utils.context import get_correlation_id
 
@@ -385,7 +385,7 @@ def log_operation(
     logger: StackLogger | None = None,
     level: str = "INFO",
     expected_exceptions: tuple[type[Exception], ...] | type[Exception] = Exception,
-) -> Any:
+) -> ContextManager[StackLogger]:
     """Context manager for logging operations.
 
     Args:
@@ -404,7 +404,7 @@ def log_operation(
     """
 
     @contextmanager
-    def _log_context() -> Any:
+    def _log_context() -> Iterator[StackLogger]:
         nonlocal logger
         if logger is None:
             logger = get_logger()
