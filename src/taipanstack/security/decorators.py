@@ -12,6 +12,7 @@ import signal
 import sys
 import threading
 from collections.abc import Callable, Mapping
+from types import FrameType
 from typing import Any, ParamSpec, TypeVar
 
 from taipanstack.security.guards import SecurityError
@@ -242,7 +243,7 @@ def _timeout_with_signal(  # pragma: no cover
 ) -> R:
     """Implement timeout using Unix signals."""
 
-    def handler(_signum: int, _frame: Any) -> None:
+    def handler(_signum: int, _frame: FrameType | None) -> None:
         raise OperationTimeoutError(seconds, func.__name__)
 
     # Set up signal handler
