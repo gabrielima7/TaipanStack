@@ -131,7 +131,9 @@ class TestFilesystemRemainingBranches:
 
         # Write to nested path that doesn't exist
         nested_file = tmp_path / "a" / "b" / "c" / "file.txt"
-        result = safe_write(nested_file, "content", options=WriteOptions(create_parents=True))
+        result = safe_write(
+            nested_file, "content", options=WriteOptions(create_parents=True)
+        )
 
         assert result.exists()
         assert result.read_text() == "content"
@@ -144,7 +146,9 @@ class TestFilesystemRemainingBranches:
         existing.write_text("old")
 
         # Write atomically - should preserve permissions
-        result = safe_write(existing, "new", options=WriteOptions(atomic=True, backup=False))
+        result = safe_write(
+            existing, "new", options=WriteOptions(atomic=True, backup=False)
+        )
         assert result.read_text() == "new"
 
 

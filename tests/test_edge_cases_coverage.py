@@ -35,7 +35,9 @@ class TestFilesystemEdgeCases:
         test_file = tmp_path / "existing.txt"
         test_file.write_text("old content")
 
-        result = safe_write(test_file, "new content", options=WriteOptions(base_dir=tmp_path))
+        result = safe_write(
+            test_file, "new content", options=WriteOptions(base_dir=tmp_path)
+        )
         assert result.read_text() == "new content"
 
     def test_safe_write_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
