@@ -652,6 +652,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taipanstack.utils.retry.RetryDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RetryDecorator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taipanstack.utils.retry.RetryConfig" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -761,6 +772,17 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;circuit_breaker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.utils.circuit_breaker.CircuitBreakerDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CircuitBreakerDecorator
       
     </span>
   </a>
@@ -1538,6 +1560,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.utils.filesystem.WriteOptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;WriteOptions
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2791,6 +2824,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taipanstack.utils.retry.RetryDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;RetryDecorator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taipanstack.utils.retry.RetryConfig" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2900,6 +2944,17 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;circuit_breaker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.utils.circuit_breaker.CircuitBreakerDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CircuitBreakerDecorator
       
     </span>
   </a>
@@ -3681,6 +3736,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taipanstack.utils.filesystem.WriteOptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;WriteOptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taipanstack.utils.filesystem.safe_read" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4183,6 +4249,37 @@ Python framework (sync and async).</p>
 
 
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="taipanstack.utils.retry.RetryDecorator" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">RetryDecorator</span>
+
+
+<a href="#taipanstack.utils.retry.RetryDecorator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
+
+
+        <p>Protocol for the retry decorator.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -4815,7 +4912,7 @@ False to let it propagate.</p>
 </span><span id="__span-0-10">    <span class="n">log_retries</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-11">    <span class="n">on_retry</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
 </span><span id="__span-0-12">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.utils.retry.F">F</span></span><span class="p">],</span> <span class="n"><span title="taipanstack.utils.retry.F">F</span></span><span class="p">]</span>
+</span><span id="__span-0-13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.utils.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5031,7 +5128,7 @@ custom monitoring or metrics collection.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.utils.retry.F">F</span>], <span title="taipanstack.utils.retry.F">F</span>]</code>
+                    <code><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.utils.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -5075,7 +5172,7 @@ custom monitoring or metrics collection.</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">retry_on_exception</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">exception_types</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
 </span><span id="__span-0-3">    <span class="n">max_attempts</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.retry.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.retry.R">R</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.retry.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.retry.R">R</span></span><span class="p">]]</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.utils.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5144,7 +5241,7 @@ just need basic retry functionality.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.retry.P">P</span>, <span title="taipanstack.utils.retry.R">R</span>]], <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.utils.retry.P">P</span>, <span title="taipanstack.utils.retry.R">R</span>]]</code>
+                    <code><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.utils.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -5214,6 +5311,37 @@ Python framework (sync and async).</p>
 
 
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="taipanstack.utils.circuit_breaker.CircuitBreakerDecorator" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">CircuitBreakerDecorator</span>
+
+
+<a href="#taipanstack.utils.circuit_breaker.CircuitBreakerDecorator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
+
+
+        <p>Protocol for the circuit breaker decorator.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -5857,7 +5985,12 @@ with (old_state, new_state). Useful for custom monitoring.</p>
 
 
 <a href="#taipanstack.utils.circuit_breaker.CircuitBreaker.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__call__</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__call__</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]</span>
+</span><span id="__span-0-3">    <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]],</span>
+</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+</span><span id="__span-0-5">    <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.R">R</span></span><span class="p">]]</span>
+</span><span id="__span-0-6"><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5900,7 +6033,7 @@ with (old_state, new_state). Useful for custom monitoring.</p>
 </span><span id="__span-0-12">        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.utils.circuit_breaker.CircuitState)" href="#taipanstack.utils.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.utils.circuit_breaker.CircuitState)" href="#taipanstack.utils.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">],</span> <span class="kc">None</span>
 </span><span id="__span-0-13">    <span class="p">]</span>
 </span><span id="__span-0-14">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-15"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">],</span> <span class="n"><span title="taipanstack.utils.circuit_breaker.F">F</span></span><span class="p">]</span>
+</span><span id="__span-0-15"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreakerDecorator (taipanstack.utils.circuit_breaker.CircuitBreakerDecorator)" href="#taipanstack.utils.circuit_breaker.CircuitBreakerDecorator">CircuitBreakerDecorator</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6072,7 +6205,7 @@ with (old_state, new_state).</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="taipanstack.utils.circuit_breaker.F">F</span>], <span title="taipanstack.utils.circuit_breaker.F">F</span>]</code>
+                    <code><a class="autorefs autorefs-internal" title="            CircuitBreakerDecorator (taipanstack.utils.circuit_breaker.CircuitBreakerDecorator)" href="#taipanstack.utils.circuit_breaker.CircuitBreakerDecorator">CircuitBreakerDecorator</a></code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -8252,6 +8385,145 @@ atomic writes, and proper error handling using Result types.</p>
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="taipanstack.utils.filesystem.WriteOptions" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">WriteOptions</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#taipanstack.utils.filesystem.WriteOptions" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">WriteOptions</span><span class="p">(</span>
+</span><span id="__span-0-2">    <span class="n">base_dir</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-3">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">create_parents</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">backup</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-6">    <span class="n">atomic</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-7"><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Options for safe_write.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">ATTRIBUTE</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="taipanstack.utils.filesystem.WriteOptions.base_dir">base_dir</span></code></td>
+            <td class="doc-attribute-details">
+              <div class="doc-md-description">
+                <p>Base directory to constrain to.</p>
+              </div>
+              <p>
+                  <span class="doc-attribute-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span> | <span title="str">str</span> | None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="taipanstack.utils.filesystem.WriteOptions.encoding">encoding</span></code></td>
+            <td class="doc-attribute-details">
+              <div class="doc-md-description">
+                <p>File encoding.</p>
+              </div>
+              <p>
+                  <span class="doc-attribute-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="str">str</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="taipanstack.utils.filesystem.WriteOptions.create_parents">create_parents</span></code></td>
+            <td class="doc-attribute-details">
+              <div class="doc-md-description">
+                <p>Create parent directories if needed.</p>
+              </div>
+              <p>
+                  <span class="doc-attribute-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="taipanstack.utils.filesystem.WriteOptions.backup">backup</span></code></td>
+            <td class="doc-attribute-details">
+              <div class="doc-md-description">
+                <p>Create backup of existing file.</p>
+              </div>
+              <p>
+                  <span class="doc-attribute-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="taipanstack.utils.filesystem.WriteOptions.atomic">atomic</span></code></td>
+            <td class="doc-attribute-details">
+              <div class="doc-md-description">
+                <p>Use atomic write.</p>
+              </div>
+              <p>
+                  <span class="doc-attribute-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -8440,12 +8712,13 @@ atomic writes, and proper error handling using Result types.</p>
 </span><span id="__span-0-2">    <span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="n">content</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">base_dir</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-6">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-</span><span id="__span-0-7">    <span class="n">create_parents</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-8">    <span class="n">backup</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-9">    <span class="n">atomic</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pathlib.Path">Path</span></span>
+</span><span id="__span-0-5">    <span class="n">options</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            WriteOptions
+
+
+  
+      dataclass
+   (taipanstack.utils.filesystem.WriteOptions)" href="#taipanstack.utils.filesystem.WriteOptions">WriteOptions</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pathlib.Path">Path</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8495,100 +8768,25 @@ atomic writes, and proper error handling using Result types.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>base_dir</code>
+                <code>options</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Base directory to constrain to.</p>
+                <p>Write options.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span> | <span title="str">str</span> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            WriteOptions
+
+
+  
+      dataclass
+   (taipanstack.utils.filesystem.WriteOptions)" href="#taipanstack.utils.filesystem.WriteOptions">WriteOptions</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
                       <code>None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>encoding</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>File encoding.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>&#39;utf-8&#39;</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>create_parents</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Create parent directories if needed.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>True</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>backup</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Create backup of existing file.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>True</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>atomic</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Use atomic write (write to temp, then rename).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>True</code>
                   </span>
               </p>
             </td>
@@ -10660,7 +10858,7 @@ logger.bind(request_id="123").info("Processing request")</p>
 </span><span id="__span-0-5">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">expected_exceptions</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
 </span><span id="__span-0-7">    <span class="o">|</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">]</span> <span class="o">=</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span>
-</span><span id="__span-0-8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Any">Any</span></span>
+</span><span id="__span-0-8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="contextlib.AbstractContextManager">AbstractContextManager</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            StackLogger (taipanstack.utils.logging.StackLogger)" href="#taipanstack.utils.logging.StackLogger">StackLogger</a></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -10767,7 +10965,7 @@ logger.bind(request_id="123").info("Processing request")</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-yields-annotation">
-                    <code><span title="typing.Any">Any</span></code>
+                    <code><span title="contextlib.AbstractContextManager">AbstractContextManager</span>[<a class="autorefs autorefs-internal" title="            StackLogger (taipanstack.utils.logging.StackLogger)" href="#taipanstack.utils.logging.StackLogger">StackLogger</a>]</code>
                 </span>
             </td>
             <td class="doc-yields-details">
