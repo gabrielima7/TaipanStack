@@ -183,7 +183,7 @@ markers = [
     "benchmark: marks tests as performance benchmarks",
 ]
 filterwarnings = [
-    "ignore::DeprecationWarning",
+
     "ignore::ResourceWarning",
     "ignore::pytest.PytestUnraisableExceptionWarning",
 ]
