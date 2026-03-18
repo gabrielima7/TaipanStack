@@ -59,7 +59,7 @@ jobs:
         run: poetry run mkdocs build
 
       - name: Download coverage HTML report from latest CI
-        uses: dawidd6/action-download-artifact@v18
+        uses: dawidd6/action-download-artifact@v19
         with:
           name: htmlcov
           path: site/htmlcov/
