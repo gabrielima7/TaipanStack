@@ -12,14 +12,26 @@ import inspect
 import logging
 import secrets
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, NoReturn, ParamSpec, TypeVar, cast
+from typing import Any, NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")
-F = TypeVar("F", bound=Callable[..., Any])
+
+
+class RetryDecorator(Protocol):
+    """Protocol for the retry decorator."""
+
+    @overload
+    def __call__(self, func: Callable[P, R]) -> Callable[P, R]: ...  # pragma: no cover
+
+    @overload
+    def __call__(
+        self, func: Callable[P, Coroutine[Any, Any, R]]
+    ) -> Callable[P, Coroutine[Any, Any, R]]: ...  # pragma: no cover
+
 
 logger = logging.getLogger("taipanstack.utils.retry")
 
@@ -219,7 +231,7 @@ def retry(
     reraise: bool = True,
     log_retries: bool = True,
     on_retry: Callable[[int, int, Exception, float], None] | None = None,
-) -> Callable[[F], F]:
+) -> RetryDecorator:
     """Retry a sync or async function with exponential backoff.
 
     Automatically retries the decorated function when specified
@@ -262,22 +274,25 @@ def retry(
         on_retry=on_retry,
     )
 
-    def decorator(func: F) -> F:
+    def decorator(
+        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
+    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Coroutine[Any, Any, R]], func)
 
-            @functools.wraps(func)
-            async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+            @functools.wraps(func_coro)
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
                 last_exception: Exception | None = None
 
                 for attempt in range(1, max_attempts + 1):  # pragma: no branch
                     try:
-                        return await func(*args, **kwargs)
+                        return await func_coro(*args, **kwargs)
                     except on as e:
                         last_exception = e
 
                         if attempt == max_attempts:
                             _log_all_failed(
-                                func.__name__,
+                                func_coro.__name__,
                                 e,
                                 config,
                             )
@@ -285,7 +300,7 @@ def retry(
 
                         delay = calculate_delay(attempt, config)
                         _log_retry_attempt(
-                            func.__name__,
+                            func_coro.__name__,
                             attempt,
                             e,
                             delay,
@@ -294,27 +309,29 @@ def retry(
                         await asyncio.sleep(delay)
 
                 _raise_retry_error(
-                    func.__name__,
+                    func_coro.__name__,
                     max_attempts,
                     reraise,
                     last_exception,
                 )
 
-            return cast(F, async_wrapper)
+            return async_wrapper
 
-        @functools.wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
+        func_sync = cast(Callable[P, R], func)
+
+        @functools.wraps(func_sync)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             last_exception: Exception | None = None
 
             for attempt in range(1, max_attempts + 1):  # pragma: no branch
                 try:
-                    return func(*args, **kwargs)
+                    return func_sync(*args, **kwargs)
                 except on as e:
                     last_exception = e
 
                     if attempt == max_attempts:
                         _log_all_failed(
-                            func.__name__,
+                            func_sync.__name__,
                             e,
                             config,
                         )
@@ -323,7 +340,7 @@ def retry(
                     # Calculate delay and wait
                     delay = calculate_delay(attempt, config)
                     _log_retry_attempt(
-                        func.__name__,
+                        func_sync.__name__,
                         attempt,
                         e,
                         delay,
@@ -332,21 +349,21 @@ def retry(
                     time.sleep(delay)
 
             _raise_retry_error(
-                func.__name__,
+                func_sync.__name__,
                 max_attempts,
                 reraise,
                 last_exception,
             )
 
-        return cast(F, wrapper)
+        return wrapper
 
-    return decorator
+    return decorator  # type: ignore[return-value]
 
 
 def retry_on_exception(
     exception_types: tuple[type[Exception], ...],
     max_attempts: int = 3,
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
+) -> RetryDecorator:
     """Retry on specific exceptions.
 
     A simpler alternative to the full retry decorator when you
