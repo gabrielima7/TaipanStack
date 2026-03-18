@@ -23,6 +23,17 @@ from taipanstack.utils.logging import (
 class TestStackLogger:
     """Tests for StackLogger class."""
 
+    def test_logging_no_structlog(self) -> None:
+        """Test fallback when structlog is not installed."""
+        import importlib.util
+        from unittest import mock
+
+        with mock.patch.dict("sys.modules", {"structlog": None}):
+            spec = importlib.util.find_spec("taipanstack.utils.logging")
+            module = importlib.util.module_from_spec(spec) # type: ignore
+            spec.loader.exec_module(module) # type: ignore
+            assert module.HAS_STRUCTLOG is False
+
     def test_init_with_defaults(self) -> None:
         """Test logger initialization with defaults."""
         logger = StackLogger()

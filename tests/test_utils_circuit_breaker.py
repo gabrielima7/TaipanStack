@@ -21,6 +21,30 @@ class TestCircuitBreakerState:
         assert CircuitState.OPEN.value == "open"
         assert CircuitState.HALF_OPEN.value == "half_open"
 
+    def test_circuit_breaker_no_structlog(self) -> None:
+        """Test fallback when structlog is not installed."""
+        # We don't want to use importlib.reload because it breaks Enum identities used elsewhere
+        # Instead, just execute the module's code in a new namespace
+        import importlib.util
+        from unittest import mock
+
+        with mock.patch.dict("sys.modules", {"structlog": None}):
+            spec = importlib.util.find_spec("taipanstack.utils.circuit_breaker")
+            module = importlib.util.module_from_spec(spec) # type: ignore
+            spec.loader.exec_module(module) # type: ignore
+            assert module._HAS_STRUCTLOG is False
+
+    def test_circuit_breaker_unreachable_state(self) -> None:
+        """Test unreachable state block."""
+        from taipanstack.utils.circuit_breaker import CircuitBreaker
+        breaker = CircuitBreaker()
+        # Forcibly inject an invalid state to hit the unreachable branch in match
+        breaker._state.state = "INVALID_STATE"  # type: ignore[assignment]
+
+        # Verify it falls through match and returns False
+        # _should_attempt wraps _allow_request
+        assert breaker._should_attempt() is False
+
 
 class TestCircuitBreaker:
     """Tests for CircuitBreaker class."""
