@@ -170,11 +170,12 @@ def collect_results(
 
     """
     values: list[T] = []
+    append = values.append
     for result in results:
-        if isinstance(result, Ok):
-            values.append(result.ok_value)
-        else:
-            return result
+        try:
+            append(result.ok_value)  # type: ignore[union-attr]
+        except AttributeError:
+            return result  # type: ignore[return-value]
     return Ok(values)
 
 
@@ -207,9 +208,10 @@ def unwrap_or(result: Result[T, E], default: U) -> T | U:
         0
 
     """
-    if isinstance(result, Ok):
-        return result.ok_value
-    return default
+    try:
+        return result.ok_value  # type: ignore[union-attr]
+    except AttributeError:
+        return default
 
 
 @overload
@@ -253,9 +255,10 @@ def unwrap_or_else(
         1
 
     """
-    if isinstance(result, Ok):
-        return result.ok_value
-    return default_fn(result.err_value)
+    try:
+        return result.ok_value  # type: ignore[union-attr]
+    except AttributeError:
+        return default_fn(result.err_value)  # type: ignore[union-attr]
 
 
 @overload
@@ -303,9 +306,11 @@ async def map_async(
         Err('fail')
 
     """
-    if isinstance(result, Ok):
-        return Ok(await func(result.ok_value))
-    return result
+    try:
+        val = result.ok_value  # type: ignore[union-attr]
+    except AttributeError:
+        return result  # type: ignore[return-value]
+    return Ok(await func(val))
 
 
 @overload
@@ -358,6 +363,8 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    if isinstance(result, Ok):
-        return await func(result.ok_value)
-    return result
+    try:
+        val = result.ok_value  # type: ignore[union-attr]
+    except AttributeError:
+        return result  # type: ignore[return-value]
+    return await func(val)
