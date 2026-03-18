@@ -6,8 +6,6 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
-from ipaddress import IPv4Address, IPv6Address, ip_address
-from typing import Literal
 from urllib.parse import urlparse
 
 # Constants to avoid magic values (PLR2004)
@@ -15,8 +13,6 @@ PYTHON_MAJOR_VERSION = 3
 MIN_PYTHON_MINOR_VERSION = 10
 MAX_EMAIL_LOCAL_LENGTH = 64
 MAX_EMAIL_DOMAIN_LENGTH = 255
-MAX_PORT_NUMBER = 65535
-MIN_PRIVILEGED_PORT = 1024
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
 PROJECT_NAME_RESERVED = frozenset(
     {
@@ -308,113 +304,3 @@ def validate_url(
             raise ValueError(msg)
 
     return url
-
-
-def validate_ip_address(
-    ip: str,
-    *,
-    version: Literal["v4", "v6", "any"] = "any",
-    allow_private: bool = True,
-) -> IPv4Address | IPv6Address:
-    """Validate IP address.
-
-    Args:
-        ip: The IP address string to validate.
-        version: IP version to allow ('v4', 'v6', or 'any').
-        allow_private: Whether to allow private/internal IPs.
-
-    Returns:
-        The validated IP address object.
-
-    Raises:
-        ValueError: If IP address is invalid.
-
-    """
-    _validate_type(ip, str, "IP address")
-
-    try:
-        addr = ip_address(ip)
-    except ValueError as e:
-        msg = f"Invalid IP address: {ip}"
-        raise ValueError(msg) from e
-
-    if version == "v4" and not isinstance(addr, IPv4Address):
-        msg = f"Expected IPv4 address, got IPv6: {ip}"
-        raise ValueError(msg)
-
-    if version == "v6" and not isinstance(addr, IPv6Address):
-        msg = f"Expected IPv6 address, got IPv4: {ip}"
-        raise ValueError(msg)
-
-    if not allow_private and addr.is_private:
-        msg = f"Private IP addresses are not allowed: {ip}"
-        raise ValueError(msg)
-
-    return addr
-
-
-def validate_port(
-    port: int | str,
-    *,
-    allow_privileged: bool = False,
-) -> int:
-    """Validate port number.
-
-    Args:
-        port: The port number to validate.
-        allow_privileged: Whether to allow ports below 1024.
-
-    Returns:
-        The validated port number.
-
-    Raises:
-        ValueError: If port is invalid.
-
-    """
-    _validate_type(port, (int, str), "Port")
-
-    try:
-        port_int = int(port)
-    except ValueError as e:
-        msg = f"Invalid port number: {port}"
-        raise ValueError(msg) from e
-
-    if port_int < 0 or port_int > MAX_PORT_NUMBER:
-        msg = f"Port must be between 0 and {MAX_PORT_NUMBER}: {port_int}"
-        raise ValueError(msg)
-
-    if not allow_privileged and port_int < MIN_PRIVILEGED_PORT:
-        msg = f"Privileged ports (< {MIN_PRIVILEGED_PORT}) are not allowed: {port_int}"
-        raise ValueError(msg)
-
-    return port_int
-
-
-def validate_semver(version: str) -> tuple[int, int, int]:
-    """Validate semantic version string.
-
-    Args:
-        version: Version string like "1.2.3" or "v1.2.3".
-
-    Returns:
-        Tuple of (major, minor, patch).
-
-    Raises:
-        ValueError: If version format is invalid.
-
-    """
-    _validate_type(version, str, "Version")
-
-    # Remove leading 'v' if present
-    version = version.lstrip("vV")
-
-    pattern = r"^(\d+)\.(\d+)\.(\d+)(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$"
-    match = re.match(pattern, version)
-
-    if not match:
-        msg = f"Invalid semantic version: {version}. Expected format: X.Y.Z"
-        raise ValueError(msg)
-
-    major, minor, patch = map(int, match.groups()[:3])
-
-    return major, minor, patch

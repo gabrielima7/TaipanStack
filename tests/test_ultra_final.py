@@ -29,13 +29,6 @@ class TestValidators100Percent:
         result = validate_url("http://example.com")
         assert urlparse(result).hostname == "example.com"
 
-    def test_validate_port_out_of_range(self) -> None:
-        """Test validate_port with out of range port."""
-        from taipanstack.security.validators import validate_port
-
-        with pytest.raises(ValueError):
-            validate_port(70000)  # > 65535
-
 
 class TestGuards100Percent:
     """Tests to reach 100% for guards."""

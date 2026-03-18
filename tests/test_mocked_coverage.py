@@ -86,31 +86,6 @@ class TestValidatorsBranches:
         parsed = urlparse(result)
         assert parsed.hostname == "example.com"
 
-    def test_validate_ip_address_any_version(self) -> None:
-        """Test validate_ip_address with any version."""
-        from taipanstack.security.validators import validate_ip_address
-
-        # IPv4
-        result4 = validate_ip_address("8.8.8.8", version="any")
-        assert result4 is not None
-
-    def test_validate_port_boundary(self) -> None:
-        """Test validate_port at boundary values."""
-        from taipanstack.security.validators import validate_port
-
-        # Maximum valid port
-        result = validate_port(65535, allow_privileged=True)
-        assert result == 65535
-
-    def test_validate_semver_with_prerelease(self) -> None:
-        """Test validate_semver with prerelease."""
-        from taipanstack.security.validators import validate_semver
-
-        # Standard semver
-        result = validate_semver("2.0.0")
-        assert result == (2, 0, 0)
-
-
 class TestGuardsBranches:
     """Tests for guards module branches."""
 
