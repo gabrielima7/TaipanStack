@@ -37,6 +37,16 @@ PROJECT_NAME_RESERVED = frozenset(
     }
 )
 
+# Pre-compiled regex patterns for project name validation to improve performance.
+# Map of (allow_hyphen, allow_underscore) to the corresponding regex pattern.
+# Using \Z instead of $ to prevent newline bypasses.
+_PROJECT_NAME_PATTERNS = {
+    (False, False): re.compile(r"^[a-zA-Z][a-zA-Z0-9]*\Z"),
+    (True, False): re.compile(r"^[a-zA-Z][a-zA-Z0-9-]*\Z"),
+    (False, True): re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*\Z"),
+    (True, True): re.compile(r"^[a-zA-Z][a-zA-Z0-9_-]*\Z"),
+}
+
 
 def _validate_type(
     value: object, expected_type: type | tuple[type, ...], name: str
@@ -96,16 +106,9 @@ def _check_project_name_chars(
         ValueError: If name contains invalid characters.
 
     """
-    # Build allowed characters
-    allowed = r"a-zA-Z0-9"
-    if allow_hyphen:
-        allowed += r"-"
-    if allow_underscore:
-        allowed += r"_"
+    pattern = _PROJECT_NAME_PATTERNS[(allow_hyphen, allow_underscore)]
 
-    pattern = f"^[a-zA-Z][{allowed}]*$"
-
-    if not re.match(pattern, name):
+    if not pattern.match(name):
         if not name[0].isalpha():
             msg = "Project name must start with a letter"
             raise ValueError(msg)
@@ -184,7 +187,7 @@ def validate_python_version(version: str) -> str:
     """
     _validate_type(version, str, "Version")
 
-    pattern = r"^\d+\.\d+$"
+    pattern = r"^\d+\.\d+\Z"
 
     if not re.match(pattern, version):
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
@@ -233,7 +236,8 @@ def validate_email(email: str) -> str:
         raise ValueError(msg)
 
     # RFC 5322 compliant pattern (simplified)
-    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    # Using \Z instead of $ to prevent newline bypasses.
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
 
     if not re.match(pattern, email):
         msg = f"Invalid email format: {email}"
@@ -408,7 +412,8 @@ def validate_semver(version: str) -> tuple[int, int, int]:
     # Remove leading 'v' if present
     version = version.lstrip("vV")
 
-    pattern = r"^(\d+)\.(\d+)\.(\d+)(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$"
+    # Using \Z instead of $ to prevent newline bypasses.
+    pattern = r"^(\d+)\.(\d+)\.(\d+)(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?\Z"
     match = re.match(pattern, version)
 
     if not match:
