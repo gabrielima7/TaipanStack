@@ -12,7 +12,7 @@ from collections.abc import Iterator, MutableMapping
 from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Any, ContextManager, Literal
+from typing import Any, Literal
 
 from taipanstack.utils.context import get_correlation_id
 
@@ -385,7 +385,7 @@ def log_operation(
     logger: StackLogger | None = None,
     level: str = "INFO",
     expected_exceptions: tuple[type[Exception], ...] | type[Exception] = Exception,
-) -> ContextManager[StackLogger]:
+) -> AbstractContextManager[StackLogger]:
     """Context manager for logging operations.
 
     Args:
