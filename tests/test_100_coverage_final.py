@@ -269,10 +269,10 @@ class TestFilesystemUncovered:
 
     def test_safe_write_atomic_success(self, tmp_path: Path) -> None:
         """Test atomic write success path."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         target = tmp_path / "test.txt"
-        safe_write(target, "content", atomic=True)
+        safe_write(target, "content", options=WriteOptions(atomic=True))
         assert target.read_text() == "content"
 
 
