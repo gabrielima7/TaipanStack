@@ -106,6 +106,7 @@ class TestValidatorsMissingBranches:
         result = validate_email("user@mail.example.com")
         assert result == "user@mail.example.com"
 
+
 class TestGuardsMissingBranches:
     """Tests for guards missing branches."""
 

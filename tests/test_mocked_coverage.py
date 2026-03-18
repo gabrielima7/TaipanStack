@@ -86,6 +86,7 @@ class TestValidatorsBranches:
         parsed = urlparse(result)
         assert parsed.hostname == "example.com"
 
+
 class TestGuardsBranches:
     """Tests for guards module branches."""
 

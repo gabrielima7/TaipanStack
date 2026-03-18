@@ -135,4 +135,3 @@ class TestValidateUrl:
         """Test URL with an out of range port raises ValueError."""
         with pytest.raises(ValueError, match="Invalid URL format: Port out of range"):
             validate_url("http://example.com:99999999999")
-
