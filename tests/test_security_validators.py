@@ -1,6 +1,7 @@
 """Tests for stack.security.validators module."""
 
 import pytest
+from hypothesis import given, strategies as st
 
 from taipanstack.security.validators import (
     validate_email,
@@ -78,6 +79,11 @@ class TestValidatePythonVersion:
             with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
                 validate_python_version("a.b")
 
+    def test_trailing_newline_rejected(self) -> None:
+        """Test that version strings with trailing newlines are rejected."""
+        with pytest.raises(ValueError, match="Invalid version format"):
+            validate_python_version("3.12\n")
+
 
 class TestValidateEmail:
     """Tests for validate_email function."""
@@ -100,6 +106,11 @@ class TestValidateEmail:
 
         with pytest.raises(ValueError, match="Invalid email format"):
             validate_email("user@")
+
+    def test_trailing_newline_rejected(self) -> None:
+        """Test that emails with trailing newlines are strictly rejected."""
+        with pytest.raises(ValueError, match="Invalid email format"):
+            validate_email("test@example.com\n")
 
 
 class TestValidateUrl:
@@ -202,3 +213,58 @@ class TestValidateSemver:
         """Test invalid semver is rejected."""
         with pytest.raises(ValueError, match="Invalid semantic version"):
             validate_semver("1.0")
+
+    def test_trailing_newline_rejected(self) -> None:
+        """Test that semver strings with trailing newlines are strictly rejected."""
+        with pytest.raises(ValueError, match="Invalid semantic version"):
+            validate_semver("1.2.3\n")
+
+
+class TestPropertyBasedFuzzing:
+    """Property-based tests to ensure validators handle extreme and malicious inputs without crashing or bypassing logic."""
+
+    @given(st.text(min_size=1, max_size=100))
+    def test_fuzz_project_name(self, name: str) -> None:
+        """Fuzz project name validation with random strings."""
+        try:
+            result = validate_project_name(name)
+            # If it passes, it must match the strict regex and not have trailing newlines
+            assert "\n" not in result
+            assert "\r" not in result
+        except ValueError:
+            # Expected if the string contains invalid characters
+            pass
+
+    @given(st.text(min_size=1, max_size=50))
+    def test_fuzz_python_version(self, version: str) -> None:
+        """Fuzz python version validation with random strings."""
+        try:
+            result = validate_python_version(version)
+            # If it passes, it must match the strict regex and not have trailing newlines
+            assert "\n" not in result
+            assert "\r" not in result
+        except ValueError:
+            # Expected for most random inputs
+            pass
+
+    @given(st.text(min_size=1, max_size=200))
+    def test_fuzz_email(self, email: str) -> None:
+        """Fuzz email validation with random strings."""
+        try:
+            result = validate_email(email)
+            # If it passes, it must match the strict regex and not have trailing newlines
+            assert "\n" not in result
+            assert "\r" not in result
+        except ValueError:
+            # Expected for most random inputs
+            pass
+
+    @given(st.text(min_size=1, max_size=50))
+    def test_fuzz_semver(self, version: str) -> None:
+        """Fuzz semver validation with random strings."""
+        try:
+            # Result is a tuple, but the input must not have allowed bypassing
+            validate_semver(version)
+        except ValueError:
+            # Expected for most random inputs
+            pass
