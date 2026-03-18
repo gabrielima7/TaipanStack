@@ -10,6 +10,7 @@ from taipanstack.utils.filesystem import (
     FileNotFoundErr,
     FileTooLargeErr,
     NotAFileErr,
+    WriteOptions,
     ensure_dir,
     find_files,
     get_file_hash,
@@ -132,7 +133,7 @@ class TestSafeWrite:
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
 
-        safe_write(test_file, "updated", backup=True)
+        safe_write(test_file, "updated", options=WriteOptions(backup=True))
 
         assert test_file.read_text() == "updated"
         assert (tmp_path / "test.txt.bak").exists()
@@ -143,7 +144,7 @@ class TestSafeWrite:
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
 
-        safe_write(test_file, "updated", backup=False)
+        safe_write(test_file, "updated", options=WriteOptions(backup=False))
 
         assert test_file.read_text() == "updated"
         assert not (tmp_path / "test.txt.bak").exists()
@@ -151,14 +152,14 @@ class TestSafeWrite:
     def test_atomic_write(self, tmp_path: Path) -> None:
         """Test atomic write mode."""
         test_file = tmp_path / "atomic.txt"
-        safe_write(test_file, "atomic content", atomic=True)
+        safe_write(test_file, "atomic content", options=WriteOptions(atomic=True))
 
         assert test_file.read_text() == "atomic content"
 
     def test_non_atomic_write(self, tmp_path: Path) -> None:
         """Test non-atomic write mode."""
         test_file = tmp_path / "direct.txt"
-        safe_write(test_file, "direct content", atomic=False)
+        safe_write(test_file, "direct content", options=WriteOptions(atomic=False))
 
         assert test_file.read_text() == "direct content"
 
@@ -168,7 +169,7 @@ class TestSafeWrite:
             safe_write(
                 tmp_path / ".." / "etc" / "evil.txt",
                 "malicious",
-                base_dir=tmp_path,
+                options=WriteOptions(base_dir=tmp_path),
             )
 
     def test_path_traversal_without_base_dir_blocked(self) -> None:

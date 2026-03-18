@@ -8,7 +8,7 @@ from .context import (
     get_correlation_id,
     set_correlation_id,
 )
-from .filesystem import ensure_dir, safe_read, safe_write
+from .filesystem import WriteOptions, ensure_dir, safe_read, safe_write
 from .logging import (
     REDACTED_VALUE,
     SENSITIVE_KEY_PATTERNS,
@@ -32,6 +32,7 @@ __all__ = (
     "RetryConfig",
     "RetryError",
     "SafeCommandResult",
+    "WriteOptions",
     "cached",
     "correlation_id_var",
     "correlation_scope",

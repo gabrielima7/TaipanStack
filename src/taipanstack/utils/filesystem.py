@@ -93,6 +93,26 @@ class FileTooLargeErr:
         )
 
 
+@dataclass(frozen=True)
+class WriteOptions:
+    """Options for safe_write.
+
+    Attributes:
+        base_dir: Base directory to constrain to.
+        encoding: File encoding.
+        create_parents: Create parent directories if needed.
+        backup: Create backup of existing file.
+        atomic: Use atomic write.
+
+    """
+
+    base_dir: Path | str | None = None
+    encoding: str = "utf-8"
+    create_parents: bool = True
+    backup: bool = True
+    atomic: bool = True
+
+
 # Union type for safe_read errors
 ReadFileError: TypeAlias = (
     FileNotFoundErr | NotAFileErr | FileTooLargeErr | SecurityError
@@ -157,22 +177,14 @@ def safe_write(
     path: Path | str,
     content: str,
     *,
-    base_dir: Path | str | None = None,
-    encoding: str = "utf-8",
-    create_parents: bool = True,
-    backup: bool = True,
-    atomic: bool = True,
+    options: WriteOptions | None = None,
 ) -> Path:
     """Write to a file safely with path validation.
 
     Args:
         path: Path to write to.
         content: Content to write.
-        base_dir: Base directory to constrain to.
-        encoding: File encoding.
-        create_parents: Create parent directories if needed.
-        backup: Create backup of existing file.
-        atomic: Use atomic write (write to temp, then rename).
+        options: Write options.
 
     Returns:
         Path to the written file.
@@ -181,11 +193,12 @@ def safe_write(
         SecurityError: If path validation fails.
 
     """
+    opts = options or WriteOptions()
     path = Path(path)
 
     # Validate path
-    if base_dir is not None:
-        base = Path(base_dir).resolve()
+    if opts.base_dir is not None:
+        base = Path(opts.base_dir).resolve()
         # For new files, validate the parent
         if not path.exists():
             parent = path.parent
@@ -200,16 +213,16 @@ def safe_write(
     path = path.parent / safe_name
 
     # Create parents if needed
-    if create_parents:
+    if opts.create_parents:
         path.parent.mkdir(parents=True, exist_ok=True)
 
     # Create backup if file exists
-    if backup and path.exists():
+    if opts.backup and path.exists():
         backup_path = path.with_suffix(f"{path.suffix}.bak")
         shutil.copy2(path, backup_path)
 
     # Write file
-    if atomic:
+    if opts.atomic:
         # Write to temp file first, then rename
         _fd, temp_path = tempfile.mkstemp(
             dir=path.parent,
@@ -220,7 +233,7 @@ def safe_write(
             # Close the file descriptor immediately - required for Windows
             os.close(_fd)
             temp_file = Path(temp_path)
-            temp_file.write_text(content, encoding=encoding)
+            temp_file.write_text(content, encoding=opts.encoding)
             # Preserve permissions if original exists
             if path.exists():
                 shutil.copymode(path, temp_file)
@@ -234,7 +247,7 @@ def safe_write(
                 Path(temp_path).unlink(missing_ok=True)
             raise
     else:
-        path.write_text(content, encoding=encoding)
+        path.write_text(content, encoding=opts.encoding)
 
     return path.resolve()
 

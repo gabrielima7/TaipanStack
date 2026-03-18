@@ -30,12 +30,14 @@ class TestFilesystemEdgeCases:
 
     def test_safe_write_existing_file_guarded(self, tmp_path: Path) -> None:
         """Test safe_write with existing file and base_dir."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "existing.txt"
         test_file.write_text("old content")
 
-        result = safe_write(test_file, "new content", base_dir=tmp_path)
+        result = safe_write(
+            test_file, "new content", options=WriteOptions(base_dir=tmp_path)
+        )
         assert result.read_text() == "new content"
 
     def test_safe_write_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
@@ -47,14 +49,14 @@ class TestFilesystemEdgeCases:
 
     def test_safe_write_atomic_error_cleanup(self, tmp_path: Path) -> None:
         """Test atomic write cleans up temp file on error."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "test.txt"
 
         # Mock write_text to raise an error
         with patch.object(Path, "write_text", side_effect=OSError("Write error")):
             with pytest.raises(OSError):
-                safe_write(test_file, "content", atomic=True)
+                safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
     def test_safe_copy_dst_exists_base_dir(self, tmp_path: Path) -> None:
         """Test safe_copy with existing dst and base_dir."""

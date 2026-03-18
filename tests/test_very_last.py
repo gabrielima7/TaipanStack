@@ -156,13 +156,13 @@ class TestFilesystemWriteError:
 
     def test_safe_write_existing_permissions(self, tmp_path: Path) -> None:
         """Test safe_write preserves permissions on existing file."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
 
         # Write new content atomically
-        result = safe_write(existing, "new", atomic=True)
+        result = safe_write(existing, "new", options=WriteOptions(atomic=True))
         assert result.read_text() == "new"
 
     def test_ensure_dir_with_traversal(self, tmp_path: Path) -> None:

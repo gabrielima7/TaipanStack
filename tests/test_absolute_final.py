@@ -92,10 +92,10 @@ class TestFilesystemLine175:
 
     def test_safe_write_different_encoding(self, tmp_path: Path) -> None:
         """Test safe_write with different encoding."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "encoded.txt"
         content = "Héllo Wörld"
 
-        result = safe_write(test_file, content, encoding="utf-8")
+        result = safe_write(test_file, content, options=WriteOptions(encoding="utf-8"))
         assert result.read_text(encoding="utf-8") == content

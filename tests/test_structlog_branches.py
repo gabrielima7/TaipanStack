@@ -127,24 +127,28 @@ class TestFilesystemRemainingBranches:
 
     def test_safe_write_create_parents(self, tmp_path: Path) -> None:
         """Test safe_write with create_parents=True."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         # Write to nested path that doesn't exist
         nested_file = tmp_path / "a" / "b" / "c" / "file.txt"
-        result = safe_write(nested_file, "content", create_parents=True)
+        result = safe_write(
+            nested_file, "content", options=WriteOptions(create_parents=True)
+        )
 
         assert result.exists()
         assert result.read_text() == "content"
 
     def test_safe_write_atomic_with_existing(self, tmp_path: Path) -> None:
         """Test safe_write atomic with existing file copies permissions."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
 
         # Write atomically - should preserve permissions
-        result = safe_write(existing, "new", atomic=True, backup=False)
+        result = safe_write(
+            existing, "new", options=WriteOptions(atomic=True, backup=False)
+        )
         assert result.read_text() == "new"
 
 

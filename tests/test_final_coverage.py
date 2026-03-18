@@ -157,10 +157,10 @@ class TestFilesystemComplete:
 
     def test_safe_write_non_atomic(self, tmp_path: Path) -> None:
         """Test safe_write with atomic=False."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "non_atomic.txt"
-        result = safe_write(test_file, "content", atomic=False)
+        result = safe_write(test_file, "content", options=WriteOptions(atomic=False))
         assert result.read_text() == "content"
 
     def test_safe_delete_recursive(self, tmp_path: Path) -> None:

@@ -186,12 +186,12 @@ class TestFilesystemBranches:
 
     def test_safe_write_no_backup(self, tmp_path: Path) -> None:
         """Test safe_write with backup=False."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
 
-        safe_write(test_file, "new", backup=False)
+        safe_write(test_file, "new", options=WriteOptions(backup=False))
         assert test_file.read_text() == "new"
 
         # No backup should exist
