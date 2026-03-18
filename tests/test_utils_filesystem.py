@@ -121,6 +121,14 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
+    def test_write_empty_content(self, tmp_path: Path) -> None:
+        """Test writing an empty string."""
+        test_file = tmp_path / "empty.txt"
+        result = safe_write(test_file, "")
+
+        assert result.exists()
+        assert result.read_text() == ""
+
     def test_write_creates_parent_dirs(self, tmp_path: Path) -> None:
         """Test that parent directories are created."""
         test_file = tmp_path / "subdir" / "nested" / "file.txt"
