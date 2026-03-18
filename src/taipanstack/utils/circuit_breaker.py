@@ -31,6 +31,7 @@ class CircuitBreakerDecorator(Protocol):
         self, func: Callable[P, Coroutine[Any, Any, R]]
     ) -> Callable[P, Coroutine[Any, Any, R]]: ...  # pragma: no cover
 
+
 logger = logging.getLogger("taipanstack.utils.circuit_breaker")
 
 try:
