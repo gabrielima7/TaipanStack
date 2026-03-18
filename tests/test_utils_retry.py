@@ -91,6 +91,20 @@ class TestCalculateDelay:
         # With 50% jitter, delays should vary
         assert len(set(delays)) > 1
 
+    def test_chaos_retry_negative_attempt_resource_exhaustion(self) -> None:
+        """Test resilience against negative attempt counter.
+
+        Simulates a rare production failure/state mutation where `attempt` becomes
+        negative, potentially causing a fractional exponential backoff result and
+        resource exhaustion (near-zero micro-delay).
+        """
+        config = RetryConfig(initial_delay=1.0, exponential_base=2.0, jitter=False)
+
+        # A negative attempt should be normalized to 1, returning the initial delay
+        delay = calculate_delay(-5, config)
+
+        assert delay == 1.0
+
 
 class TestRetryDecorator:
     """Tests for @retry decorator."""

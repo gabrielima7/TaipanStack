@@ -107,8 +107,9 @@ def calculate_delay(
         Delay in seconds before next retry.
 
     """
+    safe_attempt = max(1, attempt)
     # Exponential backoff
-    delay = config.initial_delay * (config.exponential_base ** (attempt - 1))
+    delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
 
     # Cap at max delay
     delay = min(delay, config.max_delay)
