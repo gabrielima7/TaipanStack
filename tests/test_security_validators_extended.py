@@ -107,4 +107,3 @@ class TestValidateUrlEdgeCases:
         """Test that localhost is allowed when TLD not required."""
         result = validate_url("http://localhost:8080", require_tld=False)
         assert "localhost" in result
-
