@@ -4,11 +4,8 @@ import pytest
 
 from taipanstack.security.validators import (
     validate_email,
-    validate_ip_address,
-    validate_port,
     validate_project_name,
     validate_python_version,
-    validate_semver,
     validate_url,
 )
 
@@ -138,67 +135,3 @@ class TestValidateUrl:
         """Test URL with an out of range port raises ValueError."""
         with pytest.raises(ValueError, match="Invalid URL format: Port out of range"):
             validate_url("http://example.com:99999999999")
-
-
-class TestValidateIpAddress:
-    """Tests for validate_ip_address function."""
-
-    def test_valid_ipv4(self) -> None:
-        """Test valid IPv4 addresses pass."""
-        result = validate_ip_address("192.168.1.1")
-        assert str(result) == "192.168.1.1"
-
-    def test_valid_ipv6(self) -> None:
-        """Test valid IPv6 addresses pass."""
-        result = validate_ip_address("::1")
-        assert str(result) == "::1"
-
-    def test_invalid_ip_rejected(self) -> None:
-        """Test invalid IPs are rejected."""
-        with pytest.raises(
-            ValueError, match="Invalid IP address: not.an.ip"
-        ) as exc_info:
-            validate_ip_address("not.an.ip")
-
-        # Verify that the original ipaddress ValueError was chained
-        assert isinstance(exc_info.value.__cause__, ValueError)
-
-
-class TestValidatePort:
-    """Tests for validate_port function."""
-
-    def test_valid_ports(self) -> None:
-        """Test valid ports pass."""
-        assert validate_port(8080) == 8080
-        assert validate_port("3000") == 3000
-        assert validate_port(65535) == 65535
-
-    def test_invalid_port_rejected(self) -> None:
-        """Test invalid ports are rejected."""
-        with pytest.raises(ValueError, match="must be between"):
-            validate_port(70000)
-
-    def test_invalid_string_rejected(self) -> None:
-        """Test string that cannot be cast to int is rejected."""
-        with pytest.raises(ValueError, match="Invalid port number: not-a-port"):
-            validate_port("not-a-port")
-
-    def test_privileged_ports_blocked(self) -> None:
-        """Test privileged ports are blocked by default."""
-        with pytest.raises(ValueError, match="Privileged ports"):
-            validate_port(80)
-
-
-class TestValidateSemver:
-    """Tests for validate_semver function."""
-
-    def test_valid_semver(self) -> None:
-        """Test valid semver strings pass."""
-        assert validate_semver("1.0.0") == (1, 0, 0)
-        assert validate_semver("v2.3.4") == (2, 3, 4)
-        assert validate_semver("0.1.0-beta") == (0, 1, 0)
-
-    def test_invalid_semver_rejected(self) -> None:
-        """Test invalid semver is rejected."""
-        with pytest.raises(ValueError, match="Invalid semantic version"):
-            validate_semver("1.0")

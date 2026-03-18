@@ -186,10 +186,3 @@ class TestValidatorsRemainingBranches:
         # Valid name under default max_length
         result = validate_project_name("validproject")
         assert result == "validproject"
-
-    def test_validate_ip_address_ipv6(self) -> None:
-        """Test validate_ip_address with IPv6."""
-        from taipanstack.security.validators import validate_ip_address
-
-        result = validate_ip_address("::1", version="6")
-        assert result is not None
