@@ -1,7 +1,8 @@
 """Tests for stack.security.validators module."""
 
 import pytest
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 from taipanstack.security.validators import (
     validate_email,
@@ -262,9 +263,8 @@ class TestPropertyBasedFuzzing:
     @given(st.text(min_size=1, max_size=50))
     def test_fuzz_semver(self, version: str) -> None:
         """Fuzz semver validation with random strings."""
-        try:
+        import contextlib
+
+        with contextlib.suppress(ValueError):
             # Result is a tuple, but the input must not have allowed bypassing
             validate_semver(version)
-        except ValueError:
-            # Expected for most random inputs
-            pass
