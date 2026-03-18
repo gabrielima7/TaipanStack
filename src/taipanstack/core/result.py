@@ -170,11 +170,12 @@ def collect_results(
 
     """
     values: list[T] = []
-    for result in results:
-        if isinstance(result, Ok):
-            values.append(result.ok_value)
-        else:
-            return result
+    append = values.append
+    for r in results:
+        try:
+            append(r.ok_value)
+        except AttributeError:
+            return r
     return Ok(values)
 
 
