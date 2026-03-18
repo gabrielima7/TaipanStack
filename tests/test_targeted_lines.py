@@ -94,12 +94,12 @@ class TestFilesystemLine175And259:
 
     def test_safe_write_directory_exists(self, tmp_path: Path) -> None:
         """Test safe_write when parent directory already exists."""
-        from taipanstack.utils.filesystem import safe_write
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
 
         test_file = tmp_path / "existing_dir" / "file.txt"
         (tmp_path / "existing_dir").mkdir()
 
-        result = safe_write(test_file, "content", create_parents=False)
+        result = safe_write(test_file, "content", options=WriteOptions(create_parents=False))
         assert result.read_text() == "content"
 
     def test_safe_delete_directory(self, tmp_path: Path) -> None:
