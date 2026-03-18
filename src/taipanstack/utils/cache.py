@@ -76,7 +76,7 @@ def cached(ttl: float) -> CacheDecorator:
                 result = await func_coro(*args, **kwargs)
 
                 if isinstance(result, Ok):
-                    _cache[cache_key] = (now + ttl, result.ok())
+                    _cache[cache_key] = (now + ttl, result.ok_value)
 
                 return result
 
@@ -97,7 +97,7 @@ def cached(ttl: float) -> CacheDecorator:
             result = func_sync(*args, **kwargs)
 
             if isinstance(result, Ok):
-                _cache[cache_key] = (now + ttl, result.ok())
+                _cache[cache_key] = (now + ttl, result.ok_value)
 
             return result
 
