@@ -172,9 +172,9 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for r in results:
-        try:
+        if isinstance(r, Ok):
             append(r.ok_value)
-        except AttributeError:
+        else:
             return r
     return Ok(values)
 
