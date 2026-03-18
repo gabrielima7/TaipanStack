@@ -16,3 +16,8 @@
 **Vulnerability:** The `get_file_hash` function allowed any algorithm supported by `hashlib.new()`, including cryptographically weak ones like MD5 and SHA-1.
 **Learning:** Defaulting to arbitrary user-supplied strings for cryptographic primitives without validation can lead to the use of insecure or deprecated algorithms.
 **Prevention:** Implement a dedicated security guard (whitelist) for cryptographic algorithms and apply it consistently across all utilities that perform hashing or encryption.
+
+## 2026-03-18 - Regex Validation Bypass via Trailing Newlines
+**Vulnerability:** Regex patterns in `src/taipanstack/security/validators.py` (e.g., for project names, emails, semver, Python versions) used the `$` anchor for string termination.
+**Learning:** In Python's `re` module, the `$` anchor matches either the end of the string OR just before a trailing newline (`\n`). This allows an attacker to bypass strict string validation by appending a newline character to an otherwise invalid payload.
+**Prevention:** Always use the `\Z` anchor instead of `$` when enforcing absolute string termination in security-critical regex patterns to prevent newline-based bypasses.
