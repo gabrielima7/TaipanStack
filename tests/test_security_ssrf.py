@@ -27,6 +27,19 @@ class TestGuardSsrfTypeContract:
         with pytest.raises(TypeError, match="URL must be str"):
             guard_ssrf(b"http://example.com")  # type: ignore[arg-type]
 
+    @patch("taipanstack.security.guards.urlparse")
+    def test_raises_value_error_from_urlparse(self, mock_urlparse) -> None:
+        """Return Err when urlparse raises ValueError."""
+        mock_urlparse.side_effect = ValueError("Mocked error")
+        result = guard_ssrf("http://example.com")
+        assert result.is_err()
+        err = result.err()
+        assert isinstance(err, SecurityError)
+        assert err.guard_name == "ssrf"
+        msg = str(err)
+        assert "Malformed URL" in msg
+        assert "Mocked error" in msg
+
 
 class TestGuardSsrfEmptyAndMalformed:
     """Test empty or scheme-less inputs return Err."""
