@@ -35,6 +35,33 @@ def test_fallback_sync() -> None:
         sync_raise_unhandled()
 
 
+def test_fallback_sync_unreachable() -> None:
+    """Test fallback sync unreachable logic."""
+
+    @fallback(fallback_value="safe")
+    def bad_sync() -> Result[str, ValueError]:
+        return "not-a-result"  # type: ignore
+
+    res = bad_sync()
+    assert res.is_err()
+    assert isinstance(res.err(), RuntimeError)
+    assert str(res.err()) == "Unreachable"
+
+
+@pytest.mark.asyncio
+async def test_fallback_async_unreachable() -> None:
+    """Test fallback async unreachable logic."""
+
+    @fallback(fallback_value="safe")
+    async def bad_async() -> Result[str, ValueError]:
+        return "not-a-result"  # type: ignore
+
+    res = await bad_async()
+    assert res.is_err()
+    assert isinstance(res.err(), RuntimeError)
+    assert str(res.err()) == "Unreachable"
+
+
 @pytest.mark.asyncio
 async def test_fallback_async() -> None:
     """Test async fallback."""
