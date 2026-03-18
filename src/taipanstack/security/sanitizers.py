@@ -193,6 +193,61 @@ def sanitize_filename(
     return result
 
 
+def _parse_path_parts(path: Path) -> list[str]:
+    """Parse and sanitize path components, resolving '..' and '.'."""
+    parts: list[str] = []
+    for part in path.parts:
+        if part == "..":
+            if parts and parts[-1] != "..":
+                parts.pop()
+            # Skip the .. entirely if at root
+        elif part != ".":  # pragma: no branch
+            # Sanitize each component
+            safe_part = sanitize_filename(part, preserve_extension=True)
+            if safe_part:  # Skip empty parts  # pragma: no branch
+                parts.append(safe_part)
+    return parts
+
+
+def _reconstruct_path(path: Path, parts: list[str]) -> Path:
+    """Reconstruct a path from sanitized parts."""
+    if path.is_absolute():  # pragma: no branch
+        return Path("/").joinpath(*parts) if parts else Path("/")  # pragma: no cover
+    if parts:  # pragma: no branch
+        return Path().joinpath(*parts)
+    return Path()  # pragma: no cover
+
+
+def _constrain_to_base_dir(
+    sanitized: Path, base_dir: Path | None, resolve: bool
+) -> Path:
+    """Constrain the sanitized path to the base directory."""
+    if base_dir is None:
+        return sanitized
+
+    base = Path(base_dir).resolve()
+    if resolve:
+        try:
+            return sanitized.resolve()
+        except (OSError, RuntimeError) as e:
+            msg = f"Cannot resolve path: {e}"
+            raise ValueError(msg) from e
+
+    # Make absolute relative to base
+    if not sanitized.is_absolute():  # pragma: no branch
+        return base / sanitized
+
+    return sanitized
+
+
+def _validate_depth(sanitized: Path, max_depth: int | None) -> None:
+    """Validate that the path depth does not exceed max_depth."""
+    depth = len(sanitized.parts)
+    if max_depth is not None and depth > max_depth:
+        msg = f"Path depth {depth} exceeds maximum of {max_depth}"
+        raise ValueError(msg)  # pragma: no cover
+
+
 def sanitize_path(
     path: str | Path,
     *,
@@ -221,52 +276,18 @@ def sanitize_path(
     # Remove any null bytes
     path_str = str(path).replace("\x00", "")
 
-    # Normalize the path
+    # Normalize the path and parse its parts
     path = Path(path_str)
-
-    # Remove any .. or . components manually
-    parts: list[str] = []
-    for part in path.parts:
-        if part == "..":
-            if parts and parts[-1] != "..":
-                parts.pop()
-            # Skip the .. entirely if at root
-        elif part != ".":  # pragma: no branch
-            # Sanitize each component
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part:  # Skip empty parts  # pragma: no branch
-                parts.append(safe_part)
+    parts = _parse_path_parts(path)
 
     # Reconstruct path
-    if path.is_absolute():  # pragma: no branch
-        sanitized = (
-            Path("/").joinpath(*parts) if parts else Path("/")
-        )  # pragma: no cover
-    elif parts:  # pragma: no branch
-        sanitized = Path().joinpath(*parts)
-    else:  # pragma: no cover
-        sanitized = Path()
+    sanitized = _reconstruct_path(path, parts)
 
     # Check depth (skip if max_depth is None)
-    depth = len(sanitized.parts)
-    if max_depth is not None and depth > max_depth:
-        msg = f"Path depth {depth} exceeds maximum of {max_depth}"
-        raise ValueError(msg)
+    _validate_depth(sanitized, max_depth)
 
     # Constrain to base_dir if provided
-    if base_dir is not None:
-        base = Path(base_dir).resolve()
-        if resolve:
-            try:
-                sanitized = sanitized.resolve()
-            except (OSError, RuntimeError) as e:
-                msg = f"Cannot resolve path: {e}"
-                raise ValueError(msg) from e
-        # Make absolute relative to base
-        elif not sanitized.is_absolute():  # pragma: no branch
-            sanitized = base / sanitized
-
-    return sanitized
+    return _constrain_to_base_dir(sanitized, base_dir, resolve)
 
 
 def sanitize_env_value(
