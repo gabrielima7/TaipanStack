@@ -128,3 +128,47 @@ rules:
           - pattern: requests.options(...)
           - pattern: requests.request(...)
       - pattern-not: requests.$METHOD(..., timeout=$TIMEOUT, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 5: Detect insecure usage of `eval()`
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-eval
+    languages: [python]
+    severity: ERROR
+    message: >
+      The use of `eval()` is highly discouraged and can lead to arbitrary code execution
+      if used with untrusted user input. Use `ast.literal_eval()` for safely evaluating
+      strings containing Python expressions.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern: eval(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 6: Detect insecure deserialization with pickle
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-pickle
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `pickle` to deserialize untrusted data can lead to arbitrary code
+      execution. Use safer formats like JSON (`json.loads()`) for data exchange.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+      technology:
+        - python
+    pattern-either:
+      - pattern: pickle.load(...)
+      - pattern: pickle.loads(...)
+      - pattern: _pickle.load(...)
+      - pattern: _pickle.loads(...)
+      - pattern: cPickle.load(...)
+      - pattern: cPickle.loads(...)
