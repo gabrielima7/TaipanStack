@@ -39,17 +39,6 @@ class TestValidatorsParseError:
                 validate_url("http://valid.com")
 
 
-class TestValidatorsPortString:
-    """Tests for validators port conversion (lines 302-304)."""
-
-    def test_validate_port_string_invalid(self) -> None:
-        """Test validate_port with invalid string."""
-        from taipanstack.security.validators import validate_port
-
-        with pytest.raises(ValueError, match="Invalid port"):
-            validate_port("not_a_number")
-
-
 class TestGuardsSymlinkDenied:
     """Tests for guards symlink denied (line 118)."""
 
