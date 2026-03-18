@@ -34,12 +34,12 @@ def default_encoder(obj: object) -> dict[str, object]:
         b'{"status":"error","message":"oops"}'
 
     """
-    if isinstance(obj, Ok):
-        if isinstance(obj.ok_value, dict):
-            return {"status": "success", **obj.ok_value}
-        return {"status": "success", "data": obj.ok_value}
-
-    if isinstance(obj, Err):
-        return {"status": "error", "message": str(obj.err_value)}
-
-    raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
+    match obj:
+        case Ok(ok_value) if isinstance(ok_value, dict):
+            return {"status": "success", **ok_value}
+        case Ok(ok_value):
+            return {"status": "success", "data": ok_value}
+        case Err(err_value):
+            return {"status": "error", "message": str(err_value)}
+        case _:
+            raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
