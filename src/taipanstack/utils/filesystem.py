@@ -103,6 +103,7 @@ class WriteOptions:
         create_parents: Create parent directories if needed.
         backup: Create backup of existing file.
         atomic: Use atomic write.
+
     """
 
     base_dir: Path | str | None = None
