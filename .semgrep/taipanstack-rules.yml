@@ -172,3 +172,28 @@ rules:
       - pattern: _pickle.loads(...)
       - pattern: cPickle.load(...)
       - pattern: cPickle.loads(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 7: Strict string validation regex dollar anchor bypass
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-regex-dollar-anchor
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `$` for strict string validation can lead to bypasses via trailing newlines. Use `\Z` instead.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-20: Improper Input Validation"
+      owasp: "A03:2021 - Injection"
+    patterns:
+      - pattern-either:
+        - pattern: re.match($PATTERN, ...)
+        - pattern: re.search($PATTERN, ...)
+        - pattern: re.fullmatch($PATTERN, ...)
+      - pattern-inside: |
+          $PATTERN = $REGEX
+          ...
+      - metavariable-regex:
+          metavariable: $REGEX
+          regex: '.*\$[\''"]?'
