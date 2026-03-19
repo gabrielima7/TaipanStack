@@ -6,8 +6,6 @@ to remove potentially dangerous characters.
 """
 
 import re
-import sys
-import unicodedata
 from pathlib import Path
 
 # Constants to avoid magic values (PLR2004)
@@ -17,11 +15,10 @@ MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
 _SQL_IDENTIFIER_DENY_RE = re.compile(r"[^a-zA-Z0-9_]")  # pragma: no mutate
 _HTML_TAGS_RE = re.compile(r"<[^>]+>")  # pragma: no mutate
-_CONTROL_CHARS_TRANS = {
-    i: None
-    for i in range(sys.maxunicode)
-    if unicodedata.category(chr(i)) == "Cc" and chr(i) not in "\n\r\t"
-}  # pragma: no mutate
+# Remove control characters (C0 and C1 sets)
+_CONTROL_CHARS_RE = re.compile(
+    r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]"
+)  # pragma: no mutate
 _VALID_SQL_PREFIX = frozenset(
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
 )  # pragma: no mutate
@@ -93,7 +90,7 @@ def sanitize_string(
         result = result.strip()
 
     # Remove null bytes and control characters
-    result = result.translate(_CONTROL_CHARS_TRANS)
+    result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
     if not allow_html:
