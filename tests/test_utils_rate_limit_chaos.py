@@ -74,7 +74,7 @@ def test_rate_limiter_chaos_clock_jump(monkeypatch) -> None:
     appears to jump backwards. This tests resource exhaustion via negative tokens.
     """
     import time
-    from typing import cast
+
     from taipanstack.utils.rate_limit import RateLimiter
 
     # We will simulate time manually
