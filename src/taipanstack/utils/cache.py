@@ -75,8 +75,9 @@ def cached(ttl: float) -> CacheDecorator:
                 func_coro = cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], func)
                 result = await func_coro(*args, **kwargs)
 
-                if isinstance(result, Ok):
-                    _cache[cache_key] = (now + ttl, result.ok_value)
+                match result:
+                    case Ok(ok_value):
+                        _cache[cache_key] = (now + ttl, ok_value)
 
                 return result
 
@@ -96,8 +97,9 @@ def cached(ttl: float) -> CacheDecorator:
             func_sync = cast(Callable[P, Result[T, E]], func)
             result = func_sync(*args, **kwargs)
 
-            if isinstance(result, Ok):
-                _cache[cache_key] = (now + ttl, result.ok_value)
+            match result:
+                case Ok(ok_value):
+                    _cache[cache_key] = (now + ttl, ok_value)
 
             return result
 
