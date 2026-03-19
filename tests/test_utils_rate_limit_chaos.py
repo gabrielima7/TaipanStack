@@ -64,3 +64,41 @@ def test_rate_limiter_chaos_race_condition() -> None:
         f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
     )
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
+
+
+def test_rate_limiter_chaos_clock_jump(monkeypatch) -> None:
+    """Simulate a rare production failure: extreme negative elapsed time.
+
+    This can occur due to OS-level NTP synchronization glitches, Virtualization
+    clock anomalies, or other unpredictable time behavior where time.monotonic()
+    appears to jump backwards. This tests resource exhaustion via negative tokens.
+    """
+    import time
+    from typing import cast
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    # We will simulate time manually
+    current_time = 1000.0
+
+    def fake_monotonic() -> float:
+        return current_time
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic)
+
+    # Allows 10 requests per 10 seconds (1 token per second)
+    limiter = RateLimiter(10, 10.0)
+
+    # Initial consume at t=1000.0, successful
+    assert limiter.consume() is True
+    assert limiter.tokens <= 9.0
+
+    # Now simulate a massive backward clock jump to t=0.0
+    current_time = 0.0
+
+    # This consume calculation will see elapsed = -1000.0
+    # Before the fix, tokens -= 1000.0 * (10 / 10.0) = -1000.0 tokens
+    limiter.consume()
+
+    # The tokens should NEVER be strictly negative, which would cause resource starvation
+    # for legitimate requests long after the clock recovers.
+    assert limiter.tokens >= 0.0, f"Tokens dropped below 0: {limiter.tokens}"
