@@ -44,8 +44,8 @@ def test_fallback_sync_unreachable() -> None:
 
     res = bad_sync()
     assert res.is_err()
-    assert isinstance(res.err(), RuntimeError)
-    assert str(res.err()) == "Unreachable"
+    assert isinstance(res.err_value, RuntimeError)
+    assert str(res.err_value) == "Unreachable"
 
 
 @pytest.mark.asyncio
@@ -58,8 +58,8 @@ async def test_fallback_async_unreachable() -> None:
 
     res = await bad_async()
     assert res.is_err()
-    assert isinstance(res.err(), RuntimeError)
-    assert str(res.err()) == "Unreachable"
+    assert isinstance(res.err_value, RuntimeError)
+    assert str(res.err_value) == "Unreachable"
 
 
 @pytest.mark.asyncio
@@ -102,7 +102,7 @@ def test_timeout_sync() -> None:
 
     res_err = sync_sleep(0.5)
     assert isinstance(res_err, Err)
-    res_err_instance = res_err.err()
+    res_err_instance = res_err.err_value
     assert isinstance(res_err_instance, TimeoutError)
 
     # Test exception propagation
@@ -128,5 +128,5 @@ async def test_timeout_async() -> None:
 
     res_err = await async_sleep(0.5)
     assert isinstance(res_err, Err)
-    res_err_instance = res_err.err()
+    res_err_instance = res_err.err_value
     assert isinstance(res_err_instance, TimeoutError)
