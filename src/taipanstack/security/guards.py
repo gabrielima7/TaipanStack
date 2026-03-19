@@ -453,7 +453,82 @@ def guard_hash_algorithm(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def guard_ssrf(  # noqa: PLR0911
+def _validate_ssrf_url(
+    url: str, allowed_schemes: frozenset[str]
+) -> Result[str, SecurityError]:
+    """Validate SSRF URL parsing, scheme, and presence of hostname."""
+    try:
+        parsed = urlparse(url)
+    except ValueError as exc:  # pragma: no cover — urlparse rarely raises
+        return Err(
+            SecurityError(
+                f"Malformed URL: {exc}",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+
+    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
+        return Err(
+            SecurityError(
+                f"URL scheme '{parsed.scheme}' is not allowed",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+
+    hostname = parsed.hostname
+    if not hostname:
+        return Err(
+            SecurityError(
+                "URL has no resolvable hostname",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
+    return Ok(hostname)
+
+
+def _check_ip_addresses(hostname: str) -> Result[None, SecurityError]:
+    """Resolve hostname and check if any IP addresses are private/reserved."""
+    # Resolve hostname → list of IP addresses via DNS
+    try:
+        addr_infos = socket.getaddrinfo(hostname, None)
+    except socket.gaierror as exc:
+        return Err(
+            SecurityError(
+                f"Hostname could not be resolved: {exc}",
+                guard_name="ssrf",
+                value=hostname[:80],
+            )
+        )
+
+    for addr_info in addr_infos:
+        raw_ip = addr_info[4][0]
+        try:
+            addr = ipaddress.ip_address(raw_ip)
+        except ValueError:
+            continue
+
+        if (
+            addr.is_private
+            or addr.is_loopback
+            or addr.is_link_local
+            or addr.is_reserved
+        ):
+            return Err(
+                SecurityError(
+                    f"SSRF detected: hostname '{hostname}' resolves to "
+                    f"private/reserved address {addr}",
+                    guard_name="ssrf",
+                    value=str(addr),
+                )
+            )
+
+    return Ok(None)
+
+
+def guard_ssrf(
     url: str,
     *,
     allowed_schemes: frozenset[str] = _ALLOWED_SSRF_SCHEMES,
@@ -494,68 +569,16 @@ def guard_ssrf(  # noqa: PLR0911
             )
         )
 
-    try:
-        parsed = urlparse(url)
-    except ValueError as exc:  # pragma: no cover — urlparse rarely raises
-        return Err(
-            SecurityError(
-                f"Malformed URL: {exc}",
-                guard_name="ssrf",
-                value=url[:80],
-            )
-        )
+    match _validate_ssrf_url(url, allowed_schemes):
+        case Ok(hostname):
+            pass
+        case Err(e):
+            return Err(e)
 
-    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
-        return Err(
-            SecurityError(
-                f"URL scheme '{parsed.scheme}' is not allowed",
-                guard_name="ssrf",
-                value=url[:80],
-            )
-        )
-
-    hostname = parsed.hostname
-    if not hostname:
-        return Err(
-            SecurityError(
-                "URL has no resolvable hostname",
-                guard_name="ssrf",
-                value=url[:80],
-            )
-        )
-
-    # Resolve hostname → list of IP addresses via DNS
-    try:
-        addr_infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror as exc:
-        return Err(
-            SecurityError(
-                f"Hostname could not be resolved: {exc}",
-                guard_name="ssrf",
-                value=hostname[:80],
-            )
-        )
-
-    for addr_info in addr_infos:
-        raw_ip = addr_info[4][0]
-        try:
-            addr = ipaddress.ip_address(raw_ip)
-        except ValueError:
-            continue
-
-        if (
-            addr.is_private
-            or addr.is_loopback
-            or addr.is_link_local
-            or addr.is_reserved
-        ):
-            return Err(
-                SecurityError(
-                    f"SSRF detected: hostname '{hostname}' resolves to "
-                    f"private/reserved address {addr}",
-                    guard_name="ssrf",
-                    value=str(addr),
-                )
-            )
+    match _check_ip_addresses(hostname):
+        case Ok(_):
+            pass
+        case Err(e):
+            return Err(e)
 
     return Ok(url)
