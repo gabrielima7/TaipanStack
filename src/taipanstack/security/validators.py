@@ -99,7 +99,7 @@ def _check_project_name_chars(
     if allow_underscore:
         allowed += r"_"
 
-    pattern = f"^[a-zA-Z][{allowed}]*$"
+    pattern = f"^[a-zA-Z][{allowed}]*\\Z"
 
     if not re.match(pattern, name):
         if not name[0].isalpha():
@@ -180,7 +180,7 @@ def validate_python_version(version: str) -> str:
     """
     _validate_type(version, str, "Version")
 
-    pattern = r"^\d+\.\d+$"
+    pattern = r"^\d+\.\d+\Z"
 
     if not re.match(pattern, version):
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
@@ -229,7 +229,7 @@ def validate_email(email: str) -> str:
         raise ValueError(msg)
 
     # RFC 5322 compliant pattern (simplified)
-    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
 
     if not re.match(pattern, email):
         msg = f"Invalid email format: {email}"
