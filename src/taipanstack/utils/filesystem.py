@@ -13,7 +13,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import TypeAlias
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security.guards import (
@@ -52,7 +52,10 @@ class NotAFileErr:
 
 
 def _validate_path(
-    path: Path | str, base_dir: Path | str | None = None, **kwargs: Any
+    path: Path | str,
+    base_dir: Path | str | None = None,
+    *,
+    allow_symlinks: bool = False,
 ) -> Path:
     """Validate path for traversal.
 
@@ -62,7 +65,7 @@ def _validate_path(
     """
     path = Path(path)
     if base_dir is not None:
-        return guard_path_traversal(path, base_dir, **kwargs)
+        return guard_path_traversal(path, base_dir, allow_symlinks=allow_symlinks)
 
     # Check for explicit traversal patterns
     path_str = str(path).lower()
