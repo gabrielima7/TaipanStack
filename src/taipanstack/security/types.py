@@ -135,7 +135,7 @@ SafeProjectName = Annotated[str, AfterValidator(_validate_safe_project_name)]
 """A project name validated for safe naming conventions."""
 
 
-_SQL_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+_SQL_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*\Z")
 
 
 def _sanitize_safe_html(text: str) -> str:
