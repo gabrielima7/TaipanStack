@@ -107,9 +107,6 @@ jobs:
     container:
       image: ${{ matrix.image }}
 
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: Install dependencies (apt-based)
