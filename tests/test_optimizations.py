@@ -262,17 +262,18 @@ def test_apply_optimizations_no_skipped() -> None:
     import unittest.mock
 
     class DummyConfig:
-         enable_gc_tuning = True
-         enable_string_interning = True
-         enable_gc_freeze = True
-         enable_experimental = True
-         enable_perf_hints = True
-         enable_mimalloc = True
-         gc_threshold_0 = 700
-         gc_threshold_1 = 10
-         gc_threshold_2 = 10
-         thread_pool_multiplier = 1
-         max_thread_pool_size = 32
+         def __init__(self):
+             self.enable_gc_tuning = True
+             self.enable_string_interning = True
+             self.enable_gc_freeze = True
+             self.enable_experimental = True
+             self.enable_perf_hints = True
+             self.enable_mimalloc = True
+             self.gc_threshold_0 = 700
+             self.gc_threshold_1 = 10
+             self.gc_threshold_2 = 10
+             self.thread_pool_multiplier = 1
+             self.max_thread_pool_size = 32
 
     config = DummyConfig()
 
@@ -282,3 +283,18 @@ def test_apply_optimizations_no_skipped() -> None:
 
          result = apply_optimizations(profile=config) # type: ignore
          assert len(result.skipped) == 0
+         # We ALSO need to trigger `if errors:` being empty, which it is.
+
+def test_apply_optimizations_errors_branch() -> None:
+    """Test apply_optimizations when errors list is populated."""
+    from src.taipanstack.core.optimizations import apply_optimizations, OptimizationProfile
+    import unittest.mock
+
+    config = OptimizationProfile()
+
+    def mock_gc_tuning(profile, applied, errors):
+        errors.append("test error")
+
+    with unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_tuning", side_effect=mock_gc_tuning):
+         result = apply_optimizations(profile=config) # type: ignore
+         assert "test error" in result.errors
