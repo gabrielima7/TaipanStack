@@ -37,6 +37,7 @@ class TestGuardSsrfTypeContract:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
+
 class TestGuardSsrfCoverage:
     """Extra coverage tests for guard_ssrf."""
 
@@ -50,7 +51,10 @@ class TestGuardSsrfCoverage:
         def mock_getaddrinfo(*args, **kwargs) -> list:
             return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("not_an_ip", 0))]
 
-        with patch("taipanstack.security.guards.socket.getaddrinfo", side_effect=mock_getaddrinfo):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            side_effect=mock_getaddrinfo,
+        ):
             result = guard_ssrf("http://example.com")
 
         assert result.is_ok()
