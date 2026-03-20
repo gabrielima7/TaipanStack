@@ -11,7 +11,7 @@ import time
 from collections.abc import Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
-from taipanstack.core.result import Ok, Result
+from taipanstack.core.result import Err, Ok, Result
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -75,8 +75,11 @@ def cached(ttl: float) -> CacheDecorator:
                 func_coro = cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], func)
                 result = await func_coro(*args, **kwargs)
 
-                if isinstance(result, Ok):
-                    _cache[cache_key] = (now + ttl, result.ok_value)
+                match result:
+                    case Ok(value):
+                        _cache[cache_key] = (now + ttl, value)
+                    case Err():
+                        pass
 
                 return result
 
@@ -96,8 +99,11 @@ def cached(ttl: float) -> CacheDecorator:
             func_sync = cast(Callable[P, Result[T, E]], func)
             result = func_sync(*args, **kwargs)
 
-            if isinstance(result, Ok):
-                _cache[cache_key] = (now + ttl, result.ok_value)
+            match result:
+                case Ok(value):
+                    _cache[cache_key] = (now + ttl, value)
+                case Err():
+                    pass
 
             return result
 
