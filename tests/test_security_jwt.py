@@ -28,12 +28,12 @@ class TestEncodeJWT:
 
         result = encode_jwt(payload, secret, algorithm="none")
         assert result.is_err()
-        assert isinstance(result.err(), ValueError)
-        assert "explicitly disallowed" in str(result.err())
+        assert isinstance(result.err_value, ValueError)
+        assert "explicitly disallowed" in str(result.err_value)
 
         result2 = encode_jwt(payload, secret, algorithm="nOnE")
         assert result2.is_err()
-        assert isinstance(result2.err(), ValueError)
+        assert isinstance(result2.err_value, ValueError)
 
 
 class TestDecodeJWT:
@@ -62,8 +62,8 @@ class TestDecodeJWT:
             "some.token.str", secret, algorithms=["HS256", "none"], audience="my_app"
         )
         assert result.is_err()
-        assert isinstance(result.err(), ValueError)
-        assert "explicitly disallowed" in str(result.err())
+        assert isinstance(result.err_value, ValueError)
+        assert "explicitly disallowed" in str(result.err_value)
 
     def test_decode_requires_exp(self) -> None:
         """Test that decoding strictly requires an 'exp' claim."""
@@ -74,7 +74,7 @@ class TestDecodeJWT:
 
         result = decode_jwt(token, secret, algorithms=["HS256"], audience="my_app")
         assert result.is_err()
-        assert isinstance(result.err(), jwt.exceptions.MissingRequiredClaimError)
+        assert isinstance(result.err_value, jwt.exceptions.MissingRequiredClaimError)
 
     def test_decode_requires_aud(self) -> None:
         """Test that decoding strictly requires an 'aud' claim."""
@@ -86,7 +86,7 @@ class TestDecodeJWT:
 
         result = decode_jwt(token, secret, algorithms=["HS256"], audience="my_app")
         assert result.is_err()
-        assert isinstance(result.err(), jwt.exceptions.MissingRequiredClaimError)
+        assert isinstance(result.err_value, jwt.exceptions.MissingRequiredClaimError)
 
     def test_decode_invalid_signature(self) -> None:
         """Test that decoding fails with wrong secret."""
@@ -102,7 +102,7 @@ class TestDecodeJWT:
             audience="my_app",
         )
         assert result.is_err()
-        assert isinstance(result.err(), jwt.exceptions.InvalidSignatureError)
+        assert isinstance(result.err_value, jwt.exceptions.InvalidSignatureError)
 
     def test_decode_expired_token(self) -> None:
         """Test that decoding explicitly fails for expired tokens."""
@@ -114,7 +114,7 @@ class TestDecodeJWT:
 
         result = decode_jwt(token, secret, algorithms=["HS256"], audience="my_app")
         assert result.is_err()
-        assert isinstance(result.err(), jwt.exceptions.ExpiredSignatureError)
+        assert isinstance(result.err_value, jwt.exceptions.ExpiredSignatureError)
 
     def test_decode_wrong_audience(self) -> None:
         """Test that decoding fails if audience doesn't match."""
@@ -125,4 +125,4 @@ class TestDecodeJWT:
 
         result = decode_jwt(token, secret, algorithms=["HS256"], audience="my_app")
         assert result.is_err()
-        assert isinstance(result.err(), jwt.exceptions.InvalidAudienceError)
+        assert isinstance(result.err_value, jwt.exceptions.InvalidAudienceError)

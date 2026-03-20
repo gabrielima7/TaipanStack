@@ -42,7 +42,7 @@ class TestFilesystemTraversalExtended:
         """Test that safe_read blocks encoded traversal patterns."""
         result = safe_read(f"{pattern}/etc/passwd")
         assert isinstance(result, Err)
-        assert isinstance(result.err(), SecurityError)
+        assert isinstance(result.err_value, SecurityError)
 
     def test_safe_write_encoded_traversal(self, tmp_path: Path):
         """Test that safe_write blocks encoded traversal patterns."""

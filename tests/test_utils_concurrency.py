@@ -27,7 +27,7 @@ class TestConcurrencyLimiter:
 
         res = process()
         assert res.is_ok()
-        assert res.ok() == 42
+        assert res.ok_value == 42
 
     def test_sync_limit_concurrency_timeout_success(self) -> None:
         """Test sync limit_concurrency with timeout."""
@@ -38,7 +38,7 @@ class TestConcurrencyLimiter:
 
         res = process()
         assert res.is_ok()
-        assert res.ok() == 42
+        assert res.ok_value == 42
 
     def test_sync_limit_concurrency_no_timeout_failure(self) -> None:
         """Test sync limit_concurrency blocking immediately (no timeout)."""
@@ -67,7 +67,7 @@ class TestConcurrencyLimiter:
         t.join()
 
         assert res.is_err()
-        assert isinstance(res.err(), OverloadError)
+        assert isinstance(res.err_value, OverloadError)
 
     def test_sync_limit_concurrency_with_timeout_failure(self) -> None:
         """Test sync limit_concurrency blocking and failing after timeout."""
@@ -94,7 +94,7 @@ class TestConcurrencyLimiter:
         t.join()
 
         assert res.is_err()
-        assert isinstance(res.err(), OverloadError)
+        assert isinstance(res.err_value, OverloadError)
 
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_no_timeout_success(self) -> None:
@@ -106,7 +106,7 @@ class TestConcurrencyLimiter:
 
         res = await fetch_data()
         assert res.is_ok()
-        assert res.ok() == "async data"
+        assert res.ok_value == "async data"
 
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_timeout_success(self) -> None:
@@ -118,7 +118,7 @@ class TestConcurrencyLimiter:
 
         res = await fetch_data()
         assert res.is_ok()
-        assert res.ok() == "async data"
+        assert res.ok_value == "async data"
 
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_no_timeout_failure(self) -> None:
@@ -142,7 +142,7 @@ class TestConcurrencyLimiter:
         await task
 
         assert res.is_err()
-        assert isinstance(res.err(), OverloadError)
+        assert isinstance(res.err_value, OverloadError)
 
     @pytest.mark.asyncio
     async def test_async_limit_concurrency_with_timeout_failure(self) -> None:
@@ -164,4 +164,4 @@ class TestConcurrencyLimiter:
         await task
 
         assert res.is_err()
-        assert isinstance(res.err(), OverloadError)
+        assert isinstance(res.err_value, OverloadError)

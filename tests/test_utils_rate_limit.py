@@ -60,15 +60,15 @@ class TestRateLimitDecorator:
 
         res1 = process()
         assert res1.is_ok()
-        assert res1.ok() == 42
+        assert res1.ok_value == 42
 
         res2 = process()
         assert res2.is_ok()
-        assert res2.ok() == 42
+        assert res2.ok_value == 42
 
         res3 = process()
         assert res3.is_err()
-        assert isinstance(res3.err(), RateLimitError)
+        assert isinstance(res3.err_value, RateLimitError)
 
     @pytest.mark.asyncio
     async def test_async_rate_limit(self) -> None:
@@ -80,8 +80,8 @@ class TestRateLimitDecorator:
 
         res1 = await fetch_data()
         assert res1.is_ok()
-        assert res1.ok() == "async data"
+        assert res1.ok_value == "async data"
 
         res2 = await fetch_data()
         assert res2.is_err()
-        assert isinstance(res2.err(), RateLimitError)
+        assert isinstance(res2.err_value, RateLimitError)
