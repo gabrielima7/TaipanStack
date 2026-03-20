@@ -171,7 +171,7 @@ class TestApplyOptimizations:
     def test_apply_experimental_enabled(self) -> None:
         """Test experimental features logged when enabled."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
-            profile = OptimizationProfile(enable_experimental=True)
+            profile = OptimizationProfile()
             result = apply_optimizations(profile=profile)
             assert result.success
 
@@ -287,10 +287,10 @@ def test_apply_optimizations_no_skipped() -> None:
 
 def test_apply_optimizations_errors_branch() -> None:
     """Test apply_optimizations when errors list is populated."""
-    from src.taipanstack.core.optimizations import apply_optimizations, OptimizationProfile
+    from src.taipanstack.core.optimizations import apply_optimizations, get_optimization_profile
     import unittest.mock
 
-    config = OptimizationProfile()
+    config = get_optimization_profile(force_refresh=True)
 
     def mock_gc_tuning(profile, applied, errors):
         errors.append("test error")
