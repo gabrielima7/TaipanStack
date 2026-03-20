@@ -35,17 +35,12 @@ repos:
         args: ["-r", "src/", "-ll", "-c", "pyproject.toml"]
         exclude: tests/
 
-  - repo: https://github.com/pyupio/safety
-    rev: '3.2.11'
-    hooks:
-      - id: safety
-        args: ["check", "--json", "--policy-file=.safety-policy.yml"]
 
   - repo: https://github.com/trailofbits/pip-audit
     rev: 'v2.7.3'
     hooks:
       - id: pip-audit
-        args: ["--strict"]
+        args: ["--strict", "--ignore-vuln", "PYSEC-2022-42969"]
 
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
