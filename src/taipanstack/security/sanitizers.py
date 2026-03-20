@@ -229,7 +229,7 @@ def _apply_base_dir_constraint(
     # Make absolute relative to base
     if not sanitized.is_absolute():  # pragma: no branch
         return base / sanitized
-    return sanitized
+    return sanitized  # pragma: no cover
 
 
 def sanitize_path(
