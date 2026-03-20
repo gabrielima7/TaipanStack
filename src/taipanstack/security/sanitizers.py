@@ -193,6 +193,44 @@ def sanitize_filename(
     return result
 
 
+def _clean_path_parts(path: Path) -> list[str]:
+    """Clean and sanitize individual path components."""
+    parts: list[str] = []
+    for part in path.parts:
+        if part == "..":
+            if parts and parts[-1] != "..":
+                parts.pop()
+        elif part != ".":  # pragma: no branch
+            safe_part = sanitize_filename(part, preserve_extension=True)
+            if safe_part:  # pragma: no branch
+                parts.append(safe_part)
+    return parts
+
+
+def _apply_base_dir_constraint(
+    sanitized: Path,
+    base_dir: Path | str | None,
+    resolve: bool,
+) -> Path:
+    """Apply base directory constraints to a sanitized path."""
+    if base_dir is None:
+        return sanitized
+
+    base = Path(base_dir).resolve()
+    if resolve:
+        try:
+            return sanitized.resolve()
+        except (OSError, RuntimeError) as e:
+            msg = f"Cannot resolve path: {e}"
+            raise ValueError(msg) from e
+
+    # Make absolute relative to base
+    if not sanitized.is_absolute():  # pragma: no branch
+        return base / sanitized
+
+    return sanitized  # pragma: no cover
+
+
 def sanitize_path(
     path: str | Path,
     *,
@@ -218,24 +256,11 @@ def sanitize_path(
     if isinstance(path, str):  # pragma: no branch
         path = Path(path)
 
-    # Remove any null bytes
-    path_str = str(path).replace("\x00", "")
+    # Remove any null bytes and normalize
+    path = Path(str(path).replace("\x00", ""))
 
-    # Normalize the path
-    path = Path(path_str)
-
-    # Remove any .. or . components manually
-    parts: list[str] = []
-    for part in path.parts:
-        if part == "..":
-            if parts and parts[-1] != "..":
-                parts.pop()
-            # Skip the .. entirely if at root
-        elif part != ".":  # pragma: no branch
-            # Sanitize each component
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part:  # Skip empty parts  # pragma: no branch
-                parts.append(safe_part)
+    # Clean components
+    parts = _clean_path_parts(path)
 
     # Reconstruct path
     if path.is_absolute():  # pragma: no branch
@@ -247,26 +272,14 @@ def sanitize_path(
     else:  # pragma: no cover
         sanitized = Path()
 
-    # Check depth (skip if max_depth is None)
+    # Check depth
     depth = len(sanitized.parts)
     if max_depth is not None and depth > max_depth:
         msg = f"Path depth {depth} exceeds maximum of {max_depth}"
         raise ValueError(msg)
 
-    # Constrain to base_dir if provided
-    if base_dir is not None:
-        base = Path(base_dir).resolve()
-        if resolve:
-            try:
-                sanitized = sanitized.resolve()
-            except (OSError, RuntimeError) as e:
-                msg = f"Cannot resolve path: {e}"
-                raise ValueError(msg) from e
-        # Make absolute relative to base
-        elif not sanitized.is_absolute():  # pragma: no branch
-            sanitized = base / sanitized
-
-    return sanitized
+    # Constrain to base_dir
+    return _apply_base_dir_constraint(sanitized, base_dir, resolve)
 
 
 def sanitize_env_value(
