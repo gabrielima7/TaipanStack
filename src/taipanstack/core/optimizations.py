@@ -288,9 +288,9 @@ def _apply_experimental(
     """Check and log experimental features."""
     if profile.enable_experimental:
         features = get_features()
-        if features.has_jit:  # pragma: no branch
+        if features.has_jit:
             applied.append("jit: available")
-        if features.has_free_threading:  # pragma: no branch
+        if features.has_free_threading:
             applied.append("free_threading: available")
         logger.warning(
             "EXPERIMENTAL FEATURES ENABLED: Stability and security may be affected."
@@ -350,7 +350,7 @@ def apply_optimizations(
     success = len(errors) == 0
     if applied:
         logger.debug("Applied optimizations: %s", ", ".join(applied))
-    if skipped:  # pragma: no branch
+    if skipped:
         logger.debug("Skipped optimizations: %s", ", ".join(skipped))
     if errors:
         logger.warning("Optimization errors: %s", ", ".join(errors))

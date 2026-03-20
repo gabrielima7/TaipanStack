@@ -255,3 +255,30 @@ class TestUtilityFunctions:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
             prof3 = get_optimization_profile()
             assert prof3.enable_experimental is True
+
+def test_apply_optimizations_no_skipped() -> None:
+    """Test apply_optimizations when skipped list is empty."""
+    from src.taipanstack.core.optimizations import apply_optimizations
+    import unittest.mock
+
+    class DummyConfig:
+         enable_gc_tuning = True
+         enable_string_interning = True
+         enable_gc_freeze = True
+         enable_experimental = True
+         enable_perf_hints = True
+         enable_mimalloc = True
+         gc_threshold_0 = 700
+         gc_threshold_1 = 10
+         gc_threshold_2 = 10
+         thread_pool_multiplier = 1
+         max_thread_pool_size = 32
+
+    config = DummyConfig()
+
+    with unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_tuning"), \
+         unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_freeze"), \
+         unittest.mock.patch("src.taipanstack.core.optimizations._apply_experimental"):
+
+         result = apply_optimizations(profile=config) # type: ignore
+         assert len(result.skipped) == 0
