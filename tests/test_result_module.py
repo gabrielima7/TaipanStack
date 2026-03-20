@@ -393,3 +393,32 @@ class TestAndThenAsync:
         assert chained.is_err()
         assert isinstance(chained.err(), ValueError)
         assert not executed
+
+class TestSafeFromAsyncDecorator:
+    @pytest.mark.asyncio
+    async def test_safe_from_async_success(self) -> None:
+        @safe_from(ValueError)
+        async def process(x: int) -> int:
+            return x * 2
+
+        result = await process(5)
+        assert result == Ok(10)
+
+    @pytest.mark.asyncio
+    async def test_safe_from_async_exception(self) -> None:
+        @safe_from(ValueError)
+        async def process(x: int) -> int:
+            raise ValueError("invalid")
+
+        result = await process(5)
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, ValueError)
+
+    @pytest.mark.asyncio
+    async def test_safe_from_async_propagates_unspecified(self) -> None:
+        @safe_from(ValueError)
+        async def process(x: int) -> int:
+            raise TypeError("invalid type")
+
+        with pytest.raises(TypeError):
+            await process(5)

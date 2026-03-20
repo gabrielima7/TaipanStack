@@ -25,7 +25,7 @@ Example:
 import functools
 import inspect
 from collections.abc import Callable, Coroutine, Iterable
-from typing import Any, ParamSpec, TypeVar, overload
+from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from result import Err, Ok, Result
 
@@ -45,19 +45,20 @@ __all__ = [
 P = ParamSpec("P")
 T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
+E_co = TypeVar("E_co", bound=Exception, covariant=True)
 U = TypeVar("U")
 
 
 @overload
 def safe(
     func: Callable[P, T],
-) -> Callable[P, Result[T, Exception]]: ...  # pragma: no cover
+) -> Callable[P, Result[T, Exception]]: ...
 
 
 @overload
 def safe(
     func: Callable[P, Coroutine[Any, Any, T]],
-) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...  # pragma: no cover
+) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...
 
 
 def safe(
@@ -97,25 +98,43 @@ def safe(
             **kwargs: P.kwargs,
         ) -> Result[T, Exception]:
             try:
-                return Ok(await func(*args, **kwargs))
+                func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                return Ok(await func_coro(*args, **kwargs))
             except Exception as e:
                 return Err(e)
 
-        return async_wrapper
+        return cast(
+            Callable[P, Coroutine[Any, Any, Result[T, Exception]]], async_wrapper
+        )
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
-            return Ok(func(*args, **kwargs))  # type: ignore[arg-type]
+            func_sync = cast(Callable[P, T], func)
+            return Ok(func_sync(*args, **kwargs))
         except Exception as e:
             return Err(e)
 
-    return wrapper
+    return cast(Callable[P, Result[T, Exception]], wrapper)
+
+
+class SafeFromDecorator(Protocol[E_co]):
+    """Protocol for safe_from decorator."""
+
+    @overload
+    def __call__(
+        self, func: Callable[P, T]
+    ) -> Callable[P, Result[T, E_co]]: ...
+
+    @overload
+    def __call__(
+        self, func: Callable[P, Coroutine[Any, Any, T]]
+    ) -> Callable[P, Coroutine[Any, Any, Result[T, E_co]]]: ...
 
 
 def safe_from(
     *exception_types: type[E],
-) -> Callable[[Callable[P, T]], Callable[P, Result[T, E]]]:
+) -> SafeFromDecorator[E]:
     """Decorator factory to catch specific exceptions as Err.
 
     Only catches specified exception types; others propagate normally.
@@ -135,17 +154,38 @@ def safe_from(
 
     """
 
-    def decorator(func: Callable[P, T]) -> Callable[P, Result[T, E]]:
+    def decorator(
+        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+    ) -> (
+        Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+    ):
+        if inspect.iscoroutinefunction(func):
+
+            @functools.wraps(func)
+            async def async_wrapper(
+                *args: P.args, **kwargs: P.kwargs
+            ) -> Result[T, E]:
+                try:
+                    func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                    return Ok(await func_coro(*args, **kwargs))
+                except exception_types as e:
+                    return Err(e)
+
+            return cast(
+                Callable[P, Coroutine[Any, Any, Result[T, E]]], async_wrapper
+            )
+
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             try:
-                return Ok(func(*args, **kwargs))
+                func_sync = cast(Callable[P, T], func)
+                return Ok(func_sync(*args, **kwargs))
             except exception_types as e:
                 return Err(e)
 
-        return wrapper
+        return cast(Callable[P, Result[T, E]], wrapper)
 
-    return decorator
+    return cast(SafeFromDecorator[E], decorator)  # type: ignore[redundant-cast]
 
 
 def collect_results(
@@ -180,15 +220,15 @@ def collect_results(
 
 
 @overload
-def unwrap_or(result: Ok[T], default: U) -> T: ...  # pragma: no cover
+def unwrap_or(result: Ok[T], default: U) -> T: ...
 
 
 @overload
-def unwrap_or(result: Err[E], default: U) -> U: ...  # pragma: no cover
+def unwrap_or(result: Err[E], default: U) -> U: ...
 
 
 @overload
-def unwrap_or(result: Result[T, E], default: U) -> T | U: ...  # pragma: no cover
+def unwrap_or(result: Result[T, E], default: U) -> T | U: ...
 
 
 def unwrap_or(result: Result[T, E], default: U) -> T | U:
@@ -218,21 +258,21 @@ def unwrap_or(result: Result[T, E], default: U) -> T | U:
 def unwrap_or_else(
     result: Ok[T],
     default_fn: Callable[[E], U],
-) -> T: ...  # pragma: no cover
+) -> T: ...
 
 
 @overload
 def unwrap_or_else(
     result: Err[E],
     default_fn: Callable[[E], U],
-) -> U: ...  # pragma: no cover
+) -> U: ...
 
 
 @overload
 def unwrap_or_else(
     result: Result[T, E],
     default_fn: Callable[[E], U],
-) -> T | U: ...  # pragma: no cover
+) -> T | U: ...
 
 
 def unwrap_or_else(
@@ -265,21 +305,21 @@ def unwrap_or_else(
 async def map_async(
     result: Ok[T],
     func: Callable[[T], Coroutine[Any, Any, U]],
-) -> Result[U, E]: ...  # pragma: no cover
+) -> Result[U, E]: ...
 
 
 @overload
 async def map_async(
     result: Err[E],
     func: Callable[[T], Coroutine[Any, Any, U]],
-) -> Err[E]: ...  # pragma: no cover
+) -> Err[E]: ...
 
 
 @overload
 async def map_async(
     result: Result[T, E],
     func: Callable[[T], Coroutine[Any, Any, U]],
-) -> Result[U, E]: ...  # pragma: no cover
+) -> Result[U, E]: ...
 
 
 async def map_async(
@@ -317,21 +357,21 @@ async def map_async(
 async def and_then_async(
     result: Ok[T],
     func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
-) -> Result[U, E]: ...  # pragma: no cover
+) -> Result[U, E]: ...
 
 
 @overload
 async def and_then_async(
     result: Err[E],
     func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
-) -> Err[E]: ...  # pragma: no cover
+) -> Err[E]: ...
 
 
 @overload
 async def and_then_async(
     result: Result[T, E],
     func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
-) -> Result[U, E]: ...  # pragma: no cover
+) -> Result[U, E]: ...
 
 
 async def and_then_async(
