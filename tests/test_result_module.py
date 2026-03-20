@@ -24,7 +24,7 @@ class TestOkErr:
         result: Result[int, Exception] = Ok(42)
         assert result.is_ok()
         assert not result.is_err()
-        assert result.ok() == 42
+        assert result.ok_value == 42
 
     def test_err_value(self) -> None:
         """Test Err wraps error correctly."""
@@ -32,7 +32,7 @@ class TestOkErr:
         result: Result[int, ValueError] = Err(error)
         assert result.is_err()
         assert not result.is_ok()
-        assert result.err() == error
+        assert result.err_value == error
 
 
 class TestSafeDecorator:
@@ -47,7 +47,7 @@ class TestSafeDecorator:
 
         result = add(2, 3)
         assert result.is_ok()
-        assert result.ok() == 5
+        assert result.ok_value == 5
 
     def test_safe_exception(self) -> None:
         """Test safe decorator returns Err on exception."""
@@ -58,7 +58,7 @@ class TestSafeDecorator:
 
         result = divide(10, 0)
         assert result.is_err()
-        assert isinstance(result.err(), ZeroDivisionError)
+        assert isinstance(result.err_value, ZeroDivisionError)
 
     def test_safe_basic_exception(self) -> None:
         """Test safe decorator returns Err on base Exception."""
@@ -69,7 +69,7 @@ class TestSafeDecorator:
 
         result = raise_exception()
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
@@ -97,7 +97,7 @@ class TestSafeFromDecorator:
 
         result = parse("not_a_number")
         assert result.is_err()
-        assert isinstance(result.err(), ValueError)
+        assert isinstance(result.err_value, ValueError)
 
     def test_safe_from_propagates_unspecified_exception(self) -> None:
         """Test safe_from propagates unspecified exception types."""
@@ -120,11 +120,11 @@ class TestSafeFromDecorator:
 
         result1 = process("abc")
         assert result1.is_err()
-        assert isinstance(result1.err(), ValueError)
+        assert isinstance(result1.err_value, ValueError)
 
         result2 = process(123)
         assert result2.is_err()
-        assert isinstance(result2.err(), TypeError)
+        assert isinstance(result2.err_value, TypeError)
 
     def test_safe_from_explicit_raise(self) -> None:
         """Test safe_from decorator catching explicitly raised exception."""
@@ -135,8 +135,8 @@ class TestSafeFromDecorator:
 
         result = process("abc")
         assert result.is_err()
-        assert isinstance(result.err(), ValueError)
-        assert str(result.err()) == "explicitly raised"
+        assert isinstance(result.err_value, ValueError)
+        assert str(result.err_value) == "explicitly raised"
 
     def test_safe_from_inheritance(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
@@ -150,8 +150,8 @@ class TestSafeFromDecorator:
 
         result = fail()
         assert result.is_err()
-        assert isinstance(result.err(), SubValueError)
-        assert str(result.err()) == "subclass error"
+        assert isinstance(result.err_value, SubValueError)
+        assert str(result.err_value) == "subclass error"
 
 
 class TestCollectResults:
@@ -162,7 +162,7 @@ class TestCollectResults:
         results: list[Result[int, ValueError]] = [Ok(1), Ok(2), Ok(3)]
         collected = collect_results(results)
         assert collected.is_ok()
-        assert collected.ok() == [1, 2, 3]
+        assert collected.ok_value == [1, 2, 3]
 
     def test_collect_with_err(self) -> None:
         """Test collect_results stops at first Err."""
@@ -173,15 +173,15 @@ class TestCollectResults:
         ]
         collected = collect_results(results)
         assert collected.is_err()
-        assert isinstance(collected.err(), ValueError)
-        assert str(collected.err()) == "error"
+        assert isinstance(collected.err_value, ValueError)
+        assert str(collected.err_value) == "error"
 
     def test_collect_empty(self) -> None:
         """Test collect_results with empty list."""
         results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
         assert collected.is_ok()
-        assert collected.ok() == []
+        assert collected.ok_value == []
 
     def test_collect_first_err_returned(self) -> None:
         """Test collect_results returns first Err encountered."""
@@ -192,8 +192,8 @@ class TestCollectResults:
         ]
         collected = collect_results(results)
         assert collected.is_err()
-        assert isinstance(collected.err(), ValueError)
-        assert str(collected.err()) == "first"
+        assert isinstance(collected.err_value, ValueError)
+        assert str(collected.err_value) == "first"
 
 
 class TestUnwrapOr:
@@ -268,7 +268,7 @@ class TestSafeAsyncDecorator:
 
         result = await async_add(2, 3)
         assert result.is_ok()
-        assert result.ok() == 5
+        assert result.ok_value == 5
 
     @pytest.mark.asyncio
     async def test_safe_async_exception(self) -> None:
@@ -280,7 +280,7 @@ class TestSafeAsyncDecorator:
 
         result = await async_divide(10, 0)
         assert result.is_err()
-        assert isinstance(result.err(), ZeroDivisionError)
+        assert isinstance(result.err_value, ZeroDivisionError)
 
     @pytest.mark.asyncio
     async def test_safe_async_preserves_metadata(self) -> None:
@@ -305,7 +305,7 @@ class TestSafeAsyncDecorator:
 
         result = await async_fail()
         assert result.is_err()
-        assert isinstance(result.err(), RuntimeError)
+        assert isinstance(result.err_value, RuntimeError)
 
     @pytest.mark.asyncio
     async def test_safe_async_basic_exception(self) -> None:
@@ -317,7 +317,7 @@ class TestSafeAsyncDecorator:
 
         result = await async_raise_exception()
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert type(err) is Exception
         assert str(err) == "Basic async exception occurred"
 
@@ -335,7 +335,7 @@ class TestMapAsync:
         result: Result[int, ValueError] = Ok(21)
         mapped = await map_async(result, double)
         assert mapped.is_ok()
-        assert mapped.ok() == 42
+        assert mapped.ok_value == 42
 
     @pytest.mark.asyncio
     async def test_map_async_err(self) -> None:
@@ -347,7 +347,7 @@ class TestMapAsync:
         result: Result[int, ValueError] = Err(ValueError("error"))
         mapped: Result[int, ValueError] = await map_async(result, double)
         assert mapped.is_err()
-        assert isinstance(mapped.err(), ValueError)
+        assert isinstance(mapped.err_value, ValueError)
 
 
 class TestAndThenAsync:
@@ -363,7 +363,7 @@ class TestAndThenAsync:
         result: Result[int, ValueError] = Ok(21)
         chained = await and_then_async(result, process)
         assert chained.is_ok()
-        assert chained.ok() == "42"
+        assert chained.ok_value == "42"
 
     @pytest.mark.asyncio
     async def test_and_then_async_ok_to_err(self) -> None:
@@ -375,7 +375,7 @@ class TestAndThenAsync:
         result: Result[int, ValueError] = Ok(21)
         chained = await and_then_async(result, process)
         assert chained.is_err()
-        assert isinstance(chained.err(), ValueError)
+        assert isinstance(chained.err_value, ValueError)
 
     @pytest.mark.asyncio
     async def test_and_then_async_err(self) -> None:
@@ -391,5 +391,5 @@ class TestAndThenAsync:
         result: Result[int, ValueError] = Err(ValueError("initial error"))
         chained: Result[str, ValueError] = await and_then_async(result, process)
         assert chained.is_err()
-        assert isinstance(chained.err(), ValueError)
+        assert isinstance(chained.err_value, ValueError)
         assert not executed

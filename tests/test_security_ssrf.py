@@ -33,7 +33,7 @@ class TestGuardSsrfTypeContract:
         mock_urlparse.side_effect = ValueError("Mocked error")
         result = guard_ssrf("http://example.com")
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
         msg = str(err)
@@ -48,7 +48,7 @@ class TestGuardSsrfEmptyAndMalformed:
         """Empty string returns Err with appropriate message."""
         result = guard_ssrf("")
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -56,7 +56,7 @@ class TestGuardSsrfEmptyAndMalformed:
         """FTP scheme is rejected as not allowed."""
         result = guard_ssrf("ftp://example.com/file")
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert "not allowed" in str(err)
 
@@ -80,7 +80,7 @@ class TestGuardSsrfEmptyAndMalformed:
             result = guard_ssrf(f"https://{long_hostname}/path")
 
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
         # Verify the exception message prefix without asserting on platform-specific gaierror strings
@@ -106,7 +106,7 @@ class TestGuardSsrfPrivateIpv4:
         ):
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
-        assert "SSRF" in str(result.err())
+        assert "SSRF" in str(result.err_value)
 
     def test_private_10_network_blocked(self) -> None:
         """10.0.0.1 (RFC-1918 class A) must be blocked."""
@@ -143,7 +143,7 @@ class TestGuardSsrfPrivateIpv4:
         ):
             result = guard_ssrf("http://169.254.169.254/latest/meta-data/")
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -218,7 +218,7 @@ class TestGuardSsrfSafeUrls:
         ):
             result = guard_ssrf("http://example.com/api")
         assert result.is_ok()
-        assert result.ok() == "http://example.com/api"
+        assert result.ok_value == "http://example.com/api"
 
     def test_public_https_url_accepted(self) -> None:
         """A HTTPS URL resolving to a public IP returns Ok."""
@@ -267,7 +267,7 @@ class TestGuardSsrfErrorAttrs:
             return_value=self._mock_loopback(),
         ):
             result = guard_ssrf("http://internal/")
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -278,7 +278,7 @@ class TestGuardSsrfErrorAttrs:
             return_value=self._mock_loopback(),
         ):
             result = guard_ssrf("http://internal/")
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.value is not None
         # Should contain the resolved IP address
@@ -303,7 +303,7 @@ class TestGuardSsrfCatchAllReserved:
         ):
             result = guard_ssrf("http://some-host.example.com/")
         assert result.is_err()
-        err = result.err()
+        err = result.err_value
         assert isinstance(err, SecurityError)
         assert "reserved" in str(err).lower() or "SSRF" in str(err)
         assert err.guard_name == "ssrf"
