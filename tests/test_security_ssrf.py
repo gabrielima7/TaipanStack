@@ -1,6 +1,5 @@
 """Tests for guard_ssrf — SSRF protection guard."""
 
-import ipaddress
 import socket
 from unittest.mock import patch
 

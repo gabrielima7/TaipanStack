@@ -549,7 +549,7 @@ def guard_ssrf(  # noqa: PLR0911
         ):
             return Err(
                 SecurityError(
-                    f"SSRF detected: hostname resolves to private/reserved address",
+                    "SSRF detected: hostname resolves to private/reserved address",
                     guard_name="ssrf",
                 )
             )
