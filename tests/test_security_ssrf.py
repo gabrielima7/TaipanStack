@@ -1,6 +1,5 @@
 """Tests for guard_ssrf — SSRF protection guard."""
 
-import ipaddress
 import socket
 from unittest.mock import patch
 
@@ -84,9 +83,9 @@ class TestGuardSsrfEmptyAndMalformed:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
         # Verify the exception message prefix without asserting on platform-specific gaierror strings
-        assert "Hostname could not be resolved:" in str(err)
+        assert "Hostname could not be resolved" in str(err)
         # Verify the value attribute contains the hostname truncated to 80 characters
-        assert err.value == long_hostname[:80]
+        assert err.value is None
 
 
 class TestGuardSsrfPrivateIpv4:
@@ -272,7 +271,7 @@ class TestGuardSsrfErrorAttrs:
         assert err.guard_name == "ssrf"
 
     def test_security_error_value_is_ip_string(self) -> None:
-        """SecurityError.value must contain the offending IP address."""
+        """SecurityError.value must not expose the offending IP address anymore."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
             return_value=self._mock_loopback(),
@@ -280,10 +279,7 @@ class TestGuardSsrfErrorAttrs:
             result = guard_ssrf("http://internal/")
         err = result.err_value
         assert isinstance(err, SecurityError)
-        assert err.value is not None
-        # Should contain the resolved IP address
-        resolved = ipaddress.ip_address(err.value)
-        assert resolved.is_loopback or resolved.is_private
+        assert err.value is None
 
 
 class TestGuardSsrfCatchAllReserved:

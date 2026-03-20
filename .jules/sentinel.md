@@ -16,3 +16,8 @@
 **Vulnerability:** The `get_file_hash` function allowed any algorithm supported by `hashlib.new()`, including cryptographically weak ones like MD5 and SHA-1.
 **Learning:** Defaulting to arbitrary user-supplied strings for cryptographic primitives without validation can lead to the use of insecure or deprecated algorithms.
 **Prevention:** Implement a dedicated security guard (whitelist) for cryptographic algorithms and apply it consistently across all utilities that perform hashing or encryption.
+
+## 2026-03-20 - Prevent Information Leaks and ReDoS in Security Guards
+**Vulnerability:** Found an information leak in `guard_path_traversal` where the error message and `SecurityError.value` leaked the fully resolved absolute internal path. Also found `guard_ssrf` leaked the resolved internal IP address in the exception. Furthermore, `_SENSITIVE_ENV_VAR_PATTERN` was vulnerable to catastrophic backtracking (ReDoS) due to its use of unbounded `.*` inside a large regex alternation.
+**Learning:** Returning overly detailed error messages in security guards creates a secondary vulnerability by allowing an attacker to map out internal file systems and internal network topologies. Additionally, trying to make `re.match` act like `re.search` by padding with `.*` in complex alternations is extremely dangerous and can easily lead to Denial of Service.
+**Prevention:** Always return generic, opaque messages for security violations intended for untrusted callers. Do not include detailed paths or resolved IP addresses. Use `re.search` instead of `re.match` with padded `.*` patterns when attempting to match substrings.
