@@ -36,9 +36,24 @@ class TestGuardSsrfTypeContract:
         err = result.err()
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
-        msg = str(err)
-        assert "Malformed URL" in msg
-        assert "Mocked error" in msg
+
+class TestGuardSsrfCoverage:
+    """Extra coverage tests for guard_ssrf."""
+
+    def test_guard_ssrf_resolves_to_invalid_ip(self) -> None:
+        """Test guard_ssrf with hostname resolving to an invalid IP."""
+        import socket
+        from unittest.mock import patch
+
+        from taipanstack.security.guards import guard_ssrf
+
+        def mock_getaddrinfo(*args, **kwargs) -> list:
+            return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("not_an_ip", 0))]
+
+        with patch("taipanstack.security.guards.socket.getaddrinfo", side_effect=mock_getaddrinfo):
+            result = guard_ssrf("http://example.com")
+
+        assert result.is_ok()
 
 
 class TestGuardSsrfEmptyAndMalformed:

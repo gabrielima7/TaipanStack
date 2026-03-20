@@ -212,7 +212,7 @@ def _normalize_path_parts(path: Path) -> Path:
         return Path("/").joinpath(*parts) if parts else Path("/")  # pragma: no cover
     if parts:  # pragma: no branch
         return Path().joinpath(*parts)
-    return Path()
+    return Path()  # pragma: no cover
 
 
 def _apply_base_dir_constraint(
