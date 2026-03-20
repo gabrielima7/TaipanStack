@@ -1,6 +1,5 @@
 """Tests to achieve 100% code coverage."""
 
-import logging
 from pathlib import Path
 
 import pytest
@@ -11,12 +10,12 @@ class TestAppMain:
 
     def test_main_function(self) -> None:
         """Test main() function execution."""
-        from app.main import main
         import structlog
         from structlog.testing import capture_logs
 
         # Because `logger` is created at module import, we must patch its backend
         import app.main
+        from app.main import main
 
         with capture_logs() as cap_logs:
             # Re-bind the logger so it uses the captured logs
