@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -561,6 +561,17 @@
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#taipanstack.core.result.SafeFromDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SafeFromDecorator
       
     </span>
   </a>
@@ -1829,6 +1840,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#taipanstack.core.result.SafeFromDecorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;SafeFromDecorator
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#taipanstack.core.result.safe" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2282,6 +2304,37 @@ Error: division by zero</p>
 
 
 
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="taipanstack.core.result.SafeFromDecorator" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">SafeFromDecorator</span>
+
+
+<a href="#taipanstack.core.result.SafeFromDecorator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Protocol">Protocol</span>[<span title="taipanstack.core.result.E_co">E_co</span>]</code></p>
+
+
+
+        <p>Protocol for safe_from decorator.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2415,9 +2468,7 @@ Err(ValueError("invalid literal for int()..."))</p>
 <a href="#taipanstack.core.result.safe_from" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">safe_from</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="o">*</span><span class="n">exception_types</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">],</span>
-</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
-</span><span id="__span-0-4">    <span class="p">[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.P">P</span></span><span class="p">,</span> <span class="n"><span title="result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.T">T</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]]</span>
-</span><span id="__span-0-5"><span class="p">]</span>
+</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            SafeFromDecorator (taipanstack.core.result.SafeFromDecorator)" href="#taipanstack.core.result.SafeFromDecorator">SafeFromDecorator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.core.result.E">E</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2469,7 +2520,7 @@ Err(ValueError("invalid literal for int()..."))</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="collections.abc.Callable">Callable</span>[[<span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="taipanstack.core.result.T">T</span>]], <span title="collections.abc.Callable">Callable</span>[<span title="taipanstack.core.result.P">P</span>, <span title="result.Result">Result</span>[<span title="taipanstack.core.result.T">T</span>, <span title="taipanstack.core.result.E">E</span>]]]</code>
+                    <code><a class="autorefs autorefs-internal" title="            SafeFromDecorator (taipanstack.core.result.SafeFromDecorator)" href="#taipanstack.core.result.SafeFromDecorator">SafeFromDecorator</a>[<span title="taipanstack.core.result.E">E</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
