@@ -140,10 +140,11 @@ jobs:
 
       - name: Install Poetry via pip
         run: |
-          # First upgrade pip (may need --break-system-packages on newer distros)
-          python3 -m pip install --upgrade pip --break-system-packages 2>/dev/null || python3 -m pip install --upgrade pip || true
-          # Now install poetry with the upgraded pip
-          python3 -m pip install poetry --break-system-packages 2>/dev/null || python3 -m pip install poetry
+          # Use venv for distros enforcing PEP 668 (externally-managed-environment)
+          python3 -m venv /opt/poetry-venv
+          /opt/poetry-venv/bin/pip install --upgrade pip
+          /opt/poetry-venv/bin/pip install poetry
+          echo "/opt/poetry-venv/bin" >> $GITHUB_PATH
 
       - name: Configure Poetry
         run: |
