@@ -11,7 +11,7 @@ help:
 	@echo "  lint         Run ruff linter"
 	@echo "  format       Format code with ruff"
 	@echo "  typecheck    Run mypy type checker"
-	@echo "  security     Run security checks (bandit, safety)"
+	@echo "  security     Run security checks (bandit, pip-audit)"
 	@echo "  lint-imports Check architecture with import-linter"
 	@echo "  mutate       Run mutation testing with mutmut"
 	@echo "  build-exe    Build standalone executable with PyApp"
@@ -40,8 +40,8 @@ security:
 	@echo "Running Bandit security scanner..."
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
-	@echo "Running Safety dependency checker..."
-	bash -c 'set -o pipefail; poetry run safety check -i 51457 --full-report 2>&1 | grep -v "DEPRECATED"'
+	@echo "Running Pip-Audit dependency checker..."
+	poetry run pip-audit --strict --ignore-vuln PYSEC-2022-42969
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."
