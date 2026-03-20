@@ -84,9 +84,7 @@ _DEFAULT_DENIED_ENV_VARS = frozenset(
     ]
 )
 
-_SENSITIVE_ENV_VAR_PATTERN = re.compile(
-    r".*SECRET.*|.*PASSWORD.*|.*TOKEN.*|.*PRIVATE.*KEY.*|.*API.*KEY.*"
-)
+_SENSITIVE_ENV_VAR_PATTERN = re.compile(r"SECRET|PASSWORD|TOKEN|PRIVATE.*KEY|API.*KEY")
 
 _SAFE_HASH_ALGORITHMS = frozenset(
     [
@@ -189,9 +187,8 @@ def guard_path_traversal(
     # Check if resolved path is within base_dir
     if not resolved.is_relative_to(base_dir):
         raise SecurityError(
-            f"Path escapes base directory: {resolved} is not under {base_dir}",
+            "Path escapes base directory",
             guard_name="path_traversal",
-            value=str(resolved)[:100],
         )
 
     # Check for symlinks if not allowed
@@ -380,7 +377,7 @@ def guard_env_variable(
             value=name,
         )
 
-    if _SENSITIVE_ENV_VAR_PATTERN.match(name_upper):
+    if _SENSITIVE_ENV_VAR_PATTERN.search(name_upper):
         # Only block if not explicitly allowed
         if allowed_names is not None:
             allowed = {n.upper() for n in allowed_names}
@@ -501,12 +498,11 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
     """Resolve hostname to IP addresses and check for SSRF risk."""
     try:
         addr_infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror as exc:
+    except socket.gaierror:
         return Err(
             SecurityError(
-                f"Hostname could not be resolved: {exc}",
+                "Hostname could not be resolved",
                 guard_name="ssrf",
-                value=hostname[:80],
             )
         )
 
@@ -525,10 +521,8 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
         ):
             return Err(
                 SecurityError(
-                    f"SSRF detected: hostname '{hostname}' resolves to "
-                    f"private/reserved address {addr}",
+                    "SSRF detected: hostname resolves to private/reserved address",
                     guard_name="ssrf",
-                    value=str(addr),
                 )
             )
 
