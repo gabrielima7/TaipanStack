@@ -63,7 +63,7 @@ class RateLimiter:
         """
         with self._lock:
             now = time.monotonic()
-            elapsed = now - self.last_update
+            elapsed = max(0.0, now - self.last_update)
             self.last_update = now
 
             # Add tokens for elapsed time based on fill rate
