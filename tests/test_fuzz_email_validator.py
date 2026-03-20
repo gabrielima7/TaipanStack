@@ -1,6 +1,9 @@
-from hypothesis import given, strategies as st
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+
 from taipanstack.security.validators import validate_email
+
 
 @given(st.text())
 def test_fuzz_validate_email(email_input):
@@ -13,6 +16,7 @@ def test_fuzz_validate_email(email_input):
         assert "\0" not in validated
     except (ValueError, TypeError):
         pass
+
 
 def test_validate_email_newline_bypass():
     # Explicitly test the bypass
