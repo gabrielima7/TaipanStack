@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.10] - 2026-03-20
+
+### Security
+- **Critical Fix**: Patched ReDoS vulnerability by enforcing `\Z` anchor instead of `$` in all string validators (#255).
+- **Hardening**: Restricted hash algorithms to secure ones (`sha256`, `sha512`) in internal utilities (#181).
+- **Hardening**: Enhanced filesystem path traversal validation with stricter canonicalization and expanded test coverage (#179).
+- **Privacy**: Prevented accidental credential leakage in subprocess error messages and asynchronous logging streams (#175).
+- **Privacy**: Implemented `SecureBaseModel` for all internal user-related schemas to ensure automatic sensitive data redaction (#177).
+- **Dependencies**: Bumped `authlib` and `pyjwt` to latest versions to patch upstream CVEs.
+
+### Performance
+- **Optimization**: Optimized `sanitize_string` using precompiled regex patterns, reducing overhead by ~20% on high-throughput sanitization (#245).
+- **Optimization**: Refactored `guard_ssrf` to use `ipaddress` built-ins for faster network range evaluation (#178).
+
+### Resilience
+- **Robustness**: Hardened `RateLimiter` against backward clock jumps (NTP syncs) by using monotonic references (#252).
+- **Fix**: Resolved edge-case chaos in `retry` delay calculation when negative attempt counts were passed (#229).
+
+### Refactoring
+- **Code Quality**: Reduced cyclomatic complexity in security guards and sanitizers for better maintainability (#253).
+- **Modernization**: Refactored `utils/cache.py` and `default_encoder` to use Python 3.10+ structural pattern matching (`match/case`) (#250, #227).
+- **Strict Typing**: Renamed unused logging parameters and removed legacy `# noqa` comments to align with strict mypy/ruff rules (#172, #174).
+
+### QA / Testing
+- **Coverage**: Achieved 100% code coverage with 1006 passing tests (#254).
+- **Reliability**: Replaced deprecated `.ok()` and `.err()` usages with `.ok_value` and `.err_value` across the entire test suite (#248).
+- **Edge Cases**: Added explicit validation for empty content handling in `safe_write` filesystem utility (#225).
+- **Bootstrapper**: Improved testing isolation for `_setup_pre_commit` and core bootstrapper logic (#176).
+
 ## [0.3.9] - 2026-03-11
 
 ### Added
@@ -340,6 +369,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.10...HEAD
+[0.3.10]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...v0.3.10
+[0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
+[0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8
+[0.3.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.3...v0.3.4
@@ -357,8 +391,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v0.2.0
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...HEAD
-[0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
-[0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8
-[0.3.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...v0.3.7
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
