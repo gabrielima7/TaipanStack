@@ -78,7 +78,7 @@ def cached(ttl: float) -> CacheDecorator:
                 match result:
                     case Ok(value):
                         _cache[cache_key] = (now + ttl, value)
-                    case Err():
+                    case Err(_):
                         pass
 
                 return result
@@ -102,7 +102,7 @@ def cached(ttl: float) -> CacheDecorator:
             match result:
                 case Ok(value):
                     _cache[cache_key] = (now + ttl, value)
-                case Err():
+                case Err(_):
                     pass
 
             return result
