@@ -107,6 +107,10 @@ jobs:
     container:
       image: ${{ matrix.image }}
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Install dependencies (apt-based)
         if: matrix.pkg_manager == 'apt'
@@ -144,19 +148,20 @@ jobs:
           python3 -m venv /opt/poetry-venv
           /opt/poetry-venv/bin/pip install --upgrade pip
           /opt/poetry-venv/bin/pip install poetry
-          echo "/opt/poetry-venv/bin" >> $GITHUB_PATH
+          # Use absolute symlink instead of GITHUB_PATH to avoid env issues in some distros
+          ln -sf /opt/poetry-venv/bin/poetry /usr/local/bin/poetry
 
       - name: Configure Poetry
         run: |
-          python3 -m poetry config virtualenvs.in-project true
+          poetry config virtualenvs.in-project true
 
       - name: Install project dependencies
         run: |
-          python3 -m poetry install --with dev
+          poetry install --with dev
 
       - name: Run tests
         run: |
-          python3 -m poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
+          poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
 
   lint:
     name: Code Quality Checks
