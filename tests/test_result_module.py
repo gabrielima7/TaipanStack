@@ -394,6 +394,7 @@ class TestAndThenAsync:
         assert isinstance(chained.err(), ValueError)
         assert not executed
 
+
 class TestSafeFromAsyncDecorator:
     @pytest.mark.asyncio
     async def test_safe_from_async_success(self) -> None:

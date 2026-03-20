@@ -122,9 +122,7 @@ class SafeFromDecorator(Protocol[E_co]):
     """Protocol for safe_from decorator."""
 
     @overload
-    def __call__(
-        self, func: Callable[P, T]
-    ) -> Callable[P, Result[T, E_co]]: ...
+    def __call__(self, func: Callable[P, T]) -> Callable[P, Result[T, E_co]]: ...
 
     @overload
     def __call__(
@@ -156,24 +154,18 @@ def safe_from(
 
     def decorator(
         func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
-    ) -> (
-        Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ):
+    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
-            async def async_wrapper(
-                *args: P.args, **kwargs: P.kwargs
-            ) -> Result[T, E]:
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
                     func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
                     return Ok(await func_coro(*args, **kwargs))
                 except exception_types as e:
                     return Err(e)
 
-            return cast(
-                Callable[P, Coroutine[Any, Any, Result[T, E]]], async_wrapper
-            )
+            return cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], async_wrapper)
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
@@ -185,7 +177,7 @@ def safe_from(
 
         return cast(Callable[P, Result[T, E]], wrapper)
 
-    return cast(SafeFromDecorator[E], decorator)  # type: ignore[redundant-cast]
+    return cast(SafeFromDecorator[E], decorator)
 
 
 def collect_results(
