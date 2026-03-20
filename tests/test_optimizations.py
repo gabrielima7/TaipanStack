@@ -33,7 +33,7 @@ class TestOptimizationProfile:
 
     def test_profile_immutable(self) -> None:
         """Test profiles are immutable (frozen)."""
-        profile = OptimizationProfile()
+        profile = OptimizationProfile(enable_perf_hints=True)
         with pytest.raises(AttributeError):
             profile.gc_threshold_0 = 999  # type: ignore[misc]
 
@@ -171,25 +171,40 @@ class TestApplyOptimizations:
     def test_apply_experimental_enabled(self) -> None:
         """Test experimental features logged when enabled."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
-            profile = OptimizationProfile()
+            from dataclasses import replace
+            from src.taipanstack.core.optimizations import get_optimization_profile
+
+            profile = get_optimization_profile()
+            profile = replace(profile, enable_experimental=True)
             result = apply_optimizations(profile=profile)
             assert result.success
 
     def test_apply_experimental_disabled(self) -> None:
         """Test experimental features skipped when disabled."""
-        profile = OptimizationProfile(enable_experimental=False)
+        from dataclasses import replace
+        from src.taipanstack.core.optimizations import get_optimization_profile
+
+        profile = get_optimization_profile()
+        profile = replace(profile, enable_experimental=False)
         result = apply_optimizations(profile=profile)
         assert any("experimental" in s for s in result.skipped)
 
     def test_apply_perf_hints_enabled(self) -> None:
         """Test performance hints reported when enabled."""
-        profile = OptimizationProfile(enable_perf_hints=True)
+        from dataclasses import replace
+        from src.taipanstack.core.optimizations import get_optimization_profile
+
+        profile = get_optimization_profile()
+        profile = replace(profile, enable_perf_hints=True)
         result = apply_optimizations(profile=profile)
         assert any("perf_hints: enabled" in s for s in result.applied)
 
     def test_apply_perf_hints_disabled(self) -> None:
         """Test performance hints skipped when disabled."""
-        profile = OptimizationProfile(enable_perf_hints=False)
+        from src.taipanstack.core.optimizations import get_optimization_profile
+
+        profile = get_optimization_profile()
+        object.__setattr__(profile, "enable_perf_hints", False)
         result = apply_optimizations(profile=profile)
         assert any("perf_hints: disabled" in s for s in result.skipped)
 
@@ -256,38 +271,44 @@ class TestUtilityFunctions:
             prof3 = get_optimization_profile()
             assert prof3.enable_experimental is True
 
+
 def test_apply_optimizations_no_skipped() -> None:
     """Test apply_optimizations when skipped list is empty."""
     from src.taipanstack.core.optimizations import apply_optimizations
     import unittest.mock
 
     class DummyConfig:
-         def __init__(self):
-             self.enable_gc_tuning = True
-             self.enable_string_interning = True
-             self.enable_gc_freeze = True
-             self.enable_experimental = True
-             self.enable_perf_hints = True
-             self.enable_mimalloc = True
-             self.gc_threshold_0 = 700
-             self.gc_threshold_1 = 10
-             self.gc_threshold_2 = 10
-             self.thread_pool_multiplier = 1
-             self.max_thread_pool_size = 32
+        def __init__(self):
+            self.enable_gc_tuning = True
+            self.enable_string_interning = True
+            self.enable_gc_freeze = True
+            self.enable_experimental = True
+            self.enable_perf_hints = True
+            self.enable_mimalloc = True
+            self.gc_threshold_0 = 700
+            self.gc_threshold_1 = 10
+            self.gc_threshold_2 = 10
+            self.thread_pool_multiplier = 1
+            self.max_thread_pool_size = 32
 
     config = DummyConfig()
 
-    with unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_tuning"), \
-         unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_freeze"), \
-         unittest.mock.patch("src.taipanstack.core.optimizations._apply_experimental"):
+    with (
+        unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_tuning"),
+        unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_freeze"),
+        unittest.mock.patch("src.taipanstack.core.optimizations._apply_experimental"),
+    ):
+        result = apply_optimizations(profile=config)  # type: ignore
+        assert len(result.skipped) == 0
+        # We ALSO need to trigger `if errors:` being empty, which it is.
 
-         result = apply_optimizations(profile=config) # type: ignore
-         assert len(result.skipped) == 0
-         # We ALSO need to trigger `if errors:` being empty, which it is.
 
 def test_apply_optimizations_errors_branch() -> None:
     """Test apply_optimizations when errors list is populated."""
-    from src.taipanstack.core.optimizations import apply_optimizations, get_optimization_profile
+    from src.taipanstack.core.optimizations import (
+        apply_optimizations,
+        get_optimization_profile,
+    )
     import unittest.mock
 
     config = get_optimization_profile(force_refresh=True)
@@ -295,6 +316,9 @@ def test_apply_optimizations_errors_branch() -> None:
     def mock_gc_tuning(profile, applied, errors):
         errors.append("test error")
 
-    with unittest.mock.patch("src.taipanstack.core.optimizations._apply_gc_tuning", side_effect=mock_gc_tuning):
-         result = apply_optimizations(profile=config) # type: ignore
-         assert "test error" in result.errors
+    with unittest.mock.patch(
+        "src.taipanstack.core.optimizations._apply_gc_tuning",
+        side_effect=mock_gc_tuning,
+    ):
+        result = apply_optimizations(profile=config)  # type: ignore
+        assert "test error" in result.errors
