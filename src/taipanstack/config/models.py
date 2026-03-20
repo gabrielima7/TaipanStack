@@ -209,7 +209,7 @@ class StackConfig(BaseModel):
             ValueError: If project name contains invalid characters.
 
         """
-        pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*$"
+        pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*\Z"
         if not re.match(pattern, value):
             msg = (
                 f"Project name '{value}' is invalid. "
@@ -234,7 +234,7 @@ class StackConfig(BaseModel):
             ValueError: If version format is invalid.
 
         """
-        pattern = r"^\d+\.\d+$"
+        pattern = r"^\d+\.\d+\Z"
         if not re.match(pattern, value):
             msg = (
                 f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
