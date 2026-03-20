@@ -3,6 +3,8 @@
 import threading
 import time
 
+import pytest
+
 from taipanstack.utils.rate_limit import RateLimiter
 
 
@@ -64,3 +66,39 @@ def test_rate_limiter_chaos_race_condition() -> None:
         f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
     )
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
+
+
+def test_rate_limiter_chaos_backward_clock_jump(
+    monkeypatch: "pytest.MonkeyPatch",
+) -> None:
+    """Simulate a severe NTP anomaly/backward clock jump in RateLimiter.
+
+    If `time.monotonic()` returns a value smaller than `self.last_update`
+    due to a system anomaly, `elapsed` becomes negative. This can cause the
+    token count to artificially decrease, leading to resource starvation
+    where valid requests are incorrectly rate-limited.
+    """
+
+    # Create a limiter allowing 5 calls per 10 seconds
+    limiter = RateLimiter(max_calls=5, time_window=10.0)
+
+    # Consume 2 tokens normally
+    assert limiter.consume() is True
+    assert limiter.consume() is True
+
+    # We should have exactly 3.0 tokens left (since no time has passed yet)
+    # Give it a tiny bit of time to avoid floating point issues
+    limiter.last_update = 100.0
+    limiter.tokens = 3.0
+
+    # Simulate an NTP backward clock jump (time goes backwards by 1000 seconds)
+    def fake_monotonic_backward() -> float:
+        return -900.0  # 100 - 1000 = -900
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic_backward)
+
+    # Attempt to consume a token during the clock anomaly
+    # If vulnerable, elapsed = -1000.0, tokens will become -497.0
+    # and the consume will fail even though it should succeed
+    assert limiter.consume() is True, "Rate limiter failed due to backward clock jump"
+    assert limiter.tokens >= 0.0, "Token count became negative due to clock jump"
