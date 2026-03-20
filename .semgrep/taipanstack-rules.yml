@@ -172,3 +172,34 @@ rules:
       - pattern: _pickle.loads(...)
       - pattern: cPickle.load(...)
       - pattern: cPickle.loads(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 7: Detect use of $ instead of \Z in regex validation
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-regex-dollar-anchor
+    languages: [python]
+    severity: ERROR
+    message: >
+      When writing regular expressions for strict string validation in Python, specifically within
+      `taipanstack.security.validators` and `taipanstack.config.models`, use the `\Z` anchor
+      instead of `$` to ensure absolute string termination and prevent bypasses via trailing newline
+      characters (e.g., `\n`).
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-20: Improper Input Validation"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: re.match($REGEX, ...)
+          - pattern: re.search($REGEX, ...)
+          - pattern: re.fullmatch($REGEX, ...)
+          - pattern: re.compile($REGEX, ...)
+      - pattern-inside: |
+          $REGEX = $STR
+          ...
+      - metavariable-regex:
+          metavariable: $STR
+          regex: '.*\$[\042\047]'
