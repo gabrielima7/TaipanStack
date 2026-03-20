@@ -103,6 +103,7 @@ nav:
   - Patterns:
       - Security Patterns: patterns/security.md
   - Release Notes:
+      - v0.3.10: releases/v0.3.10.md
       - v0.3.9: releases/v0.3.9.md
       - v0.3.8: releases/v0.3.8.md
       - v0.3.7: releases/v0.3.7.md
