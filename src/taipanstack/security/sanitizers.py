@@ -200,7 +200,7 @@ def _clean_path_parts(path: Path) -> list[str]:
                     parts.pop()
             case ".":
                 pass
-            case _:  # pragma: no branch
+            case _:
                 safe_part = sanitize_filename(part, preserve_extension=True)
                 if safe_part:  # pragma: no branch
                     parts.append(safe_part)

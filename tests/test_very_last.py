@@ -579,3 +579,11 @@ class TestOptimizationsEdgeCases:
         assert not result.success
         assert len(result.errors) > 0
         assert any("boom" in e for e in result.errors)
+from pathlib import Path
+from taipanstack.security.sanitizers import sanitize_path, _clean_path_parts
+
+def test_clean_path_parts_dot():
+    class DummyPath:
+        parts = ["foo", ".", "bar"]
+    parts = _clean_path_parts(DummyPath())
+    assert parts == ["foo", "bar"]
