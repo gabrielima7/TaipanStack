@@ -278,32 +278,6 @@ class StackConfig(BaseModel):
 
         return resolved
 
-    @model_validator(mode="after")
-    def validate_config_consistency(self) -> "StackConfig":
-        """Validate configuration consistency.
-
-        Returns:
-            The validated configuration.
-
-        Raises:
-            ValueError: If configuration is inconsistent.
-
-        """
-        # If paranoid security, ensure all security tools are enabled
-        all_tools_enabled = all(
-            [
-                self.security.enable_bandit,
-                self.security.enable_safety,
-                self.security.enable_semgrep,
-                self.security.enable_detect_secrets,
-            ]
-        )
-        if self.security.level == "paranoid" and not all_tools_enabled:
-            msg = "Paranoid security level requires all security tools enabled."
-            raise ValueError(msg)
-
-        return self
-
     def to_target_version(self) -> str:
         """Get Python version in Ruff target format.
 
