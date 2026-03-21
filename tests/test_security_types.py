@@ -292,7 +292,7 @@ class TestSafeSqlIdentifier:
         """Arbitrary strings are correctly accepted or rejected based on regex."""
         import re
 
-        is_valid = bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", text))
+        is_valid = bool(re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*\Z", text))
         if is_valid:
             assert SqlModel(column=text).column == text
         else:
