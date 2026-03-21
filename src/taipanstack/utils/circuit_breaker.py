@@ -249,6 +249,11 @@ class CircuitBreaker:
         """Record a failed call."""
         # Check if exception should be excluded
         if isinstance(exc, self.config.excluded_exceptions):
+            with self._state.lock:
+                if self._state.state == CircuitState.HALF_OPEN:
+                    self._state.half_open_attempts = max(
+                        0, self._state.half_open_attempts - 1
+                    )
             return
 
         with self._state.lock:
@@ -318,6 +323,14 @@ class CircuitBreaker:
                 except self.config.failure_exceptions as e:
                     self._record_failure(e)
                     raise
+                except Exception:
+                    # Non-failure exceptions should not consume a half-open attempt.
+                    with self._state.lock:
+                        if self._state.state == CircuitState.HALF_OPEN:
+                            self._state.half_open_attempts = max(
+                                0, self._state.half_open_attempts - 1
+                            )
+                    raise
 
             return async_wrapper
 
@@ -337,6 +350,14 @@ class CircuitBreaker:
                 return result
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
+                raise
+            except Exception:
+                # Non-failure exceptions should not consume a half-open attempt.
+                with self._state.lock:
+                    if self._state.state == CircuitState.HALF_OPEN:
+                        self._state.half_open_attempts = max(
+                            0, self._state.half_open_attempts - 1
+                        )
                 raise
 
         return wrapper
