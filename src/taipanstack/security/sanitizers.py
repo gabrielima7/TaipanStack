@@ -114,7 +114,7 @@ def sanitize_string(
 
 
 @functools.lru_cache(maxsize=32)
-def _get_replacement_regex(replacement: str) -> re.Pattern:
+def _get_replacement_regex(replacement: str) -> re.Pattern[str]:
     """Cache the compiled regex for consecutive replacement characters."""
     return re.compile(f"{re.escape(replacement)}+")
 
