@@ -194,13 +194,16 @@ def _clean_path_parts(path: Path) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
     for part in path.parts:
-        if part == "..":
-            if parts and parts[-1] != "..":
-                parts.pop()
-        elif part != ".":  # pragma: no branch
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part:  # pragma: no branch
-                parts.append(safe_part)
+        match part:
+            case "..":
+                if parts and parts[-1] != "..":
+                    parts.pop()
+            case ".":
+                pass
+            case _:  # pragma: no branch
+                safe_part = sanitize_filename(part, preserve_extension=True)
+                if safe_part:  # pragma: no branch
+                    parts.append(safe_part)
     return parts
 
 
