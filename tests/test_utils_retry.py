@@ -480,3 +480,38 @@ class TestRetryError:
         """Test RetryError message."""
         error = RetryError("All attempts failed", attempts=3)
         assert "All attempts failed" in str(error)
+
+    def test_retry_for_loop_exhaustion(self) -> None:
+        """Test the retry loop exhaustion explicitly."""
+        from taipanstack.utils.retry import RetryError, retry
+
+        call_count = 0
+
+        @retry(max_attempts=0)
+        def will_not_run() -> None:
+            nonlocal call_count
+            call_count += 1
+
+        with pytest.raises(RetryError) as exc_info:
+            will_not_run()
+
+        assert "All 0 attempts failed" in str(exc_info.value)
+        assert call_count == 0
+
+    @pytest.mark.asyncio
+    async def test_retry_async_for_loop_exhaustion(self) -> None:
+        """Test the retry async loop exhaustion explicitly."""
+        from taipanstack.utils.retry import RetryError, retry
+
+        call_count = 0
+
+        @retry(max_attempts=0)
+        async def will_not_run() -> None:
+            nonlocal call_count
+            call_count += 1
+
+        with pytest.raises(RetryError) as exc_info:
+            await will_not_run()
+
+        assert "All 0 attempts failed" in str(exc_info.value)
+        assert call_count == 0
