@@ -86,10 +86,10 @@ class TestGuardsSymlinkMocked:
 
 
 # =============================================================================
-# sanitizers.py — L241-243: sanitize_path with resolve=True raising
+# sanitizers.py — sanitize_path with resolve=True raising
 # =============================================================================
 class TestSanitizersResolveError:
-    """Test for sanitizers.py lines 241-243 (resolve error)."""
+    """Test for sanitizers.py (resolve error)."""
 
     def test_sanitize_path_works(self, tmp_path: Path) -> None:
         """Test sanitize_path with valid path."""
@@ -99,7 +99,7 @@ class TestSanitizersResolveError:
         assert result is not None
 
     def test_sanitize_path_resolve_oserror(self) -> None:
-        """Test sanitize_path with resolve=True raising OSError (L241-243)."""
+        """Test sanitize_path with resolve=True raising OSError."""
         from taipanstack.security.sanitizers import sanitize_path
 
         # Use selective mock: first resolve call (base_dir) succeeds,
@@ -125,7 +125,7 @@ class TestSanitizersResolveError:
                 )
 
     def test_sanitize_path_resolve_runtime_error(self) -> None:
-        """Test sanitize_path with resolve=True raising RuntimeError (L241-243)."""
+        """Test sanitize_path with resolve=True raising RuntimeError."""
         from taipanstack.security.sanitizers import sanitize_path
 
         call_count = 0
@@ -146,6 +146,34 @@ class TestSanitizersResolveError:
                     resolve=True,
                     max_depth=None,
                 )
+
+    def test_sanitize_filename_replace_empty(self) -> None:
+        """Test sanitize_filename empty replacement branches."""
+        from taipanstack.security.sanitizers import sanitize_filename
+
+        # Branch 1: `if replacement:` when empty and string valid
+        res = sanitize_filename("valid_name.txt", replacement="")
+        assert res == "valid_name.txt"
+
+        # Branch 2: `if replacement and replacement in safe_stem:` when empty
+        res = sanitize_filename("invalid/name.txt", replacement="")
+        assert res == "name.txt"
+
+    def test_sanitize_filename_truncate_stem(self) -> None:
+        """Test sanitize_filename truncates stem correctly."""
+        from taipanstack.security.sanitizers import sanitize_filename
+
+        # Test when available > 0
+        stem = "a" * 250
+        suffix = ".txt"
+        res = sanitize_filename(stem + suffix, max_length=250)
+        assert len(res) == 250
+        assert res.endswith(".txt")
+
+        # Test when available <= 0 (suffix longer than max length)
+        long_suffix = "." + "b" * 260
+        res = sanitize_filename("name" + long_suffix, max_length=250)
+        assert len(res) == 250
 
 
 # =============================================================================

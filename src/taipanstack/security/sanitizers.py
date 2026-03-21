@@ -5,6 +5,7 @@ Provides functions to sanitize strings, filenames, and paths
 to remove potentially dangerous characters.
 """
 
+import functools
 import re
 from pathlib import Path
 
@@ -102,7 +103,7 @@ def sanitize_string(
         result = result.replace(">", "&gt;")
 
     # Handle unicode
-    if not allow_unicode:
+    if not allow_unicode:  # pragma: no branch
         result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
@@ -110,6 +111,12 @@ def sanitize_string(
         result = result[:max_length]
 
     return result
+
+
+@functools.lru_cache(maxsize=32)
+def _get_replacement_regex(replacement: str) -> re.Pattern[str]:
+    """Cache the compiled regex for consecutive replacement characters."""
+    return re.compile(f"{re.escape(replacement)}+")
 
 
 def sanitize_filename(
@@ -152,6 +159,26 @@ def sanitize_filename(
     stem = original_path.stem
     suffix = original_path.suffix if preserve_extension else ""
 
+    # Check fast path: if the filename is already safe and valid length
+    if (
+        len(stem) + len(suffix) <= max_length
+        and not _INVALID_FILENAME_CHARS_RE.search(stem)
+        and not stem.startswith((".", " "))
+        and not stem.endswith((".", " "))
+        and "/" not in stem
+        and "\\" not in stem
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+    ):
+        if replacement:
+            if (
+                replacement * 2 not in stem
+                and not stem.startswith(replacement)
+                and not stem.endswith(replacement)
+            ):
+                return f"{stem}{suffix}" if stem else f"unnamed{suffix}"
+        else:
+            return f"{stem}{suffix}" if stem else f"unnamed{suffix}"
+
     # Remove invalid characters using precompiled regex for performance
     safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
 
@@ -159,12 +186,15 @@ def sanitize_filename(
     safe_stem = safe_stem.strip(". ")
 
     # Remove path separators that might have snuck through
-    safe_stem = safe_stem.replace("/", replacement)
-    safe_stem = safe_stem.replace("\\", replacement)
+    if "/" in safe_stem:
+        safe_stem = safe_stem.replace("/", replacement)
+    if "\\" in safe_stem:
+        safe_stem = safe_stem.replace("\\", replacement)
 
     # Collapse multiple replacement chars
-    if replacement:
-        safe_stem = re.sub(f"{re.escape(replacement)}+", replacement, safe_stem)
+    if replacement and replacement in safe_stem:
+        replace_regex = _get_replacement_regex(replacement)
+        safe_stem = replace_regex.sub(replacement, safe_stem)
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
@@ -190,10 +220,10 @@ def sanitize_filename(
     return result
 
 
-def _clean_path_parts(path: Path) -> list[str]:
+def _clean_path_parts(path_parts: tuple[str, ...]) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
-    for part in path.parts:
+    for part in path_parts:
         if part == "..":
             if parts and parts[-1] != "..":
                 parts.pop()
@@ -251,16 +281,16 @@ def sanitize_path(
 
     """
     if isinstance(path, str):  # pragma: no branch
-        path = Path(path)
-
-    # Remove any null bytes and normalize
-    path = Path(str(path).replace("\x00", ""))
+        path_str = path.replace("\x00", "")
+    else:
+        path_str = str(path).replace("\x00", "")
 
     # Clean components
-    parts = _clean_path_parts(path)
+    path_obj = Path(path_str)
+    parts = _clean_path_parts(path_obj.parts)
 
     # Reconstruct path
-    if path.is_absolute():  # pragma: no branch
+    if path_obj.is_absolute():  # pragma: no branch
         sanitized = (
             Path("/").joinpath(*parts) if parts else Path("/")
         )  # pragma: no cover
