@@ -1,7 +1,7 @@
 # Security Policy
 
 ## Supported Versions
-Nós priorizamos correções de segurança na versão mais recente (Rolling Release).
+We prioritize security fixes on the latest version (Rolling Release).
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -9,4 +9,4 @@ Nós priorizamos correções de segurança na versão mais recente (Rolling Rele
 | Older   | :x:                |
 
 ## Reporting a Vulnerability
-Se encontrar uma falha, por favor reporte via aba [Security](../../security) ou email.
+If you find a vulnerability, please report it via the [Security](../../security) tab or by email.
