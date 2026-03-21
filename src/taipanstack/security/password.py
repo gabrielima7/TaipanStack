@@ -16,8 +16,6 @@ from pydantic import SecretStr
 _ph = argon2.PasswordHasher()
 
 # Legacy PBKDF2 Constants
-LEGACY_ITERATIONS = 600_000
-LEGACY_SALT_SIZE = 16
 LEGACY_HASH_ALGORITHM = "sha256"
 LEGACY_FORMAT = "pbkdf2_sha256"
 

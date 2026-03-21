@@ -178,6 +178,16 @@ class TestStackConfig:
         with pytest.raises(ValidationError, match="Path traversal"):
             StackConfig(project_dir=Path("dir_with..dots"))
 
+    def test_paranoid_requires_all_tools(self) -> None:
+        """Test paranoid mode requires all security tools."""
+        with pytest.raises(ValidationError, match="requires all security tools"):
+            StackConfig(
+                security=SecurityConfig(
+                    level="paranoid",
+                    enable_bandit=False,
+                )
+            )
+
     def test_to_target_version(self) -> None:
         """Test target version conversion."""
         config = StackConfig(python_version="3.12")
