@@ -143,6 +143,7 @@ def _check_traversal_patterns(path: Path) -> None:
             value=path_str[:50],  # Truncate for safety
         )
 
+
 def _resolve_and_check_bounds(path: Path, base_dir: Path) -> tuple[Path, Path]:
     """Resolve the path and check if it escapes the base directory."""
     try:
@@ -162,6 +163,7 @@ def _resolve_and_check_bounds(path: Path, base_dir: Path) -> tuple[Path, Path]:
         )
     return full_path, resolved
 
+
 def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
     """Check for symlinks if not allowed."""
     current = full_path
@@ -175,6 +177,7 @@ def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
                 value=str(current),
             )
         current = current.parent
+
 
 def guard_path_traversal(
     path: Path | str,
