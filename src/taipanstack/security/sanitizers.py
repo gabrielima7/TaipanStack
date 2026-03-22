@@ -148,9 +148,39 @@ def sanitize_filename(
         return "unnamed"
 
     # Get parts
-    original_path = Path(filename)
-    stem = original_path.stem
-    suffix = original_path.suffix if preserve_extension else ""
+    # Normalize trailing slashes like Path() does
+    name = filename.rstrip("/\\")
+    if not name:
+        # e.g., filename was "/" or "\\"
+        return "unnamed"
+
+    name = name.rsplit("/", 1)[-1]
+    name = name.rsplit("\\", 1)[-1]
+
+    # Determine stem and suffix similar to pathlib.Path.
+    # A string of all dots (e.g. "...", "..", ".") yields stem=name, suffix="".
+    # Otherwise, split at the last dot unless it's the first character.
+    all_dots = True
+    for c in name:
+        if c != ".":
+            all_dots = False
+            break
+
+    if all_dots:
+        stem = name
+        suffix = ""
+    else:
+        dot_idx = name.rfind(".")
+        if dot_idx > 0:
+            stem = name[:dot_idx]
+            suffix = name[dot_idx:]
+        else:
+            stem = name
+            suffix = ""
+
+    if not preserve_extension:
+        # Keep stem as is (up to the last dot), but drop suffix
+        suffix = ""
 
     # Remove invalid characters using precompiled regex for performance
     safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
@@ -158,13 +188,11 @@ def sanitize_filename(
     # Remove leading/trailing dots and spaces (Windows issues)
     safe_stem = safe_stem.strip(". ")
 
-    # Remove path separators that might have snuck through
-    safe_stem = safe_stem.replace("/", replacement)
-    safe_stem = safe_stem.replace("\\", replacement)
-
     # Collapse multiple replacement chars
     if replacement:
-        safe_stem = re.sub(f"{re.escape(replacement)}+", replacement, safe_stem)
+        repl_repl = replacement + replacement
+        while repl_repl in safe_stem:
+            safe_stem = safe_stem.replace(repl_repl, replacement)
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
@@ -190,10 +218,10 @@ def sanitize_filename(
     return result
 
 
-def _clean_path_parts(path: Path) -> list[str]:
+def _clean_path_parts(path_parts: tuple[str, ...]) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
-    for part in path.parts:
+    for part in path_parts:
         if part == "..":
             if parts and parts[-1] != "..":
                 parts.pop()
@@ -257,7 +285,7 @@ def sanitize_path(
     path = Path(str(path).replace("\x00", ""))
 
     # Clean components
-    parts = _clean_path_parts(path)
+    parts = _clean_path_parts(path.parts)
 
     # Reconstruct path
     if path.is_absolute():  # pragma: no branch
