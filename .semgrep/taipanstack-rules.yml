@@ -203,3 +203,51 @@ rules:
       - metavariable-regex:
           metavariable: $STR
           regex: '.*\$[\042\047]'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 8: Detect insecure usage of subprocess with shell=True
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-subprocess-shell-true
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `subprocess` with `shell=True` can lead to command injection if untrusted
+      input is used. It is strictly forbidden in the TaipanStack project. Use
+      `taipanstack.utils.subprocess.run_safe_command` instead.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      owasp: "A03:2021 - Injection"
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.run(..., shell=True, ...)
+          - pattern: subprocess.Popen(..., shell=True, ...)
+          - pattern: subprocess.call(..., shell=True, ...)
+          - pattern: subprocess.check_call(..., shell=True, ...)
+          - pattern: subprocess.check_output(..., shell=True, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 9: Detect unsafe XML parsing
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-xml-vulnerabilities
+    languages: [python]
+    severity: ERROR
+    message: >
+      Standard library XML parsers are vulnerable to XML External Entity (XXE) attacks.
+      Avoid using `xml.etree.ElementTree`, `xml.sax`, or `xml.dom`. Use `defusedxml` instead.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      owasp: "A05:2021 - Security Misconfiguration"
+    patterns:
+      - pattern-either:
+          - pattern: xml.etree.ElementTree.parse(...)
+          - pattern: xml.etree.ElementTree.fromstring(...)
+          - pattern: xml.sax.parse(...)
+          - pattern: xml.sax.parseString(...)
+          - pattern: xml.dom.minidom.parse(...)
+          - pattern: xml.dom.minidom.parseString(...)
+          - pattern: xml.dom.pulldom.parse(...)
+          - pattern: xml.dom.pulldom.parseString(...)
