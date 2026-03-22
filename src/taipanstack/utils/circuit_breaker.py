@@ -94,6 +94,7 @@ class CircuitBreakerState:
     state: CircuitState = CircuitState.CLOSED
     failure_count: int = 0
     success_count: int = 0
+    half_open_attempts: int = 0
     last_failure_time: float = 0.0
     lock: threading.Lock = field(default_factory=threading.Lock)
 
@@ -192,6 +193,7 @@ class CircuitBreaker:
                     if elapsed >= self.config.timeout:
                         self._state.state = CircuitState.HALF_OPEN
                         self._state.success_count = 0
+                        self._state.half_open_attempts = 1
                         logger.info(
                             "Circuit %s entering half-open state "
                             "(was open for %.1fs, failures=%d)",
@@ -208,7 +210,10 @@ class CircuitBreaker:
 
                 case CircuitState.HALF_OPEN:  # pragma: no branch
                     # Allow limited attempts
-                    return True
+                    if self._state.half_open_attempts < self.config.success_threshold:
+                        self._state.half_open_attempts += 1
+                        return True
+                    return False
 
         return False  # pragma: no cover — unreachable, satisfies type checker
 
@@ -221,6 +226,7 @@ class CircuitBreaker:
                     if self._state.success_count >= self.config.success_threshold:
                         self._state.state = CircuitState.CLOSED
                         self._state.failure_count = 0
+                        self._state.half_open_attempts = 0
                         logger.info(
                             "Circuit %s closed after recovery "
                             "(%d consecutive successes)",
@@ -287,6 +293,7 @@ class CircuitBreaker:
             self._state.state = CircuitState.CLOSED
             self._state.failure_count = 0
             self._state.success_count = 0
+            self._state.half_open_attempts = 0
             logger.info("Circuit %s manually reset", self.name)
 
     def __call__(
