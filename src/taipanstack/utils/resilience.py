@@ -9,7 +9,7 @@ import functools
 import inspect
 import threading
 from collections.abc import Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import Any, ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -17,19 +17,22 @@ P = ParamSpec("P")
 T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
 
+ResultFunc: TypeAlias = Callable[P, Result[T, E]]
+AsyncResultFunc: TypeAlias = Callable[P, Coroutine[Any, Any, Result[T, E]]]
+
 
 class FallbackDecorator(Protocol):
     """Protocol for the fallback decorator."""
 
     @overload
     def __call__(
-        self, func: Callable[P, Result[T, E]]
-    ) -> Callable[P, Result[T, E]]: ...  # pragma: no cover
+        self, func: ResultFunc[P, T, E]
+    ) -> ResultFunc[P, T, E]: ...  # pragma: no cover
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E]]]: ...  # pragma: no cover
+        self, func: AsyncResultFunc[P, T, E]
+    ) -> AsyncResultFunc[P, T, E]: ...  # pragma: no cover
 
 
 def fallback(
@@ -51,19 +54,15 @@ def fallback(
     """
 
     def decorator(
-        func: (
-            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
-        ),
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+        func: ResultFunc[P, T, E] | AsyncResultFunc[P, T, E],
+    ) -> ResultFunc[P, T, E] | AsyncResultFunc[P, T, E]:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
                     # func is a coroutine function here
-                    func_coro = cast(
-                        Callable[P, Coroutine[Any, Any, Result[T, E]]], func
-                    )
+                    func_coro = cast(AsyncResultFunc[P, T, E], func)
                     result = await func_coro(*args, **kwargs)
                     match result:
                         case Err():
@@ -80,7 +79,7 @@ def fallback(
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             try:
                 # func is a normal function here
-                func_sync = cast(Callable[P, Result[T, E]], func)
+                func_sync = cast(ResultFunc[P, T, E], func)
                 result = func_sync(*args, **kwargs)
                 match result:
                     case Err():
@@ -101,12 +100,12 @@ class TimeoutDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Result[T, E]]
+        self, func: ResultFunc[P, T, E]
     ) -> Callable[P, Result[T, TimeoutError | E]]: ...  # pragma: no cover
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
+        self, func: AsyncResultFunc[P, T, E]
     ) -> Callable[
         P, Coroutine[Any, Any, Result[T, TimeoutError | E]]
     ]: ...  # pragma: no cover
@@ -126,9 +125,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
     """
 
     def decorator(
-        func: (
-            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
-        ),
+        func: ResultFunc[P, T, E] | AsyncResultFunc[P, T, E],
     ) -> (
         Callable[P, Result[T, TimeoutError | E]]
         | Callable[P, Coroutine[Any, Any, Result[T, TimeoutError | E]]]
