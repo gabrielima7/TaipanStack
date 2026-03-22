@@ -1,6 +1,5 @@
 """Property-based fuzzing tests for the secure JWT module."""
 
-import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
@@ -35,7 +34,9 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256", "HS384", "HS512"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_encode_jwt_malformed_payload(self, payload, secret, algorithm) -> None:
+    def test_fuzz_encode_jwt_malformed_payload(
+        self, payload, secret, algorithm
+    ) -> None:
         """Bombard encode_jwt with extreme, malformed payload types."""
         result = encode_jwt(payload, secret, algorithm=algorithm)
         # Should cleanly return an Err result, not raise an unhandled TypeError
@@ -48,7 +49,9 @@ class TestFuzzJWT:
         audience=st.one_of(st.text(), st.lists(st.text())),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_decode_jwt_malformed_token(self, token, secret, algorithms, audience) -> None:
+    def test_fuzz_decode_jwt_malformed_token(
+        self, token, secret, algorithms, audience
+    ) -> None:
         """Bombard decode_jwt with extreme, malformed token types."""
         result = decode_jwt(token, secret, algorithms=algorithms, audience=audience)
         # Should cleanly return an Err result, not raise an unhandled TypeError or AttributeError
