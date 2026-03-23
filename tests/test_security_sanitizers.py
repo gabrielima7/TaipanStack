@@ -174,7 +174,7 @@ class TestSanitizePath:
         base_dir = tmp_path / "base"
         base_dir.mkdir()
 
-        result = sanitize_path(path, base_dir=base_dir, resolve=False)
+        result = sanitize_path(path, base_dir=base_dir, max_depth=None, resolve=False)
         assert result.is_absolute()
         assert result.parts[-2:] == ("absolute", "path")
 
@@ -182,15 +182,13 @@ class TestSanitizePath:
         """Test sanitize_path when path is absolute and has parts."""
         # Covers path reconstruction when path.is_absolute() is True and parts is truthy
         path = tmp_path / "absolute/path"
-        result = sanitize_path(path)
+        result = sanitize_path(path, max_depth=None)
         assert result.is_absolute()
         assert result.parts[-2:] == ("absolute", "path")
 
     def test_sanitize_path_empty(self) -> None:
         """Test sanitize_path when path is empty (no parts, not absolute)."""
-        # This covers the line:
-        # else:
-        #     sanitized = Path()
+        # Covers the else branch where parts are empty and path is not absolute
         result = sanitize_path("")
         assert not result.is_absolute()
         assert result == Path()
