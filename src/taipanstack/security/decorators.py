@@ -11,16 +11,25 @@ import inspect
 import signal
 import sys
 import threading
-import typing
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from types import FrameType
-from typing import ParamSpec, TypeVar
+from typing import Any, ParamSpec, Protocol, TypeVar
 
 from taipanstack.security.guards import SecurityError
 
 P = ParamSpec("P")
 R = TypeVar("R")
 T = TypeVar("T")
+V_contra = TypeVar("V_contra", contravariant=True)
+V_co = TypeVar("V_co", covariant=True)
+
+
+class ValidatorFunc(Protocol[V_contra, V_co]):
+    """Protocol defining the signature of input validators."""
+
+    def __call__(self, value: V_contra, /) -> V_co:
+        """Validate an input value."""
+        ...
 
 
 class OperationTimeoutError(Exception):
@@ -62,7 +71,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: Callable[[typing.Any], typing.Any],
+    **validators: ValidatorFunc[Any, Any],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
@@ -222,13 +231,13 @@ def timeout(
                     func,
                     seconds,
                     args,
-                    kwargs,
+                    dict(kwargs),
                 )
             return _timeout_with_thread(
                 func,
                 seconds,
                 args,
-                kwargs,
+                dict(kwargs),
             )
 
         return wrapper
@@ -239,8 +248,8 @@ def timeout(
 def _timeout_with_signal(  # pragma: no cover
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
 ) -> R:
     """Implement timeout using Unix signals."""
 
@@ -262,8 +271,8 @@ def _timeout_with_signal(  # pragma: no cover
 def _timeout_with_thread(
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
 ) -> R:
     """Implement timeout using a separate thread."""
     result: list[R] = []
