@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774273677216,
+  "lastUpdate": 1774273725495,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -12703,6 +12703,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003414493060803887",
             "extra": "mean: 17.398072666817253 usec\nrounds: 13844"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "08a6b30bee7ade709ab710364b96e30fd4a336aa",
+          "message": "test(security): improve coverage by removing `pragma: no cover` in sanitizers (#286)\n\n* test(security): improve coverage by removing `pragma: no cover` in sanitizers\n\n- Remove `# pragma: no cover` from `src/taipanstack/security/sanitizers.py`.\n- Add unit tests in `tests/test_security_sanitizers.py` to cover absolute paths and empty paths when applying base directory constraints and parts reconstruction.\n- Tests executed and pass 100% locally with `--cov=src/taipanstack --cov-fail-under=100`.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test(security): bypass max depth limits on ci runners\n\n- Remove commented out code in tests that trigger Ruff check errors\n- Add `max_depth=None` explicitly when testing absolute paths using `tmp_path` fixture in `test_sanitize_path_absolute_with_base_dir` and `test_sanitize_path_absolute_with_parts` to avoid `ValueError` on deeper runner path hierarchies.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* fix(sanitizers): preserve OS anchor in absolute path reconstruction\n\n- Update `sanitize_path` to use `path.anchor` instead of a hardcoded UNIX root (`Path(\"/\")`) when reconstructing absolute paths from parts.\n- Fix formatting and comment code issues raised by Ruff.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* fix(tests): resolve absolute path reconstruction assertion on Windows\n\n- Update `test_handles_empty_parts` to assert `Path(abs_root.anchor)` instead of a hardcoded `Path(\"/\")`.\n- Run `poetry run ruff format` and `poetry run ruff check --fix` on the test suite to resolve Code Quality failing checks for trailing whitespaces and commented-out code.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-23T10:47:30-03:00",
+          "tree_id": "5707540ed2c5f4c930fe7610b6d9183787359526",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/08a6b30bee7ade709ab710364b96e30fd4a336aa"
+        },
+        "date": 1774273725091,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 999091.7354108775,
+            "unit": "iter/sec",
+            "range": "stddev: 2.937868956527508e-7",
+            "extra": "mean: 1.0009090902836355 usec\nrounds: 140568"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 694388.7829678725,
+            "unit": "iter/sec",
+            "range": "stddev: 3.530820156135202e-7",
+            "extra": "mean: 1.4401154288897369 usec\nrounds: 172981"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 441490.6998718513,
+            "unit": "iter/sec",
+            "range": "stddev: 4.4511787866304393e-7",
+            "extra": "mean: 2.2650533755077147 usec\nrounds: 85676"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 162310.49287118588,
+            "unit": "iter/sec",
+            "range": "stddev: 9.368449993014048e-7",
+            "extra": "mean: 6.1610311342817985 usec\nrounds: 10535"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 105734.98037136112,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000011292877185201602",
+            "extra": "mean: 9.457608035560343 usec\nrounds: 43606"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 19483.46637124504,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000018133738900316303",
+            "extra": "mean: 51.32556912336014 usec\nrounds: 11031"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 34251.29713997375,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002687448781013796",
+            "extra": "mean: 29.19597456158609 usec\nrounds: 16196"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 5103243.999126271,
+            "unit": "iter/sec",
+            "range": "stddev: 2.7683958985830467e-8",
+            "extra": "mean: 195.9537894271276 nsec\nrounds: 168891"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 2921957.6232457026,
+            "unit": "iter/sec",
+            "range": "stddev: 5.253188740939718e-8",
+            "extra": "mean: 342.23631172624385 nsec\nrounds: 45786"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 2167429.5475741047,
+            "unit": "iter/sec",
+            "range": "stddev: 2.141992003093249e-7",
+            "extra": "mean: 461.3760115613677 nsec\nrounds: 175101"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 664296.4699182509,
+            "unit": "iter/sec",
+            "range": "stddev: 3.4871312798899526e-7",
+            "extra": "mean: 1.5053519705186165 usec\nrounds: 157928"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 517622.9888177848,
+            "unit": "iter/sec",
+            "range": "stddev: 4.412087375387199e-7",
+            "extra": "mean: 1.9319080133668927 usec\nrounds: 81077"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 429766.91085551755,
+            "unit": "iter/sec",
+            "range": "stddev: 4.965269790005773e-7",
+            "extra": "mean: 2.326842701801647 usec\nrounds: 96619"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 131964.41128574067,
+            "unit": "iter/sec",
+            "range": "stddev: 8.364776203311596e-7",
+            "extra": "mean: 7.577800637739474 usec\nrounds: 78716"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 7782520.637636114,
+            "unit": "iter/sec",
+            "range": "stddev: 1.0524097562217786e-8",
+            "extra": "mean: 128.49307397446225 nsec\nrounds: 76959"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 60045.808923310135,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00011718065793984388",
+            "extra": "mean: 16.653951673416362 usec\nrounds: 7470"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 71992.6659714106,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000005428158378987882",
+            "extra": "mean: 13.890303776180692 usec\nrounds: 12552"
           }
         ]
       }
