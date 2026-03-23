@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774274355437,
+  "lastUpdate": 1774276446796,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -13132,6 +13132,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003172876802086355",
             "extra": "mean: 17.194230717033168 usec\nrounds: 14741"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "67b11d8d26af33212e1d67918c89607d18e89d87",
+          "message": "🛡️ Sentinel: [Low] Fix Unhandled Regex Backreference Processing in sanitize_filename (#294)\n\n* fix(security): harden sanitize_filename against regex replacements\n\nThe sanitize_filename fuzzer found that if the replacement parameter passed to re.sub() contained unescaped backreferences (e.g., '\\g<1>') or trailing backslashes, re.sub() would attempt to process them as regex groups, leading to an unhandled re.error (e.g., 'invalid group reference').\n\nThis PR modifies the replacement string argument in `re.sub` within `sanitize_filename` to use a `lambda _: replacement` callable. This safely instructs Python's regex engine to treat the string purely as a literal value rather than a template, closing this edge-case vulnerability completely.\n\nA comprehensive property-based Hypothesis fuzzer (`test_fuzz_sanitizers.py`) was added and tested successfully against 100% of the modified code logic to prevent future regressions.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* fix(security): harden sanitize_filename against regex replacements and format imports\n\nThe sanitize_filename fuzzer found that if the replacement parameter passed to re.sub() contained unescaped backreferences (e.g., '\\g<1>') or trailing backslashes, re.sub() would attempt to process them as regex groups, leading to an unhandled re.error (e.g., 'invalid group reference').\n\nThis PR modifies the replacement string argument in `re.sub` within `sanitize_filename` to use a `lambda _: replacement` callable. This safely instructs Python's regex engine to treat the string purely as a literal value rather than a template, closing this edge-case vulnerability completely.\n\nA comprehensive property-based Hypothesis fuzzer (`test_fuzz_sanitizers.py`) was added and tested successfully against 100% of the modified code logic to prevent future regressions.\n\nAlso ran ruff format/check to fix CI issues.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-23T11:33:17-03:00",
+          "tree_id": "5b8fa8e74a5e712f1832b07a683f04e29647b736",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/67b11d8d26af33212e1d67918c89607d18e89d87"
+        },
+        "date": 1774276446477,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 994332.6664165339,
+            "unit": "iter/sec",
+            "range": "stddev: 2.8246997803798497e-7",
+            "extra": "mean: 1.005699635318118 usec\nrounds: 72119"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 688293.3774872993,
+            "unit": "iter/sec",
+            "range": "stddev: 4.489148541690145e-7",
+            "extra": "mean: 1.4528688386493336 usec\nrounds: 143617"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 446290.2203172071,
+            "unit": "iter/sec",
+            "range": "stddev: 4.6996332221194203e-7",
+            "extra": "mean: 2.2406944057372256 usec\nrounds: 156446"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 132525.89668987435,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000013245028264962544",
+            "extra": "mean: 7.5456950300069545 usec\nrounds: 9014"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 72411.46302509619,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000015414969990738204",
+            "extra": "mean: 13.809968176632784 usec\nrounds: 35917"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 18326.59789559141,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000004369690794022222",
+            "extra": "mean: 54.56550122925744 usec\nrounds: 9762"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 31954.04261941112,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00001589937827838012",
+            "extra": "mean: 31.294944802775284 usec\nrounds: 14729"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 5107326.478296258,
+            "unit": "iter/sec",
+            "range": "stddev: 3.106543236132725e-8",
+            "extra": "mean: 195.79715615397794 nsec\nrounds: 168891"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 2836439.9054540773,
+            "unit": "iter/sec",
+            "range": "stddev: 4.4298189046224264e-8",
+            "extra": "mean: 352.5546224610676 nsec\nrounds: 126199"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 2153128.871083363,
+            "unit": "iter/sec",
+            "range": "stddev: 2.251974243954004e-7",
+            "extra": "mean: 464.4403841451638 nsec\nrounds: 144844"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 659528.988942794,
+            "unit": "iter/sec",
+            "range": "stddev: 3.8211919337711185e-7",
+            "extra": "mean: 1.51623357997193 usec\nrounds: 117981"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 527737.8638147733,
+            "unit": "iter/sec",
+            "range": "stddev: 5.297340081217467e-7",
+            "extra": "mean: 1.8948801451756025 usec\nrounds: 69701"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 430623.36145865446,
+            "unit": "iter/sec",
+            "range": "stddev: 5.787658630004624e-7",
+            "extra": "mean: 2.3222149318901115 usec\nrounds: 83459"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 127764.44321045336,
+            "unit": "iter/sec",
+            "range": "stddev: 8.82299931582164e-7",
+            "extra": "mean: 7.826903752500231 usec\nrounds: 32032"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 12784467.45013129,
+            "unit": "iter/sec",
+            "range": "stddev: 8.118386684145468e-9",
+            "extra": "mean: 78.2199183423754 nsec\nrounds: 63252"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 46051.50208899778,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00042735346484826486",
+            "extra": "mean: 21.714818293384422 usec\nrounds: 8145"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 66174.69896677573,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000006573898757762322",
+            "extra": "mean: 15.111515664046602 usec\nrounds: 10406"
           }
         ]
       }
