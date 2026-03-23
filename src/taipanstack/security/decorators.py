@@ -11,7 +11,7 @@ import inspect
 import signal
 import sys
 import threading
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from types import FrameType
 from typing import Any, ParamSpec, Protocol, TypeVar
 
