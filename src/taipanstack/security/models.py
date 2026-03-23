@@ -21,6 +21,8 @@ _SENSITIVE_KEY_REGEX = (
     else None
 )
 
+_MAX_RECURSION_DEPTH = 100
+
 
 def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
     """Recursively mask sensitive keys in data."""
@@ -28,7 +30,7 @@ def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
         return data
 
     # Prevent ReDoS or stack overflow on deeply nested payloads
-    if _depth > 100:
+    if _depth > _MAX_RECURSION_DEPTH:
         return "<MAX_DEPTH_REACHED>"
 
     if isinstance(data, dict):

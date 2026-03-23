@@ -1,6 +1,11 @@
+import json
+
 import pytest
-from hypothesis import given, settings, strategies as st, HealthCheck
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
+
 from taipanstack.security.models import _mask_data
+
 
 def recursive_json(depth=0):
     if depth > 100:
@@ -10,8 +15,11 @@ def recursive_json(depth=0):
         st.integers(),
         st.none(),
         st.lists(st.deferred(lambda: recursive_json(depth + 1)), max_size=2),
-        st.dictionaries(st.text(), st.deferred(lambda: recursive_json(depth + 1)), max_size=2)
+        st.dictionaries(
+            st.text(), st.deferred(lambda: recursive_json(depth + 1)), max_size=2
+        ),
     )
+
 
 @given(data=recursive_json())
 @settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
@@ -20,6 +28,7 @@ def test_fuzz_mask_data_recursion(data):
         _mask_data(data)
     except RecursionError:
         pytest.fail("RecursionError raised!")
+
 
 def test_deep_recursion_dict():
     data = {}
@@ -32,11 +41,11 @@ def test_deep_recursion_dict():
         masked = _mask_data(data)
 
         # Verify it was masked or truncated
-        import json
         dump = json.dumps(masked)
         assert "secret" not in dump, "Sensitive data was not masked or truncated"
     except RecursionError:
         pytest.fail("RecursionError raised!")
+
 
 def test_deep_recursion_list():
     data = []
@@ -50,7 +59,6 @@ def test_deep_recursion_list():
         masked = _mask_data(data)
 
         # Verify it was masked or truncated
-        import json
         dump = json.dumps(masked)
         assert "secret" not in dump, "Sensitive data was not masked or truncated"
     except RecursionError:
