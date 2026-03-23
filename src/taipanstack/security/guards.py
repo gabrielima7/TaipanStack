@@ -129,6 +129,50 @@ class SecurityError(Exception):
         super().__init__(f"[{guard_name}] {message}")
 
 
+def _check_traversal_patterns(path_str: str) -> None:
+    path_str_lower = path_str.lower()
+    match = TRAVERSAL_REGEX.search(path_str_lower)
+    if match:
+        pattern = match.group(0)
+        raise SecurityError(
+            f"Path traversal pattern detected: {pattern}",
+            guard_name="path_traversal",
+            value=path_str[:50],  # Truncate for safety
+        )
+
+
+def _resolve_and_check_bounds(path: Path, base_dir: Path) -> tuple[Path, Path]:
+    try:
+        full_path = path if path.is_absolute() else (base_dir / path)
+        resolved = full_path.resolve()
+    except (OSError, ValueError) as e:
+        raise SecurityError(
+            f"Invalid path: {e}",
+            guard_name="path_traversal",
+        ) from e
+
+    if not resolved.is_relative_to(base_dir):
+        raise SecurityError(
+            "Path escapes base directory",
+            guard_name="path_traversal",
+        )
+    return full_path, resolved
+
+
+def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
+    current = full_path
+    # Only check components from the user-provided path, not the base_dir
+    while current not in (base_dir, current.parent):
+        # We don't check .exists() because it returns False for broken symlinks
+        if current.is_symlink():
+            raise SecurityError(
+                "Symlinks are not allowed",
+                guard_name="path_traversal",
+                value=str(current),
+            )
+        current = current.parent
+
+
 def guard_path_traversal(
     path: Path | str,
     base_dir: Path | str | None = None,
@@ -161,49 +205,11 @@ def guard_path_traversal(
     path = Path(path) if isinstance(path, str) else path
     base_dir = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
 
-    # Check for explicit traversal patterns before resolution
-    path_str = str(path)
-    path_str_lower = path_str.lower()
+    _check_traversal_patterns(str(path))
+    full_path, resolved = _resolve_and_check_bounds(path, base_dir)
 
-    match = TRAVERSAL_REGEX.search(path_str_lower)
-    if match:
-        pattern = match.group(0)
-        raise SecurityError(
-            f"Path traversal pattern detected: {pattern}",
-            guard_name="path_traversal",
-            value=path_str[:50],  # Truncate for safety
-        )
-
-    # Resolve the path
-    try:
-        full_path = path if path.is_absolute() else (base_dir / path)
-        resolved = full_path.resolve()
-    except (OSError, ValueError) as e:
-        raise SecurityError(
-            f"Invalid path: {e}",
-            guard_name="path_traversal",
-        ) from e
-
-    # Check if resolved path is within base_dir
-    if not resolved.is_relative_to(base_dir):
-        raise SecurityError(
-            "Path escapes base directory",
-            guard_name="path_traversal",
-        )
-
-    # Check for symlinks if not allowed
     if not allow_symlinks:
-        current = full_path
-        # Only check components from the user-provided path, not the base_dir
-        while current not in (base_dir, current.parent):
-            # We don't check .exists() because it returns False for broken symlinks
-            if current.is_symlink():
-                raise SecurityError(
-                    "Symlinks are not allowed",
-                    guard_name="path_traversal",
-                    value=str(current),
-                )
-            current = current.parent
+        _check_symlink_safety(full_path, base_dir)
 
     return resolved
 
@@ -332,6 +338,41 @@ def guard_file_extension(
     return path
 
 
+def _check_env_denied(
+    name_upper: str, name: str, denied_names: Sequence[str] | None
+) -> None:
+    if denied_names is not None:
+        denied = frozenset(n.upper() for n in denied_names)
+    else:
+        denied = _DEFAULT_DENIED_ENV_VARS
+
+    if name_upper in denied:
+        raise SecurityError(
+            f"Access to sensitive variable '{name}' is denied",
+            guard_name="env_variable",
+            value=name,
+        )
+
+
+def _check_env_sensitive(
+    name_upper: str, name: str, allowed_names: Sequence[str] | None
+) -> None:
+    if not _SENSITIVE_ENV_VAR_PATTERN.search(name_upper):
+        return
+
+    # Only block if not explicitly allowed
+    if allowed_names is not None:
+        allowed = {n.upper() for n in allowed_names}
+        if name_upper in allowed:
+            return
+
+    raise SecurityError(
+        f"Access to potentially sensitive variable '{name}' is denied",
+        guard_name="env_variable",
+        value=name,
+    )
+
+
 def guard_env_variable(
     name: str,
     *,
@@ -365,34 +406,8 @@ def guard_env_variable(
 
     name_upper = name.upper()
 
-    if denied_names is not None:
-        denied = frozenset(n.upper() for n in denied_names)
-    else:
-        denied = _DEFAULT_DENIED_ENV_VARS
-
-    if name_upper in denied:
-        raise SecurityError(
-            f"Access to sensitive variable '{name}' is denied",
-            guard_name="env_variable",
-            value=name,
-        )
-
-    if _SENSITIVE_ENV_VAR_PATTERN.search(name_upper):
-        # Only block if not explicitly allowed
-        if allowed_names is not None:
-            allowed = {n.upper() for n in allowed_names}
-            if name_upper not in allowed:
-                raise SecurityError(
-                    f"Access to potentially sensitive variable '{name}' is denied",
-                    guard_name="env_variable",
-                    value=name,
-                )
-        else:
-            raise SecurityError(
-                f"Access to potentially sensitive variable '{name}' is denied",
-                guard_name="env_variable",
-                value=name,
-            )
+    _check_env_denied(name_upper, name, denied_names)
+    _check_env_sensitive(name_upper, name, allowed_names)
 
     # Get the variable
     value = os.environ.get(name)
@@ -494,7 +509,7 @@ def _validate_ssrf_url(
     return Ok(hostname)
 
 
-def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
+def _check_ip_addresses(hostname: str) -> Result[None, SecurityError]:
     """Resolve hostname to IP addresses and check for SSRF risk."""
     try:
         addr_infos = socket.getaddrinfo(hostname, None)
@@ -565,7 +580,7 @@ def guard_ssrf(
             return Err(e)
         case Ok(hostname):
             # 2. Check IP safety
-            match _check_ip_safety(hostname):
+            match _check_ip_addresses(hostname):
                 case Err(e):
                     return Err(e)
                 case Ok():
