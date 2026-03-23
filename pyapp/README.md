@@ -26,7 +26,7 @@ This directory contains configuration for building standalone executables using 
 ```bash
 # Set PyApp configuration
 export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
-export PYAPP_PROJECT_VERSION="2.0.0"
+export PYAPP_PROJECT_VERSION="0.3.10"
 export PYAPP_PYTHON_VERSION="3.11"
 export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
 
