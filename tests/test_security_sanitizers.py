@@ -165,6 +165,36 @@ class TestSanitizeFilename:
 class TestSanitizePath:
     """Tests for sanitize_path function."""
 
+    def test_sanitize_path_absolute_with_base_dir(self, tmp_path: Path) -> None:
+        """Test sanitize_path when sanitized is absolute and base_dir is given."""
+        # When `sanitized.is_absolute()` is True, `_apply_base_dir_constraint` returns `sanitized`
+        # if `base_dir` is not None and resolve is False.
+        path = tmp_path / "absolute/path"
+
+        base_dir = tmp_path / "base"
+        base_dir.mkdir()
+
+        result = sanitize_path(path, base_dir=base_dir, resolve=False)
+        assert result.is_absolute()
+        assert result.parts[-2:] == ("absolute", "path")
+
+    def test_sanitize_path_absolute_with_parts(self, tmp_path: Path) -> None:
+        """Test sanitize_path when path is absolute and has parts."""
+        # Covers path reconstruction when path.is_absolute() is True and parts is truthy
+        path = tmp_path / "absolute/path"
+        result = sanitize_path(path)
+        assert result.is_absolute()
+        assert result.parts[-2:] == ("absolute", "path")
+
+    def test_sanitize_path_empty(self) -> None:
+        """Test sanitize_path when path is empty (no parts, not absolute)."""
+        # This covers the line:
+        # else:
+        #     sanitized = Path()
+        result = sanitize_path("")
+        assert not result.is_absolute()
+        assert result == Path()
+
     def test_simple_path(self) -> None:
         """Test simple path passes through."""
         result = sanitize_path("test/file.txt")
