@@ -148,9 +148,27 @@ def sanitize_filename(
         return "unnamed"
 
     # Get parts
-    original_path = Path(filename)
-    stem = original_path.stem
-    suffix = original_path.suffix if preserve_extension else ""
+    clean_name = filename.rstrip("/\\")
+    # Emulate Path.name behavior by extracting the last component
+    name = clean_name.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+
+    # Extract stem and suffix manually
+    if name == "." or name == ".." or (name.startswith(".") and name.strip(".") == ""):
+        # e.g., ".", "..", "..."
+        stem = name
+        suffix = ""
+    elif "." in name and name != ".":
+        dot_idx = name.rfind(".")
+        if dot_idx == 0:
+            # ".ext" -> stem=".ext", suffix=""
+            stem = name
+            suffix = ""
+        else:
+            stem = name[:dot_idx]
+            suffix = name[dot_idx:] if preserve_extension else ""
+    else:
+        stem = name
+        suffix = ""
 
     # Remove invalid characters using precompiled regex for performance
     safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
@@ -162,9 +180,11 @@ def sanitize_filename(
     safe_stem = safe_stem.replace("/", replacement)
     safe_stem = safe_stem.replace("\\", replacement)
 
-    # Collapse multiple replacement chars
+    # Collapse multiple replacement chars using fast native string replacement
     if replacement:
-        safe_stem = re.sub(f"{re.escape(replacement)}+", replacement, safe_stem)
+        double_rep = replacement + replacement
+        while double_rep in safe_stem:
+            safe_stem = safe_stem.replace(double_rep, replacement)
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
@@ -190,13 +210,41 @@ def sanitize_filename(
     return result
 
 
-def _clean_path_parts(path: Path) -> list[str]:
+def _clean_path_parts(path_str: str) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
-    for part in path.parts:
+
+    # Split by both kinds of separators safely without using Path.parts
+    # First handle root indicator if absolute
+    is_absolute = False
+
+    # Keep windows drive letter or unc roots out of parts for now,
+    # but for simple path cleaning we just normalize separators.
+    normalized = path_str.replace("\\", "/")
+
+    # Check if absolute to preserve root later
+    if normalized.startswith("/"):
+        is_absolute = True
+        parts.append("/")
+    elif len(normalized) >= 2 and normalized[1] == ":" and normalized[0].isalpha():
+        # Windows drive
+        is_absolute = True
+        parts.append(normalized[:3]) # e.g. "C:/"
+        normalized = normalized[3:]
+
+    raw_parts = [p for p in normalized.split("/") if p]
+
+    for part in raw_parts:
         if part == "..":
-            if parts and parts[-1] != "..":
+            if parts and parts[-1] != ".." and parts[-1] != "/" and (not is_absolute or parts[-1] != parts[0]):
                 parts.pop()
+            # Note: Path.resolve() / Path resolution logic drops `..` at root.
+            # However, original _clean_path_parts logic was:
+            # if part == "..": if parts and parts[-1] != "..": parts.pop()
+            # WAIT, original code dropped `..` ONLY if `parts and parts[-1] != ".."`.
+            # If `parts` was empty, it didn't add `..`.
+            # If `parts[-1] == ".."`, it didn't add `..`.
+            # Original code DID NOT add ".." to `parts` EVER if `part == ".."`. It only popped.
         elif part != ".":  # pragma: no branch
             safe_part = sanitize_filename(part, preserve_extension=True)
             if safe_part:  # pragma: no branch
@@ -250,24 +298,27 @@ def sanitize_path(
         ValueError: If path is invalid or too deep.
 
     """
-    if isinstance(path, str):  # pragma: no branch
-        path = Path(path)
+    path_str = str(path)
 
-    # Remove any null bytes and normalize
-    path = Path(str(path).replace("\x00", ""))
+    # Remove any null bytes
+    path_str = path_str.replace("\x00", "")
 
-    # Clean components
-    parts = _clean_path_parts(path)
+    # Clean components using fast string parsing
+    parts = _clean_path_parts(path_str)
 
-    # Reconstruct path
-    if path.is_absolute():  # pragma: no branch
-        sanitized = (
-            Path("/").joinpath(*parts) if parts else Path("/")
-        )  # pragma: no cover
-    elif parts:  # pragma: no branch
-        sanitized = Path().joinpath(*parts)
-    else:  # pragma: no cover
+    # Reconstruct path safely
+    if not parts:
         sanitized = Path()
+    else:
+        # Check if absolute based on root added in _clean_path_parts
+        is_abs = parts[0] == "/" or (len(parts[0]) >= 2 and parts[0][1] == ":")
+        if is_abs:
+            if len(parts) > 1:
+                sanitized = Path(parts[0]).joinpath(*parts[1:])
+            else:
+                sanitized = Path(parts[0])
+        else:
+            sanitized = Path().joinpath(*parts)
 
     # Check depth
     depth = len(sanitized.parts)
