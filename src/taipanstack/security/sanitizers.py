@@ -156,7 +156,7 @@ def sanitize_filename(
     try:
         # Use lambda to avoid processing regex escape sequences in replacement string
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
-    except re.error: # pragma: no cover
+    except re.error:  # pragma: no cover
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
 
     # Remove leading/trailing dots and spaces (Windows issues)
@@ -174,7 +174,7 @@ def sanitize_filename(
                 lambda _: replacement,
                 safe_stem,
             )
-        except re.error: # pragma: no cover
+        except re.error:  # pragma: no cover
             safe_stem = re.sub(
                 f"({re.escape(replacement)})+",
                 "_",
