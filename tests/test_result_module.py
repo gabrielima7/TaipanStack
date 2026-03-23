@@ -225,9 +225,7 @@ class TestUnwrapOrElse:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
-        assert (
-            result.unwrap_or_else(lambda e: len(str(e))) == 12
-        )  # len("test message")
+        assert result.unwrap_or_else(lambda e: len(str(e))) == 12  # len("test message")
 
 
 class TestMatchCase:
