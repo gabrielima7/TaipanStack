@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_3f522a09208f6d6e_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-03-23 13:57 +0000
+            created at 2026-03-23 14:14 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -103,7 +103,7 @@
     <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="nam">JWTPayload</span><span class="op">:</span> <span class="nam">TypeAlias</span> <span class="op">=</span> <span class="nam">dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">object</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="op">@</span><span class="nam">safe_from</span><span class="op">(</span><span class="nam">PyJWTError</span><span class="op">,</span> <span class="nam">ValueError</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="op">@</span><span class="nam">safe_from</span><span class="op">(</span><span class="nam">PyJWTError</span><span class="op">,</span> <span class="nam">ValueError</span><span class="op">,</span> <span class="nam">TypeError</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="key">def</span> <span class="nam">encode_jwt</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">payload</span><span class="op">:</span> <span class="nam">JWTPayload</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">    <span class="nam">secret_key</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -132,7 +132,7 @@
     <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">    <span class="key">return</span> <span class="nam">jwt</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="nam">payload</span><span class="op">,</span> <span class="nam">secret_key</span><span class="op">,</span> <span class="nam">algorithm</span><span class="op">=</span><span class="nam">algorithm</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="op">@</span><span class="nam">safe_from</span><span class="op">(</span><span class="nam">PyJWTError</span><span class="op">,</span> <span class="nam">ValueError</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="op">@</span><span class="nam">safe_from</span><span class="op">(</span><span class="nam">PyJWTError</span><span class="op">,</span> <span class="nam">ValueError</span><span class="op">,</span> <span class="nam">TypeError</span><span class="op">,</span> <span class="nam">AttributeError</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t"><span class="key">def</span> <span class="nam">decode_jwt</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">    <span class="nam">token</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">    <span class="nam">secret_key</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -185,7 +185,7 @@
             <a class="nav" href="z_3f522a09208f6d6e_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-03-23 13:57 +0000
+            created at 2026-03-23 14:14 +0000
         </p>
     </div>
 </footer>
