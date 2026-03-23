@@ -206,32 +206,31 @@ def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProf
         profile = _PROFILE_311
 
     # Adjust for optimization level
-    if opt_level == OPT_LEVEL_NONE:
-        # Minimal optimizations - use 3.11 baseline
-        _cached_optimization_profile = _PROFILE_311
-        return _cached_optimization_profile
+    match opt_level:
+        case opt if opt == OPT_LEVEL_NONE:
+            # Minimal optimizations - use 3.11 baseline
+            _cached_optimization_profile = _PROFILE_311
+        case opt if opt == OPT_LEVEL_AGGRESSIVE and experimental:
+            # Aggressive mode - enable experimental features
+            _cached_optimization_profile = OptimizationProfile(
+                gc_threshold_0=profile.gc_threshold_0,
+                gc_threshold_1=profile.gc_threshold_1,
+                gc_threshold_2=profile.gc_threshold_2,
+                gc_freeze_enabled=profile.gc_freeze_enabled,
+                thread_pool_multiplier=profile.thread_pool_multiplier,
+                max_thread_pool_size=profile.max_thread_pool_size,
+                prefer_slots=profile.prefer_slots,
+                use_frozen_dataclasses=profile.use_frozen_dataclasses,
+                prefer_match_statements=profile.prefer_match_statements,
+                prefer_exception_groups=profile.prefer_exception_groups,
+                prefer_type_params=profile.prefer_type_params,
+                enable_perf_hints=profile.enable_perf_hints,
+                aggressive_inlining=profile.aggressive_inlining,
+                enable_experimental=True,
+            )
+        case _:
+            _cached_optimization_profile = profile
 
-    if opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
-        # Aggressive mode - enable experimental features
-        _cached_optimization_profile = OptimizationProfile(
-            gc_threshold_0=profile.gc_threshold_0,
-            gc_threshold_1=profile.gc_threshold_1,
-            gc_threshold_2=profile.gc_threshold_2,
-            gc_freeze_enabled=profile.gc_freeze_enabled,
-            thread_pool_multiplier=profile.thread_pool_multiplier,
-            max_thread_pool_size=profile.max_thread_pool_size,
-            prefer_slots=profile.prefer_slots,
-            use_frozen_dataclasses=profile.use_frozen_dataclasses,
-            prefer_match_statements=profile.prefer_match_statements,
-            prefer_exception_groups=profile.prefer_exception_groups,
-            prefer_type_params=profile.prefer_type_params,
-            enable_perf_hints=profile.enable_perf_hints,
-            aggressive_inlining=profile.aggressive_inlining,
-            enable_experimental=True,
-        )
-        return _cached_optimization_profile
-
-    _cached_optimization_profile = profile
     return _cached_optimization_profile
 
 
