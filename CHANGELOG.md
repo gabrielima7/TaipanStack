@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.11] - 2026-03-23
+
+### Security
+- **Fix (ReDoS)**: Prevented unhandled regex backreference processing in `sanitize_filename` avoiding string manipulation DoS vectors (PR #294).
+- **Fix (Recursion Error)**: Prevented `RecursionError` DoS in `_mask_data` when handling deeply nested JSON payloads (PR #284).
+- **SAST Rules**: Added custom Semgrep rules to comprehensively detect command injection, XXE, and DoS patterns (PR #272).
+- **Hardening (JWT)**: Hardened JWT parsers against malformed input types using Hypothesis fuzzing (PR #275).
+
+### Resilience
+- **Chaos Mitigation**: Hardened `CircuitBreaker` `HALF_OPEN` state against Thundering Herd attacks by capping simultaneous attempts (PR #285).
+
+### Refactoring
+- **Typing**: Enhanced static typing in core decorators using generic Protocols (PR #288).
+- **Modernization**: Adopted native `result` library methods, replacing deprecated `unwrap_or` and `unwrap_or_else` wrappers (PR #273).
+- **Modernization**: Modernized `core/optimizations.py` using `match/case` structural pattern matching (PR #283).
+- **Modernization**: Modernized type aliases and unions in `resilience.py` (PR #274).
+- **Code Quality**: Reduced cyclomatic complexity in security guards (PR #270).
+
+### QA / Testing
+- **Coverage**: Improved test coverage for retry utility loop exhaustion (PR #268).
+- **Coverage**: Removed `pragma: no cover` in sanitizers for stricter tracking (PR #286).
+
+### Docs
+- **Documentation**: Synced all documentation with latest releases and updated architecture test count to 1006 tests (PR #271, #280, #289).
+
 ## [0.3.10] - 2026-03-20
 
 ### Security
@@ -369,7 +394,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.10...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...HEAD
+[0.3.11]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.10...v0.3.11
 [0.3.10]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...v0.3.10
 [0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.7...v0.3.8
