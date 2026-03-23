@@ -8,8 +8,8 @@ ignoring caching for Err() results.
 import functools
 import inspect
 import time
-from collections.abc import Awaitable, Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -60,7 +60,7 @@ def cached(ttl: float) -> CacheDecorator:
         if inspect.iscoroutinefunction(func):
             func_coro_wrap = cast(Callable[P, Awaitable[Result[T, E]]], func)
 
-            @functools.wraps(func_coro_wrap)  # type: ignore[misc]
+            @functools.wraps(func_coro_wrap)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
                     func_coro_wrap.__name__, args, cast(dict[str, object], kwargs)
@@ -84,13 +84,15 @@ def cached(ttl: float) -> CacheDecorator:
 
                 return result
 
-            return async_wrapper  # type: ignore[misc]
+            return async_wrapper
 
         func_sync = cast(Callable[P, Result[T, E]], func)
 
-        @functools.wraps(func_sync)  # type: ignore[misc]
+        @functools.wraps(func_sync)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(func.__name__, args, cast(dict[str, object], kwargs))
+            cache_key = get_cache_key(
+                func.__name__, args, cast(dict[str, object], kwargs)
+            )
             now = time.monotonic()
 
             if cache_key in _cache:
@@ -109,6 +111,6 @@ def cached(ttl: float) -> CacheDecorator:
 
             return result
 
-        return sync_wrapper  # type: ignore[misc]
+        return sync_wrapper
 
     return decorator  # type: ignore[return-value]

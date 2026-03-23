@@ -11,7 +11,6 @@ import inspect
 import signal
 import sys
 import threading
-import typing
 from collections.abc import Callable, Mapping
 from types import FrameType
 from typing import ParamSpec, TypeVar
@@ -96,23 +95,23 @@ def validate_inputs(
 
             # Validate each parameter that has a validator
             for param_name, validator in validators.items():  # pragma: no branch
-                if param_name in bound.arguments:  # type: ignore[misc] # pragma: no branch
-                    value = bound.arguments[param_name]  # type: ignore[misc]
+                if param_name in bound.arguments:
+                    value = bound.arguments[param_name]
                     try:
                         # Call validator - it should raise on invalid input
-                        validated = validator(value)  # type: ignore[misc]
+                        validated = validator(value)
                         # Update to validated value if returned
                         if validated is not None:  # pragma: no branch
-                            bound.arguments[param_name] = validated  # type: ignore[misc]
+                            bound.arguments[param_name] = validated
                     except (ValueError, TypeError) as e:
                         raise ValidationError(
                             str(e),
                             param_name=param_name,
-                            value=repr(value)[:100],  # type: ignore[misc]
+                            value=repr(value)[:100],
                         ) from e
 
             # Call original function with validated arguments
-            return func(*bound.args, **bound.kwargs)  # type: ignore[arg-type,misc]
+            return func(*bound.args, **bound.kwargs)
 
         return wrapper
 
@@ -363,15 +362,15 @@ def require_type(
             bound.apply_defaults()
 
             for param_name, expected_type in type_hints.items():  # pragma: no branch
-                if param_name in bound.arguments:  # type: ignore[misc] # pragma: no branch
-                    value = bound.arguments[param_name]  # type: ignore[misc]
-                    if not isinstance(value, expected_type):  # type: ignore[misc,arg-type]
+                if param_name in bound.arguments:
+                    value = bound.arguments[param_name]
+                    if not isinstance(value, expected_type):
                         raise TypeError(
                             f"Parameter '{param_name}' expected "
-                            f"{expected_type.__name__}, got {type(value).__name__}"  # type: ignore[misc,attr-defined]
+                            f"{expected_type.__name__}, got {type(value).__name__}"
                         )
 
-            return func(*bound.args, **bound.kwargs)  # type: ignore[arg-type,misc]
+            return func(*bound.args, **bound.kwargs)
 
         return wrapper
 

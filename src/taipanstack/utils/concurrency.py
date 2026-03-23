@@ -10,9 +10,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
-from collections.abc import Awaitable
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -81,7 +80,7 @@ def _handle_async_concurrency(
         finally:
             async_semaphore.release()
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _handle_sync_concurrency(
@@ -92,7 +91,7 @@ def _handle_sync_concurrency(
     """Handle synchronous concurrency limiting."""
     sync_semaphore = threading.Semaphore(max_tasks)
 
-    @functools.wraps(func)  # type: ignore[misc]
+    @functools.wraps(func)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
         if timeout > 0.0:
             acquired = sync_semaphore.acquire(timeout=timeout)
@@ -108,7 +107,7 @@ def _handle_sync_concurrency(
         finally:
             sync_semaphore.release()
 
-    return sync_wrapper  # type: ignore[misc]
+    return sync_wrapper
 
 
 def limit_concurrency(

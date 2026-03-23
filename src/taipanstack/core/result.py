@@ -24,8 +24,8 @@ Example:
 
 import functools
 import inspect
-from collections.abc import Awaitable, Callable, Coroutine, Iterable
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable, Iterable
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from result import Err, Ok, Result
 
@@ -92,7 +92,7 @@ def safe(
     """
     if inspect.iscoroutinefunction(func):
 
-        @functools.wraps(func)  # type: ignore[misc]
+        @functools.wraps(func)
         async def async_wrapper(
             *args: P.args,
             **kwargs: P.kwargs,
@@ -109,7 +109,7 @@ def safe(
 
     func_sync = cast(Callable[P, T], func)
 
-    @functools.wraps(func_sync)  # type: ignore[misc]
+    @functools.wraps(func_sync)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
             return Ok(func_sync(*args, **kwargs))
@@ -158,7 +158,7 @@ def safe_from(
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)  # type: ignore[misc]
+            @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
                     func_coro = cast(Callable[P, Awaitable[T]], func)
@@ -170,7 +170,7 @@ def safe_from(
 
         func_sync = cast(Callable[P, T], func)
 
-        @functools.wraps(func_sync)  # type: ignore[misc]
+        @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             try:
                 return Ok(func_sync(*args, **kwargs))
@@ -209,7 +209,7 @@ def collect_results(
         if isinstance(result, Ok):
             append(result.ok_value)
         else:
-            return result  # type: ignore[return-value]
+            return result
     return Ok(values)
 
 
@@ -243,7 +243,7 @@ def unwrap_or(result: Result[T, E], default: U) -> T | U:
 
     """
     if isinstance(result, Ok):
-        return result.ok_value  # type: ignore[misc]
+        return result.ok_value
     return default
 
 
@@ -289,8 +289,8 @@ def unwrap_or_else(
 
     """
     if isinstance(result, Ok):
-        return result.ok_value  # type: ignore[misc]
-    return default_fn(result.err_value)  # type: ignore[misc,union-attr]
+        return result.ok_value
+    return default_fn(result.err_value)
 
 
 @overload
@@ -339,9 +339,9 @@ async def map_async(
 
     """
     if isinstance(result, Ok):
-        val = await func(result.ok_value)  # type: ignore[misc]
+        val = await func(result.ok_value)
         return Ok(val)
-    return result  # type: ignore[return-value]
+    return result
 
 
 @overload
@@ -395,5 +395,5 @@ async def and_then_async(
 
     """
     if isinstance(result, Ok):
-        return await func(result.ok_value)  # type: ignore[misc]
-    return result  # type: ignore[return-value]
+        return await func(result.ok_value)
+    return result
