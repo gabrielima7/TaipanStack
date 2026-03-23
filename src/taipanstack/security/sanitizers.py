@@ -261,9 +261,9 @@ def sanitize_path(
 
     # Reconstruct path
     if path.is_absolute():  # pragma: no branch
-        sanitized = (
-            Path("/").joinpath(*parts) if parts else Path("/")
-        )
+        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
+        anchor = Path(path.anchor)
+        sanitized = anchor.joinpath(*parts) if parts else anchor
     elif parts:  # pragma: no branch
         sanitized = Path().joinpath(*parts)
     else:
