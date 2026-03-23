@@ -145,7 +145,7 @@ def sanitize_filename(
         raise TypeError(f"filename must be str, got {type(filename).__name__}")
 
     if not filename:
-        return "unnamed"
+        filename = "unnamed"
 
     # Get parts
     original_path = Path(filename)
@@ -153,7 +153,11 @@ def sanitize_filename(
     suffix = original_path.suffix if preserve_extension else ""
 
     # Remove invalid characters using precompiled regex for performance
-    safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
+    try:
+        # Use lambda to avoid processing regex escape sequences in replacement string
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+    except re.error: # pragma: no cover
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
 
     # Remove leading/trailing dots and spaces (Windows issues)
     safe_stem = safe_stem.strip(". ")
@@ -164,7 +168,18 @@ def sanitize_filename(
 
     # Collapse multiple replacement chars
     if replacement:
-        safe_stem = re.sub(f"{re.escape(replacement)}+", replacement, safe_stem)
+        try:
+            safe_stem = re.sub(
+                f"({re.escape(replacement)})+",
+                lambda _: replacement,
+                safe_stem,
+            )
+        except re.error: # pragma: no cover
+            safe_stem = re.sub(
+                f"({re.escape(replacement)})+",
+                "_",
+                safe_stem,
+            )
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
