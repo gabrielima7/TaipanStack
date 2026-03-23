@@ -11,8 +11,6 @@ from taipanstack.core.result import (
     map_async,
     safe,
     safe_from,
-    unwrap_or,
-    unwrap_or_else,
 )
 
 
@@ -202,12 +200,12 @@ class TestUnwrapOr:
     def test_unwrap_or_ok(self) -> None:
         """Test unwrap_or returns Ok value."""
         result: Result[int, ValueError] = Ok(42)
-        assert unwrap_or(result, 0) == 42
+        assert result.unwrap_or(0) == 42
 
     def test_unwrap_or_err(self) -> None:
         """Test unwrap_or returns default on Err."""
         result: Result[int, ValueError] = Err(ValueError("error"))
-        assert unwrap_or(result, 0) == 0
+        assert result.unwrap_or(0) == 0
 
 
 class TestUnwrapOrElse:
@@ -216,19 +214,19 @@ class TestUnwrapOrElse:
     def test_unwrap_or_else_ok(self) -> None:
         """Test unwrap_or_else returns Ok value."""
         result: Result[int, ValueError] = Ok(42)
-        assert unwrap_or_else(result, len) == 42
+        assert result.unwrap_or_else(len) == 42
 
     def test_unwrap_or_else_err(self) -> None:
         """Test unwrap_or_else computes default from error."""
         result: Result[int, ValueError] = Err(ValueError("error"))
-        assert unwrap_or_else(result, lambda e: len(str(e))) == 5
+        assert result.unwrap_or_else(lambda e: len(str(e))) == 5
 
     def test_unwrap_or_else_with_exception(self) -> None:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
         assert (
-            unwrap_or_else(result, lambda e: len(str(e))) == 12
+            result.unwrap_or_else(lambda e: len(str(e))) == 12
         )  # len("test message")
 
 

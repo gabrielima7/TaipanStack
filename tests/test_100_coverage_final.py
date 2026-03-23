@@ -139,19 +139,19 @@ class TestResultModuleBranches:
 
     def test_unwrap_or_match_patterns(self) -> None:
         """Test all match patterns in unwrap_or."""
-        from taipanstack.core.result import Err, Ok, unwrap_or
+        from taipanstack.core.result import Err, Ok
 
         # Ensure both branches covered
-        assert unwrap_or(Ok(5), 0) == 5
-        assert unwrap_or(Err("x"), 0) == 0
+        assert Ok(5).unwrap_or(0) == 5
+        assert Err("x").unwrap_or(0) == 0
 
     def test_unwrap_or_else_match_patterns(self) -> None:
         """Test all match patterns in unwrap_or_else."""
-        from taipanstack.core.result import Err, Ok, unwrap_or_else
+        from taipanstack.core.result import Err, Ok
 
         # Ensure both branches covered
-        assert unwrap_or_else(Ok(5), len) == 5
-        assert unwrap_or_else(Err("abc"), len) == 3
+        assert Ok(5).unwrap_or_else(len) == 5
+        assert Err("abc").unwrap_or_else(len) == 3
 
 
 class TestConfigModelsUncovered:
