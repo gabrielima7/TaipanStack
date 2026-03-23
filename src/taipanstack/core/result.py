@@ -38,8 +38,6 @@ __all__ = [
     "map_async",
     "safe",
     "safe_from",
-    "unwrap_or",
-    "unwrap_or_else",
 ]
 
 P = ParamSpec("P")
@@ -209,88 +207,6 @@ def collect_results(
         except AttributeError:
             return result  # type: ignore[return-value]
     return Ok(values)
-
-
-@overload
-def unwrap_or(result: Ok[T], default: U) -> T: ...
-
-
-@overload
-def unwrap_or(result: Err[E], default: U) -> U: ...
-
-
-@overload
-def unwrap_or(result: Result[T, E], default: U) -> T | U: ...
-
-
-def unwrap_or(result: Result[T, E], default: U) -> T | U:
-    """Extract value from Result or return default.
-
-    Args:
-        result: The Result to unwrap.
-        default: Default value if result is Err.
-
-    Returns:
-        The Ok value or the default.
-
-    Example:
-        >>> unwrap_or(Ok(42), 0)
-        42
-        >>> unwrap_or(Err("error"), 0)
-        0
-
-    """
-    try:
-        return result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return default
-
-
-@overload
-def unwrap_or_else(
-    result: Ok[T],
-    default_fn: Callable[[E], U],
-) -> T: ...
-
-
-@overload
-def unwrap_or_else(
-    result: Err[E],
-    default_fn: Callable[[E], U],
-) -> U: ...
-
-
-@overload
-def unwrap_or_else(
-    result: Result[T, E],
-    default_fn: Callable[[E], U],
-) -> T | U: ...
-
-
-def unwrap_or_else(
-    result: Result[T, E],
-    default_fn: Callable[[E], U],
-) -> T | U:
-    """Extract value from Result or compute default from error.
-
-    Args:
-        result: The Result to unwrap.
-        default_fn: Function to compute default from error.
-
-    Returns:
-        The Ok value or computed default.
-
-    Example:
-        >>> unwrap_or_else(Ok(42), lambda e: 0)
-        42
-        >>> unwrap_or_else(Err(ValueError("x")), lambda e: len(str(e)))
-        1
-
-    """
-    try:
-        return result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return default_fn(result.err_value)  # type: ignore[union-attr]
 
 
 @overload
