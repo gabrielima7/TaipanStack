@@ -7,7 +7,7 @@ Run with: pytest tests/test_benchmarks.py --benchmark-only
 from pytest_benchmark.fixture import BenchmarkFixture
 from result import Ok
 
-from taipanstack.core.result import collect_results, safe, unwrap_or
+from taipanstack.core.result import collect_results, safe
 from taipanstack.security.guards import guard_ssrf
 from taipanstack.security.sanitizers import (
     sanitize_env_value,
@@ -119,7 +119,7 @@ def test_bench_collect_results_100(benchmark: BenchmarkFixture) -> None:
 def test_bench_unwrap_or(benchmark: BenchmarkFixture) -> None:
     """Benchmark unwrap_or with Ok value."""
     ok = Ok(42)
-    benchmark(unwrap_or, ok, 0)
+    benchmark(ok.unwrap_or, 0)
 
 
 # =============================================================================
