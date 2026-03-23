@@ -22,10 +22,14 @@ _SENSITIVE_KEY_REGEX = (
 )
 
 
-def _mask_data(data: JSONValue) -> JSONValue:
+def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
     """Recursively mask sensitive keys in data."""
     if _SENSITIVE_KEY_REGEX is None:
         return data
+
+    # Prevent ReDoS or stack overflow on deeply nested payloads
+    if _depth > 100:
+        return "<MAX_DEPTH_REACHED>"
 
     if isinstance(data, dict):
         masked: dict[str, JSONValue] = {}
@@ -33,10 +37,10 @@ def _mask_data(data: JSONValue) -> JSONValue:
             if isinstance(k, str) and _SENSITIVE_KEY_REGEX.search(k):
                 masked[k] = REDACTED_VALUE
             else:
-                masked[k] = _mask_data(v)
+                masked[k] = _mask_data(v, _depth + 1)
         return masked
     if isinstance(data, list):
-        return [_mask_data(item) for item in data]
+        return [_mask_data(item, _depth + 1) for item in data]
     return data
 
 
