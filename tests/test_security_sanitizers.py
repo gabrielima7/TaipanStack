@@ -245,9 +245,9 @@ class TestSanitizePath:
         abs_traversal = abs_root / ".."
         result = sanitize_path(abs_traversal)
 
-        # When `sanitize_path` reconstructs an absolute path that's empty, it hardcodes `Path("/")`.
-        # On Windows, `Path("/")` evaluates to `\` without a drive letter.
-        assert result == Path("/")
+        # `sanitize_path` reconstructs an absolute path that's empty by preserving the anchor.
+        # On Windows, `abs_root.anchor` evaluates to e.g. `C:\`.
+        assert result == Path(abs_root.anchor)
 
         # relative path with just traversal leads to empty path "."
         result = sanitize_path("foo/../")
