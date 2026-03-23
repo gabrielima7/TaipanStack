@@ -72,7 +72,7 @@ TaipanStack/
 │           ├── logging.py         # Structured logging (structlog)
 │           ├── filesystem.py      # Safe file operations
 │           └── subprocess.py      # Sandboxed subprocess execution
-├── tests/                    # ✅ 683 tests, 100% coverage
+├── tests/                    # ✅ 1006 tests, 100% coverage
 │   ├── test_benchmarks.py    # pytest-benchmark performance suite
 │   ├── test_property_sanitizers.py # Hypothesis fuzzing
 │   └── test_v031_features.py # v0.3.1 specific new behaviors
