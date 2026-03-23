@@ -123,6 +123,105 @@ class TestCircuitBreaker:
         # Should be back to open after failure in half-open
         assert breaker.state == CircuitState.OPEN
 
+    def test_half_open_thundering_herd_chaos(self) -> None:
+        """Test that half-open state prevents thundering herd attacks.
+
+        Simulates an extreme thundering herd failure scenario where
+        hundreds of requests are simultaneously spawned exactly as the
+        circuit goes into half-open state. This ensures only a limited
+        number of requests (equal to success_threshold) actually proceed.
+        """
+        import concurrent.futures
+
+        breaker = CircuitBreaker(
+            failure_threshold=1,
+            success_threshold=3,
+            timeout=0.05,
+        )
+
+        active_calls = 0
+        max_active_calls = 0
+        call_count = 0
+
+        @breaker
+        def api_call() -> str:
+            nonlocal active_calls, max_active_calls, call_count
+
+            with breaker._state.lock:
+                # We do lock-based increment purely for test measurement
+                # Real requests would run concurrently here
+                pass
+
+            active_calls += 1
+            max_active_calls = max(max_active_calls, active_calls)
+
+            call_count += 1
+
+            # Simulate first call failing to trigger open state
+            if call_count == 1:
+                active_calls -= 1
+                raise ValueError("Initial trip failure")
+
+            # Simulate real-world delay for concurrency check
+            time.sleep(0.01)
+
+            active_calls -= 1
+            return "ok"
+
+        # 1. Trip the circuit
+        with pytest.raises(ValueError):
+            api_call()
+
+        assert breaker.state == CircuitState.OPEN
+
+        # 2. Wait for timeout to allow half-open
+        time.sleep(0.1)
+
+        # 3. Simulate thundering herd (100 simultaneous requests)
+        num_requests = 100
+        successes = 0
+        circuit_open_errors = 0
+
+        import threading
+        start_event = threading.Event()
+
+        def synchronized_call() -> str:
+            start_event.wait()
+            return api_call()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+            futures = [executor.submit(synchronized_call) for _ in range(num_requests)]
+
+            # Ensure all threads are waiting at the starting line, then release
+            time.sleep(0.05)
+            start_event.set()
+
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    if result == "ok":
+                        successes += 1
+                except CircuitBreakerError:
+                    circuit_open_errors += 1
+                except Exception as e:
+                    pytest.fail(f"Unexpected exception: {e}")
+
+        # 4. Verify resilience
+
+        # Only success_threshold (3) requests should have actually succeeded
+        # during the half-open thundering herd
+        assert successes == breaker.config.success_threshold
+
+        # The remaining 97 requests must have been instantly rejected with CircuitBreakerError
+        assert circuit_open_errors == num_requests - breaker.config.success_threshold
+
+        # Concurrency should have been strictly limited to the success threshold
+        # (Though due to thread timing, max_active_calls could be lower, it must never exceed threshold)
+        assert max_active_calls <= breaker.config.success_threshold
+
+        # Finally, circuit should be fully closed again
+        assert breaker.state == CircuitState.CLOSED
+
     def test_success_in_half_open_closes(self) -> None:
         """Test that success in half-open closes circuit."""
         breaker = CircuitBreaker(
