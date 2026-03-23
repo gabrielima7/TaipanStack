@@ -62,7 +62,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: Callable[[typing.Any], typing.Any],
+    **validators: Callable[[object], object],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
@@ -96,23 +96,23 @@ def validate_inputs(
 
             # Validate each parameter that has a validator
             for param_name, validator in validators.items():  # pragma: no branch
-                if param_name in bound.arguments:  # pragma: no branch
-                    value = bound.arguments[param_name]
+                if param_name in bound.arguments:  # type: ignore[misc] # pragma: no branch
+                    value = bound.arguments[param_name]  # type: ignore[misc]
                     try:
                         # Call validator - it should raise on invalid input
-                        validated = validator(value)
+                        validated = validator(value)  # type: ignore[misc]
                         # Update to validated value if returned
                         if validated is not None:  # pragma: no branch
-                            bound.arguments[param_name] = validated
+                            bound.arguments[param_name] = validated  # type: ignore[misc]
                     except (ValueError, TypeError) as e:
                         raise ValidationError(
                             str(e),
                             param_name=param_name,
-                            value=repr(value)[:100],
+                            value=repr(value)[:100],  # type: ignore[misc]
                         ) from e
 
             # Call original function with validated arguments
-            return func(*bound.args, **bound.kwargs)
+            return func(*bound.args, **bound.kwargs)  # type: ignore[arg-type,misc]
 
         return wrapper
 
@@ -239,8 +239,8 @@ def timeout(
 def _timeout_with_signal(  # pragma: no cover
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[object, ...],
+    kwargs: Mapping[str, object],
 ) -> R:
     """Implement timeout using Unix signals."""
 
@@ -252,7 +252,7 @@ def _timeout_with_signal(  # pragma: no cover
     signal.setitimer(signal.ITIMER_REAL, seconds)
 
     try:
-        return func(*args, **kwargs)
+        return func(*args, **kwargs)  # type: ignore[arg-type]
     finally:
         # Restore old handler and cancel alarm
         signal.setitimer(signal.ITIMER_REAL, 0)
@@ -262,8 +262,8 @@ def _timeout_with_signal(  # pragma: no cover
 def _timeout_with_thread(
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[object, ...],
+    kwargs: Mapping[str, object],
 ) -> R:
     """Implement timeout using a separate thread."""
     result: list[R] = []
@@ -271,7 +271,7 @@ def _timeout_with_thread(
 
     def target() -> None:
         try:
-            result.append(func(*args, **kwargs))
+            result.append(func(*args, **kwargs))  # type: ignore[arg-type]
         except Exception as e:
             exception.append(e)
 
@@ -363,15 +363,15 @@ def require_type(
             bound.apply_defaults()
 
             for param_name, expected_type in type_hints.items():  # pragma: no branch
-                if param_name in bound.arguments:  # pragma: no branch
-                    value = bound.arguments[param_name]
-                    if not isinstance(value, expected_type):
+                if param_name in bound.arguments:  # type: ignore[misc] # pragma: no branch
+                    value = bound.arguments[param_name]  # type: ignore[misc]
+                    if not isinstance(value, expected_type):  # type: ignore[misc,arg-type]
                         raise TypeError(
                             f"Parameter '{param_name}' expected "
-                            f"{expected_type.__name__}, got {type(value).__name__}"
+                            f"{expected_type.__name__}, got {type(value).__name__}"  # type: ignore[misc,attr-defined]
                         )
 
-            return func(*bound.args, **bound.kwargs)
+            return func(*bound.args, **bound.kwargs)  # type: ignore[arg-type,misc]
 
         return wrapper
 

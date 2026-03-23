@@ -24,7 +24,7 @@ Example:
 
 import functools
 import inspect
-from collections.abc import Callable, Coroutine, Iterable
+from collections.abc import Awaitable, Callable, Coroutine, Iterable
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from result import Err, Ok, Result
@@ -57,15 +57,15 @@ def safe(
 
 @overload
 def safe(
-    func: Callable[P, Coroutine[Any, Any, T]],
-) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...
+    func: Callable[P, Awaitable[T]],
+) -> Callable[P, Awaitable[Result[T, Exception]]]: ...
 
 
 def safe(
-    func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+    func: Callable[P, T] | Callable[P, Awaitable[T]],
 ) -> (
     Callable[P, Result[T, Exception]]
-    | Callable[P, Coroutine[Any, Any, Result[T, Exception]]]
+    | Callable[P, Awaitable[Result[T, Exception]]]
 ):
     """Wrap a sync or async function to convert exceptions into Err results.
 
@@ -92,25 +92,26 @@ def safe(
     """
     if inspect.iscoroutinefunction(func):
 
-        @functools.wraps(func)
+        @functools.wraps(func)  # type: ignore[misc]
         async def async_wrapper(
             *args: P.args,
             **kwargs: P.kwargs,
         ) -> Result[T, Exception]:
             try:
-                func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                func_coro = cast(Callable[P, Awaitable[T]], func)
                 return Ok(await func_coro(*args, **kwargs))
             except Exception as e:
                 return Err(e)
 
         return cast(
-            Callable[P, Coroutine[Any, Any, Result[T, Exception]]], async_wrapper
+            Callable[P, Awaitable[Result[T, Exception]]], async_wrapper
         )
 
-    @functools.wraps(func)
+    func_sync = cast(Callable[P, T], func)
+
+    @functools.wraps(func_sync)  # type: ignore[misc]
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
-            func_sync = cast(Callable[P, T], func)
             return Ok(func_sync(*args, **kwargs))
         except Exception as e:
             return Err(e)
@@ -126,8 +127,8 @@ class SafeFromDecorator(Protocol[E_co]):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, T]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E_co]]]: ...
+        self, func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Awaitable[Result[T, E_co]]]: ...
 
 
 def safe_from(
@@ -153,24 +154,25 @@ def safe_from(
     """
 
     def decorator(
-        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+        func: Callable[P, T] | Callable[P, Awaitable[T]],
+    ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
-                    func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                    func_coro = cast(Callable[P, Awaitable[T]], func)
                     return Ok(await func_coro(*args, **kwargs))
                 except exception_types as e:
                     return Err(e)
 
-            return cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], async_wrapper)
+            return cast(Callable[P, Awaitable[Result[T, E]]], async_wrapper)
 
-        @functools.wraps(func)
+        func_sync = cast(Callable[P, T], func)
+
+        @functools.wraps(func_sync)  # type: ignore[misc]
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             try:
-                func_sync = cast(Callable[P, T], func)
                 return Ok(func_sync(*args, **kwargs))
             except exception_types as e:
                 return Err(e)
@@ -204,9 +206,9 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        try:
-            append(result.ok_value)  # type: ignore[union-attr]
-        except AttributeError:
+        if isinstance(result, Ok):
+            append(result.ok_value)
+        else:
             return result  # type: ignore[return-value]
     return Ok(values)
 
@@ -240,10 +242,9 @@ def unwrap_or(result: Result[T, E], default: U) -> T | U:
         0
 
     """
-    try:
-        return result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return default
+    if isinstance(result, Ok):
+        return result.ok_value  # type: ignore[misc]
+    return default
 
 
 @overload
@@ -287,36 +288,35 @@ def unwrap_or_else(
         1
 
     """
-    try:
-        return result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return default_fn(result.err_value)  # type: ignore[union-attr]
+    if isinstance(result, Ok):
+        return result.ok_value  # type: ignore[misc]
+    return default_fn(result.err_value)  # type: ignore[misc,union-attr]
 
 
 @overload
 async def map_async(
     result: Ok[T],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]: ...
 
 
 @overload
 async def map_async(
     result: Err[E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Err[E]: ...
 
 
 @overload
 async def map_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]: ...
 
 
 async def map_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]:
     """Asynchronously apply a function to the value of an Ok result.
 
@@ -338,37 +338,36 @@ async def map_async(
         Err('fail')
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return Ok(await func(val))
+    if isinstance(result, Ok):
+        val = await func(result.ok_value)  # type: ignore[misc]
+        return Ok(val)
+    return result  # type: ignore[return-value]
 
 
 @overload
 async def and_then_async(
     result: Ok[T],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]: ...
 
 
 @overload
 async def and_then_async(
     result: Err[E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Err[E]: ...
 
 
 @overload
 async def and_then_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]: ...
 
 
 async def and_then_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]:
     """Asynchronously chain operations that return Results.
 
@@ -395,8 +394,6 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return await func(val)
+    if isinstance(result, Ok):
+        return await func(result.ok_value)  # type: ignore[misc]
+    return result  # type: ignore[return-value]

@@ -8,7 +8,7 @@ ignoring caching for Err() results.
 import functools
 import inspect
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
@@ -28,8 +28,8 @@ class CacheDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E]]]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[Result[T, E]]]
+    ) -> Callable[P, Awaitable[Result[T, E]]]: ...  # pragma: no cover
 
 
 def cached(ttl: float) -> CacheDecorator:
@@ -44,69 +44,71 @@ def cached(ttl: float) -> CacheDecorator:
         Decorator function.
 
     """
-    _cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+    _cache: dict[tuple[object, ...], tuple[float, object]] = {}
 
     def get_cache_key(
-        func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
-    ) -> tuple[Any, ...]:
+        func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
+    ) -> tuple[object, ...]:
         kwargs_tuple = tuple(sorted(kwargs.items()))
         return (func_name, args, kwargs_tuple)
 
     def decorator(
         func: (
-            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
+            Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]
         ),
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+    ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
+            func_coro_wrap = cast(Callable[P, Awaitable[Result[T, E]]], func)
 
-            @functools.wraps(func)
+            @functools.wraps(func_coro_wrap)  # type: ignore[misc]
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
-                    func.__name__, args, cast(dict[str, Any], kwargs)
+                    func_coro_wrap.__name__, args, cast(dict[str, object], kwargs)
                 )
                 now = time.monotonic()
 
                 if cache_key in _cache:
                     expiry, value = _cache[cache_key]
                     if now < expiry:
-                        return Ok(value)
+                        return Ok(cast(T, value))
                     del _cache[cache_key]
 
-                func_coro = cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], func)
+                func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
                 result = await func_coro(*args, **kwargs)
 
                 match result:
-                    case Ok(value):
-                        _cache[cache_key] = (now + ttl, value)
+                    case Ok(value_ok):
+                        _cache[cache_key] = (now + ttl, value_ok)
                     case Err(_):
                         pass
 
                 return result
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
-        @functools.wraps(func)
+        func_sync = cast(Callable[P, Result[T, E]], func)
+
+        @functools.wraps(func_sync)  # type: ignore[misc]
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(func.__name__, args, cast(dict[str, Any], kwargs))
+            cache_key = get_cache_key(func.__name__, args, cast(dict[str, object], kwargs))
             now = time.monotonic()
 
             if cache_key in _cache:
                 expiry, value = _cache[cache_key]
                 if now < expiry:
-                    return Ok(value)
+                    return Ok(cast(T, value))
                 del _cache[cache_key]
 
-            func_sync = cast(Callable[P, Result[T, E]], func)
             result = func_sync(*args, **kwargs)
 
             match result:
-                case Ok(value):
-                    _cache[cache_key] = (now + ttl, value)
+                case Ok(value_ok):
+                    _cache[cache_key] = (now + ttl, value_ok)
                 case Err(_):
                     pass
 
             return result
 
-        return sync_wrapper
+        return sync_wrapper  # type: ignore[misc]
 
     return decorator  # type: ignore[return-value]

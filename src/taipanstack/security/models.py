@@ -98,5 +98,5 @@ class SecureBaseModel(BaseModel):
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
         if indent is not None:
-            return json.dumps(masked_dict, indent=indent)
+            return json.dumps(masked_dict, indent=indent)  # type: ignore[arg-type]
         return json.dumps(masked_dict)
