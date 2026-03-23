@@ -225,7 +225,7 @@ def _apply_base_dir_constraint(
     if not sanitized.is_absolute():  # pragma: no branch
         return base / sanitized
 
-    return sanitized  # pragma: no cover
+    return sanitized
 
 
 def sanitize_path(
@@ -261,12 +261,12 @@ def sanitize_path(
 
     # Reconstruct path
     if path.is_absolute():  # pragma: no branch
-        sanitized = (
-            Path("/").joinpath(*parts) if parts else Path("/")
-        )  # pragma: no cover
+        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
+        anchor = Path(path.anchor)
+        sanitized = anchor.joinpath(*parts) if parts else anchor
     elif parts:  # pragma: no branch
         sanitized = Path().joinpath(*parts)
-    else:  # pragma: no cover
+    else:
         sanitized = Path()
 
     # Check depth

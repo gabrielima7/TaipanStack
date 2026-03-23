@@ -165,6 +165,34 @@ class TestSanitizeFilename:
 class TestSanitizePath:
     """Tests for sanitize_path function."""
 
+    def test_sanitize_path_absolute_with_base_dir(self, tmp_path: Path) -> None:
+        """Test sanitize_path when sanitized is absolute and base_dir is given."""
+        # When `sanitized.is_absolute()` is True, `_apply_base_dir_constraint` returns `sanitized`
+        # if `base_dir` is not None and resolve is False.
+        path = tmp_path / "absolute/path"
+
+        base_dir = tmp_path / "base"
+        base_dir.mkdir()
+
+        result = sanitize_path(path, base_dir=base_dir, max_depth=None, resolve=False)
+        assert result.is_absolute()
+        assert result.parts[-2:] == ("absolute", "path")
+
+    def test_sanitize_path_absolute_with_parts(self, tmp_path: Path) -> None:
+        """Test sanitize_path when path is absolute and has parts."""
+        # Covers path reconstruction when path.is_absolute() is True and parts is truthy
+        path = tmp_path / "absolute/path"
+        result = sanitize_path(path, max_depth=None)
+        assert result.is_absolute()
+        assert result.parts[-2:] == ("absolute", "path")
+
+    def test_sanitize_path_empty(self) -> None:
+        """Test sanitize_path when path is empty (no parts, not absolute)."""
+        # Covers the else branch where parts are empty and path is not absolute
+        result = sanitize_path("")
+        assert not result.is_absolute()
+        assert result == Path()
+
     def test_simple_path(self) -> None:
         """Test simple path passes through."""
         result = sanitize_path("test/file.txt")
@@ -217,9 +245,9 @@ class TestSanitizePath:
         abs_traversal = abs_root / ".."
         result = sanitize_path(abs_traversal)
 
-        # When `sanitize_path` reconstructs an absolute path that's empty, it hardcodes `Path("/")`.
-        # On Windows, `Path("/")` evaluates to `\` without a drive letter.
-        assert result == Path("/")
+        # `sanitize_path` reconstructs an absolute path that's empty by preserving the anchor.
+        # On Windows, `abs_root.anchor` evaluates to e.g. `C:\`.
+        assert result == Path(abs_root.anchor)
 
         # relative path with just traversal leads to empty path "."
         result = sanitize_path("foo/../")
