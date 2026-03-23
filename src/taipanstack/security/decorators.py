@@ -11,7 +11,6 @@ import inspect
 import signal
 import sys
 import threading
-import typing
 from collections.abc import Callable, Mapping
 from types import FrameType
 from typing import ParamSpec, TypeVar
@@ -62,7 +61,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: Callable[[typing.Any], typing.Any],
+    **validators: Callable[[object], object],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
@@ -95,7 +94,7 @@ def validate_inputs(
             bound.apply_defaults()
 
             # Validate each parameter that has a validator
-            for param_name, validator in validators.items():  # pragma: no branch
+            for param_name, validator in validators.items():
                 if param_name in bound.arguments:  # pragma: no branch
                     value = bound.arguments[param_name]
                     try:
@@ -239,8 +238,8 @@ def timeout(
 def _timeout_with_signal(  # pragma: no cover
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[object, ...],
+    kwargs: Mapping[str, object],
 ) -> R:
     """Implement timeout using Unix signals."""
 
@@ -252,7 +251,7 @@ def _timeout_with_signal(  # pragma: no cover
     signal.setitimer(signal.ITIMER_REAL, seconds)
 
     try:
-        return func(*args, **kwargs)
+        return func(*args, **kwargs)  # type: ignore[arg-type]
     finally:
         # Restore old handler and cancel alarm
         signal.setitimer(signal.ITIMER_REAL, 0)
@@ -262,8 +261,8 @@ def _timeout_with_signal(  # pragma: no cover
 def _timeout_with_thread(
     func: Callable[P, R],
     seconds: float,
-    args: tuple[typing.Any, ...],
-    kwargs: Mapping[str, typing.Any],
+    args: tuple[object, ...],
+    kwargs: Mapping[str, object],
 ) -> R:
     """Implement timeout using a separate thread."""
     result: list[R] = []
@@ -271,7 +270,7 @@ def _timeout_with_thread(
 
     def target() -> None:
         try:
-            result.append(func(*args, **kwargs))
+            result.append(func(*args, **kwargs))  # type: ignore[arg-type]
         except Exception as e:
             exception.append(e)
 
@@ -362,7 +361,7 @@ def require_type(
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
-            for param_name, expected_type in type_hints.items():  # pragma: no branch
+            for param_name, expected_type in type_hints.items():
                 if param_name in bound.arguments:  # pragma: no branch
                     value = bound.arguments[param_name]
                     if not isinstance(value, expected_type):

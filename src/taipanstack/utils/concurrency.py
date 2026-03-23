@@ -10,8 +10,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeVar, overload
+from collections.abc import Awaitable, Callable, Coroutine
+from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -52,10 +52,10 @@ class ConcurrencyLimitDecorator(Protocol):
 
 
 def _handle_async_concurrency(
-    func: Callable[P, Coroutine[Any, Any, T]],
+    func: Callable[P, Awaitable[T]],
     max_tasks: int,
     timeout: float,
-) -> Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]:
+) -> Callable[P, Awaitable[Result[T, OverloadError]]]:
     """Handle asynchronous concurrency limiting."""
     async_semaphore = asyncio.Semaphore(max_tasks)
 
@@ -92,7 +92,7 @@ def _handle_sync_concurrency(
     sync_semaphore = threading.Semaphore(max_tasks)
 
     @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
         if timeout > 0.0:
             acquired = sync_semaphore.acquire(timeout=timeout)
             if not acquired:
@@ -107,7 +107,7 @@ def _handle_sync_concurrency(
         finally:
             sync_semaphore.release()
 
-    return wrapper
+    return sync_wrapper
 
 
 def limit_concurrency(
@@ -141,20 +141,22 @@ def limit_concurrency(
         raise ValueError("timeout must be >= 0.0")
 
     def decorator(
-        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+        func: Callable[P, T] | Callable[P, Awaitable[T]],
     ) -> (
         Callable[P, Result[T, OverloadError]]
-        | Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]
+        | Callable[P, Awaitable[Result[T, OverloadError]]]
     ):
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Awaitable[T]], func)
             return _handle_async_concurrency(
-                func,
+                func_coro,
                 max_tasks,
                 timeout,
             )
 
+        func_sync = cast(Callable[P, T], func)
         return _handle_sync_concurrency(
-            func,  # type: ignore[arg-type]
+            func_sync,
             max_tasks,
             timeout,
         )
