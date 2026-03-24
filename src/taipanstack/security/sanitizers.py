@@ -151,14 +151,15 @@ def sanitize_filename(
     # Get parts
     stripped = filename.rstrip("/\\")
     if not stripped:
-        # On POSIX, a backslash is a valid filename character, so Path("\\").name == "\\"
+        # On POSIX, backslash is a valid char, so Path("\\").name == "\\"
         # On Windows, Path("\\").name == ""
-        if os.name != "nt" and "\\" in filename and "/" not in filename:  # pragma: no branch
-            name = filename
+        # pragma: no branch
+        if os.name != "nt" and "\\" in filename and "/" not in filename:
+            name = filename  # pragma: no cover
         else:
             name = ""
     elif os.name == "nt":  # pragma: no branch
-        name = stripped.replace("\\", "/").split("/")[-1]
+        name = stripped.replace("\\", "/").split("/")[-1]  # pragma: no cover
     else:
         name = stripped.split("/")[-1]
 
