@@ -10,8 +10,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Callable, Awaitable
-from typing import Any, ParamSpec, Protocol, TypeVar, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeVar, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -46,9 +46,7 @@ class ConcurrencyLimitDecorator(Protocol):
     @overload
     def __call__(
         self, func: Callable[P, Awaitable[T]]
-    ) -> Callable[
-        P, Awaitable[Result[T, OverloadError]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...  # pragma: no cover
 
 
 def _handle_async_concurrency(
