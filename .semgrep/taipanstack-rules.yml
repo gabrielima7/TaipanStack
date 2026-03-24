@@ -282,3 +282,64 @@ rules:
       - pattern-not-inside: |
           with pytest.raises(...):
               ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 11: Detect potential Server-Side Request Forgery (SSRF)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-ssrf
+    languages: [python]
+    severity: ERROR
+    message: >
+      Potential Server-Side Request Forgery (SSRF) detected. Ensure URLs are
+      validated against an allowlist before making requests.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery"
+      technology:
+        - requests
+    patterns:
+      - pattern-either:
+          - pattern: requests.get($URL, ...)
+          - pattern: requests.post($URL, ...)
+          - pattern: requests.put($URL, ...)
+          - pattern: requests.delete($URL, ...)
+          - pattern: requests.patch($URL, ...)
+          - pattern: requests.head($URL, ...)
+          - pattern: requests.options($URL, ...)
+          - pattern: requests.request(..., $URL, ...)
+      - pattern-not: requests.get("...", ...)
+      - pattern-not: requests.post("...", ...)
+      - pattern-not: requests.put("...", ...)
+      - pattern-not: requests.delete("...", ...)
+      - pattern-not: requests.patch("...", ...)
+      - pattern-not: requests.head("...", ...)
+      - pattern-not: requests.options("...", ...)
+      - pattern-not: requests.request(..., "...", ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 12: Detect insecure random number generation
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-random
+    languages: [python]
+    severity: ERROR
+    message: >
+      The `random` module is not cryptographically secure. Use the `secrets`
+      module instead for generating tokens, passwords, or other sensitive data.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: random.choice(...)
+          - pattern: random.choices(...)
+          - pattern: random.randint(...)
+          - pattern: random.random(...)
+          - pattern: random.randrange(...)
+          - pattern: random.sample(...)
+          - pattern: random.uniform(...)
