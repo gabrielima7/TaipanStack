@@ -113,6 +113,16 @@ def test_timeout_sync() -> None:
     with pytest.raises(ValueError, match="crashed"):
         sync_raise()
 
+    # Test BaseException propagation (missing result, index error fix)
+    @timeout(0.2)
+    def sync_base_exc() -> Result[str, Exception]:
+        raise SystemExit(1)
+
+    res_base_exc = sync_base_exc()
+    assert isinstance(res_base_exc, Err)
+    assert isinstance(res_base_exc.err_value, RuntimeError)
+    assert "without returning a result or exception" in str(res_base_exc.err_value)
+
 
 @pytest.mark.asyncio
 async def test_timeout_async() -> None:

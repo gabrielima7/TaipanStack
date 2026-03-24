@@ -49,6 +49,17 @@ class TestDecoratorsThreadTimeoutBranches:
         with pytest.raises(ValueError, match="Expected error"):
             raise_error()
 
+    def test_timeout_thread_with_base_exception(self) -> None:
+        """Test thread timeout when function raises BaseException."""
+        from taipanstack.security.decorators import timeout
+
+        @timeout(5.0, use_signal=False)
+        def raise_base_error() -> None:
+            raise SystemExit(1)
+
+        with pytest.raises(RuntimeError, match="Thread execution failed without returning a result or exception."):
+            raise_base_error()
+
     def test_timeout_thread_success(self) -> None:
         """Test thread timeout with successful execution."""
         from taipanstack.security.decorators import timeout
