@@ -163,7 +163,9 @@ class TestCircuitBreaker:
                 raise ValueError("Initial trip failure")
 
             # Simulate real-world delay for concurrency check
-            time.sleep(0.01)
+            # Must be long enough to let other threads hit the HALF_OPEN gate
+            # before the first thread finishes and modifies the success_count
+            time.sleep(0.25)
 
             active_calls -= 1
             return "ok"

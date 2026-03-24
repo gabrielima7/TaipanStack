@@ -178,6 +178,17 @@ def timeout(seconds: float) -> TimeoutDecorator:
             if exception:
                 raise exception[0]
 
+            if not result:
+                return Err(
+                    cast(
+                        E,
+                        RuntimeError(
+                            "Thread execution failed without returning a "
+                            "result or exception."
+                        ),
+                    )
+                )
+
             return result[0]
 
         return sync_wrapper
