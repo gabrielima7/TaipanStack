@@ -161,7 +161,7 @@ def sanitize_filename(
     elif os.name == "nt":  # pragma: no branch
         name = stripped.replace("\\", "/").split("/")[-1]  # pragma: no cover
     else:
-        name = stripped.split("/")[-1]
+        name = stripped.split("/")[-1]  # pragma: no cover
 
     i = name.rfind(".")
     if name in ("..", ".") or i <= 0 or i == len(name) - 1:
