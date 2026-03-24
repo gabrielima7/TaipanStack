@@ -53,7 +53,7 @@ TaipanStack/
 │   └── taipanstack/
 │       ├── __init__.py       # Public API surface
 │       ├── core/             # 🎯 Result types, compat, optimizations
-│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
+│       │   ├── result.py     #    Ok / Err / safe
 │       │   ├── compat.py     #    Python version feature flags
 │       │   └── optimizations.py # uvloop / orjson bootstrap
 │       ├── config/           # ⚙️ Configuration models & generators

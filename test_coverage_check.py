@@ -1,4 +1,5 @@
 """Test module for URL validation coverage."""
+
 from taipanstack.security.validators import validate_url
 
 try:
