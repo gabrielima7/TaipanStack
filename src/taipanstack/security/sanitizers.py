@@ -112,47 +112,21 @@ def sanitize_string(
     return result
 
 
-def sanitize_filename(
-    filename: str,
-    *,
-    max_length: int = 255,
-    replacement: str = "_",
-    preserve_extension: bool = True,
-) -> str:
-    """Sanitize a filename to be safe for filesystem use.
-
-    Removes or replaces characters that are:
-    - Not allowed in filenames on various OSes
-    - Potentially dangerous (path separators, etc.)
-
-    Args:
-        filename: The filename to sanitize.
-        max_length: Maximum length for the filename.
-        replacement: Character to replace invalid chars with.
-        preserve_extension: Keep original extension.
-
-    Returns:
-        The sanitized filename.
-
-    Example:
-        ```python
-        sanitize_filename("my/../file<>:name.txt")
-        # Returns: 'my_file_name.txt'
-        ```
-
-    """
-    if not isinstance(filename, str):
-        raise TypeError(f"filename must be str, got {type(filename).__name__}")
-
+def _extract_stem_and_suffix(
+    filename: str, preserve_extension: bool
+) -> tuple[str, str]:
+    """Extract stem and suffix from a filename."""
     if not filename:
-        filename = "unnamed"
+        return "unnamed", ""
 
-    # Get parts
     original_path = Path(filename)
     stem = original_path.stem
     suffix = original_path.suffix if preserve_extension else ""
+    return stem, suffix
 
-    # Remove invalid characters using precompiled regex for performance
+
+def _clean_filename_stem(stem: str, replacement: str) -> str:
+    """Clean the stem by replacing invalid characters and collapsing replacements."""
     try:
         # Use lambda to avoid processing regex escape sequences in replacement string
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
@@ -189,6 +163,45 @@ def sanitize_filename(
     # Handle empty result
     if not safe_stem:
         safe_stem = "unnamed"
+
+    return safe_stem
+
+
+def sanitize_filename(
+    filename: str,
+    *,
+    max_length: int = 255,
+    replacement: str = "_",
+    preserve_extension: bool = True,
+) -> str:
+    """Sanitize a filename to be safe for filesystem use.
+
+    Removes or replaces characters that are:
+    - Not allowed in filenames on various OSes
+    - Potentially dangerous (path separators, etc.)
+
+    Args:
+        filename: The filename to sanitize.
+        max_length: Maximum length for the filename.
+        replacement: Character to replace invalid chars with.
+        preserve_extension: Keep original extension.
+
+    Returns:
+        The sanitized filename.
+
+    Example:
+        ```python
+        sanitize_filename("my/../file<>:name.txt")
+        # Returns: 'my_file_name.txt'
+        ```
+
+    """
+    if not isinstance(filename, str):
+        raise TypeError(f"filename must be str, got {type(filename).__name__}")
+
+    stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
+
+    safe_stem = _clean_filename_stem(stem, replacement)
 
     # Construct result
     result = f"{safe_stem}{suffix}"
