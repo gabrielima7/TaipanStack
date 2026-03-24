@@ -79,7 +79,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
             )
 
             return secrets.compare_digest(new_hash, stored_hash)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, OverflowError):
             return False
 
     # Argon2 verification
