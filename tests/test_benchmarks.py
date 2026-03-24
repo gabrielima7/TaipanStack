@@ -119,7 +119,7 @@ def test_bench_collect_results_100(benchmark: BenchmarkFixture) -> None:
 def test_bench_unwrap_or(benchmark: BenchmarkFixture) -> None:
     """Benchmark unwrap_or with Ok value."""
     ok = Ok(42)
-    benchmark(ok.unwrap_or, 0)
+    benchmark(lambda: ok.unwrap_or(0))
 
 
 # =============================================================================
