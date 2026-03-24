@@ -5,6 +5,7 @@ Provides functions to sanitize strings, filenames, and paths
 to remove potentially dangerous characters.
 """
 
+import os
 import re
 from pathlib import Path
 
@@ -148,9 +149,25 @@ def sanitize_filename(
         filename = "unnamed"
 
     # Get parts
-    original_path = Path(filename)
-    stem = original_path.stem
-    suffix = original_path.suffix if preserve_extension else ""
+    stripped = filename.rstrip("/\\")
+    if not stripped:
+        if os.name != "nt" and "\\" in filename and "/" not in filename:
+            name = filename
+        else:
+            name = ""
+    elif os.name == "nt":
+        name = stripped.replace("\\", "/").split("/")[-1]
+    else:
+        name = stripped.split("/")[-1]
+
+    i = name.rfind(".")
+    if name in ("..", ".") or i <= 0 or i == len(name) - 1:
+        stem, suffix = name, ""
+    else:
+        stem, suffix = name[:i], name[i:]
+
+    if not preserve_extension:
+        suffix = ""
 
     # Remove invalid characters using precompiled regex for performance
     try:
@@ -168,18 +185,9 @@ def sanitize_filename(
 
     # Collapse multiple replacement chars
     if replacement:
-        try:
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                lambda _: replacement,
-                safe_stem,
-            )
-        except re.error:  # pragma: no cover
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                "_",
-                safe_stem,
-            )
+        double_replacement = replacement * 2
+        while double_replacement in safe_stem:
+            safe_stem = safe_stem.replace(double_replacement, replacement)
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)

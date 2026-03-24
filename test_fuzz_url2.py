@@ -1,4 +1,5 @@
 """Test module for URL parsing fuzzing."""
+
 from urllib.parse import urlparse
 
 url = "http://user:pass@example.com"
