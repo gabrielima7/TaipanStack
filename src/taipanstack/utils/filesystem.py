@@ -176,9 +176,7 @@ def safe_read(
     return Ok(path.read_text(encoding=encoding))
 
 
-def _validate_write_path(
-    path: Path, base_dir: Path | str | None = None
-) -> Path:
+def _validate_write_path(path: Path, base_dir: Path | str | None = None) -> Path:
     """Validate and sanitize the path for writing."""
     if base_dir is not None:
         base = Path(base_dir).resolve()
@@ -196,9 +194,7 @@ def _validate_write_path(
     return path.parent / safe_name
 
 
-def _perform_atomic_write(
-    path: Path, content: str, encoding: str
-) -> None:
+def _perform_atomic_write(path: Path, content: str, encoding: str) -> None:
     """Perform an atomic write operation to the file."""
     # Write to temp file first, then rename
     _fd, temp_path = tempfile.mkstemp(
