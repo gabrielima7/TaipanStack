@@ -163,7 +163,7 @@ class TestCircuitBreaker:
                 raise ValueError("Initial trip failure")
 
             # Simulate real-world delay for concurrency check
-            time.sleep(0.01)
+            time.sleep(0.2)
 
             active_calls -= 1
             return "ok"
@@ -301,6 +301,62 @@ class TestCircuitBreaker:
                 failing_func()
 
         assert breaker.state == CircuitState.CLOSED
+
+    def test_failure_count_property(self) -> None:
+        """Test that failure count property returns correctly."""
+        breaker = CircuitBreaker(failure_threshold=2)
+        assert breaker.failure_count == 0
+
+        @breaker
+        def failing_func() -> None:
+            raise ValueError("fail")
+
+        with pytest.raises(ValueError):
+            failing_func()
+
+        assert breaker.failure_count == 1
+
+    def test_on_state_change_callback(self) -> None:
+        """Test that on_state_change callback is invoked."""
+        states = []
+        def callback(old: CircuitState, new: CircuitState) -> None:
+            states.append((old, new))
+
+        breaker = CircuitBreaker(
+            failure_threshold=1,
+            on_state_change=callback
+        )
+
+        @breaker
+        def failing_func() -> None:
+            raise ValueError("fail")
+
+        with pytest.raises(ValueError):
+            failing_func()
+
+        assert states == [(CircuitState.CLOSED, CircuitState.OPEN)]
+
+    def test_record_success_when_open(self) -> None:
+        """Test that _record_success handles gracefully when in OPEN state."""
+        breaker = CircuitBreaker()
+        # Force state to open
+        breaker._state.state = CircuitState.OPEN
+
+        # This shouldn't normally happen since _should_attempt blocks,
+        # but the method should handle it gracefully
+        breaker._record_success()
+        assert breaker.state == CircuitState.OPEN
+
+    def test_record_failure_when_open(self) -> None:
+        """Test that _record_failure does nothing when already OPEN."""
+        breaker = CircuitBreaker()
+        # Force state to open
+        breaker._state.state = CircuitState.OPEN
+
+        # This shouldn't normally happen,
+        # but the method should handle it gracefully
+        breaker._record_failure(ValueError("test"))
+        assert breaker.state == CircuitState.OPEN
 
 
 class TestCircuitBreakerDecorator:
