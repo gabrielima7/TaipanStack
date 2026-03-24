@@ -205,7 +205,7 @@ def collect_results(
         if isinstance(result, Ok):
             append(result.ok_value)
         else:
-            return result  # type: ignore[return-value]
+            return result
     return Ok(values)
 
 
@@ -256,7 +256,7 @@ async def map_async(
     """
     if isinstance(result, Ok):
         return Ok(await func(result.ok_value))
-    return result  # type: ignore[return-value]
+    return result
 
 
 @overload
@@ -311,4 +311,4 @@ async def and_then_async(
     """
     if isinstance(result, Ok):
         return await func(result.ok_value)
-    return result  # type: ignore[return-value]
+    return result
