@@ -319,13 +319,11 @@ class TestCircuitBreaker:
     def test_on_state_change_callback(self) -> None:
         """Test that on_state_change callback is invoked."""
         states = []
+
         def callback(old: CircuitState, new: CircuitState) -> None:
             states.append((old, new))
 
-        breaker = CircuitBreaker(
-            failure_threshold=1,
-            on_state_change=callback
-        )
+        breaker = CircuitBreaker(failure_threshold=1, on_state_change=callback)
 
         @breaker
         def failing_func() -> None:
