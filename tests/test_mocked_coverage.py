@@ -57,7 +57,10 @@ class TestDecoratorsThreadTimeoutBranches:
         def raise_base_error() -> None:
             raise SystemExit(1)
 
-        with pytest.raises(RuntimeError, match="Thread execution failed without returning a result or exception."):
+        with pytest.raises(
+            RuntimeError,
+            match="Thread execution failed without returning a result or exception.",
+        ):
             raise_base_error()
 
     def test_timeout_thread_success(self) -> None:
