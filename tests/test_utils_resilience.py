@@ -114,6 +114,27 @@ def test_timeout_sync() -> None:
         sync_raise()
 
 
+def test_timeout_chaos_thread_death() -> None:
+    """Simulate a severe production failure where the worker thread dies unexpectedly.
+
+    This can happen if the function suffers a fatal error that inherits from
+    BaseException (like SystemExit or KeyboardInterrupt) bypassing the standard
+    'except Exception' block, causing the thread to terminate silently without
+    populating the result or exception lists.
+    """
+
+    @timeout(1.0)
+    def crash_func() -> Result[str, Exception]:
+        raise SystemExit("Fatal crash")
+
+    # Before hardening, this would raise IndexError: list index out of range.
+    # After hardening, it should return an Err(RuntimeError).
+    res = crash_func()
+    assert res.is_err()
+    assert isinstance(res.err_value, RuntimeError)
+    assert "Worker thread terminated unexpectedly" in str(res.err_value)
+
+
 @pytest.mark.asyncio
 async def test_timeout_async() -> None:
     """Test async timeout."""
