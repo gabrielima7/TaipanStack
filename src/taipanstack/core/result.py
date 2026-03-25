@@ -202,10 +202,10 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        try:
-            append(result.ok_value)  # type: ignore[union-attr]
-        except AttributeError:
-            return result  # type: ignore[return-value]
+        if isinstance(result, Ok):
+            append(result.ok())
+        else:
+            return result
     return Ok(values)
 
 
@@ -254,11 +254,9 @@ async def map_async(
         Err('fail')
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return Ok(await func(val))
+    if isinstance(result, Ok):
+        return Ok(await func(result.ok()))
+    return result
 
 
 @overload
@@ -311,8 +309,6 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return await func(val)
+    if isinstance(result, Ok):
+        return await func(result.ok())
+    return result
