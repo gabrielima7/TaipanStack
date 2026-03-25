@@ -180,8 +180,11 @@ def timeout(seconds: float) -> TimeoutDecorator:
 
             if not result:
                 return Err(
-                    RuntimeError(
-                        "Thread terminated unexpectedly without returning a result."
+                    cast(
+                        E,
+                        RuntimeError(
+                            "Thread terminated unexpectedly without returning a result."
+                        ),
                     )
                 )
 
