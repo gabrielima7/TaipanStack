@@ -282,3 +282,63 @@ rules:
       - pattern-not-inside: |
           with pytest.raises(...):
               ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 11: Detect SSRF vulnerabilities in requests
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-ssrf-requests
+    languages: [python]
+    severity: ERROR
+    message: >
+      A `requests` call was made without using a URL validator or SSRF guard.
+      This can lead to Server-Side Request Forgery (SSRF) vulnerabilities if the URL
+      is constructed using untrusted input. Ensure the URL is validated using
+      `taipanstack.security.validators.validate_url` or guarded using
+      `taipanstack.security.guards.guard_ssrf_public`.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery (SSRF)"
+      technology:
+        - requests
+    patterns:
+      - pattern-either:
+          - pattern: requests.get($URL, ...)
+          - pattern: requests.post($URL, ...)
+          - pattern: requests.put($URL, ...)
+          - pattern: requests.delete($URL, ...)
+          - pattern: requests.patch($URL, ...)
+          - pattern: requests.head($URL, ...)
+          - pattern: requests.options($URL, ...)
+          - pattern: requests.request(..., $URL, ...)
+      - pattern-not-inside: |
+          $URL = validate_url(...)
+          ...
+      - pattern-not-inside: |
+          $URL = guard_ssrf_public(...)
+          ...
+      - pattern-not: requests.get(validate_url(...), ...)
+      - pattern-not: requests.post(validate_url(...), ...)
+      - pattern-not: requests.put(validate_url(...), ...)
+      - pattern-not: requests.delete(validate_url(...), ...)
+      - pattern-not: requests.patch(validate_url(...), ...)
+      - pattern-not: requests.head(validate_url(...), ...)
+      - pattern-not: requests.options(validate_url(...), ...)
+      - pattern-not: requests.request(..., validate_url(...), ...)
+      - pattern-not: requests.get(guard_ssrf_public(...), ...)
+      - pattern-not: requests.post(guard_ssrf_public(...), ...)
+      - pattern-not: requests.put(guard_ssrf_public(...), ...)
+      - pattern-not: requests.delete(guard_ssrf_public(...), ...)
+      - pattern-not: requests.patch(guard_ssrf_public(...), ...)
+      - pattern-not: requests.head(guard_ssrf_public(...), ...)
+      - pattern-not: requests.options(guard_ssrf_public(...), ...)
+      - pattern-not: requests.request(..., guard_ssrf_public(...), ...)
+      - pattern-not: requests.get("...", ...)
+      - pattern-not: requests.post("...", ...)
+      - pattern-not: requests.put("...", ...)
+      - pattern-not: requests.delete("...", ...)
+      - pattern-not: requests.patch("...", ...)
+      - pattern-not: requests.head("...", ...)
+      - pattern-not: requests.options("...", ...)
+      - pattern-not: requests.request(..., "...", ...)
