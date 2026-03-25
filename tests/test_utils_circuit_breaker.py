@@ -163,7 +163,7 @@ class TestCircuitBreaker:
                 raise ValueError("Initial trip failure")
 
             # Simulate real-world delay for concurrency check
-            time.sleep(0.01)
+            time.sleep(0.5)
 
             active_calls -= 1
             return "ok"
@@ -283,6 +283,44 @@ class TestCircuitBreaker:
 
         breaker.reset()
         assert breaker.state == CircuitState.CLOSED
+
+    def test_excluded_exceptions_in_half_open(self) -> None:
+        """Test that excluded exceptions in half-open state decrement attempts but don't trip circuit."""
+        breaker = CircuitBreaker(
+            failure_threshold=1,
+            success_threshold=2,
+            timeout=0.05,
+            excluded_exceptions=(ValueError,),
+        )
+
+        call_count = 0
+
+        @breaker
+        def flaky_func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise RuntimeError("first fail")
+            if call_count == 2:
+                raise ValueError("excluded fail")
+            return "ok"
+
+        # Trip the circuit
+        with pytest.raises(RuntimeError):
+            flaky_func()
+
+        # Wait for timeout to allow half-open
+        time.sleep(0.1)
+
+        # Call in half-open state, raising excluded exception
+        with pytest.raises(ValueError):
+            flaky_func()
+
+        # Since it was excluded, the circuit should STILL be in HALF_OPEN
+        assert breaker.state == CircuitState.HALF_OPEN
+
+        # Another call should be allowed because we freed up the attempt slot!
+        assert flaky_func() == "ok"
 
     def test_excluded_exceptions_dont_trip(self) -> None:
         """Test that excluded exceptions don't trip circuit."""

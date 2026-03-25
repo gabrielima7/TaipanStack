@@ -228,6 +228,7 @@ class CircuitBreaker:
         with self._state.lock:
             match self._state.state:
                 case CircuitState.HALF_OPEN:
+                    self._state.half_open_attempts -= 1
                     self._state.success_count += 1
                     if self._state.success_count >= self.config.success_threshold:
                         self._state.state = CircuitState.CLOSED
@@ -255,6 +256,9 @@ class CircuitBreaker:
         """Record a failed call."""
         # Check if exception should be excluded
         if isinstance(exc, self.config.excluded_exceptions):
+            with self._state.lock:
+                if self._state.state == CircuitState.HALF_OPEN:
+                    self._state.half_open_attempts -= 1
             return
 
         with self._state.lock:
