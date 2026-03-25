@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 # Optimization Levels
 OPT_LEVEL_NONE = 0
+OPT_LEVEL_SAFE = 1
 OPT_LEVEL_AGGRESSIVE = 2
 
 
@@ -381,5 +382,3 @@ def get_recommended_thread_pool_size(*, force_refresh: bool = False) -> int:
 
     size = int(cpu_count * profile.thread_pool_multiplier)
     return min(size, profile.max_thread_pool_size)
-
-
