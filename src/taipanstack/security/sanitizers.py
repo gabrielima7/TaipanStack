@@ -112,6 +112,55 @@ def sanitize_string(
     return result
 
 
+def _replace_invalid_chars(stem: str, replacement: str) -> str:
+    """Replace invalid filename characters with a replacement string."""
+    try:
+        # Use lambda to avoid processing regex escape sequences in replacement string
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+    except re.error:  # pragma: no cover
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
+
+    # Remove leading/trailing dots and spaces (Windows issues)
+    safe_stem = safe_stem.strip(". ")
+
+    # Remove path separators that might have snuck through
+    safe_stem = safe_stem.replace("/", replacement)
+    safe_stem = safe_stem.replace("\\", replacement)
+    return safe_stem
+
+
+def _collapse_replacements(stem: str, replacement: str) -> str:
+    """Collapse multiple consecutive replacement characters into one."""
+    if not replacement:
+        return stem
+    try:
+        safe_stem = re.sub(
+            f"({re.escape(replacement)})+",
+            lambda _: replacement,
+            stem,
+        )
+    except re.error:  # pragma: no cover
+        safe_stem = re.sub(
+            f"({re.escape(replacement)})+",
+            "_",
+            stem,
+        )
+    return safe_stem.strip(replacement)
+
+
+def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
+    """Truncate the filename, preserving extension if possible."""
+    result = f"{safe_stem}{suffix}"
+    if len(result) <= max_length:
+        return result
+
+    available = max_length - len(suffix)
+    if available > 0:
+        safe_stem = safe_stem[:available]
+        return f"{safe_stem}{suffix}"
+    return result[:max_length]
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -152,35 +201,11 @@ def sanitize_filename(
     stem = original_path.stem
     suffix = original_path.suffix if preserve_extension else ""
 
-    # Remove invalid characters using precompiled regex for performance
-    try:
-        # Use lambda to avoid processing regex escape sequences in replacement string
-        safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
-    except re.error:  # pragma: no cover
-        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
-
-    # Remove leading/trailing dots and spaces (Windows issues)
-    safe_stem = safe_stem.strip(". ")
-
-    # Remove path separators that might have snuck through
-    safe_stem = safe_stem.replace("/", replacement)
-    safe_stem = safe_stem.replace("\\", replacement)
+    # Replace invalid characters
+    safe_stem = _replace_invalid_chars(stem, replacement)
 
     # Collapse multiple replacement chars
-    if replacement:
-        try:
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                lambda _: replacement,
-                safe_stem,
-            )
-        except re.error:  # pragma: no cover
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                "_",
-                safe_stem,
-            )
-        safe_stem = safe_stem.strip(replacement)
+    safe_stem = _collapse_replacements(safe_stem, replacement)
 
     # Handle reserved names (Windows)
     if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
@@ -190,19 +215,8 @@ def sanitize_filename(
     if not safe_stem:
         safe_stem = "unnamed"
 
-    # Construct result
-    result = f"{safe_stem}{suffix}"
-
-    # Truncate if needed (keeping extension)
-    if len(result) > max_length:
-        available = max_length - len(suffix)
-        if available > 0:
-            safe_stem = safe_stem[:available]
-            result = f"{safe_stem}{suffix}"
-        else:
-            result = result[:max_length]
-
-    return result
+    # Construct result and truncate if needed
+    return _truncate_filename(safe_stem, suffix, max_length)
 
 
 def _clean_path_parts(path: Path) -> list[str]:
