@@ -114,6 +114,19 @@ def test_timeout_sync() -> None:
         sync_raise()
 
 
+def test_timeout_sync_thread_crash() -> None:
+    """Test sync timeout handling severe thread crashes like SystemExit."""
+
+    @timeout(1.0)
+    def severe_crash() -> Result[str, Exception]:
+        raise SystemExit("Fatal exit")
+
+    res = severe_crash()
+    assert isinstance(res, Err)
+    assert isinstance(res.err_value, RuntimeError)
+    assert "Thread terminated unexpectedly" in str(res.err_value)
+
+
 @pytest.mark.asyncio
 async def test_timeout_async() -> None:
     """Test async timeout."""
