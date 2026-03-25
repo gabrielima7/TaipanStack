@@ -12,8 +12,6 @@ from taipanstack.core.optimizations import (
     apply_optimizations,
     get_optimization_profile,
     get_recommended_thread_pool_size,
-    should_use_frozen_dataclass,
-    should_use_slots,
 )
 
 
@@ -226,20 +224,6 @@ class TestUtilityFunctions:
             size = get_recommended_thread_pool_size(force_refresh=True)
             # Should default to 4 CPUs
             assert size >= 4
-
-    def test_should_use_slots(self) -> None:
-        """Test should_use_slots recommendation."""
-        result = should_use_slots()
-        assert isinstance(result, bool)
-        # All profiles recommend slots
-        assert result is True
-
-    def test_should_use_frozen_dataclass(self) -> None:
-        """Test should_use_frozen_dataclass recommendation."""
-        result = should_use_frozen_dataclass()
-        assert isinstance(result, bool)
-        # All profiles recommend frozen dataclasses
-        assert result is True
 
     def test_optimization_profile_cached(self) -> None:
         """Test get_optimization_profile is cached."""

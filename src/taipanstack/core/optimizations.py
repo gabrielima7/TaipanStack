@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 
 # Optimization Levels
 OPT_LEVEL_NONE = 0
-OPT_LEVEL_SAFE = 1
 OPT_LEVEL_AGGRESSIVE = 2
 
 
@@ -384,21 +383,3 @@ def get_recommended_thread_pool_size(*, force_refresh: bool = False) -> int:
     return min(size, profile.max_thread_pool_size)
 
 
-def should_use_slots() -> bool:
-    """Check if __slots__ should be used for new classes.
-
-    Returns:
-        True if slots are recommended for current version.
-
-    """
-    return get_optimization_profile().prefer_slots
-
-
-def should_use_frozen_dataclass() -> bool:
-    """Check if frozen=True should be used for dataclasses.
-
-    Returns:
-        True if frozen dataclasses are recommended.
-
-    """
-    return get_optimization_profile().use_frozen_dataclasses
