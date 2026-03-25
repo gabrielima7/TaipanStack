@@ -24,8 +24,8 @@ Example:
 
 import functools
 import inspect
-from collections.abc import Callable, Awaitable, Iterable
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable, Iterable
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from result import Err, Ok, Result
 
@@ -61,10 +61,7 @@ def safe(
 
 def safe(
     func: Callable[P, T] | Callable[P, Awaitable[T]],
-) -> (
-    Callable[P, Result[T, Exception]]
-    | Callable[P, Awaitable[Result[T, Exception]]]
-):
+) -> Callable[P, Result[T, Exception]] | Callable[P, Awaitable[Result[T, Exception]]]:
     """Wrap a sync or async function to convert exceptions into Err results.
 
     Detect whether *func* is a coroutine function and choose the
@@ -101,9 +98,7 @@ def safe(
             except Exception as e:
                 return Err(e)
 
-        return cast(
-            Callable[P, Awaitable[Result[T, Exception]]], async_wrapper
-        )
+        return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:

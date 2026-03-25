@@ -12,10 +12,10 @@ import inspect
 import logging
 import secrets
 import time
-from collections.abc import Callable, Awaitable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")

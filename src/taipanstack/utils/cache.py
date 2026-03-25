@@ -8,7 +8,7 @@ ignoring caching for Err() results.
 import functools
 import inspect
 import time
-from collections.abc import Callable, Awaitable
+from collections.abc import Awaitable, Callable
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
@@ -53,9 +53,7 @@ def cached(ttl: float) -> CacheDecorator:
         return (func_name, args, kwargs_tuple)
 
     def decorator(
-        func: (
-            Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]
-        ),
+        func: (Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]),
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
