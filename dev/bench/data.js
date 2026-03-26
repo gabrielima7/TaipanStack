@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774540879251,
+  "lastUpdate": 1774550787154,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -13990,6 +13990,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0002905018429535377",
             "extra": "mean: 17.00653128905252 usec\nrounds: 15197"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "75062756df59c5be6599d1e10432dca6c013cf12",
+          "message": "✨ [feat] Implement Adaptive Resilience and Watchdogs (#331)\n\n* feat: implement adaptive resilience and watchdogs for v0.4.0\n\n- Added config watcher and health pinger watchdogs\n- Created AdaptiveCircuitBreaker using target error rates\n- Created AdaptiveTimeout using latency EMA\n- Ensured 100% test coverage and robust error handling\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* feat: implement adaptive resilience and watchdogs for v0.4.0\n\n- Added config watcher and health pinger watchdogs\n- Rewrote AdaptiveCircuitBreaker using error rates and min throughput\n- Created AdaptiveTimeout using latency EMA\n- Fixed ResilienceOrchestrator integration with AdaptiveBreaker\n- Maintained strict typing, linting, and 100% test coverage\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* feat: implement adaptive resilience and watchdogs for v0.4.0\n\n- Added config watcher and health pinger watchdogs\n- Rewrote AdaptiveCircuitBreaker using error rates and min throughput\n- Created AdaptiveTimeout using latency EMA\n- Fixed ResilienceOrchestrator integration with AdaptiveBreaker\n- Maintained strict typing, linting, and 100% test coverage\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-26T18:45:50Z",
+          "tree_id": "da63f2360385d3abf10bda2f9cd6f6514b2a3f2a",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/75062756df59c5be6599d1e10432dca6c013cf12"
+        },
+        "date": 1774550786894,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 1026224.4749896941,
+            "unit": "iter/sec",
+            "range": "stddev: 3.0561077747877516e-7",
+            "extra": "mean: 974.4456737986516 nsec\nrounds: 73390"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 709866.0191659138,
+            "unit": "iter/sec",
+            "range": "stddev: 4.254726681946449e-7",
+            "extra": "mean: 1.408716536643057 usec\nrounds: 140766"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 451576.8275311044,
+            "unit": "iter/sec",
+            "range": "stddev: 4.889398584214977e-7",
+            "extra": "mean: 2.2144626097563 usec\nrounds: 166086"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 324832.53922163666,
+            "unit": "iter/sec",
+            "range": "stddev: 6.80990021965814e-7",
+            "extra": "mean: 3.078509321745287 usec\nrounds: 60021"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 230190.07091018077,
+            "unit": "iter/sec",
+            "range": "stddev: 7.88554703734595e-7",
+            "extra": "mean: 4.344236030885085 usec\nrounds: 83112"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 37625.96308814419,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002596516767804533",
+            "extra": "mean: 26.577392787457885 usec\nrounds: 15889"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 53246.1337562425,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000011473118386579774",
+            "extra": "mean: 18.780706305887634 usec\nrounds: 22360"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 5267700.676253122,
+            "unit": "iter/sec",
+            "range": "stddev: 3.182785630946402e-8",
+            "extra": "mean: 189.83614701339283 nsec\nrounds: 161005"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 2954793.4752279483,
+            "unit": "iter/sec",
+            "range": "stddev: 5.435613743793812e-8",
+            "extra": "mean: 338.43312853614304 nsec\nrounds: 185874"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 2196010.0594887487,
+            "unit": "iter/sec",
+            "range": "stddev: 2.3709916425507604e-7",
+            "extra": "mean: 455.37132021736244 nsec\nrounds: 147428"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 682548.8638282344,
+            "unit": "iter/sec",
+            "range": "stddev: 4.2458327339552544e-7",
+            "extra": "mean: 1.4650965710956825 usec\nrounds: 129283"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 531365.3006260217,
+            "unit": "iter/sec",
+            "range": "stddev: 4.964829978314734e-7",
+            "extra": "mean: 1.8819444905827722 usec\nrounds: 90327"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 430909.73203982384,
+            "unit": "iter/sec",
+            "range": "stddev: 5.385548334389775e-7",
+            "extra": "mean: 2.320671652659685 usec\nrounds: 89518"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 130904.08735197494,
+            "unit": "iter/sec",
+            "range": "stddev: 9.668860292885115e-7",
+            "extra": "mean: 7.639180870733239 usec\nrounds: 72538"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 12529274.103300178,
+            "unit": "iter/sec",
+            "range": "stddev: 9.078547223818352e-9",
+            "extra": "mean: 79.8130834840694 nsec\nrounds: 126503"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 49076.822581147724,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003930238995571131",
+            "extra": "mean: 20.37621727336802 usec\nrounds: 8846"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 58033.029408879294,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003291482325876171",
+            "extra": "mean: 17.23156640599217 usec\nrounds: 14193"
           }
         ]
       }
