@@ -1800,14 +1800,13 @@
 </span><span id="__span-2-5">    <span class="n">ResilienceOrchestrator</span><span class="p">(</span><span class="s2">&quot;ai-service&quot;</span><span class="p">)</span>
 </span><span id="__span-2-6">    <span class="o">.</span><span class="n">with_bulkhead</span><span class="p">(</span><span class="n">max_concurrent</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </span><span id="__span-2-7">    <span class="o">.</span><span class="n">with_circuit_breaker</span><span class="p">(</span><span class="n">AdaptiveCircuitBreaker</span><span class="p">(</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
-</span><span id="__span-2-8">    <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">RetryConfig</span><span class="p">(</span><span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
-</span><span id="__span-2-9">    <span class="o">.</span><span class="n">with_timeout</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
-</span><span id="__span-2-10">    <span class="o">.</span><span class="n">with_fallback</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;cached&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]})</span>
-</span><span id="__span-2-11"><span class="p">)</span>
-</span><span id="__span-2-12">
-</span><span id="__span-2-13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_ai_recommendation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
-</span><span id="__span-2-14">    <span class="c1"># Seamlessly managed execution</span>
-</span><span id="__span-2-15">    <span class="k">return</span> <span class="k">await</span> <span class="n">orch</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ai_client</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span>
+</span><span id="__span-2-8">    <span class="o">.</span><span class="n">with_timeout</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+</span><span id="__span-2-9">    <span class="o">.</span><span class="n">with_fallback</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;cached&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]})</span>
+</span><span id="__span-2-10"><span class="p">)</span>
+</span><span id="__span-2-11">
+</span><span id="__span-2-12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_ai_recommendation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
+</span><span id="__span-2-13">    <span class="c1"># Seamlessly managed execution</span>
+</span><span id="__span-2-14">    <span class="k">return</span> <span class="k">await</span> <span class="n">orch</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ai_client</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span>
 </span></code></pre></div>
 
 
