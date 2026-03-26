@@ -70,7 +70,6 @@ orch = (
     ResilienceOrchestrator("ai-service")
     .with_bulkhead(max_concurrent=5)
     .with_circuit_breaker(AdaptiveCircuitBreaker("ai", window_size=50))
-    .with_retry(RetryConfig(max_attempts=3))
     .with_timeout(10.0)
     .with_fallback({"status": "cached", "data": []})
 )

@@ -99,7 +99,7 @@ class TestResilienceOrchestrator:
     @pytest.mark.asyncio
     async def test_with_adaptive_breaker(self) -> None:
         """Adaptive breaker integrates with orchestrator."""
-        ab = AdaptiveCircuitBreaker("orch", max_threshold=2)
+        ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         for _ in range(5):
             ab.record_failure(RuntimeError("fail"))
 
@@ -110,7 +110,7 @@ class TestResilienceOrchestrator:
     @pytest.mark.asyncio
     async def test_adaptive_breaker_records_success(self) -> None:
         """Successful execution records a success on the adaptive breaker."""
-        ab = AdaptiveCircuitBreaker("orch", max_threshold=3)
+        ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
 
         result = await orch.execute(_ok_fn)
@@ -122,7 +122,7 @@ class TestResilienceOrchestrator:
     @pytest.mark.asyncio
     async def test_adaptive_breaker_records_failure(self) -> None:
         """Failing execution records a failure on the adaptive breaker."""
-        ab = AdaptiveCircuitBreaker("orch", max_threshold=3)
+        ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
 
         result = await orch.execute(_fail_fn)
