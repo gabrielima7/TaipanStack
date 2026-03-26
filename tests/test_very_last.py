@@ -580,6 +580,7 @@ class TestOptimizationsEdgeCases:
         assert len(result.errors) > 0
         assert any("boom" in e for e in result.errors)
 
+
 class TestGuardHashAlgorithmFormat:
     def test_guard_hash_algorithm_format_error(self):
         import pytest
