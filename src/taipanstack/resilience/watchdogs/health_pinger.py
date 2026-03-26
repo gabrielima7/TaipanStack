@@ -71,7 +71,12 @@ async def check_all(
         match result:
             case Ok(healthy):
                 results[target.name] = healthy
-            case Err():
+            case Err(error):
+                logger.warning(
+                    "Health check for '%s' failed during aggregation: %s",
+                    target.name,
+                    error,
+                )
                 results[target.name] = False
     return Ok(results)
 
