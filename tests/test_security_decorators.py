@@ -183,6 +183,48 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
+    def test_base_exception_propagates(self) -> None:
+        """Test that BaseExceptions like SystemExit propagate correctly."""
+
+        @timeout(5.0, use_signal=False)
+        def exit_func() -> None:
+            raise SystemExit(42)
+
+        with pytest.raises(SystemExit) as exc_info:
+            exit_func()
+        assert exc_info.value.code == 42
+
+    def test_thread_bypass_raises_runtime_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that bypass of exception handling raises RuntimeError."""
+        import threading
+
+        # Override the thread's start method to do nothing, so neither result nor exception is populated
+        def mock_start(*args, **kwargs):
+            pass
+
+        monkeypatch.setattr(threading.Thread, "start", mock_start)
+
+        # Override join so it doesn't wait
+        def mock_join(*args, **kwargs):
+            pass
+
+        monkeypatch.setattr(threading.Thread, "join", mock_join)
+
+        # Override is_alive to return False
+        def mock_is_alive(*args, **kwargs):
+            return False
+
+        monkeypatch.setattr(threading.Thread, "is_alive", mock_is_alive)
+
+        @timeout(5.0, use_signal=False)
+        def dummy_func() -> None:
+            pass
+
+        with pytest.raises(RuntimeError) as exc_info:
+            dummy_func()
+        assert "no result or exception was captured" in str(exc_info.value)
+
+
 
 class TestDeprecated:
     """Tests for @deprecated decorator."""
