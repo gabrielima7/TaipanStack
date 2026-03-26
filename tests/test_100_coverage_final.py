@@ -103,7 +103,7 @@ class TestCircuitBreakerOpenState:
 
     def test_record_success_in_open_state(self) -> None:
         """Test _record_success when circuit is OPEN (should be no-op)."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(name="test", failure_threshold=2)
         # Force state to OPEN
@@ -115,7 +115,7 @@ class TestCircuitBreakerOpenState:
 
     def test_record_failure_in_open_state(self) -> None:
         """Test _record_failure when circuit is already OPEN."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(name="test", failure_threshold=2)
         # Force state to OPEN
@@ -239,7 +239,7 @@ class TestRetryUncovered:
 
     def test_retry_no_reraise(self) -> None:
         """Test retry with reraise=False still raises RetryError."""
-        from taipanstack.utils.retry import RetryError, retry
+        from taipanstack.resilience.retry import RetryError, retry
 
         @retry(max_attempts=1, on=(ValueError,), reraise=True, log_retries=False)
         def failing() -> None:
@@ -250,7 +250,7 @@ class TestRetryUncovered:
 
     def test_retrier_context_wrong_exception(self) -> None:
         """Test Retrier with non-matching exception type."""
-        from taipanstack.utils.retry import Retrier
+        from taipanstack.resilience.retry import Retrier
 
         retrier = Retrier(max_attempts=3, on=(ValueError,))
         with pytest.raises(TypeError):

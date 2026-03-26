@@ -8,6 +8,8 @@ import time
 
 import pytest
 
+from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+from taipanstack.resilience.retry import retry
 from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
@@ -21,8 +23,6 @@ from taipanstack.security.validators import (
     validate_python_version,
     validate_url,
 )
-from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
-from taipanstack.utils.retry import retry
 
 # ---------- guards.py ----------
 

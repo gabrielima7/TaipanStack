@@ -217,7 +217,7 @@ class TestRetryBranches:
 
     def test_calculate_delay_with_jitter(self) -> None:
         """Test calculate_delay produces different values with jitter."""
-        from taipanstack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(jitter=True, jitter_factor=0.5)
 
@@ -227,7 +227,7 @@ class TestRetryBranches:
 
     def test_retry_config_defaults(self) -> None:
         """Test RetryConfig defaults."""
-        from taipanstack.utils.retry import RetryConfig
+        from taipanstack.resilience.retry import RetryConfig
 
         config = RetryConfig()
         assert config.max_attempts == 3
@@ -239,7 +239,7 @@ class TestCircuitBreakerExitBranches:
 
     def test_circuit_breaker_success_resets_failures(self) -> None:
         """Test circuit breaker resets failure count on success."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(failure_threshold=3)
 

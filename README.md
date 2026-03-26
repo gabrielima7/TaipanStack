@@ -67,7 +67,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1006 tests)
+- **100% code coverage** (1164 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -109,7 +109,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1006 tests)
+# Run tests with 100% coverage (1164 tests)
 make test
 
 # Check architecture contracts
@@ -164,7 +164,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1006 tests, 100% coverage
+├── tests/                # ✅ 1164 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
@@ -301,6 +301,28 @@ def fetch_user_profile(user_id: str) -> dict:
 
 # Retry handles transient failures, Result handles business errors
 profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
+```
+
+### 🔗 Adaptive Resilience Pipeline
+
+```python
+from taipanstack.core.result import Result, Ok, Err
+from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker
+from taipanstack.resilience.retry import RetryConfig
+
+# Compose an intelligent pipeline: Bulkhead -> Breaker -> Retry -> Timeout -> Fallback
+orch = (
+    ResilienceOrchestrator("billing_api")
+    .with_bulkhead(max_concurrent=10, max_queue=50) # Prevent resource exhaustion
+    .with_circuit_breaker(AdaptiveCircuitBreaker("billing", target_error_rate=0.1)) # Auto-tunes thresholds
+    .with_retry(RetryConfig(max_attempts=3, initial_delay=0.1))
+    .with_timeout(5.0)
+    .with_fallback({"status": "unavailable"})
+)
+
+async def process_billing() -> Result[dict, Exception]:
+    # The orchestrator handles all concurrency, retry, circuit breaking, and fallbacks
+    return await orch.execute(stripe_gateway.charge)
 ```
 
 ### Intelligent Caching

@@ -283,7 +283,7 @@ class TestCircuitBreakerComplete:
 
     def test_excluded_exceptions_work(self) -> None:
         """Test that excluded exceptions don't trip circuit."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(
             failure_threshold=2,
@@ -308,7 +308,7 @@ class TestRetryComplete:
 
     def test_retry_backoff_exponential(self) -> None:
         """Test retry with exponential backoff."""
-        from taipanstack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(
             initial_delay=1.0,

@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from taipanstack.utils.circuit_breaker import (
+from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,
     CircuitState,
@@ -29,14 +29,14 @@ class TestCircuitBreakerState:
         from unittest import mock
 
         with mock.patch.dict("sys.modules", {"structlog": None}):
-            spec = importlib.util.find_spec("taipanstack.utils.circuit_breaker")
+            spec = importlib.util.find_spec("taipanstack.resilience.circuit_breaker")
             module = importlib.util.module_from_spec(spec)  # type: ignore
             spec.loader.exec_module(module)  # type: ignore
             assert module._HAS_STRUCTLOG is False
 
     def test_circuit_breaker_unreachable_state(self) -> None:
         """Test unreachable state block."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
         breaker = CircuitBreaker()
         # Forcibly inject an invalid state to hit the unreachable branch in match

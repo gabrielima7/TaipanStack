@@ -2,7 +2,7 @@
 
 import pytest
 
-from taipanstack.utils.retry import (
+from taipanstack.resilience.retry import (
     Retrier,
     RetryConfig,
     RetryError,
@@ -21,7 +21,7 @@ class TestRetryConfig:
         from unittest import mock
 
         with mock.patch.dict("sys.modules", {"structlog": None}):
-            spec = importlib.util.find_spec("taipanstack.utils.retry")
+            spec = importlib.util.find_spec("taipanstack.resilience.retry")
             module = importlib.util.module_from_spec(spec)  # type: ignore
             spec.loader.exec_module(module)  # type: ignore
             assert module._HAS_STRUCTLOG is False
@@ -502,7 +502,7 @@ class TestRetryError:
 
     def test_retry_for_loop_exhaustion(self) -> None:
         """Test the retry loop exhaustion explicitly."""
-        from taipanstack.utils.retry import RetryError, retry
+        from taipanstack.resilience.retry import RetryError, retry
 
         call_count = 0
 
@@ -520,7 +520,7 @@ class TestRetryError:
     @pytest.mark.asyncio
     async def test_retry_async_for_loop_exhaustion(self) -> None:
         """Test the retry async loop exhaustion explicitly."""
-        from taipanstack.utils.retry import RetryError, retry
+        from taipanstack.resilience.retry import RetryError, retry
 
         call_count = 0
 

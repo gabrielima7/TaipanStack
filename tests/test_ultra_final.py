@@ -128,7 +128,7 @@ class TestRetry100Percent:
 
     def test_retry_max_delay_applied(self) -> None:
         """Test that max_delay is actually applied."""
-        from taipanstack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(
             initial_delay=1.0,
@@ -161,7 +161,7 @@ class TestCircuitBreaker100Percent:
 
     def test_circuit_breaker_name(self) -> None:
         """Test CircuitBreaker with custom name."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
         breaker = CircuitBreaker(name="custom_breaker")
 
