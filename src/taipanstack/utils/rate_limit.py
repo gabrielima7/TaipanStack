@@ -11,8 +11,8 @@ import functools
 import inspect
 import threading
 import time
-from collections.abc import Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeVar, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeVar, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -86,10 +86,8 @@ class RateLimitDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, T]]
-    ) -> Callable[
-        P, Coroutine[Any, Any, Result[T, RateLimitError]]
-    ]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Awaitable[Result[T, RateLimitError]]]: ...  # pragma: no cover
 
 
 def rate_limit(
@@ -122,10 +120,10 @@ def rate_limit(
     """
 
     def decorator(
-        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+        func: Callable[P, T] | Callable[P, Awaitable[T]],
     ) -> (
         Callable[P, Result[T, RateLimitError]]
-        | Callable[P, Coroutine[Any, Any, Result[T, RateLimitError]]]
+        | Callable[P, Awaitable[Result[T, RateLimitError]]]
     ):
         limiter = RateLimiter(max_calls, time_window)
 
