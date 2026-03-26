@@ -194,7 +194,9 @@ class TestTimeout:
             exit_func()
         assert exc_info.value.code == 42
 
-    def test_thread_bypass_raises_runtime_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_thread_bypass_raises_runtime_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that bypass of exception handling raises RuntimeError."""
         import threading
 
@@ -223,7 +225,6 @@ class TestTimeout:
         with pytest.raises(RuntimeError) as exc_info:
             dummy_func()
         assert "no result or exception was captured" in str(exc_info.value)
-
 
 
 class TestDeprecated:
