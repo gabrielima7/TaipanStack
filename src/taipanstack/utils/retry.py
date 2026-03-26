@@ -467,6 +467,7 @@ class Retrier:
 
         Returns:
             Delay in seconds if retry should occur, None otherwise.
+
         """
         if exc_type is None:
             return None  # No exception, exit normally
