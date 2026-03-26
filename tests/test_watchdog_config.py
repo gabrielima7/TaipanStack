@@ -134,8 +134,10 @@ class TestValidateConfig:
         """Returns Ok(model) for valid data."""
         result = validate_config({"host": "db", "port": 5432}, SampleConfig)
         assert isinstance(result, Ok)
-        assert result.ok_value.host == "db"
-        assert result.ok_value.port == 5432
+        val = result.ok_value
+        assert isinstance(val, SampleConfig)
+        assert val.host == "db"
+        assert val.port == 5432
 
     def test_invalid_data(self) -> None:
         """Returns Err for data that fails validation."""
@@ -189,7 +191,9 @@ class TestConfigWatcher:
         await watcher.stop()
 
         assert len(changes) >= 1
-        assert changes[-1].host == "new"  # type: ignore[attr-defined]
+        model = changes[-1]
+        assert isinstance(model, SampleConfig)
+        assert model.host == "new"
 
     @pytest.mark.asyncio
     async def test_invalid_config_calls_error_callback(self, tmp_path: Path) -> None:

@@ -1,5 +1,8 @@
 """Tests for AdaptiveCircuitBreaker."""
 
+from unittest.mock import patch
+
+from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.adaptive.adaptive_breaker import (
     AdaptiveCircuitBreaker,
     AdaptiveMetrics,
@@ -11,10 +14,9 @@ class TestAdaptiveCircuitBreaker:
     """Tests for the adaptive circuit breaker."""
 
     def test_initial_state_closed(self) -> None:
-        """Starts in CLOSED state with max threshold."""
-        ab = AdaptiveCircuitBreaker("test", max_threshold=10)
-        assert ab.state == CircuitState.CLOSED
-        assert ab.current_threshold == 10
+        """Starts in CLOSED state."""
+        ab = AdaptiveCircuitBreaker("test")
+        assert ab.state.value == CircuitState.CLOSED.value
         assert ab.should_allow()
 
     def test_record_success(self) -> None:
@@ -24,73 +26,104 @@ class TestAdaptiveCircuitBreaker:
         m = ab.metrics
         assert m.total_calls == 1
         assert m.success_rate == 1.0
-        assert m.state == CircuitState.CLOSED
+        assert m.state.value == CircuitState.CLOSED.value
 
-    def test_record_failure(self) -> None:
-        """Failures update window and increase error count."""
-        ab = AdaptiveCircuitBreaker("test", max_threshold=5)
-        ab.record_failure(RuntimeError("fail"))
-        m = ab.metrics
-        assert m.total_calls == 1
-        assert m.error_count == 1
-
-    def test_threshold_lowers_on_high_error_rate(self) -> None:
-        """Threshold decreases when error rate exceeds target."""
-        ab = AdaptiveCircuitBreaker(
-            "test",
-            window_size=10,
-            min_threshold=2,
-            max_threshold=10,
-            target_error_rate=0.1,
-        )
-        # Fill window with 80% failures
-        for _ in range(8):
+    def test_record_failure_below_throughput(self) -> None:
+        """Failures update window, but don't trip if below min throughput."""
+        ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.1)
+        # 4 failures, 0 successes (100% error rate). Below 5 throughput.
+        for _ in range(4):
             ab.record_failure(RuntimeError("fail"))
-        for _ in range(2):
-            ab.record_success()
 
-        assert ab.current_threshold < 10
-
-    def test_threshold_stays_max_on_low_error_rate(self) -> None:
-        """Threshold stays at max when error rate is below target."""
-        ab = AdaptiveCircuitBreaker(
-            "test",
-            window_size=100,
-            min_threshold=2,
-            max_threshold=20,
-            target_error_rate=0.1,
-        )
-        for _ in range(50):
-            ab.record_success()
-
-        assert ab.current_threshold == 20
+        m = ab.metrics
+        assert m.total_calls == 4
+        assert m.error_count == 4
+        assert m.state.value == CircuitState.CLOSED.value
 
     def test_trips_open_on_enough_failures(self) -> None:
-        """Breaker opens after enough cumulative failures."""
-        ab = AdaptiveCircuitBreaker(
-            "test",
-            min_threshold=2,
-            max_threshold=3,
-        )
-        for _ in range(5):
+        """Breaker opens after enough cumulative failures (burst)."""
+        ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.5)
+
+        # We need more than 50% failures out of at least 5. Let's do 6 failures out of 6.
+        for _ in range(6):
             ab.record_failure(RuntimeError("fail"))
 
-        assert ab.state == CircuitState.OPEN
+        assert ab.state.value == CircuitState.OPEN.value
         assert not ab.should_allow()
+
+    def test_stays_closed_if_under_target_rate(self) -> None:
+        """If error rate is below target, it stays closed even at high throughput."""
+        ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.5)
+
+        # Do 10 requests: 6 successes, 4 failures (40% error rate).
+        # We must do successes first so it doesn't trip on the 5th request (which would be 100% failure rate).
+        for _ in range(6):
+            ab.record_success()
+        for _ in range(4):
+            ab.record_failure(RuntimeError("fail"))
+
+        assert ab.state.value == CircuitState.CLOSED.value
+        assert ab.should_allow()
+
+    def test_half_open_recovery(self) -> None:
+        """Breaker transitions to HALF_OPEN after timeout, then CLOSED on success."""
+        with patch("taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic") as mock_time:
+            # Time 0
+            mock_time.return_value = 0.0
+            ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0)
+
+            # Trip it open
+            ab.record_failure(RuntimeError("fail"))
+            ab.record_failure(RuntimeError("fail"))
+            assert ab.state.value == CircuitState.OPEN.value
+
+            # Time 11: Past timeout, should go to half-open
+            mock_time.return_value = 11.0
+            assert ab.state.value == CircuitState.HALF_OPEN.value
+            assert ab.should_allow()
+
+            # Successful call should close it
+            ab.record_success()
+            assert ab.state.value == CircuitState.CLOSED.value
+            assert ab.metrics.total_calls == 1 # Just the success
+
+    def test_half_open_failure_returns_to_open(self) -> None:
+        """Breaker transitions to HALF_OPEN after timeout, then back OPEN on failure."""
+        with patch("taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic") as mock_time:
+            # Time 0
+            mock_time.return_value = 0.0
+            ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0)
+
+            ab.record_failure(RuntimeError("fail"))
+            ab.record_failure(RuntimeError("fail"))
+
+            # Time 11: Past timeout, should go to half-open
+            mock_time.return_value = 11.0
+            assert ab.state.value == CircuitState.HALF_OPEN.value
+
+            # Failure puts it back to open
+            ab.record_failure(RuntimeError("fail"))
+            assert ab.state.value == CircuitState.OPEN.value
+            assert ab._last_opened_at == 11.0 # Last opened updated
+
+            # At time 15 it's still open
+            mock_time.return_value = 15.0
+            assert ab.state.value == CircuitState.OPEN.value
 
     def test_reset_clears_window(self) -> None:
         """Reset clears window and closes breaker."""
-        ab = AdaptiveCircuitBreaker("test", max_threshold=3)
-        for _ in range(5):
-            ab.record_failure(RuntimeError("fail"))
+        ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.1)
+        ab.record_failure(RuntimeError("fail"))
+        ab.record_failure(RuntimeError("fail"))
 
+        assert ab.state.value == CircuitState.OPEN.value
         ab.reset()
-        assert ab.state == CircuitState.CLOSED
+        assert ab.state.value == CircuitState.CLOSED.value
         assert ab.metrics.total_calls == 0
 
     def test_metrics_snapshot(self) -> None:
         """Metrics returns correct snapshot."""
-        ab = AdaptiveCircuitBreaker("test")
+        ab = AdaptiveCircuitBreaker("test", min_throughput=10, target_error_rate=0.9)
         ab.record_success()
         ab.record_success()
         ab.record_failure(RuntimeError("x"))
@@ -99,38 +132,51 @@ class TestAdaptiveCircuitBreaker:
         assert isinstance(m, AdaptiveMetrics)
         assert m.total_calls == 3
         assert m.error_count == 1
+        assert abs(m.error_rate - 1/3) < 1e-9
+        assert abs(m.success_rate - 2/3) < 1e-9
 
-    def test_on_threshold_change_callback(self) -> None:
-        """Callback is invoked on threshold change."""
-        changes: list[tuple[int, int]] = []
-
-        ab = AdaptiveCircuitBreaker(
-            "test",
-            window_size=10,
-            min_threshold=2,
-            max_threshold=10,
-            target_error_rate=0.1,
-            on_threshold_change=lambda old, new: changes.append((old, new)),
-        )
-        # Cause high error rate to trigger threshold change
-        for _ in range(9):
-            ab.record_failure(RuntimeError("fail"))
-        ab.record_success()
-
-        assert len(changes) > 0
-
-    def test_inner_breaker_access(self) -> None:
-        """Can access the underlying CircuitBreaker."""
+    def test_evaluate_result_ok(self) -> None:
+        """Evaluating an Ok result records success."""
         ab = AdaptiveCircuitBreaker("test")
-        assert ab.inner_breaker is not None
-        assert ab.inner_breaker.name == "test"
+        res = Ok(42)
+        ret = ab.evaluate_result(res)
+        assert ret is res
+        assert ab.metrics.total_calls == 1
+        assert ab.metrics.error_count == 0
 
-    def test_empty_window_returns_max_threshold(self) -> None:
-        """Empty window defaults to max threshold."""
-        ab = AdaptiveCircuitBreaker("test", min_threshold=2, max_threshold=15)
-        assert ab.current_threshold == 15
+    def test_evaluate_result_err(self) -> None:
+        """Evaluating an Err result records failure."""
+        ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5)
+        res = Err(ValueError("bad"))
+        ret = ab.evaluate_result(res)
+        assert ret is res
+        assert ab.metrics.error_count == 1
+        assert ab.metrics.total_calls == 1
 
-    def test_compute_threshold_empty_window_returns_max_threshold(self) -> None:
-        """Internal threshold computation returns max threshold on empty history."""
-        ab = AdaptiveCircuitBreaker("test", min_threshold=2, max_threshold=15)
-        assert ab._compute_threshold() == 15
+    def test_empty_metrics(self) -> None:
+        """Empty metrics return safe defaults."""
+        ab = AdaptiveCircuitBreaker("test")
+        m = ab.metrics
+        assert m.total_calls == 0
+        assert m.error_count == 0
+        assert m.error_rate == 0.0
+        assert m.success_rate == 1.0
+
+    def test_burst_scenario(self) -> None:
+        """Testing a burst scenario where error rates shift over a sliding window."""
+        # Window size 10, min throughput 5, trip at 50% failures
+        ab = AdaptiveCircuitBreaker("test", window_size=10, min_throughput=5, target_error_rate=0.5)
+
+        # 10 successes
+        for _ in range(10):
+            ab.record_success()
+
+        assert ab.state.value == CircuitState.CLOSED.value
+
+        # 6 failures push the oldest 6 successes out
+        for _ in range(6):
+            ab.record_failure(RuntimeError("burst"))
+
+        # The window is now: [True, True, True, True, False, False, False, False, False, False]
+        # Total: 10, Errors: 6 -> Error rate 60% -> Tripped!
+        assert ab.state.value == CircuitState.OPEN.value

@@ -1,23 +1,23 @@
 """
 Adaptive Circuit Breaker — auto-tunes failure threshold via rolling window.
 
-Wraps a standard ``CircuitBreaker`` and dynamically adjusts its
-``failure_threshold`` based on the observed error rate in a
-sliding window of recent calls.
+Unlike standard Circuit Breakers that use static absolute failure counts,
+the AdaptiveCircuitBreaker opens its circuit ONLY when the error rate
+exceeds a target percentage in a rolling window of recent calls AND a
+minimum throughput of requests has been met.
 """
 
 from __future__ import annotations
 
 import logging
 import threading
+import time
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
 
-from taipanstack.resilience.circuit_breaker import (
-    CircuitBreaker,
-    CircuitState,
-)
+from taipanstack.core.result import Err, Ok, Result
+from taipanstack.resilience.circuit_breaker import CircuitState
 
 logger = logging.getLogger("taipanstack.resilience.adaptive.breaker")
 
@@ -27,47 +27,38 @@ class AdaptiveMetrics:
     """Snapshot of adaptive circuit breaker metrics.
 
     Attributes:
-        current_threshold: Dynamically computed failure threshold.
         success_rate: Current success rate (0.0 - 1.0).
+        error_rate: Current error rate (0.0 - 1.0).
         total_calls: Total calls in the window.
         error_count: Errors in the window.
         state: Current circuit state.
 
     """
 
-    current_threshold: int
     success_rate: float
+    error_rate: float
     total_calls: int
     error_count: int
     state: CircuitState
 
 
 class AdaptiveCircuitBreaker:
-    """Circuit breaker that auto-tunes its failure threshold.
+    """Circuit breaker that opens based on an error rate percentage.
 
-    Maintains a rolling window of call outcomes and adjusts the
-    inner ``CircuitBreaker.config.failure_threshold`` so that:
+    Maintains a rolling window of call outcomes. The circuit trips to OPEN if:
+    1. The `window_size` history has at least `min_throughput` events.
+    2. The error rate (errors / total) > `target_error_rate`.
 
-    - **High error rate** → lowers threshold (trips faster)
-    - **Low error rate** → raises threshold (more tolerant)
+    Once OPEN, it waits `recovery_timeout` seconds before transitioning
+    to HALF_OPEN. In HALF_OPEN, if a request succeeds, it CLOSES and
+    clears the window. If it fails, it returns to OPEN.
 
     Args:
         name: Identifier for logging.
         window_size: Number of recent calls to track.
-        min_threshold: Minimum failure threshold.
-        max_threshold: Maximum failure threshold.
-        target_error_rate: Desired error rate boundary.
-        recovery_timeout: Seconds before half-open attempt.
-        on_threshold_change: Optional callback ``(old, new)``.
-
-    Example:
-        >>> breaker = AdaptiveCircuitBreaker("api", window_size=50)
-        >>> if breaker.should_allow():
-        ...     try:
-        ...         result = call_api()
-        ...         breaker.record_success()
-        ...     except Exception as e:
-        ...         breaker.record_failure(e)
+        min_throughput: Minimum requests before considering error rate.
+        target_error_rate: Desired error rate boundary (0.0 - 1.0).
+        recovery_timeout: Seconds before attempting half-open recovery.
 
     """
 
@@ -76,109 +67,77 @@ class AdaptiveCircuitBreaker:
         name: str = "default",
         *,
         window_size: int = 100,
-        min_threshold: int = 2,
-        max_threshold: int = 20,
-        target_error_rate: float = 0.1,
+        min_throughput: int = 10,
+        target_error_rate: float = 0.5,
         recovery_timeout: float = 30.0,
-        on_threshold_change: Any | None = None,
     ) -> None:
-        """Initialize the adaptive circuit breaker.
-
-        Args:
-            name: Breaker name.
-            window_size: Rolling window size.
-            min_threshold: Minimum threshold.
-            max_threshold: Maximum threshold.
-            target_error_rate: Target error rate boundary.
-            recovery_timeout: Seconds before half-open.
-            on_threshold_change: Callback ``(old_threshold, new_threshold)``.
-
-        """
+        """Initialize the adaptive circuit breaker."""
         self.name = name
         self._window_size = window_size
-        self._min_threshold = min_threshold
-        self._max_threshold = max_threshold
+        self._min_throughput = min_throughput
         self._target_error_rate = target_error_rate
-        self._on_threshold_change = on_threshold_change
+        self._recovery_timeout = recovery_timeout
 
         # Rolling window: True = success, False = failure
         self._window: deque[bool] = deque(maxlen=window_size)
+        self._state = CircuitState.CLOSED
+        self._last_opened_at: float = 0.0
         self._lock = threading.Lock()
-
-        # Inner circuit breaker
-        self._breaker = CircuitBreaker(
-            name=name,
-            failure_threshold=max_threshold,
-            timeout=recovery_timeout,
-        )
 
     @property
     def state(self) -> CircuitState:
-        """Current circuit state."""
-        return self._breaker.state
-
-    @property
-    def current_threshold(self) -> int:
-        """Dynamically computed failure threshold."""
-        return self._breaker.config.failure_threshold
-
-    @property
-    def inner_breaker(self) -> CircuitBreaker:
-        """Access the underlying ``CircuitBreaker``."""
-        return self._breaker
-
-    def _compute_threshold(self) -> int:
-        """Calculate threshold from rolling window error rate.
-
-        Returns:
-            New failure threshold clamped to [min, max].
-
-        """
+        """Current circuit state. May evaluate timeouts and switch to HALF_OPEN."""
         with self._lock:
-            total = len(self._window)
-            if total == 0:
-                return self._max_threshold
+            if self._state == CircuitState.OPEN:
+                now = time.monotonic()
+                if now - self._last_opened_at >= self._recovery_timeout:
+                    self._state = CircuitState.HALF_OPEN
+                    logger.info(
+                        "Adaptive breaker '%s' entering HALF_OPEN state", self.name
+                    )
+            return self._state
 
-            errors = sum(1 for ok in self._window if not ok)
-            error_rate = errors / total
+    def _evaluate_trip(self) -> None:
+        """Evaluate if the circuit should trip open.
 
-        # High error rate → low threshold (trip faster)
-        # Low error rate → high threshold (more tolerant)
+        MUST BE CALLED UNDER LOCK.
+        """
+        if self._state != CircuitState.CLOSED:
+            return
+
+        total = len(self._window)
+        if total < self._min_throughput:
+            return
+
+        errors = sum(1 for ok in self._window if not ok)
+        error_rate = errors / total
+
         if error_rate > self._target_error_rate:
-            ratio = 1.0 - min(error_rate, 1.0)
-            threshold = int(
-                self._min_threshold
-                + ratio * (self._max_threshold - self._min_threshold)
-            )
-        else:
-            threshold = self._max_threshold
-
-        return max(self._min_threshold, min(threshold, self._max_threshold))
-
-    def _update_threshold(self) -> None:
-        """Recalculate and apply the adaptive threshold."""
-        new_threshold = self._compute_threshold()
-        old_threshold = self._breaker.config.failure_threshold
-
-        if new_threshold != old_threshold:
-            self._breaker.config.failure_threshold = new_threshold
-            logger.info(
-                "Adaptive breaker '%s' threshold: %d → %d",
+            self._state = CircuitState.OPEN
+            self._last_opened_at = time.monotonic()
+            logger.warning(
+                "Adaptive breaker '%s' OPENED. Error rate %.2f > %.2f",
                 self.name,
-                old_threshold,
-                new_threshold,
+                error_rate,
+                self._target_error_rate,
             )
-            if self._on_threshold_change is not None:
-                self._on_threshold_change(old_threshold, new_threshold)
 
     def record_success(self) -> None:
         """Record a successful call."""
         with self._lock:
-            self._window.append(True)
-        self._breaker._record_success()
-        self._update_threshold()
+            if self._state == CircuitState.HALF_OPEN:
+                # Full recovery on success
+                self._state = CircuitState.CLOSED
+                self._window.clear()
+                logger.info(
+                    "Adaptive breaker '%s' CLOSED after successful half-open recovery.",
+                    self.name,
+                )
 
-    def record_failure(self, exc: Exception) -> None:
+            self._window.append(True)
+            self._evaluate_trip()
+
+    def record_failure(self, _exc: Exception) -> None:
         """Record a failed call.
 
         Args:
@@ -186,9 +145,34 @@ class AdaptiveCircuitBreaker:
 
         """
         with self._lock:
+            if self._state == CircuitState.HALF_OPEN:
+                # Return to open immediately on failure
+                self._state = CircuitState.OPEN
+                self._last_opened_at = time.monotonic()
+                logger.warning(
+                    "Adaptive breaker '%s' RETURNED to OPEN after half-open failure.",
+                    self.name,
+                )
+
             self._window.append(False)
-        self._breaker._record_failure(exc)
-        self._update_threshold()
+            self._evaluate_trip()
+
+    def evaluate_result(self, result: Result[Any, Exception]) -> Result[Any, Exception]:
+        """Evaluate a Result and record success or failure.
+
+        Args:
+            result: A ``Result`` to evaluate.
+
+        Returns:
+            The original Result.
+
+        """
+        match result:
+            case Ok(_):
+                self.record_success()
+            case Err(error):
+                self.record_failure(error)
+        return result
 
     def should_allow(self) -> bool:
         """Check if a call should be attempted.
@@ -197,13 +181,14 @@ class AdaptiveCircuitBreaker:
             ``True`` if the circuit permits a call.
 
         """
-        return self._breaker._should_attempt()
+        return self.state in (CircuitState.CLOSED, CircuitState.HALF_OPEN)
 
     def reset(self) -> None:
         """Reset the breaker and window."""
         with self._lock:
             self._window.clear()
-        self._breaker.reset()
+            self._state = CircuitState.CLOSED
+            self._last_opened_at = 0.0
 
     @property
     def metrics(self) -> AdaptiveMetrics:
@@ -211,12 +196,14 @@ class AdaptiveCircuitBreaker:
         with self._lock:
             total = len(self._window)
             errors = sum(1 for ok in self._window if not ok)
-            success_rate = (total - errors) / total if total > 0 else 1.0
+            error_rate = errors / total if total > 0 else 0.0
+            success_rate = 1.0 - error_rate
+            state_val = self._state
 
         return AdaptiveMetrics(
-            current_threshold=self.current_threshold,
             success_rate=success_rate,
+            error_rate=error_rate,
             total_calls=total,
             error_count=errors,
-            state=self.state,
+            state=state_val,
         )

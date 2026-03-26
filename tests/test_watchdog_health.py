@@ -110,7 +110,7 @@ class TestForceOpenBreaker:
         assert breaker.state == CircuitState.CLOSED
 
         _force_open_breaker(breaker, "db")
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state.value == CircuitState.OPEN.value
 
 
 # --- HealthPinger -------------------------------------------------------------
@@ -174,7 +174,7 @@ class TestHealthPinger:
         await asyncio.sleep(0.15)
         await pinger.stop()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
     async def test_does_not_close_breaker_on_recovery(self) -> None:
@@ -202,7 +202,7 @@ class TestHealthPinger:
         await pinger.stop()
 
         # Breaker was opened and stays open (timeout=999s so no half-open)
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
     async def test_exception_in_check_treated_as_unhealthy(self) -> None:

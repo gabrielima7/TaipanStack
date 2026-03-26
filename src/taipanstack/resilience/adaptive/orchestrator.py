@@ -106,7 +106,7 @@ class ResilienceOrchestrator:
         """
         if isinstance(breaker, AdaptiveCircuitBreaker):
             self._adaptive_breaker = breaker
-            self._breaker = breaker.inner_breaker
+            self._breaker = breaker
         else:
             self._breaker = breaker
         return self
@@ -261,8 +261,8 @@ class ResilienceOrchestrator:
             match result:
                 case Ok():
                     # Record success on breaker
-                    if self._adaptive_breaker is not None:
-                        self._adaptive_breaker.record_success()
+                    if isinstance(self._breaker, AdaptiveCircuitBreaker):
+                        self._breaker.evaluate_result(result)
                     elif self._breaker is not None:
                         self._breaker._record_success()
 
@@ -275,8 +275,8 @@ class ResilienceOrchestrator:
                     last_error = error
 
                     # Record failure on breaker
-                    if self._adaptive_breaker is not None:
-                        self._adaptive_breaker.record_failure(error)
+                    if isinstance(self._breaker, AdaptiveCircuitBreaker):
+                        self._breaker.evaluate_result(result)
                     elif self._breaker is not None:
                         self._breaker._record_failure(error)
 
