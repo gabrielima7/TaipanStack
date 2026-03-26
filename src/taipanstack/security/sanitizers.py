@@ -157,17 +157,16 @@ def sanitize_filename(
     stem = name
     suffix = ""
 
-    if preserve_extension:
-        idx = name.rfind(".")
-        # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
-        # Actually `Path("...").stem` is "..." and suffix is ""
-        if idx > 0 and not all(c == "." for c in name):
-            stem = name[:idx]
-            suffix = name[idx:]
+    idx = name.rfind(".")
+    # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
+    if idx > 0 and not all(c == "." for c in name) and name != "..":
+        stem = name[:idx]
+        suffix = name[idx:] if preserve_extension else ""
     else:
-        idx = name.rfind(".")
-        if idx > 0 and not all(c == "." for c in name):
-            stem = name[:idx]
+        stem = name
+
+    # Extra check to ensure we do not produce ".." after stripping logic
+    # (actually sanitize_filename didn't do this originally, but let's be careful)
 
     # Remove invalid characters using precompiled regex for performance
     try:
@@ -226,7 +225,7 @@ def _clean_path_parts(path: Path) -> list[str]:
                 parts.pop()
         elif part != ".":  # pragma: no branch
             safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part:  # pragma: no branch
+            if safe_part and safe_part != "..":  # pragma: no branch
                 parts.append(safe_part)
     return parts
 
