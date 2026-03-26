@@ -295,4 +295,3 @@ class TestBaseWatcher:
             await watcher.start()
             await asyncio.sleep(0.1)
             await watcher.stop()
-

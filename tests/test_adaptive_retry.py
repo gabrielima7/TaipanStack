@@ -49,9 +49,7 @@ class TestAdaptiveRetry:
 
     def test_to_retry_config(self) -> None:
         """Converts to standard RetryConfig."""
-        ar = AdaptiveRetry(
-            min_delay=0.1, max_delay=30.0, max_attempts=5
-        )
+        ar = AdaptiveRetry(min_delay=0.1, max_delay=30.0, max_attempts=5)
         ar.record_outcome(attempt=1, success=True, elapsed=0.5)
 
         config = ar.to_retry_config()

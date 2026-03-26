@@ -194,9 +194,11 @@ class ResilienceOrchestrator:
                     )
                 except TimeoutError:
                     return self._apply_fallback(
-                        Err(TimeoutError(
-                            f"Bulkhead '{bh.name}' timed out after {bh._timeout}s"
-                        ))
+                        Err(
+                            TimeoutError(
+                                f"Bulkhead '{bh.name}' timed out after {bh._timeout}s"
+                            )
+                        )
                     )
             finally:
                 bh._queued -= 1
@@ -266,9 +268,7 @@ class ResilienceOrchestrator:
 
                     # Record outcome on adaptive retry
                     if self._adaptive_retry is not None:
-                        self._adaptive_retry.record_outcome(
-                            attempt, True, 0.0
-                        )
+                        self._adaptive_retry.record_outcome(attempt, True, 0.0)
                     return result
 
                 case Err(error):
@@ -282,18 +282,14 @@ class ResilienceOrchestrator:
 
                     # Record outcome on adaptive retry
                     if self._adaptive_retry is not None:
-                        self._adaptive_retry.record_outcome(
-                            attempt, False, 0.0
-                        )
+                        self._adaptive_retry.record_outcome(attempt, False, 0.0)
 
                     # Retry delay
                     if self._retry_config is not None and attempt < max_attempts:
                         if self._adaptive_retry is not None:
                             delay = self._adaptive_retry.get_delay(attempt)
                         else:
-                            delay = calculate_delay(
-                                attempt, self._retry_config
-                            )
+                            delay = calculate_delay(attempt, self._retry_config)
                         await asyncio.sleep(delay)
                         continue
                     break
@@ -331,9 +327,7 @@ class ResilienceOrchestrator:
             return Ok(result)
         except TimeoutError:
             return Err(
-                TimeoutError(
-                    f"Pipeline '{self.name}' timed out after {self._timeout}s"
-                )
+                TimeoutError(f"Pipeline '{self.name}' timed out after {self._timeout}s")
             )
         except Exception as exc:
             return Err(exc)

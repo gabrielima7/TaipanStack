@@ -17,6 +17,7 @@ from taipanstack.utils.rate_limit import RateLimiter
 
 # --- helpers ----------------------------------------------------------------
 
+
 async def _make_dummy_app(
     scope: dict[str, Any],
     receive: Any,
@@ -255,4 +256,3 @@ class TestSendJsonResponse:
             extra_headers=[(b"x-custom", b"value")],
         )
         assert capture.headers.get("x-custom") == "value"
-

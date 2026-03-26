@@ -1,10 +1,13 @@
 """Tests for Pydantic v2 security type aliases (security/types.py)."""
 
+from unittest.mock import patch
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import BaseModel, ValidationError
 
+from taipanstack.core.result import Ok
 from taipanstack.security.types import (
     SafeCommand,
     SafeHtml,
@@ -74,6 +77,17 @@ class TestSafeUrl:
         """Link-local IP address raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.0.1/data")
+
+    def test_safe_url_returns_guarded_value(self) -> None:
+        """The SSRF validator returns the Ok value from the guard."""
+        with patch(
+            "taipanstack.security.types.guard_ssrf",
+            return_value=Ok("https://safe.example.com"),
+        ):
+            assert (
+                UrlModel(url="https://safe.example.com").url
+                == "https://safe.example.com"
+            )
 
 
 # ---------------------------------------------------------------------------

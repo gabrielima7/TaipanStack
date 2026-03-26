@@ -108,6 +108,30 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
+    async def test_adaptive_breaker_records_success(self) -> None:
+        """Successful execution records a success on the adaptive breaker."""
+        ab = AdaptiveCircuitBreaker("orch", max_threshold=3)
+        orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
+
+        result = await orch.execute(_ok_fn)
+
+        assert isinstance(result, Ok)
+        assert ab.metrics.total_calls == 1
+        assert ab.metrics.error_count == 0
+
+    @pytest.mark.asyncio
+    async def test_adaptive_breaker_records_failure(self) -> None:
+        """Failing execution records a failure on the adaptive breaker."""
+        ab = AdaptiveCircuitBreaker("orch", max_threshold=3)
+        orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
+
+        result = await orch.execute(_fail_fn)
+
+        assert isinstance(result, Err)
+        assert ab.metrics.total_calls == 1
+        assert ab.metrics.error_count == 1
+
+    @pytest.mark.asyncio
     async def test_with_adaptive_retry(self) -> None:
         """Adaptive retry integrates with orchestrator."""
         ar = AdaptiveRetry(min_delay=0.01, max_delay=0.1, max_attempts=3)
@@ -133,10 +157,37 @@ class TestResilienceOrchestrator:
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=2, max_queue=5
         )
-        results = await asyncio.gather(
-            *[orch.execute(_ok_fn) for _ in range(4)]
-        )
+        results = await asyncio.gather(*[orch.execute(_ok_fn) for _ in range(4)])
         assert all(isinstance(r, Ok) for r in results)
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_queue_full_returns_err(self) -> None:
+        """Queue saturation returns a bulkhead error before execution starts."""
+        orch = ResilienceOrchestrator("test").with_bulkhead(
+            max_concurrent=1, max_queue=0
+        )
+
+        result = await orch.execute(_ok_fn)
+
+        assert isinstance(result, Err)
+        assert "bulkhead" in str(result.err_value).lower()
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_acquire_timeout_returns_err(self) -> None:
+        """Semaphore acquisition timeout returns an error result."""
+        orch = ResilienceOrchestrator("test").with_bulkhead(
+            max_concurrent=1, max_queue=1, timeout=0.01
+        )
+        assert orch._bulkhead is not None
+        await orch._bulkhead._semaphore.acquire()
+
+        try:
+            result = await orch.execute(_ok_fn)
+        finally:
+            orch._bulkhead._semaphore.release()
+
+        assert isinstance(result, Err)
+        assert "timed out" in str(result.err_value)
 
     @pytest.mark.asyncio
     async def test_full_pipeline(self) -> None:
@@ -188,9 +239,30 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
+    async def test_zero_retry_attempts_returns_runtime_error(self) -> None:
+        """A zero-attempt retry config returns the synthetic execution error."""
+        orch = ResilienceOrchestrator("test").with_retry(
+            RetryConfig(max_attempts=0, initial_delay=0.01, jitter=False)
+        )
+
+        result = await orch.execute(_ok_fn)
+
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, RuntimeError)
+        assert str(result.err_value) == "Execution failed"
+
+    @pytest.mark.asyncio
     async def test_chaining_returns_self(self) -> None:
         """Builder methods return self for chaining."""
         orch = ResilienceOrchestrator("test")
         assert orch.with_bulkhead() is orch
         assert orch.with_timeout(1.0) is orch
         assert orch.with_fallback("x") is orch
+
+    def test_apply_fallback_keeps_ok_result(self) -> None:
+        """Fallback logic leaves successful results untouched."""
+        orch = ResilienceOrchestrator("test").with_fallback("cached")
+        result = orch._apply_fallback(Ok("live"))
+
+        assert isinstance(result, Ok)
+        assert result.ok_value == "live"

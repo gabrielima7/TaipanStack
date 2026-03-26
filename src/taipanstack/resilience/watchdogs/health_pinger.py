@@ -168,9 +168,7 @@ def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
         target_name: Target name for logging context.
 
     """
-    synthetic = ConnectionError(
-        f"Health ping failed for '{target_name}'"
-    )
+    synthetic = ConnectionError(f"Health ping failed for '{target_name}'")
     # Record failures until the breaker opens
     while breaker.state != CircuitState.OPEN:
         breaker._record_failure(synthetic)

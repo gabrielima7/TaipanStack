@@ -24,9 +24,7 @@ class TestRequireDependency:
 
     def test_missing_module_with_extra(self) -> None:
         """Returns Err with pip extra install hint."""
-        result = require_dependency(
-            "not_a_real_module_xyz", pip_extra="bridges-http"
-        )
+        result = require_dependency("not_a_real_module_xyz", pip_extra="bridges-http")
         assert isinstance(result, Err)
         assert "pip install taipanstack[bridges-http]" in str(result.err_value)
 

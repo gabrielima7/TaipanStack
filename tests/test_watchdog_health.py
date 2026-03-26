@@ -16,6 +16,7 @@ from taipanstack.resilience.watchdogs.health_pinger import (
 
 # --- helpers -----------------------------------------------------------------
 
+
 async def _healthy() -> bool:
     return True
 
@@ -181,9 +182,7 @@ class TestHealthPinger:
 
         Natural recovery (half-open → closed) is handled by CircuitBreaker itself.
         """
-        breaker = CircuitBreaker(
-            name="db_breaker", failure_threshold=1, timeout=999.0
-        )
+        breaker = CircuitBreaker(name="db_breaker", failure_threshold=1, timeout=999.0)
 
         call_count = 0
 

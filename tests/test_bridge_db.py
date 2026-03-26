@@ -12,6 +12,7 @@ from taipanstack.resilience.retry import RetryConfig
 
 # --- helpers ----------------------------------------------------------------
 
+
 def _setup_sqlalchemy_mock() -> AsyncMock:
     """Create and install an AsyncSession mock on db_mod."""
     mock_session = AsyncMock()
@@ -68,9 +69,7 @@ class TestResilientDatabase:
         breaker._record_failure(Exception("fail"))
 
         with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-            db = ResilientDatabase(
-                engine=MagicMock(), circuit_breaker=breaker
-            )
+            db = ResilientDatabase(engine=MagicMock(), circuit_breaker=breaker)
             result = await db.execute("SELECT 1")
 
         assert isinstance(result, Err)
@@ -128,6 +127,24 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
+    async def test_execute_zero_attempts_returns_runtime_error(self) -> None:
+        """A zero-attempt retry config returns the synthetic DB error."""
+        _setup_sqlalchemy_mock()
+        try:
+            with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
+                db = ResilientDatabase(
+                    engine=MagicMock(),
+                    retry_config=RetryConfig(max_attempts=0, jitter=False),
+                )
+                result = await db.execute("SELECT 1")
+
+            assert isinstance(result, Err)
+            assert isinstance(result.err_value, RuntimeError)
+            assert str(result.err_value) == "Database execute failed"
+        finally:
+            _teardown_sqlalchemy_mock()
+
+    @pytest.mark.asyncio
     async def test_health_check_no_sqlalchemy(self) -> None:
         """Health check returns Err without SQLAlchemy."""
         db = ResilientDatabase(engine=MagicMock())
@@ -153,9 +170,7 @@ class TestResilientDatabase:
     async def test_health_check_fails(self) -> None:
         """Health check returns Err on DB failure."""
         mock_session = _setup_sqlalchemy_mock()
-        mock_session.execute = AsyncMock(
-            side_effect=ConnectionError("db down")
-        )
+        mock_session.execute = AsyncMock(side_effect=ConnectionError("db down"))
         try:
             with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
                 db = ResilientDatabase(engine=MagicMock())
@@ -221,6 +236,18 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
+    async def test_execute_failure_without_breaker_returns_err(self) -> None:
+        """Failed commands still return Err when no breaker is configured."""
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(side_effect=ConnectionError("lost"))
+
+        with patch.object(db_mod, "_HAS_REDIS", True):
+            r = ResilientRedis(client=mock_client)
+            result = await r.execute("GET", "key")
+
+        assert isinstance(result, Err)
+
+    @pytest.mark.asyncio
     async def test_health_check_no_redis(self) -> None:
         """Health check returns Err without redis."""
         r = ResilientRedis(client=MagicMock())
@@ -245,9 +272,7 @@ class TestResilientRedis:
     async def test_health_check_fails(self) -> None:
         """Health check returns Err when Redis is down."""
         mock_client = AsyncMock()
-        mock_client.ping = AsyncMock(
-            side_effect=ConnectionError("redis down")
-        )
+        mock_client.ping = AsyncMock(side_effect=ConnectionError("redis down"))
 
         with patch.object(db_mod, "_HAS_REDIS", True):
             r = ResilientRedis(client=mock_client)

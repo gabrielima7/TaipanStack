@@ -198,9 +198,7 @@ class TaipanMiddleware:
         if self._rate_limiter is not None and not self._rate_limiter.consume():
             logger.warning("Rate limit exceeded for request")
             security_hdrs = (
-                self._headers_config.to_headers()
-                if self._security_headers
-                else None
+                self._headers_config.to_headers() if self._security_headers else None
             )
             await _send_json_response(
                 send,

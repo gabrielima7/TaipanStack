@@ -47,7 +47,9 @@ class TestRetryAsyncSupport:
                 raise ValueError("not yet")
             return "done"
 
-        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch(
+            "taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock
+        ):
             result = await flaky()
 
         assert result == "done"
@@ -60,7 +62,9 @@ class TestRetryAsyncSupport:
         async def always_fails() -> None:
             raise OSError("boom")
 
-        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch(
+            "taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock
+        ):
             with pytest.raises(RetryError) as exc_info:
                 await always_fails()
 
@@ -117,7 +121,9 @@ class TestRetryAsyncSupport:
                 raise ValueError("retry me")
             return "final"
 
-        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch(
+            "taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock
+        ):
             result = await two_fails()
 
         assert result == "final"
@@ -135,7 +141,9 @@ class TestRetryAsyncSupport:
 
         with (
             patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch(
+                "taipanstack.resilience.retry._structlog_logger", mock_structlog_logger
+            ),
             patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock),
         ):
             with pytest.raises(RetryError):
@@ -163,7 +171,9 @@ class TestRetryAsyncSupport:
                 raise ValueError("quiet")
             return "ok"
 
-        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch(
+            "taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock
+        ):
             result = await one_fail_async()
 
         assert result == "ok"
