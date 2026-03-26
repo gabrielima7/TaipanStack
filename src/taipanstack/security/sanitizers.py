@@ -147,15 +147,35 @@ def sanitize_filename(
     if not filename:
         filename = "unnamed"
 
-    # Get parts
-    original_path = Path(filename)
-    stem = original_path.stem
-    suffix = original_path.suffix if preserve_extension else ""
+    # Get parts using native string manipulation instead of Path for performance
+    # Emulate Path(filename).name
+    name = filename
+    slash_idx = max(name.rfind("/"), name.rfind("\\"))
+    if slash_idx >= 0:
+        name = name[slash_idx + 1 :]
+
+    stem = name
+    suffix = ""
+
+    if preserve_extension:
+        idx = name.rfind(".")
+        # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
+        # Actually `Path("...").stem` is "..." and suffix is ""
+        if idx > 0 and not all(c == "." for c in name):
+            stem = name[:idx]
+            suffix = name[idx:]
+    else:
+        idx = name.rfind(".")
+        if idx > 0 and not all(c == "." for c in name):
+            stem = name[:idx]
 
     # Remove invalid characters using precompiled regex for performance
     try:
-        # Use lambda to avoid processing regex escape sequences in replacement string
-        safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+        if "\\" in replacement:
+            # Use lambda to avoid processing regex escape sequences in replacement
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+        else:
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
     except re.error:  # pragma: no cover
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
 
@@ -168,18 +188,9 @@ def sanitize_filename(
 
     # Collapse multiple replacement chars
     if replacement:
-        try:
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                lambda _: replacement,
-                safe_stem,
-            )
-        except re.error:  # pragma: no cover
-            safe_stem = re.sub(
-                f"({re.escape(replacement)})+",
-                "_",
-                safe_stem,
-            )
+        double_replacement = replacement + replacement
+        while double_replacement in safe_stem:
+            safe_stem = safe_stem.replace(double_replacement, replacement)
         safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
@@ -208,9 +219,10 @@ def sanitize_filename(
 def _clean_path_parts(path: Path) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
+    anchor = path.anchor
     for part in path.parts:
         if part == "..":
-            if parts and parts[-1] != "..":
+            if parts and parts[-1] != ".." and parts[-1] != anchor:
                 parts.pop()
         elif part != ".":  # pragma: no branch
             safe_part = sanitize_filename(part, preserve_extension=True)
