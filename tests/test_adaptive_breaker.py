@@ -67,10 +67,14 @@ class TestAdaptiveCircuitBreaker:
 
     def test_half_open_recovery(self) -> None:
         """Breaker transitions to HALF_OPEN after timeout, then CLOSED on success."""
-        with patch("taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic") as mock_time:
+        with patch(
+            "taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic"
+        ) as mock_time:
             # Time 0
             mock_time.return_value = 0.0
-            ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0)
+            ab = AdaptiveCircuitBreaker(
+                "test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0
+            )
 
             # Trip it open
             ab.record_failure(RuntimeError("fail"))
@@ -85,14 +89,18 @@ class TestAdaptiveCircuitBreaker:
             # Successful call should close it
             ab.record_success()
             assert ab.state.value == CircuitState.CLOSED.value
-            assert ab.metrics.total_calls == 1 # Just the success
+            assert ab.metrics.total_calls == 1  # Just the success
 
     def test_half_open_failure_returns_to_open(self) -> None:
         """Breaker transitions to HALF_OPEN after timeout, then back OPEN on failure."""
-        with patch("taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic") as mock_time:
+        with patch(
+            "taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic"
+        ) as mock_time:
             # Time 0
             mock_time.return_value = 0.0
-            ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0)
+            ab = AdaptiveCircuitBreaker(
+                "test", min_throughput=2, target_error_rate=0.5, recovery_timeout=10.0
+            )
 
             ab.record_failure(RuntimeError("fail"))
             ab.record_failure(RuntimeError("fail"))
@@ -104,7 +112,7 @@ class TestAdaptiveCircuitBreaker:
             # Failure puts it back to open
             ab.record_failure(RuntimeError("fail"))
             assert ab.state.value == CircuitState.OPEN.value
-            assert ab._last_opened_at == 11.0 # Last opened updated
+            assert ab._last_opened_at == 11.0  # Last opened updated
 
             # At time 15 it's still open
             mock_time.return_value = 15.0
@@ -132,8 +140,8 @@ class TestAdaptiveCircuitBreaker:
         assert isinstance(m, AdaptiveMetrics)
         assert m.total_calls == 3
         assert m.error_count == 1
-        assert abs(m.error_rate - 1/3) < 1e-9
-        assert abs(m.success_rate - 2/3) < 1e-9
+        assert abs(m.error_rate - 1 / 3) < 1e-9
+        assert abs(m.success_rate - 2 / 3) < 1e-9
 
     def test_evaluate_result_ok(self) -> None:
         """Evaluating an Ok result records success."""
@@ -165,7 +173,9 @@ class TestAdaptiveCircuitBreaker:
     def test_burst_scenario(self) -> None:
         """Testing a burst scenario where error rates shift over a sliding window."""
         # Window size 10, min throughput 5, trip at 50% failures
-        ab = AdaptiveCircuitBreaker("test", window_size=10, min_throughput=5, target_error_rate=0.5)
+        ab = AdaptiveCircuitBreaker(
+            "test", window_size=10, min_throughput=5, target_error_rate=0.5
+        )
 
         # 10 successes
         for _ in range(10):
