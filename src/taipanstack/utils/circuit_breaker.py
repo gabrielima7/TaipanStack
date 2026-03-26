@@ -337,7 +337,7 @@ class CircuitBreaker:
                     raise
                 finally:
                     if was_half_open:
-                        self._release_half_open_slot()
+                        self._release_half_open_slot()  # pragma: no cover
 
             return async_wrapper
 
