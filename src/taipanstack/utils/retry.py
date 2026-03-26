@@ -283,6 +283,9 @@ def retry(
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+                if max_attempts <= 0:
+                    _raise_retry_error(func_coro.__name__, max_attempts, reraise, None)
+
                 last_exception: Exception | None = None
 
                 for attempt in range(1, max_attempts + 1):  # pragma: no branch
@@ -322,6 +325,9 @@ def retry(
 
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            if max_attempts <= 0:
+                _raise_retry_error(func_sync.__name__, max_attempts, reraise, None)
+
             last_exception: Exception | None = None
 
             for attempt in range(1, max_attempts + 1):  # pragma: no branch
@@ -395,12 +401,22 @@ class Retrier:
     """Context manager for retry logic.
 
     Provides a context manager interface for retry logic when
-    decorators are not suitable.
+    decorators are not suitable. Supports both synchronous and
+    asynchronous contexts.
 
     Example:
         >>> retrier = Retrier(max_attempts=3, on=(ConnectionError,))
-        >>> with retrier:
-        ...     result = some_operation()
+        >>> while True:
+        ...     try:
+        ...         with retrier:
+        ...             result = some_operation()
+        ...             break
+        ...     except ConnectionError:
+        ...         if retrier.attempt >= 3:
+        ...             raise
+
+        >>> async with Retrier(max_attempts=3, on=(ConnectionError,)) as retrier:
+        ...     result = await some_async_operation()
 
     """
 
@@ -432,9 +448,40 @@ class Retrier:
 
     def __enter__(self) -> "Retrier":
         """Enter the retry context."""
-        self.attempt = 0
-        self.last_exception = None
         return self
+
+    async def __aenter__(self) -> "Retrier":
+        """Enter the async retry context."""
+        return self
+
+    def _prepare_retry(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+    ) -> float | None:
+        """Evaluate if retry should occur and return delay if so.
+
+        Args:
+            exc_type: The type of the exception raised.
+            exc_val: The exception instance.
+
+        Returns:
+            Delay in seconds if retry should occur, None otherwise.
+        """
+        if exc_type is None:
+            return None  # No exception, exit normally
+
+        if not issubclass(exc_type, self.exception_types):
+            return None  # Exception type not in retry list
+
+        # Safe cast: issubclass guard above ensures exc_val is Exception
+        self.last_exception = exc_val if isinstance(exc_val, Exception) else None
+        self.attempt += 1
+
+        if self.attempt >= self.config.max_attempts:
+            return None  # Max attempts reached, propagate exception
+
+        return calculate_delay(self.attempt, self.config)
 
     def __exit__(
         self,
@@ -447,21 +494,27 @@ class Retrier:
         Returns True to suppress the exception if we should retry,
         False to let it propagate.
         """
-        if exc_type is None:
-            return False  # No exception, exit normally
+        delay = self._prepare_retry(exc_type, exc_val)
+        if delay is None:
+            return False
 
-        if not issubclass(exc_type, self.exception_types):
-            return False  # Exception type not in retry list
-
-        # Safe cast: issubclass guard above ensures exc_val is Exception
-        self.last_exception = exc_val if isinstance(exc_val, Exception) else None
-        self.attempt += 1
-
-        if self.attempt >= self.config.max_attempts:
-            return False  # Max attempts reached, propagate exception
-
-        # Calculate delay and wait
-        delay = calculate_delay(self.attempt, self.config)
         time.sleep(delay)
+        return True  # Suppress exception and retry
 
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
+    ) -> bool:
+        """Exit the async retry context.
+
+        Returns True to suppress the exception if we should retry,
+        False to let it propagate.
+        """
+        delay = self._prepare_retry(exc_type, exc_val)
+        if delay is None:
+            return False
+
+        await asyncio.sleep(delay)
         return True  # Suppress exception and retry

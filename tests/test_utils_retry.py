@@ -194,6 +194,21 @@ class TestRetryDecorator:
         assert retries[0][0] == 1
         assert retries[1][0] == 2
 
+    def test_decorator_stops_after_max_attempts(self) -> None:
+        """Test that decorator stops after max attempts."""
+        call_count = 0
+
+        @retry(max_attempts=3, initial_delay=0.01)
+        def always_fail() -> None:
+            nonlocal call_count
+            call_count += 1
+            raise ValueError("fail")
+
+        with pytest.raises(RetryError):
+            always_fail()
+
+        assert call_count == 3
+
     def test_reraise_false(self) -> None:
         """Test reraise=False option."""
 
@@ -312,6 +327,22 @@ class TestAsyncRetryDecorator:
         assert len(retries) == 2
         assert retries[0][0] == 1
         assert retries[1][0] == 2
+
+    @pytest.mark.asyncio
+    async def test_async_decorator_stops_after_max_attempts(self) -> None:
+        """Test that async decorator stops after max attempts."""
+        call_count = 0
+
+        @retry(max_attempts=3, initial_delay=0.01)
+        async def always_fail() -> None:
+            nonlocal call_count
+            call_count += 1
+            raise ValueError("fail")
+
+        with pytest.raises(RetryError):
+            await always_fail()
+
+        assert call_count == 3
 
     @pytest.mark.asyncio
     async def test_reraise_false(self) -> None:
@@ -445,19 +476,53 @@ class TestRetrier:
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
         attempts = 0
 
-        while True:
-            try:
-                # Use 'with retrier' inside the loop to handle each attempt.
-                # Note: __enter__ resets retrier.attempt to 0, but __exit__
-                # will set it correctly for the current attempt if it fails.
+        try:
+            while True:
                 with retrier:
                     attempts += 1
-                    if attempts < 3:
-                        raise ValueError("fail")
-                    break
-            except ValueError:
-                if attempts >= 3:
-                    raise
+                    raise ValueError("fail")
+        except ValueError:
+            pass
+
+        assert attempts == 3
+
+    @pytest.mark.asyncio
+    async def test_retrier_async_successful_operation(self) -> None:
+        """Test successful async operation without retry."""
+        retrier = Retrier(max_attempts=3)
+        result = None
+
+        async with retrier:
+            result = "success"
+
+        assert result == "success"
+        assert retrier.attempt == 0
+
+    @pytest.mark.asyncio
+    async def test_retrier_async_suppression(self) -> None:
+        """Test that async Retrier suppresses exception and sleeps."""
+        retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+
+        # First attempt - should be suppressed
+        async with retrier:
+            raise ValueError("first")
+
+        assert retrier.attempt == 1
+        assert isinstance(retrier.last_exception, ValueError)
+
+    @pytest.mark.asyncio
+    async def test_retrier_async_manual_loop(self) -> None:
+        """Test async Retrier in a manual retry loop."""
+        retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
+        attempts = 0
+
+        try:
+            while True:
+                async with retrier:
+                    attempts += 1
+                    raise ValueError("fail")
+        except ValueError:
+            pass
 
         assert attempts == 3
 
