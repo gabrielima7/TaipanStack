@@ -163,7 +163,7 @@ class TestCircuitBreaker:
                 raise ValueError("Initial trip failure")
 
             # Simulate real-world delay for concurrency check
-            time.sleep(0.01)
+            time.sleep(0.1)
 
             active_calls -= 1
             return "ok"
@@ -364,3 +364,27 @@ class TestCircuitBreakerError:
         """Test error message."""
         error = CircuitBreakerError("Circuit is open", CircuitState.OPEN)
         assert "Circuit is open" in str(error)
+
+
+@pytest.mark.asyncio
+async def test_async_circuit_breaker_half_open_release():
+    breaker2 = CircuitBreaker(failure_threshold=1, success_threshold=2, timeout=0.01)
+
+    @breaker2
+    async def async_func2(fail: bool = False) -> str:
+        if fail:
+            raise ValueError("fail")
+        return "ok"
+
+    with pytest.raises(ValueError):
+        await async_func2(fail=True)
+
+    import asyncio
+
+    await asyncio.sleep(0.02)
+
+    # Trigger half open logic
+    with pytest.raises(ValueError):
+        await async_func2(fail=True)
+    assert breaker2._state.half_open_attempts == 0
+    assert breaker2._state.state == CircuitState.OPEN

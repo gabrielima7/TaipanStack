@@ -303,6 +303,15 @@ class CircuitBreaker:
             self._state.half_open_attempts = 0
             logger.info("Circuit %s manually reset", self.name)
 
+    def _release_half_open_slot(self) -> None:
+        """Release a concurrency slot in half-open state."""
+        with self._state.lock:
+            if self._state.state == CircuitState.HALF_OPEN:
+                # Ensure we don't drop below 0
+                self._state.half_open_attempts = max(
+                    0, self._state.half_open_attempts - 1
+                )
+
     def __call__(
         self, func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]
     ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
@@ -312,6 +321,7 @@ class CircuitBreaker:
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+                was_half_open = self._state.state == CircuitState.HALF_OPEN
                 if not self._should_attempt():
                     raise CircuitBreakerError(
                         f"Circuit {self.name} is open",
@@ -325,6 +335,9 @@ class CircuitBreaker:
                 except self.config.failure_exceptions as e:
                     self._record_failure(e)
                     raise
+                finally:
+                    if was_half_open:
+                        self._release_half_open_slot()
 
             return async_wrapper
 
@@ -332,6 +345,7 @@ class CircuitBreaker:
 
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            was_half_open = self._state.state == CircuitState.HALF_OPEN
             if not self._should_attempt():
                 raise CircuitBreakerError(
                     f"Circuit {self.name} is open",
@@ -345,6 +359,9 @@ class CircuitBreaker:
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
+            finally:
+                if was_half_open:
+                    self._release_half_open_slot()
 
         return wrapper
 
