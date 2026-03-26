@@ -6,19 +6,19 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="TaipanStack v0.3.2 release: MkDocs Material documentation portal, accessibility fixes, and CI stabilization.">
+        <meta name="description" content="Modular, secure, and scalable Python stack for robust development">
       
       
         <meta name="author" content="gabrielima7">
       
       
-        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.3.2/">
+        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/features/bridges/">
       
       
-        <link rel="prev" href="../v0.3.3/">
+        <link rel="prev" href="../../patterns/security/">
       
       
-        <link rel="next" href="../v0.3.1/">
+        <link rel="next" href="../adaptive-resilience/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>v0.3.2 - TaipanStack</title>
+        <title>Taipan Bridges - TaipanStack</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#taipanstack-v032-documentation-quality-release" class="md-skip">
+        <a href="#taipan-bridges" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v0.3.2
+              Taipan Bridges
             
           </span>
         </div>
@@ -305,11 +305,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../features/bridges/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -325,13 +327,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../v0.4.0/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../releases/v0.4.0/" class="md-tabs__link">
           
   
   
@@ -708,28 +708,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -747,7 +750,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -762,10 +765,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../features/bridges/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Taipan Bridges
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -781,6 +811,121 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-safehttpclient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The SafeHTTPClient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The SafeHTTPClient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#web-bridge-asgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Bridge (ASGI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web Bridge (ASGI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage (FastAPI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#db-bridge-resilient-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DB Bridge (Resilient Database)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DB Bridge (Resilient Database)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -793,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/adaptive-resilience/" class="md-nav__link">
+      <a href="../adaptive-resilience/" class="md-nav__link">
         
   
   
@@ -821,7 +966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/watchdogs/" class="md-nav__link">
+      <a href="../watchdogs/" class="md-nav__link">
         
   
   
@@ -853,31 +998,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -895,7 +1037,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -913,7 +1055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.4.0/" class="md-nav__link">
+      <a href="../../releases/v0.4.0/" class="md-nav__link">
         
   
   
@@ -941,7 +1083,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.11/" class="md-nav__link">
+      <a href="../../releases/v0.3.11/" class="md-nav__link">
         
   
   
@@ -969,7 +1111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.10/" class="md-nav__link">
+      <a href="../../releases/v0.3.10/" class="md-nav__link">
         
   
   
@@ -997,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.9/" class="md-nav__link">
+      <a href="../../releases/v0.3.9/" class="md-nav__link">
         
   
   
@@ -1025,7 +1167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.8/" class="md-nav__link">
+      <a href="../../releases/v0.3.8/" class="md-nav__link">
         
   
   
@@ -1053,7 +1195,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.7/" class="md-nav__link">
+      <a href="../../releases/v0.3.7/" class="md-nav__link">
         
   
   
@@ -1081,7 +1223,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.6/" class="md-nav__link">
+      <a href="../../releases/v0.3.6/" class="md-nav__link">
         
   
   
@@ -1109,7 +1251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.5/" class="md-nav__link">
+      <a href="../../releases/v0.3.5/" class="md-nav__link">
         
   
   
@@ -1137,7 +1279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.4/" class="md-nav__link">
+      <a href="../../releases/v0.3.4/" class="md-nav__link">
         
   
   
@@ -1165,7 +1307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.3/" class="md-nav__link">
+      <a href="../../releases/v0.3.3/" class="md-nav__link">
         
   
   
@@ -1190,37 +1332,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v0.3.2
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../releases/v0.3.2/" class="md-nav__link">
         
   
   
@@ -1236,188 +1351,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-mkdocs-material-documentation-portal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. MkDocs Material Documentation Portal
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="1. MkDocs Material Documentation Portal">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-accessibility-standards-fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Accessibility &amp; Standards Fixes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Accessibility &amp; Standards Fixes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-security-hardening-in-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Security Hardening in Documentation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Security Hardening in Documentation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-ci-benchmark-threshold-stabilization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CI Benchmark Threshold Stabilization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. CI Benchmark Threshold Stabilization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-type-annotation-alignments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Type Annotation Alignments
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="5. Type Annotation Alignments">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quality-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quality Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1430,7 +1363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.1/" class="md-nav__link">
+      <a href="../../releases/v0.3.1/" class="md-nav__link">
         
   
   
@@ -1458,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.3.0/" class="md-nav__link">
+      <a href="../../releases/v0.3.0/" class="md-nav__link">
         
   
   
@@ -1486,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.9/" class="md-nav__link">
+      <a href="../../releases/v0.2.9/" class="md-nav__link">
         
   
   
@@ -1514,7 +1447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.8/" class="md-nav__link">
+      <a href="../../releases/v0.2.8/" class="md-nav__link">
         
   
   
@@ -1542,7 +1475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.7/" class="md-nav__link">
+      <a href="../../releases/v0.2.7/" class="md-nav__link">
         
   
   
@@ -1570,7 +1503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.6/" class="md-nav__link">
+      <a href="../../releases/v0.2.6/" class="md-nav__link">
         
   
   
@@ -1598,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.5/" class="md-nav__link">
+      <a href="../../releases/v0.2.5/" class="md-nav__link">
         
   
   
@@ -1626,7 +1559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.4/" class="md-nav__link">
+      <a href="../../releases/v0.2.4/" class="md-nav__link">
         
   
   
@@ -1654,7 +1587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.3/" class="md-nav__link">
+      <a href="../../releases/v0.2.3/" class="md-nav__link">
         
   
   
@@ -1682,7 +1615,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.2/" class="md-nav__link">
+      <a href="../../releases/v0.2.2/" class="md-nav__link">
         
   
   
@@ -1710,7 +1643,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.1/" class="md-nav__link">
+      <a href="../../releases/v0.2.1/" class="md-nav__link">
         
   
   
@@ -1738,7 +1671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.2.0/" class="md-nav__link">
+      <a href="../../releases/v0.2.0/" class="md-nav__link">
         
   
   
@@ -1766,7 +1699,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../v0.1.0/" class="md-nav__link">
+      <a href="../../releases/v0.1.0/" class="md-nav__link">
         
   
   
@@ -1821,33 +1754,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#the-safehttpclient" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        The SafeHTTPClient
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-mkdocs-material-documentation-portal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. MkDocs Material Documentation Portal
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="1. MkDocs Material Documentation Portal">
+    <nav class="md-nav" aria-label="The SafeHTTPClient">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what-changed" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Changed
+        Usage
       
     </span>
   </a>
@@ -1860,22 +1782,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-accessibility-standards-fixes" class="md-nav__link">
+  <a href="#web-bridge-asgi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Accessibility &amp; Standards Fixes
+        Web Bridge (ASGI)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Accessibility &amp; Standards Fixes">
+    <nav class="md-nav" aria-label="Web Bridge (ASGI)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what-changed_1" class="md-nav__link">
+  <a href="#usage-fastapi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Changed
+        Usage (FastAPI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Mapping
       
     </span>
   </a>
@@ -1888,22 +1821,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-security-hardening-in-documentation" class="md-nav__link">
+  <a href="#db-bridge-resilient-database" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Security Hardening in Documentation
+        DB Bridge (Resilient Database)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Security Hardening in Documentation">
+    <nav class="md-nav" aria-label="DB Bridge (Resilient Database)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what-changed_2" class="md-nav__link">
+  <a href="#usage_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Changed
+        Usage
       
     </span>
   </a>
@@ -1912,73 +1845,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-ci-benchmark-threshold-stabilization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CI Benchmark Threshold Stabilization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. CI Benchmark Threshold Stabilization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-type-annotation-alignments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Type Annotation Alignments
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="5. Type Annotation Alignments">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quality-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quality Summary
-      
-    </span>
-  </a>
   
 </li>
       
@@ -2002,101 +1868,87 @@
   
 
 
-<h1 id="taipanstack-v032-documentation-quality-release">TaipanStack v0.3.2 — Documentation &amp; Quality Release<a class="headerlink" href="#taipanstack-v032-documentation-quality-release" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>v0.3.2 is a <strong>patch release</strong> focused heavily on advancing the project's documentation accessibility and presentation, along with performance pipeline stability. It introduces a brand new <strong>MkDocs Material</strong> documentation portal, fixes crucial accessibility issues, and stabilizes the benchmark CI threshold.</p>
+<h1 id="taipan-bridges">Taipan Bridges<a class="headerlink" href="#taipan-bridges" title="Permanent link">&para;</a></h1>
+<p>TaipanStack introduces an agnostic, optionally loadable integration layer called <strong>Taipan Bridges</strong>, which connects your existing framework tools (like FastAPI, Litestar, SQLAlchemy, and Redis) directly with the native resilience and security features of TaipanStack.</p>
 <hr />
-<h2 id="1-mkdocs-material-documentation-portal">1. MkDocs Material Documentation Portal<a class="headerlink" href="#1-mkdocs-material-documentation-portal" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>mkdocs.yml</code>
-- <code>docs/architecture.md</code>
-- <code>docs/api/*.md</code></p>
-<p>TaipanStack now utilizes a first-class documentation portal built with MkDocs Material. The portal integrates all system architecture documentation and API references into a highly readable, searchable, and navigable interface.</p>
-<h3 id="what-changed">What Changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Navigation tree grouping Core, Config, Security, and Utility APIs.</li>
-<li>Built-in site-search, dark mode toggling, and code-copying functionality.</li>
-<li>Direct links to GitHub repositories and PyPI package instances directly from the docs.</li>
-</ul>
+<h2 id="the-safehttpclient">The SafeHTTPClient<a class="headerlink" href="#the-safehttpclient" title="Permanent link">&para;</a></h2>
+<p>When making external connections, developers often use raw <code>httpx</code>, risking vulnerabilities such as <strong>SSRF</strong> (Server-Side Request Forgery) and lack of circuit breaking for degraded dependencies.</p>
+<p><strong>Taipan Bridges</strong> elegantly intercepts <code>httpx</code> and integrates:
+1. <code>guard_ssrf</code> on every request.
+2. Exponential Retry.
+3. Circuit Breakers.</p>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.bridges.http_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafeHttpClient</span>
+</span><span id="__span-0-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
+</span><span id="__span-0-3">
+</span><span id="__span-0-4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_external_api</span><span class="p">():</span>
+</span><span id="__span-0-5">    <span class="k">async</span> <span class="k">with</span> <span class="n">SafeHttpClient</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;external-api&quot;</span><span class="p">,</span> <span class="n">ssrf_protection</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+</span><span id="__span-0-6">        <span class="c1"># Resolves URL, checks if IP is private/reserved, limits timeouts, and retries.</span>
+</span><span id="__span-0-7">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.github.com/users/gabrielima7&quot;</span><span class="p">)</span>
+</span><span id="__span-0-8">
+</span><span id="__span-0-9">        <span class="k">match</span> <span class="n">result</span><span class="p">:</span>
+</span><span id="__span-0-10">            <span class="k">case</span> <span class="n">Ok</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+</span><span id="__span-0-11">                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</span><span id="__span-0-12">            <span class="k">case</span> <span class="n">Err</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+</span><span id="__span-0-13">                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Securely blocked or failed:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</span></code></pre></div>
 <hr />
-<h2 id="2-accessibility-standards-fixes">2. Accessibility &amp; Standards Fixes<a class="headerlink" href="#2-accessibility-standards-fixes" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>docs/*</code> generated outputs and templates</p>
-<p>We ensured that our newly generated documentation portal meets rigorous web accessibility standards.</p>
-<h3 id="what-changed_1">What Changed<a class="headerlink" href="#what-changed_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Form Labels</strong>: Replaced missing or duplicate discernible text and fixed <code>&lt;form&gt;</code> elements lacking explicit labels.</li>
-<li><strong>Safari Support</strong>: Addressed and replaced legacy Safari-specific <code>autocapitalize</code> attributes that threw warnings.</li>
-<li><strong>Axe-Core Warnings</strong>: Cleared out HTML accessibility warnings detected by linters and IDE plugins.</li>
-</ul>
+<h2 id="web-bridge-asgi">Web Bridge (ASGI)<a class="headerlink" href="#web-bridge-asgi" title="Permanent link">&para;</a></h2>
+<p>You can protect your <strong>FastAPI</strong> or <strong>Litestar</strong> application simply by mounting <code>TaipanMiddleware</code>.</p>
+<p>This middleware:
+- Unifies unhandled error mapping to strict <code>{ "status": "error" }</code> JSON preventing info leaks.
+- Supports Rate Limiting via <code>RateLimiter</code>.
+- Injects essential security headers (<code>X-Frame-Options</code>, <code>X-Content-Type-Options</code>, <code>Strict-Transport-Security</code>, <code>Content-Security-Policy</code>).</p>
+<h3 id="usage-fastapi">Usage (FastAPI)<a class="headerlink" href="#usage-fastapi" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+</span><span id="__span-1-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.bridges.web_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaipanMiddleware</span><span class="p">,</span> <span class="n">SecurityHeadersConfig</span>
+</span><span id="__span-1-3">
+</span><span id="__span-1-4"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span><span id="__span-1-5">
+</span><span id="__span-1-6"><span class="c1"># Add the middleware with strict headers and a JSON 429 rate limit payload</span>
+</span><span id="__span-1-7"><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+</span><span id="__span-1-8">    <span class="n">TaipanMiddleware</span><span class="p">,</span>
+</span><span id="__span-1-9">    <span class="n">security_headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-1-10">    <span class="n">security_config</span><span class="o">=</span><span class="n">SecurityHeadersConfig</span><span class="p">(</span>
+</span><span id="__span-1-11">        <span class="n">frame_options</span><span class="o">=</span><span class="s2">&quot;DENY&quot;</span><span class="p">,</span>
+</span><span id="__span-1-12">        <span class="n">csp</span><span class="o">=</span><span class="s2">&quot;default-src &#39;self&#39;&quot;</span>
+</span><span id="__span-1-13">    <span class="p">)</span>
+</span><span id="__span-1-14"><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="response-mapping">Response Mapping<a class="headerlink" href="#response-mapping" title="Permanent link">&para;</a></h3>
+<p>Returning <code>Result</code> types in API handlers is made simple with <code>result_to_response</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.bridges.web_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">result_to_response</span>
+</span><span id="__span-2-2"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONResponse</span>
+</span><span id="__span-2-3">
+</span><span id="__span-2-4"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-2-5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span><span id="__span-2-6">    <span class="c1"># Returns {&quot;status&quot;: &quot;success&quot;, &quot;data&quot;: {...}} or {&quot;status&quot;: &quot;error&quot;, &quot;error&quot;: &quot;...&quot;}</span>
+</span><span id="__span-2-7">    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">result_to_response</span><span class="p">(</span><span class="n">fetch_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)))</span>
+</span></code></pre></div>
 <hr />
-<h2 id="3-security-hardening-in-documentation">3. Security Hardening in Documentation<a class="headerlink" href="#3-security-hardening-in-documentation" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- Various docstrings in <code>src/taipanstack/security/*</code></p>
-<p>Addressed potential vulnerabilities within the generated HTML of the documentation itself.</p>
-<h3 id="what-changed_2">What Changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>XSS Prevention</strong>: Fixed potential Cross-Site Scripting (XSS) vectors that could theoretically occur if raw security docstrings were unsafely rendered into the MkDocs HTML output.</li>
-</ul>
-<hr />
-<h2 id="4-ci-benchmark-threshold-stabilization">4. CI Benchmark Threshold Stabilization<a class="headerlink" href="#4-ci-benchmark-threshold-stabilization" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>.github/workflows/benchmarks.yml</code></p>
-<p>Our property-based testing and benchmark actions have been fine-tuned to reduce false positives in Continuous Integration environments.</p>
-<h3 id="what-changed_3">What Changed<a class="headerlink" href="#what-changed_3" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Threshold Increased:</strong> Raised the performance regression threshold up to <strong>150%</strong> (up from earlier overly strict boundaries) in the <code>benchmark-action</code> workflow to account for natural CI runner variance. This prevents transient test failures on GitHub-hosted runners.</li>
-</ul>
-<hr />
-<h2 id="5-type-annotation-alignments">5. Type Annotation Alignments<a class="headerlink" href="#5-type-annotation-alignments" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>src/taipanstack/security/guards.py</code> (and related pattern definitions)</p>
-<h3 id="what-changed_4">What Changed<a class="headerlink" href="#what-changed_4" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Fixed type annotation structures for <code>_TRAVERSAL_PATTERNS</code> to explicitly align with <code>pyright --strict</code> mode definitions, ensuring that the type checker correctly understands the compiled regex sequence tuple.</li>
-</ul>
-<hr />
-<h2 id="quality-summary">Quality Summary<a class="headerlink" href="#quality-summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>v0.3.1</th>
-<th>v0.3.2</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Documentation Portal</strong></td>
-<td>❌ (Raw MD)</td>
-<td>✅ (MkDocs)</td>
-</tr>
-<tr>
-<td><strong>Accessibility Warnings</strong></td>
-<td>&gt;0</td>
-<td>0</td>
-</tr>
-<tr>
-<td><strong>Strict Type Violations</strong></td>
-<td>1</td>
-<td>0</td>
-</tr>
-<tr>
-<td><strong>Breaking changes</strong></td>
-<td>0</td>
-<td><strong>0</strong></td>
-</tr>
-</tbody>
-</table>
+<h2 id="db-bridge-resilient-database">DB Bridge (Resilient Database)<a class="headerlink" href="#db-bridge-resilient-database" title="Permanent link">&para;</a></h2>
+<p>Direct database queries suffer from locking, connection drops, and thundering herd scenarios. <code>ResilientDatabase</code> protects SQLAlchemy and Redis instances transparently.</p>
+<h3 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.bridges.db_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResilientDatabase</span>
+</span><span id="__span-3-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
+</span><span id="__span-3-3">
+</span><span id="__span-3-4"><span class="c1"># Provide your async SQLAlchemy session</span>
+</span><span id="__span-3-5"><span class="n">resilient_db</span> <span class="o">=</span> <span class="n">ResilientDatabase</span><span class="p">(</span>
+</span><span id="__span-3-6">    <span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">,</span>
+</span><span id="__span-3-7">    <span class="n">circuit_breaker</span><span class="o">=</span><span class="n">CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;postgres-db&quot;</span><span class="p">,</span> <span class="n">failure_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-3-8"><span class="p">)</span>
+</span><span id="__span-3-9">
+</span><span id="__span-3-10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">make_query</span><span class="p">():</span>
+</span><span id="__span-3-11">    <span class="c1"># Will be blocked automatically if DB trips the breaker</span>
+</span><span id="__span-3-12">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resilient_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+</span><span id="__span-3-13">    <span class="c1"># ...</span>
+</span></code></pre></div>
 
 
 
 
 
 
-
-  
-  
 
 
 
