@@ -229,6 +229,7 @@ class CircuitBreaker:
             match self._state.state:
                 case CircuitState.HALF_OPEN:
                     self._state.success_count += 1
+                    self._state.half_open_attempts -= 1  # Free up attempt slot
                     if self._state.success_count >= self.config.success_threshold:
                         self._state.state = CircuitState.CLOSED
                         self._state.failure_count = 0
