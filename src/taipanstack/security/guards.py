@@ -453,9 +453,21 @@ def guard_hash_algorithm(
 
     algo_lower = algorithm.lower().replace("-", "")
 
+    # Ensure normalized algorithm name is not empty and contains only alphanumeric chars
+    if not algo_lower or not algo_lower.isalnum():
+        raise SecurityError(
+            f"Invalid hash algorithm format: '{algorithm}'",
+            guard_name="hash_algorithm",
+            value=algorithm,
+        )
+
     allowed: frozenset[str]
     if allowed_algorithms is not None:
-        allowed = frozenset(a.lower().replace("-", "") for a in allowed_algorithms)
+        allowed = frozenset(
+            a.lower().replace("-", "")
+            for a in allowed_algorithms
+            if a.lower().replace("-", "").isalnum()
+        )
     else:
         allowed = _SAFE_HASH_ALGORITHMS
 
