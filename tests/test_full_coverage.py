@@ -13,12 +13,12 @@ from unittest import mock
 import pytest
 
 from taipanstack.config.models import StackConfig
+from taipanstack.resilience.retry import RetryError, retry
 from taipanstack.security.guards import SecurityError, guard_env_variable
 from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
 from taipanstack.security.validators import validate_python_version
 from taipanstack.utils.filesystem import ensure_dir, safe_delete, safe_read
 from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
-from taipanstack.utils.retry import RetryError, retry
 
 # ============================================================================
 # Logging Coverage - Lines 20-21 (HAS_STRUCTLOG=False branch)
@@ -269,7 +269,7 @@ class TestCircuitBreakerExits:
 
     def test_circuit_breaker_success(self) -> None:
         """Test circuit breaker with successful operation."""
-        from taipanstack.utils.circuit_breaker import CircuitBreaker
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
         cb = CircuitBreaker(failure_threshold=3, timeout=1.0)
 

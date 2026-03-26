@@ -191,7 +191,7 @@ class TestRetryMaxAttemptsBranch:
 
     def test_retry_exhausts_all_attempts(self) -> None:
         """Test retry when all attempts fail."""
-        from taipanstack.utils.retry import RetryError, retry
+        from taipanstack.resilience.retry import RetryError, retry
 
         @retry(max_attempts=2, initial_delay=0.001, on=(ValueError,))
         def always_fails() -> None:

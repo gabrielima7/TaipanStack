@@ -15,11 +15,11 @@ class TestRetryStructlogIntegration:
         call_count = 0
 
         with (
-            patch("taipanstack.utils.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.utils.retry._structlog_logger", mock_structlog_logger),
-            patch("taipanstack.utils.retry.time.sleep"),  # skip actual sleep
+            patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch("taipanstack.resilience.retry.time.sleep"),  # skip actual sleep
         ):
-            from taipanstack.utils.retry import RetryError, retry
+            from taipanstack.resilience.retry import RetryError, retry
 
             @retry(max_attempts=2, initial_delay=0.0, jitter=False)
             def always_fails() -> int:
@@ -45,11 +45,11 @@ class TestRetryStructlogIntegration:
         callback_calls: list[tuple[int, int, Exception, float]] = []
 
         with (
-            patch("taipanstack.utils.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.utils.retry._structlog_logger", mock_structlog_logger),
-            patch("taipanstack.utils.retry.time.sleep"),
+            patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch("taipanstack.resilience.retry.time.sleep"),
         ):
-            from taipanstack.utils.retry import retry
+            from taipanstack.resilience.retry import retry
 
             @retry(
                 max_attempts=2,
@@ -73,11 +73,11 @@ class TestRetryStructlogIntegration:
         mock_structlog_logger = MagicMock()
 
         with (
-            patch("taipanstack.utils.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.utils.retry._structlog_logger", mock_structlog_logger),
-            patch("taipanstack.utils.retry.time.sleep"),
+            patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch("taipanstack.resilience.retry.time.sleep"),
         ):
-            from taipanstack.utils.retry import RetryError, retry
+            from taipanstack.resilience.retry import RetryError, retry
 
             @retry(max_attempts=2, initial_delay=0.0, jitter=False)
             def named_failing_fn() -> None:
@@ -101,11 +101,11 @@ class TestRetryStructlogIntegration:
     def test_retry_no_structlog_no_crash(self) -> None:
         """When _HAS_STRUCTLOG is False, retries must still work silently."""
         with (
-            patch("taipanstack.utils.retry._HAS_STRUCTLOG", False),
-            patch("taipanstack.utils.retry._structlog_logger", None),
-            patch("taipanstack.utils.retry.time.sleep"),
+            patch("taipanstack.resilience.retry._HAS_STRUCTLOG", False),
+            patch("taipanstack.resilience.retry._structlog_logger", None),
+            patch("taipanstack.resilience.retry.time.sleep"),
         ):
-            from taipanstack.utils.retry import retry
+            from taipanstack.resilience.retry import retry
 
             attempt_counter = {"n": 0}
 
@@ -131,13 +131,13 @@ class TestCircuitBreakerStructlogIntegration:
         mock_structlog_logger = MagicMock()
 
         with (
-            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", True),
             patch(
-                "taipanstack.utils.circuit_breaker._structlog_logger",
+                "taipanstack.resilience.circuit_breaker._structlog_logger",
                 mock_structlog_logger,
             ),
         ):
-            from taipanstack.utils.circuit_breaker import CircuitBreaker
+            from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
             breaker = CircuitBreaker(failure_threshold=1, name="test_circuit")
 
@@ -160,13 +160,13 @@ class TestCircuitBreakerStructlogIntegration:
         mock_structlog_logger = MagicMock()
 
         with (
-            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", True),
             patch(
-                "taipanstack.utils.circuit_breaker._structlog_logger",
+                "taipanstack.resilience.circuit_breaker._structlog_logger",
                 mock_structlog_logger,
             ),
         ):
-            from taipanstack.utils.circuit_breaker import CircuitBreaker
+            from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
             breaker = CircuitBreaker(
                 failure_threshold=1,
@@ -198,13 +198,13 @@ class TestCircuitBreakerStructlogIntegration:
         transitions: list[tuple[object, object]] = []
 
         with (
-            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", True),
             patch(
-                "taipanstack.utils.circuit_breaker._structlog_logger",
+                "taipanstack.resilience.circuit_breaker._structlog_logger",
                 mock_structlog_logger,
             ),
         ):
-            from taipanstack.utils.circuit_breaker import CircuitBreaker
+            from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
             breaker = CircuitBreaker(
                 failure_threshold=1,
@@ -228,10 +228,10 @@ class TestCircuitBreakerStructlogIntegration:
     def test_circuit_breaker_no_structlog_no_crash(self) -> None:
         """Without structlog, circuit breaker must operate normally."""
         with (
-            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", False),
-            patch("taipanstack.utils.circuit_breaker._structlog_logger", None),
+            patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", False),
+            patch("taipanstack.resilience.circuit_breaker._structlog_logger", None),
         ):
-            from taipanstack.utils.circuit_breaker import CircuitBreaker
+            from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
             breaker = CircuitBreaker(failure_threshold=1, name="no_structlog")
 
@@ -243,6 +243,6 @@ class TestCircuitBreakerStructlogIntegration:
             with pytest.raises(RuntimeError):
                 fn()
 
-            from taipanstack.utils.circuit_breaker import CircuitState
+            from taipanstack.resilience.circuit_breaker import CircuitState
 
             assert breaker.state == CircuitState.OPEN

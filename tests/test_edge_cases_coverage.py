@@ -241,7 +241,7 @@ class TestRetryEdgeCases:
 
     def test_retrier_multiple_attempts(self) -> None:
         """Test Retrier with a loop for multiple attempts."""
-        from taipanstack.utils.retry import Retrier
+        from taipanstack.resilience.retry import Retrier
 
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
         attempt_count = 0
@@ -281,7 +281,7 @@ class TestCircuitBreakerEdgeCases:
         """Test circuit transitions from half-open to closed."""
         import time
 
-        from taipanstack.utils.circuit_breaker import CircuitBreaker, CircuitState
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
         breaker = CircuitBreaker(
             failure_threshold=1,

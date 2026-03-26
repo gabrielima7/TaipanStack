@@ -142,7 +142,7 @@ class TestRetryFinalBranches:
 
     def test_retry_decorator_success_no_retry(self) -> None:
         """Test retry decorator when function succeeds immediately."""
-        from taipanstack.utils.retry import retry
+        from taipanstack.resilience.retry import retry
 
         call_count = 0
 

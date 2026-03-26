@@ -5,13 +5,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from taipanstack.utils.circuit_breaker import (
+from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,
     CircuitState,
     circuit_breaker,
 )
-from taipanstack.utils.retry import RetryError, retry
+from taipanstack.resilience.retry import RetryError, retry
 
 # ---------------------------------------------------------------------------
 # Async @retry tests
@@ -47,7 +47,7 @@ class TestRetryAsyncSupport:
                 raise ValueError("not yet")
             return "done"
 
-        with patch("taipanstack.utils.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
             result = await flaky()
 
         assert result == "done"
@@ -60,7 +60,7 @@ class TestRetryAsyncSupport:
         async def always_fails() -> None:
             raise OSError("boom")
 
-        with patch("taipanstack.utils.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
             with pytest.raises(RetryError) as exc_info:
                 await always_fails()
 
@@ -92,8 +92,8 @@ class TestRetryAsyncSupport:
             return "ok"
 
         with (
-            patch("taipanstack.utils.retry.asyncio.sleep", mock_asyncio_sleep),
-            patch("taipanstack.utils.retry.time.sleep", mock_time_sleep),
+            patch("taipanstack.resilience.retry.asyncio.sleep", mock_asyncio_sleep),
+            patch("taipanstack.resilience.retry.time.sleep", mock_time_sleep),
         ):
             result = await one_fail()
 
@@ -117,7 +117,7 @@ class TestRetryAsyncSupport:
                 raise ValueError("retry me")
             return "final"
 
-        with patch("taipanstack.utils.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
             result = await two_fails()
 
         assert result == "final"
@@ -134,9 +134,9 @@ class TestRetryAsyncSupport:
             raise RuntimeError("err")
 
         with (
-            patch("taipanstack.utils.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.utils.retry._structlog_logger", mock_structlog_logger),
-            patch("taipanstack.utils.retry.asyncio.sleep", new_callable=AsyncMock),
+            patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock),
         ):
             with pytest.raises(RetryError):
                 await async_fails()
@@ -163,7 +163,7 @@ class TestRetryAsyncSupport:
                 raise ValueError("quiet")
             return "ok"
 
-        with patch("taipanstack.utils.retry.asyncio.sleep", new_callable=AsyncMock):
+        with patch("taipanstack.resilience.retry.asyncio.sleep", new_callable=AsyncMock):
             result = await one_fail_async()
 
         assert result == "ok"
@@ -356,9 +356,9 @@ class TestCircuitBreakerAsyncSupport:
             raise RuntimeError("x")
 
         with (
-            patch("taipanstack.utils.circuit_breaker._HAS_STRUCTLOG", True),
+            patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", True),
             patch(
-                "taipanstack.utils.circuit_breaker._structlog_logger",
+                "taipanstack.resilience.circuit_breaker._structlog_logger",
                 mock_structlog_logger,
             ),
         ):

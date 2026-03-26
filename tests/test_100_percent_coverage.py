@@ -224,7 +224,7 @@ class TestRetryMissingBranches:
 
     def test_retry_with_max_delay(self) -> None:
         """Test retry respects max_delay."""
-        from taipanstack.utils.retry import RetryConfig, calculate_delay
+        from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
         config = RetryConfig(
             initial_delay=10.0,

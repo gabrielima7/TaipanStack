@@ -6,7 +6,7 @@ import time
 import pytest
 
 from taipanstack.core.result import Err, Ok, Result
-from taipanstack.utils.resilience import fallback, timeout
+from taipanstack.resilience.resilience import fallback, timeout
 
 
 def test_fallback_sync() -> None:

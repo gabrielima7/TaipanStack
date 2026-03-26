@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-26
+
+Fechamos com sucesso e integramos melhorias provenientes de mais de **30 Pull Requests externas**, além do lançamento massivo dos componentes de resiliência e adaptação listados abaixo.
+
+### Added
+- **Taipan Bridges**: A universal integration layer for external dependencies.
+  - `_imports.py`: Safe lazy dependency loading returning `Result`.
+  - `http_bridge.py`: ASGI `SafeHttpClient` and `safe_request` integrating `httpx` with natively enforced SSRF protection, circuit breaker, and retry.
+  - `db_bridge.py`: `ResilientDatabase` for SQLAlchemy and `ResilientRedis` with auto-repair and timeouts.
+  - `web_bridge.py`: Framework-agnostic ASGI `TaipanMiddleware` delivering rate-limiting, missing JSON responses, and strict security headers injected.
+- **Watchdogs (Active Monitoring)**: 
+  - `HealthPinger`: Proactively pings external dependencies and preemptively opens Circuit Breakers on failure.
+  - `ResourceWatcher`: Enforces process-level CPU/RAM limits protecting against exhaustion.
+  - `ConfigWatcher`: Checks for configuration alterations via SHA-256 fingerprinting.
+- **Adaptive Resilience**: Self-healing components that tune parameters in real-time.
+  - `AdaptiveCircuitBreaker`: Learns success rate and dynamically adjusts the failure threshold over a rolling window.
+  - `AdaptiveRetry`: Analyzes backoff effectiveness and intelligently sets optimal retry delays.
+  - `Bulkhead`: Async concurrency isolation and queue limiting to prevent thundering herd scenarios.
+  - `ResilienceOrchestrator`: A fluent builder to orchestrate a combination of components (Bulkhead → Breaker → Retry → Fallback) in a unified pipeline.
+
+### Security
+- **Hardening**: Reforçado `guard_hash_algorithm` contra potenciais mecanismos de bypass (PR #318).
+- **SAST**: Injetadas novas regras Semgrep customizadas para auditoria de Insecure YAML e Algoritmos de Hashing fracos (PR #326).
+- **Dos**: Corrigido um alerta de segurança onde um hash bcrypt enorme poderia induzir `OverflowError` não tratado na rotina de Password Verification (PR #307).
+
+### Performance
+- **Otimização**: Velocidade de execução do `sanitize_filename` foi significativamente otimizada para rotinas I/O intensivas (PR #322).
+
+### Changed & Refactoring
+- **Typing**: Substituídas assinaturas genéricas `Coroutine`/`Any` para `Awaitable` estrito nos core utilitários, erradicando warnings do lint estático (PR #323).
+- **Coverage**: Acrescentados cenários Edge Cases nativos testando os retornos contextuais de `Retrier.__exit__` ampliando a estabilidade da biblioteca (PR #327).
+- Refactored `taipanstack.utils.retry` and `taipanstack.utils.circuit_breaker` into a dedicated `taipanstack.resilience` layer.
+- Added new import-linter contract `bridges-isolation` to ensure `taipanstack.bridges` does not couple with application configurations.
+- Upgraded `Makefile` security scanning ignoring Pygments CVE-2026-4539 to avoid false positives.
+
+### QA / Testing
+- Achieved validation over 1164 passing tests enforcing 100% test coverage threshold on the new architectural modules.
+
 ## [0.3.11] - 2026-03-23
 
 ### Security

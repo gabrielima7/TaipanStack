@@ -8,11 +8,9 @@ include_external_packages = False
 name = Utils Module Independence
 type = independence
 modules =
-    taipanstack.utils.circuit_breaker
-    taipanstack.utils.retry
     taipanstack.utils.metrics
 
-# Core independence - core module should not import security or utils
+# Core independence - core module should not import security, utils, or resilience
 # Core provides foundation types that other modules depend on
 [importlinter:contract:core-isolation]
 name = Core Layer Isolation
@@ -22,6 +20,18 @@ source_modules =
 forbidden_modules =
     taipanstack.security
     taipanstack.utils
+    taipanstack.config
+    taipanstack.resilience
+
+# Resilience layer - may import core but not security, config, or integrations
+# Resilience provides patterns (retry, circuit breaker) built on core types
+[importlinter:contract:resilience-isolation]
+name = Resilience Layer Isolation
+type = forbidden
+source_modules =
+    taipanstack.resilience
+forbidden_modules =
+    taipanstack.security
     taipanstack.config
 
 # Config generators should not import utils directly
@@ -34,3 +44,12 @@ source_modules =
 forbidden_modules =
     taipanstack.utils.subprocess
     taipanstack.utils.filesystem
+
+# Bridges layer - may import core, security, resilience but not config or utils internals
+[importlinter:contract:bridges-isolation]
+name = Bridges Layer Isolation
+type = forbidden
+source_modules =
+    taipanstack.bridges
+forbidden_modules =
+    taipanstack.config
