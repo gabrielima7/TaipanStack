@@ -24,8 +24,8 @@ Example:
 
 import functools
 import inspect
-from collections.abc import Callable, Coroutine, Iterable
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable, Iterable
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from result import Err, Ok, Result
 
@@ -55,16 +55,13 @@ def safe(
 
 @overload
 def safe(
-    func: Callable[P, Coroutine[Any, Any, T]],
-) -> Callable[P, Coroutine[Any, Any, Result[T, Exception]]]: ...
+    func: Callable[P, Awaitable[T]],
+) -> Callable[P, Awaitable[Result[T, Exception]]]: ...
 
 
 def safe(
-    func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
-) -> (
-    Callable[P, Result[T, Exception]]
-    | Callable[P, Coroutine[Any, Any, Result[T, Exception]]]
-):
+    func: Callable[P, T] | Callable[P, Awaitable[T]],
+) -> Callable[P, Result[T, Exception]] | Callable[P, Awaitable[Result[T, Exception]]]:
     """Wrap a sync or async function to convert exceptions into Err results.
 
     Detect whether *func* is a coroutine function and choose the
@@ -96,14 +93,12 @@ def safe(
             **kwargs: P.kwargs,
         ) -> Result[T, Exception]:
             try:
-                func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                func_coro = cast(Callable[P, Awaitable[T]], func)
                 return Ok(await func_coro(*args, **kwargs))
             except Exception as e:
                 return Err(e)
 
-        return cast(
-            Callable[P, Coroutine[Any, Any, Result[T, Exception]]], async_wrapper
-        )
+        return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
@@ -124,8 +119,8 @@ class SafeFromDecorator(Protocol[E_co]):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, T]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E_co]]]: ...
+        self, func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Awaitable[Result[T, E_co]]]: ...
 
 
 def safe_from(
@@ -151,19 +146,19 @@ def safe_from(
     """
 
     def decorator(
-        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+        func: Callable[P, T] | Callable[P, Awaitable[T]],
+    ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
-                    func_coro = cast(Callable[P, Coroutine[Any, Any, T]], func)
+                    func_coro = cast(Callable[P, Awaitable[T]], func)
                     return Ok(await func_coro(*args, **kwargs))
                 except exception_types as e:
                     return Err(e)
 
-            return cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], async_wrapper)
+            return cast(Callable[P, Awaitable[Result[T, E]]], async_wrapper)
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
@@ -212,27 +207,27 @@ def collect_results(
 @overload
 async def map_async(
     result: Ok[T],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]: ...
 
 
 @overload
 async def map_async(
     result: Err[E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Err[E]: ...
 
 
 @overload
 async def map_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]: ...
 
 
 async def map_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, U]],
+    func: Callable[[T], Awaitable[U]],
 ) -> Result[U, E]:
     """Asynchronously apply a function to the value of an Ok result.
 
@@ -240,7 +235,7 @@ async def map_async(
 
     Args:
         result: The Result to process.
-        func: Coroutine function to apply to the Ok value.
+        func: Awaitable function to apply to the Ok value.
 
     Returns:
         New Result containing the processed value or original error.
@@ -264,27 +259,27 @@ async def map_async(
 @overload
 async def and_then_async(
     result: Ok[T],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]: ...
 
 
 @overload
 async def and_then_async(
     result: Err[E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Err[E]: ...
 
 
 @overload
 async def and_then_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]: ...
 
 
 async def and_then_async(
     result: Result[T, E],
-    func: Callable[[T], Coroutine[Any, Any, Result[U, E]]],
+    func: Callable[[T], Awaitable[Result[U, E]]],
 ) -> Result[U, E]:
     """Asynchronously chain operations that return Results.
 
@@ -293,7 +288,7 @@ async def and_then_async(
 
     Args:
         result: The Result to process.
-        func: Coroutine function taking the Ok value and returning a new Result.
+        func: Awaitable function taking the Ok value and returning a new Result.
 
     Returns:
         The new Result from `func` or the original error.

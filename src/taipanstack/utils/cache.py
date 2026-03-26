@@ -8,7 +8,7 @@ ignoring caching for Err() results.
 import functools
 import inspect
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
@@ -28,8 +28,8 @@ class CacheDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, Result[T, E]]]
-    ) -> Callable[P, Coroutine[Any, Any, Result[T, E]]]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[Result[T, E]]]
+    ) -> Callable[P, Awaitable[Result[T, E]]]: ...  # pragma: no cover
 
 
 def cached(ttl: float) -> CacheDecorator:
@@ -53,10 +53,8 @@ def cached(ttl: float) -> CacheDecorator:
         return (func_name, args, kwargs_tuple)
 
     def decorator(
-        func: (
-            Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]
-        ),
-    ) -> Callable[P, Result[T, E]] | Callable[P, Coroutine[Any, Any, Result[T, E]]]:
+        func: (Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]),
+    ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
@@ -72,7 +70,7 @@ def cached(ttl: float) -> CacheDecorator:
                         return Ok(value)
                     del _cache[cache_key]
 
-                func_coro = cast(Callable[P, Coroutine[Any, Any, Result[T, E]]], func)
+                func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
                 result = await func_coro(*args, **kwargs)
 
                 match result:

@@ -10,8 +10,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeVar, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeVar, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -45,17 +45,15 @@ class ConcurrencyLimitDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, T]]
-    ) -> Callable[
-        P, Coroutine[Any, Any, Result[T, OverloadError]]
-    ]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...  # pragma: no cover
 
 
 def _handle_async_concurrency(
-    func: Callable[P, Coroutine[Any, Any, T]],
+    func: Callable[P, Awaitable[T]],
     max_tasks: int,
     timeout: float,
-) -> Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]:
+) -> Callable[P, Awaitable[Result[T, OverloadError]]]:
     """Handle asynchronous concurrency limiting."""
     async_semaphore = asyncio.Semaphore(max_tasks)
 
@@ -141,10 +139,10 @@ def limit_concurrency(
         raise ValueError("timeout must be >= 0.0")
 
     def decorator(
-        func: Callable[P, T] | Callable[P, Coroutine[Any, Any, T]],
+        func: Callable[P, T] | Callable[P, Awaitable[T]],
     ) -> (
         Callable[P, Result[T, OverloadError]]
-        | Callable[P, Coroutine[Any, Any, Result[T, OverloadError]]]
+        | Callable[P, Awaitable[Result[T, OverloadError]]]
     ):
         if inspect.iscoroutinefunction(func):
             return _handle_async_concurrency(
