@@ -440,6 +440,24 @@ class TestRetrier:
         assert retrier.attempt == 1
         assert isinstance(retrier.last_exception, ValueError)
 
+    def test_retrier_exit_return_values(self) -> None:
+        """Test Retrier.__exit__ return values for all logic branches."""
+        retrier = Retrier(max_attempts=2, initial_delay=0.01, on=(ValueError,))
+
+        # 1. No exception -> returns False
+        assert retrier.__exit__(None, None, None) is False
+
+        # 2. Unhandled exception type -> returns False
+        assert retrier.__exit__(TypeError, TypeError("wrong"), None) is False
+
+        # 3. Handled exception, within limits -> returns True (suppress)
+        assert retrier.__exit__(ValueError, ValueError("fail 1"), None) is True
+        assert retrier.attempt == 1
+
+        # 4. Handled exception, max attempts reached -> returns False (propagate)
+        assert retrier.__exit__(ValueError, ValueError("fail 2"), None) is False
+        assert retrier.attempt == 2
+
     def test_retrier_manual_loop(self) -> None:
         """Test Retrier in a manual retry loop."""
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
@@ -447,19 +465,20 @@ class TestRetrier:
 
         while True:
             try:
-                # Use 'with retrier' inside the loop to handle each attempt.
-                # Note: __enter__ resets retrier.attempt to 0, but __exit__
-                # will set it correctly for the current attempt if it fails.
                 with retrier:
                     attempts += 1
                     if attempts < 3:
                         raise ValueError("fail")
                     break
             except ValueError:
+                # This block is reached only when max_attempts is exceeded
+                # because Retrier.__exit__ returns True to suppress it otherwise.
                 if attempts >= 3:
-                    raise
+                    break
+                raise  # Should not be reached in this test
 
         assert attempts == 3
+        assert retrier.attempt == 2  # 2 failures suppressed
 
 
 class TestRetryError:

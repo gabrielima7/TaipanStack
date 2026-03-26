@@ -432,8 +432,6 @@ class Retrier:
 
     def __enter__(self) -> "Retrier":
         """Enter the retry context."""
-        self.attempt = 0
-        self.last_exception = None
         return self
 
     def __exit__(
