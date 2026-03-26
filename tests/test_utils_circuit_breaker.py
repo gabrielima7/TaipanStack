@@ -163,7 +163,9 @@ class TestCircuitBreaker:
                 raise ValueError("Initial trip failure")
 
             # Simulate real-world delay for concurrency check
-            time.sleep(0.01)
+            # Increased sleep duration to ensure deterministic concurrency limits
+            # across different CI runner topologies as per project memory.
+            time.sleep(0.05)
 
             active_calls -= 1
             return "ok"
