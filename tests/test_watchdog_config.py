@@ -42,7 +42,7 @@ class TestParseEnv:
 
     def test_strips_quotes(self) -> None:
         """Surrounding quotes are removed from values."""
-        text = 'KEY="quoted"\nK2=\'single\'\n'
+        text = "KEY=\"quoted\"\nK2='single'\n"
         result = _parse_env(text)
         assert result["KEY"] == "quoted"
         assert result["K2"] == "single"
@@ -192,9 +192,7 @@ class TestConfigWatcher:
         assert changes[-1].host == "new"  # type: ignore[attr-defined]
 
     @pytest.mark.asyncio
-    async def test_invalid_config_calls_error_callback(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_invalid_config_calls_error_callback(self, tmp_path: Path) -> None:
         """Validation error callback fires on bad config."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
@@ -315,4 +313,3 @@ class TestConfigWatcher:
         )
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Ok)
-

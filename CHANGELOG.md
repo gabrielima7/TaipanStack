@@ -7,15 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-03-26
 
-Fechamos com sucesso e integramos melhorias provenientes de mais de **30 Pull Requests externas**, além do lançamento massivo dos componentes de resiliência e adaptação listados abaixo.
-
 ### Added
 - **Taipan Bridges**: A universal integration layer for external dependencies.
   - `_imports.py`: Safe lazy dependency loading returning `Result`.
   - `http_bridge.py`: ASGI `SafeHttpClient` and `safe_request` integrating `httpx` with natively enforced SSRF protection, circuit breaker, and retry.
   - `db_bridge.py`: `ResilientDatabase` for SQLAlchemy and `ResilientRedis` with auto-repair and timeouts.
   - `web_bridge.py`: Framework-agnostic ASGI `TaipanMiddleware` delivering rate-limiting, missing JSON responses, and strict security headers injected.
-- **Watchdogs (Active Monitoring)**: 
+- **Watchdogs (Active Monitoring)**:
   - `HealthPinger`: Proactively pings external dependencies and preemptively opens Circuit Breakers on failure.
   - `ResourceWatcher`: Enforces process-level CPU/RAM limits protecting against exhaustion.
   - `ConfigWatcher`: Checks for configuration alterations via SHA-256 fingerprinting.
@@ -26,19 +24,24 @@ Fechamos com sucesso e integramos melhorias provenientes de mais de **30 Pull Re
   - `ResilienceOrchestrator`: A fluent builder to orchestrate a combination of components (Bulkhead → Breaker → Retry → Fallback) in a unified pipeline.
 
 ### Security
-- **Hardening**: Reforçado `guard_hash_algorithm` contra potenciais mecanismos de bypass (PR #318).
-- **SAST**: Injetadas novas regras Semgrep customizadas para auditoria de Insecure YAML e Algoritmos de Hashing fracos (PR #326).
-- **Dos**: Corrigido um alerta de segurança onde um hash bcrypt enorme poderia induzir `OverflowError` não tratado na rotina de Password Verification (PR #307).
+- **Hardening**: Hardened `guard_hash_algorithm` against potential bypass mechanisms (PR #318).
+- **SAST**: Injected new custom Semgrep rules to actively audit Insecure YAML and weak Hashing algorithms (PR #326).
+- **Dos**: Remedied a security vulnerability where enormous bcrypt hashes could induce an unhandled `OverflowError` in Password Verification routing (PR #307).
+- **Dependencies**: Regenerated the Poetry lockfile and upgraded the resolved `requests` version to `2.33.0`, remediating the insecure temporary file reuse advisory reported by Dependabot.
+- **Dependencies**: Kept `Pygments` pinned at `2.19.2`, the newest upstream release currently available, and documented the remaining local-only ReDoS risk until an upstream fix is published.
 
 ### Performance
-- **Otimização**: Velocidade de execução do `sanitize_filename` foi significativamente otimizada para rotinas I/O intensivas (PR #322).
+- **Optimization**: Execution speed of `sanitize_filename` was significantly boosted for high I/O volume environments (PR #322).
 
 ### Changed & Refactoring
-- **Typing**: Substituídas assinaturas genéricas `Coroutine`/`Any` para `Awaitable` estrito nos core utilitários, erradicando warnings do lint estático (PR #323).
-- **Coverage**: Acrescentados cenários Edge Cases nativos testando os retornos contextuais de `Retrier.__exit__` ampliando a estabilidade da biblioteca (PR #327).
+- **Typing**: Replaced generic `Coroutine`/`Any` signatures in core utilities with strict `Awaitable`, resolving static lint warnings (PR #323).
+- **Coverage**: Introduced native Edge Cases validating the contextual resolutions of `Retrier.__exit__` promoting better overall stability (PR #327).
 - Refactored `taipanstack.utils.retry` and `taipanstack.utils.circuit_breaker` into a dedicated `taipanstack.resilience` layer.
+- Restored `taipanstack.utils.retry` and `taipanstack.utils.resilience` as backward-compatibility shims that exactly re-export the canonical `taipanstack.resilience` symbols.
+- Restored `Retrier` loop semantics in `taipanstack.resilience.retry` so manual retry loops preserve the accumulated suppressed-attempt counter.
 - Added new import-linter contract `bridges-isolation` to ensure `taipanstack.bridges` does not couple with application configurations.
 - Upgraded `Makefile` security scanning ignoring Pygments CVE-2026-4539 to avoid false positives.
+- Hardened Linux distro CI provisioning by refreshing openSUSE metadata with retries and initializing the Arch Linux keyring before full upgrades.
 
 ### QA / Testing
 - Achieved validation over 1164 passing tests enforcing 100% test coverage threshold on the new architectural modules.

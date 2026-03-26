@@ -18,9 +18,7 @@ class TestSafeRequest:
         """Returns Err when httpx is not installed."""
         from taipanstack.bridges.http_bridge import safe_request
 
-        with patch(
-            "taipanstack.bridges.http_bridge._HAS_HTTPX", False
-        ):
+        with patch("taipanstack.bridges.http_bridge._HAS_HTTPX", False):
             result = await safe_request("GET", "https://example.com")
         assert isinstance(result, Err)
         assert isinstance(result.err_value, ImportError)
@@ -30,9 +28,7 @@ class TestSafeRequest:
         """SSRF protection blocks requests to private IPs."""
         from taipanstack.bridges.http_bridge import safe_request
 
-        with patch(
-            "taipanstack.bridges.http_bridge._HAS_HTTPX", True
-        ):
+        with patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True):
             result = await safe_request("GET", "http://127.0.0.1/admin")
         assert isinstance(result, Err)
         assert isinstance(result.err_value, SecurityError)
@@ -58,6 +54,32 @@ class TestSafeRequest:
                 "GET", "http://127.0.0.1/test", ssrf_protection=False
             )
         assert isinstance(result, Ok)
+
+    @pytest.mark.asyncio
+    async def test_ssrf_ok_path_calls_request(self) -> None:
+        """SSRF-enabled requests proceed when the guard returns Ok."""
+        from taipanstack.bridges.http_bridge import safe_request
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        with (
+            patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True),
+            patch(
+                "taipanstack.bridges.http_bridge.guard_ssrf",
+                return_value=Ok("https://example.com"),
+            ),
+            patch("taipanstack.bridges.http_bridge.httpx") as mock_httpx,
+        ):
+            mock_httpx.AsyncClient.return_value = mock_client
+            result = await safe_request("GET", "https://example.com")
+
+        assert isinstance(result, Ok)
+        mock_client.request.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_circuit_breaker_open_returns_err(self) -> None:
@@ -179,6 +201,48 @@ class TestSafeRequest:
             )
         assert isinstance(result, Err)
 
+    @pytest.mark.asyncio
+    async def test_zero_attempts_returns_runtime_error(self) -> None:
+        """A zero-attempt retry config returns a runtime error wrapper."""
+        from taipanstack.bridges.http_bridge import safe_request
+
+        result = await safe_request(
+            "GET",
+            "https://example.com",
+            ssrf_protection=False,
+            retry_config=RetryConfig(max_attempts=0, jitter=False),
+        )
+
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, RuntimeError)
+        assert str(result.err_value) == "Request failed"
+
+    @pytest.mark.asyncio
+    async def test_circuit_breaker_records_failure_on_request_exception(self) -> None:
+        """A closed circuit breaker records failures raised during the request."""
+        from taipanstack.bridges.http_bridge import safe_request
+
+        breaker = CircuitBreaker(name="record-http", failure_threshold=5)
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(side_effect=ConnectionError("fail"))
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        with (
+            patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True),
+            patch("taipanstack.bridges.http_bridge.httpx") as mock_httpx,
+        ):
+            mock_httpx.AsyncClient.return_value = mock_client
+            result = await safe_request(
+                "GET",
+                "https://example.com",
+                ssrf_protection=False,
+                circuit_breaker=breaker,
+            )
+
+        assert isinstance(result, Err)
+        assert breaker.failure_count == 1
+
 
 class TestSafeHttpClient:
     """Tests for the SafeHttpClient async context manager."""
@@ -261,6 +325,33 @@ class TestSafeHttpClient:
             async with SafeHttpClient(ssrf_protection=True) as client:
                 result = await client.get("http://127.0.0.1/admin")
             assert isinstance(result, Err)
+
+    @pytest.mark.asyncio
+    async def test_client_ssrf_ok_path_calls_request(self) -> None:
+        """SSRF-enabled client requests proceed when the guard returns Ok."""
+        from taipanstack.bridges.http_bridge import SafeHttpClient
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True),
+            patch(
+                "taipanstack.bridges.http_bridge.guard_ssrf",
+                return_value=Ok("https://example.com"),
+            ),
+            patch("taipanstack.bridges.http_bridge.httpx") as mock_httpx,
+        ):
+            mock_httpx.AsyncClient.return_value = mock_client
+
+            async with SafeHttpClient(ssrf_protection=True) as client:
+                result = await client.get("https://example.com")
+
+        assert isinstance(result, Ok)
+        mock_client.request.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_client_retry_on_status(self) -> None:
@@ -390,3 +481,38 @@ class TestSafeHttpClient:
                 result = await client.get("https://example.com")
 
         assert isinstance(result, Err)
+
+    @pytest.mark.asyncio
+    async def test_client_zero_attempts_returns_runtime_error(self) -> None:
+        """Client returns a runtime error wrapper when retries are disabled."""
+        from taipanstack.bridges.http_bridge import SafeHttpClient
+
+        mock_client = AsyncMock()
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True),
+            patch("taipanstack.bridges.http_bridge.httpx") as mock_httpx,
+        ):
+            mock_httpx.AsyncClient.return_value = mock_client
+
+            async with SafeHttpClient(
+                ssrf_protection=False,
+                retry_config=RetryConfig(max_attempts=0, jitter=False),
+            ) as client:
+                result = await client.get("https://example.com")
+
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, RuntimeError)
+        assert str(result.err_value) == "Request failed"
+
+    @pytest.mark.asyncio
+    async def test_aexit_without_client_is_noop(self) -> None:
+        """Exiting without an initialised client is a no-op."""
+        from taipanstack.bridges.http_bridge import SafeHttpClient
+
+        client = SafeHttpClient()
+
+        await client.__aexit__(None, None, None)
+
+        assert client._client is None

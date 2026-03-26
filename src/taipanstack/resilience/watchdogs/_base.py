@@ -83,9 +83,7 @@ class BaseWatcher(ABC):
             except Exception:
                 logger.exception("%s encountered an error", type(self).__name__)
             try:
-                await asyncio.wait_for(
-                    self._stop_event.wait(), timeout=self._interval
-                )
+                await asyncio.wait_for(self._stop_event.wait(), timeout=self._interval)
             except TimeoutError:
                 continue
 

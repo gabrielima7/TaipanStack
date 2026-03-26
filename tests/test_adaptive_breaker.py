@@ -127,7 +127,10 @@ class TestAdaptiveCircuitBreaker:
 
     def test_empty_window_returns_max_threshold(self) -> None:
         """Empty window defaults to max threshold."""
-        ab = AdaptiveCircuitBreaker(
-            "test", min_threshold=2, max_threshold=15
-        )
+        ab = AdaptiveCircuitBreaker("test", min_threshold=2, max_threshold=15)
         assert ab.current_threshold == 15
+
+    def test_compute_threshold_empty_window_returns_max_threshold(self) -> None:
+        """Internal threshold computation returns max threshold on empty history."""
+        ab = AdaptiveCircuitBreaker("test", min_threshold=2, max_threshold=15)
+        assert ab._compute_threshold() == 15

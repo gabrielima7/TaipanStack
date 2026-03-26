@@ -16,7 +16,9 @@ class TestRetryStructlogIntegration:
 
         with (
             patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch(
+                "taipanstack.resilience.retry._structlog_logger", mock_structlog_logger
+            ),
             patch("taipanstack.resilience.retry.time.sleep"),  # skip actual sleep
         ):
             from taipanstack.resilience.retry import RetryError, retry
@@ -46,7 +48,9 @@ class TestRetryStructlogIntegration:
 
         with (
             patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch(
+                "taipanstack.resilience.retry._structlog_logger", mock_structlog_logger
+            ),
             patch("taipanstack.resilience.retry.time.sleep"),
         ):
             from taipanstack.resilience.retry import retry
@@ -74,7 +78,9 @@ class TestRetryStructlogIntegration:
 
         with (
             patch("taipanstack.resilience.retry._HAS_STRUCTLOG", True),
-            patch("taipanstack.resilience.retry._structlog_logger", mock_structlog_logger),
+            patch(
+                "taipanstack.resilience.retry._structlog_logger", mock_structlog_logger
+            ),
             patch("taipanstack.resilience.retry.time.sleep"),
         ):
             from taipanstack.resilience.retry import RetryError, retry

@@ -158,9 +158,7 @@ class ResilientDatabase:
 
         """
         if not _HAS_SQLALCHEMY:
-            return Err(
-                ImportError("sqlalchemy is required for health check")
-            )
+            return Err(ImportError("sqlalchemy is required for health check"))
 
         try:
             async with AsyncSession(self._engine) as session:
@@ -246,9 +244,7 @@ class ResilientRedis:
 
         """
         if not _HAS_REDIS:
-            return Err(
-                ImportError("redis is required for health check")
-            )
+            return Err(ImportError("redis is required for health check"))
 
         try:
             pong = await self._client.ping()

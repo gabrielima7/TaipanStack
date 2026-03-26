@@ -8,7 +8,7 @@ This module self-tunes in real-time by analyzing success rates and execution out
 
 ## Adaptive Circuit Breakers
 
-A standard circuit breaker has a static `failure_threshold`. An **AdaptiveCircuitBreaker** changes its tolerance.
+A standard circuit breaker has a static `failure_threshold`. An **AdaptiveCircuitBreaker** changes its tolerance automatically.
 
 - **High Error Rate**: It lowers its own threshold to trip the circuit faster.
 - **Low Error Rate**: It increases its threshold, becoming more tolerant to intermittent drops.
