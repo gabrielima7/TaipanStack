@@ -282,3 +282,47 @@ rules:
       - pattern-not-inside: |
           with pytest.raises(...):
               ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 11: Detect insecure usage of yaml.load without SafeLoader
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-yaml-load
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `yaml.load()` without specifying a safe loader allows for arbitrary code
+      execution. This is a critical security risk (Insecure Deserialization).
+      Always use `yaml.safe_load()` or specify `Loader=yaml.SafeLoader` in `yaml.load()`.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+      technology:
+        - python
+    patterns:
+      - pattern: yaml.load(...)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader, ...)
+      - pattern-not: yaml.load(..., Loader=yaml.CSafeLoader, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 12: Detect insecure cryptographic hash functions
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-weak-hash-md5-sha1
+    languages: [python]
+    severity: WARNING
+    message: >
+      MD5 and SHA1 hash algorithms are considered cryptographically weak and
+      are susceptible to collision attacks. They should not be used for security
+      purposes (like password hashing or digital signatures). Prefer SHA-256 or
+      SHA-3 variants.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-328: Use of Weak Hash"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+    pattern-either:
+      - pattern: hashlib.md5(...)
+      - pattern: hashlib.sha1(...)
