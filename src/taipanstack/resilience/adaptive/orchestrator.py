@@ -106,7 +106,7 @@ class ResilienceOrchestrator:
         """
         if isinstance(breaker, AdaptiveCircuitBreaker):
             self._adaptive_breaker = breaker
-            self._breaker = breaker.inner_breaker
+            self._breaker = None
         else:
             self._breaker = breaker
         return self

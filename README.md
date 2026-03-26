@@ -31,6 +31,11 @@
 
 TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
+### ✨ What's New in v0.4.0
+- **Taipan Bridges**: Native ASGI middleware integrations (Rate Limiting, Security Headers) out of the box.
+- **Adaptive Resilience**: Self-healing with AI-style failure thresholds and dynamic timeout tracking.
+- **Watchdogs**: Active CPU/Memory monitoring, background Health Checks, and Hot Reload of settings via Pydantic.
+
 <table>
 <tr>
 <td width="50%">
