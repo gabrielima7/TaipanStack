@@ -11,10 +11,10 @@ import inspect
 import logging
 import threading
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -28,8 +28,8 @@ class CircuitBreakerDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, R]]
-    ) -> Callable[P, Coroutine[Any, Any, R]]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[R]]
+    ) -> Callable[P, Awaitable[R]]: ...  # pragma: no cover
 
 
 logger = logging.getLogger("taipanstack.utils.circuit_breaker")
@@ -304,11 +304,11 @@ class CircuitBreaker:
             logger.info("Circuit %s manually reset", self.name)
 
     def __call__(
-        self, func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]
-    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+        self, func: Callable[P, R] | Callable[P, Awaitable[R]]
+    ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         """Decorate a sync or async function with circuit breaker protection."""
         if inspect.iscoroutinefunction(func):
-            func_coro = cast(Callable[P, Coroutine[Any, Any, R]], func)
+            func_coro = cast(Callable[P, Awaitable[R]], func)
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -389,8 +389,8 @@ def circuit_breaker(
     """
 
     def decorator(
-        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
-    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+        func: Callable[P, R] | Callable[P, Awaitable[R]],
+    ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         breaker = CircuitBreaker(
             failure_threshold=failure_threshold,
             success_threshold=success_threshold,
