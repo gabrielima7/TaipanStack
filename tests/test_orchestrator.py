@@ -266,3 +266,10 @@ class TestResilienceOrchestrator:
 
         assert isinstance(result, Ok)
         assert result.ok_value == "live"
+
+    @pytest.mark.asyncio
+    async def test_calculate_retry_delay_no_config(self) -> None:
+        orch = ResilienceOrchestrator("test")
+        # Should return 0.0 when no retry config is set
+        delay = orch._calculate_retry_delay(1)
+        assert delay == 0.0

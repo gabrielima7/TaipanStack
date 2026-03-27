@@ -212,6 +212,53 @@ class ResilienceOrchestrator:
 
         return await self._execute_inner(fn, *args, **kwargs)
 
+    def _evaluate_circuit_breaker(self) -> Result[Any, Exception] | None:
+        """Check if execution is allowed by the circuit breaker."""
+        if self._adaptive_breaker is not None:
+            if not self._adaptive_breaker.should_allow():
+                return Err(
+                    CircuitBreakerError(
+                        f"Circuit '{self._adaptive_breaker.name}' is open",
+                        state=self._adaptive_breaker.state,
+                    )
+                )
+        elif self._breaker is not None and not self._breaker._should_attempt():
+            return Err(
+                CircuitBreakerError(
+                    f"Circuit '{self._breaker.name}' is open",
+                    state=self._breaker.state,
+                )
+            )
+        return None
+
+    def _record_success_outcome(self, attempt: int) -> None:
+        """Record a successful execution outcome."""
+        if self._adaptive_breaker is not None:
+            self._adaptive_breaker.record_success()
+        elif self._breaker is not None:
+            self._breaker._record_success()
+
+        if self._adaptive_retry is not None:
+            self._adaptive_retry.record_outcome(attempt, True, 0.0)
+
+    def _record_failure_outcome(self, error: Exception, attempt: int) -> None:
+        """Record a failed execution outcome."""
+        if self._adaptive_breaker is not None:
+            self._adaptive_breaker.record_failure(error)
+        elif self._breaker is not None:
+            self._breaker._record_failure(error)
+
+        if self._adaptive_retry is not None:
+            self._adaptive_retry.record_outcome(attempt, False, 0.0)
+
+    def _calculate_retry_delay(self, attempt: int) -> float:
+        """Calculate the retry delay for the given attempt."""
+        if self._adaptive_retry is not None:
+            return self._adaptive_retry.get_delay(attempt)
+        if self._retry_config is not None:
+            return calculate_delay(attempt, self._retry_config)
+        return 0.0
+
     async def _execute_inner(
         self,
         fn: Any,
@@ -230,29 +277,12 @@ class ResilienceOrchestrator:
 
         """
         # Layer 2: Circuit breaker gate
-        if self._adaptive_breaker is not None:
-            if not self._adaptive_breaker.should_allow():
-                result: Result[Any, Exception] = Err(
-                    CircuitBreakerError(
-                        f"Circuit '{self._adaptive_breaker.name}' is open",
-                        state=self._adaptive_breaker.state,
-                    )
-                )
-                return self._apply_fallback(result)
-        elif self._breaker is not None and not self._breaker._should_attempt():
-            result = Err(
-                CircuitBreakerError(
-                    f"Circuit '{self._breaker.name}' is open",
-                    state=self._breaker.state,
-                )
-            )
-            return self._apply_fallback(result)
+        cb_err = self._evaluate_circuit_breaker()
+        if cb_err is not None:
+            return self._apply_fallback(cb_err)
 
         # Layer 3: Retry
-        max_attempts = 1
-        if self._retry_config is not None:
-            max_attempts = self._retry_config.max_attempts
-
+        max_attempts = self._retry_config.max_attempts if self._retry_config is not None else 1
         last_error: Exception | None = None
 
         for attempt in range(1, max_attempts + 1):
@@ -260,36 +290,15 @@ class ResilienceOrchestrator:
 
             match result:
                 case Ok():
-                    # Record success on breaker
-                    if self._adaptive_breaker is not None:
-                        self._adaptive_breaker.record_success()
-                    elif self._breaker is not None:
-                        self._breaker._record_success()
-
-                    # Record outcome on adaptive retry
-                    if self._adaptive_retry is not None:
-                        self._adaptive_retry.record_outcome(attempt, True, 0.0)
+                    self._record_success_outcome(attempt)
                     return result
 
                 case Err(error):
                     last_error = error
+                    self._record_failure_outcome(error, attempt)
 
-                    # Record failure on breaker
-                    if self._adaptive_breaker is not None:
-                        self._adaptive_breaker.record_failure(error)
-                    elif self._breaker is not None:
-                        self._breaker._record_failure(error)
-
-                    # Record outcome on adaptive retry
-                    if self._adaptive_retry is not None:
-                        self._adaptive_retry.record_outcome(attempt, False, 0.0)
-
-                    # Retry delay
                     if self._retry_config is not None and attempt < max_attempts:
-                        if self._adaptive_retry is not None:
-                            delay = self._adaptive_retry.get_delay(attempt)
-                        else:
-                            delay = calculate_delay(attempt, self._retry_config)
+                        delay = self._calculate_retry_delay(attempt)
                         await asyncio.sleep(delay)
                         continue
                     break
