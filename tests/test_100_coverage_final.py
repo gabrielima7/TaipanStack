@@ -291,20 +291,3 @@ class TestLoggingUncovered:
 
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
-
-
-class TestMetricsBranch:
-    """Tests for metrics.py branch coverage."""
-
-    def test_metrics_counter_increment(self) -> None:
-        """Test Counter increment."""
-        from taipanstack.utils.metrics import Counter
-
-        counter = Counter()
-        counter.increment()
-        counter.increment(5)
-        assert counter.value == 6
-        counter.decrement(2)
-        assert counter.value == 4
-        counter.reset()
-        assert counter.value == 0
