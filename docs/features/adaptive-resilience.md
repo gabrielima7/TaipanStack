@@ -20,9 +20,9 @@ from taipanstack.core.result import Ok
 breaker = AdaptiveCircuitBreaker(
     name="payments-api",
     window_size=100,
-    min_threshold=2,
-    max_threshold=20,
-    target_error_rate=0.1
+    min_throughput=10,
+    target_error_rate=0.1,
+    recovery_timeout=30.0
 )
 
 # You can use it as a standard breaker, but it calculates optimum protection.
@@ -64,13 +64,13 @@ The ultimate way to secure a dependency is by composing multiple patterns:
 
 ```python
 from taipanstack.core.result import Result
-from taipanstack.resilience.adaptive import ResilienceOrchestrator
+from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveTimeout
 
 orch = (
     ResilienceOrchestrator("ai-service")
     .with_bulkhead(max_concurrent=5)
     .with_circuit_breaker(AdaptiveCircuitBreaker("ai", window_size=50))
-    .with_timeout(10.0)
+    .with_timeout(AdaptiveTimeout(min_timeout=1.0, max_timeout=10.0))
     .with_fallback({"status": "cached", "data": []})
 )
 

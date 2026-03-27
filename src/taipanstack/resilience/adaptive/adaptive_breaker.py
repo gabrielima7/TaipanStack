@@ -141,7 +141,7 @@ class AdaptiveCircuitBreaker:
         """Record a failed call.
 
         Args:
-            exc: The exception that occurred.
+            _exc: The exception that occurred.
 
         """
         with self._lock:
