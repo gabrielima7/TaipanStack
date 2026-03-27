@@ -318,6 +318,8 @@ class CircuitBreaker:
                         state=self._state.state,
                     )
 
+                is_half_open = self._state.state == CircuitState.HALF_OPEN
+
                 try:
                     result = await func_coro(*args, **kwargs)
                     self._record_success()
@@ -325,6 +327,14 @@ class CircuitBreaker:
                 except self.config.failure_exceptions as e:
                     self._record_failure(e)
                     raise
+                finally:
+                    if is_half_open:
+                        with self._state.lock:
+                            if (
+                                self._state.state == CircuitState.HALF_OPEN
+                                and self._state.half_open_attempts > 0
+                            ):
+                                self._state.half_open_attempts -= 1
 
             return async_wrapper
 
@@ -338,6 +348,8 @@ class CircuitBreaker:
                     state=self._state.state,
                 )
 
+            is_half_open = self._state.state == CircuitState.HALF_OPEN
+
             try:
                 result = func_sync(*args, **kwargs)
                 self._record_success()
@@ -345,6 +357,14 @@ class CircuitBreaker:
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
+            finally:
+                if is_half_open:
+                    with self._state.lock:
+                        if (
+                            self._state.state == CircuitState.HALF_OPEN
+                            and self._state.half_open_attempts > 0
+                        ):
+                            self._state.half_open_attempts -= 1
 
         return wrapper
 
