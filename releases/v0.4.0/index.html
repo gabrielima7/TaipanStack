@@ -1808,6 +1808,7 @@
 <p>Dynamic structural stabilization components.
 * <strong><code>AdaptiveCircuitBreaker</code></strong>: Replaces static numeric tolerances. This circuit monitors successes and failures in a rolling window and inflates or decreases its punishment threshold depending on how degraded the infrastructure is at the time.
 * <strong><code>AdaptiveRetry</code></strong>: Monitors the effectiveness of exponential backoff to adapt <em>sleep</em> latencies in the <code>asyncio</code> engine.
+* <strong><code>AdaptiveTimeout</code></strong>: Uses EMA (Exponential Moving Average) to automatically set request timeouts based on recent response latencies.
 * <strong><code>Bulkhead</code></strong>: Creates concurrency limit gates with a defined maximum queue, isolating excessive loads from the HTTP pipeline.
 * <strong><code>ResilienceOrchestrator</code></strong>: The new supreme object designed under the Builder Pattern that attaches Bulkheads -&gt; Adaptive Circuits -&gt; Numeric Retries -&gt; Physical Timeouts -&gt; Fallback Data in <code>__call__</code> methods in a single stroke.</p>
 <hr />

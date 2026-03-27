@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-03-26 18:46 +0000
+            created at 2026-03-27 18:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -248,7 +248,7 @@
     <p class="run"><span class="n"><a id="t164" href="#t164">164</a></span><span class="t">        <span class="nam">name_upper</span> <span class="op">=</span> <span class="nam">env_key</span><span class="op">.</span><span class="nam">upper</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t">        <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t">            <span class="nam">name_upper</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">_DEFAULT_DENIED_ENV_VARS</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t">            <span class="key">and</span> <span class="key">not</span> <span class="nam">_SENSITIVE_ENV_VAR_PATTERN</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="nam">name_upper</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t">            <span class="key">and</span> <span class="key">not</span> <span class="nam">_SENSITIVE_ENV_VAR_PATTERN</span><span class="op">.</span><span class="nam">search</span><span class="op">(</span><span class="nam">name_upper</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t">        <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t">            <span class="nam">safe_env</span><span class="op">[</span><span class="nam">env_key</span><span class="op">]</span> <span class="op">=</span> <span class="nam">str</span><span class="op">(</span><span class="nam">env_val</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -398,7 +398,7 @@
             <a class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-03-26 18:46 +0000
+            created at 2026-03-27 18:41 +0000
         </p>
     </div>
 </footer>
