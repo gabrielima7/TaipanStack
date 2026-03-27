@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Adaptive Resilience**: Self-healing components that tune parameters in real-time.
   - `AdaptiveCircuitBreaker`: Learns success rate and dynamically adjusts the failure threshold over a rolling window.
   - `AdaptiveRetry`: Analyzes backoff effectiveness and intelligently sets optimal retry delays.
+  - `AdaptiveTimeout`: Uses EMA (Exponential Moving Average) to automatically set request timeouts based on recent response latencies.
   - `Bulkhead`: Async concurrency isolation and queue limiting to prevent thundering herd scenarios.
   - `ResilienceOrchestrator`: A fluent builder to orchestrate a combination of components (Bulkhead → Breaker → Retry → Fallback) in a unified pipeline.
 
