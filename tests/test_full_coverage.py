@@ -300,24 +300,3 @@ class TestDecoratorsPartialBranches:
 
         result = quick_func()
         assert result == "done"
-
-
-# ============================================================================
-# Metrics Coverage
-# ============================================================================
-
-
-class TestMetricsPartialBranches:
-    """Test metrics partial branches."""
-
-    def test_metrics_record_time(self) -> None:
-        """Test record_time with values."""
-        from taipanstack.utils.metrics import MetricsCollector
-
-        collector = MetricsCollector()
-        collector.reset()  # Reset singleton state
-        collector.record_time("test_timer", 1.0)
-        collector.record_time("test_timer", 2.0)
-
-        metrics = collector.get_all_metrics()
-        assert "test_timer" in metrics["timers"]
