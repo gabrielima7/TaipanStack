@@ -183,6 +183,26 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
+    def test_slow_function_raises_exception(self) -> None:
+        """Test that slow function raising an exception propagates the exception."""
+
+        @timeout(0.5, use_signal=False)
+        def failing_func() -> str:
+            raise ValueError("Expected failure")
+
+        with pytest.raises(ValueError, match="Expected failure"):
+            failing_func()
+
+    def test_slow_function_raises_systemexit(self) -> None:
+        """Test that a BaseException like SystemExit triggers the fallback RuntimeError."""
+
+        @timeout(0.5, use_signal=False)
+        def sys_exit_func() -> str:
+            raise SystemExit(1)
+
+        with pytest.raises(RuntimeError, match="Thread failed unexpectedly for sys_exit_func"):
+            sys_exit_func()
+
 
 class TestDeprecated:
     """Tests for @deprecated decorator."""

@@ -296,6 +296,9 @@ def _timeout_with_thread(
     if exception:
         raise exception[0]
 
+    if not result:
+        raise RuntimeError(f"Thread failed unexpectedly for {func.__name__}")
+
     return result[0]
 
 
