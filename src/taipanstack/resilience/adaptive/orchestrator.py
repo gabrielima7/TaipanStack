@@ -282,7 +282,9 @@ class ResilienceOrchestrator:
             return self._apply_fallback(cb_err)
 
         # Layer 3: Retry
-        max_attempts = self._retry_config.max_attempts if self._retry_config is not None else 1
+        max_attempts = (
+            self._retry_config.max_attempts if self._retry_config is not None else 1
+        )
         last_error: Exception | None = None
 
         for attempt in range(1, max_attempts + 1):
