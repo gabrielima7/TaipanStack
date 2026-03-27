@@ -1,8 +1,8 @@
 ---
-description: "API reference for TaipanStack's resilience utilities: retry with backoff, circuit breaker, and metrics."
+description: "API reference for TaipanStack's resilience utilities: retry with backoff and circuit breaker."
 ---
 
-# Utilities — Retry, Circuit Breaker & Metrics
+# Utilities — Retry, Circuit Breaker
 
 TaipanStack provides resilience and observability utilities for production applications.
 
@@ -20,15 +20,6 @@ TaipanStack provides resilience and observability utilities for production appli
 ## Circuit Breaker
 
 ::: taipanstack.utils.circuit_breaker
-    options:
-      show_root_heading: false
-      members_order: source
-
----
-
-## Metrics
-
-::: taipanstack.utils.metrics
     options:
       show_root_heading: false
       members_order: source
