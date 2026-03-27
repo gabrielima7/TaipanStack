@@ -212,7 +212,7 @@ warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --strict-markers --timeout=30"
+addopts = "-v  --strict-markers --timeout=30"
 asyncio_mode = "auto"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
