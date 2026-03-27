@@ -541,8 +541,13 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
             )
         )
 
+    seen_ips = set()
     for addr_info in addr_infos:
         raw_ip = addr_info[4][0]
+        if raw_ip in seen_ips:
+            continue
+        seen_ips.add(raw_ip)
+
         try:
             addr = ipaddress.ip_address(raw_ip)
         except ValueError:

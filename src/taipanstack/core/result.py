@@ -194,6 +194,16 @@ def collect_results(
         Err("fail")
 
     """
+    # Fast path for lists and tuples, which allows list comprehension
+    if type(results) in (list, tuple):
+        try:
+            return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
+        except AttributeError:
+            for r in results:  # type: ignore[assignment]
+                if type(r) is Err:
+                    return r  # type: ignore[return-value]
+
+    # Safe path for generators/iterators
     values: list[T] = []
     append = values.append
     for result in results:
