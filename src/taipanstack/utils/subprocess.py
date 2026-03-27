@@ -164,7 +164,7 @@ def _filter_environment(env: dict[str, str] | None) -> dict[str, str]:
         name_upper = env_key.upper()
         if (
             name_upper not in _DEFAULT_DENIED_ENV_VARS
-            and not _SENSITIVE_ENV_VAR_PATTERN.match(name_upper)
+            and not _SENSITIVE_ENV_VAR_PATTERN.search(name_upper)
         ):
             safe_env[env_key] = str(env_val)
 
