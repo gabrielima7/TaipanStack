@@ -6,6 +6,7 @@ enforcing strict validation of algorithms, expiration, and audience claims.
 All operations return ``Result`` types.
 """
 
+import secrets
 from collections.abc import Iterable
 from typing import TypeAlias
 
@@ -42,7 +43,7 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
-    if str(algorithm).strip().lower() == "none":
+    if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
     return jwt.encode(payload, secret_key, algorithm=algorithm)
@@ -74,7 +75,9 @@ def decode_jwt(
         PyJWTError: If the token is invalid, expired, or has incorrect claims.
 
     """
-    if any(str(alg).strip().lower() == "none" for alg in algorithms):
+    if any(
+        secrets.compare_digest(str(alg).strip().lower(), "none") for alg in algorithms
+    ):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
 
     # We enforce 'exp' and 'aud' through PyJWT's options parameter
