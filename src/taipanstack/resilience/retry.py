@@ -15,7 +15,15 @@ import time
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import (
+    Any,
+    NoReturn,
+    ParamSpec,
+    Protocol,
+    TypeVar,
+    cast,
+    overload,
+)
 
 P = ParamSpec("P")
 R = TypeVar("R")
