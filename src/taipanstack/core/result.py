@@ -201,7 +201,7 @@ def collect_results(
             case Ok(value):
                 append(value)
             case Err(_):
-                return result  # type: ignore[return-value]
+                return result
     return Ok(values)
 
 
@@ -254,7 +254,7 @@ async def map_async(
         case Ok(val):
             return Ok(await func(val))
         case Err(_):
-            return result  # type: ignore[return-value]
+            return result
 
 
 @overload
@@ -311,4 +311,4 @@ async def and_then_async(
         case Ok(val):
             return await func(val)
         case Err(_):
-            return result  # type: ignore[return-value]
+            return result
