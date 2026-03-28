@@ -202,7 +202,9 @@ class ConfigWatcher(BaseWatcher):
                 case Err(error):
                     logger.warning("Cannot hash %s: %s", path, error)
                 case _:
-                    raise TypeError(f"Expected Result, got {type(hash_result).__name__}")
+                    raise TypeError(
+                        f"Expected Result, got {type(hash_result).__name__}"
+                    )
         return Ok(changed)
 
     def _validate_and_apply(self, path: Path) -> Result[BaseModel, Exception]:
@@ -240,7 +242,9 @@ class ConfigWatcher(BaseWatcher):
                             self._on_validation_error(val_error)
                         return Err(val_error)
                     case _:
-                        raise TypeError(f"Expected Result, got {type(validation).__name__}")
+                        raise TypeError(
+                            f"Expected Result, got {type(validation).__name__}"
+                        )
             case _:
                 raise TypeError(f"Expected Result, got {type(load_result).__name__}")
 
