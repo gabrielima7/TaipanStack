@@ -337,7 +337,12 @@ def sanitize_env_value(
             return value
         result = value.replace("\x00", "")
     else:
-        if "\x00" not in value and "\n" not in value and "\r" not in value and len(value) <= max_length:
+        if (
+            "\x00" not in value
+            and "\n" not in value
+            and "\r" not in value
+            and len(value) <= max_length
+        ):
             return value
         result = value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
 
@@ -370,13 +375,17 @@ def sanitize_sql_identifier(identifier: str) -> str:
         raise ValueError(msg)
 
     # Fast path: already clean and valid
-    if identifier.isidentifier() and identifier.isascii() and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH:
+    if (
+        identifier.isidentifier()
+        and identifier.isascii()
+        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+    ):
         return identifier
 
     result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
 
     # Must start with letter or underscore
-    if result and not result[0].isalpha() and result[0] != '_':
+    if result and not result[0].isalpha() and result[0] != "_":
         result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
