@@ -194,6 +194,12 @@ def collect_results(
         Err("fail")
 
     """
+    if type(results) in (list, tuple):
+        try:
+            return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
+        except AttributeError:
+            pass
+
     values: list[T] = []
     append = values.append
     for result in results:
