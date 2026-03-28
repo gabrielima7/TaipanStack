@@ -93,6 +93,8 @@ def result_to_response(
             return {"status": status_ok, "data": value}
         case Err(error):
             return {"status": status_err, "error": str(error)}
+        case _:
+            raise TypeError(f"Expected Result, got {type(result).__name__}")
 
 
 async def _send_json_response(

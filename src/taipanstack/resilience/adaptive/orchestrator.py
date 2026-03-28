@@ -305,6 +305,9 @@ class ResilienceOrchestrator:
                         continue
                     break
 
+                case _:
+                    raise TypeError(f"Expected Result, got {type(result).__name__}")
+
         final_result: Result[Any, Exception] = Err(
             last_error or RuntimeError("Execution failed")
         )
@@ -362,6 +365,8 @@ class ResilienceOrchestrator:
                     return Ok(self._fallback_value)
             case Ok():
                 pass
+            case _:
+                raise TypeError(f"Expected Result, got {type(result).__name__}")
         return result
 
 

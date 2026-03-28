@@ -78,6 +78,8 @@ def cached(ttl: float) -> CacheDecorator:
                         _cache[cache_key] = (now + ttl, value)
                     case Err(_):
                         pass
+                    case _:
+                        raise TypeError(f"Expected Result, got {type(result).__name__}")
 
                 return result
 
@@ -102,6 +104,8 @@ def cached(ttl: float) -> CacheDecorator:
                     _cache[cache_key] = (now + ttl, value)
                 case Err(_):
                     pass
+                case _:
+                    raise TypeError(f"Expected Result, got {type(result).__name__}")
 
             return result
 

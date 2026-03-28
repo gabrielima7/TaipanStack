@@ -78,6 +78,8 @@ async def check_all(
                     error,
                 )
                 results[target.name] = False
+            case _:
+                raise TypeError(f"Expected Result, got {type(result).__name__}")
     return Ok(results)
 
 
@@ -139,6 +141,8 @@ class HealthPinger(BaseWatcher):
                         error,
                     )
                     is_healthy = False
+                case _:
+                    raise TypeError(f"Expected Result, got {type(result).__name__}")
 
             previous = self._last_status.get(target.name)
 

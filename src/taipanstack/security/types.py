@@ -44,6 +44,8 @@ def _validate_safe_url(url: str) -> str:
             return val
         case Err(err):
             raise ValueError(str(err)) from err
+        case _:
+            raise TypeError("Expected Result, got unmatched value")
 
 
 def _validate_safe_path(path: str) -> str:

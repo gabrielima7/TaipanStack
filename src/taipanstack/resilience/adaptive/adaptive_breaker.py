@@ -172,6 +172,8 @@ class AdaptiveCircuitBreaker:
                 self.record_success()
             case Err(error):
                 self.record_failure(error)
+            case _:
+                raise TypeError(f"Expected Result, got {type(result).__name__}")
         return result
 
     def should_allow(self) -> bool:

@@ -153,3 +153,5 @@ class ResourceWatcher(BaseWatcher):
 
             case Err(error):
                 logger.error("Resource check failed: %s", error)
+            case _:
+                raise TypeError(f"Expected Result, got {type(result).__name__}")

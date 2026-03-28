@@ -607,3 +607,7 @@ def guard_ssrf(
                     return Err(e)
                 case Ok():
                     return Ok(url)
+                case _:
+                    raise TypeError("Expected Result, got unmatched value")
+        case _:
+            raise TypeError("Expected Result, got unmatched value")
