@@ -106,9 +106,7 @@ class TimeoutDecorator(Protocol):
     @overload
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
-    ) -> Callable[
-        P, Awaitable[Result[T, TimeoutError | E]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...  # pragma: no cover
 
 
 def timeout(seconds: float) -> TimeoutDecorator:
@@ -157,13 +155,13 @@ def timeout(seconds: float) -> TimeoutDecorator:
             *args: P.args, **kwargs: P.kwargs
         ) -> Result[T, TimeoutError | E]:
             result: list[Result[T, TimeoutError | E]] = []
-            exception: list[Exception] = []
+            exception: list[BaseException] = []
 
             def worker() -> None:
                 try:
                     func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
                     result.append(func_sync(*args, **kwargs))
-                except Exception as e:
+                except BaseException as e:
                     exception.append(e)
 
             thread = threading.Thread(target=worker, daemon=True)
