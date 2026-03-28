@@ -8,8 +8,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -18,7 +18,7 @@ T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
 
 ResultFunc: TypeAlias = Callable[P, Result[T, E]]
-AsyncResultFunc: TypeAlias = Callable[P, Coroutine[Any, Any, Result[T, E]]]
+AsyncResultFunc: TypeAlias = Callable[P, Awaitable[Result[T, E]]]
 
 
 class FallbackDecorator(Protocol):
@@ -107,7 +107,7 @@ class TimeoutDecorator(Protocol):
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
     ) -> Callable[
-        P, Coroutine[Any, Any, Result[T, TimeoutError | E]]
+        P, Awaitable[Result[T, TimeoutError | E]]
     ]: ...  # pragma: no cover
 
 
@@ -128,7 +128,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
         func: ResultFunc[P, T, E] | AsyncResultFunc[P, T, E],
     ) -> (
         Callable[P, Result[T, TimeoutError | E]]
-        | Callable[P, Coroutine[Any, Any, Result[T, TimeoutError | E]]]
+        | Callable[P, Awaitable[Result[T, TimeoutError | E]]]
     ):
         if inspect.iscoroutinefunction(func):
 
@@ -138,7 +138,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
             ) -> Result[T, TimeoutError | E]:
                 try:
                     func_coro = cast(
-                        Callable[P, Coroutine[Any, Any, Result[T, TimeoutError | E]]],
+                        Callable[P, Awaitable[Result[T, TimeoutError | E]]],
                         func,
                     )
                     return await asyncio.wait_for(
