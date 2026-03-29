@@ -53,9 +53,7 @@ def cached(ttl: float) -> CacheDecorator:
             if isinstance(val, (tuple, list)):
                 return tuple(_make_hashable(item) for item in val)
             if isinstance(val, dict):
-                return tuple(
-                    sorted((k, _make_hashable(v)) for k, v in val.items())
-                )
+                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
             if isinstance(val, set):
                 return frozenset(_make_hashable(item) for item in val)
             try:
