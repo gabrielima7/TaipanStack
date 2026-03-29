@@ -7,7 +7,9 @@ class CustomBaseException(BaseException):
     pass
 
 
-@pytest.mark.parametrize("exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException])
+@pytest.mark.parametrize(
+    "exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException]
+)
 def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]):
     """
     Fuzz the timeout decorator with uncatchable BaseExceptions.
