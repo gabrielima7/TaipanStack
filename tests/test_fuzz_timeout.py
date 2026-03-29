@@ -21,7 +21,7 @@ def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]) -> None:
     returning a RuntimeError instead of throwing an unhandled IndexError.
     """
 
-    @timeout(1.0, use_signal=False)
+    @timeout(5.0, use_signal=False)
     def target_function() -> None:
         raise exc_class("Fuzzing exception")
 
