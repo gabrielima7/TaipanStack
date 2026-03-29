@@ -1,6 +1,4 @@
 import pytest
-from hypothesis import given, settings
-from hypothesis import strategies as st
 
 from taipanstack.security.decorators import timeout
 
@@ -9,12 +7,10 @@ class CustomBaseException(BaseException):
     pass
 
 
-@settings(deadline=None)
-@pytest.mark.skip(reason="Flaky test causing CI failures; unrelated to current module cleanup.")
-@given(
-    st.sampled_from([SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException])
+@pytest.mark.parametrize(
+    "exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException]
 )
-def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]):
+def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]) -> None:
     """
     Fuzz the timeout decorator with uncatchable BaseExceptions.
 
