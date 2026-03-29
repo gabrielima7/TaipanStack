@@ -1,13 +1,8 @@
 --- tests/test_fuzz_timeout.py
 +++ tests/test_fuzz_timeout.py
-@@ -11,10 +11,7 @@
+@@ -1,7 +1,4 @@
+ import pytest
+-from hypothesis import given, settings
+-from hypothesis import strategies as st
 
-
--@settings(deadline=None)
--@given(
--    st.sampled_from([SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException])
--)
-+@pytest.mark.parametrize("exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException])
- def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]):
-     """
-     Fuzz the timeout decorator with uncatchable BaseExceptions.
+ from taipanstack.security.decorators import timeout
