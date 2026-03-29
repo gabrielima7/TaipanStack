@@ -1,16 +1,23 @@
-import pytest
-from hypothesis import given, settings, strategies as st
-from taipanstack.utils.cache import cached
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from taipanstack.core.result import Ok
+from taipanstack.utils.cache import cached
+
 
 @cached(10.0)
 def my_func(*args, **kwargs):
     return Ok(args)
 
+
 @settings(deadline=None, max_examples=100)
 @given(
     st.lists(st.dictionaries(st.text(max_size=10), st.text(max_size=10)), max_size=10),
-    st.dictionaries(st.text(max_size=10), st.dictionaries(st.text(max_size=10), st.text(max_size=10)), max_size=10)
+    st.dictionaries(
+        st.text(max_size=10),
+        st.dictionaries(st.text(max_size=10), st.text(max_size=10)),
+        max_size=10,
+    ),
 )
 def test_fuzz_cached_unhashable(args, kwargs):
     # First call puts result in cache
@@ -21,13 +28,17 @@ def test_fuzz_cached_unhashable(args, kwargs):
     # Check that they returned the same content (the Ok result)
     assert result1 == result2
 
+
 class UnhashableDummy:
     __hash__ = None  # type: ignore
+
 
 class RecursiveDummy:
     def __init__(self):
         self.child = None
+
     __hash__ = None  # type: ignore
+
 
 def test_cache_fallback_to_string_and_sets():
     """Ensure the custom fallback and sets are fully covered."""

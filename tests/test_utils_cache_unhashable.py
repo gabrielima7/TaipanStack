@@ -1,12 +1,15 @@
-from taipanstack.utils.cache import cached
 from taipanstack.core.result import Ok
+from taipanstack.utils.cache import cached
+
 
 @cached(10.0)
 def my_func(*args, **kwargs):
     return Ok(args)
 
+
 class UnhashableDummy:
     __hash__ = None  # type: ignore
+
 
 def test_cache_fallback_to_string_and_sets():
     """Ensure the custom fallback and sets are fully covered without hypothesis."""
