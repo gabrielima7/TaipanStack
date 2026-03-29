@@ -382,5 +382,3 @@ def get_recommended_thread_pool_size(*, force_refresh: bool = False) -> int:
 
     size = int(cpu_count * profile.thread_pool_multiplier)
     return min(size, profile.max_thread_pool_size)
-
-
