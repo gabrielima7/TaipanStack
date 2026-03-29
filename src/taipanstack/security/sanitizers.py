@@ -112,6 +112,112 @@ def sanitize_string(
     return result
 
 
+def _extract_stem_and_suffix(
+    filename: str, preserve_extension: bool
+) -> tuple[str, str]:
+    """Extract the stem and suffix from a filename.
+
+    Args:
+        filename: The filename to parse.
+        preserve_extension: Whether to preserve the extension.
+
+    Returns:
+        A tuple of (stem, suffix).
+
+    """
+    # Emulate Path(filename).name
+    name = filename
+    slash_idx = max(name.rfind("/"), name.rfind("\\"))
+    if slash_idx >= 0:
+        name = name[slash_idx + 1 :]
+
+    stem = name
+    suffix = ""
+
+    idx = name.rfind(".")
+    # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
+    if idx > 0 and not all(c == "." for c in name) and name != "..":
+        stem = name[:idx]
+        suffix = name[idx:] if preserve_extension else ""
+    else:
+        stem = name
+
+    return stem, suffix
+
+
+def _clean_stem(stem: str, replacement: str) -> str:
+    """Clean the stem of a filename by removing invalid characters.
+
+    Args:
+        stem: The stem to clean.
+        replacement: Character to replace invalid chars with.
+
+    Returns:
+        The cleaned stem.
+
+    """
+    # Remove invalid characters using precompiled regex for performance
+    try:
+        if "\\" in replacement:
+            # Use lambda to avoid processing regex escape sequences in replacement
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+        else:
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
+    except re.error:  # pragma: no cover
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
+
+    # Remove leading/trailing dots and spaces (Windows issues)
+    safe_stem = safe_stem.strip(". ")
+
+    # Remove path separators that might have snuck through
+    safe_stem = safe_stem.replace("/", replacement)
+    safe_stem = safe_stem.replace("\\", replacement)
+
+    # Collapse multiple replacement chars
+    if replacement:
+        double_replacement = replacement + replacement
+        while double_replacement in safe_stem:
+            safe_stem = safe_stem.replace(double_replacement, replacement)
+        safe_stem = safe_stem.strip(replacement)
+
+    # Handle reserved names (Windows)
+    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
+        safe_stem = f"{replacement}{safe_stem}"
+
+    # Handle empty result
+    if not safe_stem:
+        safe_stem = "unnamed"
+
+    return safe_stem
+
+
+def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
+    """Truncate a filename to a maximum length while preserving the suffix.
+
+    Args:
+        safe_stem: The safe stem of the filename.
+        suffix: The suffix of the filename.
+        max_length: The maximum length allowed.
+
+    Returns:
+        The truncated filename.
+
+    """
+    result = f"{safe_stem}{suffix}"
+
+    if len(result) <= max_length:
+        return result
+
+    available = max_length - len(suffix)
+    if available > 0:
+        safe_stem = safe_stem[:available]
+        result = f"{safe_stem}{suffix}"
+    else:
+        result = result[:max_length]
+
+    return result
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -147,72 +253,9 @@ def sanitize_filename(
     if not filename:
         filename = "unnamed"
 
-    # Get parts using native string manipulation instead of Path for performance
-    # Emulate Path(filename).name
-    name = filename
-    slash_idx = max(name.rfind("/"), name.rfind("\\"))
-    if slash_idx >= 0:
-        name = name[slash_idx + 1 :]
-
-    stem = name
-    suffix = ""
-
-    idx = name.rfind(".")
-    # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
-    if idx > 0 and not all(c == "." for c in name) and name != "..":
-        stem = name[:idx]
-        suffix = name[idx:] if preserve_extension else ""
-    else:
-        stem = name
-
-    # Extra check to ensure we do not produce ".." after stripping logic
-    # (actually sanitize_filename didn't do this originally, but let's be careful)
-
-    # Remove invalid characters using precompiled regex for performance
-    try:
-        if "\\" in replacement:
-            # Use lambda to avoid processing regex escape sequences in replacement
-            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
-        else:
-            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
-    except re.error:  # pragma: no cover
-        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
-
-    # Remove leading/trailing dots and spaces (Windows issues)
-    safe_stem = safe_stem.strip(". ")
-
-    # Remove path separators that might have snuck through
-    safe_stem = safe_stem.replace("/", replacement)
-    safe_stem = safe_stem.replace("\\", replacement)
-
-    # Collapse multiple replacement chars
-    if replacement:
-        double_replacement = replacement + replacement
-        while double_replacement in safe_stem:
-            safe_stem = safe_stem.replace(double_replacement, replacement)
-        safe_stem = safe_stem.strip(replacement)
-
-    # Handle reserved names (Windows)
-    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
-        safe_stem = f"{replacement}{safe_stem}"
-
-    # Handle empty result
-    if not safe_stem:
-        safe_stem = "unnamed"
-
-    # Construct result
-    result = f"{safe_stem}{suffix}"
-
-    # Truncate if needed (keeping extension)
-    if len(result) > max_length:
-        available = max_length - len(suffix)
-        if available > 0:
-            safe_stem = safe_stem[:available]
-            result = f"{safe_stem}{suffix}"
-        else:
-            result = result[:max_length]
-
-    return result
+    stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
+    safe_stem = _clean_stem(stem, replacement)
+    return _truncate_filename(safe_stem, suffix, max_length)
 
 
 def _clean_path_parts(path: Path) -> list[str]:

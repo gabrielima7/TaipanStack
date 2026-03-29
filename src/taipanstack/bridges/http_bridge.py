@@ -36,6 +36,62 @@ except ImportError:  # pragma: no cover
 _RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({500, 502, 503, 504, 429})
 
 
+def _check_request_preconditions(
+    url: str,
+    ssrf_protection: bool,
+    circuit_breaker: CircuitBreaker | None,
+) -> Result[Any, Exception] | None:
+    """Check preconditions for an HTTP request.
+
+    Args:
+        url: The target URL.
+        ssrf_protection: Whether SSRF protection is enabled.
+        circuit_breaker: Optional circuit breaker.
+
+    Returns:
+        An ``Err`` if a precondition fails, ``None`` otherwise.
+
+    """
+    if ssrf_protection:
+        ssrf_result = guard_ssrf(url)
+        if isinstance(ssrf_result, Err):
+            return ssrf_result
+
+    if circuit_breaker is not None:
+        cb_err = _check_circuit_breaker(circuit_breaker)
+        if cb_err is not None:
+            return Err(cb_err)
+
+    return None
+
+
+def _should_retry_status(
+    response: Any,
+    retry_config: RetryConfig | None,
+    retryable_status_codes: frozenset[int],
+    attempt: int,
+) -> bool:
+    """Check if a request should be retried based on status code.
+
+    Args:
+        response: The HTTP response.
+        retry_config: Optional retry configuration.
+        retryable_status_codes: Status codes that trigger retries.
+        attempt: The current attempt number.
+
+    Returns:
+        True if the request should be retried, False otherwise.
+
+    """
+    if retry_config is None:
+        return False
+
+    return (
+        response.status_code in retryable_status_codes
+        and attempt < retry_config.max_attempts
+    )
+
+
 def _check_circuit_breaker(
     circuit_breaker: CircuitBreaker,
 ) -> CircuitBreakerError | None:
@@ -89,20 +145,12 @@ async def safe_request(
             )
         )
 
-    # SSRF check
-    if ssrf_protection:
-        ssrf_result = guard_ssrf(url)
-        match ssrf_result:
-            case Err(security_err):
-                return Err(security_err)
-            case Ok():  # pragma: no branch
-                pass
-
-    # Circuit breaker gate
-    if circuit_breaker is not None:
-        cb_err = _check_circuit_breaker(circuit_breaker)
-        if cb_err is not None:
-            return Err(cb_err)
+    # Preconditions check (SSRF and Circuit Breaker)
+    precondition_err = _check_request_preconditions(
+        url, ssrf_protection, circuit_breaker
+    )
+    if precondition_err is not None:
+        return precondition_err
 
     max_attempts = 1
     if retry_config is not None:
@@ -116,12 +164,10 @@ async def safe_request(
                 response = await client.request(method, url, **kwargs)
 
             # Check if we should retry on status code
-            if (
-                retry_config is not None
-                and response.status_code in retryable_status_codes
-                and attempt < max_attempts
+            if _should_retry_status(
+                response, retry_config, retryable_status_codes, attempt
             ):
-                delay = calculate_delay(attempt, retry_config)
+                delay = calculate_delay(attempt, retry_config)  # type: ignore[arg-type]
                 await asyncio.sleep(delay)
                 continue
 
@@ -227,20 +273,12 @@ class SafeHttpClient:
         if self._client is None:
             return Err(RuntimeError("Client not initialised. Use 'async with'."))
 
-        # SSRF check
-        if self._ssrf_protection:
-            ssrf_result = guard_ssrf(url)
-            match ssrf_result:
-                case Err(security_err):
-                    return Err(security_err)
-                case Ok():  # pragma: no branch
-                    pass
-
-        # Circuit breaker gate
-        if self._circuit_breaker is not None:
-            cb_err = _check_circuit_breaker(self._circuit_breaker)
-            if cb_err is not None:
-                return Err(cb_err)
+        # Preconditions check (SSRF and Circuit Breaker)
+        precondition_err = _check_request_preconditions(
+            url, self._ssrf_protection, self._circuit_breaker
+        )
+        if precondition_err is not None:
+            return precondition_err
 
         max_attempts = 1
         if self._retry_config is not None:
@@ -252,12 +290,10 @@ class SafeHttpClient:
             try:
                 response = await self._client.request(method, url, **kwargs)
 
-                if (
-                    self._retry_config is not None
-                    and response.status_code in self._retryable_status_codes
-                    and attempt < max_attempts
+                if _should_retry_status(
+                    response, self._retry_config, self._retryable_status_codes, attempt
                 ):
-                    delay = calculate_delay(attempt, self._retry_config)
+                    delay = calculate_delay(attempt, self._retry_config)  # type: ignore[arg-type]
                     await asyncio.sleep(delay)
                     continue
 
