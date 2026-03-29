@@ -28,8 +28,5 @@ def test_timeout_fuzz_base_exceptions(exc_class: type[BaseException]):
     def target_function() -> None:
         raise exc_class("Fuzzing exception")
 
-    with pytest.raises(
-        RuntimeError,
-        match="Thread execution failed without returning a result or exception in target_function",
-    ):
+    with pytest.raises(exc_class, match="Fuzzing exception"):
         target_function()
