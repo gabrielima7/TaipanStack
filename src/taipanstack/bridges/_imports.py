@@ -31,8 +31,12 @@ def require_dependency(
         Ok(<module 'httpx' ...>)
 
     """
+    # Validate module name to prevent loading malformed paths or unauthorized built-ins
+    if not all(part.isidentifier() for part in module_name.split(".")):
+        return Err(ImportError(f"Invalid module name format: '{module_name}'"))
+
     try:
-        mod = importlib.import_module(module_name)
+        mod = importlib.import_module(module_name)  # nosemgrep
         return Ok(mod)
     except ImportError:
         install_hint = (

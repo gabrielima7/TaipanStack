@@ -28,6 +28,13 @@ class TestRequireDependency:
         assert isinstance(result, Err)
         assert "pip install taipanstack[bridges-http]" in str(result.err_value)
 
+    def test_invalid_module_name_format(self) -> None:
+        """Returns Err when module name contains invalid characters."""
+        result = require_dependency("os.system('ls')")
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, ImportError)
+        assert "Invalid module name format: 'os.system('ls')'" in str(result.err_value)
+
 
 class TestGetAttrOrErr:
     """Tests for get_attr_or_err."""
