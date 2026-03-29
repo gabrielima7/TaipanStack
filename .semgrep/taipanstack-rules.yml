@@ -352,3 +352,28 @@ rules:
           - pattern: '"none" == $X'
           - pattern: $X != "none"
           - pattern: '"none" != $X'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 14: Prevent insecure arbitrary code loading via importlib
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-dynamic-import
+    languages: [python]
+    severity: ERROR
+    message: >
+      Dynamic module import using `importlib.import_module` with a non-literal variable
+      can lead to arbitrary code execution if the module name is attacker-controlled.
+      Strictly validate dynamic module path strings using `all(part.isidentifier() for part in module_name.split('.'))`.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern: importlib.import_module($MOD)
+      - pattern-not: importlib.import_module("...")
+      - pattern-not-inside: |
+          if not all(... for $PART in $MOD.split('.')):
+              ...
+          ...
