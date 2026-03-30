@@ -295,3 +295,20 @@ class TestBaseWatcher:
             await watcher.start()
             await asyncio.sleep(0.1)
             await watcher.stop()
+
+
+@pytest.mark.asyncio
+async def test_resource_watcher_run_err_branch() -> None:
+    from unittest.mock import patch
+
+    from taipanstack.core.result import Err
+    from taipanstack.resilience.watchdogs.resource_watcher import ResourceWatcher
+
+    watcher = ResourceWatcher(interval=0.1)
+
+    with patch(
+        "taipanstack.resilience.watchdogs.resource_watcher.check_resources",
+        return_value=Err(RuntimeError("mock_err")),
+    ):
+        # Calls the watcher's loop manually once to hit the `Err` branch
+        await watcher._run()
