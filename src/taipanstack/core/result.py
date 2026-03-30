@@ -203,10 +203,14 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        try:
-            append(result.ok_value)  # type: ignore[union-attr]
-        except AttributeError:
-            return result  # type: ignore[return-value]
+        match result:
+            case Ok(val):
+                append(val)
+            case Err(e):
+                _ = e
+                return result
+            case _:  # pragma: no cover
+                return result
     return Ok(values)
 
 
@@ -255,11 +259,14 @@ async def map_async(
         Err('fail')
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return Ok(await func(val))
+    match result:
+        case Ok(val):
+            return Ok(await func(val))
+        case Err(e):
+            _ = e
+            return result
+        case _:  # pragma: no cover
+            return result
 
 
 @overload
@@ -312,8 +319,11 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    try:
-        val = result.ok_value  # type: ignore[union-attr]
-    except AttributeError:
-        return result  # type: ignore[return-value]
-    return await func(val)
+    match result:
+        case Ok(val):
+            return await func(val)
+        case Err(e):
+            _ = e
+            return result
+        case _:  # pragma: no cover
+            return result
