@@ -168,9 +168,6 @@ max-complexity = 10
 "src/taipanstack/security/sanitizers.py" = ["PLR0912"]
 # Decorators: allow inline imports for lazy loading, unused signal args, D401 imperative mood
 "src/taipanstack/security/decorators.py" = ["PLC0415", "ARG001", "D401"]
-# Circuit breaker and metrics: allow D401 for decorator docstrings
-"src/taipanstack/utils/circuit_breaker.py" = ["D401"]
-"src/taipanstack/utils/metrics.py" = ["D401"]
 # Core result: allow D401 for utility function docstrings
 "src/taipanstack/core/result.py" = ["D401"]
 # Resilience module: allow D401, too many args, random for jitter
@@ -215,7 +212,7 @@ warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --strict-markers --timeout=30"
+addopts = "-v  --strict-markers --timeout=30"
 asyncio_mode = "auto"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

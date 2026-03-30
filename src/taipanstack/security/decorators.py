@@ -296,6 +296,13 @@ def _timeout_with_thread(
     if exception:
         raise exception[0]
 
+    if not result:
+        msg = (
+            "Thread execution failed without returning a result or exception "
+            f"in {func.__name__}"
+        )
+        raise RuntimeError(msg)
+
     return result[0]
 
 
