@@ -54,6 +54,7 @@ def _run_command(
             text=True,
             encoding="utf-8",
             capture_output=capture_output,
+            timeout=60,
         )
         return result
     except FileNotFoundError:
