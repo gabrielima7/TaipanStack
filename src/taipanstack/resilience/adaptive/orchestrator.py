@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, TypeVar
+from typing import Any, Generic, ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
@@ -26,9 +26,11 @@ from taipanstack.resilience.retry import RetryConfig, calculate_delay
 logger = logging.getLogger("taipanstack.resilience.adaptive.orchestrator")
 
 T = TypeVar("T")
+E = TypeVar("E", bound=Exception)
+P = ParamSpec("P")
 
 
-class ResilienceOrchestrator:
+class ResilienceOrchestrator(Generic[T]):
     """Compose resilience patterns into a single pipeline.
 
     Provides a fluent builder API to add patterns in order.
@@ -64,14 +66,14 @@ class ResilienceOrchestrator:
         self._retry_config: RetryConfig | None = None
         self._adaptive_retry: AdaptiveRetry | None = None
         self._timeout: float | None = None
-        self._fallback_value: Any = _SENTINEL
+        self._fallback_value: T | Any = _SENTINEL
 
     def with_bulkhead(
         self,
         max_concurrent: int = 10,
         max_queue: int = 50,
         timeout: float = 30.0,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add a bulkhead concurrency limiter.
 
         Args:
@@ -94,7 +96,7 @@ class ResilienceOrchestrator:
     def with_circuit_breaker(
         self,
         breaker: CircuitBreaker | AdaptiveCircuitBreaker,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add a circuit breaker.
 
         Args:
@@ -114,7 +116,7 @@ class ResilienceOrchestrator:
     def with_retry(
         self,
         config: RetryConfig | AdaptiveRetry,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add retry logic.
 
         Args:
@@ -131,7 +133,7 @@ class ResilienceOrchestrator:
             self._retry_config = config
         return self
 
-    def with_timeout(self, seconds: float) -> ResilienceOrchestrator:
+    def with_timeout(self, seconds: float) -> ResilienceOrchestrator[T]:
         """Add a timeout.
 
         Args:
@@ -144,7 +146,7 @@ class ResilienceOrchestrator:
         self._timeout = seconds
         return self
 
-    def with_fallback(self, value: Any) -> ResilienceOrchestrator:
+    def with_fallback(self, value: T) -> ResilienceOrchestrator[T]:
         """Add a fallback value for failures.
 
         Args:
