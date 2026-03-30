@@ -303,52 +303,6 @@ repos:
 {"".join(security_hooks)}"""
 
 
-def generate_dependabot_config() -> str:
-    """Generate .github/dependabot.yml content.
-
-    Returns:
-        Dependabot configuration YAML string.
-
-    """
-    return """# Stack v2.0 Dependabot Configuration
-version: 2
-updates:
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
-    groups:
-      dev-dependencies:
-        patterns:
-          - "ruff"
-          - "mypy"
-          - "bandit"
-          - "safety"
-          - "pytest*"
-          - "pre-commit"
-          - "semgrep"
-          - "py-spy"
-      security-tools:
-        patterns:
-          - "bandit"
-          - "safety"
-          - "semgrep"
-          - "pip-audit"
-    reviewers:
-      - "gabrielima7"
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    groups:
-      actions:
-        patterns:
-          - "*"
-"""
-
-
 def generate_security_policy() -> str:
     """Generate SECURITY.md content.
 
@@ -396,57 +350,4 @@ This project includes multiple layers of security:
 """
 
 
-def generate_editorconfig() -> str:
-    """Generate .editorconfig content.
 
-    Returns:
-        EditorConfig content string.
-
-    """
-    return """# Stack v2.0 EditorConfig
-root = true
-
-[*]
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-charset = utf-8
-indent_style = space
-indent_size = 4
-
-[*.py]
-max_line_length = 88
-
-[*.{yml,yaml,toml,json}]
-indent_size = 2
-
-[Makefile]
-indent_style = tab
-"""
-
-
-def write_config_file(
-    path: Path,
-    content: str,
-    config: StackConfig,
-) -> bool:
-    """Write configuration file with backup support.
-
-    Args:
-        path: Path to write the file.
-        content: Content to write.
-        config: Stack configuration.
-
-    Returns:
-        True if file was written, False if in dry-run mode.
-
-    """
-    if config.dry_run:
-        return False
-
-    if path.exists() and not config.force:
-        backup_path = path.with_suffix(f"{path.suffix}.bak")
-        path.rename(backup_path)
-
-    path.write_text(content, encoding="utf-8")
-    return True
