@@ -71,5 +71,3 @@ def test_generate_pyproject_config_dry_run_with_config(tmp_path, monkeypatch):
         mock_log.assert_any_call(
             "Would add tool configurations to pyproject.toml", args, is_verbose=True
         )
-
-

@@ -346,6 +346,3 @@ This project includes multiple layers of security:
 - **Initial Assessment**: Within 1 week
 - **Fix Release**: Depends on severity (critical: ASAP, others: next release)
 """
-
-
-
