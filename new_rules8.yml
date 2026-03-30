@@ -1,0 +1,21 @@
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 21: Server-Side Request Forgery (SSRF) - Unvalidated urllib.request
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-urllib-ssrf
+    languages: [python]
+    severity: ERROR
+    message: >
+      A function from the `urllib.request` library is called without a static/hardcoded URL.
+      Ensure the URL is validated against SSRF attacks before making the request.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery (SSRF)"
+      technology:
+        - python
+        - urllib
+    patterns:
+      - pattern: urllib.request.urlopen($URL, ...)
+      - pattern-not: urllib.request.urlopen("...", ...)
