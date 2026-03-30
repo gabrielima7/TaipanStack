@@ -1,0 +1,20 @@
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 30: Detect weak temporary directory creation
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-weak-temp-dir
+    languages: [python]
+    severity: WARNING
+    message: >
+      Using `tempfile.gettempdir()` directly does not create a uniquely isolated directory.
+      This can lead to predictable temp paths and potential race conditions or privilege escalation.
+      Use `tempfile.TemporaryDirectory()` or `tempfile.mkdtemp()` instead.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-377: Insecure Temporary File"
+      owasp: "A01:2021 - Broken Access Control"
+      technology:
+        - python
+    patterns:
+      - pattern: tempfile.gettempdir()

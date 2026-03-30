@@ -1,0 +1,44 @@
+  - id: taipanstack.security-subprocess-no-shell-string
+    languages: [python]
+    severity: ERROR
+    message: >
+      Passing a string to subprocess functions when `shell=False` (default) can lead to
+      unexpected behavior or execution failures if the string contains arguments. If you
+      are not using `shell=True`, you should pass a list of arguments instead
+      (e.g., `subprocess.run(["ls", "-l"])`).
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-88: Improper Neutralization of Argument Delimiters in a Command"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.Popen("$CMD", ...)
+          - pattern: subprocess.call("$CMD", ...)
+          - pattern: subprocess.check_call("$CMD", ...)
+          - pattern: subprocess.check_output("$CMD", ...)
+          - pattern: subprocess.run("$CMD", ...)
+      - metavariable-regex:
+          metavariable: $CMD
+          regex: ".* .*$" # Matches strings with spaces
+
+  - id: taipanstack.security-path-join-hardcoded-sep
+    languages: [python]
+    severity: WARNING
+    message: >
+      Avoid hardcoding path separators (e.g., `/` or `\\`) when using `os.path.join` or
+      when concatenating paths. Use `os.sep` or strictly use `pathlib.Path` objects to
+      ensure cross-platform compatibility and prevent potential path traversal or canonicalization bugs.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-73: External Control of File Name or Path"
+      owasp: "A01:2021 - Broken Access Control"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: os.path.join(..., "*/...", ...)
+          - pattern: os.path.join(..., "*\\...", ...)

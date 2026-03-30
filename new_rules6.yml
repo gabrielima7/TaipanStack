@@ -1,0 +1,22 @@
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 19: Detect insecure loading of yaml files
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-yaml-load
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `yaml.load()` without specifying the `SafeLoader` allows the instantiation
+      of arbitrary Python objects, leading to remote code execution.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+      technology:
+        - python
+        - yaml
+    patterns:
+      - pattern: yaml.load(...)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader, ...)
+      - pattern-not: yaml.load(..., Loader=yaml.CSafeLoader, ...)
