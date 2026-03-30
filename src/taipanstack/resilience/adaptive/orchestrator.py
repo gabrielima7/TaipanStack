@@ -11,7 +11,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import Any, Generic, ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
@@ -26,9 +27,11 @@ from taipanstack.resilience.retry import RetryConfig, calculate_delay
 logger = logging.getLogger("taipanstack.resilience.adaptive.orchestrator")
 
 T = TypeVar("T")
+E = TypeVar("E", bound=Exception)
+P = ParamSpec("P")
 
 
-class ResilienceOrchestrator:
+class ResilienceOrchestrator(Generic[T]):
     """Compose resilience patterns into a single pipeline.
 
     Provides a fluent builder API to add patterns in order.
@@ -159,10 +162,10 @@ class ResilienceOrchestrator:
 
     async def execute(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute the function through the resilience pipeline.
 
         Order: bulkhead → circuit breaker → retry → timeout → fn → fallback.
@@ -212,7 +215,7 @@ class ResilienceOrchestrator:
 
         return await self._execute_inner(fn, *args, **kwargs)
 
-    def _evaluate_circuit_breaker(self) -> Result[Any, Exception] | None:
+    def _evaluate_circuit_breaker(self) -> Result[T, Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
         if self._adaptive_breaker is not None:
             if not self._adaptive_breaker.should_allow():
@@ -261,10 +264,10 @@ class ResilienceOrchestrator:
 
     async def _execute_inner(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute through breaker → retry → timeout → fn layers.
 
         Args:
@@ -305,17 +308,17 @@ class ResilienceOrchestrator:
                         continue
                     break
 
-        final_result: Result[Any, Exception] = Err(
+        final_result: Result[T, Exception] = Err(
             last_error or RuntimeError("Execution failed")
         )
         return self._apply_fallback(final_result)
 
     async def _execute_with_timeout(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute fn with optional timeout.
 
         Args:
@@ -345,8 +348,8 @@ class ResilienceOrchestrator:
 
     def _apply_fallback(
         self,
-        result: Result[Any, Exception],
-    ) -> Result[Any, Exception]:
+        result: Result[T, Exception],
+    ) -> Result[T, Exception]:
         """Apply fallback if configured and result is Err.
 
         Args:
