@@ -1,0 +1,27 @@
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 16: Detect insecure default argument in python
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-default-argument-mutable
+    languages: [python]
+    severity: WARNING
+    message: >
+      Using a mutable default argument (like list, dict, or set) can lead to unexpected
+      behavior because the object is evaluated once at module load time and shared
+      across all calls. This is a common bug and potential security risk (e.g. state leak).
+      Use `None` and initialize the mutable inside the function instead.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-374: Passing Mutable Objects to an Untrusted Method"
+      owasp: "A05:2021 - Security Misconfiguration"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: |
+              def $FUNC(..., $ARG=[], ...):
+                  ...
+          - pattern: |
+              def $FUNC(..., $ARG={}, ...):
+                  ...
