@@ -87,28 +87,29 @@ def sanitize_string(
     result = value.strip() if strip_whitespace else value
 
     # Fast path: typical strings needing no further heavy processing
-    if allow_unicode and allow_html and max_length is None:
-        if not _CONTROL_CHARS_RE.search(result):
-            return result
+    if (
+        allow_unicode
+        and allow_html
+        and max_length is None
+        and not _CONTROL_CHARS_RE.search(result)
+    ):
+        return result
 
     # Remove null bytes and control characters
     result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
-    if not allow_html:
-        # Fast path to avoid regex and replacements if no typical HTML chars
-        if "<" in result or ">" in result or "&" in result:
-            # Remove HTML tags
-            result = _HTML_TAGS_RE.sub("", result)
-            # Escape HTML entities
-            result = result.replace("&", "&amp;")
-            result = result.replace("<", "&lt;")
-            result = result.replace(">", "&gt;")
+    if not allow_html and ("<" in result or ">" in result or "&" in result):
+        # Remove HTML tags
+        result = _HTML_TAGS_RE.sub("", result)
+        # Escape HTML entities
+        result = result.replace("&", "&amp;")
+        result = result.replace("<", "&lt;")
+        result = result.replace(">", "&gt;")
 
     # Handle unicode
-    if not allow_unicode:
-        if not result.isascii():
-            result = result.encode("ascii", errors="ignore").decode("ascii")
+    if not allow_unicode and not result.isascii():
+        result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
     if max_length is not None and len(result) > max_length:
