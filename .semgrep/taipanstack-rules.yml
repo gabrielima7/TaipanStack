@@ -352,3 +352,66 @@ rules:
           - pattern: '"none" == $X'
           - pattern: $X != "none"
           - pattern: '"none" != $X'
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 14: Prevent unvalidated import_module (Code Injection / Path Traversal)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-unvalidated-import-module
+    languages: [python]
+    severity: ERROR
+    message: >
+      Unvalidated `importlib.import_module()` can lead to arbitrary code execution
+      if the module name is controlled by an external source. Ensure the module
+      name is explicitly validated to contain only safe identifier characters using
+      `all(part.isidentifier() for part in module_name.split('.'))`.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern: importlib.import_module($MOD)
+      - pattern-not: importlib.import_module("...")
+      - pattern-not-inside: |
+          if not all($PART.isidentifier() for $PART in $MOD.split('.')):
+              ...
+          ...
+          <... importlib.import_module($MOD) ...>
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 15: SSRF protection bypass detection
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-ssrf-unsafe-urllib
+    languages: [python]
+    severity: ERROR
+    message: >
+      Fetching external URLs without prior SSRF validation is highly discouraged.
+      Always wrap the URL via `guard_ssrf(url)` from `taipanstack.security.guards`
+      before making HTTP requests to prevent Server-Side Request Forgery.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: urllib.request.urlopen($URL, ...)
+          - pattern: requests.get($URL, ...)
+          - pattern: requests.post($URL, ...)
+          - pattern: requests.put($URL, ...)
+          - pattern: requests.delete($URL, ...)
+          - pattern: requests.patch($URL, ...)
+          - pattern: requests.head($URL, ...)
+          - pattern: requests.options($URL, ...)
+      - pattern-not-inside: |
+          $SAFE = guard_ssrf($URL, ...)
+          ...
+          urllib.request.urlopen(..., $SAFE, ...)
+      - pattern-not-inside: |
+          $SAFE = guard_ssrf($URL, ...)
+          ...
+          requests.$METHOD(..., $SAFE, ...)

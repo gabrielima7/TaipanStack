@@ -31,6 +31,9 @@ def require_dependency(
         Ok(<module 'httpx' ...>)
 
     """
+    if not all(part.isidentifier() for part in module_name.split(".")):
+        return Err(ImportError(f"Invalid module name format: '{module_name}'"))
+
     try:
         mod = importlib.import_module(module_name)
         return Ok(mod)
