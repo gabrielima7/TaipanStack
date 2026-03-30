@@ -312,3 +312,17 @@ class TestSafeSqlIdentifier:
         else:
             with pytest.raises(ValidationError):
                 SqlModel(column=text)
+
+
+def test_safe_url_err_branch() -> None:
+    import pytest
+    from pydantic import BaseModel, ValidationError
+
+    from taipanstack.security.types import SafeUrl
+
+    class DummyModel(BaseModel):
+        url: SafeUrl
+
+    # Pass an invalid URL that fails guard_ssrf (like a local IP) to trigger the Err branch in the validator
+    with pytest.raises(ValidationError):
+        DummyModel(url="http://169.254.169.254/metadata")
