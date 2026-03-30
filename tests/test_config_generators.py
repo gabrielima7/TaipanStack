@@ -1,9 +1,6 @@
 """Tests for configuration generators."""
 
-from pathlib import Path
-
 from taipanstack.config.generators import (
-    generate_pre_commit_config,
     generate_pyproject_config,
     generate_security_policy,
 )

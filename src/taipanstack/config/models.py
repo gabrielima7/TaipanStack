@@ -196,7 +196,7 @@ class StackConfig(BaseModel):
 
     @field_validator("project_name")
     @classmethod
-    def validate_project_name(_cls, value: str) -> str:
+    def validate_project_name(cls, value: str) -> str:
         """Validate that project name is safe.
 
         Args:
@@ -209,6 +209,7 @@ class StackConfig(BaseModel):
             ValueError: If project name contains invalid characters.
 
         """
+        _ = cls
         pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*\Z"
         if not re.match(pattern, value):
             msg = (
@@ -221,7 +222,7 @@ class StackConfig(BaseModel):
 
     @field_validator("python_version")
     @classmethod
-    def validate_python_version(_cls, value: str) -> str:
+    def validate_python_version(cls, value: str) -> str:
         """Validate Python version format.
 
         Args:
@@ -234,6 +235,7 @@ class StackConfig(BaseModel):
             ValueError: If version format is invalid.
 
         """
+        _ = cls
         pattern = r"^\d+\.\d+\Z"
         if not re.match(pattern, value):
             msg = (
@@ -256,7 +258,7 @@ class StackConfig(BaseModel):
 
     @field_validator("project_dir")
     @classmethod
-    def validate_project_dir(_cls, value: Path) -> Path:
+    def validate_project_dir(cls, value: Path) -> Path:
         """Validate project directory is safe.
 
         Args:
@@ -269,6 +271,7 @@ class StackConfig(BaseModel):
             ValueError: If path is unsafe or contains traversal.
 
         """
+        _ = cls
         resolved = value.resolve()
 
         # Check for path traversal attempts
