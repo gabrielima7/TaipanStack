@@ -67,14 +67,14 @@ class ResilienceOrchestrator(Generic[T]):
         self._retry_config: RetryConfig | None = None
         self._adaptive_retry: AdaptiveRetry | None = None
         self._timeout: float | None = None
-        self._fallback_value: Any = _SENTINEL
+        self._fallback_value: T | Any = _SENTINEL
 
     def with_bulkhead(
         self,
         max_concurrent: int = 10,
         max_queue: int = 50,
         timeout: float = 30.0,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add a bulkhead concurrency limiter.
 
         Args:
@@ -97,7 +97,7 @@ class ResilienceOrchestrator(Generic[T]):
     def with_circuit_breaker(
         self,
         breaker: CircuitBreaker | AdaptiveCircuitBreaker,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add a circuit breaker.
 
         Args:
@@ -117,7 +117,7 @@ class ResilienceOrchestrator(Generic[T]):
     def with_retry(
         self,
         config: RetryConfig | AdaptiveRetry,
-    ) -> ResilienceOrchestrator:
+    ) -> ResilienceOrchestrator[T]:
         """Add retry logic.
 
         Args:
@@ -134,7 +134,7 @@ class ResilienceOrchestrator(Generic[T]):
             self._retry_config = config
         return self
 
-    def with_timeout(self, seconds: float) -> ResilienceOrchestrator:
+    def with_timeout(self, seconds: float) -> ResilienceOrchestrator[T]:
         """Add a timeout.
 
         Args:
@@ -147,7 +147,7 @@ class ResilienceOrchestrator(Generic[T]):
         self._timeout = seconds
         return self
 
-    def with_fallback(self, value: Any) -> ResilienceOrchestrator:
+    def with_fallback(self, value: T) -> ResilienceOrchestrator[T]:
         """Add a fallback value for failures.
 
         Args:
@@ -162,10 +162,10 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def execute(
         self,
-        fn: Callable[P, Awaitable[T]],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> Result[T, Exception]:
+        fn: Any,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Result[Any, Exception]:
         """Execute the function through the resilience pipeline.
 
         Order: bulkhead → circuit breaker → retry → timeout → fn → fallback.
@@ -215,7 +215,7 @@ class ResilienceOrchestrator(Generic[T]):
 
         return await self._execute_inner(fn, *args, **kwargs)
 
-    def _evaluate_circuit_breaker(self) -> Result[T, Exception] | None:
+    def _evaluate_circuit_breaker(self) -> Result[Any, Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
         if self._adaptive_breaker is not None:
             if not self._adaptive_breaker.should_allow():
@@ -264,10 +264,10 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def _execute_inner(
         self,
-        fn: Callable[P, Awaitable[T]],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> Result[T, Exception]:
+        fn: Any,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Result[Any, Exception]:
         """Execute through breaker → retry → timeout → fn layers.
 
         Args:
@@ -308,17 +308,17 @@ class ResilienceOrchestrator(Generic[T]):
                         continue
                     break
 
-        final_result: Result[T, Exception] = Err(
+        final_result: Result[Any, Exception] = Err(
             last_error or RuntimeError("Execution failed")
         )
         return self._apply_fallback(final_result)
 
     async def _execute_with_timeout(
         self,
-        fn: Callable[P, Awaitable[T]],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> Result[T, Exception]:
+        fn: Any,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Result[Any, Exception]:
         """Execute fn with optional timeout.
 
         Args:
@@ -348,8 +348,8 @@ class ResilienceOrchestrator(Generic[T]):
 
     def _apply_fallback(
         self,
-        result: Result[T, Exception],
-    ) -> Result[T, Exception]:
+        result: Result[Any, Exception],
+    ) -> Result[Any, Exception]:
         """Apply fallback if configured and result is Err.
 
         Args:
