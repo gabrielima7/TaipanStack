@@ -201,6 +201,7 @@ def collect_results(
             case Ok(val):
                 append(val)
             case Err(e):
+                _ = e
                 return result
             case _:  # pragma: no cover
                 return result
@@ -256,6 +257,7 @@ async def map_async(
         case Ok(val):
             return Ok(await func(val))
         case Err(e):
+            _ = e
             return result
         case _:  # pragma: no cover
             return result
@@ -315,6 +317,7 @@ async def and_then_async(
         case Ok(val):
             return await func(val)
         case Err(e):
+            _ = e
             return result
         case _:  # pragma: no cover
             return result
