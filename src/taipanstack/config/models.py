@@ -196,7 +196,7 @@ class StackConfig(BaseModel):
 
     @field_validator("project_name")
     @classmethod
-    def validate_project_name(cls, value: str) -> str:
+    def validate_project_name(_cls, value: str) -> str:
         """Validate that project name is safe.
 
         Args:
@@ -221,7 +221,7 @@ class StackConfig(BaseModel):
 
     @field_validator("python_version")
     @classmethod
-    def validate_python_version(cls, value: str) -> str:
+    def validate_python_version(_cls, value: str) -> str:
         """Validate Python version format.
 
         Args:
@@ -256,7 +256,7 @@ class StackConfig(BaseModel):
 
     @field_validator("project_dir")
     @classmethod
-    def validate_project_dir(cls, value: Path) -> Path:
+    def validate_project_dir(_cls, value: Path) -> Path:
         """Validate project directory is safe.
 
         Args:
