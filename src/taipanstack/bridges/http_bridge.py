@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from taipanstack.core.result import Err, Ok, Result
@@ -56,6 +57,81 @@ def _check_circuit_breaker(
     return None
 
 
+def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
+    """Validate URL against SSRF if protection is enabled.
+
+    Args:
+        url: The URL to validate.
+        ssrf_protection: Whether SSRF protection is enabled.
+
+    Returns:
+        ``Ok(None)`` if valid or protection disabled, ``Err(Exception)`` otherwise.
+
+    """
+    if not ssrf_protection:
+        return Ok(None)
+
+    ssrf_result = guard_ssrf(url)
+    match ssrf_result:
+        case Err(security_err):
+            return Err(security_err)
+        case Ok():  # pragma: no branch
+            return Ok(None)
+
+
+async def _execute_with_retries(
+    request_func: Callable[[], Awaitable[Any]],
+    retry_config: RetryConfig | None,
+    circuit_breaker: CircuitBreaker | None,
+    retryable_status_codes: frozenset[int],
+) -> Result[Any, Exception]:
+    """Execute a request function with optional retries and circuit breaker.
+
+    Args:
+        request_func: Async callable that performs the request.
+        retry_config: Optional retry configuration.
+        circuit_breaker: Optional circuit breaker.
+        retryable_status_codes: Status codes to retry on.
+
+    Returns:
+        ``Ok(Response)`` on success, ``Err`` on failure.
+
+    """
+    max_attempts = 1
+    if retry_config is not None:
+        max_attempts = retry_config.max_attempts
+
+    last_error: Exception | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = await request_func()
+
+            # Check if we should retry on status code
+            if (
+                retry_config is not None
+                and response.status_code in retryable_status_codes
+                and attempt < max_attempts
+            ):
+                delay = calculate_delay(attempt, retry_config)
+                await asyncio.sleep(delay)
+                continue
+
+            return Ok(response)
+
+        except Exception as exc:
+            last_error = exc
+            if circuit_breaker is not None:  # pragma: no branch
+                circuit_breaker._record_failure(exc)
+            if retry_config is not None and attempt < max_attempts:
+                delay = calculate_delay(attempt, retry_config)
+                await asyncio.sleep(delay)
+                continue
+            break
+
+    return Err(last_error or RuntimeError("Request failed"))
+
+
 async def safe_request(
     method: str,
     url: str,
@@ -90,13 +166,9 @@ async def safe_request(
         )
 
     # SSRF check
-    if ssrf_protection:
-        ssrf_result = guard_ssrf(url)
-        match ssrf_result:
-            case Err(security_err):
-                return Err(security_err)
-            case Ok():  # pragma: no branch
-                pass
+    ssrf_check = _check_ssrf(url, ssrf_protection)
+    if isinstance(ssrf_check, Err):
+        return ssrf_check
 
     # Circuit breaker gate
     if circuit_breaker is not None:
@@ -104,40 +176,16 @@ async def safe_request(
         if cb_err is not None:
             return Err(cb_err)
 
-    max_attempts = 1
-    if retry_config is not None:
-        max_attempts = retry_config.max_attempts
+    async def _do_request() -> Any:
+        async with httpx.AsyncClient() as client:
+            return await client.request(method, url, **kwargs)
 
-    last_error: Exception | None = None
-
-    for attempt in range(1, max_attempts + 1):
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.request(method, url, **kwargs)
-
-            # Check if we should retry on status code
-            if (
-                retry_config is not None
-                and response.status_code in retryable_status_codes
-                and attempt < max_attempts
-            ):
-                delay = calculate_delay(attempt, retry_config)
-                await asyncio.sleep(delay)
-                continue
-
-            return Ok(response)
-
-        except Exception as exc:
-            last_error = exc
-            if circuit_breaker is not None:  # pragma: no branch
-                circuit_breaker._record_failure(exc)
-            if retry_config is not None and attempt < max_attempts:
-                delay = calculate_delay(attempt, retry_config)
-                await asyncio.sleep(delay)
-                continue
-            break
-
-    return Err(last_error or RuntimeError("Request failed"))
+    return await _execute_with_retries(
+        _do_request,
+        retry_config,
+        circuit_breaker,
+        retryable_status_codes,
+    )
 
 
 class SafeHttpClient:
@@ -228,13 +276,9 @@ class SafeHttpClient:
             return Err(RuntimeError("Client not initialised. Use 'async with'."))
 
         # SSRF check
-        if self._ssrf_protection:
-            ssrf_result = guard_ssrf(url)
-            match ssrf_result:
-                case Err(security_err):
-                    return Err(security_err)
-                case Ok():  # pragma: no branch
-                    pass
+        ssrf_check = _check_ssrf(url, self._ssrf_protection)
+        if isinstance(ssrf_check, Err):
+            return ssrf_check
 
         # Circuit breaker gate
         if self._circuit_breaker is not None:
@@ -242,38 +286,15 @@ class SafeHttpClient:
             if cb_err is not None:
                 return Err(cb_err)
 
-        max_attempts = 1
-        if self._retry_config is not None:
-            max_attempts = self._retry_config.max_attempts
+        async def _do_request() -> Any:
+            return await self._client.request(method, url, **kwargs)
 
-        last_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            try:
-                response = await self._client.request(method, url, **kwargs)
-
-                if (
-                    self._retry_config is not None
-                    and response.status_code in self._retryable_status_codes
-                    and attempt < max_attempts
-                ):
-                    delay = calculate_delay(attempt, self._retry_config)
-                    await asyncio.sleep(delay)
-                    continue
-
-                return Ok(response)
-
-            except Exception as exc:
-                last_error = exc
-                if self._circuit_breaker is not None:
-                    self._circuit_breaker._record_failure(exc)
-                if self._retry_config is not None and attempt < max_attempts:
-                    delay = calculate_delay(attempt, self._retry_config)
-                    await asyncio.sleep(delay)
-                    continue
-                break
-
-        return Err(last_error or RuntimeError("Request failed"))
+        return await _execute_with_retries(
+            _do_request,
+            self._retry_config,
+            self._circuit_breaker,
+            self._retryable_status_codes,
+        )
 
     async def get(self, url: str, **kw: Any) -> Result[Any, Exception]:
         """Send a GET request."""
