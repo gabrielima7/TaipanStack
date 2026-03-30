@@ -49,8 +49,24 @@ def cached(ttl: float) -> CacheDecorator:
     def get_cache_key(
         func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
     ) -> tuple[Any, ...]:
-        kwargs_tuple = tuple(sorted(kwargs.items()))
-        return (func_name, args, kwargs_tuple)
+        def _make_hashable(val: Any) -> Any:
+            if isinstance(val, (tuple, list)):
+                return tuple(_make_hashable(item) for item in val)
+            if isinstance(val, dict):
+                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+            if isinstance(val, set):
+                return frozenset(_make_hashable(item) for item in val)
+            try:
+                hash(val)
+                return val
+            except TypeError:
+                return str(val)
+
+        hashable_args = tuple(_make_hashable(arg) for arg in args)
+        hashable_kwargs = tuple(
+            sorted((k, _make_hashable(v)) for k, v in kwargs.items())
+        )
+        return (func_name, hashable_args, hashable_kwargs)
 
     def decorator(
         func: (Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]),
