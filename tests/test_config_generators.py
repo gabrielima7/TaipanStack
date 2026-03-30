@@ -54,5 +54,3 @@ class TestGenerateSecurityPolicy:
         result = generate_security_policy()
 
         assert "version" in result.lower()
-
-
