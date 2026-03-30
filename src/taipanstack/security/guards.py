@@ -167,7 +167,20 @@ def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
     # Only check components from the user-provided path, not the base_dir
     while current not in (base_dir, current.parent):
         # We don't check .exists() because it returns False for broken symlinks
-        if current.is_symlink():
+        try:
+            is_sym = current.is_symlink()
+        except OSError as e:
+            raise SecurityError(
+                f"Cannot check symlink safety: {e}",
+                guard_name="path_traversal",
+            ) from e
+        except RuntimeError as e:
+            raise SecurityError(
+                f"Cannot check symlink safety: {e}",
+                guard_name="path_traversal",
+            ) from e
+
+        if is_sym:
             raise SecurityError(
                 "Symlinks are not allowed",
                 guard_name="path_traversal",
