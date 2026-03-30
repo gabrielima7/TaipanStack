@@ -20,7 +20,7 @@ __all__ = ["decode_jwt", "encode_jwt"]
 JWTPayload: TypeAlias = dict[str, object]
 
 
-@safe_from(PyJWTError, ValueError, TypeError)
+@safe_from(PyJWTError, ValueError, TypeError, NotImplementedError)
 def encode_jwt(
     payload: JWTPayload,
     secret_key: str,
@@ -49,7 +49,7 @@ def encode_jwt(
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
-@safe_from(PyJWTError, ValueError, TypeError, AttributeError)
+@safe_from(PyJWTError, ValueError, TypeError, AttributeError, NotImplementedError)
 def decode_jwt(
     token: str,
     secret_key: str,
