@@ -200,10 +200,10 @@ def collect_results(
         match result:
             case Ok(val):
                 append(val)
-            case Err():
-                return result  # type: ignore[return-value]
-            case _:
-                return result  # type: ignore[return-value]
+            case Err(e):
+                return result
+            case _:  # pragma: no cover
+                return result
     return Ok(values)
 
 
@@ -255,10 +255,10 @@ async def map_async(
     match result:
         case Ok(val):
             return Ok(await func(val))
-        case Err():
-            return result  # type: ignore[return-value]
-        case _:
-            return result  # type: ignore[return-value]
+        case Err(e):
+            return result
+        case _:  # pragma: no cover
+            return result
 
 
 @overload
@@ -314,7 +314,7 @@ async def and_then_async(
     match result:
         case Ok(val):
             return await func(val)
-        case Err():
-            return result  # type: ignore[return-value]
-        case _:
-            return result  # type: ignore[return-value]
+        case Err(e):
+            return result
+        case _:  # pragma: no cover
+            return result
