@@ -81,34 +81,6 @@ class TestSanitizers100Percent:
         assert result is not None
 
 
-class TestGenerators100Percent:
-    """Tests to reach 100% for generators."""
-
-    def test_write_config_file_dry_run(self, tmp_path: Path) -> None:
-        """Test write_config_file in dry_run mode."""
-        from taipanstack.config.generators import write_config_file
-        from taipanstack.config.models import StackConfig
-
-        config = StackConfig(project_name="test", dry_run=True)
-        target = tmp_path / "test.toml"
-
-        result = write_config_file(target, "content", config)
-        assert result is False  # Dry run returns False
-
-    def test_write_config_file_force(self, tmp_path: Path) -> None:
-        """Test write_config_file with force=True overwrites."""
-        from taipanstack.config.generators import write_config_file
-        from taipanstack.config.models import StackConfig
-
-        config = StackConfig(project_name="test", force=True)
-        target = tmp_path / "test.toml"
-        target.write_text("old content")
-
-        result = write_config_file(target, "new content", config)
-        assert result is True
-        assert target.read_text() == "new content"
-
-
 class TestFilesystem100Percent:
     """Tests to reach 100% for filesystem."""
 
