@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-03-30
+
+### Security
+- **Fix (Critical)**: Patched arbitrary code loading vulnerability via `importlib` and hardened Module Imports to prevent unvalidated loading and SSRF (PR #365).
+- **Fix**: Mitigated PyJWT `NotImplementedError` bypass protecting token parsing (PR #359).
+- **Hardening**: Hardened cache decorator against unhashable inputs preventing cache poisoning (PR #350).
+- **SAST**: Introduced new custom Semgrep rules for continuous security coverage (PR #367).
+
+### Performance
+- **Optimization**: Core results and security sanitizers optimized for higher throughput (PR #375).
+
+### Resilience & Refactoring
+- **Typing**: Added strict Generic Static Typing in the Resilience Adaptive Suite (PR #373).
+- **Complexity**: Reduced cyclomatic complexity across `http_bridge` and `sanitizers` (PR #369).
+- **Exceptions**: Resolved unhandled `BaseException` propagation in timeout threads (PR #366).
+- **Dead Code**: Cleaned up legacy/dead code from optimizations and config generators (PR #360, #374).
+- **Modernization**: Upgraded `Result` type unwrapping in core using `match/case` structural pattern matching (PR #358).
+
+### Docs & QA
+- **Coverage**: Achieved 100% test coverage including branch coverage within `src/taipanstack/` (PR #362).
+- **Docs**: Synchronized global test count to 1184 passing tests in architecture docs (PR #364).
+
 ## [0.4.0] - 2026-03-26
 
 ### Added
@@ -436,7 +458,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...v0.4.0
 [0.3.11]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.10...v0.3.11
 [0.3.10]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.9...v0.3.10
 [0.3.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.8...v0.3.9
