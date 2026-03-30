@@ -276,11 +276,12 @@ def sanitize_path(
         ValueError: If path is invalid or too deep.
 
     """
-    if isinstance(path, str):  # pragma: no branch
+    if isinstance(path, str):
+        if "\x00" in path:  # pragma: no branch
+            path = path.replace("\x00", "")
         path = Path(path)
-
-    # Remove any null bytes and normalize
-    path = Path(str(path).replace("\x00", ""))
+    else:  # pragma: no branch
+        path = Path(path)
 
     # Clean components
     parts = _clean_path_parts(path)
@@ -331,27 +332,22 @@ def sanitize_env_value(
     if not value:
         return ""
 
-    # Fast path: if no sensitive characters and within length, return as is
-    if (
-        len(value) <= max_length
-        and "\x00" not in value
-        and (allow_multiline or ("\n" not in value and "\r" not in value))
-    ):
-        return value
+    if allow_multiline:
+        if "\x00" not in value and len(value) <= max_length:
+            return value
+        result = value.replace("\x00", "")
+    else:
+        if (
+            "\x00" not in value
+            and "\n" not in value
+            and "\r" not in value
+            and len(value) <= max_length
+        ):
+            return value
+        result = value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
 
-    result = value
-
-    # Remove null bytes
-    result = result.replace("\x00", "")
-
-    # Handle newlines
-    if not allow_multiline:
-        result = result.replace("\n", " ").replace("\r", " ")
-
-    # Truncate
     if len(result) > max_length:
-        result = result[:max_length]
-
+        return result[:max_length]
     return result
 
 
@@ -379,19 +375,17 @@ def sanitize_sql_identifier(identifier: str) -> str:
         raise ValueError(msg)
 
     # Fast path: already clean and valid
-    if not _SQL_IDENTIFIER_DENY_RE.search(identifier):
-        if (
-            identifier[0] in _VALID_SQL_PREFIX
-            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-        ):
-            return identifier
-        result = identifier
-    else:
-        # Only allow alphanumeric and underscore
-        result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
+    if (
+        identifier.isidentifier()
+        and identifier.isascii()
+        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+    ):
+        return identifier
+
+    result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
 
     # Must start with letter or underscore
-    if result and result[0] not in _VALID_SQL_PREFIX:
+    if result and not result[0].isalpha() and result[0] != "_":
         result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
