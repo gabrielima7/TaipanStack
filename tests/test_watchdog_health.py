@@ -237,3 +237,37 @@ class TestHealthPinger:
         # Only one transition: None -> True
         assert len(changes) == 1
         assert changes[0] == ("stable", True)
+
+
+@pytest.mark.asyncio
+async def test_health_pinger_check_all_err_branch() -> None:
+    from taipanstack.resilience.watchdogs.health_pinger import HealthTarget, check_all
+
+    async def always_fail():
+        raise RuntimeError("boom")
+
+    targets = [HealthTarget(name="t1", check=always_fail)]
+    res = await check_all(targets)
+    from taipanstack.core.result import Ok
+
+    assert res == Ok({"t1": False})
+
+
+@pytest.mark.asyncio
+async def test_health_pinger_run_err_branch() -> None:
+
+    from taipanstack.resilience.watchdogs.health_pinger import (
+        HealthPinger,
+        HealthTarget,
+    )
+
+    async def always_fail():
+        raise RuntimeError("fail_run")
+
+    targets = [HealthTarget(name="t2", check=always_fail)]
+    pinger = HealthPinger(targets=targets, interval=0.1)
+
+    # Run once manually to trigger the `Err` branch in `pinger._run`
+    await pinger._run()
+
+    assert pinger._last_status["t2"] is False

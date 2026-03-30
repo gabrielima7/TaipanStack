@@ -317,3 +317,79 @@ class TestConfigWatcher:
         )
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Ok)
+
+
+def test_config_watcher_hash_err_branch() -> None:
+
+    from pydantic import BaseModel
+
+    from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
+
+    class DummyConfig(BaseModel):
+        val: int
+
+    def mock_on_error(err):
+        pass
+
+    from pathlib import Path
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("nonexistent_file_xyz.json")],
+        config_model=DummyConfig,
+        on_validation_error=mock_on_error,
+    )
+    # _detect_changes calls _hash_file, which returns Err on missing file
+    # This covers the Err branch of match hash_result:
+    watcher._detect_changes()
+
+
+def test_config_watcher_validate_and_apply_err_without_error_callback_branch() -> None:
+    import json
+
+    from pydantic import BaseModel
+
+    from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
+
+    class DummyConfig(BaseModel):
+        val: int
+
+    from pathlib import Path
+
+    with Path("test_bad_validate.json").open("w") as f:
+        json.dump({"val": "not an int"}, f)
+
+    from pathlib import Path
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("test_bad_validate.json")],
+        config_model=DummyConfig,
+        on_validation_error=None,
+    )
+    watcher._validate_and_apply(Path("test_bad_validate.json"))
+    Path("test_bad_validate.json").unlink()
+
+
+def test_config_watcher_validate_and_apply_ok_without_change_callback_branch() -> None:
+    import json
+
+    from pydantic import BaseModel
+
+    from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
+
+    class DummyConfig(BaseModel):
+        val: int
+
+    from pathlib import Path
+
+    with Path("test_good_validate.json").open("w") as f:
+        json.dump({"val": 1}, f)
+
+    from pathlib import Path
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("test_good_validate.json")],
+        config_model=DummyConfig,
+        on_config_change=None,
+    )
+    watcher._validate_and_apply(Path("test_good_validate.json"))
+    Path("test_good_validate.json").unlink()

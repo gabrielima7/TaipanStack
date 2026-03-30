@@ -291,3 +291,25 @@ class TestGuardHashAlgorithm:
         assert guard_hash_algorithm("md5", allowed_algorithms=["md5"]) == "md5"
         with pytest.raises(SecurityError):
             guard_hash_algorithm("sha256", allowed_algorithms=["md5"])
+
+
+def test_guard_ssrf_ok_and_other_branches() -> None:
+    from taipanstack.core.result import Ok
+    from taipanstack.security.guards import guard_ssrf
+
+    # Ok branch
+    res = guard_ssrf("https://www.google.com")
+    assert isinstance(res, Ok)
+
+
+def test_guard_ssrf_internal_err_branches() -> None:
+    from taipanstack.core.result import Err
+    from taipanstack.security.guards import guard_ssrf
+
+    # Validation error branch:
+    res = guard_ssrf("invalid_url:")
+    assert isinstance(res, Err)
+
+    # IP safety error branch:
+    res2 = guard_ssrf("http://127.0.0.1")
+    assert isinstance(res2, Err)
