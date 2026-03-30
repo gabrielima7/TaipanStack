@@ -209,6 +209,7 @@ class StackConfig(BaseModel):
             ValueError: If project name contains invalid characters.
 
         """
+        _ = cls
         pattern = r"^[a-zA-Z][a-zA-Z0-9_-]*\Z"
         if not re.match(pattern, value):
             msg = (
@@ -234,6 +235,7 @@ class StackConfig(BaseModel):
             ValueError: If version format is invalid.
 
         """
+        _ = cls
         pattern = r"^\d+\.\d+\Z"
         if not re.match(pattern, value):
             msg = (
@@ -269,6 +271,7 @@ class StackConfig(BaseModel):
             ValueError: If path is unsafe or contains traversal.
 
         """
+        _ = cls
         resolved = value.resolve()
 
         # Check for path traversal attempts
