@@ -83,27 +83,32 @@ def sanitize_string(
     if not value:
         return ""
 
-    result = value
-
     # Strip whitespace first
-    if strip_whitespace:
-        result = result.strip()
+    result = value.strip() if strip_whitespace else value
+
+    # Fast path: typical strings needing no further heavy processing
+    if allow_unicode and allow_html and max_length is None:
+        if not _CONTROL_CHARS_RE.search(result):
+            return result
 
     # Remove null bytes and control characters
     result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
     if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
+        # Fast path to avoid regex and replacements if no typical HTML chars
+        if "<" in result or ">" in result or "&" in result:
+            # Remove HTML tags
+            result = _HTML_TAGS_RE.sub("", result)
+            # Escape HTML entities
+            result = result.replace("&", "&amp;")
+            result = result.replace("<", "&lt;")
+            result = result.replace(">", "&gt;")
 
     # Handle unicode
     if not allow_unicode:
-        result = result.encode("ascii", errors="ignore").decode("ascii")
+        if not result.isascii():
+            result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
     if max_length is not None and len(result) > max_length:
@@ -339,10 +344,8 @@ def sanitize_env_value(
     ):
         return value
 
-    result = value
-
     # Remove null bytes
-    result = result.replace("\x00", "")
+    result = value.replace("\x00", "")
 
     # Handle newlines
     if not allow_multiline:
@@ -350,7 +353,7 @@ def sanitize_env_value(
 
     # Truncate
     if len(result) > max_length:
-        result = result[:max_length]
+        return result[:max_length]
 
     return result
 
@@ -378,25 +381,31 @@ def sanitize_sql_identifier(identifier: str) -> str:
         msg = "SQL identifier cannot be empty"
         raise ValueError(msg)
 
-    # Fast path: already clean and valid
-    if not _SQL_IDENTIFIER_DENY_RE.search(identifier):
-        if (
-            identifier[0] in _VALID_SQL_PREFIX
-            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-        ):
+    # Ultra-fast path for typical simple identifiers
+    if identifier.isascii() and identifier.isidentifier():
+        if len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH:
             return identifier
-        result = identifier
+        result = identifier[:MAX_SQL_IDENTIFIER_LENGTH]
     else:
-        # Only allow alphanumeric and underscore
-        result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
+        # Fast path: already clean and valid, using regex as fallback check
+        if not _SQL_IDENTIFIER_DENY_RE.search(identifier):
+            if (
+                identifier[0] in _VALID_SQL_PREFIX
+                and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+            ):
+                return identifier
+            result = identifier
+        else:
+            # Only allow alphanumeric and underscore
+            result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
 
-    # Must start with letter or underscore
-    if result and result[0] not in _VALID_SQL_PREFIX:
-        result = f"_{result}"
+        # Must start with letter or underscore
+        if result and result[0] not in _VALID_SQL_PREFIX:
+            result = f"_{result}"
 
-    # Check length (most DBs limit to 128 chars)
-    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
-        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
+        # Check length (most DBs limit to 128 chars)
+        if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
+            result = result[:MAX_SQL_IDENTIFIER_LENGTH]
 
     if not result:
         msg = "SQL identifier contains no valid characters"
