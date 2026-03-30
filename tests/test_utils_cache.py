@@ -75,3 +75,34 @@ async def test_cached_async() -> None:
     await asyncio.sleep(0.15)
     assert await compute_async(5) == Ok(10)
     assert call_count == 3
+
+
+def test_cached_sync_err_branch() -> None:
+    call_count = 0
+
+    @cached(ttl=0.1)
+    def compute() -> Result[int, ValueError]:
+        nonlocal call_count
+        call_count += 1
+        return Err(ValueError("err"))
+
+    assert isinstance(compute(), Err)
+    assert call_count == 1
+    assert isinstance(compute(), Err)
+    assert call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_cached_async_err_branch() -> None:
+    call_count = 0
+
+    @cached(ttl=0.1)
+    async def compute() -> Result[int, ValueError]:
+        nonlocal call_count
+        call_count += 1
+        return Err(ValueError("err"))
+
+    assert isinstance(await compute(), Err)
+    assert call_count == 1
+    assert isinstance(await compute(), Err)
+    assert call_count == 2

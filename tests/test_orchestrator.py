@@ -273,3 +273,37 @@ class TestResilienceOrchestrator:
         # Should return 0.0 when no retry config is set
         delay = orch._calculate_retry_delay(1)
         assert delay == 0.0
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_fallback_err_branch() -> None:
+    from taipanstack.core.result import Ok
+    from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+
+    orchestrator = ResilienceOrchestrator("test_fallback").with_fallback(
+        {"status": "failed"}
+    )
+
+    async def fail_func():
+        raise ValueError("err")
+
+    res = await orchestrator.execute(fail_func)
+    assert res == Ok({"status": "failed"})
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_execute_timeout_err_branch() -> None:
+    from taipanstack.core.result import Err
+    from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+    from taipanstack.resilience.retry import RetryConfig
+
+    # We want to test _execute_with_retry returning Err
+    orchestrator = ResilienceOrchestrator("test_err").with_retry(
+        RetryConfig(max_attempts=1)
+    )
+
+    async def fail_func():
+        raise ValueError("err")
+
+    res = await orchestrator.execute(fail_func)
+    assert isinstance(res, Err)

@@ -190,3 +190,11 @@ class TestAdaptiveCircuitBreaker:
         # The window is now: [True, True, True, True, False, False, False, False, False, False]
         # Total: 10, Errors: 6 -> Error rate 60% -> Tripped!
         assert ab.state.value == CircuitState.OPEN.value
+
+
+def test_adaptive_breaker_err_branch() -> None:
+    from taipanstack.core.result import Err
+    from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
+
+    breaker = AdaptiveCircuitBreaker(name="test_err")
+    breaker.evaluate_result(Err(ValueError("err")))

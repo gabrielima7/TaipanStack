@@ -256,3 +256,22 @@ class TestSendJsonResponse:
             extra_headers=[(b"x-custom", b"value")],
         )
         assert capture.headers.get("x-custom") == "value"
+
+
+def test_send_json_response_err() -> None:
+    import asyncio
+
+    from taipanstack.core.result import Err
+
+    async def run_test():
+        class MockSend:
+            called = False
+
+            async def __call__(self, message):
+                self.called = True
+
+        from taipanstack.bridges.web_bridge import result_to_response
+
+        result_to_response(Err(ValueError("err")))
+
+    asyncio.run(run_test())
