@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../releases/v0.4.0/" class="md-tabs__link">
+        <a href="../../releases/v0.4.1/" class="md-tabs__link">
           
   
   
@@ -1180,10 +1180,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.FileNotFoundErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.FileNotFoundErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -1208,10 +1208,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.NotAFileErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.NotAFileErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -1236,10 +1236,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.FileTooLargeErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.FileTooLargeErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -2744,6 +2744,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../releases/v0.4.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.4.1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/v0.4.0/" class="md-nav__link">
         
   
@@ -3973,10 +4001,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.FileNotFoundErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.FileNotFoundErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -4001,10 +4029,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.NotAFileErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.NotAFileErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -4029,10 +4057,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#taipanstack.utils.filesystem.FileTooLargeErr.__post_init__" class="md-nav__link">
+  <a href="#taipanstack.utils.filesystem.FileTooLargeErr.message" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;message
       
     </span>
   </a>
@@ -8230,7 +8258,7 @@ atomic writes, and proper error handling using Result types.</p>
   </span>
 
 <a href="#taipanstack.utils.filesystem.FileNotFoundErr" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">FileNotFoundErr</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">FileNotFoundErr</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8257,28 +8285,32 @@ atomic writes, and proper error handling using Result types.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
 
 
 
-<div class="doc doc-object doc-function">
+<h3 id="taipanstack.utils.filesystem.FileNotFoundErr.message" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">message</span>
 
 
-<h3 id="taipanstack.utils.filesystem.FileNotFoundErr.__post_init__" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__post_init__</span>
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
 
-
-<a href="#taipanstack.utils.filesystem.FileNotFoundErr.__post_init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__post_init__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a href="#taipanstack.utils.filesystem.FileNotFoundErr.message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Set default message.</p>
-
+        <p>Get the error message.</p>
 
     </div>
 
 </div>
+
+
+
 
 
 
@@ -8301,7 +8333,7 @@ atomic writes, and proper error handling using Result types.</p>
   </span>
 
 <a href="#taipanstack.utils.filesystem.NotAFileErr" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">NotAFileErr</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">NotAFileErr</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8328,28 +8360,32 @@ atomic writes, and proper error handling using Result types.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
 
 
 
-<div class="doc doc-object doc-function">
+<h3 id="taipanstack.utils.filesystem.NotAFileErr.message" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">message</span>
 
 
-<h3 id="taipanstack.utils.filesystem.NotAFileErr.__post_init__" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__post_init__</span>
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
 
-
-<a href="#taipanstack.utils.filesystem.NotAFileErr.__post_init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__post_init__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a href="#taipanstack.utils.filesystem.NotAFileErr.message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Set default message.</p>
-
+        <p>Get the error message.</p>
 
     </div>
 
 </div>
+
+
+
 
 
 
@@ -8372,9 +8408,7 @@ atomic writes, and proper error handling using Result types.</p>
   </span>
 
 <a href="#taipanstack.utils.filesystem.FileTooLargeErr" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">FileTooLargeErr</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">max_size</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-</span><span id="__span-0-3"><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">FileTooLargeErr</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">max_size</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8401,28 +8435,32 @@ atomic writes, and proper error handling using Result types.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
 
 
 
-<div class="doc doc-object doc-function">
+<h3 id="taipanstack.utils.filesystem.FileTooLargeErr.message" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">message</span>
 
 
-<h3 id="taipanstack.utils.filesystem.FileTooLargeErr.__post_init__" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__post_init__</span>
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
 
-
-<a href="#taipanstack.utils.filesystem.FileTooLargeErr.__post_init__" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__post_init__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a href="#taipanstack.utils.filesystem.FileTooLargeErr.message" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Set default message.</p>
-
+        <p>Get the error message.</p>
 
     </div>
 
 </div>
+
+
+
 
 
 
@@ -9511,7 +9549,7 @@ atomic writes, and proper error handling using Result types.</p>
 </span><span id="__span-0-5">    <span class="n">base_dir</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">recursive</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-7">    <span class="n">include_hidden</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-0-8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">]</span>
+</span><span id="__span-0-8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Iterator">Iterator</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9638,12 +9676,12 @@ atomic writes, and proper error handling using Result types.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="list">list</span>[<span title="pathlib.Path">Path</span>]</code>
+                    <code><span title="collections.abc.Iterator">Iterator</span>[<span title="pathlib.Path">Path</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>List of matching file paths.</p>
+                <p>Iterator of matching file paths.</p>
               </div>
             </td>
           </tr>
@@ -11919,8 +11957,9 @@ command validation, timeout handling, and retry logic.</p>
 </span><span id="__span-0-7">    <span class="n">check</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-8">    <span class="n">allowed_commands</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-9">    <span class="n">env</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-10">    <span class="n">dry_run</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-0-11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            SafeCommandResult
+</span><span id="__span-0-10">    <span class="n">allowed_env_vars</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-11">    <span class="n">dry_run</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-0-12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            SafeCommandResult
 
 
   
@@ -12072,6 +12111,26 @@ optional command whitelisting.</p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>] | None</code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>allowed_env_vars</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Whitelist of allowed environment variables.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span>] | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -14803,6 +14862,8 @@ retry, timeout, and fallback into a single execution pipeline.</p>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Generic">Generic</span>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code></p>
 
 
 
@@ -14928,7 +14989,7 @@ result = await orch.execute(call_api, endpoint)</p>
 </span><span id="__span-0-2">    <span class="n">max_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="n">max_queue</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">timeout</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
-</span><span id="__span-0-5"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span>
+</span><span id="__span-0-5"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15019,7 +15080,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></code>
+                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -15046,7 +15107,7 @@ result = await orch.execute(call_api, endpoint)</p>
 <a href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator.with_circuit_breaker" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">with_circuit_breaker</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="#taipanstack.utils.circuit_breaker.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="            AdaptiveCircuitBreaker (taipanstack.resilience.adaptive.adaptive_breaker.AdaptiveCircuitBreaker)" href="#taipanstack.resilience.adaptive.adaptive_breaker.AdaptiveCircuitBreaker">AdaptiveCircuitBreaker</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span>
+</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15093,7 +15154,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></code>
+                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -15125,7 +15186,7 @@ result = await orch.execute(call_api, endpoint)</p>
   
       dataclass
    (taipanstack.resilience.retry.RetryConfig)" href="#taipanstack.utils.retry.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="            AdaptiveRetry (taipanstack.resilience.adaptive.adaptive_retry.AdaptiveRetry)" href="#taipanstack.resilience.adaptive.adaptive_retry.AdaptiveRetry">AdaptiveRetry</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span>
+</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15177,7 +15238,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></code>
+                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -15202,7 +15263,7 @@ result = await orch.execute(call_api, endpoint)</p>
 
 
 <a href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator.with_timeout" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">with_timeout</span><span class="p">(</span><span class="n">seconds</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">with_timeout</span><span class="p">(</span><span class="n">seconds</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15249,7 +15310,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></code>
+                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -15274,7 +15335,7 @@ result = await orch.execute(call_api, endpoint)</p>
 
 
 <a href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator.with_fallback" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">with_fallback</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">with_fallback</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15301,7 +15362,7 @@ result = await orch.execute(call_api, endpoint)</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="typing.Any">Any</span></code>
+                      <code><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></code>
                   </span>
               </p>
             </td>
@@ -15321,7 +15382,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a></code>
+                    <code><a class="autorefs autorefs-internal" title="            ResilienceOrchestrator (taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator)" href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator">ResilienceOrchestrator</a>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
