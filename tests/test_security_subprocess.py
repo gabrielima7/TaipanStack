@@ -17,7 +17,7 @@ def test_run_safe_command_filters_sensitive_env_vars() -> None:
         ["echo", "hello"],
         allowed_commands=["echo"],
         env=env,
-        allowed_env_vars=["PATH", "SAFE_VAR"]
+        allowed_env_vars=["PATH", "SAFE_VAR"],
     )
     assert result.success
 
@@ -43,12 +43,13 @@ def test_run_safe_command_empty_whitelist() -> None:
     # but run_safe_command validates and resolves `shutil.which` *before* execution.
     # Actually wait, Popen without PATH and just "echo" as command might fail. Let's use the resolved path.
     import shutil
+
     echo_path = shutil.which("echo")
     if echo_path:
         result = run_safe_command(
             [echo_path, "hello"],
             allowed_commands=["echo", echo_path],
             env=env,
-            allowed_env_vars=[]
+            allowed_env_vars=[],
         )
         assert result.success
