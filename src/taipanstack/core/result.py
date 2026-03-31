@@ -196,7 +196,7 @@ def collect_results(
     """
     if type(results) is list or type(results) is tuple:
         try:
-            return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
+            return Ok([r.ok_value for r in results])
         except AttributeError:
             pass
 
@@ -206,7 +206,7 @@ def collect_results(
         try:
             append(result.ok_value)  # type: ignore[union-attr]
         except AttributeError:
-            return result
+            return cast(Result[list[T], E], result)
     return Ok(values)
 
 

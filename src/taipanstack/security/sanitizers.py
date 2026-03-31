@@ -96,12 +96,13 @@ def sanitize_string(
         if "<" in result or ">" in result:
             result = _HTML_TAGS_RE.sub("", result)
         if "&" in result or "<" in result or ">" in result:
-            result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            result = (
+                result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            )
 
     # Handle unicode
-    if not allow_unicode:
-        if not result.isascii():
-            result = result.encode("ascii", errors="ignore").decode("ascii")
+    if not allow_unicode and not result.isascii():
+        result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
     if max_length is not None and len(result) > max_length:
@@ -167,7 +168,9 @@ def sanitize_filename(
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
 
     # Clean residual path chars
-    safe_stem = safe_stem.strip(". ").replace("/", replacement).replace("\\", replacement)
+    safe_stem = (
+        safe_stem.strip(". ").replace("/", replacement).replace("\\", replacement)
+    )
 
     # Collapse multiple replacement chars
     if replacement:
@@ -319,7 +322,12 @@ def sanitize_env_value(
             return value
         result = value.replace("\x00", "")
     else:
-        if val_len <= max_length and "\x00" not in value and "\n" not in value and "\r" not in value:
+        if (
+            val_len <= max_length
+            and "\x00" not in value
+            and "\n" not in value
+            and "\r" not in value
+        ):
             return value
         result = value.translate(_ENV_MULTILINE_TRANSLATE).replace("\x00", "")
 
