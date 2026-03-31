@@ -284,9 +284,6 @@ def ensure_dir(
     for p in [path, *path.parents]:
         if p.is_dir():
             break
-        if p.exists():
-            # If it exists but is not a dir, mkdir later will raise FileExistsError
-            pass
         paths_to_create.append(p)
 
     for p in reversed(paths_to_create):

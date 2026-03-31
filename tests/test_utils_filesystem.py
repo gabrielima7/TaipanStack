@@ -227,6 +227,17 @@ class TestEnsureDir:
             assert (tmp_path / "a" / "b").stat().st_mode & 0o777 == mode
             assert nested.stat().st_mode & 0o777 == mode
 
+    def test_ensure_dir_fails_if_file_exists(self, tmp_path: Path) -> None:
+        """Test that ensure_dir fails if a file exists at the path or a parent."""
+        file_path = tmp_path / "a"
+        file_path.write_text("content")
+
+        with pytest.raises(FileExistsError):
+            ensure_dir(file_path / "b")
+
+        with pytest.raises(FileExistsError):
+            ensure_dir(file_path)
+
     def test_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
