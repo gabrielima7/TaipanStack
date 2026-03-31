@@ -5,15 +5,46 @@ This module provides functions for secure password management using Argon2,
 with fallback verification support for PBKDF2-HMAC-SHA256.
 """
 
+import functools
 import hashlib
+import os
 import secrets
 
 import argon2
 from argon2.exceptions import VerifyMismatchError
 from pydantic import SecretStr
 
-# Global Argon2 PasswordHasher instance
-_ph = argon2.PasswordHasher()
+
+@functools.lru_cache(maxsize=1)
+def _get_cached_hasher(
+    time_cost: int, memory_cost: int, parallelism: int
+) -> argon2.PasswordHasher:
+    return argon2.PasswordHasher(
+        time_cost=time_cost,
+        memory_cost=memory_cost,
+        parallelism=parallelism,
+    )
+
+
+def get_password_hasher() -> argon2.PasswordHasher:
+    """Get a configured Argon2 hasher instance based on environment variables."""
+    try:
+        time_cost = int(os.getenv("ARGON2_TIME_COST", "3"))
+    except ValueError:
+        time_cost = 3
+
+    try:
+        memory_cost = int(os.getenv("ARGON2_MEMORY_COST", "65536"))
+    except ValueError:
+        memory_cost = 65536
+
+    try:
+        parallelism = int(os.getenv("ARGON2_PARALLELISM", "4"))
+    except ValueError:
+        parallelism = 4
+
+    return _get_cached_hasher(time_cost, memory_cost, parallelism)
+
 
 # Legacy PBKDF2 Constants
 LEGACY_ITERATIONS = 600_000
@@ -38,7 +69,7 @@ def hash_password(password: str | SecretStr) -> str:
     else:
         password_str = password
 
-    return _ph.hash(password_str)
+    return get_password_hasher().hash(password_str)
 
 
 def verify_password(password: str | SecretStr, password_hash: str) -> bool:
@@ -84,7 +115,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
 
     # Argon2 verification
     try:
-        return _ph.verify(password_hash, password_str)
+        return get_password_hasher().verify(password_hash, password_str)
     except (
         VerifyMismatchError,
         ValueError,
