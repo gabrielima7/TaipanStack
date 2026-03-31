@@ -142,7 +142,9 @@ class TestSafeWrite:
     def test_write_no_create_parents(self, tmp_path: Path) -> None:
         """Test writing a file with create_parents=False."""
         test_file = tmp_path / "direct.txt"
-        result = safe_write(test_file, "content", options=WriteOptions(create_parents=False))
+        result = safe_write(
+            test_file, "content", options=WriteOptions(create_parents=False)
+        )
 
         assert result.exists()
         assert result.read_text() == "content"
@@ -206,7 +208,9 @@ class TestSafeWrite:
         # Trigger an exception to enter the `except Exception:` cleanup block
         with patch("pathlib.Path.rename", side_effect=ValueError("Rename failed")):
             # When the cleanup attempts to unlink the temp file, raise PermissionError
-            with patch("pathlib.Path.unlink", side_effect=PermissionError("Permission denied")):
+            with patch(
+                "pathlib.Path.unlink", side_effect=PermissionError("Permission denied")
+            ):
                 with pytest.raises(PermissionError, match="Permission denied"):
                     safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
