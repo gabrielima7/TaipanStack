@@ -191,7 +191,7 @@ def _execute_command(
         The execution result.
 
     """
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     try:
         result = subprocess.run(  # nosec B603
@@ -205,7 +205,7 @@ def _execute_command(
             check=False,
         )
     except subprocess.TimeoutExpired as e:
-        duration = time.time() - start_time
+        duration = time.perf_counter() - start_time
         stdout_str = ""
         if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
             if isinstance(e.stdout, str):
@@ -220,7 +220,7 @@ def _execute_command(
             duration_seconds=duration,
         )
 
-    duration = time.time() - start_time
+    duration = time.perf_counter() - start_time
 
     return SafeCommandResult(
         command=validated_cmd,
