@@ -10,6 +10,7 @@ import hashlib
 import os
 import shutil
 import tempfile
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeAlias
@@ -420,7 +421,7 @@ def find_files(
     base_dir: Path | str | None = None,
     recursive: bool = True,
     include_hidden: bool = False,
-) -> list[Path]:
+) -> Iterator[Path]:
     """Find files matching a pattern.
 
     Args:
@@ -431,7 +432,7 @@ def find_files(
         include_hidden: Include hidden files (starting with .).
 
     Returns:
-        List of matching file paths.
+        Iterator of matching file paths.
 
     """
     directory = Path(directory)
@@ -440,16 +441,13 @@ def find_files(
     directory = _validate_path(directory, base_dir)
 
     if not directory.exists():
-        return []
+        return iter([])
 
-    if recursive:
-        files = list(directory.rglob(pattern))
-    else:
-        files = list(directory.glob(pattern))
+    iterator = directory.rglob(pattern) if recursive else directory.glob(pattern)
 
-    # Filter hidden files if needed
-    if not include_hidden:
-        files = [f for f in files if not any(p.startswith(".") for p in f.parts)]
-
-    # Only return files, not directories
-    return [f for f in files if f.is_file()]
+    return (
+        f
+        for f in iterator
+        if f.is_file()
+        and (include_hidden or not any(p.startswith(".") for p in f.parts))
+    )

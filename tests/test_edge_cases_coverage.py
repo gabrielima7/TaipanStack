@@ -91,7 +91,7 @@ class TestFilesystemEdgeCases:
         (tmp_path / "subdir").mkdir()
         (tmp_path / "subdir" / "b.txt").touch()
 
-        results = find_files(tmp_path, pattern="*.txt", recursive=True)
+        results = list(find_files(tmp_path, pattern="*.txt", recursive=True))
         names = [r.name for r in results]
         assert "a.txt" in names
         assert "b.txt" in names
