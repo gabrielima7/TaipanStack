@@ -24,6 +24,14 @@ from taipanstack.utils.filesystem import (
 class TestSafeRead:
     """Tests for safe_read function."""
 
+    def test_read_no_max_size(self, tmp_path: Path) -> None:
+        """Test reading a file with max_size_bytes=None."""
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("hello")
+
+        result = safe_read(test_file, max_size_bytes=None)
+        assert result.ok_value == "hello"
+
     def test_read_existing_file(self, tmp_path: Path) -> None:
         """Test reading an existing file."""
         test_file = tmp_path / "test.txt"
@@ -121,6 +129,24 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
+    def test_write_existing_file_with_base_dir(self, tmp_path: Path) -> None:
+        """Test writing an existing file with base_dir."""
+        test_file = tmp_path / "existing.txt"
+        test_file.write_text("old")
+
+        result = safe_write(test_file, "new", options=WriteOptions(base_dir=tmp_path))
+
+        assert result.exists()
+        assert result.read_text() == "new"
+
+    def test_write_no_create_parents(self, tmp_path: Path) -> None:
+        """Test writing a file with create_parents=False."""
+        test_file = tmp_path / "direct.txt"
+        result = safe_write(test_file, "content", options=WriteOptions(create_parents=False))
+
+        assert result.exists()
+        assert result.read_text() == "content"
+
     def test_write_empty_content(self, tmp_path: Path) -> None:
         """Test writing an empty string."""
         test_file = tmp_path / "empty.txt"
@@ -170,6 +196,30 @@ class TestSafeWrite:
         safe_write(test_file, "direct content", options=WriteOptions(atomic=False))
 
         assert test_file.read_text() == "direct content"
+
+    def test_safe_write_cleanup_propagates_oserror(self, tmp_path: Path) -> None:
+        """Test that cleanup during write propagates critical OSErrors like PermissionError."""
+        test_file = tmp_path / "protected.txt"
+
+        from unittest.mock import patch
+
+        # Trigger an exception to enter the `except Exception:` cleanup block
+        with patch("pathlib.Path.rename", side_effect=ValueError("Rename failed")):
+            # When the cleanup attempts to unlink the temp file, raise PermissionError
+            with patch("pathlib.Path.unlink", side_effect=PermissionError("Permission denied")):
+                with pytest.raises(PermissionError, match="Permission denied"):
+                    safe_write(test_file, "content", options=WriteOptions(atomic=True))
+
+    def test_safe_write_cleanup_succeeds(self, tmp_path: Path) -> None:
+        """Test that cleanup during write unlinks the temp file."""
+        test_file = tmp_path / "cleanup.txt"
+
+        from unittest.mock import patch
+
+        # Trigger an exception to enter the `except Exception:` cleanup block
+        with patch("pathlib.Path.rename", side_effect=ValueError("Rename failed")):
+            with pytest.raises(ValueError, match="Rename failed"):
+                safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
     def test_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
@@ -223,6 +273,20 @@ class TestEnsureDir:
 
 class TestSafeCopy:
     """Tests for safe_copy function."""
+
+    def test_copy_file_with_base_dir(self, tmp_path: Path) -> None:
+        """Test copying files with base_dir."""
+        src = tmp_path / "src.txt"
+        src.write_text("hello")
+
+        dst_new = tmp_path / "dst_new.txt"
+        safe_copy(src, dst_new, base_dir=tmp_path)
+        assert dst_new.read_text() == "hello"
+
+        dst_existing = tmp_path / "dst_exist.txt"
+        dst_existing.write_text("old")
+        safe_copy(src, dst_existing, base_dir=tmp_path, overwrite=True)
+        assert dst_existing.read_text() == "hello"
 
     def test_copy_file(self, tmp_path: Path) -> None:
         """Test copying a file."""
