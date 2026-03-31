@@ -186,7 +186,9 @@ class TestSafeWrite:
         """Test writing fails if parent directories don't exist and create_parents is false."""
         test_file = tmp_path / "subdir" / "nested" / "file.txt"
         with pytest.raises(FileNotFoundError):
-            safe_write(test_file, "nested content", options=WriteOptions(create_parents=False))
+            safe_write(
+                test_file, "nested content", options=WriteOptions(create_parents=False)
+            )
 
     def test_write_creates_backup(self, tmp_path: Path) -> None:
         """Test that backup is created for existing file."""
@@ -216,7 +218,9 @@ class TestSafeWrite:
 
         assert test_file.read_text() == "atomic content"
 
-    def test_atomic_write_rename_failure(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_atomic_write_rename_failure(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test atomic write cleans up temp file on rename failure."""
         test_file = tmp_path / "atomic_fail.txt"
 
