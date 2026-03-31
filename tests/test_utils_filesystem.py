@@ -79,6 +79,42 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
+    def test_read_file_within_size_limit(self, tmp_path: Path) -> None:
+        """Test reading file within max_size returns Ok."""
+        test_file = tmp_path / "small.txt"
+        test_file.write_text("A" * 50, encoding="utf-8")
+
+        result = safe_read(test_file, max_size_bytes=100)
+        match result:
+            case Ok(content):
+                assert content == "A" * 50
+            case Err():
+                pytest.fail("Expected Ok but got Err")
+
+    def test_read_file_size_exactly_limit(self, tmp_path: Path) -> None:
+        """Test reading file size equal to max_size returns Ok."""
+        test_file = tmp_path / "exact.txt"
+        test_file.write_text("A" * 100, encoding="utf-8")
+
+        result = safe_read(test_file, max_size_bytes=100)
+        match result:
+            case Ok(content):
+                assert content == "A" * 100
+            case Err():
+                pytest.fail("Expected Ok but got Err")
+
+    def test_read_file_without_size_limit(self, tmp_path: Path) -> None:
+        """Test reading file when max_size_bytes is None."""
+        test_file = tmp_path / "small.txt"
+        test_file.write_text("A" * 50, encoding="utf-8")
+
+        result = safe_read(test_file, max_size_bytes=None)
+        match result:
+            case Ok(content):
+                assert content == "A" * 50
+            case Err():
+                pytest.fail("Expected Ok but got Err")
+
     def test_read_with_custom_encoding(self, tmp_path: Path) -> None:
         """Test reading with custom encoding."""
         test_file = tmp_path / "test.txt"
@@ -121,6 +157,16 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
+    def test_write_existing_file_with_base_dir(self, tmp_path: Path) -> None:
+        """Test writing an existing file with a base_dir constraint."""
+        test_file = tmp_path / "existing.txt"
+        test_file.write_text("old")
+
+        result = safe_write(test_file, "new", options=WriteOptions(base_dir=tmp_path))
+
+        assert result.exists()
+        assert result.read_text() == "new"
+
     def test_write_empty_content(self, tmp_path: Path) -> None:
         """Test writing an empty string."""
         test_file = tmp_path / "empty.txt"
@@ -135,6 +181,12 @@ class TestSafeWrite:
         safe_write(test_file, "nested content")
 
         assert test_file.exists()
+
+    def test_write_does_not_create_parent_dirs(self, tmp_path: Path) -> None:
+        """Test writing fails if parent directories don't exist and create_parents is false."""
+        test_file = tmp_path / "subdir" / "nested" / "file.txt"
+        with pytest.raises(FileNotFoundError):
+            safe_write(test_file, "nested content", options=WriteOptions(create_parents=False))
 
     def test_write_creates_backup(self, tmp_path: Path) -> None:
         """Test that backup is created for existing file."""
@@ -163,6 +215,23 @@ class TestSafeWrite:
         safe_write(test_file, "atomic content", options=WriteOptions(atomic=True))
 
         assert test_file.read_text() == "atomic content"
+
+    def test_atomic_write_rename_failure(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test atomic write cleans up temp file on rename failure."""
+        test_file = tmp_path / "atomic_fail.txt"
+
+        # Monkeypatch Path.rename to raise an error
+        def mock_rename(self: Path, target: Path | str) -> Path:
+            raise OSError("Mocked rename failure")
+
+        monkeypatch.setattr(Path, "rename", mock_rename)
+
+        with pytest.raises(OSError, match="Mocked rename failure"):
+            safe_write(test_file, "atomic content", options=WriteOptions(atomic=True))
+
+        # Verify no temp files are left behind
+        temp_files = list(tmp_path.glob("*.tmp*"))
+        assert len(temp_files) == 0
 
     def test_non_atomic_write(self, tmp_path: Path) -> None:
         """Test non-atomic write mode."""
@@ -270,6 +339,29 @@ class TestSafeCopy:
         safe_copy(src, dst)
 
         assert dst.exists()
+
+    def test_copy_with_base_dir_dst_not_exists(self, tmp_path: Path) -> None:
+        """Test copying a file with base_dir when dst does not exist."""
+        src = tmp_path / "source.txt"
+        src.write_text("content")
+        dst = tmp_path / "new_dest.txt"
+
+        result = safe_copy(src, dst, base_dir=tmp_path)
+
+        assert result.exists()
+        assert result.read_text() == "content"
+
+    def test_copy_with_base_dir_dst_exists(self, tmp_path: Path) -> None:
+        """Test copying a file with base_dir when dst already exists."""
+        src = tmp_path / "source.txt"
+        src.write_text("new content")
+        dst = tmp_path / "existing_dest.txt"
+        dst.write_text("old content")
+
+        result = safe_copy(src, dst, base_dir=tmp_path, overwrite=True)
+
+        assert result.exists()
+        assert result.read_text() == "new content"
 
 
 class TestSafeDelete:
