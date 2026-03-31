@@ -226,7 +226,10 @@ def run_safe_command(
         subprocess.CalledProcessError: If check=True and command fails.
 
     Example:
-        >>> result = run_safe_command(["poetry", "install"], allowed_commands=["poetry"])
+        >>> result = run_safe_command(
+        ...     ["poetry", "install"],
+        ...     allowed_commands=["poetry"],
+        ... )
         >>> if result.success:
         ...     print("Installation complete!")
 
