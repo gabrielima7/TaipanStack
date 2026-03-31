@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -41,15 +42,26 @@ class RecursiveDummy:
 
 
 def test_cache_fallback_to_string_and_sets():
-    """Ensure the custom fallback and sets are fully covered."""
+    """Ensure sets of hashable objects still work, and unhashable raises TypeError."""
     dummy1 = UnhashableDummy()
 
-    # Trigger set path (line 60) and fallback exception (line 64-65)
-    res1 = my_func({1, 2, 3}, dummy=dummy1)
-    res2 = my_func({1, 2, 3}, dummy=dummy1)
+    # Trigger set path
+    res1 = my_func({1, 2, 3})
+    res2 = my_func({1, 2, 3})
     assert res1 == res2
 
-    # Trigger tuple recursive path (line 54)
-    res3 = my_func(({"nested": dummy1},), dummy=dummy1)
-    res4 = my_func(({"nested": dummy1},), dummy=dummy1)
+    # Attempting to use unhashable type raises TypeError
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(dummy1)
+
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(dummy=dummy1)
+
+    # Trigger tuple recursive path for hashable objects
+    res3 = my_func(({"nested": 1},))
+    res4 = my_func(({"nested": 1},))
     assert res3 == res4
+
+    # Trigger tuple recursive path fails for unhashable objects
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(({"nested": dummy1},))
