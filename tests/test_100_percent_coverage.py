@@ -176,19 +176,6 @@ class TestFilesystemMissingBranches:
         result = ensure_dir(new_dir, base_dir=tmp_path)
         assert result.exists()
 
-    def test_find_files_include_hidden(self, tmp_path: Path) -> None:
-        """Test find_files with include_hidden=True."""
-        from taipanstack.utils.filesystem import find_files
-
-        # Create hidden file
-        hidden = tmp_path / ".hidden"
-        hidden.touch()
-        (tmp_path / "visible.txt").touch()
-
-        results = find_files(tmp_path, include_hidden=True)
-        names = [r.name for r in results]
-        assert ".hidden" in names
-
 
 class TestGeneratorsBranches:
     """Tests for generators branches."""

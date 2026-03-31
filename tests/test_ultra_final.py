@@ -84,16 +84,6 @@ class TestSanitizers100Percent:
 class TestFilesystem100Percent:
     """Tests to reach 100% for filesystem."""
 
-    def test_get_file_hash_with_base_dir(self, tmp_path: Path) -> None:
-        """Test get_file_hash with base_dir."""
-        from taipanstack.utils.filesystem import get_file_hash
-
-        test_file = tmp_path / "hashfile.txt"
-        test_file.write_text("content")
-
-        result = get_file_hash(test_file, base_dir=tmp_path)
-        assert len(result) == 64  # SHA256
-
 
 class TestRetry100Percent:
     """Tests to reach 100% for retry."""

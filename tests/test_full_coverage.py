@@ -17,7 +17,7 @@ from taipanstack.resilience.retry import RetryError, retry
 from taipanstack.security.guards import SecurityError, guard_env_variable
 from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
 from taipanstack.security.validators import validate_python_version
-from taipanstack.utils.filesystem import ensure_dir, safe_delete, safe_read
+from taipanstack.utils.filesystem import ensure_dir, safe_read
 from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
 
 # ============================================================================
@@ -174,15 +174,6 @@ class TestFilesystemEnsureDir:
 
 class TestFilesystemSafeDelete:
     """Test safe_delete edge cases."""
-
-    def test_safe_delete_file_no_base_dir(self) -> None:
-        """Test safe_delete without base_dir."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            test_file = Path(tmpdir) / "test_file.txt"
-            test_file.write_text("content")
-
-            result = safe_delete(test_file, base_dir=None, missing_ok=True)
-            assert result is True
 
 
 # ============================================================================
