@@ -30,13 +30,11 @@ class FileNotFoundErr:
     """Error when file is not found."""
 
     path: Path
-    message: str = ""
 
-    def __post_init__(self) -> None:
-        """Set default message."""
-        object.__setattr__(
-            self, "message", self.message or f"File not found: {self.path}"
-        )
+    @property
+    def message(self) -> str:
+        """Get the error message."""
+        return f"File not found: {self.path}"
 
 
 @dataclass(frozen=True)
@@ -44,11 +42,11 @@ class NotAFileErr:
     """Error when path is not a file."""
 
     path: Path
-    message: str = ""
 
-    def __post_init__(self) -> None:
-        """Set default message."""
-        object.__setattr__(self, "message", self.message or f"Not a file: {self.path}")
+    @property
+    def message(self) -> str:
+        """Get the error message."""
+        return f"Not a file: {self.path}"
 
 
 def _validate_path(
@@ -85,15 +83,11 @@ class FileTooLargeErr:
     path: Path
     size: int
     max_size: int
-    message: str = ""
 
-    def __post_init__(self) -> None:
-        """Set default message."""
-        object.__setattr__(
-            self,
-            "message",
-            self.message or f"File too large: {self.size} bytes (max: {self.max_size})",
-        )
+    @property
+    def message(self) -> str:
+        """Get the error message."""
+        return f"File too large: {self.size} bytes (max: {self.max_size})"
 
 
 @dataclass(frozen=True)

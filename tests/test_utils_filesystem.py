@@ -52,8 +52,9 @@ class TestSafeRead:
         """Test reading non-existent file returns Err."""
         result = safe_read(tmp_path / "nonexistent.txt")
         match result:
-            case Err(FileNotFoundErr(path=p)):
+            case Err(FileNotFoundErr(path=p) as e):
                 assert "nonexistent.txt" in str(p)
+                assert e.message == f"File not found: {p}"
             case _:
                 pytest.fail("Expected Err(FileNotFoundErr)")
 
@@ -61,8 +62,9 @@ class TestSafeRead:
         """Test reading a directory returns Err."""
         result = safe_read(tmp_path)
         match result:
-            case Err(NotAFileErr(path=p)):
+            case Err(NotAFileErr(path=p) as e):
                 assert p == tmp_path
+                assert e.message == f"Not a file: {p}"
             case _:
                 pytest.fail("Expected Err(NotAFileErr)")
 
@@ -73,9 +75,10 @@ class TestSafeRead:
 
         result = safe_read(test_file, max_size_bytes=100)
         match result:
-            case Err(FileTooLargeErr(size=s, max_size=m)):
+            case Err(FileTooLargeErr(size=s, max_size=m) as e):
                 assert s >= 1000
                 assert m == 100
+                assert e.message == f"File too large: {s} bytes (max: {m})"
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
