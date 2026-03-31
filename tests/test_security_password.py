@@ -83,6 +83,17 @@ def test_verify_legacy_password() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
+def test_verify_legacy_password_too_many_iterations() -> None:
+    """Test that legacy PBKDF2 hashes with too many iterations are rejected."""
+    password = "my_password"
+    salt = b"1234567890123456"
+    hash_bytes = b"fakehash"
+    iterations = 1_000_001
+    pwd_hash = f"pbkdf2_sha256${iterations}${salt.hex()}${hash_bytes.hex()}"
+
+    assert verify_password(password, pwd_hash) is False
+
+
 def test_hash_password_is_random() -> None:
     """Test that hashing the same password twice produces different hashes due to salt."""
     password = "my_password"

@@ -20,6 +20,7 @@ LEGACY_ITERATIONS = 600_000
 LEGACY_SALT_SIZE = 16
 LEGACY_HASH_ALGORITHM = "sha256"
 LEGACY_FORMAT = "pbkdf2_sha256"
+MAX_LEGACY_ITERATIONS = 1_000_000
 
 
 def hash_password(password: str | SecretStr) -> str:
@@ -68,6 +69,9 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
             _algorithm, iterations_str, salt_hex, hash_hex = parts
 
             iterations = int(iterations_str)
+            if iterations > MAX_LEGACY_ITERATIONS:
+                return False
+
             salt = bytes.fromhex(salt_hex)
             stored_hash = bytes.fromhex(hash_hex)
 
