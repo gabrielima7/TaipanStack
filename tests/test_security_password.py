@@ -103,3 +103,21 @@ def test_hash_password_is_random() -> None:
     assert hash1 != hash2
     assert verify_password(password, hash1) is True
     assert verify_password(password, hash2) is True
+
+
+def test_verify_password_invalid_type_password() -> None:
+    """Test that an invalid type for password raises a TypeError."""
+    import pytest
+
+    pwd_hash = hash_password("my_password")
+
+    with pytest.raises(TypeError, match="password must be a string or SecretStr"):
+        verify_password(123, pwd_hash)  # type: ignore[arg-type]
+
+
+def test_verify_password_invalid_type_hash() -> None:
+    """Test that an invalid type for password_hash raises a TypeError."""
+    import pytest
+
+    with pytest.raises(TypeError, match="password_hash must be a string"):
+        verify_password("my_password", 123)  # type: ignore[arg-type]
