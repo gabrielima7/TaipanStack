@@ -50,17 +50,19 @@ def cached(ttl: float) -> CacheDecorator:
         func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
     ) -> tuple[Any, ...]:
         def _make_hashable(val: Any) -> Any:
-            if isinstance(val, (tuple, list)):
-                return tuple(_make_hashable(item) for item in val)
-            if isinstance(val, dict):
-                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
-            if isinstance(val, set):
-                return frozenset(_make_hashable(item) for item in val)
-            try:
-                hash(val)
-                return val
-            except TypeError:
-                return str(val)
+            match val:
+                case tuple() | list():
+                    return tuple(_make_hashable(item) for item in val)
+                case dict():
+                    return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+                case set():
+                    return frozenset(_make_hashable(item) for item in val)
+                case _:
+                    try:
+                        hash(val)
+                        return val
+                    except TypeError:
+                        return str(val)
 
         hashable_args = tuple(_make_hashable(arg) for arg in args)
         hashable_kwargs = tuple(
