@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774983223903,
+  "lastUpdate": 1774983836997,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -15563,6 +15563,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.000004948114369023411",
             "extra": "mean: 12.468202094424546 usec\nrounds: 8308"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1a6ff28881dc44df991e833ee3215c711c52cfcd",
+          "message": "🛡️ Sentinel: [Low] Fix crash on non-string keys during log redaction (#378)\n\n* 🛡️ Sentinel: [Low] Fix crash on non-string keys during log redaction\n\n- Wrote a property-based test with `hypothesis` that fuzzes `_redact_dict` with malformed dictionaries containing `None`, `int`, `float`, `bool`, and `datetime` keys.\n- Discovered an unhandled `TypeError` when `regex.search()` attempted to evaluate non-string keys.\n- Refactored `_is_sensitive` in `taipanstack.utils.logging` to safely intercept and skip any non-string key before regex evaluation (`isinstance(key, str)`).\n- Both `poetry run pytest` and static checks (ruff/mypy) pass successfully without regressions.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* 🛡️ Sentinel: [Low] Fix crash on non-string keys during log redaction\n\n- Wrote a property-based test with `hypothesis` that fuzzes `_redact_dict` with malformed dictionaries containing `None`, `int`, `float`, `bool`, and `datetime` keys.\n- Discovered an unhandled `TypeError` when `regex.search()` attempted to evaluate non-string keys.\n- Refactored `_is_sensitive` in `taipanstack.utils.logging` to safely intercept and skip any non-string key before regex evaluation (`isinstance(key, str)`).\n- Both `poetry run pytest` and static checks (ruff/mypy) pass successfully without regressions.\n- Fixed unused `pytest` import in `tests/test_fuzz_logging_redact.py` that caused linting failure in CI.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-31T16:03:20-03:00",
+          "tree_id": "cfb20cb690ac05942c8d7753316449a0a2e2e5c2",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/1a6ff28881dc44df991e833ee3215c711c52cfcd"
+        },
+        "date": 1774983836688,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 1000262.2869716958,
+            "unit": "iter/sec",
+            "range": "stddev: 3.2601062547966e-7",
+            "extra": "mean: 999.7377818047206 nsec\nrounds: 78469"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 696005.7961033568,
+            "unit": "iter/sec",
+            "range": "stddev: 3.873285122344469e-7",
+            "extra": "mean: 1.4367696441589695 usec\nrounds: 151470"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 441601.9628616734,
+            "unit": "iter/sec",
+            "range": "stddev: 5.374470934493542e-7",
+            "extra": "mean: 2.264482688255709 usec\nrounds: 145075"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 302896.49234771327,
+            "unit": "iter/sec",
+            "range": "stddev: 7.21842395422811e-7",
+            "extra": "mean: 3.3014578420803873 usec\nrounds: 52754"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 219841.30906701085,
+            "unit": "iter/sec",
+            "range": "stddev: 8.063077960627699e-7",
+            "extra": "mean: 4.548735650474067 usec\nrounds: 55298"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 40125.52188462817,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000004119084311133809",
+            "extra": "mean: 24.921794235481173 usec\nrounds: 14225"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 62243.995715078796,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000015833705953918975",
+            "extra": "mean: 16.0658066454713 usec\nrounds: 23625"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4162512.586798785,
+            "unit": "iter/sec",
+            "range": "stddev: 4.777957181428308e-8",
+            "extra": "mean: 240.23951379078792 nsec\nrounds: 88645"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 2308703.4587614476,
+            "unit": "iter/sec",
+            "range": "stddev: 5.033202602660013e-8",
+            "extra": "mean: 433.1435447914885 nsec\nrounds: 104954"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 2881627.882704142,
+            "unit": "iter/sec",
+            "range": "stddev: 2.1262148691256526e-7",
+            "extra": "mean: 347.02607022999524 nsec\nrounds: 150785"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 707964.1288581348,
+            "unit": "iter/sec",
+            "range": "stddev: 4.2210254165941563e-7",
+            "extra": "mean: 1.4125009435335172 usec\nrounds: 103864"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 513286.2384262308,
+            "unit": "iter/sec",
+            "range": "stddev: 4.853537029335725e-7",
+            "extra": "mean: 1.9482306852138984 usec\nrounds: 78722"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 428677.3505171368,
+            "unit": "iter/sec",
+            "range": "stddev: 6.097905244047731e-7",
+            "extra": "mean: 2.3327567896779375 usec\nrounds: 91904"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 153039.41259181686,
+            "unit": "iter/sec",
+            "range": "stddev: 8.590485914859472e-7",
+            "extra": "mean: 6.53426449477545 usec\nrounds: 84013"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 12673713.6393603,
+            "unit": "iter/sec",
+            "range": "stddev: 1.3791719003556397e-8",
+            "extra": "mean: 78.90347126782169 nsec\nrounds: 189036"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 51157.65334699922,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003542134255429674",
+            "extra": "mean: 19.547417337872428 usec\nrounds: 9436"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 68656.91952322373,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00000600233184444805",
+            "extra": "mean: 14.565174303541864 usec\nrounds: 12025"
           }
         ]
       }
