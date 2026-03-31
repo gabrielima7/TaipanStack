@@ -185,7 +185,7 @@ class TestFilesystemMissingBranches:
         hidden.touch()
         (tmp_path / "visible.txt").touch()
 
-        results = find_files(tmp_path, include_hidden=True)
+        results = list(find_files(tmp_path, include_hidden=True))
         names = [r.name for r in results]
         assert ".hidden" in names
 

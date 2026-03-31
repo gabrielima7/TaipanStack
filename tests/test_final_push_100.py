@@ -121,7 +121,7 @@ class TestFilesystemFinalBranches:
 
         (tmp_path / "file.txt").touch()
 
-        results = find_files(tmp_path, pattern="*.txt", base_dir=tmp_path)
+        results = list(find_files(tmp_path, pattern="*.txt", base_dir=tmp_path))
         assert len(list(results)) >= 1
 
 
