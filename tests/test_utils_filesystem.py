@@ -210,6 +210,19 @@ class TestEnsureDir:
         assert result.exists()
         assert result.is_dir()
 
+    def test_ensure_dir_applies_mode_to_all_parents(self, tmp_path: Path) -> None:
+        """Test that ensure_dir applies mode to all created parent directories."""
+        nested = tmp_path / "a" / "b" / "c"
+        # 0o700 is typically not the default umask
+        mode = 0o700
+
+        ensure_dir(nested, mode=mode)
+
+        assert nested.exists()
+        assert (tmp_path / "a").stat().st_mode & 0o777 == mode
+        assert (tmp_path / "a" / "b").stat().st_mode & 0o777 == mode
+        assert nested.stat().st_mode & 0o777 == mode
+
     def test_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):

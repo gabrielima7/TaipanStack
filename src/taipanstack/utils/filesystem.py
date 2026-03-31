@@ -280,7 +280,15 @@ def ensure_dir(
     # Validate path
     path = _validate_path(path, base_dir, allow_symlinks=True)
 
-    path.mkdir(parents=True, exist_ok=True, mode=mode)
+    paths_to_create = []
+    for p in [path, *path.parents]:
+        if p.exists():
+            break
+        paths_to_create.append(p)
+
+    for p in reversed(paths_to_create):
+        p.mkdir(exist_ok=True, mode=mode)
+
     return path.resolve()
 
 
