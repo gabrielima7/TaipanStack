@@ -11,6 +11,7 @@ import hashlib
 import os
 import shutil
 import tempfile
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeAlias
@@ -128,7 +129,7 @@ def safe_read(
     base_dir: Path | str | None = None,
     encoding: str = "utf-8",
     max_size_bytes: int | None = 10 * 1024 * 1024,  # 10MB default
-) -> Result[str, ReadFileError]:
+) -> Result[str | Iterator[str], ReadFileError]:
     """Read a file safely with path validation.
 
     Args:
@@ -172,8 +173,14 @@ def safe_read(
             return Err(
                 FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes)
             )
+        return Ok(path.read_text(encoding=encoding))
 
-    return Ok(path.read_text(encoding=encoding))
+    def _stream() -> Iterator[str]:
+        with path.open("r", encoding=encoding) as f:
+            while chunk := f.read(8192):
+                yield chunk
+
+    return Ok(_stream())
 
 
 def safe_write(

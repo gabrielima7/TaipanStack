@@ -157,7 +157,7 @@ class TestFilesystemSizeLimit:
         try:
             result = safe_read(temp_path, max_size_bytes=None)
             assert result.is_ok()
-            assert result.unwrap() == "test content"
+            assert "".join(result.unwrap()) == "test content"
         finally:
             temp_path.unlink()
 
