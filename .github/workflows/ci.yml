@@ -128,7 +128,10 @@ jobs:
           while [ "$attempt" -le 5 ]; do
             zypper clean -a || true
             zypper --gpg-auto-import-keys --non-interactive refresh --force || true
-            if zypper --non-interactive install python3 python3-pip git curl bash; then
+
+            # The openSUSE mirror sync frequently breaks appdata.xml.gz metadata.
+            # Work around this by ignoring metadata errors on install if needed.
+            if zypper --no-refresh --non-interactive install --no-recommends python3 python3-pip git curl bash; then
               break
             fi
 
