@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774982481866,
+  "lastUpdate": 1774983223903,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -15420,6 +15420,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003144466118930963",
             "extra": "mean: 17.093501879687462 usec\nrounds: 14364"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "62741d4b9983259254a625d9dd2a0497d27acc45",
+          "message": "🛡️ Sentinel: [Medium] Fix unhandled exception in CircuitBreaker state change callback (#380)\n\n* 🛡️ Sentinel: [Medium] Fix unhandled exception in CircuitBreaker state change callback\n\nTargeted component: `src/taipanstack/resilience/circuit_breaker.py`\nSimulated failure: User-provided `on_state_change` callback raises an unhandled `ValueError` during a critical transition.\nCode adjustments: Wrapped the callback execution inside a `try...except Exception` block in `_notify_state_change`. Unhandled exceptions in the user's callback are now safely caught and logged (via `_structlog_logger` or standard `logger`), preventing the state transition from being interrupted and protecting the caller from unexpected crashes. Added comprehensive chaos tests to verify behavior with and without structlog integration. All tests and linters pass with 100% coverage.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* 🛡️ Sentinel: [Medium] Fix unhandled exception in CircuitBreaker state change callback\n\nTargeted component: `src/taipanstack/resilience/circuit_breaker.py`\nSimulated failure: User-provided `on_state_change` callback raises an unhandled `ValueError` during a critical transition.\nCode adjustments: Wrapped the callback execution inside a `try...except Exception` block in `_notify_state_change`. Unhandled exceptions in the user's callback are now safely caught and logged (via `_structlog_logger` or standard `logger`), preventing the state transition from being interrupted and protecting the caller from unexpected crashes. Added comprehensive chaos tests to verify behavior with and without structlog integration. Resolved all `ruff` linting errors automatically to ensure the build cleanly passes all CI rules. All tests and linters pass with 100% coverage.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* 🛡️ Sentinel: [Medium] Fix unhandled exception in CircuitBreaker state change callback\n\nTargeted component: `src/taipanstack/resilience/circuit_breaker.py`\nSimulated failure: User-provided `on_state_change` callback raises an unhandled `ValueError` during a critical transition.\nCode adjustments: Wrapped the callback execution inside a `try...except Exception` block in `_notify_state_change`. Unhandled exceptions in the user's callback are now safely caught and logged (via `_structlog_logger` or standard `logger`), preventing the state transition from being interrupted and protecting the caller from unexpected crashes. Added comprehensive chaos tests to verify behavior with and without structlog integration. Resolved all `ruff` linting and formatting errors automatically to ensure the build cleanly passes all CI rules. All tests and linters pass with 100% coverage.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-03-31T15:33:27-03:00",
+          "tree_id": "9bea8d576110d6a82ddb0eaf2393a929918cb1df",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/62741d4b9983259254a625d9dd2a0497d27acc45"
+        },
+        "date": 1774983223263,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 1074521.1797659094,
+            "unit": "iter/sec",
+            "range": "stddev: 3.7440179191712826e-7",
+            "extra": "mean: 930.6470815380817 nsec\nrounds: 88060"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 766563.9912926622,
+            "unit": "iter/sec",
+            "range": "stddev: 2.1744093271306165e-7",
+            "extra": "mean: 1.304522533485682 usec\nrounds: 160206"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 539240.8307220816,
+            "unit": "iter/sec",
+            "range": "stddev: 3.082943198672704e-7",
+            "extra": "mean: 1.8544589783027543 usec\nrounds: 160927"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 299836.0523397316,
+            "unit": "iter/sec",
+            "range": "stddev: 3.7278726961198627e-7",
+            "extra": "mean: 3.335155970059738 usec\nrounds: 51465"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 257846.5848738348,
+            "unit": "iter/sec",
+            "range": "stddev: 4.6716378057359066e-7",
+            "extra": "mean: 3.8782751398057234 usec\nrounds: 69561"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 43966.603217936456,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000013608590241216138",
+            "extra": "mean: 22.74453623454003 usec\nrounds: 16683"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 70268.73069062817,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000012714901793141374",
+            "extra": "mean: 14.231081025252832 usec\nrounds: 23721"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 4248464.971842645,
+            "unit": "iter/sec",
+            "range": "stddev: 2.4524862376495976e-8",
+            "extra": "mean: 235.3791326110409 nsec\nrounds: 130668"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 2288844.392071949,
+            "unit": "iter/sec",
+            "range": "stddev: 3.430434184045695e-8",
+            "extra": "mean: 436.90169740845175 nsec\nrounds: 100241"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 3153654.8324617962,
+            "unit": "iter/sec",
+            "range": "stddev: 1.0488438869072026e-7",
+            "extra": "mean: 317.0924064696653 nsec\nrounds: 165865"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 764836.9678490116,
+            "unit": "iter/sec",
+            "range": "stddev: 2.2657154740358637e-7",
+            "extra": "mean: 1.3074681821569751 usec\nrounds: 105664"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 552991.7059752131,
+            "unit": "iter/sec",
+            "range": "stddev: 2.584252031989294e-7",
+            "extra": "mean: 1.8083453860062473 usec\nrounds: 91266"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 443793.65920614527,
+            "unit": "iter/sec",
+            "range": "stddev: 6.088105060909269e-7",
+            "extra": "mean: 2.253299431516873 usec\nrounds: 77400"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 156699.15170940134,
+            "unit": "iter/sec",
+            "range": "stddev: 9.496879961216789e-7",
+            "extra": "mean: 6.381655478611017 usec\nrounds: 83452"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 12734159.12280775,
+            "unit": "iter/sec",
+            "range": "stddev: 1.6851452830527658e-8",
+            "extra": "mean: 78.52893860960761 nsec\nrounds: 129434"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 57534.274536873854,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003255955364977539",
+            "extra": "mean: 17.3809439338476 usec\nrounds: 9792"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 80204.02560263069,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000004948114369023411",
+            "extra": "mean: 12.468202094424546 usec\nrounds: 8308"
           }
         ]
       }
