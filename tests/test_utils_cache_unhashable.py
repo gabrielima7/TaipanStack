@@ -11,16 +11,29 @@ class UnhashableDummy:
     __hash__ = None  # type: ignore
 
 
-def test_cache_fallback_to_string_and_sets():
-    """Ensure the custom fallback and sets are fully covered without hypothesis."""
+import pytest
+
+def test_cache_unhashable_raises_typeerror():
+    """Ensure passing unhashable types directly raises a TypeError."""
     dummy1 = UnhashableDummy()
 
-    # Trigger set path (line 60) and fallback exception (line 64-65)
-    res1 = my_func({1, 2, 3}, dummy=dummy1)
-    res2 = my_func({1, 2, 3}, dummy=dummy1)
+    # Trigger set path for hashable items still works
+    res1 = my_func({1, 2, 3})
+    res2 = my_func({1, 2, 3})
     assert res1 == res2
 
-    # Trigger tuple recursive path (line 54)
-    res3 = my_func(({"nested": dummy1},), dummy=dummy1)
-    res4 = my_func(({"nested": dummy1},), dummy=dummy1)
+    # Passing an unhashable dummy object should raise TypeError directly
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(dummy1)
+
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(dummy=dummy1)
+
+    # Trigger tuple recursive path still works for hashable nested contents
+    res3 = my_func(({"nested": 1},))
+    res4 = my_func(({"nested": 1},))
     assert res3 == res4
+
+    # Trigger tuple recursive path fails for unhashable nested contents
+    with pytest.raises(TypeError, match="unhashable type"):
+        my_func(({"nested": dummy1},))
