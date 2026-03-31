@@ -6,7 +6,6 @@ atomic writes, and proper error handling using Result types.
 """
 
 import contextlib
-import functools
 import hashlib
 import os
 import shutil
@@ -408,7 +407,7 @@ def get_file_hash(
     hasher = hashlib.new(algorithm)
 
     with path.open("rb") as f:
-        for chunk in iter(functools.partial(f.read, 8192), b""):
+        while chunk := f.read(8192):
             hasher.update(chunk)
 
     return hasher.hexdigest()
