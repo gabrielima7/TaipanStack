@@ -5,7 +5,6 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-import contextlib
 import functools
 import hashlib
 import os
@@ -247,8 +246,7 @@ def safe_write(
             temp_file.rename(path)
         except Exception:
             # Clean up temp file on error
-            with contextlib.suppress(OSError):
-                Path(temp_path).unlink(missing_ok=True)
+            Path(temp_path).unlink(missing_ok=True)
             raise
     else:
         path.write_text(content, encoding=opts.encoding)
