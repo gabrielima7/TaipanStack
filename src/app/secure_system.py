@@ -78,6 +78,18 @@ class User(SecureBaseModel):
     id: UUID
     username: str
     email: EmailStr
+    is_active: bool = True
+
+
+class UserInDB(User):
+    """
+    Model representing a registered user in the database.
+
+    Attributes:
+        password_hash: The hashed password of the user.
+
+    """
+
     password_hash: str
 
 
@@ -85,7 +97,7 @@ class UserRepository(ABC):
     """Abstract base class for user data access."""
 
     @abstractmethod
-    def save(self, user: User) -> None:
+    def save(self, user: UserInDB) -> None:
         """
         Save a user to the repository.
 
@@ -95,7 +107,7 @@ class UserRepository(ABC):
         """
 
     @abstractmethod
-    def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(self, user_id: UUID) -> UserInDB | None:
         """
         Retrieve a user by their ID.
 
@@ -103,7 +115,7 @@ class UserRepository(ABC):
             user_id: The UUID of the user.
 
         Returns:
-            The User object if found, otherwise None.
+            The UserInDB object if found, otherwise None.
 
         """
 
@@ -113,9 +125,9 @@ class InMemoryUserRepository(UserRepository):
 
     def __init__(self) -> None:
         """Initialize the in-memory repository."""
-        self._storage: dict[UUID, User] = {}
+        self._storage: dict[UUID, UserInDB] = {}
 
-    def save(self, user: User) -> None:
+    def save(self, user: UserInDB) -> None:
         """
         Save a user to the in-memory storage.
 
@@ -125,7 +137,7 @@ class InMemoryUserRepository(UserRepository):
         """
         self._storage[user.id] = user
 
-    def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(self, user_id: UUID) -> UserInDB | None:
         """
         Retrieve a user from the in-memory storage.
 
@@ -133,7 +145,7 @@ class InMemoryUserRepository(UserRepository):
             user_id: The UUID of the user.
 
         Returns:
-            The User object if found, otherwise None.
+            The UserInDB object if found, otherwise None.
 
         """
         return self._storage.get(user_id)
@@ -167,18 +179,25 @@ class UserService:
         pwd_hash = hash_password(user_create.password)
 
         user_id = uuid4()
-        user = User(
+        user_in_db = UserInDB(
             id=user_id,
             username=user_create.username,
             email=user_create.email,
             password_hash=pwd_hash,
         )
         try:
-            self._user_repository.save(user)
-            logger.info("User created successfully", user_id=user.id)
-            return Ok(user)
+            self._user_repository.save(user_in_db)
+            logger.info("User created successfully", user_id=user_in_db.id)
+            # Return the public User model, excluding the password hash
+            public_user = User(
+                id=user_in_db.id,
+                username=user_in_db.username,
+                email=user_in_db.email,
+                is_active=user_in_db.is_active,
+            )
+            return Ok(public_user)
         except UserAlreadyExistsError as e:
-            logger.exception("Failed to create user", user_id=user.id)
+            logger.warning("Failed to create user", user_id=user_in_db.id)
             return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
@@ -199,8 +218,15 @@ class UserService:
             ...         print(f"Not found: {error.user_id}")
 
         """
-        user = self._user_repository.get_by_id(user_id)
-        if user is None:
+        user_in_db = self._user_repository.get_by_id(user_id)
+        if user_in_db is None:
             logger.warning("User lookup failed", user_id=user_id)
             return Err(UserNotFoundError(user_id))
-        return Ok(user)
+
+        public_user = User(
+            id=user_in_db.id,
+            username=user_in_db.username,
+            email=user_in_db.email,
+            is_active=user_in_db.is_active,
+        )
+        return Ok(public_user)
