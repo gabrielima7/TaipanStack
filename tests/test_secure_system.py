@@ -8,10 +8,10 @@ from pydantic import SecretStr, ValidationError
 
 from app.secure_system import (
     InMemoryUserRepository,
-    User,
     UserAlreadyExistsError,
     UserCreate,
     UserCreationError,
+    UserInDB,
     UserNotFoundError,
     UserRepository,
     UserService,
@@ -37,7 +37,12 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     user = result.unwrap()
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
-    assert verify_password("secure_password", user.password_hash)
+    assert not hasattr(user, "password_hash")
+
+    # Verify that the password hash is present in the repository's UserInDB model
+    user_in_db = repository.get_by_id(user.id)
+    assert user_in_db is not None
+    assert verify_password("secure_password", user_in_db.password_hash)
 
     # Test get_user with Result pattern
     result_get = service.get_user(user.id)
@@ -96,7 +101,7 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
         ip_address=None,
     )
 
-    with caplog.at_level(logging.ERROR):
+    with caplog.at_level(logging.WARNING):
         result = service.create_user(user_create)
 
     match result:
@@ -151,7 +156,7 @@ def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
 
 
 def test_models_redaction() -> None:
-    """Test that UserCreate and User models redact sensitive fields."""
+    """Test that UserCreate and UserInDB models redact sensitive fields."""
     user_create = UserCreate(
         username="testuser",
         email="test@example.com",
@@ -166,17 +171,17 @@ def test_models_redaction() -> None:
     assert "***REDACTED***" in json_create
     assert "my_secret_password" not in json_create
 
-    user = User(
+    user_in_db = UserInDB(
         id=uuid4(),
         username="testuser",
         email="test@example.com",
         password_hash="some_hashed_value",
     )
 
-    dumped_user = user.model_dump()
+    dumped_user = user_in_db.model_dump()
     assert dumped_user["password_hash"] == "***REDACTED***"
     assert "some_hashed_value" not in str(dumped_user)
 
-    json_user = user.model_dump_json()
+    json_user = user_in_db.model_dump_json()
     assert "***REDACTED***" in json_user
     assert "some_hashed_value" not in json_user
