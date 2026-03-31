@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
-from pydantic import EmailStr, Field, SecretStr
+from pydantic import EmailStr, Field, SecretStr, field_validator
 from pydantic.networks import IPvAnyAddress
 
 from taipanstack.core.result import Err, Ok, Result
@@ -59,8 +59,21 @@ class UserCreate(SecureBaseModel):
 
     username: str = Field(..., min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
-    password: SecretStr
+    password: SecretStr = Field(..., min_length=8, max_length=128)
     ip_address: IPvAnyAddress | None = None
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_complexity(cls, v: SecretStr) -> SecretStr:
+        """Validate password complexity."""
+        password = v.get_secret_value()
+        if not any(char.isalpha() for char in password):
+            raise ValueError("Password must contain at least one letter")
+        if not any(char.isdigit() for char in password):
+            raise ValueError("Password must contain at least one number")
+        if not any(not char.isalnum() for char in password):
+            raise ValueError("Password must contain at least one symbol")
+        return v
 
 
 class User(SecureBaseModel):

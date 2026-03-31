@@ -27,7 +27,7 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     user_create = UserCreate(
         username="valid_user",
         email="user@example.com",
-        password=SecretStr("secure_password"),
+        password=SecretStr("Secure_password1!"),
         ip_address=None,
     )
 
@@ -37,7 +37,7 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     user = result.unwrap()
     assert user.username == "valid_user"
     assert user.email == "user@example.com"
-    assert verify_password("secure_password", user.password_hash)
+    assert verify_password("Secure_password1!", user.password_hash)
 
     # Test get_user with Result pattern
     result_get = service.get_user(user.id)
@@ -66,7 +66,7 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
     user_create = UserCreate(
         username="fail_user",
         email="fail@example.com",
-        password=SecretStr("password"),
+        password=SecretStr("Secure_password1!"),
         ip_address=None,
     )
 
@@ -92,7 +92,7 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
     user_create = UserCreate(
         username="existing_user",
         email="existing@example.com",
-        password=SecretStr("password"),
+        password=SecretStr("Secure_password1!"),
         ip_address=None,
     )
 
@@ -114,7 +114,7 @@ def test_create_user_invalid_email() -> None:
         UserCreate(
             username="valid_user",
             email="invalid-email",
-            password=SecretStr("secure_password"),
+            password=SecretStr("Secure_password1!"),
         )
 
 
@@ -124,8 +124,27 @@ def test_create_user_invalid_username() -> None:
         UserCreate(
             username="invalid user name",  # Spaces not allowed
             email="user@example.com",
-            password=SecretStr("secure_password"),
+            password=SecretStr("Secure_password1!"),
         )
+
+
+def test_create_user_weak_password() -> None:
+    """Test creating a user with a weak password raises ValidationError."""
+    weak_passwords = [
+        "short",  # Too short
+        "a" * 129,  # Too long
+        "nosymbols123",  # No symbols
+        "NoNumbersHere!",  # No numbers
+        "123456789!",  # No letters
+    ]
+
+    for pwd in weak_passwords:
+        with pytest.raises(ValidationError):
+            UserCreate(
+                username="valid_user",
+                email="user@example.com",
+                password=SecretStr(pwd),
+            )
 
 
 def test_get_non_existent_user(caplog: pytest.LogCaptureFixture) -> None:
@@ -155,16 +174,16 @@ def test_models_redaction() -> None:
     user_create = UserCreate(
         username="testuser",
         email="test@example.com",
-        password=SecretStr("my_secret_password"),
+        password=SecretStr("My_secret_password1!"),
     )
 
     dumped_create = user_create.model_dump()
     assert dumped_create["password"] == "***REDACTED***"
-    assert "my_secret_password" not in str(dumped_create)
+    assert "My_secret_password1!" not in str(dumped_create)
 
     json_create = user_create.model_dump_json()
     assert "***REDACTED***" in json_create
-    assert "my_secret_password" not in json_create
+    assert "My_secret_password1!" not in json_create
 
     user = User(
         id=uuid4(),
