@@ -209,12 +209,12 @@ class TestSubprocessCheckCommand:
 
     def test_run_safe_command_check_true_fails(self) -> None:
         """Test run_safe_command with check=True when command fails (L231)."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         with pytest.raises(subprocess.CalledProcessError):
             run_safe_command(
                 ["python", "-c", "raise SystemExit(1)"],
-                check=True,
+                config=SafeCommandConfig(check=True),
             )
 
 

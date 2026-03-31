@@ -58,9 +58,10 @@ def cached(ttl: float) -> CacheDecorator:
                 return frozenset(_make_hashable(item) for item in val)
             try:
                 hash(val)
-                return val
             except TypeError:
                 return str(val)
+            else:
+                return val
 
         hashable_args = tuple(_make_hashable(arg) for arg in args)
         hashable_kwargs = tuple(

@@ -194,7 +194,7 @@ def _execute_command(
     start_time = time.time()
 
     try:
-        result = subprocess.run(  # nosec B603
+        result = subprocess.run(  # nosec B603 # noqa: S603
             validated_cmd,
             cwd=cwd,
             timeout=timeout,
@@ -231,16 +231,33 @@ def _execute_command(
     )
 
 
+@dataclass
+class SafeCommandConfig:
+    """Configuration for safe command execution.
+
+    Attributes:
+        cwd: Working directory for the command.
+        timeout: Maximum execution time in seconds.
+        capture_output: Whether to capture stdout/stderr.
+        check: Whether to raise on non-zero exit.
+        allowed_commands: Whitelist of allowed commands.
+        env: Environment variables to set.
+        dry_run: If True, don't actually execute the command.
+
+    """
+
+    cwd: Path | str | None = None
+    timeout: float = 300.0
+    capture_output: bool = True
+    check: bool = False
+    allowed_commands: Sequence[str] | None = None
+    env: dict[str, str] | None = None
+    dry_run: bool = False
+
+
 def run_safe_command(
     command: Sequence[str],
-    *,
-    cwd: Path | str | None = None,
-    timeout: float = 300.0,
-    capture_output: bool = True,
-    check: bool = False,
-    allowed_commands: Sequence[str] | None = None,
-    env: dict[str, str] | None = None,
-    dry_run: bool = False,
+    config: SafeCommandConfig | None = None,
 ) -> SafeCommandResult:
     """Execute a command safely with security guards.
 
@@ -250,13 +267,7 @@ def run_safe_command(
 
     Args:
         command: Command and arguments as a sequence.
-        cwd: Working directory for the command.
-        timeout: Maximum execution time in seconds.
-        capture_output: Whether to capture stdout/stderr.
-        check: Whether to raise on non-zero exit.
-        allowed_commands: Whitelist of allowed commands.
-        env: Environment variables to set.
-        dry_run: If True, don't actually execute the command.
+        config: Configuration for command execution.
 
     Returns:
         SafeCommandResult with execution details.
@@ -272,10 +283,13 @@ def run_safe_command(
         ...     print("Installation complete!")
 
     """
-    validated_cmd = _validate_and_resolve_command(command, allowed_commands)
-    safe_env = _filter_environment(env)
+    if config is None:
+        config = SafeCommandConfig()
 
-    if dry_run:
+    validated_cmd = _validate_and_resolve_command(command, config.allowed_commands)
+    safe_env = _filter_environment(config.env)
+
+    if config.dry_run:
         return SafeCommandResult(
             command=validated_cmd,
             returncode=0,
@@ -285,23 +299,23 @@ def run_safe_command(
         )
 
     resolved_cwd: Path | None = None
-    if cwd is not None:
-        resolved_cwd = Path(cwd).resolve()
+    if config.cwd is not None:
+        resolved_cwd = Path(config.cwd).resolve()
         if not resolved_cwd.exists():
             raise SecurityError(
-                f"Working directory does not exist: {cwd}",
+                f"Working directory does not exist: {config.cwd}",
                 guard_name="safe_command",
             )
 
     safe_result = _execute_command(
         validated_cmd,
         resolved_cwd,
-        timeout,
-        capture_output,
+        config.timeout,
+        config.capture_output,
         safe_env,
     )
 
-    if check:
+    if config.check:
         safe_result.raise_on_error()
 
     return safe_result

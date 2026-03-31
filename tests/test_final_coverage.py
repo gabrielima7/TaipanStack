@@ -80,13 +80,11 @@ class TestSubprocessComplete:
 
     def test_run_safe_command_with_all_options(self) -> None:
         """Test run_safe_command with all options."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         result = run_safe_command(
             ["echo", "hello"],
-            timeout=30.0,
-            capture_output=True,
-            check=False,
+            config=SafeCommandConfig(timeout=30.0, capture_output=True, check=False),
         )
         assert result.success
         assert "hello" in result.stdout

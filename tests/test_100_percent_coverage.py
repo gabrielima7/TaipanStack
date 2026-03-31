@@ -65,11 +65,11 @@ class TestSubprocessTimeoutEdgeCases:
 
     def test_run_safe_command_check_false(self) -> None:
         """Test run_safe_command with check=False."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         result = run_safe_command(
             ["python", "-c", "exit(5)"],
-            check=False,
+            config=SafeCommandConfig(check=False),
         )
         assert not result.success
         assert result.returncode == 5

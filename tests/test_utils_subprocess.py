@@ -9,6 +9,7 @@ from taipanstack.security.guards import SecurityError
 from taipanstack.utils.subprocess import (
     DEFAULT_ALLOWED_COMMANDS,
     SafeCommandResult,
+    SafeCommandConfig,
     run_safe_command,
 )
 
@@ -90,7 +91,9 @@ class TestRunSafeCommand:
 
     def test_dry_run_mode(self) -> None:
         """Test dry-run mode doesn't execute command."""
-        result = run_safe_command(["rm", "-rf", "/"], dry_run=True)
+        result = run_safe_command(
+            ["rm", "-rf", "/"], config=SafeCommandConfig(dry_run=True)
+        )
         assert result.success is True
         assert "[DRY-RUN]" in result.stdout
         assert result.returncode == 0
@@ -100,7 +103,7 @@ class TestRunSafeCommand:
         with pytest.raises(SecurityError, match="Command not in allowed list"):
             run_safe_command(
                 ["dangerous_command"],
-                allowed_commands=["safe_command"],
+                config=SafeCommandConfig(allowed_commands=["safe_command"]),
             )
 
     def test_empty_command_rejected(self) -> None:
@@ -118,7 +121,7 @@ class TestRunSafeCommand:
         with pytest.raises(SecurityError, match="Command not found"):
             run_safe_command(
                 ["nonexistent_command_xyz"],
-                allowed_commands=["nonexistent_command_xyz"],
+                config=SafeCommandConfig(allowed_commands=["nonexistent_command_xyz"]),
             )
 
     def test_timeout_handling(self) -> None:
@@ -126,8 +129,7 @@ class TestRunSafeCommand:
         # Use sleep command which is safer than Python -c with semicolons
         result = run_safe_command(
             ["sleep", "5"],
-            timeout=0.1,
-            allowed_commands=["sleep"],
+            config=SafeCommandConfig(timeout=0.1, allowed_commands=["sleep"]),
         )
         assert result.success is False
         assert result.returncode == -1
@@ -141,21 +143,21 @@ class TestRunSafeCommand:
 
         # Use echo which works on both Windows and Linux
         result = run_safe_command(
-            ["echo", "hello"],
-            cwd=tmp_path,
+            ["echo", "hello"], config=SafeCommandConfig(cwd=tmp_path)
         )
         assert result.success is True
 
     def test_invalid_working_directory(self) -> None:
         """Test that non-existent working directory raises error."""
         with pytest.raises(SecurityError, match="Working directory does not exist"):
-            run_safe_command(["echo", "test"], cwd="/nonexistent/path/xyz")
+            run_safe_command(
+                ["echo", "test"], config=SafeCommandConfig(cwd="/nonexistent/path/xyz")
+            )
 
     def test_custom_allowed_commands(self) -> None:
         """Test custom allowed commands list."""
         result = run_safe_command(
-            ["echo", "custom"],
-            allowed_commands=["echo"],
+            ["echo", "custom"], config=SafeCommandConfig(allowed_commands=["echo"])
         )
         assert result.success is True
 

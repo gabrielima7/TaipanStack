@@ -265,11 +265,10 @@ class TestSubprocessEdgeCases:
 
     def test_run_safe_command_with_env(self) -> None:
         """Test run_safe_command with custom environment."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         result = run_safe_command(
-            ["echo", "test"],
-            env={"CUSTOM_VAR": "value"},
+            ["echo", "test"], config=SafeCommandConfig(env={"CUSTOM_VAR": "value"})
         )
         assert result.success
 

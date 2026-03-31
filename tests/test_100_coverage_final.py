@@ -263,9 +263,11 @@ class TestSubprocessUncovered:
 
     def test_run_safe_command_success(self) -> None:
         """Test run_safe_command with successful command."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
-        result = run_safe_command(["echo", "test"], timeout=30.0)
+        result = run_safe_command(
+            ["echo", "test"], config=SafeCommandConfig(timeout=30.0)
+        )
         assert result.success
         assert result.returncode == 0
 

@@ -12,7 +12,7 @@ class TestSubprocessFinalBranches:
 
     def test_run_safe_command_timeout_branch_stdout_bytes(self) -> None:
         """Test timeout exception with stdout as bytes."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         # Create a mock TimeoutExpired with bytes stdout
         mock_exc = sp.TimeoutExpired(
@@ -22,7 +22,9 @@ class TestSubprocessFinalBranches:
         mock_exc.stdout = b"partial output"
 
         with patch("subprocess.run", side_effect=mock_exc):
-            result = run_safe_command(["echo", "test"], timeout=1.0)
+            result = run_safe_command(
+                ["echo", "test"], config=SafeCommandConfig(timeout=1.0)
+            )
 
         assert not result.success
         assert result.returncode == -1
@@ -30,13 +32,15 @@ class TestSubprocessFinalBranches:
 
     def test_run_safe_command_timeout_branch_stdout_str(self) -> None:
         """Test timeout exception with stdout as string."""
-        from taipanstack.utils.subprocess import run_safe_command
+        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
 
         mock_exc = sp.TimeoutExpired(cmd=["test"], timeout=1.0)
         mock_exc.stdout = "partial string output"
 
         with patch("subprocess.run", side_effect=mock_exc):
-            result = run_safe_command(["echo", "test"], timeout=1.0)
+            result = run_safe_command(
+                ["echo", "test"], config=SafeCommandConfig(timeout=1.0)
+            )
 
         assert not result.success
         assert "timed out" in result.stderr
