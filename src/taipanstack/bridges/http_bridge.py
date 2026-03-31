@@ -225,7 +225,8 @@ class SafeHttpClient:
             retry_config: Retry configuration.
             circuit_breaker: Circuit breaker instance.
             retryable_status_codes: Status codes to retry.
-            **client_kwargs: Keyword args for httpx.AsyncClient. Default timeout is 10.0 seconds if not provided.
+            **client_kwargs: Keyword args for httpx.AsyncClient.
+                Default timeout is 10.0 seconds if not provided.
 
         """
         self._ssrf_protection = ssrf_protection
