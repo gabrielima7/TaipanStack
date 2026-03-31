@@ -93,6 +93,7 @@ def test_hash_password_is_random() -> None:
     assert verify_password(password, hash1) is True
     assert verify_password(password, hash2) is True
 
+
 def test_hash_password_configurable_cost(monkeypatch) -> None:
     """Test that setting environment variables changes Argon2 hashing cost."""
 
@@ -127,6 +128,7 @@ def test_hash_password_configurable_cost(monkeypatch) -> None:
     assert hasher_high.parallelism == 4
 
     hasher_high.hash("test_password")
+
 
 def test_hash_password_invalid_env_vars(monkeypatch) -> None:
     """Test that invalid environment variables fallback to defaults."""
