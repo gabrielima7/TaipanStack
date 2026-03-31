@@ -75,7 +75,9 @@ class TestRunSafeCommand:
 
     def test_dry_run_mode(self) -> None:
         """Test dry-run mode doesn't execute command."""
-        result = run_safe_command(["rm", "-rf", "/"], allowed_commands=["rm"], dry_run=True)
+        result = run_safe_command(
+            ["rm", "-rf", "/"], allowed_commands=["rm"], dry_run=True
+        )
         assert result.success is True
         assert "[DRY-RUN]" in result.stdout
         assert result.returncode == 0
@@ -135,7 +137,9 @@ class TestRunSafeCommand:
     def test_invalid_working_directory(self) -> None:
         """Test that non-existent working directory raises error."""
         with pytest.raises(SecurityError, match="Working directory does not exist"):
-            run_safe_command(["echo", "test"], allowed_commands=["echo"], cwd="/nonexistent/path/xyz")
+            run_safe_command(
+                ["echo", "test"], allowed_commands=["echo"], cwd="/nonexistent/path/xyz"
+            )
 
     def test_custom_allowed_commands(self) -> None:
         """Test custom allowed commands list."""
