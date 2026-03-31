@@ -81,31 +81,104 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
 def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
 
-    class AlreadyExistsRepository(UserRepository):
-        def save(self, user: object) -> None:
-            raise UserAlreadyExistsError("User already exists")
+    repository = InMemoryUserRepository()
+    service = UserService(repository)
 
-        def get_by_id(self, user_id: UUID) -> None:
-            return None
-
-    service = UserService(AlreadyExistsRepository())
-    user_create = UserCreate(
+    # First user
+    user_create_1 = UserCreate(
         username="existing_user",
+        email="existing@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+    service.create_user(user_create_1)
+
+    # Second user with same username
+    user_create_2 = UserCreate(
+        username="existing_user",
+        email="another@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    with caplog.at_level(logging.ERROR):
+        result = service.create_user(user_create_2)
+
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "already exists" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError) due to duplicate username")
+
+    assert "Failed to create user" in caplog.text
+
+    # Third user with same email
+    user_create_3 = UserCreate(
+        username="another_user",
         email="existing@example.com",
         password=SecretStr("password"),
         ip_address=None,
     )
 
     with caplog.at_level(logging.ERROR):
-        result = service.create_user(user_create)
+        result = service.create_user(user_create_3)
 
     match result:
         case Err(UserCreationError(message=msg)):
-            assert "User already exists" in msg
+            assert "already exists" in msg
         case _:
-            pytest.fail("Expected Err(UserCreationError)")
+            pytest.fail("Expected Err(UserCreationError) due to duplicate email")
 
-    assert "Failed to create user" in caplog.text
+    # Empty repository loop coverage
+    empty_repo = InMemoryUserRepository()
+    service_empty = UserService(empty_repo)
+    user_create_empty = UserCreate(
+        username="first_user",
+        email="first@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+    res = service_empty.create_user(user_create_empty)
+    assert res.is_ok()
+
+    # Continue loop after first mismatch
+    user_create_mismatch = UserCreate(
+        username="first_user",  # match
+        email="new@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    # We need a scenario where existing_user.username does not match, but existing_user.email does match
+    # to hit the fallback of the first branch (if existing_user.username == user.username: False)
+    user_create_email_match = UserCreate(
+        username="new_user", # mismatch
+        email="first@example.com", # match
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+    res_email_match = service_empty.create_user(user_create_email_match)
+    assert res_email_match.is_err()
+
+    # Create another user to have 2 existing users, so that the loop iterates without breaking immediately
+    user_create_empty_2 = UserCreate(
+        username="second_user",
+        email="second@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+    res_2 = service_empty.create_user(user_create_empty_2)
+    assert res_2.is_ok()
+
+    # Now create a user where it doesn't match the first one, but matches the second one
+    user_create_match_second = UserCreate(
+        username="third_user",
+        email="second@example.com",  # Matches the second user's email
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+    res_match_second = service_empty.create_user(user_create_match_second)
+    assert res_match_second.is_err()
 
 
 def test_create_user_invalid_email() -> None:

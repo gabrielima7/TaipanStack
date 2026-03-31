@@ -122,7 +122,20 @@ class InMemoryUserRepository(UserRepository):
         Args:
             user: The user to save.
 
+        Raises:
+            UserAlreadyExistsError: If a user with the same username
+                or email already exists.
+
         """
+        for existing_user in self._storage.values():
+            if existing_user.username == user.username:
+                raise UserAlreadyExistsError(
+                    f"User with username {user.username} already exists"
+                )
+            if existing_user.email == user.email:
+                raise UserAlreadyExistsError(
+                    f"User with email {user.email} already exists"
+                )
         self._storage[user.id] = user
 
     def get_by_id(self, user_id: UUID) -> User | None:
