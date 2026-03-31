@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -39,8 +40,6 @@ class RecursiveDummy:
 
     __hash__ = None  # type: ignore
 
-
-import pytest
 
 def test_cache_fallback_to_string_and_sets():
     """Ensure sets of hashable objects still work, and unhashable raises TypeError."""

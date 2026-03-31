@@ -1,3 +1,5 @@
+import pytest
+
 from taipanstack.core.result import Ok
 from taipanstack.utils.cache import cached
 
@@ -10,8 +12,6 @@ def my_func(*args, **kwargs):
 class UnhashableDummy:
     __hash__ = None  # type: ignore
 
-
-import pytest
 
 def test_cache_unhashable_raises_typeerror():
     """Ensure passing unhashable types directly raises a TypeError."""
