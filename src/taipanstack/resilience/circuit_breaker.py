@@ -170,7 +170,23 @@ class CircuitBreaker:
         and structlog is available.
         """
         if self._on_state_change is not None:
-            self._on_state_change(old_state, new_state)
+            try:
+                self._on_state_change(old_state, new_state)
+            except Exception as e:
+                if _HAS_STRUCTLOG and _structlog_logger is not None:
+                    _structlog_logger.error(
+                        "circuit_state_change_callback_failed",
+                        circuit=self.name,
+                        old_state=old_state.value,
+                        new_state=new_state.value,
+                        error=str(e),
+                    )
+                else:
+                    logger.error(
+                        "Circuit %s state change callback failed: %s",
+                        self.name,
+                        str(e),
+                    )
         elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
             _structlog_logger.warning(
                 "circuit_state_changed",
