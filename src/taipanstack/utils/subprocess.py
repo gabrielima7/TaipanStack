@@ -171,6 +171,23 @@ def _filter_environment(env: dict[str, str] | None) -> dict[str, str]:
     return safe_env
 
 
+def _decode_output(output: bytes | str | None) -> str:
+    """Safely decode subprocess output.
+
+    Args:
+        output: Raw output from subprocess.
+
+    Returns:
+        Decoded string using replace error handler.
+
+    """
+    if not output:
+        return ""
+    if isinstance(output, str):
+        return output
+    return output.decode("utf-8", errors="replace")
+
+
 def _execute_command(
     validated_cmd: list[str],
     cwd: Path | None,
@@ -191,7 +208,7 @@ def _execute_command(
         The execution result.
 
     """
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     try:
         result = subprocess.run(  # nosec B603
@@ -199,34 +216,33 @@ def _execute_command(
             cwd=cwd,
             timeout=timeout,
             capture_output=capture_output,
-            text=True,
-            encoding="utf-8",
             env=safe_env,
             check=False,
         )
     except subprocess.TimeoutExpired as e:
-        duration = time.time() - start_time
-        stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
-            if isinstance(e.stdout, str):
-                stdout_str = e.stdout
-            else:  # pragma: no cover
-                stdout_str = e.stdout.decode("utf-8", errors="replace")
+        duration = time.perf_counter() - start_time
+        stdout_str = _decode_output(getattr(e, "stdout", None))
+
+        stderr_str = f"Command timed out after {timeout}s"
+        stderr_output = getattr(e, "stderr", None)
+        if stderr_output is not None:
+            stderr_str = f"{stderr_str}\n{_decode_output(stderr_output)}"
+
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
             stdout=stdout_str,
-            stderr=f"Command timed out after {timeout}s",
+            stderr=stderr_str,
             duration_seconds=duration,
         )
 
-    duration = time.time() - start_time
+    duration = time.perf_counter() - start_time
 
     return SafeCommandResult(
         command=validated_cmd,
         returncode=result.returncode,
-        stdout=result.stdout or "",
-        stderr=result.stderr or "",
+        stdout=_decode_output(result.stdout),
+        stderr=_decode_output(result.stderr),
         duration_seconds=duration,
     )
 

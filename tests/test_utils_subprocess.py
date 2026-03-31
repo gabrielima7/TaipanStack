@@ -163,3 +163,44 @@ class TestRunSafeCommand:
         """Test that command duration is tracked."""
         result = run_safe_command(["echo", "test"])
         assert result.duration_seconds >= 0
+
+    def test_unicode_decode_error_handling(self, tmp_path: Path) -> None:
+        """Test that invalid unicode output is safely decoded with replacement."""
+        # Create a python script that outputs invalid unicode bytes
+        script_file = tmp_path / "bad_unicode.py"
+        script_file.write_text(
+            "import sys\n"
+            "sys.stdout.buffer.write(b'valid data\\xffinvalid')\n"
+            "sys.stderr.buffer.write(b'error\\xffdata')\n"
+        )
+
+        result = run_safe_command(["python", str(script_file)])
+
+        # Should complete successfully despite the invalid output bytes
+        assert result.success is True
+        # \xff gets replaced with \ufffd (replacement character)
+        assert "valid data\ufffdinvalid" in result.stdout
+        assert "error\ufffddata" in result.stderr
+
+    def test_timeout_preserves_partial_output(self, tmp_path: Path) -> None:
+        """Test that a timeout captures standard output and standard error."""
+        # Create a python script that outputs partial info before sleeping
+        script_file = tmp_path / "timeout_script.py"
+        script_file.write_text(
+            "import sys\n"
+            "import time\n"
+            "sys.stdout.write('partial stdout data\\n')\n"
+            "sys.stdout.flush()\n"
+            "sys.stderr.write('partial stderr data\\n')\n"
+            "sys.stderr.flush()\n"
+            "time.sleep(5)\n"
+        )
+
+        result = run_safe_command(["python", str(script_file)], timeout=0.1)
+
+        # Command should fail due to timeout
+        assert result.success is False
+        assert result.returncode == -1
+        assert "partial stdout data" in result.stdout
+        assert "partial stderr data" in result.stderr
+        assert "timed out" in result.stderr
