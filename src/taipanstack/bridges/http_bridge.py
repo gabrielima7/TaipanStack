@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -32,6 +32,13 @@ try:
 except ImportError:  # pragma: no cover
     httpx = None  # type: ignore[assignment]
     _HAS_HTTPX = False
+
+if TYPE_CHECKING:
+    from httpx import Response
+else:
+    Response = Any
+
+T = TypeVar("T")
 
 # Default status codes that trigger a retry
 _RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({500, 502, 503, 504, 429})
@@ -80,11 +87,11 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
 
 
 async def _execute_with_retries(
-    request_func: Callable[[], Awaitable[Any]],
+    request_func: Callable[[], Awaitable[Response]],
     retry_config: RetryConfig | None,
     circuit_breaker: CircuitBreaker | None,
     retryable_status_codes: frozenset[int],
-) -> Result[Any, Exception]:
+) -> Result[Response, Exception]:
     """Execute a request function with optional retries and circuit breaker.
 
     Args:
@@ -141,7 +148,7 @@ async def safe_request(
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     **kwargs: Any,
-) -> Result[Any, Exception]:
+) -> Result[Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
     Args:
@@ -176,7 +183,7 @@ async def safe_request(
         if cb_err is not None:
             return Err(cb_err)
 
-    async def _do_request() -> Any:
+    async def _do_request() -> Response:
         async with httpx.AsyncClient() as client:
             return await client.request(method, url, **kwargs)
 
@@ -231,7 +238,7 @@ class SafeHttpClient:
         self._circuit_breaker = circuit_breaker
         self._retryable_status_codes = retryable_status_codes
         self._client_kwargs = client_kwargs
-        self._client: Any = None
+        self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self) -> SafeHttpClient:
         """Enter the async context manager."""
@@ -260,7 +267,7 @@ class SafeHttpClient:
         method: str,
         url: str,
         **kwargs: Any,
-    ) -> Result[Any, Exception]:
+    ) -> Result[Response, Exception]:
         """Send an HTTP request with safety features.
 
         Args:
@@ -286,8 +293,11 @@ class SafeHttpClient:
             if cb_err is not None:
                 return Err(cb_err)
 
-        async def _do_request() -> Any:
-            return await self._client.request(method, url, **kwargs)
+        async def _do_request() -> Response:
+            if self._client is None:  # pragma: no cover
+                raise RuntimeError("Client not initialised.")
+            resp = await self._client.request(method, url, **kwargs)
+            return resp
 
         return await _execute_with_retries(
             _do_request,
@@ -296,22 +306,22 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def get(self, url: str, **kw: Any) -> Result[Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def post(self, url: str, **kw: Any) -> Result[Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def put(self, url: str, **kw: Any) -> Result[Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def delete(self, url: str, **kw: Any) -> Result[Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def patch(self, url: str, **kw: Any) -> Result[Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)

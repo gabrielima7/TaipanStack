@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -38,6 +38,17 @@ try:
     _HAS_REDIS = True  # pragma: no cover
 except ImportError:  # pragma: no cover
     _HAS_REDIS = False
+
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
+    from sqlalchemy.ext.asyncio import AsyncEngine
+    from sqlalchemy.sql import Executable
+else:
+    Redis = Any
+    AsyncEngine = Any
+    Executable = Any
+
+T = TypeVar("T")
 
 
 def _breaker_is_open(cb: CircuitBreaker) -> CircuitBreakerError | None:
@@ -74,7 +85,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: Any,
+        engine: AsyncEngine,
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -93,7 +104,7 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: Any,
+        statement: Executable,
         **kwargs: Any,
     ) -> Result[Any, Exception]:
         """Execute a SQL statement with resilience.
@@ -183,7 +194,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: Any,
+        client: Redis,
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:
@@ -201,7 +212,7 @@ class ResilientRedis:
         self,
         command: str,
         *args: Any,
-    ) -> Result[Any, Exception]:
+    ) -> Result[T, Exception]:
         """Execute a Redis command with resilience.
 
         Args:
