@@ -107,6 +107,19 @@ class UserRepository(ABC):
 
         """
 
+    @abstractmethod
+    def get_by_email(self, email: str) -> User | None:
+        """
+        Retrieve a user by their email.
+
+        Args:
+            email: The email of the user.
+
+        Returns:
+            The User object if found, otherwise None.
+
+        """
+
 
 class InMemoryUserRepository(UserRepository):
     """In-memory implementation of UserRepository."""
@@ -138,6 +151,22 @@ class InMemoryUserRepository(UserRepository):
         """
         return self._storage.get(user_id)
 
+    def get_by_email(self, email: str) -> User | None:
+        """
+        Retrieve a user from the in-memory storage by email.
+
+        Args:
+            email: The email of the user.
+
+        Returns:
+            The User object if found, otherwise None.
+
+        """
+        for user in self._storage.values():
+            if user.email == email:
+                return user
+        return None
+
 
 class UserService:
     """Service for managing users securely."""
@@ -163,6 +192,11 @@ class UserService:
             Ok(User) on success, Err(UserCreationError) on failure.
 
         """
+        # Fast-path validation: Check if user already exists by email
+        if self._user_repository.get_by_email(user_create.email) is not None:
+            logger.warning("Failed to create user: Email already exists", email=user_create.email)
+            return Err(UserCreationError(message="User already exists"))
+
         # Hash the password securely using the security module
         pwd_hash = hash_password(user_create.password)
 
@@ -178,7 +212,7 @@ class UserService:
             logger.info("User created successfully", user_id=user.id)
             return Ok(user)
         except UserAlreadyExistsError as e:
-            logger.exception("Failed to create user", user_id=user.id)
+            logger.warning("Failed to create user", user_id=user.id, error=str(e))
             return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:

@@ -62,6 +62,9 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
         def get_by_id(self, user_id: UUID) -> None:
             return None
 
+        def get_by_email(self, email: str) -> None:
+            return None
+
     service = UserService(FailingRepository())
     user_create = UserCreate(
         username="fail_user",
@@ -78,6 +81,44 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
             pytest.fail("Expected Err(UserCreationError)")
 
 
+def test_create_user_email_exists_fast_path(caplog: pytest.LogCaptureFixture) -> None:
+    """Test fast-path validation when a user with the same email already exists."""
+
+    class EmailExistsRepository(UserRepository):
+        def save(self, user: object) -> None:
+            pass  # Should not be reached
+
+        def get_by_id(self, user_id: UUID) -> None:
+            return None
+
+        def get_by_email(self, email: str) -> User | None:
+            return User(
+                id=uuid4(),
+                username="existing_user",
+                email="existing@example.com",
+                password_hash="some_hash",
+            )
+
+    service = UserService(EmailExistsRepository())
+    user_create = UserCreate(
+        username="new_user",
+        email="existing@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        result = service.create_user(user_create)
+
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "User already exists" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")
+
+    assert "Failed to create user: Email already exists" in caplog.text
+
+
 def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
 
@@ -88,6 +129,9 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
         def get_by_id(self, user_id: UUID) -> None:
             return None
 
+        def get_by_email(self, email: str) -> None:
+            return None
+
     service = UserService(AlreadyExistsRepository())
     user_create = UserCreate(
         username="existing_user",
@@ -96,7 +140,7 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
         ip_address=None,
     )
 
-    with caplog.at_level(logging.ERROR):
+    with caplog.at_level(logging.WARNING):
         result = service.create_user(user_create)
 
     match result:
