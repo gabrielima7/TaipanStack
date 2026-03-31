@@ -97,6 +97,7 @@ def test_hash_password_is_random() -> None:
 def test_verify_password_invalid_type_password() -> None:
     """Test that an invalid type for password raises a TypeError."""
     import pytest
+
     pwd_hash = hash_password("my_password")
 
     with pytest.raises(TypeError, match="password must be a string or SecretStr"):
