@@ -15,6 +15,23 @@ import pathlib
 import re
 
 
+def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:
+    """Monkeypatch pygments HtmlFormatter to handle filename=None safely."""
+    try:
+        import pygments.formatters.html
+        original_init = pygments.formatters.html.HtmlFormatter.__init__
+
+        def patched_init(self, **options):
+            if options.get("filename") is None:
+                options["filename"] = ""
+            original_init(self, **options)
+
+        pygments.formatters.html.HtmlFormatter.__init__ = patched_init
+    except ImportError:
+        pass
+    return config
+
+
 def _patch_html(html: str) -> str:
     """Apply all accessibility patches to a full HTML page string."""
     # Patch 1: hidden checkbox toggle for drawer navigation
