@@ -101,6 +101,7 @@ class TestSubprocessTimeoutBranches:
 
         result = run_safe_command(
             ["python", "-c", "exit(42)"],
+            allowed_commands=["python"],
         )
         assert not result.success
         assert result.returncode == 42

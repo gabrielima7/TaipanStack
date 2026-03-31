@@ -69,6 +69,7 @@ class TestSubprocessTimeoutEdgeCases:
 
         result = run_safe_command(
             ["python", "-c", "exit(5)"],
+            allowed_commands=["python"],
             check=False,
         )
         assert not result.success

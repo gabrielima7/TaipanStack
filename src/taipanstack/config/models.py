@@ -50,6 +50,37 @@ class SecurityConfig(BaseModel):
         default="low",
         description="Minimum Bandit severity",
     )
+    allowed_commands: list[str] = Field(
+        default_factory=lambda: [
+            "python",
+            "python3",
+            "pip",
+            "pip3",
+            "poetry",
+            "pipx",
+            "git",
+            "make",
+            "pytest",
+            "mypy",
+            "ruff",
+            "bandit",
+            "safety",
+            "semgrep",
+            "pre-commit",
+            "echo",
+            "cat",
+            "ls",
+            "pwd",
+            "mkdir",
+            "rm",
+            "cp",
+            "mv",
+            "touch",
+            "chmod",
+            "which",
+        ],
+        description="List of allowed system commands for subprocess execution",
+    )
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 

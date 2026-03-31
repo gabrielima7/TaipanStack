@@ -7,7 +7,6 @@ import pytest
 
 from taipanstack.security.guards import SecurityError
 from taipanstack.utils.subprocess import (
-    DEFAULT_ALLOWED_COMMANDS,
     SafeCommandResult,
     run_safe_command,
 )
@@ -64,33 +63,19 @@ class TestSafeCommandResult:
         assert result.duration_seconds == 0.0
 
 
-class TestDefaultAllowedCommands:
-    """Tests for DEFAULT_ALLOWED_COMMANDS."""
-
-    def test_contains_essential_commands(self) -> None:
-        """Test that essential commands are in the whitelist."""
-        essential = ["python", "poetry", "git", "pytest", "mypy", "ruff"]
-        for cmd in essential:
-            assert cmd in DEFAULT_ALLOWED_COMMANDS
-
-    def test_is_frozenset(self) -> None:
-        """Test that it's immutable."""
-        assert isinstance(DEFAULT_ALLOWED_COMMANDS, frozenset)
-
-
 class TestRunSafeCommand:
     """Tests for run_safe_command function."""
 
     def test_run_echo_command(self) -> None:
         """Test running a simple echo command."""
-        result = run_safe_command(["echo", "hello"])
+        result = run_safe_command(["echo", "hello"], allowed_commands=["echo"])
         assert result.success is True
         assert "hello" in result.stdout
         assert result.returncode == 0
 
     def test_dry_run_mode(self) -> None:
         """Test dry-run mode doesn't execute command."""
-        result = run_safe_command(["rm", "-rf", "/"], dry_run=True)
+        result = run_safe_command(["rm", "-rf", "/"], allowed_commands=["rm"], dry_run=True)
         assert result.success is True
         assert "[DRY-RUN]" in result.stdout
         assert result.returncode == 0
@@ -106,12 +91,12 @@ class TestRunSafeCommand:
     def test_empty_command_rejected(self) -> None:
         """Test that empty command raises SecurityError."""
         with pytest.raises(SecurityError, match="Empty command"):
-            run_safe_command([])
+            run_safe_command([], allowed_commands=["echo"])
 
     def test_command_injection_blocked(self) -> None:
         """Test that shell metacharacters are blocked."""
         with pytest.raises(SecurityError, match="Dangerous"):
-            run_safe_command(["echo", "hello; rm -rf /"])
+            run_safe_command(["echo", "hello; rm -rf /"], allowed_commands=["echo"])
 
     def test_command_not_found(self) -> None:
         """Test that non-existent command raises SecurityError."""
@@ -142,6 +127,7 @@ class TestRunSafeCommand:
         # Use echo which works on both Windows and Linux
         result = run_safe_command(
             ["echo", "hello"],
+            allowed_commands=["echo"],
             cwd=tmp_path,
         )
         assert result.success is True
@@ -149,7 +135,7 @@ class TestRunSafeCommand:
     def test_invalid_working_directory(self) -> None:
         """Test that non-existent working directory raises error."""
         with pytest.raises(SecurityError, match="Working directory does not exist"):
-            run_safe_command(["echo", "test"], cwd="/nonexistent/path/xyz")
+            run_safe_command(["echo", "test"], allowed_commands=["echo"], cwd="/nonexistent/path/xyz")
 
     def test_custom_allowed_commands(self) -> None:
         """Test custom allowed commands list."""
@@ -161,5 +147,5 @@ class TestRunSafeCommand:
 
     def test_duration_is_tracked(self) -> None:
         """Test that command duration is tracked."""
-        result = run_safe_command(["echo", "test"])
+        result = run_safe_command(["echo", "test"], allowed_commands=["echo"])
         assert result.duration_seconds >= 0

@@ -84,6 +84,7 @@ class TestSubprocessComplete:
 
         result = run_safe_command(
             ["echo", "hello"],
+            allowed_commands=["echo"],
             timeout=30.0,
             capture_output=True,
             check=False,

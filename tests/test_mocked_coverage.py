@@ -152,7 +152,7 @@ class TestSubprocessBranches:
         """Test run_safe_command with failing command."""
         from taipanstack.utils.subprocess import run_safe_command
 
-        result = run_safe_command(["python", "-c", "exit(1)"])
+        result = run_safe_command(["python", "-c", "exit(1)"], allowed_commands=["python"])
         assert not result.success
         assert result.returncode == 1
 

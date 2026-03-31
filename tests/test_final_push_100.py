@@ -22,7 +22,7 @@ class TestSubprocessFinalBranches:
         mock_exc.stdout = b"partial output"
 
         with patch("subprocess.run", side_effect=mock_exc):
-            result = run_safe_command(["echo", "test"], timeout=1.0)
+            result = run_safe_command(["echo", "test"], allowed_commands=["echo"], timeout=1.0)
 
         assert not result.success
         assert result.returncode == -1
@@ -36,7 +36,7 @@ class TestSubprocessFinalBranches:
         mock_exc.stdout = "partial string output"
 
         with patch("subprocess.run", side_effect=mock_exc):
-            result = run_safe_command(["echo", "test"], timeout=1.0)
+            result = run_safe_command(["echo", "test"], allowed_commands=["echo"], timeout=1.0)
 
         assert not result.success
         assert "timed out" in result.stderr

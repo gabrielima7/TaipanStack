@@ -66,47 +66,9 @@ class SafeCommandResult:
         return self
 
 
-# Default allowed commands whitelist
-DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
-    {
-        # Python/Poetry
-        "python",
-        "python3",
-        "pip",
-        "pip3",
-        "poetry",
-        "pipx",
-        # Version control
-        "git",
-        # Build tools
-        "make",
-        # Testing
-        "pytest",
-        "mypy",
-        "ruff",
-        "bandit",
-        "safety",
-        "semgrep",
-        "pre-commit",
-        # System
-        "echo",
-        "cat",
-        "ls",
-        "pwd",
-        "mkdir",
-        "rm",
-        "cp",
-        "mv",
-        "touch",
-        "chmod",
-        "which",
-    }
-)
-
-
 def _validate_and_resolve_command(
     command: Sequence[str],
-    allowed_commands: Sequence[str] | None,
+    allowed_commands: Sequence[str],
 ) -> list[str]:
     """Validate and resolve a command.
 
@@ -129,10 +91,7 @@ def _validate_and_resolve_command(
             guard_name="safe_command",
         )
 
-    if allowed_commands is not None:
-        whitelist = list(allowed_commands)
-    else:
-        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
+    whitelist = list(allowed_commands)
 
     validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
 
@@ -234,11 +193,11 @@ def _execute_command(
 def run_safe_command(
     command: Sequence[str],
     *,
+    allowed_commands: Sequence[str],
     cwd: Path | str | None = None,
     timeout: float = 300.0,
     capture_output: bool = True,
     check: bool = False,
-    allowed_commands: Sequence[str] | None = None,
     env: dict[str, str] | None = None,
     dry_run: bool = False,
 ) -> SafeCommandResult:
@@ -267,7 +226,7 @@ def run_safe_command(
         subprocess.CalledProcessError: If check=True and command fails.
 
     Example:
-        >>> result = run_safe_command(["poetry", "install"])
+        >>> result = run_safe_command(["poetry", "install"], allowed_commands=["poetry"])
         >>> if result.success:
         ...     print("Installation complete!")
 

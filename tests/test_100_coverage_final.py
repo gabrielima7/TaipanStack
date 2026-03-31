@@ -265,7 +265,7 @@ class TestSubprocessUncovered:
         """Test run_safe_command with successful command."""
         from taipanstack.utils.subprocess import run_safe_command
 
-        result = run_safe_command(["echo", "test"], timeout=30.0)
+        result = run_safe_command(["echo", "test"], allowed_commands=["echo"], timeout=30.0)
         assert result.success
         assert result.returncode == 0
 

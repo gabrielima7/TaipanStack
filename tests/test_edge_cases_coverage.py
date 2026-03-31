@@ -269,6 +269,7 @@ class TestSubprocessEdgeCases:
 
         result = run_safe_command(
             ["echo", "test"],
+            allowed_commands=["echo"],
             env={"CUSTOM_VAR": "value"},
         )
         assert result.success
