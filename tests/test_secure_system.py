@@ -154,8 +154,8 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
     # We need a scenario where existing_user.username does not match, but existing_user.email does match
     # to hit the fallback of the first branch (if existing_user.username == user.username: False)
     user_create_email_match = UserCreate(
-        username="new_user", # mismatch
-        email="first@example.com", # match
+        username="new_user",  # mismatch
+        email="first@example.com",  # match
         password=SecretStr("password"),
         ip_address=None,
     )
