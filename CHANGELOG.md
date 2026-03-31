@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-03-31
+
+### Security
+- **Fix (Critical)**: Fixed OS command injection vulnerability by hardening the security guards against command concatenation and shell escape sequences (PR #385).
+- **Fix (Critical)**: Isolated subprocess environment variables to prevent sensitive data leakage and credential exposure (PR #403).
+- **Fix (Critical)**: Remedied sensitive data exposure in User Domain Model by redacting password hashes from public serialization schemas (PR #402).
+- **Fix (High)**: Patched DoS vulnerability in PBKDF2 legacy verification by enforcing `MAX_LEGACY_ITERATIONS` limit (PR #411).
+- **Fix (High)**: Hardened the `@cached` decorator against cache collision vulnerabilities (PR #388).
+- **Fix (Medium)**: Enforced mandatory network timeout defaults across all bridge components to prevent resource exhaustion (PR #381).
+- **Fix (Medium)**: Resolved unhandled exceptions during `CircuitBreaker` state change callbacks (PR #380).
+- **Fix**: Prevented crash during log redaction when processing non-string dictionary keys (PR #378).
+- **Fix**: Improved exception serialization resilience for "Dataclass Exceptions" in the secure system (PR #409).
+- **Hardening**: Prevented silent path mutation in `safe_write` by raising `SecurityError` on unsafe character sequences (PR #408).
+- **Hardening**: Prevented potential type masking during password verification routines (PR #391).
+
+### Performance
+- **Optimization**: Implemented lazy evaluation for `find_files` utility to prevent memory bottlenecks during large directory crawls (PR #394).
+
+### Changed & Refactoring
+- **Refactoring**: Standardized filesystem error classes to use idiomatic dataclass properties for better maintainability (PR #401).
+- **Refactoring**: Removed generic linter suppressions and resolved legacy code quality warnings (PR #398).
+- **Chore**: Enabled `ResourceWarning` in pytest configuration to proactively detect leaked file handles and sockets (PR #393).
+- **Fix**: Resolved `UnicodeDecodeError` in subprocess execution by hardening output decoding logic (PR #407).
+- **Fix**: Fixed Pygments crash in documentation generation during mkdocstrings processing (PR #386).
+- **Optimization**: Reduced cyclomatic complexity in security sanitizer modules (PR #384).
+
 ## [0.4.1] - 2026-03-30
 
 ### Security
@@ -458,7 +484,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...v0.4.0
 [0.3.11]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.10...v0.3.11
