@@ -49,6 +49,8 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     }
 )
 
+_ENV_MULTILINE_TRANSLATE = str.maketrans("\n\r", "  ")
+
 
 def sanitize_string(
     value: str,
@@ -83,101 +85,28 @@ def sanitize_string(
     if not value:
         return ""
 
-    result = value
-
     # Strip whitespace first
-    if strip_whitespace:
-        result = result.strip()
+    result = value.strip() if strip_whitespace else value
 
     # Remove null bytes and control characters
     result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
     if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
+        if "<" in result or ">" in result:
+            result = _HTML_TAGS_RE.sub("", result)
+        if "&" in result or "<" in result or ">" in result:
+            result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     # Handle unicode
     if not allow_unicode:
-        result = result.encode("ascii", errors="ignore").decode("ascii")
+        if not result.isascii():
+            result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
     if max_length is not None and len(result) > max_length:
         result = result[:max_length]
 
-    return result
-
-
-def _extract_stem_and_suffix(
-    filename: str, preserve_extension: bool
-) -> tuple[str, str]:
-    """Extract stem and suffix from a filename."""
-    # Get parts using native string manipulation instead of Path for performance
-    # Emulate Path(filename).name
-    name = filename
-    slash_idx = max(name.rfind("/"), name.rfind("\\"))
-    if slash_idx >= 0:
-        name = name[slash_idx + 1 :]
-
-    stem = name
-    suffix = ""
-
-    idx = name.rfind(".")
-    # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
-    if idx > 0 and not all(c == "." for c in name) and name != "..":
-        stem = name[:idx]
-        suffix = name[idx:] if preserve_extension else ""
-    else:
-        stem = name
-
-    return stem, suffix
-
-
-def _remove_invalid_chars(stem: str, replacement: str) -> str:
-    """Remove or replace invalid characters in a filename stem."""
-    try:
-        if "\\" in replacement:
-            # Use lambda to avoid processing regex escape sequences in replacement
-            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
-        else:
-            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
-    except re.error:  # pragma: no cover
-        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
-
-    # Remove leading/trailing dots and spaces (Windows issues)
-    safe_stem = safe_stem.strip(". ")
-
-    # Remove path separators that might have snuck through
-    safe_stem = safe_stem.replace("/", replacement)
-    safe_stem = safe_stem.replace("\\", replacement)
-
-    return safe_stem
-
-
-def _collapse_replacements(safe_stem: str, replacement: str) -> str:
-    """Collapse multiple consecutive replacement characters."""
-    if replacement:
-        double_replacement = replacement + replacement
-        while double_replacement in safe_stem:
-            safe_stem = safe_stem.replace(double_replacement, replacement)
-        safe_stem = safe_stem.strip(replacement)
-    return safe_stem
-
-
-def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
-    """Truncate the filename while keeping the extension if possible."""
-    result = f"{safe_stem}{suffix}"
-    if len(result) > max_length:
-        available = max_length - len(suffix)
-        if available > 0:
-            safe_stem = safe_stem[:available]
-            result = f"{safe_stem}{suffix}"
-        else:
-            result = result[:max_length]
     return result
 
 
@@ -216,13 +145,36 @@ def sanitize_filename(
     if not filename:
         filename = "unnamed"
 
-    stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
+    # Extract stem and suffix natively to avoid pathlib overhead
+    slash_idx = max(filename.rfind("/"), filename.rfind("\\"))
+    name = filename[slash_idx + 1 :] if slash_idx >= 0 else filename
+    idx = name.rfind(".")
 
-    # Remove invalid characters using precompiled regex for performance
-    safe_stem = _remove_invalid_chars(stem, replacement)
+    if idx > 0 and name != ".." and not name.startswith("..") and name.strip(".") != "":
+        stem = name[:idx]
+        suffix = name[idx:] if preserve_extension else ""
+    else:
+        stem = name
+        suffix = ""
+
+    # Remove invalid characters using precompiled regex
+    try:
+        if "\\" in replacement:
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+        else:
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
+    except re.error:  # pragma: no cover
+        safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
+
+    # Clean residual path chars
+    safe_stem = safe_stem.strip(". ").replace("/", replacement).replace("\\", replacement)
 
     # Collapse multiple replacement chars
-    safe_stem = _collapse_replacements(safe_stem, replacement)
+    if replacement:
+        double_replacement = replacement + replacement
+        while double_replacement in safe_stem:
+            safe_stem = safe_stem.replace(double_replacement, replacement)
+        safe_stem = safe_stem.strip(replacement)
 
     # Handle reserved names (Windows)
     if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
@@ -232,7 +184,15 @@ def sanitize_filename(
     if not safe_stem:
         safe_stem = "unnamed"
 
-    return _truncate_filename(safe_stem, suffix, max_length)
+    # Truncate while keeping extension if possible
+    result = f"{safe_stem}{suffix}"
+    if len(result) > max_length:
+        available = max_length - len(suffix)
+        if available > 0:
+            return f"{safe_stem[:available]}{suffix}"
+        return result[:max_length]
+
+    return result
 
 
 def _clean_path_parts(path: Path) -> list[str]:
@@ -352,19 +312,16 @@ def sanitize_env_value(
     if not value:
         return ""
 
+    val_len = len(value)
+
     if allow_multiline:
-        if "\x00" not in value and len(value) <= max_length:
+        if "\x00" not in value and val_len <= max_length:
             return value
         result = value.replace("\x00", "")
     else:
-        if (
-            "\x00" not in value
-            and "\n" not in value
-            and "\r" not in value
-            and len(value) <= max_length
-        ):
+        if val_len <= max_length and "\x00" not in value and "\n" not in value and "\r" not in value:
             return value
-        result = value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
+        result = value.translate(_ENV_MULTILINE_TRANSLATE).replace("\x00", "")
 
     if len(result) > max_length:
         return result[:max_length]
@@ -394,19 +351,23 @@ def sanitize_sql_identifier(identifier: str) -> str:
         msg = "SQL identifier cannot be empty"
         raise ValueError(msg)
 
+    length = len(identifier)
+
     # Fast path: already clean and valid
     if (
         identifier.isidentifier()
         and identifier.isascii()
-        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+        and length <= MAX_SQL_IDENTIFIER_LENGTH
     ):
         return identifier
 
     result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
 
     # Must start with letter or underscore
-    if result and not result[0].isalpha() and result[0] != "_":
-        result = f"_{result}"
+    if result:
+        first_char = result[0]
+        if not first_char.isalpha() and first_char != "_":
+            result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
     if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
