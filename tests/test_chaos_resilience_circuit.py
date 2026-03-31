@@ -1,11 +1,10 @@
-import time
 import sys
-import threading
+import time
 
 import pytest
+
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
-    CircuitBreakerError,
     CircuitState,
 )
 
@@ -64,12 +63,9 @@ def test_circuit_breaker_on_state_change_chaos():
 
 def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
     """Test the failure branch when structlog is missing."""
-    import sys
-    from unittest.mock import patch
 
     # We patch the module-level variable by grabbing the actual module
     # since it shares a name with the function.
-    import taipanstack.resilience.circuit_breaker as cb_module
 
     monkeypatch.setattr(sys.modules["taipanstack.resilience.circuit_breaker"], "_HAS_STRUCTLOG", False)
 
