@@ -96,7 +96,7 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
         ip_address=None,
     )
 
-    with caplog.at_level(logging.ERROR):
+    with caplog.at_level(logging.WARNING):
         result = service.create_user(user_create)
 
     match result:

@@ -178,7 +178,7 @@ class UserService:
             logger.info("User created successfully", user_id=user.id)
             return Ok(user)
         except UserAlreadyExistsError as e:
-            logger.exception("Failed to create user", user_id=user.id)
+            logger.warning("Failed to create user", user_id=user.id)
             return Err(UserCreationError(message=str(e)))
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
