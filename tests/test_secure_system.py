@@ -148,6 +148,8 @@ def test_create_user_already_exists(caplog: pytest.LogCaptureFixture) -> None:
         password=SecretStr("password"),
         ip_address=None,
     )
+    res_mismatch = service_empty.create_user(user_create_mismatch)
+    assert res_mismatch.is_err()
 
     # We need a scenario where existing_user.username does not match, but existing_user.email does match
     # to hit the fallback of the first branch (if existing_user.username == user.username: False)
