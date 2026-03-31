@@ -380,3 +380,24 @@ rules:
       - pattern-not: subprocess.check_call(..., timeout=$TIMEOUT, ...)
       - pattern-not: subprocess.check_output(..., timeout=$TIMEOUT, ...)
       - pattern-not: subprocess.run(..., timeout=$TIMEOUT, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 32: Detect insecure usage of os.system
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-os-system-usage
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `os.system()` is inherently dangerous because it executes the command
+      in a shell, which is susceptible to OS Command Injection if the command
+      string contains untrusted input. Use `taipanstack.utils.subprocess.run_safe_command`
+      instead.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern: os.system(...)
