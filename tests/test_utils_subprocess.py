@@ -133,6 +133,51 @@ class TestRunSafeCommand:
         assert result.returncode == -1
         assert "timed out" in result.stderr
 
+    def test_timeout_handling_preserves_stderr(self, tmp_path: Path) -> None:
+        """Test command timeout preserves existing stderr."""
+        script = tmp_path / "timeout_test.py"
+        script.write_text(
+            "import sys\n"
+            "import time\n"
+            "sys.stdout.write('stdout debug info')\n"
+            "sys.stdout.flush()\n"
+            "sys.stderr.write('vital debug info')\n"
+            "sys.stderr.flush()\n"
+            "time.sleep(5)\n"
+        )
+        result = run_safe_command(
+            ["python", str(script)],
+            timeout=0.2,
+            allowed_commands=["python"],
+        )
+        assert result.success is False
+        assert result.returncode == -1
+        assert "stdout debug info" in result.stdout
+        assert "vital debug info" in result.stderr
+        assert "timed out" in result.stderr
+
+    def test_run_safe_command_check_raises(self, tmp_path: Path) -> None:
+        """Test check=True raises CalledProcessError."""
+        script = tmp_path / "fail_test.py"
+        script.write_text("import sys\nsys.exit(1)\n")
+        with pytest.raises(subprocess.CalledProcessError):
+            run_safe_command(
+                ["python", str(script)],
+                check=True,
+                allowed_commands=["python"],
+            )
+
+    def test_filter_environment_filters_sensitive(self) -> None:
+        """Test that _filter_environment removes sensitive variables."""
+        # Using a sensitive environment pattern like AWS_SECRET_ACCESS_KEY
+        import os
+        from taipanstack.utils.subprocess import _filter_environment
+
+        env = {"AWS_SECRET_ACCESS_KEY": "secret", "SAFE_VAR": "value"}
+        filtered = _filter_environment(env)
+        assert "SAFE_VAR" in filtered
+        assert "AWS_SECRET_ACCESS_KEY" not in filtered
+
     def test_working_directory(self, tmp_path: Path) -> None:
         """Test that working directory is respected."""
         # Create a file in tmp_path to verify we can access it
