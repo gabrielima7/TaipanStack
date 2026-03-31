@@ -50,7 +50,7 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 @lru_cache(maxsize=1024)
-def _is_sensitive(key: str, regex: re.Pattern[str] | None) -> bool:
+def _is_sensitive(key: Any, regex: re.Pattern[str] | None) -> bool:
     """Check if a key is sensitive using cached regex matching.
 
     Args:
@@ -58,10 +58,12 @@ def _is_sensitive(key: str, regex: re.Pattern[str] | None) -> bool:
         regex: The regex pattern to use for matching.
 
     Returns:
-        True if the key is sensitive, False otherwise.
+        True if the key is a string and sensitive, False otherwise.
 
     """
     if regex is None:
+        return False
+    if not isinstance(key, str):
         return False
     return bool(regex.search(key))
 
