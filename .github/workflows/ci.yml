@@ -124,6 +124,7 @@ jobs:
         if: matrix.pkg_manager == 'zypper'
         run: |
           zypper --non-interactive removerepo repo-openh264 || true
+          zypper clean -a
           zypper --gpg-auto-import-keys --non-interactive refresh --force
           attempt=1
           while [ "$attempt" -le 3 ]; do
@@ -136,6 +137,7 @@ jobs:
             fi
 
             attempt=$((attempt + 1))
+            zypper clean -a
             zypper --gpg-auto-import-keys --non-interactive refresh --force
             sleep 5
           done
