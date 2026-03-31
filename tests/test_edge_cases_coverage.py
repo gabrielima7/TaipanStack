@@ -53,8 +53,60 @@ class TestFilesystemEdgeCases:
 
         test_file = tmp_path / "test.txt"
 
-        # Mock write_text to raise an error
-        with patch.object(Path, "write_text", side_effect=OSError("Write error")):
+        # Mock os.fdopen to raise an error
+        import os
+        with patch.object(os, "fdopen", side_effect=OSError("Write error")):
+            with pytest.raises(OSError):
+                safe_write(test_file, "content", options=WriteOptions(atomic=True))
+
+    def test_safe_write_atomic_error_cleanup_oserror(self, tmp_path: Path) -> None:
+        """Test atomic write cleans up temp file on os.close error."""
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
+
+        test_file = tmp_path / "test.txt"
+
+        import os
+        # Need to patch os.close but only when it's called in the exception handler
+        original_close = os.close
+
+        def mock_close(fd):
+            if fd > 2:  # Assuming fd > 2 is our temp file
+                original_close(fd)
+                raise OSError("Close error")
+            original_close(fd)
+
+        with patch.object(os, "fdopen", side_effect=OSError("Write error")):
+            with patch.object(os, "close", side_effect=mock_close):
+                with pytest.raises(OSError):
+                    safe_write(test_file, "content", options=WriteOptions(atomic=True))
+
+    def test_safe_read_max_size_none(self, tmp_path: Path) -> None:
+        """Test safe_read with max_size_bytes=None."""
+        from taipanstack.utils.filesystem import safe_read
+
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("content")
+
+        result = safe_read(test_file, max_size_bytes=None)
+        assert result.unwrap() == "content"
+
+    def test_safe_write_create_parents_false(self, tmp_path: Path) -> None:
+        """Test safe_write with create_parents=False."""
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
+
+        test_file = tmp_path / "test.txt"
+
+        result = safe_write(test_file, "content", options=WriteOptions(create_parents=False))
+        assert result.read_text() == "content"
+
+    def test_safe_write_atomic_error_cleanup_oserror_after_fdopen(self, tmp_path: Path) -> None:
+        """Test atomic write cleans up temp file when error happens after fd is closed."""
+        from taipanstack.utils.filesystem import WriteOptions, safe_write
+
+        test_file = tmp_path / "test.txt"
+
+        import shutil
+        with patch.object(Path, "rename", side_effect=OSError("Rename error")):
             with pytest.raises(OSError):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
 

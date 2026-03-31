@@ -232,11 +232,15 @@ def safe_write(
             prefix=f".{path.name}.",
             suffix=".tmp",
         )
+        fd_open = False
         try:
-            # Close the file descriptor immediately - required for Windows
-            os.close(_fd)
+            # Write directly to the file descriptor to avoid TOCTOU
+            f = os.fdopen(_fd, 'w', encoding=opts.encoding)
+            fd_open = True
+            with f:
+                f.write(content)
+
             temp_file = Path(temp_path)
-            temp_file.write_text(content, encoding=opts.encoding)
             # Preserve permissions if original exists
             if path.exists():
                 shutil.copymode(path, temp_file)
@@ -246,6 +250,10 @@ def safe_write(
             temp_file.rename(path)
         except Exception:
             # Clean up temp file on error
+            if not fd_open:
+                # Ensure the file descriptor is closed if os.fdopen failed
+                with contextlib.suppress(OSError):
+                    os.close(_fd)
             with contextlib.suppress(OSError):
                 Path(temp_path).unlink(missing_ok=True)
             raise
