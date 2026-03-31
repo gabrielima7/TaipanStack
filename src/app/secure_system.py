@@ -6,7 +6,6 @@ following strict typing and security guidelines.
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from uuid import UUID, uuid4
 
 from pydantic import EmailStr, Field, SecretStr
@@ -38,11 +37,13 @@ class UserAlreadyExistsError(Exception):
         super().__init__(message)
 
 
-@dataclass(frozen=True)
 class UserCreationError(Exception):
     """Exception class for user creation errors."""
 
-    message: str = "Failed to create user"
+    def __init__(self, message: str = "Failed to create user") -> None:
+        """Initialize the exception with a message."""
+        self.message = message
+        super().__init__(message)
 
 
 class UserCreate(SecureBaseModel):
