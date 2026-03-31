@@ -14,8 +14,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from taipanstack.security.guards import (
-    _DEFAULT_DENIED_ENV_VARS,
-    _SENSITIVE_ENV_VAR_PATTERN,
     SecurityError,
     guard_command_injection,
 )
@@ -147,25 +145,36 @@ def _validate_and_resolve_command(
     return validated_cmd
 
 
-def _filter_environment(env: dict[str, str] | None) -> dict[str, str]:
-    """Filter environment variables for safe execution.
+def _filter_environment(
+    env: dict[str, str] | None,
+    allowed_env_vars: Sequence[str] | None = None,
+) -> dict[str, str]:
+    """Filter environment variables for safe execution using a whitelist approach.
 
     Args:
-        env: Environment variables to filter.
+        env: Environment variables to filter. If None, uses os.environ.
+        allowed_env_vars: Whitelist of allowed environment variable names.
+            If None, only minimal necessary variables (e.g. PATH) are inherited.
+            Pass an empty list for a completely empty environment.
 
     Returns:
-        Filtered environment variables.
+        Filtered environment variables containing only allowed keys.
 
     """
     safe_env: dict[str, str] = {}
     env_to_filter = env if env is not None else dict(os.environ)
 
+    if allowed_env_vars is None:
+        # Default minimal whitelist
+        allowed_keys = {"PATH"}
+    else:
+        allowed_keys = {k.upper() for k in allowed_env_vars}
+
+    if not allowed_keys:
+        return safe_env
+
     for env_key, env_val in env_to_filter.items():
-        name_upper = env_key.upper()
-        if (
-            name_upper not in _DEFAULT_DENIED_ENV_VARS
-            and not _SENSITIVE_ENV_VAR_PATTERN.search(name_upper)
-        ):
+        if env_key.upper() in allowed_keys:
             safe_env[env_key] = str(env_val)
 
     return safe_env
@@ -240,6 +249,7 @@ def run_safe_command(
     check: bool = False,
     allowed_commands: Sequence[str] | None = None,
     env: dict[str, str] | None = None,
+    allowed_env_vars: Sequence[str] | None = None,
     dry_run: bool = False,
 ) -> SafeCommandResult:
     """Execute a command safely with security guards.
@@ -256,6 +266,7 @@ def run_safe_command(
         check: Whether to raise on non-zero exit.
         allowed_commands: Whitelist of allowed commands.
         env: Environment variables to set.
+        allowed_env_vars: Whitelist of allowed environment variables.
         dry_run: If True, don't actually execute the command.
 
     Returns:
@@ -273,7 +284,7 @@ def run_safe_command(
 
     """
     validated_cmd = _validate_and_resolve_command(command, allowed_commands)
-    safe_env = _filter_environment(env)
+    safe_env = _filter_environment(env, allowed_env_vars)
 
     if dry_run:
         return SafeCommandResult(
