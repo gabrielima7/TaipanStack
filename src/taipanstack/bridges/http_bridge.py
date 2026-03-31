@@ -140,6 +140,7 @@ async def safe_request(
     retry_config: RetryConfig | None = None,
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
+    timeout: float | None = 10.0,
     **kwargs: Any,
 ) -> Result[Any, Exception]:
     """Perform a one-shot HTTP request with safety features.
@@ -151,6 +152,7 @@ async def safe_request(
         retry_config: Optional retry configuration.
         circuit_breaker: Optional circuit breaker.
         retryable_status_codes: Status codes that trigger retries.
+        timeout: Explicit timeout in seconds (default: 10.0).
         **kwargs: Passed to ``httpx.AsyncClient.request``.
 
     Returns:
@@ -177,7 +179,7 @@ async def safe_request(
             return Err(cb_err)
 
     async def _do_request() -> Any:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=timeout) as client:
             return await client.request(method, url, **kwargs)
 
     return await _execute_with_retries(
@@ -223,7 +225,7 @@ class SafeHttpClient:
             retry_config: Retry configuration.
             circuit_breaker: Circuit breaker instance.
             retryable_status_codes: Status codes to retry.
-            **client_kwargs: Keyword args for httpx.AsyncClient.
+            **client_kwargs: Keyword args for httpx.AsyncClient. Default timeout is 10.0 seconds if not provided.
 
         """
         self._ssrf_protection = ssrf_protection
@@ -231,6 +233,7 @@ class SafeHttpClient:
         self._circuit_breaker = circuit_breaker
         self._retryable_status_codes = retryable_status_codes
         self._client_kwargs = client_kwargs
+        self._client_kwargs.setdefault("timeout", 10.0)
         self._client: Any = None
 
     async def __aenter__(self) -> SafeHttpClient:
