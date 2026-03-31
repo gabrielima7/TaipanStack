@@ -53,7 +53,18 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
     Returns:
         True if the password matches the hash, False otherwise.
 
+    Raises:
+        TypeError: If `password` or `password_hash` are not the correct types.
+
     """
+    if not isinstance(password, (str, SecretStr)):
+        msg = "password must be a string or SecretStr"
+        raise TypeError(msg)
+
+    if not isinstance(password_hash, str):
+        msg = "password_hash must be a string"
+        raise TypeError(msg)
+
     if isinstance(password, SecretStr):
         password_str = password.get_secret_value()
     else:
