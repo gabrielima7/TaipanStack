@@ -383,7 +383,7 @@ class TestFindFiles:
         (tmp_path / "file1.txt").write_text("1")
         (tmp_path / "file2.txt").write_text("2")
 
-        files = find_files(tmp_path)
+        files = list(find_files(tmp_path))
 
         assert len(files) == 2
 
@@ -392,7 +392,7 @@ class TestFindFiles:
         (tmp_path / "test.py").write_text("python")
         (tmp_path / "test.txt").write_text("text")
 
-        files = find_files(tmp_path, pattern="*.py")
+        files = list(find_files(tmp_path, pattern="*.py"))
 
         assert len(files) == 1
         assert files[0].suffix == ".py"
@@ -404,7 +404,7 @@ class TestFindFiles:
         subdir.mkdir()
         (subdir / "nested.txt").write_text("nested")
 
-        files = find_files(tmp_path, recursive=True)
+        files = list(find_files(tmp_path, recursive=True))
 
         assert len(files) == 2
 
@@ -415,7 +415,7 @@ class TestFindFiles:
         subdir.mkdir()
         (subdir / "nested.txt").write_text("nested")
 
-        files = find_files(tmp_path, pattern="*.txt", recursive=False)
+        files = list(find_files(tmp_path, pattern="*.txt", recursive=False))
 
         assert len(files) == 1
         assert files[0].name == "root.txt"
@@ -425,7 +425,7 @@ class TestFindFiles:
         (tmp_path / "visible.txt").write_text("visible")
         (tmp_path / ".hidden.txt").write_text("hidden")
 
-        files = find_files(tmp_path, include_hidden=False)
+        files = list(find_files(tmp_path, include_hidden=False))
 
         assert len(files) == 1
         assert files[0].name == "visible.txt"
@@ -435,11 +435,11 @@ class TestFindFiles:
         (tmp_path / "visible.txt").write_text("visible")
         (tmp_path / ".hidden.txt").write_text("hidden")
 
-        files = find_files(tmp_path, include_hidden=True)
+        files = list(find_files(tmp_path, include_hidden=True))
 
         assert len(files) == 2
 
     def test_find_in_nonexistent_dir(self, tmp_path: Path) -> None:
         """Test finding in non-existent directory returns empty list."""
-        files = find_files(tmp_path / "nonexistent")
+        files = list(find_files(tmp_path / "nonexistent"))
         assert files == []

@@ -206,7 +206,7 @@ class TestFilesystemBranches:
         (tmp_path / "subdir").mkdir()
         (tmp_path / "subdir" / "nested.txt").touch()
 
-        results = find_files(tmp_path, pattern="*.txt", recursive=False)
+        results = list(find_files(tmp_path, pattern="*.txt", recursive=False))
         names = [r.name for r in results]
         assert "file.txt" in names
         assert "nested.txt" not in names
