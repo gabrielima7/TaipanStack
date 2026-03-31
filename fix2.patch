@@ -1,0 +1,10 @@
+--- .github/workflows/ci.yml
++++ .github/workflows/ci.yml
+@@ -135,7 +135,7 @@
+             fi
+
+             attempt=$((attempt + 1))
+-            zypper --gpg-auto-import-keys --non-interactive refresh --force
++            zypper clean -a && zypper --gpg-auto-import-keys --non-interactive refresh --force || true
+             sleep 5
+           done
