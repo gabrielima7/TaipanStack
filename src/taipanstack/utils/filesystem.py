@@ -213,6 +213,13 @@ def safe_write(
 
     # Sanitize filename
     safe_name = sanitize_filename(path.name)
+    if safe_name != path.name:
+        raise SecurityError(
+            f"Unsafe or invalid characters in filename: '{path.name}'. "
+            f"Expected safe name: '{safe_name}'",
+            guard_name="sanitize_filename",
+            value=path.name,
+        )
     path = path.parent / safe_name
 
     # Create parents if needed

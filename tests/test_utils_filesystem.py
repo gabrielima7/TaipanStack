@@ -185,6 +185,12 @@ class TestSafeWrite:
         with pytest.raises(SecurityError):
             safe_write("../etc/evil.txt", "malicious")
 
+    def test_write_invalid_filename_blocked(self, tmp_path: Path) -> None:
+        """Test that writing to an invalid filename raises an error instead of silently mutating."""
+        test_file = tmp_path / "report:2023.txt"
+        with pytest.raises(SecurityError, match="Unsafe or invalid characters in filename"):
+            safe_write(test_file, "content")
+
 
 class TestEnsureDir:
     """Tests for ensure_dir function."""
