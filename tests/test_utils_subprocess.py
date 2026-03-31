@@ -8,8 +8,8 @@ import pytest
 from taipanstack.security.guards import SecurityError
 from taipanstack.utils.subprocess import (
     DEFAULT_ALLOWED_COMMANDS,
-    SafeCommandResult,
     SafeCommandConfig,
+    SafeCommandResult,
     run_safe_command,
 )
 

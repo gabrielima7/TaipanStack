@@ -97,7 +97,7 @@ class TestSubprocessTimeoutBranches:
 
     def test_run_safe_command_with_failure(self) -> None:
         """Test run_safe_command with failing command."""
-        from taipanstack.utils.subprocess import SafeCommandConfig, run_safe_command
+        from taipanstack.utils.subprocess import run_safe_command
 
         result = run_safe_command(
             ["python", "-c", "exit(42)"],
