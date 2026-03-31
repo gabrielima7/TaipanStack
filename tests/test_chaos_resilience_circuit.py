@@ -67,7 +67,9 @@ def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
     # We patch the module-level variable by grabbing the actual module
     # since it shares a name with the function.
 
-    monkeypatch.setattr(sys.modules["taipanstack.resilience.circuit_breaker"], "_HAS_STRUCTLOG", False)
+    monkeypatch.setattr(
+        sys.modules["taipanstack.resilience.circuit_breaker"], "_HAS_STRUCTLOG", False
+    )
 
     def faulty_callback(old: CircuitState, new: CircuitState) -> None:
         raise ValueError("Simulated failure without structlog")
