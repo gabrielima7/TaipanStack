@@ -194,7 +194,10 @@ class UserService:
         """
         # Fast-path validation: Check if user already exists by email
         if self._user_repository.get_by_email(user_create.email) is not None:
-            logger.warning("Failed to create user: Email already exists", email=user_create.email)
+            logger.warning(
+                "Failed to create user: Email already exists",
+                email=user_create.email,
+            )
             return Err(UserCreationError(message="User already exists"))
 
         # Hash the password securely using the security module

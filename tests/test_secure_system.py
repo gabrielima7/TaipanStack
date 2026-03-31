@@ -81,6 +81,26 @@ def test_create_user_failure(caplog: pytest.LogCaptureFixture) -> None:
             pytest.fail("Expected Err(UserCreationError)")
 
 
+def test_in_memory_repository_get_by_email_found() -> None:
+    """Test get_by_email returns a user if they exist in InMemoryUserRepository."""
+    repository = InMemoryUserRepository()
+    user = User(
+        id=uuid4(),
+        username="existing_user",
+        email="existing@example.com",
+        password_hash="some_hash",
+    )
+    repository.save(user)
+
+    found_user = repository.get_by_email("existing@example.com")
+    assert found_user is not None
+    assert found_user.email == "existing@example.com"
+    assert found_user.username == "existing_user"
+
+    not_found_user = repository.get_by_email("nonexistent@example.com")
+    assert not_found_user is None
+
+
 def test_create_user_email_exists_fast_path(caplog: pytest.LogCaptureFixture) -> None:
     """Test fast-path validation when a user with the same email already exists."""
 
