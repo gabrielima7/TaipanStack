@@ -205,11 +205,11 @@ def collect_results(
     for result in results:
         t = type(result)
         if t is Ok:
-            append(result.ok_value)
+            append(cast(Ok[T], result).ok_value)
         elif t is Err:
-            return result
+            return cast(Err[E], result)
         else:  # pragma: no cover
-            return result
+            return cast(Err[E], result)
     return Ok(values)
 
 
