@@ -535,7 +535,7 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
     """Resolve hostname to IP addresses and check for SSRF risk."""
     try:
         addr_infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror:
+    except (socket.gaierror, UnicodeError):
         return Err(
             SecurityError(
                 "Hostname could not be resolved",
