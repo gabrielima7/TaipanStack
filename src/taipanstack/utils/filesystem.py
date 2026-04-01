@@ -273,7 +273,8 @@ def ensure_dir(
 
     Raises:
         SecurityError: If path validation fails.
-        FileExistsError: If a file already exists at the given path or intermediate paths.
+        FileExistsError: If a file already exists at the given path or intermediate
+            paths.
 
     """
     path = Path(path)
@@ -283,7 +284,7 @@ def ensure_dir(
     resolved_path = path.resolve()
 
     # Identify missing parent directories from root to leaf
-    paths_to_create = []
+    paths_to_create: list[Path] = []
     current_path = resolved_path
 
     while not current_path.is_dir():
