@@ -208,8 +208,6 @@ def _execute_command(
             cwd=cwd,
             timeout=timeout,
             capture_output=capture_output,
-            text=True,
-            encoding="utf-8",
             env=safe_env,
             check=False,
         )
@@ -221,21 +219,47 @@ def _execute_command(
                 stdout_str = e.stdout
             else:  # pragma: no cover
                 stdout_str = e.stdout.decode("utf-8", errors="replace")
+
+        stderr_str = ""
+        if hasattr(e, "stderr") and e.stderr is not None:
+            if isinstance(e.stderr, str):
+                stderr_str = e.stderr
+            else:
+                stderr_str = e.stderr.decode("utf-8", errors="replace")
+
+        error_msg = f"Command timed out after {timeout}s"
+        if stderr_str:
+            error_msg += f"\nStderr:\n{stderr_str}"
+
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
             stdout=stdout_str,
-            stderr=f"Command timed out after {timeout}s",
+            stderr=error_msg,
             duration_seconds=duration,
         )
 
     duration = time.time() - start_time
 
+    stdout_str = ""
+    if result.stdout is not None:
+        if isinstance(result.stdout, str):
+            stdout_str = result.stdout
+        else:
+            stdout_str = result.stdout.decode("utf-8", errors="replace")
+
+    stderr_str = ""
+    if result.stderr is not None:
+        if isinstance(result.stderr, str):
+            stderr_str = result.stderr
+        else:
+            stderr_str = result.stderr.decode("utf-8", errors="replace")
+
     return SafeCommandResult(
         command=validated_cmd,
         returncode=result.returncode,
-        stdout=result.stdout or "",
-        stderr=result.stderr or "",
+        stdout=stdout_str,
+        stderr=stderr_str,
         duration_seconds=duration,
     )
 

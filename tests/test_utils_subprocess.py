@@ -163,3 +163,36 @@ class TestRunSafeCommand:
         """Test that command duration is tracked."""
         result = run_safe_command(["echo", "test"])
         assert result.duration_seconds >= 0
+
+    def test_invalid_unicode_bytes_decoded_safely(self, tmp_path: Path) -> None:
+        """Test that output with invalid UTF-8 bytes is decoded using replacement chars."""
+        # Create a python script that writes raw invalid bytes to stdout
+        script = tmp_path / "bad_bytes.py"
+        script.write_text(
+            "import sys\n"
+            "sys.stdout.buffer.write(b'valid \\xff bytes')\n"
+            "sys.stderr.buffer.write(b'error \\xfe bytes')\n"
+        )
+
+        result = run_safe_command(["python", str(script)], allowed_commands=["python"])
+
+        assert "valid \ufffd bytes" in result.stdout
+        assert "error \ufffd bytes" in result.stderr
+        assert result.success is True
+
+    def test_timeout_preserves_stderr_telemetry(self, tmp_path: Path) -> None:
+        """Test that stderr is preserved when a subprocess times out."""
+        script = tmp_path / "timeout_script.py"
+        script.write_text(
+            "import sys, time\n"
+            "sys.stderr.write('Important debugging info\\n')\n"
+            "sys.stderr.flush()\n"
+            "time.sleep(10)\n"
+        )
+
+        result = run_safe_command(["python", str(script)], timeout=0.1, allowed_commands=["python"])
+
+        assert result.returncode == -1
+        assert result.success is False
+        assert "Command timed out" in result.stderr
+        assert "Important debugging info" in result.stderr
