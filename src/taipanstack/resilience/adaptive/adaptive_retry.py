@@ -9,6 +9,7 @@ historically led to successful retries.
 from __future__ import annotations
 
 import logging
+import math
 import statistics
 import threading
 from collections import defaultdict, deque
@@ -110,6 +111,14 @@ class AdaptiveRetry:
             elapsed: Time elapsed before this attempt was made.
 
         """
+        if not math.isfinite(elapsed) or elapsed < 0:
+            logger.warning(
+                "Ignoring invalid elapsed time %s for adaptive retry attempt %d",
+                elapsed,
+                attempt,
+            )
+            return
+
         outcome = _Outcome(attempt=attempt, success=success, elapsed=elapsed)
         with self._lock:
             self._outcomes.append(outcome)
