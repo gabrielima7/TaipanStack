@@ -203,14 +203,13 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        match result:
-            case Ok(val):
-                append(val)
-            case Err(e):
-                _ = e
-                return result
-            case _:  # pragma: no cover
-                return result
+        t = type(result)
+        if t is Ok:
+            append(result.ok_value)
+        elif t is Err:
+            return result
+        else:  # pragma: no cover
+            return result
     return Ok(values)
 
 

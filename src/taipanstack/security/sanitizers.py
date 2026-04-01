@@ -49,6 +49,8 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     }
 )
 
+_ENV_TRANS_SINGLE = str.maketrans({"\x00": None, "\n": " ", "\r": " "})
+
 
 def sanitize_string(
     value: str,
@@ -118,21 +120,20 @@ def _extract_stem_and_suffix(
     """Extract stem and suffix from a filename."""
     # Get parts using native string manipulation instead of Path for performance
     # Emulate Path(filename).name
-    name = filename
-    slash_idx = max(name.rfind("/"), name.rfind("\\"))
-    if slash_idx >= 0:
-        name = name[slash_idx + 1 :]
+    slash_idx_1 = filename.rfind("/")
+    slash_idx_2 = filename.rfind("\\")
+    slash_idx = slash_idx_1 if slash_idx_1 > slash_idx_2 else slash_idx_2
 
-    stem = name
-    suffix = ""
+    name = filename[slash_idx + 1 :] if slash_idx >= 0 else filename
 
     idx = name.rfind(".")
     # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
-    if idx > 0 and not all(c == "." for c in name) and name != "..":
+    if idx > 0 and name != ".." and name.replace(".", "") != "":
         stem = name[:idx]
         suffix = name[idx:] if preserve_extension else ""
     else:
         stem = name
+        suffix = ""
 
     return stem, suffix
 
@@ -342,7 +343,7 @@ def _sanitize_env_singleline(value: str, max_length: int) -> str:
         and len(value) <= max_length
     ):
         return value
-    return value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
+    return value.translate(_ENV_TRANS_SINGLE)
 
 
 def sanitize_env_value(
