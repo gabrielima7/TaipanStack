@@ -298,7 +298,7 @@ def ensure_dir(
 
     # Iterate through parents and create them with specific mode
     for p in paths_to_create:
-        p.mkdir(mode=mode)
+        p.mkdir(mode=mode, exist_ok=True)
 
     return resolved_path
 
