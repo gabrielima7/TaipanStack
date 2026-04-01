@@ -9,9 +9,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.result import Err, Ok, Result
+
+if TYPE_CHECKING:
+    import redis.asyncio as aioredis
+    import sqlalchemy
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,
@@ -24,7 +28,7 @@ logger = logging.getLogger("taipanstack.bridges.db")
 # --- optional imports ------------------------------------------------------
 
 try:
-    import sqlalchemy  # noqa: F401
+    import sqlalchemy
     from sqlalchemy import text as sa_text  # pragma: no cover
     from sqlalchemy.ext.asyncio import AsyncSession  # pragma: no cover
 
@@ -95,7 +99,7 @@ class ResilientDatabase:
         self,
         statement: Any,
         **kwargs: Any,
-    ) -> Result[Any, Exception]:
+    ) -> Result[sqlalchemy.CursorResult[Any], Exception]:
         """Execute a SQL statement with resilience.
 
         Args:
