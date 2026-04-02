@@ -106,9 +106,7 @@ class TimeoutDecorator(Protocol):
     @overload
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
-    ) -> Callable[
-        P, Awaitable[Result[T, TimeoutError | E]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...  # pragma: no cover
 
 
 def timeout(seconds: float) -> TimeoutDecorator:
