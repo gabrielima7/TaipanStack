@@ -235,6 +235,34 @@ def sanitize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
+def _is_valid_path_part_fast_path(part: str) -> bool:
+    """Check if a path component is already safe and doesn't need full sanitization."""
+    if len(part) > 255:
+        return False
+
+    # Fast path for simple alphanumeric ASCII strings (very common)
+    if part.isascii() and part.isalnum():
+        return part.upper() not in _WINDOWS_RESERVED_NAMES
+
+    # Must be ASCII to avoid unicode issues bypassed in fast path
+    if not part.isascii():
+        return False
+
+    # Check for safe chars (hyphens, underscores, dots)
+    safe_chars_only = all(c.isalnum() or c in "-_." for c in part)
+    if safe_chars_only:
+        # Check it's not starting/ending with dot/space, isn't reserved, and isn't ".."
+        return (
+            not part.startswith(".") and
+            not part.endswith(".") and
+            not part.startswith(" ") and
+            not part.endswith(" ") and
+            part.upper() not in _WINDOWS_RESERVED_NAMES and
+            ".." not in part
+        )
+    return False
+
+
 def _clean_path_parts(path: Path) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
@@ -244,9 +272,13 @@ def _clean_path_parts(path: Path) -> list[str]:
             if parts and parts[-1] != ".." and parts[-1] != anchor:
                 parts.pop()
         elif part != ".":  # pragma: no branch
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part and safe_part != "..":  # pragma: no branch
-                parts.append(safe_part)
+            # Fast path check to avoid expensive sanitize_filename overhead
+            if _is_valid_path_part_fast_path(part):
+                parts.append(part)
+            else:
+                safe_part = sanitize_filename(part, preserve_extension=True)
+                if safe_part and safe_part != "..":  # pragma: no branch
+                    parts.append(safe_part)
     return parts
 
 

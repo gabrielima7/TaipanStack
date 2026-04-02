@@ -86,6 +86,7 @@ def safe(
 
     """
     if inspect.iscoroutinefunction(func):
+        func_coro = cast(Callable[P, Awaitable[T]], func)
 
         @functools.wraps(func)
         async def async_wrapper(
@@ -93,17 +94,17 @@ def safe(
             **kwargs: P.kwargs,
         ) -> Result[T, Exception]:
             try:
-                func_coro = cast(Callable[P, Awaitable[T]], func)
                 return Ok(await func_coro(*args, **kwargs))
             except Exception as e:
                 return Err(e)
 
         return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
 
+    func_sync = cast(Callable[P, T], func)
+
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
-            func_sync = cast(Callable[P, T], func)
             return Ok(func_sync(*args, **kwargs))
         except Exception as e:
             return Err(e)
@@ -149,21 +150,22 @@ def safe_from(
         func: Callable[P, T] | Callable[P, Awaitable[T]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Awaitable[T]], func)
 
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
-                    func_coro = cast(Callable[P, Awaitable[T]], func)
                     return Ok(await func_coro(*args, **kwargs))
                 except exception_types as e:
                     return Err(e)
 
             return cast(Callable[P, Awaitable[Result[T, E]]], async_wrapper)
 
+        func_sync = cast(Callable[P, T], func)
+
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             try:
-                func_sync = cast(Callable[P, T], func)
                 return Ok(func_sync(*args, **kwargs))
             except exception_types as e:
                 return Err(e)
