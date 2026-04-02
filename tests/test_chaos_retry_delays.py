@@ -1,6 +1,8 @@
 import math
+
 import pytest
-from taipanstack.resilience.retry import retry, calculate_delay, RetryConfig
+
+from taipanstack.resilience.retry import RetryConfig, RetryError, calculate_delay, retry
 
 
 def test_calculate_delay_nan_chaos():
@@ -46,7 +48,7 @@ def test_retry_decorator_nan_chaos():
     def fail_service():
         raise ValueError("boom")
 
-    with pytest.raises(Exception):
+    with pytest.raises(RetryError):
         fail_service()
 
 
@@ -57,5 +59,5 @@ def test_retry_decorator_inf_chaos():
     def fail_service():
         raise ValueError("boom")
 
-    with pytest.raises(Exception):
+    with pytest.raises(RetryError):
         fail_service()
