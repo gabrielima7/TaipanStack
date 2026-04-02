@@ -112,9 +112,8 @@ async def _execute_with_retries(
     for attempt in range(1, max_attempts + 1):
         try:
             response = await request_func()
-            if (
-                response.status_code in retryable_status_codes
-                and _should_retry_request(retry_config, attempt, max_attempts)
+            if response.status_code in retryable_status_codes and _should_retry_request(
+                retry_config, attempt, max_attempts
             ):
                 # We know retry_config is not None if _should_retry_request is true
                 delay = calculate_delay(attempt, retry_config)  # type: ignore[arg-type]
