@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Iterator
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -81,10 +81,7 @@ class SecureBaseModel(BaseModel):
 
         """
         data = super().model_dump(**kwargs)
-        masked = _mask_data(data)
-        if isinstance(masked, dict):
-            return masked
-        return {"_error": "Root data was not a dictionary"}
+        return cast(dict[str, Any], _mask_data(data))
 
     def model_dump_json(
         self,

@@ -8,8 +8,8 @@ import asyncio
 import functools
 import inspect
 import threading
-from collections.abc import Awaitable, Callable, Coroutine
-from typing import Any, ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -142,7 +142,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                         func,
                     )
                     return await asyncio.wait_for(
-                        func_coro(*args, **kwargs),  # type: ignore[arg-type]
+                        func_coro(*args, **kwargs),
                         timeout=seconds,
                     )
                 except TimeoutError:

@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import Any, Generic, ParamSpec, TypeVar, cast
+from typing import Any, Generic, ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker

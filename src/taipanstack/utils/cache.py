@@ -99,7 +99,9 @@ def cached(ttl: float) -> CacheDecorator:
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(func.__name__, args, cast(dict[str, object], kwargs))
+            cache_key = get_cache_key(
+                func.__name__, args, cast(dict[str, object], kwargs)
+            )
             now = time.monotonic()
 
             if cache_key in _cache:
