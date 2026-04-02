@@ -23,6 +23,11 @@ try:
 except ImportError:  # pragma: no cover — structlog is optional
     HAS_STRUCTLOG = False
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
+
 
 # Default log format
 DEFAULT_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
@@ -84,7 +89,7 @@ def _redact_dict(d: MutableMapping[str, Any]) -> None:
 
 
 def mask_sensitive_data_processor(
-    _logger: Any,
+    _logger: "logging.Logger | BoundLogger",
     _method: str,
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
@@ -108,7 +113,7 @@ def mask_sensitive_data_processor(
 
 
 def correlation_id_processor(
-    _logger: Any,
+    _logger: "logging.Logger | BoundLogger",
     _method: str,
     event_dict: MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:

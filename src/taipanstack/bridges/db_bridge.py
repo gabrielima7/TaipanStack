@@ -23,6 +23,13 @@ logger = logging.getLogger("taipanstack.bridges.db")
 
 # --- optional imports ------------------------------------------------------
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncEngine
+    from sqlalchemy.sql.elements import ClauseElement
+    from sqlalchemy.sql.base import Executable
+
 try:
     import sqlalchemy  # noqa: F401
     from sqlalchemy import text as sa_text  # pragma: no cover
@@ -74,7 +81,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: Any,
+        engine: "AsyncEngine",
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -93,7 +100,7 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: Any,
+        statement: "ClauseElement | Executable",
         **kwargs: Any,
     ) -> Result[Any, Exception]:
         """Execute a SQL statement with resilience.
@@ -183,7 +190,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: Any,
+        client: "aioredis.Redis[Any]",
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:

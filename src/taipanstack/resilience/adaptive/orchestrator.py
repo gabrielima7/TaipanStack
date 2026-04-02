@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Callable, Coroutine
 from typing import Any, Generic, ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
@@ -161,10 +162,10 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def execute(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Coroutine[Any, Any, T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute the function through the resilience pipeline.
 
         Order: bulkhead → circuit breaker → retry → timeout → fn → fallback.
@@ -182,7 +183,7 @@ class ResilienceOrchestrator(Generic[T]):
         if self._bulkhead is not None:
             bh = self._bulkhead
             if bh.queued >= bh._max_queue:
-                result: Result[Any, Exception] = Err(
+                result: Result[T, Exception] = Err(
                     BulkheadFullError(bh.name, bh._max_concurrent, bh._max_queue)
                 )
                 return self._apply_fallback(result)
@@ -214,7 +215,7 @@ class ResilienceOrchestrator(Generic[T]):
 
         return await self._execute_inner(fn, *args, **kwargs)
 
-    def _evaluate_circuit_breaker(self) -> Result[Any, Exception] | None:
+    def _evaluate_circuit_breaker(self) -> Result[T, Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
         if self._adaptive_breaker is not None:
             if not self._adaptive_breaker.should_allow():
@@ -263,10 +264,10 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def _execute_inner(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Coroutine[Any, Any, T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute through breaker → retry → timeout → fn layers.
 
         Args:
@@ -307,17 +308,17 @@ class ResilienceOrchestrator(Generic[T]):
                         continue
                     break
 
-        final_result: Result[Any, Exception] = Err(
+        final_result: Result[T, Exception] = Err(
             last_error or RuntimeError("Execution failed")
         )
         return self._apply_fallback(final_result)
 
     async def _execute_with_timeout(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Coroutine[Any, Any, T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute fn with optional timeout.
 
         Args:
@@ -347,8 +348,8 @@ class ResilienceOrchestrator(Generic[T]):
 
     def _apply_fallback(
         self,
-        result: Result[Any, Exception],
-    ) -> Result[Any, Exception]:
+        result: Result[T, Exception],
+    ) -> Result[T, Exception]:
         """Apply fallback if configured and result is Err.
 
         Args:

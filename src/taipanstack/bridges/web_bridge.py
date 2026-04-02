@@ -20,6 +20,10 @@ from taipanstack.utils.rate_limit import RateLimiter
 logger = logging.getLogger("taipanstack.bridges.web")
 
 # ASGI type aliases
+from typing import TypeVar
+
+T = TypeVar("T")
+
 Scope = dict[str, Any]
 Receive = Callable[[], Awaitable[dict[str, Any]]]
 Send = Callable[[dict[str, Any]], Awaitable[None]]
@@ -68,7 +72,7 @@ class SecurityHeadersConfig:
 
 
 def result_to_response(
-    result: Result[Any, Exception],
+    result: Result[T, Exception],
     *,
     status_ok: int = 200,
     status_err: int = 500,
