@@ -44,12 +44,12 @@ def cached(ttl: float) -> CacheDecorator:
         Decorator function.
 
     """
-    _cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+    _cache: dict[tuple[object, ...], tuple[float, Any]] = {}
 
     def get_cache_key(
-        func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
-    ) -> tuple[Any, ...]:
-        def _make_hashable(val: Any) -> Any:
+        func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
+    ) -> tuple[object, ...]:
+        def _make_hashable(val: object) -> object:
             if isinstance(val, (tuple, list)):
                 return tuple(_make_hashable(item) for item in val)
             if isinstance(val, dict):
@@ -74,7 +74,7 @@ def cached(ttl: float) -> CacheDecorator:
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
-                    func.__name__, args, cast(dict[str, Any], kwargs)
+                    func.__name__, args, cast(dict[str, object], kwargs)
                 )
                 now = time.monotonic()
 
@@ -99,7 +99,7 @@ def cached(ttl: float) -> CacheDecorator:
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(func.__name__, args, cast(dict[str, Any], kwargs))
+            cache_key = get_cache_key(func.__name__, args, cast(dict[str, object], kwargs))
             now = time.monotonic()
 
             if cache_key in _cache:

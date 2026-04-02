@@ -81,7 +81,10 @@ class SecureBaseModel(BaseModel):
 
         """
         data = super().model_dump(**kwargs)
-        return _mask_data(data)  # type: ignore[return-value]
+        masked = _mask_data(data)
+        if isinstance(masked, dict):
+            return masked
+        return {"_error": "Root data was not a dictionary"}
 
     def model_dump_json(
         self,
