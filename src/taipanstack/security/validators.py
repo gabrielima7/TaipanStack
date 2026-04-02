@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 # Constants to avoid magic values (PLR2004)
 PYTHON_MAJOR_VERSION = 3
 MIN_PYTHON_MINOR_VERSION = 10
+MAX_PYTHON_VERSION_LENGTH = 20
 MAX_EMAIL_LOCAL_LENGTH = 64
 MAX_EMAIL_DOMAIN_LENGTH = 255
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
@@ -181,7 +182,7 @@ def validate_python_version(version: str) -> str:
     _validate_type(version, str, "Version")
 
     # Prevent DoS from massive integer string conversion limit in Python
-    if len(version) > 20:
+    if len(version) > MAX_PYTHON_VERSION_LENGTH:
         msg = "Version string exceeds maximum length"
         raise ValueError(msg)
 

@@ -1,6 +1,8 @@
 """Tests for stack.security.validators module."""
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from taipanstack.security.validators import (
     validate_email,
@@ -82,10 +84,10 @@ class TestValidatePythonVersion:
         with pytest.raises(ValueError, match="Version string exceeds maximum length"):
             validate_python_version(massive_version)
 
-    from hypothesis import given, strategies as st
-
     @given(st.text(min_size=21, max_size=5000))
-    def test_validate_python_version_fuzzing_hypothesis(self, massive_version: str) -> None:
+    def test_validate_python_version_fuzzing_hypothesis(
+        self, massive_version: str
+    ) -> None:
         """Property-based test: bombard with massive strings to ensure no DoS crashes."""
         with pytest.raises(ValueError):
             validate_python_version(massive_version)
