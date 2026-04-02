@@ -79,7 +79,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: "AsyncEngine",
+        engine: AsyncEngine,
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -98,7 +98,7 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: "Executable",
+        statement: Executable,
         **kwargs: Any,
     ) -> Result[Any, Exception]:
         """Execute a SQL statement with resilience.
@@ -188,7 +188,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: "Redis",
+        client: Redis,
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:

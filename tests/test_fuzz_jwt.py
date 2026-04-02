@@ -71,7 +71,7 @@ class TestFuzzJWT:
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
         secret_key=st.text(),
-        algorithm=st.text(),
+        algorithm=st.text().filter(lambda alg: alg not in ["HS256", "HS384", "HS512", "RS256", "RS384", "RS512"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
     def test_fuzz_encode_jwt_malformed_algorithm(self, payload, secret_key, algorithm):

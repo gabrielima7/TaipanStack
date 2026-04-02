@@ -14,7 +14,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")

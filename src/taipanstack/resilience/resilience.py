@@ -8,9 +8,8 @@ import asyncio
 import functools
 import inspect
 import threading
-
 from collections.abc import Awaitable, Callable
-from typing import Any, ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -107,9 +106,7 @@ class TimeoutDecorator(Protocol):
     @overload
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
-    ) -> Callable[
-        P, Awaitable[Result[T, TimeoutError | E]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...  # pragma: no cover
 
 
 def timeout(seconds: float) -> TimeoutDecorator:
