@@ -33,7 +33,7 @@ except ImportError:  # pragma: no cover
     _HAS_SQLALCHEMY = False
 
 try:
-    import redis.asyncio as aioredis  # noqa: F401
+    import redis.asyncio as aioredis
 
     _HAS_REDIS = True  # pragma: no cover
 except ImportError:  # pragma: no cover
@@ -78,7 +78,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: "AsyncEngine",
+        engine: AsyncEngine,
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -187,7 +187,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: "aioredis.Redis[Any]",
+        client: aioredis.Redis[Any],
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:

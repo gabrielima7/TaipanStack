@@ -26,7 +26,7 @@ logger = logging.getLogger("taipanstack.bridges.http")
 # --- optional httpx import ------------------------------------------------
 
 try:
-    import httpx # noqa: F401
+    import httpx
 
     _HAS_HTTPX = True  # pragma: no cover
 except ImportError:  # pragma: no cover
@@ -82,11 +82,11 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
 
 
 async def _execute_with_retries(
-    request_func: Callable[[], Awaitable["httpx.Response"]],
+    request_func: Callable[[], Awaitable[httpx.Response]],
     retry_config: RetryConfig | None,
     circuit_breaker: CircuitBreaker | None,
     retryable_status_codes: frozenset[int],
-) -> Result["httpx.Response", Exception]:
+) -> Result[httpx.Response, Exception]:
     """Execute a request function with optional retries and circuit breaker.
 
     Args:
@@ -144,7 +144,7 @@ async def safe_request(
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     timeout: float | None = 10.0,
     **kwargs: Any,
-) -> Result["httpx.Response", Exception]:
+) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
     Args:
@@ -180,7 +180,7 @@ async def safe_request(
         if cb_err is not None:
             return Err(cb_err)
 
-    async def _do_request() -> "httpx.Response":
+    async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.request(method, url, **kwargs)
             return response  # type: ignore[no-any-return]
@@ -267,7 +267,7 @@ class SafeHttpClient:
         method: str,
         url: str,
         **kwargs: Any,
-    ) -> Result["httpx.Response", Exception]:
+    ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
 
         Args:
@@ -293,7 +293,7 @@ class SafeHttpClient:
             if cb_err is not None:
                 return Err(cb_err)
 
-        async def _do_request() -> "httpx.Response":
+        async def _do_request() -> httpx.Response:
             response = await self._client.request(method, url, **kwargs)
             return response  # type: ignore[no-any-return]
 
@@ -304,22 +304,22 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result["httpx.Response", Exception]:
+    async def get(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result["httpx.Response", Exception]:
+    async def post(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result["httpx.Response", Exception]:
+    async def put(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result["httpx.Response", Exception]:
+    async def delete(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result["httpx.Response", Exception]:
+    async def patch(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)
