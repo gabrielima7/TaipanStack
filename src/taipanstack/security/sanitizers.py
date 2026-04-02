@@ -235,9 +235,12 @@ def sanitize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
+_MAX_PATH_PART_LENGTH = 255
+
+
 def _is_valid_path_part_fast_path(part: str) -> bool:
     """Check if a path component is already safe and doesn't need full sanitization."""
-    if len(part) > 255:
+    if len(part) > _MAX_PATH_PART_LENGTH:
         return False
 
     # Fast path for simple alphanumeric ASCII strings (very common)
