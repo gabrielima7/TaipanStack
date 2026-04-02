@@ -294,7 +294,7 @@ class SafeHttpClient:
                 return Err(cb_err)
 
         async def _do_request() -> httpx.Response:
-            if self._client is None:
+            if self._client is None:  # pragma: no cover
                 msg = "Client not initialised"
                 raise RuntimeError(msg)
             return await self._client.request(method, url, **kwargs)
