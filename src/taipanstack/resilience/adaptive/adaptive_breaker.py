@@ -14,12 +14,15 @@ import threading
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Any
+from typing import TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import CircuitState
 
 logger = logging.getLogger("taipanstack.resilience.adaptive.breaker")
+
+T = TypeVar("T")
+E = TypeVar("E", bound=Exception)
 
 
 @dataclass(frozen=True)
@@ -157,7 +160,7 @@ class AdaptiveCircuitBreaker:
             self._window.append(False)
             self._evaluate_trip()
 
-    def evaluate_result(self, result: Result[Any, Exception]) -> Result[Any, Exception]:
+    def evaluate_result(self, result: Result[T, E]) -> Result[T, E]:
         """Evaluate a Result and record success or failure.
 
         Args:

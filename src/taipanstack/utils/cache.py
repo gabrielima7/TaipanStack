@@ -81,7 +81,7 @@ def cached(ttl: float) -> CacheDecorator:
                 if cache_key in _cache:
                     expiry, value = _cache[cache_key]
                     if now < expiry:
-                        return Ok(value)
+                        return Ok(cast(T, value))
                     del _cache[cache_key]
 
                 func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
@@ -105,7 +105,7 @@ def cached(ttl: float) -> CacheDecorator:
             if cache_key in _cache:
                 expiry, value = _cache[cache_key]
                 if now < expiry:
-                    return Ok(value)
+                    return Ok(cast(T, value))
                 del _cache[cache_key]
 
             func_sync = cast(Callable[P, Result[T, E]], func)
