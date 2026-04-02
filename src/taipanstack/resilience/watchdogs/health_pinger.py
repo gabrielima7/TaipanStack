@@ -7,7 +7,7 @@ preventively.
 """
 
 import logging
-from collections.abc import Callable, Coroutine, Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -31,7 +31,7 @@ class HealthTarget:
     """
 
     name: str
-    check: Callable[[], Coroutine[Any, Any, bool]]
+    check: Callable[[], Awaitable[bool]]
     circuit_breaker: CircuitBreaker | None = None
 
 
