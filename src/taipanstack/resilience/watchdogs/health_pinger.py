@@ -124,6 +124,22 @@ class HealthPinger(BaseWatcher):
         self._on_health_change = on_health_change
         self._last_status: dict[str, bool] = {}
 
+    def _handle_status_change(self, target: HealthTarget, is_healthy: bool) -> None:
+        """Handle a change in health status."""
+        previous = self._last_status.get(target.name)
+        if previous == is_healthy:
+            return
+
+        self._last_status[target.name] = is_healthy
+
+        if self._on_health_change is not None:
+            self._on_health_change(target.name, is_healthy)
+
+        if is_healthy:
+            logger.info("Target '%s' is now healthy", target.name)
+        else:
+            logger.warning("Target '%s' is now unhealthy", target.name)
+
     async def _run(self) -> None:
         """Execute a single health-check cycle."""
         for target in self._targets:
@@ -140,18 +156,7 @@ class HealthPinger(BaseWatcher):
                     )
                     is_healthy = False
 
-            previous = self._last_status.get(target.name)
-
-            if previous != is_healthy:
-                self._last_status[target.name] = is_healthy
-
-                if self._on_health_change is not None:
-                    self._on_health_change(target.name, is_healthy)
-
-                if is_healthy:
-                    logger.info("Target '%s' is now healthy", target.name)
-                else:
-                    logger.warning("Target '%s' is now unhealthy", target.name)
+            self._handle_status_change(target, is_healthy)
 
             # Open circuit breaker preventively on failure
             if (
