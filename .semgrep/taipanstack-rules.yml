@@ -401,3 +401,71 @@ rules:
         - python
     patterns:
       - pattern: os.system(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 33: Missing timeout in httpx requests
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-httpx-missing-timeout
+    languages: [python]
+    severity: WARNING
+    message: >
+      Calling `httpx` request functions without a `timeout` argument can lead to
+      Denial of Service (DoS) if the remote server hangs indefinitely.
+      Always provide a reasonable `timeout` when calling external endpoints.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      owasp: "A06:2021 - Vulnerable and Outdated Components"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: httpx.get(...)
+          - pattern: httpx.post(...)
+          - pattern: httpx.put(...)
+          - pattern: httpx.patch(...)
+          - pattern: httpx.delete(...)
+          - pattern: httpx.request(...)
+          - pattern: httpx.Client(...)
+          - pattern: httpx.AsyncClient(...)
+      - pattern-not: httpx.get(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.post(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.put(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.patch(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.delete(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.request(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.Client(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.AsyncClient(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.Client(**$KWARGS)
+      - pattern-not: httpx.AsyncClient(**$KWARGS)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 34: Detect insecure usage of random for cryptographic purposes
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-random-crypto
+    languages: [python]
+    severity: WARNING
+    message: >
+      The `random` module uses a predictable pseudorandom number generator (PRNG) and
+      is unfit for cryptographic purposes or generating security tokens/passwords.
+      Use the `secrets` module for cryptographically secure random numbers.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: random.choice(...)
+          - pattern: random.randint(...)
+          - pattern: random.random(...)
+          - pattern: random.randrange(...)
+          - pattern: random.sample(...)
+          - pattern: random.choices(...)
+      - pattern-not-inside: |
+          jitter = random.random(...)
+      - pattern-not-inside: |
+          jitter = random.uniform(...)
