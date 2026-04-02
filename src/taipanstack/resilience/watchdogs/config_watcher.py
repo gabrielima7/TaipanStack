@@ -10,7 +10,6 @@ import json
 import logging
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any
 
 from pydantic import BaseModel, ValidationError
 
@@ -37,7 +36,7 @@ def _hash_file(path: Path) -> Result[str, Exception]:
         return Err(exc)
 
 
-def _parse_env(text: str) -> dict[str, Any]:
+def _parse_env(text: str) -> dict[str, object]:
     """Parse a simple ``.env`` key=value file.
 
     Lines starting with ``#`` or blank lines are skipped.
@@ -50,7 +49,7 @@ def _parse_env(text: str) -> dict[str, Any]:
         Parsed key-value mapping.
 
     """
-    result: dict[str, Any] = {}
+    result: dict[str, object] = {}
     for line in text.splitlines():
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
@@ -63,7 +62,7 @@ def _parse_env(text: str) -> dict[str, Any]:
     return result
 
 
-def _parse_json(text: str) -> Result[dict[str, Any], Exception]:
+def _parse_json(text: str) -> Result[dict[str, object], Exception]:
     """Parse JSON text.
 
     Args:
@@ -82,7 +81,7 @@ def _parse_json(text: str) -> Result[dict[str, Any], Exception]:
         return Err(exc)
 
 
-def _load_file_data(path: Path) -> Result[dict[str, Any], Exception]:
+def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
     """Read and parse a configuration file based on its extension.
 
     Supported extensions: ``.env``, ``.json``.
@@ -109,7 +108,7 @@ def _load_file_data(path: Path) -> Result[dict[str, Any], Exception]:
 
 
 def validate_config(
-    data: dict[str, Any],
+    data: dict[str, object],
     model: type[BaseModel],
 ) -> Result[BaseModel, Exception]:
     """Validate a data dictionary against a Pydantic model.
