@@ -256,12 +256,12 @@ def _is_valid_path_part_fast_path(part: str) -> bool:
     if safe_chars_only:
         # Check it's not starting/ending with dot/space, isn't reserved, and isn't ".."
         return (
-            not part.startswith(".") and
-            not part.endswith(".") and
-            not part.startswith(" ") and
-            not part.endswith(" ") and
-            part.upper() not in _WINDOWS_RESERVED_NAMES and
-            ".." not in part
+            not part.startswith(".")
+            and not part.endswith(".")
+            and not part.startswith(" ")
+            and not part.endswith(" ")
+            and part.upper() not in _WINDOWS_RESERVED_NAMES
+            and ".." not in part
         )
     return False
 
