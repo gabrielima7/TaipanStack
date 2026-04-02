@@ -10,6 +10,7 @@ import asyncio
 import functools
 import inspect
 import logging
+import math
 import secrets
 import time
 from collections.abc import Callable, Coroutine
@@ -93,6 +94,8 @@ class RetryError(Exception):
         super().__init__(message)
 
 
+
+
 def calculate_delay(
     attempt: int,
     config: RetryConfig,
@@ -107,12 +110,29 @@ def calculate_delay(
         Delay in seconds before next retry.
 
     """
+    # Sanitize inputs to prevent NaN/Inf propagation or negative numbers
+    initial_delay = (
+        config.initial_delay
+        if math.isfinite(config.initial_delay) and config.initial_delay >= 0
+        else 1.0
+    )
+    max_delay = (
+        config.max_delay
+        if math.isfinite(config.max_delay) and config.max_delay >= 0
+        else 60.0
+    )
+    exponential_base = (
+        config.exponential_base
+        if math.isfinite(config.exponential_base) and config.exponential_base >= 1.0
+        else 2.0
+    )
+
     safe_attempt = max(1, attempt)
     # Exponential backoff
-    delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    delay = initial_delay * (exponential_base ** (safe_attempt - 1))
 
     # Cap at max delay
-    delay = min(delay, config.max_delay)
+    delay = min(delay, max_delay)
 
     # Add jitter if enabled
     # Note: Using random for jitter is intentionally non-cryptographic.
@@ -120,10 +140,19 @@ def calculate_delay(
     # we use secrets.SystemRandom() which provides cryptographically
     # secure random numbers.
     if config.jitter:
-        jitter_amount = delay * config.jitter_factor
+        jitter_factor = (
+            config.jitter_factor
+            if math.isfinite(config.jitter_factor) and config.jitter_factor >= 0
+            else 0.1
+        )
+        jitter_amount = delay * jitter_factor
         delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
 
-    return max(0, delay)
+    # Final bounds check against non-finite anomalies from operations
+    if not math.isfinite(delay) or delay < 0:
+        return 0.0
+
+    return max(0.0, delay)
 
 
 def _log_retry_attempt(
