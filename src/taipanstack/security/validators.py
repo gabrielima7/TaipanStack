@@ -180,6 +180,11 @@ def validate_python_version(version: str) -> str:
     """
     _validate_type(version, str, "Version")
 
+    # Prevent DoS from massive integer string conversion limit in Python
+    if len(version) > 20:
+        msg = "Version string exceeds maximum length"
+        raise ValueError(msg)
+
     pattern = r"^\d+\.\d+\Z"
 
     if not re.match(pattern, version):

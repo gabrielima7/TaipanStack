@@ -75,6 +75,21 @@ class TestValidatePythonVersion:
             with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
                 validate_python_version("a.b")
 
+    def test_massive_version_string_fuzzing(self) -> None:
+        """Test system does not crash on massive integer strings (DoS protection)."""
+        # Create a massive string that exceeds Python's integer string conversion limit (4300)
+        massive_version = "3." + "9" * 5000
+        with pytest.raises(ValueError, match="Version string exceeds maximum length"):
+            validate_python_version(massive_version)
+
+    from hypothesis import given, strategies as st
+
+    @given(st.text(min_size=21, max_size=5000))
+    def test_validate_python_version_fuzzing_hypothesis(self, massive_version: str) -> None:
+        """Property-based test: bombard with massive strings to ensure no DoS crashes."""
+        with pytest.raises(ValueError):
+            validate_python_version(massive_version)
+
 
 class TestValidateEmail:
     """Tests for validate_email function."""
