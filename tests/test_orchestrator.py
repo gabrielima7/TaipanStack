@@ -45,6 +45,7 @@ class TestResilienceOrchestrator:
     @pytest.mark.asyncio
     async def test_execute_already_returns_result(self) -> None:
         """Executes a function that natively returns a Result type."""
+
         async def _result_ok_fn() -> Ok[str]:
             return Ok("success")
 

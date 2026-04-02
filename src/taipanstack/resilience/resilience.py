@@ -142,7 +142,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     # wait_for expects an awaitable
                     coro = func_coro(*args, **kwargs)
                     return await asyncio.wait_for(
-                        coro,  # type: ignore[arg-type]
+                        coro,
                         timeout=seconds,
                     )
                 except TimeoutError:

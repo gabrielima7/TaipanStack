@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -183,8 +183,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.request(method, url, **kwargs)
-            return cast("httpx.Response", response)
+            return await client.request(method, url, **kwargs)
 
     return await _execute_with_retries(
         _do_request,
@@ -295,8 +294,8 @@ class SafeHttpClient:
                 return Err(cb_err)
 
         async def _do_request() -> httpx.Response:
-            response = await self._client.request(method, url, **kwargs)
-            return cast("httpx.Response", response)
+            response: httpx.Response = await self._client.request(method, url, **kwargs)
+            return response
 
         return await _execute_with_retries(
             _do_request,

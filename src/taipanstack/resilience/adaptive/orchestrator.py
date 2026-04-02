@@ -333,7 +333,7 @@ class ResilienceOrchestrator(Generic[T]):
         try:
             if self._timeout is not None:
                 result = await asyncio.wait_for(
-                    fn(*args, **kwargs),  # type: ignore[arg-type]
+                    fn(*args, **kwargs),
                     timeout=self._timeout,
                 )
             else:
@@ -341,7 +341,7 @@ class ResilienceOrchestrator(Generic[T]):
 
             # Support wrapping functions that already return Result
             if isinstance(result, (Ok, Err)):
-                return result  # type: ignore[return-value]
+                return result
             return Ok(result)
         except TimeoutError:
             return Err(
