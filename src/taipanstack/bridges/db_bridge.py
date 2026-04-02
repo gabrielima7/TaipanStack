@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -20,6 +20,12 @@ from taipanstack.resilience.circuit_breaker import (
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 logger = logging.getLogger("taipanstack.bridges.db")
+
+if TYPE_CHECKING:
+    import redis.asyncio as aioredis
+    from sqlalchemy import Result as SAResult
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+    from sqlalchemy.sql import Executable
 
 # --- optional imports ------------------------------------------------------
 
@@ -33,7 +39,7 @@ except ImportError:  # pragma: no cover
     _HAS_SQLALCHEMY = False
 
 try:
-    import redis.asyncio as aioredis  # noqa: F401
+    import redis.asyncio as aioredis
 
     _HAS_REDIS = True  # pragma: no cover
 except ImportError:  # pragma: no cover
@@ -74,7 +80,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: Any,
+        engine: AsyncEngine,
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -93,9 +99,9 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: Any,
+        statement: Executable,
         **kwargs: Any,
-    ) -> Result[Any, Exception]:
+    ) -> Result[SAResult[Any], Exception]:
         """Execute a SQL statement with resilience.
 
         Args:
@@ -183,7 +189,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: Any,
+        client: aioredis.Redis,
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:
