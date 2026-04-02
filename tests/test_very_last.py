@@ -595,3 +595,12 @@ class TestGuardHashAlgorithmFormat:
 
         with pytest.raises(SecurityError, match="Invalid hash algorithm format"):
             guard_hash_algorithm("sha!256")
+
+def test_is_valid_path_part_fast_path_too_long():
+    from taipanstack.security.sanitizers import _is_valid_path_part_fast_path
+    long_part = "a" * 260
+    assert _is_valid_path_part_fast_path(long_part) is False
+
+def test_is_valid_path_part_fast_path_non_ascii():
+    from taipanstack.security.sanitizers import _is_valid_path_part_fast_path
+    assert _is_valid_path_part_fast_path("café") is False
