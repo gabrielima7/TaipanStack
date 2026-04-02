@@ -94,8 +94,6 @@ class RetryError(Exception):
         super().__init__(message)
 
 
-
-
 def calculate_delay(
     attempt: int,
     config: RetryConfig,
