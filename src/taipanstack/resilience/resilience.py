@@ -106,9 +106,7 @@ class TimeoutDecorator(Protocol):
     @overload
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
-    ) -> Callable[
-        P, Awaitable[Result[T, TimeoutError | E]]
-    ]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...  # pragma: no cover
 
 
 def timeout(seconds: float) -> TimeoutDecorator:
@@ -142,7 +140,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                         func,
                     )
                     return await asyncio.wait_for(
-                        func_coro(*args, **kwargs), # type: ignore[arg-type]
+                        func_coro(*args, **kwargs),
                         timeout=seconds,
                     )
                 except TimeoutError:

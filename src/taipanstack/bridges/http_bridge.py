@@ -183,7 +183,7 @@ async def safe_request(
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.request(method, url, **kwargs)
-            return response  # type: ignore[no-any-return]
+            return response
 
     return await _execute_with_retries(
         _do_request,
