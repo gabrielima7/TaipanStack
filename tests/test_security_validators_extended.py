@@ -60,8 +60,8 @@ class TestValidatePythonVersionEdgeCases:
 
     def test_version_number_conversion_error(self) -> None:
         """Test that extremely long version numbers are rejected."""
-        # This triggers the except ValueError block due to integer string conversion limit
-        with pytest.raises(ValueError, match="Invalid version numbers"):
+        # This now triggers the length boundary check preventing DoS
+        with pytest.raises(ValueError, match="Version string exceeds maximum length"):
             validate_python_version("1." + "9" * 5000)
 
     def test_non_numeric_version_mock(self) -> None:
