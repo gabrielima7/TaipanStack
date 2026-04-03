@@ -500,7 +500,7 @@ def _validate_ssrf_url(
 
     try:
         parsed = urlparse(url)
-    except ValueError as exc:  # pragma: no cover
+    except ValueError as exc:
         return Err(
             SecurityError(
                 f"Malformed URL: {exc}",

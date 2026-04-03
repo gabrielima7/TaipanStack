@@ -169,6 +169,20 @@ class TestConfigModelsUncovered:
 class TestGuardsUncovered:
     """Tests for guards.py uncovered lines 97-98, 341."""
 
+    def test_guard_ssrf_urlparse_value_error(self) -> None:
+        """Test urlparse raising ValueError in guard_ssrf."""
+        from unittest.mock import patch
+
+        from taipanstack.security.guards import guard_ssrf
+
+        with patch("taipanstack.security.guards.urlparse") as mock_urlparse:
+            mock_urlparse.side_effect = ValueError("Mocked error")
+            res = guard_ssrf("http://example.com")
+            assert res.is_err()
+            err = res.err_value
+            assert "Malformed URL" in str(err)
+            assert "Mocked error" in str(err)
+
     def test_path_traversal_resolution_error(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with resolution error."""
         from taipanstack.security.guards import guard_path_traversal
