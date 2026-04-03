@@ -102,3 +102,44 @@ def test_rate_limiter_chaos_backward_clock_jump(
     # and the consume will fail even though it should succeed
     assert limiter.consume() is True, "Rate limiter failed due to backward clock jump"
     assert limiter.tokens >= 0.0, "Token count became negative due to clock jump"
+
+
+def test_rate_limiter_chaos_extreme_time_anomalies(
+    monkeypatch: "pytest.MonkeyPatch",
+) -> None:
+    """Simulate severe time anomalies in RateLimiter.
+
+    Tests if RateLimiter handles float('inf') and float('nan') safely
+    by effectively clamping anomalous elapsed time to zero.
+    """
+
+    # Create a limiter allowing 5 calls per 10 seconds
+    limiter = RateLimiter(max_calls=5, time_window=10.0)
+
+    # Consume 2 tokens normally
+    assert limiter.consume() is True
+    assert limiter.consume() is True
+
+    # Give it a tiny bit of time to avoid floating point issues
+    limiter.last_update = 100.0
+    limiter.tokens = 3.0
+
+    # Test INF anomaly
+    def fake_monotonic_inf() -> float:
+        return float("inf")
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic_inf)
+    assert limiter.consume() is True, "Rate limiter failed due to infinite clock jump"
+    assert limiter.tokens >= 0.0, "Token count corrupted due to infinite clock jump"
+
+    # Reset slightly
+    limiter.last_update = 100.0
+    limiter.tokens = 2.0
+
+    # Test NAN anomaly
+    def fake_monotonic_nan() -> float:
+        return float("nan")
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic_nan)
+    assert limiter.consume() is True, "Rate limiter failed due to NaN clock jump"
+    assert limiter.tokens >= 0.0, "Token count corrupted due to NaN clock jump"
