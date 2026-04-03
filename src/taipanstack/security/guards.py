@@ -6,6 +6,7 @@ and programming errors that can occur from incorrect AI-generated code.
 All guards raise SecurityError on violation.
 """
 
+import functools
 import ipaddress
 import os
 import re
@@ -531,6 +532,23 @@ def _validate_ssrf_url(
     return Ok(hostname)
 
 
+@functools.lru_cache(maxsize=1024)
+def _is_ip_safe(raw_ip: str) -> bool:
+    """Check if a single IP address is safe (not private/loopback/reserved)."""
+    try:
+        addr = ipaddress.ip_address(raw_ip)
+    except ValueError:
+        return True
+
+    if (
+        addr.is_private
+        or addr.is_loopback
+        or addr.is_link_local
+        or addr.is_reserved
+    ):
+        return False
+    return True
+
 def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
     """Resolve hostname to IP addresses and check for SSRF risk."""
     try:
@@ -545,17 +563,7 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
 
     for addr_info in addr_infos:
         raw_ip = addr_info[4][0]
-        try:
-            addr = ipaddress.ip_address(raw_ip)
-        except ValueError:
-            continue
-
-        if (
-            addr.is_private
-            or addr.is_loopback
-            or addr.is_link_local
-            or addr.is_reserved
-        ):
+        if not _is_ip_safe(raw_ip):
             return Err(
                 SecurityError(
                     "SSRF detected: hostname resolves to private/reserved address",

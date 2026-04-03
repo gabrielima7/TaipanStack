@@ -218,6 +218,17 @@ def sanitize_filename(
 
     stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
 
+    # Fast-path for already safe, typical filenames
+    if (
+        len(filename) <= max_length
+        and filename.isascii()
+        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+    ):
+        # On Windows, reserved names apply to the stem, not the full filename
+        if stem.upper() not in _WINDOWS_RESERVED_NAMES:
+            if filename != ".." and filename != ".":
+                return f"{stem}{suffix}"
+
     # Remove invalid characters using precompiled regex for performance
     safe_stem = _remove_invalid_chars(stem, replacement)
 
