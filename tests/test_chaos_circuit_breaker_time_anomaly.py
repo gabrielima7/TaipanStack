@@ -1,6 +1,4 @@
-import math
 from unittest.mock import patch
-import pytest
 
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
