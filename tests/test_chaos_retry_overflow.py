@@ -1,7 +1,5 @@
 """Chaos test for retry backoff overflow."""
 
-import pytest
-
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
@@ -17,7 +15,7 @@ def test_retry_calculate_delay_overflow_chaos():
         initial_delay=1.0,
         max_delay=60.0,
         exponential_base=2.0,
-        jitter=False
+        jitter=False,
     )
 
     # Attempt 2000 will calculate `1.0 * (2.0 ** 1999)`, which overflows float capacity
