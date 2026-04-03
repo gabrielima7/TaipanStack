@@ -10,6 +10,7 @@ import asyncio
 import functools
 import inspect
 import logging
+import math
 import secrets
 import time
 from collections.abc import Awaitable, Callable
@@ -109,9 +110,17 @@ def calculate_delay(
     """
     safe_attempt = max(1, attempt)
     # Exponential backoff
-    delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    try:
+        delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    except OverflowError:
+        delay = config.max_delay
 
-    # Cap at max delay
+    # Cap at max delay or fallback if NaN/Inf
+    if not math.isfinite(delay):
+        delay = config.max_delay
+        if not math.isfinite(delay):
+            delay = 0.0
+
     delay = min(delay, config.max_delay)
 
     # Add jitter if enabled
@@ -119,11 +128,18 @@ def calculate_delay(
     # However, to maintain a clean security baseline and satisfy Bandit,
     # we use secrets.SystemRandom() which provides cryptographically
     # secure random numbers.
-    if config.jitter:
+    if config.jitter and math.isfinite(delay):
         jitter_amount = delay * config.jitter_factor
-        delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+        if math.isfinite(jitter_amount):
+            try:
+                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+            except Exception as e:
+                logger.warning("Failed to add jitter to delay: %s", str(e))
 
-    return max(0, delay)
+    if not math.isfinite(delay) or delay < 0:
+        return 0.0
+
+    return delay
 
 
 def _log_retry_attempt(
