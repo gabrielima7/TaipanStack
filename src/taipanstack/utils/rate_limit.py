@@ -9,6 +9,7 @@ or a ``RateLimitError`` error.
 
 import functools
 import inspect
+import math
 import threading
 import time
 from collections.abc import Awaitable, Callable
@@ -63,6 +64,11 @@ class RateLimiter:
         """
         with self._lock:
             now = time.monotonic()
+            if not math.isfinite(now) or now < 0:
+                # Protect against severe clock anomalies (NaN, Infinity, negative time)
+                # Fallback to the last known valid time to avoid state corruption.
+                now = self.last_update
+
             elapsed = max(0.0, now - self.last_update)
             self.last_update = now
 
