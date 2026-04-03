@@ -105,6 +105,43 @@ class TestCalculateDelay:
 
         assert delay == 1.0
 
+    def test_chaos_retry_max_delay_anomaly(self) -> None:
+        """Test resilience against max_delay time anomalies."""
+        import math
+
+        config = RetryConfig(
+            initial_delay=1e308,
+            exponential_base=2.0,
+            max_delay=math.inf,
+            jitter=False,
+        )
+        delay = calculate_delay(10, config)
+        assert delay == 0.0
+
+        config_neg = RetryConfig(
+            initial_delay=1e308,
+            exponential_base=2.0,
+            max_delay=-5.0,
+            jitter=False,
+        )
+        delay_neg = calculate_delay(10, config_neg)
+        assert delay_neg == 0.0
+
+    def test_chaos_retry_jitter_anomaly(self) -> None:
+        """Test final defensive bounds when jitter produces negative delay."""
+        from unittest import mock
+
+        config = RetryConfig(
+            initial_delay=1.0,
+            exponential_base=2.0,
+            max_delay=10.0,
+            jitter=True,
+            jitter_factor=2.0,
+        )
+        with mock.patch("secrets.SystemRandom.uniform", return_value=-5.0):
+            delay = calculate_delay(1, config)
+            assert delay == 0.0
+
 
 class TestRetryDecorator:
     """Tests for @retry decorator."""
