@@ -93,3 +93,19 @@ class TestAdaptiveRetry:
         ar = AdaptiveRetry(min_delay=1.0, max_delay=5.0)
         delay = ar.get_delay(10)
         assert delay <= 5.0
+
+    def test_chaos_extreme_time_anomalies(self) -> None:
+        """Chaos engineering: rejects invalid elapsed time anomalies."""
+        import math
+        import pytest
+
+        ar = AdaptiveRetry(min_delay=0.1, max_delay=10.0)
+
+        with pytest.raises(ValueError, match="elapsed time must be a finite non-negative number"):
+            ar.record_outcome(attempt=1, success=True, elapsed=math.nan)
+
+        with pytest.raises(ValueError, match="elapsed time must be a finite non-negative number"):
+            ar.record_outcome(attempt=1, success=True, elapsed=math.inf)
+
+        with pytest.raises(ValueError, match="elapsed time must be a finite non-negative number"):
+            ar.record_outcome(attempt=1, success=True, elapsed=-1.0)
