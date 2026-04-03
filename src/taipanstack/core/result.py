@@ -203,14 +203,15 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        match result:
-            case Ok(val):
-                append(val)
-            case Err(e):
-                _ = e
-                return result
-            case _:  # pragma: no cover
-                return result
+        # We explicitly avoid structural pattern matching here to eliminate
+        # Python overhead in tight loop iteration for Result arrays, but we
+        # use isinstance rather than explicit type check to maintain subclass support.
+        if isinstance(result, Ok):
+            append(result.ok_value)
+        elif isinstance(result, Err):
+            return result
+        else:  # pragma: no cover
+            return result
     return Ok(values)
 
 
