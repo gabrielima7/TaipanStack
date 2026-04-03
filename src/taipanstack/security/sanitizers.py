@@ -223,11 +223,10 @@ def sanitize_filename(
         len(filename) <= max_length
         and filename.isascii()
         and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+        and filename not in {"..", "."}
     ):
-        # On Windows, reserved names apply to the stem, not the full filename
-        if stem.upper() not in _WINDOWS_RESERVED_NAMES:
-            if filename != ".." and filename != ".":
-                return f"{stem}{suffix}"
+        return f"{stem}{suffix}"
 
     # Remove invalid characters using precompiled regex for performance
     safe_stem = _remove_invalid_chars(stem, replacement)

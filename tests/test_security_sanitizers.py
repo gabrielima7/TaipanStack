@@ -137,6 +137,13 @@ class TestSanitizeFilename:
         assert result != "CON"
         assert result.upper() != "CON"
 
+    def test_handles_dot_names(self) -> None:
+        """Test fast-path avoids passing dotfiles directly without stripping."""
+        result = sanitize_filename(".")
+        assert result == "unnamed"
+        result2 = sanitize_filename("..")
+        assert result2 == "unnamed"
+
     def test_max_length_with_extension(self) -> None:
         """Test max length preserves extension."""
         result = sanitize_filename("verylongfilename.txt", max_length=10)
