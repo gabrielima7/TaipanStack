@@ -172,6 +172,7 @@ class TestGuardsUncovered:
     def test_guard_ssrf_urlparse_value_error(self) -> None:
         """Test urlparse raising ValueError in guard_ssrf."""
         from unittest.mock import patch
+
         from taipanstack.security.guards import guard_ssrf
 
         with patch("taipanstack.security.guards.urlparse") as mock_urlparse:
