@@ -9,6 +9,7 @@ Python framework (sync and async).
 import functools
 import inspect
 import logging
+import math
 import threading
 import time
 from collections.abc import Callable, Coroutine
@@ -206,6 +207,9 @@ class CircuitBreaker:
                 case CircuitState.OPEN:
                     # Check if timeout has passed
                     elapsed = time.monotonic() - self._state.last_failure_time
+                    if not math.isfinite(elapsed):
+                        elapsed = 0.0
+                    elapsed = max(0.0, elapsed)
                     if elapsed >= self.config.timeout:
                         # Before transitioning, verify if we can make an attempt
                         # This happens in a lock, so it's thread-safe. However, once
