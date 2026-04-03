@@ -112,7 +112,9 @@ class AdaptiveRetry:
 
         """
         if not math.isfinite(elapsed) or elapsed < 0:
-            raise ValueError(f"elapsed time must be a finite non-negative number, got {elapsed}")
+            raise ValueError(
+                f"elapsed time must be a finite non-negative number, got {elapsed}"
+            )
         outcome = _Outcome(attempt=attempt, success=success, elapsed=elapsed)
         with self._lock:
             self._outcomes.append(outcome)
