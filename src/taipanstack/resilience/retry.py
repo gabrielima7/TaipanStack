@@ -12,10 +12,10 @@ import inspect
 import logging
 import secrets
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -29,8 +29,8 @@ class RetryDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Coroutine[Any, Any, R]]
-    ) -> Callable[P, Coroutine[Any, Any, R]]: ...  # pragma: no cover
+        self, func: Callable[P, Awaitable[R]]
+    ) -> Callable[P, Awaitable[R]]: ...  # pragma: no cover
 
 
 logger = logging.getLogger("taipanstack.resilience.retry")
@@ -276,10 +276,10 @@ def retry(
     )
 
     def decorator(
-        func: Callable[P, R] | Callable[P, Coroutine[Any, Any, R]],
-    ) -> Callable[P, R] | Callable[P, Coroutine[Any, Any, R]]:
+        func: Callable[P, R] | Callable[P, Awaitable[R]],
+    ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
-            func_coro = cast(Callable[P, Coroutine[Any, Any, R]], func)
+            func_coro = cast(Callable[P, Awaitable[R]], func)
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
