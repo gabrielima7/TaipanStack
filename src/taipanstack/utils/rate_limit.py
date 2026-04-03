@@ -9,6 +9,7 @@ or a ``RateLimitError`` error.
 
 import functools
 import inspect
+import math
 import threading
 import time
 from collections.abc import Awaitable, Callable
@@ -63,8 +64,12 @@ class RateLimiter:
         """
         with self._lock:
             now = time.monotonic()
-            elapsed = max(0.0, now - self.last_update)
-            self.last_update = now
+
+            if not math.isfinite(now):
+                elapsed = 0.0
+            else:
+                elapsed = max(0.0, now - self.last_update)
+                self.last_update = now
 
             # Add tokens for elapsed time based on fill rate
             self.tokens += elapsed * (self.capacity / self.time_window)

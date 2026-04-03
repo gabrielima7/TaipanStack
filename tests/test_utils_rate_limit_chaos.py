@@ -102,3 +102,43 @@ def test_rate_limiter_chaos_backward_clock_jump(
     # and the consume will fail even though it should succeed
     assert limiter.consume() is True, "Rate limiter failed due to backward clock jump"
     assert limiter.tokens >= 0.0, "Token count became negative due to clock jump"
+
+
+def test_rate_limiter_chaos_extreme_time_anomalies(
+    monkeypatch: "pytest.MonkeyPatch",
+) -> None:
+    """Simulate severe NTP anomalies using NaN and Inf to corrupt the rate limiter.
+
+    If `time.monotonic()` returns NaN or Inf due to a severe system anomaly,
+    `elapsed` becomes NaN or Inf. This can cause the token count to artificially
+    decrease or become permanently NaN, leading to resource starvation and DoS.
+    """
+    limiter = RateLimiter(max_calls=5, time_window=10.0)
+
+    # Consume 2 tokens normally
+    assert limiter.consume() is True
+    assert limiter.consume() is True
+
+    limiter.last_update = 100.0
+    limiter.tokens = 3.0
+
+    def fake_monotonic_inf() -> float:
+        return float("inf")
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic_inf)
+
+    # Consume should just fail safely or use elapsed=0.0 and fail/succeed based on existing tokens
+    # Because there are tokens available (3.0), it should succeed without making tokens NaN/Inf
+    assert limiter.consume() is True
+    import math
+
+    assert math.isfinite(limiter.tokens), "Tokens became non-finite due to Inf time"
+
+    def fake_monotonic_nan() -> float:
+        return float("nan")
+
+    monkeypatch.setattr(time, "monotonic", fake_monotonic_nan)
+
+    # Consume should succeed with elapsed=0.0
+    assert limiter.consume() is True
+    assert not math.isnan(limiter.tokens), "Tokens became NaN due to NaN time"
