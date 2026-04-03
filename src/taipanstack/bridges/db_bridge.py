@@ -91,6 +91,37 @@ class ResilientDatabase:
         self._circuit_breaker = circuit_breaker
         self._retry_config = retry_config
 
+    async def _execute_loop(
+        self,
+        statement: Any,
+        max_attempts: int,
+        **kwargs: Any,
+    ) -> Result[Any, Exception]:
+        """Execute the retry loop for database operations."""
+        last_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                async with AsyncSession(self._engine) as session:
+                    result = await session.execute(statement, **kwargs)
+                    return Ok(result)
+            except Exception as exc:
+                last_error = exc
+                logger.warning(
+                    "DB execute attempt %d failed: %s",
+                    attempt,
+                    exc,
+                )
+                if self._circuit_breaker is not None:
+                    self._circuit_breaker._record_failure(exc)
+                if self._retry_config is not None and attempt < max_attempts:
+                    delay = calculate_delay(attempt, self._retry_config)
+                    await asyncio.sleep(delay)
+                    continue
+                break
+
+        return Err(last_error or RuntimeError("Database execute failed"))
+
     async def execute(
         self,
         statement: Any,
@@ -124,29 +155,7 @@ class ResilientDatabase:
         if self._retry_config is not None:
             max_attempts = self._retry_config.max_attempts
 
-        last_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            try:
-                async with AsyncSession(self._engine) as session:
-                    result = await session.execute(statement, **kwargs)
-                    return Ok(result)
-            except Exception as exc:
-                last_error = exc
-                logger.warning(
-                    "DB execute attempt %d failed: %s",
-                    attempt,
-                    exc,
-                )
-                if self._circuit_breaker is not None:
-                    self._circuit_breaker._record_failure(exc)
-                if self._retry_config is not None and attempt < max_attempts:
-                    delay = calculate_delay(attempt, self._retry_config)
-                    await asyncio.sleep(delay)
-                    continue
-                break
-
-        return Err(last_error or RuntimeError("Database execute failed"))
+        return await self._execute_loop(statement, max_attempts, **kwargs)
 
     async def health_check(self) -> Result[bool, Exception]:
         """Check database connectivity.

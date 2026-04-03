@@ -79,6 +79,38 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
             return Ok(None)
 
 
+def _should_retry_status(
+    response: Any,
+    retry_config: RetryConfig | None,
+    retryable_status_codes: frozenset[int],
+    attempt: int,
+    max_attempts: int,
+) -> bool:
+    """Determine if a request should be retried based on status code."""
+    return (
+        retry_config is not None
+        and response.status_code in retryable_status_codes
+        and attempt < max_attempts
+    )
+
+
+async def _handle_http_exception(
+    exc: Exception,
+    attempt: int,
+    max_attempts: int,
+    retry_config: RetryConfig | None,
+    circuit_breaker: CircuitBreaker | None,
+) -> bool:
+    """Handle exception and return True if we should retry, False otherwise."""
+    if circuit_breaker is not None:  # pragma: no branch
+        circuit_breaker._record_failure(exc)
+    if retry_config is not None and attempt < max_attempts:
+        delay = calculate_delay(attempt, retry_config)
+        await asyncio.sleep(delay)
+        return True
+    return False
+
+
 async def _execute_with_retries(
     request_func: Callable[[], Awaitable[Any]],
     retry_config: RetryConfig | None,
@@ -97,35 +129,29 @@ async def _execute_with_retries(
         ``Ok(Response)`` on success, ``Err`` on failure.
 
     """
-    max_attempts = 1
-    if retry_config is not None:
-        max_attempts = retry_config.max_attempts
-
+    max_attempts = retry_config.max_attempts if retry_config is not None else 1
     last_error: Exception | None = None
 
     for attempt in range(1, max_attempts + 1):
         try:
             response = await request_func()
-
-            # Check if we should retry on status code
-            if (
-                retry_config is not None
-                and response.status_code in retryable_status_codes
-                and attempt < max_attempts
+            if _should_retry_status(
+                response,
+                retry_config,
+                retryable_status_codes,
+                attempt,
+                max_attempts,
             ):
-                delay = calculate_delay(attempt, retry_config)
+                delay = calculate_delay(attempt, retry_config)  # type: ignore[arg-type]
                 await asyncio.sleep(delay)
                 continue
-
             return Ok(response)
-
         except Exception as exc:
             last_error = exc
-            if circuit_breaker is not None:  # pragma: no branch
-                circuit_breaker._record_failure(exc)
-            if retry_config is not None and attempt < max_attempts:
-                delay = calculate_delay(attempt, retry_config)
-                await asyncio.sleep(delay)
+            should_retry = await _handle_http_exception(
+                exc, attempt, max_attempts, retry_config, circuit_breaker
+            )
+            if should_retry:
                 continue
             break
 
