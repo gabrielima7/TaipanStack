@@ -77,6 +77,29 @@ def test_rate_limiter_chaos_inf_injection():
         time.monotonic = orig_monotonic
 
 
+def test_rate_limiter_corrupted_tokens():
+    """
+    Simulate state corruption where tokens becomes NaN.
+    The limiter should recover by resetting tokens to capacity.
+    """
+    limiter = RateLimiter(max_calls=1, time_window=1.0)
+    limiter.tokens = float("nan")
+    # Should recover gracefully to max capacity and then be consumed
+    assert limiter.consume() is True
+    assert not math.isnan(limiter.tokens)
+
+
+def test_rate_limiter_corrupted_elapsed():
+    """
+    Simulate state corruption where elapsed calculation becomes NaN.
+    The limiter should default elapsed to 0.0.
+    """
+    limiter = RateLimiter(max_calls=1, time_window=1.0)
+    limiter.last_update = float("nan")
+    # Should recover gracefully to max capacity and then be consumed
+    assert limiter.consume() is True
+
+
 def test_rate_limiter_chaos_negative_time_jump():
     """
     Simulate a clock that jumps backwards (NTP sync anomaly).

@@ -69,11 +69,13 @@ class RateLimiter:
             if not math.isfinite(now):
                 now = self.last_update
 
-            elapsed = max(0.0, now - self.last_update)
+            raw_elapsed = now - self.last_update
 
             # Additional safety check against invalid elapsed times
-            if not math.isfinite(elapsed) or elapsed < 0:
+            if not math.isfinite(raw_elapsed) or raw_elapsed < 0:
                 elapsed = 0.0
+            else:
+                elapsed = raw_elapsed
 
             self.last_update = now
 
