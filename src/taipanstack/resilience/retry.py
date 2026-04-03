@@ -114,7 +114,11 @@ def calculate_delay(
 
     # Defensive check against extreme time anomalies (NaN, inf) before capping
     if not math.isfinite(delay) or delay < 0:
-        delay = config.max_delay if math.isfinite(config.max_delay) and config.max_delay >= 0 else 0.0
+        delay = (
+            config.max_delay
+            if math.isfinite(config.max_delay) and config.max_delay >= 0
+            else 0.0
+        )
 
     # Cap at max delay
     delay = min(delay, config.max_delay)
