@@ -273,15 +273,34 @@ def ensure_dir(
 
     Raises:
         SecurityError: If path validation fails.
+        FileExistsError: If a file already exists at the given path or intermediate
+            paths.
 
     """
     path = Path(path)
 
     # Validate path
     path = _validate_path(path, base_dir, allow_symlinks=True)
+    resolved_path = path.resolve()
 
-    path.mkdir(parents=True, exist_ok=True, mode=mode)
-    return path.resolve()
+    # Identify missing parent directories from root to leaf
+    paths_to_create: list[Path] = []
+    current_path = resolved_path
+
+    while not current_path.is_dir():
+        if current_path.exists():
+            raise FileExistsError(f"Path exists but is not a directory: {current_path}")
+        paths_to_create.insert(0, current_path)
+        parent = current_path.parent
+        if parent == current_path:
+            break
+        current_path = parent
+
+    # Iterate through parents and create them with specific mode
+    for p in paths_to_create:
+        p.mkdir(mode=mode, exist_ok=True)
+
+    return resolved_path
 
 
 def safe_copy(

@@ -401,3 +401,56 @@ rules:
         - python
     patterns:
       - pattern: os.system(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 33: Detect usage of mkstemp without secure permissions or context manager
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-mkstemp
+    languages: [python]
+    severity: ERROR
+    message: >
+      `tempfile.mkstemp` returns a tuple containing an OS-level file descriptor and a file path.
+      If the file descriptor is not properly closed or wrapped in `os.fdopen()`, it can cause resource
+      leaks or file descriptor reuse vulnerabilities (TOCTOU). Ensure the file descriptor is correctly handled.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-404: Improper Resource Shutdown or Release"
+      owasp: "A04:2021 - Insecure Design"
+      technology:
+        - python
+    patterns:
+      - pattern: tempfile.mkstemp(...)
+      - pattern-not-inside: |
+          $FD, $PATH = tempfile.mkstemp(...)
+          ...
+          os.close($FD)
+      - pattern-not-inside: |
+          $FD, $PATH = tempfile.mkstemp(...)
+          ...
+          with os.fdopen($FD, ...) as $F:
+              ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 34: Detect insecure directory creation with parents=True and explicit mode
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-mkdir-mode
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `Path.mkdir(parents=True, mode=...)` or `os.makedirs(..., mode=...)` applies
+      the explicit mode only to the leaf directory. Intermediate parent directories are
+      created with the default OS umask, which may result in overly permissive access
+      rights, allowing an attacker to hijack the intermediate directories. Instead,
+      create missing parent directories iteratively and apply the intended mode to each.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      owasp: "A01:2021 - Broken Access Control"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: $PATH.mkdir(..., parents=True, ..., mode=$MODE, ...)
+          - pattern: os.makedirs(..., mode=$MODE, ...)
