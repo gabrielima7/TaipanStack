@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -30,8 +30,10 @@ try:
 
     _HAS_HTTPX = True  # pragma: no cover
 except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
     _HAS_HTTPX = False
+
+if TYPE_CHECKING:
+    import httpx
 
 # Default status codes that trigger a retry
 _RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({500, 502, 503, 504, 429})
@@ -80,11 +82,11 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
 
 
 async def _execute_with_retries(
-    request_func: Callable[[], Awaitable[Any]],
+    request_func: Callable[[], Awaitable[httpx.Response]],
     retry_config: RetryConfig | None,
     circuit_breaker: CircuitBreaker | None,
     retryable_status_codes: frozenset[int],
-) -> Result[Any, Exception]:
+) -> Result[httpx.Response, Exception]:
     """Execute a request function with optional retries and circuit breaker.
 
     Args:
@@ -142,7 +144,7 @@ async def safe_request(
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     timeout: float | None = 10.0,
     **kwargs: Any,
-) -> Result[Any, Exception]:
+) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
     Args:
@@ -178,9 +180,10 @@ async def safe_request(
         if cb_err is not None:
             return Err(cb_err)
 
-    async def _do_request() -> Any:
+    async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:
-            return await client.request(method, url, **kwargs)
+            response = await client.request(method, url, **kwargs)
+            return response
 
     return await _execute_with_retries(
         _do_request,
@@ -264,7 +267,7 @@ class SafeHttpClient:
         method: str,
         url: str,
         **kwargs: Any,
-    ) -> Result[Any, Exception]:
+    ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
 
         Args:
@@ -290,8 +293,9 @@ class SafeHttpClient:
             if cb_err is not None:
                 return Err(cb_err)
 
-        async def _do_request() -> Any:
-            return await self._client.request(method, url, **kwargs)
+        async def _do_request() -> httpx.Response:
+            response = await self._client.request(method, url, **kwargs)
+            return response  # type: ignore[no-any-return]
 
         return await _execute_with_retries(
             _do_request,
@@ -300,22 +304,22 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def get(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def post(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def put(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def delete(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result[Any, Exception]:
+    async def patch(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)
