@@ -15,13 +15,13 @@ import pathlib
 import re
 
 
-def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:
+def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:  # noqa: ARG001
     """Monkeypatch pygments HtmlFormatter to handle filename=None safely."""
     try:
-        import pygments.formatters.html
+        import pygments.formatters.html  # noqa: PLC0415
         original_init = pygments.formatters.html.HtmlFormatter.__init__
 
-        def patched_init(self, **options):
+        def patched_init(self, **options):  # type: ignore[no-untyped-def]
             if options.get("filename") is None:
                 options["filename"] = ""
             original_init(self, **options)

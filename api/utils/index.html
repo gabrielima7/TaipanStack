@@ -6708,11 +6708,8 @@ with (old_state, new_state). Useful for custom monitoring.</p>
 
 <a href="#taipanstack.utils.circuit_breaker.CircuitBreaker.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">__call__</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]</span>
-</span><span id="__span-0-3">    <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]],</span>
-</span><span id="__span-0-4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
-</span><span id="__span-0-5">    <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Coroutine">Coroutine</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]]</span>
-</span><span id="__span-0-6"><span class="p">)</span>
+</span><span id="__span-0-2">    <span class="n">func</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Awaitable">Awaitable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]],</span>
+</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.P">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Awaitable">Awaitable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.circuit_breaker.R">R</span></span><span class="p">]]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9090,6 +9087,19 @@ atomic writes, and proper error handling using Result types.</p>
             <td class="doc-raises-details">
               <div class="doc-md-description">
                 <p>If path validation fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="FileExistsError">FileExistsError</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If a file already exists at the given path or intermediate
+paths.</p>
               </div>
             </td>
           </tr>
@@ -15440,8 +15450,10 @@ result = await orch.execute(call_api, endpoint)</p>
 
 <a href="#taipanstack.resilience.adaptive.orchestrator.ResilienceOrchestrator.execute" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">execute</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">fn</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span>
-</span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="taipanstack.core.result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]</span>
+</span><span id="__span-0-2">    <span class="n">fn</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n"><span title="collections.abc.Awaitable">Awaitable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">]],</span>
+</span><span id="__span-0-3">    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span>
+</span><span id="__span-0-5"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="taipanstack.core.result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="taipanstack.resilience.adaptive.orchestrator.T">T</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -15469,7 +15481,7 @@ result = await orch.execute(call_api, endpoint)</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="typing.Any">Any</span></code>
+                      <code><span title="collections.abc.Callable">Callable</span>[..., <span title="collections.abc.Awaitable">Awaitable</span>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>]]</code>
                   </span>
               </p>
             </td>
@@ -15529,7 +15541,7 @@ result = await orch.execute(call_api, endpoint)</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="taipanstack.core.result.Result">Result</span>[<span title="typing.Any">Any</span>, <span title="Exception">Exception</span>]</code>
+                    <code><span title="taipanstack.core.result.Result">Result</span>[<span title="taipanstack.resilience.adaptive.orchestrator.T">T</span>, <span title="Exception">Exception</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
