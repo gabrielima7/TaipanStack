@@ -9,7 +9,7 @@ import functools
 import inspect
 import time
 from collections.abc import Awaitable, Callable
-from typing import Any, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -44,21 +44,22 @@ def cached(ttl: float) -> CacheDecorator:
         Decorator function.
 
     """
-    _cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+    _cache: dict[tuple[object, ...], tuple[float, object]] = {}
 
     def get_cache_key(
-        func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
-    ) -> tuple[Any, ...]:
-        def _make_hashable(val: Any) -> Any:
-            if isinstance(val, (tuple, list)):
-                return tuple(_make_hashable(item) for item in val)
-            if isinstance(val, dict):
-                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
-            if isinstance(val, set):
-                return frozenset(_make_hashable(item) for item in val)
-
-            hash(val)
-            return val
+        func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
+    ) -> tuple[object, ...]:
+        def _make_hashable(val: object) -> object:
+            match val:
+                case tuple() | list():
+                    return tuple(_make_hashable(item) for item in val)
+                case dict():
+                    return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+                case set():
+                    return frozenset(_make_hashable(item) for item in val)
+                case _:
+                    hash(val)
+                    return val
 
         hashable_args = tuple(_make_hashable(arg) for arg in args)
         hashable_kwargs = tuple(
@@ -74,14 +75,14 @@ def cached(ttl: float) -> CacheDecorator:
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
-                    func.__name__, args, cast(dict[str, Any], kwargs)
+                    func.__name__, args, cast(dict[str, object], kwargs)
                 )
                 now = time.monotonic()
 
                 if cache_key in _cache:
                     expiry, value = _cache[cache_key]
                     if now < expiry:
-                        return Ok(value)
+                        return Ok(cast(T, value))
                     del _cache[cache_key]
 
                 func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
@@ -99,13 +100,15 @@ def cached(ttl: float) -> CacheDecorator:
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(func.__name__, args, cast(dict[str, Any], kwargs))
+            cache_key = get_cache_key(
+                func.__name__, args, cast(dict[str, object], kwargs)
+            )
             now = time.monotonic()
 
             if cache_key in _cache:
                 expiry, value = _cache[cache_key]
                 if now < expiry:
-                    return Ok(value)
+                    return Ok(cast(T, value))
                 del _cache[cache_key]
 
             func_sync = cast(Callable[P, Result[T, E]], func)
