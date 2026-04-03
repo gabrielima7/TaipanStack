@@ -541,11 +541,9 @@ def _is_ip_safe(raw_ip: str) -> bool:
         return True
 
     return not (
-        addr.is_private
-        or addr.is_loopback
-        or addr.is_link_local
-        or addr.is_reserved
+        addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
     )
+
 
 def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
     """Resolve hostname to IP addresses and check for SSRF risk."""
