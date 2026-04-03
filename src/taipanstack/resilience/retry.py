@@ -109,7 +109,10 @@ def calculate_delay(
     """
     safe_attempt = max(1, attempt)
     # Exponential backoff
-    delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    try:
+        delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    except OverflowError:
+        delay = config.max_delay
 
     # Cap at max delay
     delay = min(delay, config.max_delay)
