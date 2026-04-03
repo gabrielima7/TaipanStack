@@ -285,6 +285,69 @@ class TestEnsureDir:
         with pytest.raises(SecurityError):
             ensure_dir("../etc/evil_dir")
 
+    def test_file_exists_error_when_path_is_file(self, tmp_path: Path) -> None:
+        """Test that FileExistsError is raised if intermediate path is a file."""
+        conflict_file = tmp_path / "conflict"
+        conflict_file.write_text("content")
+
+        with pytest.raises(FileExistsError, match="Path exists but is not a directory"):
+            ensure_dir(conflict_file / "nested_dir")
+
+        with pytest.raises(FileExistsError, match="Path exists but is not a directory"):
+            ensure_dir(conflict_file)
+
+    def test_root_directory_already_exists(self) -> None:
+        """Test ensuring the root directory to cover the root parent check."""
+        import sys
+
+        # Determine the root directory based on the platform
+        root = Path("C:\\") if sys.platform == "win32" else Path("/")
+
+        # Ensure dir on the root should not loop indefinitely and should return the root
+        result = ensure_dir(root)
+        assert result == root
+
+    def test_missing_intermediate_directory_created(self, tmp_path: Path) -> None:
+        """Test creating a directory with a missing intermediate parent."""
+        target = tmp_path / "missing" / "leaf"
+        result = ensure_dir(target)
+
+        assert result.exists()
+        assert result.is_dir()
+        assert (tmp_path / "missing").is_dir()
+
+    def test_root_parent_loop_break(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test the break condition when looping up to root."""
+        import sys
+
+        root = Path("C:\\") if sys.platform == "win32" else Path("/")
+
+        # We need to simulate that the root is NOT a dir to enter the loop,
+        # but it doesn't exist either so we don't hit the FileExistsError.
+        original_is_dir = Path.is_dir
+        original_exists = Path.exists
+
+        def mock_is_dir(self: Path) -> bool:
+            if self == root:
+                return False
+            return original_is_dir(self)
+
+        def mock_exists(self: Path) -> bool:
+            if self == root:
+                return False
+            return original_exists(self)
+
+        monkeypatch.setattr(Path, "is_dir", mock_is_dir)
+        monkeypatch.setattr(Path, "exists", mock_exists)
+
+        # Mock mkdir to avoid PermissionError trying to mkdir on root
+        def mock_mkdir(*args, **kwargs) -> None:
+            pass
+
+        monkeypatch.setattr(Path, "mkdir", mock_mkdir)
+
+        ensure_dir(root)
+
 
 class TestSafeCopy:
     """Tests for safe_copy function."""
