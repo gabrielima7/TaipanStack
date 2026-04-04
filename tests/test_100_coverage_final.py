@@ -3,6 +3,9 @@
 from pathlib import Path
 
 import pytest
+from pydantic import SecretStr
+
+from taipanstack.security.password import hash_password, verify_password
 
 
 class TestAppMain:
@@ -305,9 +308,6 @@ class TestLoggingUncovered:
 
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
-from taipanstack.security.password import verify_password, hash_password
-from pydantic import SecretStr
-import pytest
 
 def test_password_empty_verify():
     assert verify_password("", "hash") is False
