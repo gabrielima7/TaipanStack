@@ -28,7 +28,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
     ---
 
-    Path traversal protection, command injection guards, input sanitizers & validators, secret detection, SBOM + SLSA attestation.
+    Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, input sanitizers & validators, secret detection, SBOM + SLSA attestation.
 
 -   :zap: **High Performance**
 
