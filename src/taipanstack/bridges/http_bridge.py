@@ -207,6 +207,7 @@ async def safe_request(
             return Err(cb_err)
 
     async def _do_request() -> httpx.Response:
+        # nosemgrep: taipanstack.use-safe-http-client
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.request(method, url, **kwargs)
             return response
@@ -274,7 +275,9 @@ class SafeHttpClient:
                 "Install with: pip install taipanstack[bridges-http]"
             )
             raise ImportError(msg)
-        self._client = httpx.AsyncClient(**self._client_kwargs)
+        timeout = self._client_kwargs.pop("timeout", 10.0)
+        # nosemgrep: taipanstack.use-safe-http-client
+        self._client = httpx.AsyncClient(timeout=timeout, **self._client_kwargs)
         return self
 
     async def __aexit__(
