@@ -1,4 +1,5 @@
 """Tests to achieve 100% code coverage."""
+
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
@@ -311,7 +312,6 @@ class TestLoggingUncovered:
         assert isinstance(HAS_STRUCTLOG, bool)
 
 
-
 class TestSupplementarySubprocess:
     @patch("taipanstack.utils.subprocess.subprocess.run")
     def test_run_safe_command_mocked_timeout_no_stdout(self, mock_run):
@@ -319,9 +319,11 @@ class TestSupplementarySubprocess:
         class MockTimeoutExpired(subprocess.TimeoutExpired):
             def __init__(self):
                 pass
+
             @property
             def cmd(self):
                 return ["python"]
+
             @property
             def timeout(self):
                 return 1.0
@@ -337,9 +339,7 @@ class TestSupplementarySubprocess:
 
     @patch("taipanstack.utils.subprocess.subprocess.run")
     def test_run_safe_command_mocked_timeout_with_bytes_stdout(self, mock_run):
-        # Even though type hint says stdout is string/bytes depending on `text`,
-        # mock it as bytes to test the fallback branch if it existed (though we know the code only checks str vs non-str, wait: the code is:
-        # if isinstance(e.stdout, str): stdout_str = e.stdout else: stdout_str = e.stdout.decode()
+        # Mock it as bytes to test the fallback decode branch.
         exc = subprocess.TimeoutExpired(cmd=["python"], timeout=1.0)
         exc.stdout = b"some bytes output"
         mock_run.side_effect = exc
@@ -347,6 +347,7 @@ class TestSupplementarySubprocess:
         result = run_safe_command(["python"], timeout=1.0)
         assert result.returncode == -1
         assert result.stdout == "some bytes output"
+
 
 class TestSupplementarySanitizer:
     def test_sanitize_string_allow_html(self):
@@ -357,7 +358,9 @@ class TestSupplementarySanitizer:
 
     def test_sanitize_string_disallow_unicode(self):
         # With allow_unicode=False, it should remove non-ASCII characters
-        assert sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
+        assert (
+            sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
+        )
 
     def test_sanitize_string_truncate_exact(self):
         val = "12345"
