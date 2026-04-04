@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
+
+T = TypeVar("T")
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,

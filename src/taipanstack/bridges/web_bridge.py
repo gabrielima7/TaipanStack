@@ -215,7 +215,7 @@ class TaipanMiddleware:
 
             async def send_with_headers(message: dict[str, Any]) -> None:
                 if message.get("type") == "http.response.start":
-                    existing = list(message.get("headers", []))
+                    existing = list(message.get("headers", []))  # type: ignore[arg-type]
                     existing.extend(extra_headers)
                     message["headers"] = existing
                 await original_send(message)
