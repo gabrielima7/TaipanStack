@@ -1,8 +1,12 @@
 """Tests to achieve 100% code coverage."""
-
+import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
+
+from taipanstack.security.sanitizers import sanitize_string
+from taipanstack.utils.subprocess import run_safe_command
 
 
 class TestAppMain:
@@ -306,12 +310,6 @@ class TestLoggingUncovered:
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
 
-import subprocess
-import pytest
-from unittest.mock import patch, MagicMock
-
-from taipanstack.utils.subprocess import run_safe_command
-from taipanstack.security.sanitizers import sanitize_string
 
 
 class TestSupplementarySubprocess:
@@ -359,12 +357,6 @@ class TestSupplementarySanitizer:
 
     def test_sanitize_string_disallow_unicode(self):
         # With allow_unicode=False, it should remove non-ASCII characters
-        val = "Hello\u200bWorld 😊"
-        res = sanitize_string(val, allow_unicode=False)
-        assert res == "HelloWorld ?" or res == "HelloWorld " or "?" in res or "HelloWorld" in res # Depending on exact encode/decode behavior
-
-        # let's be more exact: encode('ascii', errors='ignore').decode('ascii')
-        # "Hello\u200bWorld 😊".encode('ascii', errors='ignore').decode('ascii') -> "HelloWorld "
         assert sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
 
     def test_sanitize_string_truncate_exact(self):
