@@ -21,6 +21,10 @@ LEGACY_FORMAT = "pbkdf2_sha256"
 MAX_LEGACY_ITERATIONS = 1_000_000
 
 
+# Constants to prevent DoS via massive processing times
+MAX_PASSWORD_LENGTH = 1024
+
+
 def hash_password(password: str | SecretStr) -> str:
     """
     Hash a password using Argon2id.
@@ -31,16 +35,32 @@ def hash_password(password: str | SecretStr) -> str:
     Returns:
         The hashed password in Argon2 format.
 
+    Raises:
+        TypeError: If `password` is not a str or SecretStr.
+        ValueError: If `password` length exceeds the maximum allowed or is empty.
+
     """
+    if not isinstance(password, (str, SecretStr)):
+        msg = "password must be a string or SecretStr"
+        raise TypeError(msg)
+
     if isinstance(password, SecretStr):
         password_str = password.get_secret_value()
     else:
         password_str = password
 
+    if not password_str:
+        msg = "password cannot be empty"
+        raise ValueError(msg)
+
+    if len(password_str) > MAX_PASSWORD_LENGTH:
+        msg = f"password length exceeds {MAX_PASSWORD_LENGTH} characters"
+        raise ValueError(msg)
+
     return _ph.hash(password_str)
 
 
-def verify_password(password: str | SecretStr, password_hash: str) -> bool:
+def verify_password(password: str | SecretStr, password_hash: str) -> bool:  # noqa: PLR0911
     """
     Verify a password against an Argon2 or legacy PBKDF2-HMAC-SHA256 hash.
 
@@ -67,6 +87,12 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
         password_str = password.get_secret_value()
     else:
         password_str = password
+
+    if not password_str:
+        return False
+
+    if len(password_str) > MAX_PASSWORD_LENGTH:
+        return False
 
     if password_hash.startswith(LEGACY_FORMAT + "$"):
         # Legacy PBKDF2 verification
