@@ -7,9 +7,8 @@ preventively.
 """
 
 import logging
-from collections.abc import Callable, Coroutine, Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
-from typing import Any
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
@@ -31,7 +30,7 @@ class HealthTarget:
     """
 
     name: str
-    check: Callable[[], Coroutine[Any, Any, bool]]
+    check: Callable[[], Awaitable[bool]]
     circuit_breaker: CircuitBreaker | None = None
 
 
