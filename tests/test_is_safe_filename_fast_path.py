@@ -35,7 +35,6 @@ def test_sanitize_filename_backslash_replacement():
     assert sanitize_filename("invalid:name", replacement="\\") == "invalid\\name"
 
 def test_sanitize_filename_backslash_replacement_regex_group():
-    from taipanstack.security.sanitizers import sanitize_filename
     # Because of `double_replacement` collapsing in `_collapse_replacements`,
     # "\\1" + "\\1" = "\\1\\1". But wait, the assert checks the return value.
     # Actually the string replace happens as string replace, so `re.sub` behavior might differ.
