@@ -181,6 +181,23 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
+def _is_safe_filename_fast_path(filename: str, stem: str, max_length: int) -> bool:
+    """Check if a filename is safe via the fast-path.
+
+    Operations are ordered from cheapest (len, isascii, set containment)
+    to most expensive (replace, isalnum).
+    """
+    if len(filename) > max_length:
+        return False
+    if not filename.isascii():
+        return False
+    if filename in {"..", "."}:
+        return False
+    if stem.upper() in _WINDOWS_RESERVED_NAMES:
+        return False
+
+    return filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+
 def sanitize_filename(
     filename: str,
     *,
@@ -219,13 +236,7 @@ def sanitize_filename(
     stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
 
     # Fast-path for already safe, typical filenames
-    if (
-        len(filename) <= max_length
-        and filename.isascii()
-        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename not in {"..", "."}
-    ):
+    if _is_safe_filename_fast_path(filename, stem, max_length):
         return f"{stem}{suffix}"
 
     # Remove invalid characters using precompiled regex for performance

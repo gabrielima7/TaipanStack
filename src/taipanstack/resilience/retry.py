@@ -94,6 +94,26 @@ class RetryError(Exception):
         super().__init__(message)
 
 
+def _apply_jitter(delay: float, config: RetryConfig) -> float:
+    """Apply random jitter to the calculated delay.
+
+    Args:
+        delay: The calculated base delay.
+        config: Retry configuration containing jitter settings.
+
+    Returns:
+        The delay with jitter applied.
+
+    """
+    if config.jitter and math.isfinite(delay):
+        jitter_amount = delay * config.jitter_factor
+        if math.isfinite(jitter_amount):
+            try:
+                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+            except Exception as e:
+                logger.warning("Failed to add jitter to delay: %s", str(e))
+    return delay
+
 def calculate_delay(
     attempt: int,
     config: RetryConfig,
@@ -128,13 +148,7 @@ def calculate_delay(
     # However, to maintain a clean security baseline and satisfy Bandit,
     # we use secrets.SystemRandom() which provides cryptographically
     # secure random numbers.
-    if config.jitter and math.isfinite(delay):
-        jitter_amount = delay * config.jitter_factor
-        if math.isfinite(jitter_amount):
-            try:
-                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-            except Exception as e:
-                logger.warning("Failed to add jitter to delay: %s", str(e))
+    delay = _apply_jitter(delay, config)
 
     if not math.isfinite(delay) or delay < 0:
         return 0.0
