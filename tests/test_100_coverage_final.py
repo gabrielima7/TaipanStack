@@ -305,3 +305,70 @@ class TestLoggingUncovered:
 
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
+
+import subprocess
+import pytest
+from unittest.mock import patch, MagicMock
+
+from taipanstack.utils.subprocess import run_safe_command
+from taipanstack.security.sanitizers import sanitize_string
+
+
+class TestSupplementarySubprocess:
+    @patch("taipanstack.utils.subprocess.subprocess.run")
+    def test_run_safe_command_mocked_timeout_no_stdout(self, mock_run):
+        # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
+        class MockTimeoutExpired(subprocess.TimeoutExpired):
+            def __init__(self):
+                pass
+            @property
+            def cmd(self):
+                return ["python"]
+            @property
+            def timeout(self):
+                return 1.0
+
+        exc = MockTimeoutExpired()
+        # Ensure hasattr(exc, "stdout") is False
+        mock_run.side_effect = exc
+
+        result = run_safe_command(["python", "-c", "print(1)"], timeout=1.0)
+        assert result.returncode == -1
+        assert result.stdout == ""
+        assert "timed out after 1.0s" in result.stderr
+
+    @patch("taipanstack.utils.subprocess.subprocess.run")
+    def test_run_safe_command_mocked_timeout_with_bytes_stdout(self, mock_run):
+        # Even though type hint says stdout is string/bytes depending on `text`,
+        # mock it as bytes to test the fallback branch if it existed (though we know the code only checks str vs non-str, wait: the code is:
+        # if isinstance(e.stdout, str): stdout_str = e.stdout else: stdout_str = e.stdout.decode()
+        exc = subprocess.TimeoutExpired(cmd=["python"], timeout=1.0)
+        exc.stdout = b"some bytes output"
+        mock_run.side_effect = exc
+
+        result = run_safe_command(["python"], timeout=1.0)
+        assert result.returncode == -1
+        assert result.stdout == "some bytes output"
+
+class TestSupplementarySanitizer:
+    def test_sanitize_string_allow_html(self):
+        # With allow_html=True, it should NOT remove HTML tags, but still strip whitespace
+        val = "   <script>alert(1)</script>   "
+        res = sanitize_string(val, allow_html=True, strip_whitespace=True)
+        assert res == "<script>alert(1)</script>"
+
+    def test_sanitize_string_disallow_unicode(self):
+        # With allow_unicode=False, it should remove non-ASCII characters
+        val = "Hello\u200bWorld 😊"
+        res = sanitize_string(val, allow_unicode=False)
+        assert res == "HelloWorld ?" or res == "HelloWorld " or "?" in res or "HelloWorld" in res # Depending on exact encode/decode behavior
+
+        # let's be more exact: encode('ascii', errors='ignore').decode('ascii')
+        # "Hello\u200bWorld 😊".encode('ascii', errors='ignore').decode('ascii') -> "HelloWorld "
+        assert sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
+
+    def test_sanitize_string_truncate_exact(self):
+        val = "12345"
+        assert sanitize_string(val, max_length=5) == "12345"
+        assert sanitize_string(val, max_length=4) == "1234"
+        assert sanitize_string(val, max_length=10) == "12345"
