@@ -198,6 +198,7 @@ def _is_safe_filename_fast_path(filename: str, stem: str, max_length: int) -> bo
 
     return filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
 
+
 def sanitize_filename(
     filename: str,
     *,
