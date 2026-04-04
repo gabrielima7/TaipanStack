@@ -12,14 +12,14 @@ import logging
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
-
-T = TypeVar("T")
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerError,
     CircuitState,
 )
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
+
+T = TypeVar("T")
 
 logger = logging.getLogger("taipanstack.bridges.db")
 
