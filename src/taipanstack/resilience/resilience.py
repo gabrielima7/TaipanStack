@@ -136,7 +136,12 @@ def timeout(seconds: float) -> TimeoutDecorator:
                 *args: P.args, **kwargs: P.kwargs
             ) -> Result[T, TimeoutError | E]:
                 if not math.isfinite(seconds) or seconds < 0:
-                    return Err(cast(E, ValueError("Timeout must be a finite non-negative number")))
+                    return Err(
+                        cast(
+                            E,
+                            ValueError("Timeout must be a finite non-negative number"),
+                        )
+                    )
 
                 try:
                     func_coro = cast(
@@ -159,7 +164,12 @@ def timeout(seconds: float) -> TimeoutDecorator:
             *args: P.args, **kwargs: P.kwargs
         ) -> Result[T, TimeoutError | E]:
             if not math.isfinite(seconds) or seconds < 0:
-                return Err(cast(E, ValueError("Timeout must be a finite non-negative number")))
+                return Err(
+                    cast(
+                        E,
+                        ValueError("Timeout must be a finite non-negative number"),
+                    )
+                )
 
             result: list[Result[T, TimeoutError | E]] = []
             exception: list[BaseException] = []
