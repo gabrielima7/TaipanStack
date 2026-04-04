@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import Any, Generic, ParamSpec, TypeVar
+from typing import Generic, ParamSpec, TypeVar, cast
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
@@ -67,7 +67,7 @@ class ResilienceOrchestrator(Generic[T]):
         self._retry_config: RetryConfig | None = None
         self._adaptive_retry: AdaptiveRetry | None = None
         self._timeout: float | None = None
-        self._fallback_value: T | Any = _SENTINEL
+        self._fallback_value: T | object = _SENTINEL
 
     def with_bulkhead(
         self,
@@ -162,9 +162,9 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def execute(
         self,
-        fn: Callable[..., Awaitable[T]],
-        *args: Any,
-        **kwargs: Any,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
         """Execute the function through the resilience pipeline.
 
@@ -264,9 +264,9 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def _execute_inner(
         self,
-        fn: Callable[..., Awaitable[T]],
-        *args: Any,
-        **kwargs: Any,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
         """Execute through breaker → retry → timeout → fn layers.
 
@@ -315,9 +315,9 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def _execute_with_timeout(
         self,
-        fn: Callable[..., Awaitable[T]],
-        *args: Any,
-        **kwargs: Any,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
         """Execute fn with optional timeout.
 
@@ -362,7 +362,7 @@ class ResilienceOrchestrator(Generic[T]):
         match result:
             case Err():
                 if self._fallback_value is not _SENTINEL:
-                    return Ok(self._fallback_value)
+                    return Ok(cast(T, self._fallback_value))
             case Ok():
                 pass
         return result

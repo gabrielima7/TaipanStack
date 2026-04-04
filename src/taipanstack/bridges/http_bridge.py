@@ -82,7 +82,7 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
 
 
 def _should_retry_status(
-    response: Any,
+    response: httpx.Response,
     retry_config: RetryConfig | None,
     retryable_status_codes: frozenset[int],
     attempt: int,
@@ -264,7 +264,7 @@ class SafeHttpClient:
         self._retryable_status_codes = retryable_status_codes
         self._client_kwargs = client_kwargs
         self._client_kwargs.setdefault("timeout", 10.0)
-        self._client: Any = None
+        self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self) -> SafeHttpClient:
         """Enter the async context manager."""
@@ -281,7 +281,7 @@ class SafeHttpClient:
         self,
         _exc_type: type[BaseException] | None,
         _exc_val: BaseException | None,
-        _exc_tb: Any,
+        _exc_tb: object,
     ) -> None:
         """Exit the async context manager."""
         if self._client is not None:
@@ -320,8 +320,10 @@ class SafeHttpClient:
                 return Err(cb_err)
 
         async def _do_request() -> httpx.Response:
-            response = await self._client.request(method, url, **kwargs)
-            return response  # type: ignore[no-any-return]
+            # We explicitly verified client is not None above
+            client: httpx.AsyncClient = self._client  # type: ignore[assignment]
+            response = await client.request(method, url, **kwargs)
+            return response
 
         return await _execute_with_retries(
             _do_request,
