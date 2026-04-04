@@ -214,6 +214,7 @@ warn_required_dynamic_aliases = true
 testpaths = ["tests"]
 addopts = "-v  --strict-markers --timeout=30"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "security: marks tests as security-related",
