@@ -304,7 +304,7 @@ class ResilienceOrchestrator(Generic[T]):
 
                     if self._retry_config is not None and attempt < max_attempts:
                         delay = self._calculate_retry_delay(attempt)
-                        await asyncio.sleep(delay)
+                        await asyncio.sleep(min(delay, 3600.0))
                         continue
                     break
 

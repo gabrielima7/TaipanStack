@@ -120,7 +120,7 @@ class ResilientDatabase:
                     self._circuit_breaker._record_failure(exc)
                 if self._retry_config is not None and attempt < max_attempts:
                     delay = calculate_delay(attempt, self._retry_config)
-                    await asyncio.sleep(delay)
+                    await asyncio.sleep(min(delay, 3600.0))
                     continue
                 break
 

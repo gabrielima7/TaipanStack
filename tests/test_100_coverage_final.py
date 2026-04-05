@@ -182,7 +182,7 @@ class TestGuardsUncovered:
 
         from taipanstack.security.guards import guard_ssrf
 
-        with patch("taipanstack.security.guards.urlparse") as mock_urlparse:
+        with patch("taipanstack.security.guards.urlsplit") as mock_urlparse:
             mock_urlparse.side_effect = ValueError("Mocked error")
             res = guard_ssrf("http://example.com")
             assert res.is_err()

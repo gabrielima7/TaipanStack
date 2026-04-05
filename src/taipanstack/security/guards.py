@@ -13,7 +13,7 @@ import re
 import socket
 from collections.abc import Sequence
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 from result import Err, Ok, Result
 
@@ -500,7 +500,7 @@ def _validate_ssrf_url(
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
 
     try:
-        parsed = urlparse(url)
+        parsed = urlsplit(url)
     except ValueError as exc:
         return Err(
             SecurityError(

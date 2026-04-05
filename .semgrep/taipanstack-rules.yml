@@ -521,3 +521,55 @@ rules:
       - pattern-not-inside: |
           async def safe_request(...):
               ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 37: Enforce urlsplit over urlparse for SSRF and general parsing
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-urlparse-ssrf
+    languages: [python]
+    severity: WARNING
+    message: >
+      Using `urllib.parse.urlparse` can be slower and sometimes less secure than
+      `urllib.parse.urlsplit` when path parameters are not needed. Prefer `urlsplit`
+      for improved execution speed and to mitigate certain URL parsing inconsistencies
+      in SSRF validation.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery (SSRF)"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: urllib.parse.urlparse(...)
+          - pattern: urlparse(...)
+      - pattern-not: urllib.parse.urlsplit(...)
+      - pattern-not: urlsplit(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 38: Prevent unbounded time.sleep and asyncio.sleep
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-time-sleep
+    languages: [python]
+    severity: ERROR
+    message: >
+      Passing an unbounded or extremely large calculated delay to `time.sleep()`
+      or `asyncio.sleep()` can cause an `OverflowError` (timestamp out of range for
+      platform time_t) or a Denial of Service. Always clamp the delay using `min(delay, MAX_DELAY)`.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      owasp: "A05:2021 - Security Misconfiguration"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: time.sleep($DELAY)
+          - pattern: asyncio.sleep($DELAY)
+      - pattern-not: time.sleep(min(...))
+      - pattern-not: asyncio.sleep(min(...))
+      - pattern-not-inside: |
+          $DELAY = min(...)
+          ...
