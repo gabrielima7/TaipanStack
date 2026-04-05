@@ -103,4 +103,3 @@ class TestFilesystemLine175And259:
             test_file, "content", options=WriteOptions(create_parents=False)
         )
         assert result.read_text() == "content"
-

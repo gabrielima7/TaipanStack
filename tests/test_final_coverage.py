@@ -163,6 +163,7 @@ class TestFilesystemComplete:
         result = safe_write(test_file, "content", options=WriteOptions(atomic=False))
         assert result.read_text() == "content"
 
+
 class TestConfigModelsComplete:
     """Complete tests for config models."""
 

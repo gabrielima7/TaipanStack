@@ -176,6 +176,7 @@ class TestFilesystemMissingBranches:
         result = ensure_dir(new_dir, base_dir=tmp_path)
         assert result.exists()
 
+
 class TestGeneratorsBranches:
     """Tests for generators branches."""
 

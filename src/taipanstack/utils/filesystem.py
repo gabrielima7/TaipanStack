@@ -297,4 +297,3 @@ def ensure_dir(
         p.mkdir(mode=mode, exist_ok=True)
 
     return resolved_path
-

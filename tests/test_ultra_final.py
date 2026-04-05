@@ -84,6 +84,7 @@ class TestSanitizers100Percent:
 class TestFilesystem100Percent:
     """Tests to reach 100% for filesystem."""
 
+
 class TestRetry100Percent:
     """Tests to reach 100% for retry."""
 

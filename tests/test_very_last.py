@@ -174,6 +174,7 @@ class TestFilesystemWriteError:
         with pytest.raises(SecurityError, match="traversal"):
             ensure_dir("../../../escape_dir")
 
+
 # =============================================================================
 # retry.py — retry exhaustion
 # =============================================================================
