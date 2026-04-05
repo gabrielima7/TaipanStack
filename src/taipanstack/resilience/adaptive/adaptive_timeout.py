@@ -13,7 +13,7 @@ import threading
 import time
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -120,8 +120,8 @@ class AdaptiveTimeout:
             )
 
     def evaluate_result(
-        self, result: Result[Any, Exception], duration: float
-    ) -> Result[Any, Exception]:
+        self, result: Result[T, Exception], duration: float
+    ) -> Result[T, Exception]:
         """Evaluate a Result and update EMA if successful.
 
         Args:
@@ -151,7 +151,7 @@ class AdaptiveTimeout:
         """
 
         @wraps(func)
-        async def wrapper(*args: Any, **kwargs: Any) -> Result[T, Exception]:
+        async def wrapper(*args: object, **kwargs: object) -> Result[T, Exception]:
             timeout = self.current_timeout
             start = time.monotonic()
             try:

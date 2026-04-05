@@ -8,7 +8,6 @@ watchdog tasks running on the asyncio event loop.
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Any
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -95,7 +94,7 @@ class BaseWatcher(ABC):
         """
         ...  # pragma: no cover
 
-    def _get_extra_repr(self) -> dict[str, Any]:
+    def _get_extra_repr(self) -> dict[str, object]:
         """Return extra fields for ``__repr__``.
 
         Subclasses can override to add custom fields.

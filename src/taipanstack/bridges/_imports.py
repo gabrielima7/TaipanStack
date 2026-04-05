@@ -7,7 +7,6 @@ that may or may not be installed at runtime.
 
 import importlib
 import types
-from typing import Any
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -51,7 +50,7 @@ def require_dependency(
 def get_attr_or_err(
     module: types.ModuleType,
     name: str,
-) -> Result[Any, AttributeError]:
+) -> Result[object, AttributeError]:
     """Safely access an attribute from a module.
 
     Args:
