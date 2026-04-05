@@ -580,7 +580,9 @@ class TestRetryChaosEngineering:
 
         from taipanstack.resilience.retry import Retrier
 
-        retrier = Retrier(max_attempts=2, initial_delay=1e100, max_delay=1e100, on=(ValueError,))
+        retrier = Retrier(
+            max_attempts=2, initial_delay=1e100, max_delay=1e100, on=(ValueError,)
+        )
         call_count = 0
 
         with mock.patch("time.sleep") as mock_sleep:
