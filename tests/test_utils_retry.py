@@ -517,6 +517,89 @@ class TestRetryError:
         assert "All 0 attempts failed" in str(exc_info.value)
         assert call_count == 0
 
+
+class TestRetryChaosEngineering:
+    """Chaos engineering tests for the retry module."""
+
+    def test_retry_sleep_overflow_resilience(self) -> None:
+        """Test resilience against OverflowError during time.sleep.
+
+        Simulates an extreme delay (e.g. from an anomalous max_delay config)
+        that causes time.sleep() to raise OverflowError (timestamp out of range).
+        The retrier should gracefully clamp or survive the overflow.
+        """
+        from unittest import mock
+
+        from taipanstack.resilience.retry import retry
+
+        call_count = 0
+
+        @retry(max_attempts=2, initial_delay=1e100, max_delay=1e100, on=(ValueError,))
+        def flaky_func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise ValueError("Simulated failure")
+            return "success"
+
+        with mock.patch("time.sleep") as mock_sleep:
+            result = flaky_func()
+            assert result == "success"
+            assert call_count == 2
+            mock_sleep.assert_called_once()
+            # 3600.0 is the fallback safe cap in retry.py
+            assert mock_sleep.call_args[0][0] == 3600.0
+
+    @pytest.mark.asyncio
+    async def test_retry_async_sleep_overflow_resilience(self) -> None:
+        """Test resilience against OverflowError during asyncio.sleep."""
+        from unittest import mock
+
+        from taipanstack.resilience.retry import retry
+
+        call_count = 0
+
+        @retry(max_attempts=2, initial_delay=1e100, max_delay=1e100, on=(ValueError,))
+        async def flaky_func() -> str:
+            nonlocal call_count
+            call_count += 1
+            if call_count < 2:
+                raise ValueError("Simulated failure")
+            return "success"
+
+        with mock.patch("asyncio.sleep", new_callable=mock.AsyncMock) as mock_sleep:
+            result = await flaky_func()
+            assert result == "success"
+            assert call_count == 2
+            mock_sleep.assert_called_once()
+            assert mock_sleep.call_args[0][0] == 3600.0
+
+    def test_retrier_sleep_overflow_resilience(self) -> None:
+        """Test resilience of the Retrier context manager against sleep overflows."""
+        from unittest import mock
+
+        from taipanstack.resilience.retry import Retrier
+
+        retrier = Retrier(max_attempts=2, initial_delay=1e100, max_delay=1e100, on=(ValueError,))
+        call_count = 0
+
+        with mock.patch("time.sleep") as mock_sleep:
+            # We manually drive the loop since it's a context manager
+            while True:
+                try:
+                    with retrier:
+                        call_count += 1
+                        if call_count < 2:
+                            raise ValueError("Simulated failure")
+                        break
+                except ValueError:
+                    if call_count >= 2:
+                        break
+
+            assert call_count == 2
+            mock_sleep.assert_called_once()
+            assert mock_sleep.call_args[0][0] == 3600.0
+
     @pytest.mark.asyncio
     async def test_retry_async_for_loop_exhaustion(self) -> None:
         """Test the retry async loop exhaustion explicitly."""

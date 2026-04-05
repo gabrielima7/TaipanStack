@@ -323,7 +323,13 @@ def retry(
                             delay,
                             config,
                         )
-                        await asyncio.sleep(delay)
+                        # Cap extreme delays to a safe max to avoid OverflowError
+                        # or infinite hangs if math.isfinite check passes
+                        safe_delay = min(delay, 3600.0)
+                        try:
+                            await asyncio.sleep(safe_delay)
+                        except OverflowError:
+                            await asyncio.sleep(3600.0)
 
                 _raise_retry_error(
                     func_coro.__name__,
@@ -363,7 +369,12 @@ def retry(
                         delay,
                         config,
                     )
-                    time.sleep(delay)
+                    # Cap extreme delays to a safe max to avoid OverflowError
+                    safe_delay = min(delay, 3600.0)
+                    try:
+                        time.sleep(safe_delay)
+                    except OverflowError:
+                        time.sleep(3600.0)
 
             _raise_retry_error(
                 func_sync.__name__,
@@ -476,6 +487,11 @@ class Retrier:
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        time.sleep(delay)
+        # Cap extreme delays to a safe max to avoid OverflowError
+        safe_delay = min(delay, 3600.0)
+        try:
+            time.sleep(safe_delay)
+        except OverflowError:
+            time.sleep(3600.0)
 
         return True  # Suppress exception and retry
