@@ -194,7 +194,6 @@ def collect_results(
         Err("fail")
 
     """
-
     # We explicitly avoid structural pattern matching here to eliminate
     # Python overhead in tight loop iteration for Result arrays, but we
     # use isinstance rather than explicit type check to maintain subclass support.
