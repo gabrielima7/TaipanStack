@@ -1,11 +1,16 @@
 """Tests to achieve 100% code coverage."""
 
+import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from pydantic import SecretStr
 
 from taipanstack.security.password import hash_password, verify_password
+
+from taipanstack.security.sanitizers import sanitize_string
+from taipanstack.utils.subprocess import run_safe_command
 
 
 class TestAppMain:
@@ -348,3 +353,60 @@ def test_password_hash_legacy_invalid():
 def test_password_hash_wrong_type():
     with pytest.raises(TypeError, match="must be a string or SecretStr"):
         hash_password(None)
+
+
+class TestSupplementarySubprocess:
+    @patch("taipanstack.utils.subprocess.subprocess.run")
+    def test_run_safe_command_mocked_timeout_no_stdout(self, mock_run):
+        # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
+        class MockTimeoutExpired(subprocess.TimeoutExpired):
+            def __init__(self):
+                pass
+
+            @property
+            def cmd(self):
+                return ["python"]
+
+            @property
+            def timeout(self):
+                return 1.0
+
+        exc = MockTimeoutExpired()
+        # Ensure hasattr(exc, "stdout") is False
+        mock_run.side_effect = exc
+
+        result = run_safe_command(["python", "-c", "print(1)"], timeout=1.0)
+        assert result.returncode == -1
+        assert result.stdout == ""
+        assert "timed out after 1.0s" in result.stderr
+
+    @patch("taipanstack.utils.subprocess.subprocess.run")
+    def test_run_safe_command_mocked_timeout_with_bytes_stdout(self, mock_run):
+        # Mock it as bytes to test the fallback decode branch.
+        exc = subprocess.TimeoutExpired(cmd=["python"], timeout=1.0)
+        exc.stdout = b"some bytes output"
+        mock_run.side_effect = exc
+
+        result = run_safe_command(["python"], timeout=1.0)
+        assert result.returncode == -1
+        assert result.stdout == "some bytes output"
+
+
+class TestSupplementarySanitizer:
+    def test_sanitize_string_allow_html(self):
+        # With allow_html=True, it should NOT remove HTML tags, but still strip whitespace
+        val = "   <script>alert(1)</script>   "
+        res = sanitize_string(val, allow_html=True, strip_whitespace=True)
+        assert res == "<script>alert(1)</script>"
+
+    def test_sanitize_string_disallow_unicode(self):
+        # With allow_unicode=False, it should remove non-ASCII characters
+        assert (
+            sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
+        )
+
+    def test_sanitize_string_truncate_exact(self):
+        val = "12345"
+        assert sanitize_string(val, max_length=5) == "12345"
+        assert sanitize_string(val, max_length=4) == "1234"
+        assert sanitize_string(val, max_length=10) == "12345"
