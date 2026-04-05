@@ -31,6 +31,11 @@
 
 TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
+### ✨ What's New in v0.4.2
+- **Subprocess Isolation Environment**: Isolates child execution environments to prevent implicit credential leaks via `allowed_env_vars`.
+- **Obfuscation for Models**: Hardens Pydantic models by suppressing sensitive secrets (`SecretStr`, `SecretBytes`) in `repr()` and `str()`.
+- **Adaptive Limiters**: Restricts computationally intensive hashing arrays (Argon2id) to cap length overrides and prevent Denial of Service (DoS).
+
 ### ✨ What's New in v0.4.0
 - **Taipan Bridges**: Native ASGI middleware integrations (Rate Limiting, Security Headers) out of the box.
 - **Adaptive Resilience**: Self-healing with AI-style failure thresholds and dynamic timeout tracking.
