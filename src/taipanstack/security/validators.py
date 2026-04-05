@@ -6,7 +6,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 # Constants to avoid magic values (PLR2004)
 PYTHON_MAJOR_VERSION = 3
@@ -282,7 +282,7 @@ def validate_url(
         raise ValueError(msg)
 
     try:
-        parsed = urlparse(url)
+        parsed = urlsplit(url)
         _ = parsed.port
     except ValueError as e:
         msg = f"Invalid URL format: {e}"

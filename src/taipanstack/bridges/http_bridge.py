@@ -108,7 +108,7 @@ async def _handle_http_exception(
         circuit_breaker._record_failure(exc)
     if retry_config is not None and attempt < max_attempts:
         delay = calculate_delay(attempt, retry_config)
-        await asyncio.sleep(delay)
+        await asyncio.sleep(min(delay, 3600.0))
         return True
     return False
 
@@ -145,7 +145,7 @@ async def _execute_with_retries(
                 max_attempts,
             ):
                 delay = calculate_delay(attempt, retry_config)  # type: ignore[arg-type]
-                await asyncio.sleep(delay)
+                await asyncio.sleep(min(delay, 3600.0))
                 continue
             return Ok(response)
         except Exception as exc:
