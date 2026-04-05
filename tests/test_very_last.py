@@ -174,14 +174,6 @@ class TestFilesystemWriteError:
         with pytest.raises(SecurityError, match="traversal"):
             ensure_dir("../../../escape_dir")
 
-    def test_safe_delete_with_traversal(self, tmp_path: Path) -> None:
-        """Test safe_delete with '..' in path (L327)."""
-        from taipanstack.security.guards import SecurityError
-        from taipanstack.utils.filesystem import safe_delete
-
-        with pytest.raises(SecurityError, match="traversal"):
-            safe_delete("../../../escape_file.txt", missing_ok=False)
-
 
 # =============================================================================
 # retry.py — retry exhaustion

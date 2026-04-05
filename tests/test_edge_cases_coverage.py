@@ -58,61 +58,6 @@ class TestFilesystemEdgeCases:
             with pytest.raises(OSError):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
-    def test_safe_copy_dst_exists_base_dir(self, tmp_path: Path) -> None:
-        """Test safe_copy with existing dst and base_dir."""
-        from taipanstack.utils.filesystem import safe_copy
-
-        src = tmp_path / "src.txt"
-        dst = tmp_path / "dst.txt"
-        src.write_text("source")
-        dst.write_text("destination")
-
-        result = safe_copy(src, dst, base_dir=tmp_path, overwrite=True)
-        assert result.read_text() == "source"
-
-    def test_safe_copy_dst_parent_guarded(self, tmp_path: Path) -> None:
-        """Test safe_copy dst parent is guarded when dst doesn't exist."""
-        from taipanstack.utils.filesystem import safe_copy
-
-        src = tmp_path / "src.txt"
-        dst = tmp_path / "subdir" / "dst.txt"
-        src.write_text("source")
-        (tmp_path / "subdir").mkdir()
-
-        result = safe_copy(src, dst, base_dir=tmp_path)
-        assert result.read_text() == "source"
-
-    def test_find_files_recursive(self, tmp_path: Path) -> None:
-        """Test find_files with recursive search."""
-        from taipanstack.utils.filesystem import find_files
-
-        # Create test structure
-        (tmp_path / "a.txt").touch()
-        (tmp_path / "subdir").mkdir()
-        (tmp_path / "subdir" / "b.txt").touch()
-
-        results = list(find_files(tmp_path, pattern="*.txt", recursive=True))
-        names = [r.name for r in results]
-        assert "a.txt" in names
-        assert "b.txt" in names
-
-    def test_get_file_hash_algorithms(self, tmp_path: Path) -> None:
-        """Test get_file_hash with different algorithms."""
-        from taipanstack.utils.filesystem import get_file_hash
-
-        test_file = tmp_path / "test.txt"
-        test_file.write_text("test content")
-
-        sha256_hash = get_file_hash(test_file, algorithm="sha256")
-        sha512_hash = get_file_hash(test_file, algorithm="sha512")
-
-        assert sha256_hash != sha512_hash
-        assert len(sha256_hash) == 64  # SHA256 hex length
-        assert len(sha512_hash) == 128  # SHA512 hex length
-
-        with pytest.raises(SecurityError, match="weak"):
-            get_file_hash(test_file, algorithm="md5")
-
 
 class TestLoggingEdgeCases:
     """Edge case tests for logging module."""

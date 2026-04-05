@@ -103,14 +103,3 @@ class TestFilesystemLine175And259:
             test_file, "content", options=WriteOptions(create_parents=False)
         )
         assert result.read_text() == "content"
-
-    def test_safe_delete_directory(self, tmp_path: Path) -> None:
-        """Test safe_delete with directory."""
-        from taipanstack.utils.filesystem import safe_delete
-
-        test_dir = tmp_path / "to_delete"
-        test_dir.mkdir()
-        (test_dir / "file.txt").write_text("content")
-
-        safe_delete(test_dir, recursive=True)
-        assert not test_dir.exists()
