@@ -24,12 +24,12 @@ class CacheDecorator(Protocol):
     @overload
     def __call__(
         self, func: Callable[P, Result[T, E]]
-    ) -> Callable[P, Result[T, E]]: ...  # pragma: no cover
+    ) -> Callable[P, Result[T, E]]: ...
 
     @overload
     def __call__(
         self, func: Callable[P, Awaitable[Result[T, E]]]
-    ) -> Callable[P, Awaitable[Result[T, E]]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
 def cached(ttl: float) -> CacheDecorator:

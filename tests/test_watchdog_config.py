@@ -393,3 +393,33 @@ def test_config_watcher_validate_and_apply_ok_without_change_callback_branch() -
     )
     watcher._validate_and_apply(Path("test_good_validate.json"))
     Path("test_good_validate.json").unlink()
+import pytest
+import asyncio
+from pydantic import BaseModel
+from unittest.mock import patch
+from taipanstack.core.result import Ok, Err
+from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
+
+class DummyConfig(BaseModel):
+    pass
+
+@pytest.mark.asyncio
+async def test_config_watcher_detect_changes_err():
+    watcher = ConfigWatcher(config_paths=[], config_model=DummyConfig)
+
+    # We want to run `_poll` which is synchronous
+    # wait, earlier it failed with _poll not existing.
+    # Ah, let's look at `_run`.
+
+    call_count = 0
+    def mock_detect_changes():
+        nonlocal call_count
+        call_count += 1
+        watcher._running = False
+        return Err("test error")
+
+    with patch.object(watcher, '_detect_changes', side_effect=mock_detect_changes):
+        with patch("taipanstack.resilience.watchdogs.config_watcher.logger") as mock_logger:
+            watcher._running = True
+            await watcher._run()
+            mock_logger.error.assert_called_once_with("Change detection failed: %s", "test error")

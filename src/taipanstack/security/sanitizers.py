@@ -145,7 +145,7 @@ def _remove_invalid_chars(stem: str, replacement: str) -> str:
             safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
         else:
             safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
-    except re.error:  # pragma: no cover
+    except re.error:
         safe_stem = _INVALID_FILENAME_CHARS_RE.sub("_", stem)
 
     # Remove leading/trailing dots and spaces (Windows issues)

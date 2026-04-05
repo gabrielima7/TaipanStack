@@ -219,7 +219,7 @@ def _execute_command(
         if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
             if isinstance(e.stdout, str):
                 stdout_str = e.stdout
-            else:  # pragma: no cover
+            else:
                 stdout_str = e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,

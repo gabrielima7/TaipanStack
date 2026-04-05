@@ -41,12 +41,12 @@ class ConcurrencyLimitDecorator(Protocol):
     @overload
     def __call__(
         self, func: Callable[P, T]
-    ) -> Callable[P, Result[T, OverloadError]]: ...  # pragma: no cover
+    ) -> Callable[P, Result[T, OverloadError]]: ...
 
     @overload
     def __call__(
         self, func: Callable[P, Awaitable[T]]
-    ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...
 
 
 def _handle_async_concurrency(

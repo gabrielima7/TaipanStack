@@ -25,18 +25,18 @@ logger = logging.getLogger("taipanstack.bridges.db")
 
 try:
     import sqlalchemy  # noqa: F401
-    from sqlalchemy import text as sa_text  # pragma: no cover
-    from sqlalchemy.ext.asyncio import AsyncSession  # pragma: no cover
+    from sqlalchemy import text as sa_text
+    from sqlalchemy.ext.asyncio import AsyncSession
 
-    _HAS_SQLALCHEMY = True  # pragma: no cover
-except ImportError:  # pragma: no cover
+    _HAS_SQLALCHEMY = True
+except ImportError:
     _HAS_SQLALCHEMY = False
 
 try:
     import redis.asyncio as aioredis
 
-    _HAS_REDIS = True  # pragma: no cover
-except ImportError:  # pragma: no cover
+    _HAS_REDIS = True
+except ImportError:
     _HAS_REDIS = False
 
 if TYPE_CHECKING:

@@ -312,3 +312,22 @@ async def test_resource_watcher_run_err_branch() -> None:
     ):
         # Calls the watcher's loop manually once to hit the `Err` branch
         await watcher._run()
+import pytest
+import sys
+import types
+from unittest.mock import patch
+
+def test_resource_watcher_imports_successful():
+    mock_psutil = types.ModuleType("psutil")
+    with patch.dict(sys.modules, {"psutil": mock_psutil}):
+        if "taipanstack.resilience.watchdogs.resource_watcher" in sys.modules:
+            del sys.modules["taipanstack.resilience.watchdogs.resource_watcher"]
+        import taipanstack.resilience.watchdogs.resource_watcher as resource_watcher
+        assert resource_watcher._HAS_PSUTIL is True
+
+def test_resource_watcher_imports_missing():
+    with patch.dict(sys.modules, {"psutil": None}):
+        if "taipanstack.resilience.watchdogs.resource_watcher" in sys.modules:
+            del sys.modules["taipanstack.resilience.watchdogs.resource_watcher"]
+        import taipanstack.resilience.watchdogs.resource_watcher as resource_watcher
+        assert resource_watcher._HAS_PSUTIL is False

@@ -419,3 +419,30 @@ class TestSafeFromAsyncDecorator:
 
         with pytest.raises(TypeError):
             await process(5)
+import pytest
+from taipanstack.core.result import collect_results, map_async, and_then_async, Ok, Err
+
+def test_collect_results_invalid():
+    # To hit `else:` on line 213 (which returns result)
+    # the type should not be list or tuple so it bypasses fast path
+    # and goes to the loop, then it shouldn't be Ok or Err
+    assert collect_results((r for r in [Ok(1), "invalid"])) == "invalid"
+
+def test_collect_results_fast_path_empty():
+    # If it's a list, it does Ok([r.ok_value for r in results])
+    # But wait, to hit `197->203`, it means we had a list/tuple but it failed the fast path
+    # and then went to 203. Wait, `test_collect_with_err` might pass a list with `Err`.
+    # Let's ensure a list with `Err` hits 203 and then the loop returns `Err`.
+    # But wait, the missing line is `215`, which is `return Ok(values)`.
+    # How to hit 215? We need an iterator (not list/tuple) that is all `Ok`s.
+    assert collect_results((r for r in [Ok(1), Ok(2)])) == Ok([1, 2])
+
+@pytest.mark.asyncio
+async def test_map_async_invalid():
+    async def process(x): return x
+    assert await map_async("invalid", process) == "invalid"
+
+@pytest.mark.asyncio
+async def test_and_then_async_invalid():
+    async def process(x): return x
+    assert await and_then_async("invalid", process) == "invalid"

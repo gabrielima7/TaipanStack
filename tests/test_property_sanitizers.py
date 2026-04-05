@@ -244,7 +244,7 @@ class TestSanitizePathProperties:
 
     @given(
         segments=st.lists(
-            st.from_regex(r"[a-z]{1,8}", fullmatch=True),
+            st.text(alphabet=st.characters(min_codepoint=97, max_codepoint=122), min_size=1, max_size=8),
             min_size=1,
             max_size=20,
         ),
@@ -352,3 +352,24 @@ class TestSanitizeSqlIdentifierProperties:
         """Identifier with only invalid characters must raise ValueError."""
         with pytest.raises(ValueError, match="no valid characters"):
             sanitize_sql_identifier("!@#$%^&*()")
+import pytest
+import re
+from unittest.mock import patch
+from taipanstack.security.sanitizers import sanitize_filename
+
+def test_sanitize_filename_re_error():
+    from taipanstack.security.sanitizers import _INVALID_FILENAME_CHARS_RE
+
+    # Create a wrapper that raises re.error when sub is called
+    class BrokenRegex:
+        def sub(self, repl, string):
+            # We want to raise error on the first call, but the fallback call
+            # with "_" MUST succeed.
+            if repl != "_":
+                raise re.error("mocked error")
+            # fallback
+            return _INVALID_FILENAME_CHARS_RE.sub(repl, string)
+
+    with patch("taipanstack.security.sanitizers._INVALID_FILENAME_CHARS_RE", new=BrokenRegex()):
+        result = sanitize_filename("bad<name", replacement="-")
+        assert result == "bad_name"

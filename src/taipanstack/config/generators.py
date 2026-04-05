@@ -117,15 +117,10 @@ def _generate_coverage_config() -> str:
     return """[tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["*/tests/*", "*/__pycache__/*"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise NotImplementedError",
     "if TYPE_CHECKING:",
-    "if __name__ == .__main__.:",
 ]
 """
 

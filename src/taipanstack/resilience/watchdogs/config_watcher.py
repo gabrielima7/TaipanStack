@@ -245,5 +245,5 @@ class ConfigWatcher(BaseWatcher):
             case Ok(paths):
                 for path in paths:
                     self._validate_and_apply(path)
-            case Err(error):  # pragma: no cover — defensive
+            case Err(error):
                 logger.error("Change detection failed: %s", error)

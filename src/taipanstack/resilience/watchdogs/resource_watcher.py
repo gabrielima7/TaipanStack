@@ -18,8 +18,8 @@ logger = logging.getLogger("taipanstack.resilience.watchdogs.resource")
 try:
     import psutil
 
-    _HAS_PSUTIL = True  # pragma: no cover
-except ImportError:  # pragma: no cover
+    _HAS_PSUTIL = True
+except ImportError:
     psutil = None
     _HAS_PSUTIL = False
 

@@ -228,18 +228,13 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["*/tests/*", "*/__pycache__/*", "*/conftest.py"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise NotImplementedError",
     "if TYPE_CHECKING:",
-    "if __name__ == .__main__.:",
-    "@abstractmethod",
     "@overload",
-    "def __call__\\(.*\\) -> .*:\\s*(?:\"\"\".*?\"\"\"\\s*)?\\.\\.\\.",
+    "@abstractmethod",
+    'def __call__\(.*\) -> .*:\s*(?:\"\"\".*?\"\"\"\s*)?\.\.\.',
 ]
 partial_branches = [
     "pragma: no branch",

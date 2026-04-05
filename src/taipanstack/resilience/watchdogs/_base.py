@@ -93,7 +93,7 @@ class BaseWatcher(ABC):
 
         Subclasses must override this with the actual monitoring logic.
         """
-        ...  # pragma: no cover
+        ...
 
     def _get_extra_repr(self) -> dict[str, Any]:
         """Return extra fields for ``__repr__``.
