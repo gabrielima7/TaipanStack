@@ -250,7 +250,7 @@ def _clean_path_parts(path: Path) -> list[str]:
     parts: list[str] = []
     anchor = path.anchor
     for part in path.parts:
-        match part:
+        match part:  # pragma: no branch
             case "..":
                 if parts and parts[-1] != ".." and parts[-1] != anchor:
                     parts.pop()
