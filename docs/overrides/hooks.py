@@ -11,8 +11,12 @@ Fixes:
 
 from __future__ import annotations
 
+import os
 import pathlib
 import re
+
+# Suppress MkDocs 2.0 backward-incompatibility warnings that fail strict builds
+os.environ["NO_MKDOCS_2_WARNING"] = "1"
 
 
 def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:  # noqa: ARG001

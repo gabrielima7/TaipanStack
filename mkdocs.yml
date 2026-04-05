@@ -102,7 +102,7 @@ nav:
       - Utilities: api/utils.md
   - Patterns:
       - Security Patterns: patterns/security.md
-  - Features (v0.4.0):
+  - Features (v0.4.2):
       - Taipan Bridges: features/bridges.md
       - Adaptive Resilience: features/adaptive-resilience.md
       - Watchdogs & Monitoring: features/watchdogs.md
