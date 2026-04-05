@@ -245,30 +245,50 @@ def sanitize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
+def _is_safe_part_fast(part: str, stem: str) -> bool:
+    """Check if a path part is safe using fast operations."""
+    return (
+        len(part) <= 255  # noqa: PLR2004
+        and part.isascii()
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+        and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
+    )
+
+
+def _handle_parent_directory(parts: list[str], anchor: str) -> None:
+    """Handle processing of a parent directory ('..') path component."""
+    if parts and parts[-1] != ".." and parts[-1] != anchor:
+        parts.pop()
+
+
+def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
+    """Process a single path component and update the parts list."""
+    if part == "..":
+        _handle_parent_directory(parts, anchor)
+        return
+
+    if part == ".":
+        return
+
+    # Find the stem to check against reserved names
+    idx = part.rfind(".")
+    stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
+
+    if _is_safe_part_fast(part, stem):
+        parts.append(part)
+        return
+
+    safe_part = sanitize_filename(part, preserve_extension=True)
+    if safe_part and safe_part != "..":  # pragma: no branch
+        parts.append(safe_part)
+
+
 def _clean_path_parts(path: Path) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
     anchor = path.anchor
     for part in path.parts:
-        if part == "..":
-            if parts and parts[-1] != ".." and parts[-1] != anchor:
-                parts.pop()
-        elif part != ".":  # pragma: no branch
-            # fast-path bypass for perfectly safe segments (skip split/logic)
-            # Find the stem to check against reserved names
-            idx = part.rfind(".")
-            stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
-            if (
-                len(part) <= 255  # noqa: PLR2004
-                and part.isascii()
-                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
-                and stem.upper() not in _WINDOWS_RESERVED_NAMES
-            ):
-                parts.append(part)
-            else:
-                safe_part = sanitize_filename(part, preserve_extension=True)
-                if safe_part and safe_part != "..":  # pragma: no branch
-                    parts.append(safe_part)
+        _process_path_part(part, parts, anchor)
     return parts
 
 
