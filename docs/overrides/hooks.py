@@ -19,6 +19,7 @@ def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:
     """Monkeypatch pygments HtmlFormatter to handle filename=None safely."""
     try:
         import pygments.formatters.html  # noqa: PLC0415
+
         original_init = pygments.formatters.html.HtmlFormatter.__init__
 
         def patched_init(self, **options):  # type: ignore[no-untyped-def]
