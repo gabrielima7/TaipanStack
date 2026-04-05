@@ -221,10 +221,10 @@ def sanitize_filename(
     # Fast-path for already safe, typical filenames
     if (
         len(filename) <= max_length
+        and filename not in {"..", "."}
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
         and filename.isascii()
         and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename not in {"..", "."}
     ):
         return f"{stem}{suffix}"
 
@@ -254,9 +254,21 @@ def _clean_path_parts(path: Path) -> list[str]:
             if parts and parts[-1] != ".." and parts[-1] != anchor:
                 parts.pop()
         elif part != ".":  # pragma: no branch
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part and safe_part != "..":  # pragma: no branch
-                parts.append(safe_part)
+            # fast-path bypass for perfectly safe segments (skip split/logic)
+            # Find the stem to check against reserved names
+            idx = part.rfind(".")
+            stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
+            if (
+                len(part) <= 255  # noqa: PLR2004
+                and part.isascii()
+                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
+                and stem.upper() not in _WINDOWS_RESERVED_NAMES
+            ):
+                parts.append(part)
+            else:
+                safe_part = sanitize_filename(part, preserve_extension=True)
+                if safe_part and safe_part != "..":  # pragma: no branch
+                    parts.append(safe_part)
     return parts
 
 
