@@ -185,21 +185,33 @@ class TestTimeout:
 
     def test_timeout_negative_value(self) -> None:
         """Test timeout with negative seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
             @timeout(-1.0)
-            def func() -> None: pass
+            def func() -> None:
+                pass
 
     def test_timeout_nan_value(self) -> None:
         """Test timeout with NaN seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
             @timeout(float("nan"))
-            def func() -> None: pass
+            def func() -> None:
+                pass
 
     def test_timeout_inf_value(self) -> None:
         """Test timeout with Infinity seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
             @timeout(float("inf"))
-            def func() -> None: pass
+            def func() -> None:
+                pass
 
     def test_timeout_with_exception_in_thread(self) -> None:
         @timeout(1.0, use_signal=False)
