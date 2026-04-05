@@ -5898,7 +5898,7 @@ any Python framework (Flask, FastAPI, Django, etc.).</p>
 
 <a href="#taipanstack.security.decorators.validate_inputs" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">validate_inputs</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="o">**</span><span class="n">validators</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ValidatorFunc (taipanstack.security.decorators.ValidatorFunc)" href="#taipanstack.security.decorators.ValidatorFunc">ValidatorFunc</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span>
+</span><span id="__span-0-2">    <span class="o">**</span><span class="n">validators</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ValidatorFunc (taipanstack.security.decorators.ValidatorFunc)" href="#taipanstack.security.decorators.ValidatorFunc">ValidatorFunc</a></span><span class="p">[</span><span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">],</span>
 </span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.security.decorators.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.security.decorators.R">R</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.security.decorators.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.security.decorators.R">R</span></span><span class="p">]]</span>
 </span></code></pre></div>
 
@@ -5928,7 +5928,7 @@ Validators should raise ValueError or ValidationError on invalid input.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            ValidatorFunc (taipanstack.security.decorators.ValidatorFunc)" href="#taipanstack.security.decorators.ValidatorFunc">ValidatorFunc</a>[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>]</code>
+                      <code><a class="autorefs autorefs-internal" title="            ValidatorFunc (taipanstack.security.decorators.ValidatorFunc)" href="#taipanstack.security.decorators.ValidatorFunc">ValidatorFunc</a>[<span title="object">object</span>, <span title="object">object</span>]</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -6945,7 +6945,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
 
 
 <a href="#taipanstack.security.models.SecureBaseModel.model_dump" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">model_dump</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">model_dump</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="object">object</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6972,7 +6972,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="typing.Any">Any</span></code>
+                      <code><span title="object">object</span></code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -6996,7 +6996,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+                    <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
                 </span>
             </td>
             <td class="doc-returns-details">
@@ -7021,7 +7021,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
 
 
 <a href="#taipanstack.security.models.SecureBaseModel.model_dump_json" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">model_dump_json</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">model_dump_json</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="object">object</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7048,7 +7048,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="typing.Any">Any</span></code>
+                      <code><span title="object">object</span></code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -7200,6 +7200,42 @@ with fallback verification support for PBKDF2-HMAC-SHA256.</p>
             <td class="doc-returns-details">
               <div class="doc-md-description">
                 <p>The hashed password in Argon2 format.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="TypeError">TypeError</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If <code>password</code> is not a str or SecretStr.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="ValueError">ValueError</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If <code>password</code> length exceeds the maximum allowed or is empty.</p>
               </div>
             </td>
           </tr>
