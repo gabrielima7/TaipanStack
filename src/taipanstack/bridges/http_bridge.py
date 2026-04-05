@@ -207,8 +207,7 @@ async def safe_request(
             return Err(cb_err)
 
     async def _do_request() -> httpx.Response:
-        # nosemgrep: taipanstack.use-safe-http-client  # noqa: ERA001
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
             response = await client.request(method, url, **kwargs)
             return response
 
@@ -276,8 +275,7 @@ class SafeHttpClient:
             )
             raise ImportError(msg)
         timeout = self._client_kwargs.pop("timeout", 10.0)
-        # nosemgrep: taipanstack.use-safe-http-client  # noqa: ERA001
-        self._client = httpx.AsyncClient(timeout=timeout, **self._client_kwargs)
+        self._client = httpx.AsyncClient(timeout=timeout, **self._client_kwargs)  # nosemgrep
         return self
 
     async def __aexit__(
