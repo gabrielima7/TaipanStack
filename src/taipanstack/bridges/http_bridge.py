@@ -275,7 +275,10 @@ class SafeHttpClient:
             )
             raise ImportError(msg)
         timeout = self._client_kwargs.pop("timeout", 10.0)
-        self._client = httpx.AsyncClient(timeout=timeout, **self._client_kwargs)  # nosemgrep
+        self._client = httpx.AsyncClient(
+            timeout=timeout,
+            **self._client_kwargs,
+        )  # nosemgrep
         return self
 
     async def __aexit__(
