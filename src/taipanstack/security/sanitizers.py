@@ -261,8 +261,8 @@ def _clean_path_parts(path: Path) -> list[str]:
             if (
                 len(part) <= 255  # noqa: PLR2004
                 and part.isascii()
-                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
                 and stem.upper() not in _WINDOWS_RESERVED_NAMES
+                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
             ):
                 parts.append(part)
             else:

@@ -194,20 +194,15 @@ def collect_results(
         Err("fail")
 
     """
-    if type(results) in (list, tuple):
-        try:
-            return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
-        except AttributeError:
-            pass
 
+    # We explicitly avoid structural pattern matching here to eliminate
+    # Python overhead in tight loop iteration for Result arrays, but we
+    # use isinstance rather than explicit type check to maintain subclass support.
     values: list[T] = []
     append = values.append
     for result in results:
-        # We explicitly avoid structural pattern matching here to eliminate
-        # Python overhead in tight loop iteration for Result arrays, but we
-        # use isinstance rather than explicit type check to maintain subclass support.
         if isinstance(result, Ok):
-            append(result.ok_value)
+            append(result._value)  # bypass property wrapper for speed
         elif isinstance(result, Err):
             return result
         else:  # pragma: no cover
