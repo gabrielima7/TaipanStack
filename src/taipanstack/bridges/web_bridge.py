@@ -10,19 +10,21 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, MutableMapping
 from dataclasses import dataclass
-from typing import Any
+from typing import TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.utils.rate_limit import RateLimiter
 
 logger = logging.getLogger("taipanstack.bridges.web")
 
+T = TypeVar("T")
+
 # ASGI type aliases
-Scope = dict[str, Any]
-Receive = Callable[[], Awaitable[dict[str, Any]]]
-Send = Callable[[dict[str, Any]], Awaitable[None]]
+Scope = MutableMapping[str, object]
+Receive = Callable[[], Awaitable[MutableMapping[str, object]]]
+Send = Callable[[MutableMapping[str, object]], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
 
@@ -68,11 +70,11 @@ class SecurityHeadersConfig:
 
 
 def result_to_response(
-    result: Result[Any, Exception],
+    result: Result[T, Exception],
     *,
     status_ok: int = 200,
     status_err: int = 500,
-) -> dict[str, Any]:
+) -> dict[str, object]:
     """Convert a ``Result`` to a JSON-friendly response dict.
 
     Args:
@@ -99,7 +101,7 @@ async def _send_json_response(
     send: Send,
     *,
     status: int,
-    body: dict[str, Any],
+    body: dict[str, object],
     extra_headers: list[tuple[bytes, bytes]] | None = None,
 ) -> None:
     """Send a JSON response via ASGI send.
@@ -213,9 +215,10 @@ class TaipanMiddleware:
             original_send = send
             extra_headers = self._headers_config.to_headers()
 
-            async def send_with_headers(message: dict[str, Any]) -> None:
+            async def send_with_headers(message: MutableMapping[str, object]) -> None:
                 if message.get("type") == "http.response.start":
-                    existing = list(message.get("headers", []))
+                    headers = message.get("headers")
+                    existing = list(headers) if isinstance(headers, list) else []
                     existing.extend(extra_headers)
                     message["headers"] = existing
                 await original_send(message)

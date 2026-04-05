@@ -13,7 +13,7 @@ import sys
 import threading
 from collections.abc import Callable
 from types import FrameType
-from typing import Any, ParamSpec, Protocol, TypeVar
+from typing import ParamSpec, Protocol, TypeVar
 
 from taipanstack.security.guards import SecurityError
 
@@ -71,7 +71,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: ValidatorFunc[Any, Any],
+    **validators: ValidatorFunc[object, object],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
@@ -246,10 +246,10 @@ def timeout(
 
 
 def _timeout_with_signal(  # pragma: no cover
-    func: Callable[P, R],
+    func: Callable[..., R],
     seconds: float,
-    args: tuple[Any, ...],
-    kwargs: dict[str, Any],
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
 ) -> R:
     """Implement timeout using Unix signals."""
 
@@ -269,10 +269,10 @@ def _timeout_with_signal(  # pragma: no cover
 
 
 def _timeout_with_thread(
-    func: Callable[P, R],
+    func: Callable[..., R],
     seconds: float,
-    args: tuple[Any, ...],
-    kwargs: dict[str, Any],
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
 ) -> R:
     """Implement timeout using a separate thread."""
     result: list[R] = []

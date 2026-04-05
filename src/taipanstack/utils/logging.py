@@ -12,7 +12,7 @@ from collections.abc import Iterator, MutableMapping
 from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Literal
 
 from taipanstack.utils.context import get_correlation_id
 
@@ -50,7 +50,7 @@ REDACTED_VALUE = "***REDACTED***"
 
 
 @lru_cache(maxsize=1024)
-def _is_sensitive(key: Any, regex: re.Pattern[str] | None) -> bool:
+def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
     """Check if a key is sensitive using cached regex matching.
 
     Args:
@@ -68,7 +68,7 @@ def _is_sensitive(key: Any, regex: re.Pattern[str] | None) -> bool:
     return bool(regex.search(key))
 
 
-def _redact_dict(d: MutableMapping[str, Any]) -> None:
+def _redact_dict(d: MutableMapping[str, object]) -> None:
     """Redact sensitive keys in a dictionary in-place.
 
     Args:
@@ -84,10 +84,10 @@ def _redact_dict(d: MutableMapping[str, Any]) -> None:
 
 
 def mask_sensitive_data_processor(
-    _logger: Any,
+    _logger: object,
     _method: str,
-    event_dict: MutableMapping[str, Any],
-) -> MutableMapping[str, Any]:
+    event_dict: MutableMapping[str, object],
+) -> MutableMapping[str, object]:
     """Mask sensitive data in structlog event dictionaries.
 
     Intercept the *event_dict* produced by structlog and replace the
@@ -108,10 +108,10 @@ def mask_sensitive_data_processor(
 
 
 def correlation_id_processor(
-    _logger: Any,
+    _logger: object,
     _method: str,
-    event_dict: MutableMapping[str, Any],
-) -> MutableMapping[str, Any]:
+    event_dict: MutableMapping[str, object],
+) -> MutableMapping[str, object]:
     """Structlog processor to inject correlation ID into events.
 
     Args:
@@ -158,7 +158,7 @@ class StackLogger:
         """
         self.name = name
         self.level = level
-        self._context: dict[str, Any] = {}
+        self._context: dict[str, object] = {}
 
         if use_structured and HAS_STRUCTLOG:
             self._logger = structlog.get_logger(name)
@@ -168,7 +168,7 @@ class StackLogger:
             self._logger.setLevel(getattr(logging, level.upper()))
             self._structured = False
 
-    def bind(self, **context: Any) -> "StackLogger":
+    def bind(self, **context: object) -> "StackLogger":
         """Add context to logger.
 
         Args:
@@ -199,7 +199,7 @@ class StackLogger:
             self._logger = self._logger.unbind(*keys)
         return self
 
-    def _format_message(self, message: str, **kwargs: Any) -> str:
+    def _format_message(self, message: str, **kwargs: object) -> str:
         """Format message with context.
 
         Args:
@@ -219,7 +219,7 @@ class StackLogger:
         context_str = " ".join(f"{k}={v}" for k, v in context.items())
         return f"{message} | {context_str}"
 
-    def debug(self, message: str, **kwargs: Any) -> None:
+    def debug(self, message: str, **kwargs: object) -> None:
         """Log a debug message.
 
         Args:
@@ -232,7 +232,7 @@ class StackLogger:
         else:
             self._logger.debug(self._format_message(message, **kwargs))
 
-    def info(self, message: str, **kwargs: Any) -> None:
+    def info(self, message: str, **kwargs: object) -> None:
         """Log an info message.
 
         Args:
@@ -245,7 +245,7 @@ class StackLogger:
         else:
             self._logger.info(self._format_message(message, **kwargs))
 
-    def warning(self, message: str, **kwargs: Any) -> None:
+    def warning(self, message: str, **kwargs: object) -> None:
         """Log a warning message.
 
         Args:
@@ -258,7 +258,7 @@ class StackLogger:
         else:
             self._logger.warning(self._format_message(message, **kwargs))
 
-    def error(self, message: str, **kwargs: Any) -> None:
+    def error(self, message: str, **kwargs: object) -> None:
         """Log an error message.
 
         Args:
@@ -271,7 +271,7 @@ class StackLogger:
         else:
             self._logger.error(self._format_message(message, **kwargs))
 
-    def critical(self, message: str, **kwargs: Any) -> None:
+    def critical(self, message: str, **kwargs: object) -> None:
         """Log a critical message.
 
         Args:
@@ -284,7 +284,7 @@ class StackLogger:
         else:
             self._logger.critical(self._format_message(message, **kwargs))
 
-    def exception(self, message: str, **kwargs: Any) -> None:
+    def exception(self, message: str, **kwargs: object) -> None:
         """Log an exception with traceback.
 
         Args:

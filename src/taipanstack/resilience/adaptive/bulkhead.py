@@ -9,13 +9,15 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 
 logger = logging.getLogger("taipanstack.resilience.adaptive.bulkhead")
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class BulkheadFullError(Exception):
@@ -100,10 +102,10 @@ class Bulkhead:
 
     async def execute(
         self,
-        fn: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Result[Any, Exception]:
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
         """Execute a callable within bulkhead limits.
 
         Args:
