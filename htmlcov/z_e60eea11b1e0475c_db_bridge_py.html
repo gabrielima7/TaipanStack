@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_e60eea11b1e0475c_http_bridge_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-05 18:17 +0000
+            created at 2026-04-05 18:58 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -204,7 +204,7 @@
     <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">                    <span class="nam">self</span><span class="op">.</span><span class="nam">_circuit_breaker</span><span class="op">.</span><span class="nam">_record_failure</span><span class="op">(</span><span class="nam">exc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">                <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_retry_config</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span> <span class="key">and</span> <span class="nam">attempt</span> <span class="op">&lt;</span> <span class="nam">max_attempts</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">                    <span class="nam">delay</span> <span class="op">=</span> <span class="nam">calculate_delay</span><span class="op">(</span><span class="nam">attempt</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_retry_config</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">                    <span class="key">await</span> <span class="nam">asyncio</span><span class="op">.</span><span class="nam">sleep</span><span class="op">(</span><span class="nam">delay</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">                    <span class="key">await</span> <span class="nam">asyncio</span><span class="op">.</span><span class="nam">sleep</span><span class="op">(</span><span class="nam">min</span><span class="op">(</span><span class="nam">delay</span><span class="op">,</span> <span class="num">3600.0</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">                    <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">                <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -357,7 +357,7 @@
             <a class="nav" href="z_e60eea11b1e0475c_http_bridge_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-05 18:17 +0000
+            created at 2026-04-05 18:58 +0000
         </p>
     </div>
 </footer>

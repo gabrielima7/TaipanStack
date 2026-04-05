@@ -11,14 +11,19 @@ Fixes:
 
 from __future__ import annotations
 
+import os
 import pathlib
 import re
+
+# Suppress MkDocs 2.0 backward-incompatibility warnings that fail strict builds
+os.environ["NO_MKDOCS_2_WARNING"] = "1"
 
 
 def on_config(config: dict[str, object], **kwargs: object) -> dict[str, object]:  # noqa: ARG001
     """Monkeypatch pygments HtmlFormatter to handle filename=None safely."""
     try:
         import pygments.formatters.html  # noqa: PLC0415
+
         original_init = pygments.formatters.html.HtmlFormatter.__init__
 
         def patched_init(self, **options):  # type: ignore[no-untyped-def]
