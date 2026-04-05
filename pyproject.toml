@@ -174,7 +174,7 @@ max-complexity = 10
 "src/taipanstack/resilience/*.py" = ["PLR0913", "D401", "S311", "TRY300", "TRY400"]
 "src/taipanstack/resilience/watchdogs/*.py" = ["PLR0913", "D401", "TRY300", "TRY400"]
 "src/taipanstack/resilience/adaptive/*.py" = ["PLR0913", "PLR0912", "D401", "TRY300", "TRY400"]
-"src/taipanstack/bridges/*.py" = ["PLR0913", "D401", "TRY300", "TRY400"]
+"src/taipanstack/bridges/*.py" = ["PLR0913", "D401", "TRY300", "TRY400", "ANN401"]
 
 [tool.ruff.format]
 quote-style = "double"
