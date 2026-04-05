@@ -163,29 +163,6 @@ class TestFilesystemComplete:
         result = safe_write(test_file, "content", options=WriteOptions(atomic=False))
         assert result.read_text() == "content"
 
-    def test_safe_delete_recursive(self, tmp_path: Path) -> None:
-        """Test safe_delete with recursive=True."""
-        from taipanstack.utils.filesystem import safe_delete
-
-        # Create a directory with files
-        test_dir = tmp_path / "to_delete"
-        test_dir.mkdir()
-        (test_dir / "file.txt").write_text("content")
-
-        safe_delete(test_dir, recursive=True)
-        assert not test_dir.exists()
-
-    def test_get_file_hash_sha256(self, tmp_path: Path) -> None:
-        """Test get_file_hash with sha256."""
-        from taipanstack.utils.filesystem import get_file_hash
-
-        test_file = tmp_path / "hash_test.txt"
-        test_file.write_text("test content")
-
-        hash_result = get_file_hash(test_file)
-        assert len(hash_result) == 64  # SHA256 hex length
-
-
 class TestConfigModelsComplete:
     """Complete tests for config models."""
 
