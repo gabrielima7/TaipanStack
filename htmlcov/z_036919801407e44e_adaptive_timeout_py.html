@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_036919801407e44e_bulkhead_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-05 01:07 +0000
+            created at 2026-04-05 01:11 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -97,7 +97,7 @@
     <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="key">import</span> <span class="nam">time</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">collections</span><span class="op">.</span><span class="nam">abc</span> <span class="key">import</span> <span class="nam">Awaitable</span><span class="op">,</span> <span class="nam">Callable</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="key">from</span> <span class="nam">functools</span> <span class="key">import</span> <span class="nam">wraps</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">Any</span><span class="op">,</span> <span class="nam">TypeVar</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">TypeVar</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="key">from</span> <span class="nam">taipanstack</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">result</span> <span class="key">import</span> <span class="nam">Err</span><span class="op">,</span> <span class="nam">Ok</span><span class="op">,</span> <span class="nam">Result</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -204,8 +204,8 @@
     <p class="run run2"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">    <span class="key">def</span> <span class="nam">evaluate_result</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">        <span class="nam">self</span><span class="op">,</span> <span class="nam">result</span><span class="op">:</span> <span class="nam">Result</span><span class="op">[</span><span class="nam">Any</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">,</span> <span class="nam">duration</span><span class="op">:</span> <span class="nam">float</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="nam">Result</span><span class="op">[</span><span class="nam">Any</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">        <span class="nam">self</span><span class="op">,</span> <span class="nam">result</span><span class="op">:</span> <span class="nam">Result</span><span class="op">[</span><span class="nam">T</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">,</span> <span class="nam">duration</span><span class="op">:</span> <span class="nam">float</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="nam">Result</span><span class="op">[</span><span class="nam">T</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">        <span class="str">"""Evaluate a Result and update EMA if successful.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t"><span class="str">        Args:</span>&nbsp;</span><span class="r"></span></p>
@@ -235,7 +235,7 @@
     <p class="pln"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">        <span class="op">@</span><span class="nam">wraps</span><span class="op">(</span><span class="nam">func</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">        <span class="key">async</span> <span class="key">def</span> <span class="nam">wrapper</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">:</span> <span class="nam">Any</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">:</span> <span class="nam">Any</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Result</span><span class="op">[</span><span class="nam">T</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">        <span class="key">async</span> <span class="key">def</span> <span class="nam">wrapper</span><span class="op">(</span><span class="op">*</span><span class="nam">args</span><span class="op">:</span> <span class="nam">object</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">:</span> <span class="nam">object</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Result</span><span class="op">[</span><span class="nam">T</span><span class="op">,</span> <span class="nam">Exception</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">            <span class="nam">timeout</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">current_timeout</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">start</span> <span class="op">=</span> <span class="nam">time</span><span class="op">.</span><span class="nam">monotonic</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">            <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -268,7 +268,7 @@
             <a class="nav" href="z_036919801407e44e_bulkhead_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-05 01:07 +0000
+            created at 2026-04-05 01:11 +0000
         </p>
     </div>
 </footer>
