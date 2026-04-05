@@ -454,3 +454,70 @@ rules:
       - pattern-either:
           - pattern: $PATH.mkdir(..., parents=True, ..., mode=$MODE, ...)
           - pattern: os.makedirs(..., mode=$MODE, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 35: Missing `timeout` argument in httpx calls
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.httpx-missing-timeout
+    languages: [python]
+    severity: ERROR
+    message: >
+      An `httpx` call was made without a `timeout` argument.
+      This can lead to a hanging process if the server never responds, causing Denial of Service.
+      Always specify a `timeout` argument (e.g., `timeout=10`).
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      owasp: "A06:2021 - Vulnerable and Outdated Components"
+      technology:
+        - httpx
+    patterns:
+      - pattern-either:
+          - pattern: httpx.get(...)
+          - pattern: httpx.post(...)
+          - pattern: httpx.put(...)
+          - pattern: httpx.delete(...)
+          - pattern: httpx.patch(...)
+          - pattern: httpx.head(...)
+          - pattern: httpx.options(...)
+          - pattern: httpx.request(...)
+          - pattern: httpx.AsyncClient(...)
+          - pattern: httpx.Client(...)
+      - pattern-not: httpx.$METHOD(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.AsyncClient(..., timeout=$TIMEOUT, ...)
+      - pattern-not: httpx.Client(..., timeout=$TIMEOUT, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 36: Enforce SafeHttpClient over direct httpx usage
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.use-safe-http-client
+    languages: [python]
+    severity: WARNING
+    message: >
+      Direct use of `httpx` is discouraged. Use `taipanstack.bridges.http_bridge.SafeHttpClient`
+      or `safe_request` to ensure SSRF protections and timeouts are applied.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      technology:
+        - httpx
+        - taipanstack
+    patterns:
+      - pattern-either:
+          - pattern: httpx.get(...)
+          - pattern: httpx.post(...)
+          - pattern: httpx.put(...)
+          - pattern: httpx.delete(...)
+          - pattern: httpx.patch(...)
+          - pattern: httpx.head(...)
+          - pattern: httpx.options(...)
+          - pattern: httpx.request(...)
+          - pattern: httpx.AsyncClient(...)
+          - pattern: httpx.Client(...)
+      - pattern-not-inside: |
+          class SafeHttpClient:
+              ...
+      - pattern-not-inside: |
+          async def safe_request(...):
+              ...
