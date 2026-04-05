@@ -183,6 +183,51 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
+    def test_timeout_negative_value(self) -> None:
+        """Test timeout with negative seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
+            @timeout(-1.0)
+            def func() -> None:
+                pass
+
+    def test_timeout_nan_value(self) -> None:
+        """Test timeout with NaN seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
+            @timeout(float("nan"))
+            def func() -> None:
+                pass
+
+    def test_timeout_inf_value(self) -> None:
+        """Test timeout with Infinity seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+
+            @timeout(float("inf"))
+            def func() -> None:
+                pass
+
+    def test_timeout_with_exception_in_thread(self) -> None:
+        @timeout(1.0, use_signal=False)
+        def func_raises() -> None:
+            raise ValueError("Thread error")
+
+        with pytest.raises(ValueError, match="Thread error"):
+            func_raises()
+
+    def test_timeout_with_success_in_thread(self) -> None:
+        @timeout(1.0, use_signal=False)
+        def func_success() -> str:
+            return "success"
+
+        assert func_success() == "success"
+
 
 class TestDeprecated:
     """Tests for @deprecated decorator."""

@@ -8,6 +8,7 @@ any Python framework (Flask, FastAPI, Django, etc.).
 
 import functools
 import inspect
+import math
 import signal
 import sys
 import threading
@@ -215,6 +216,12 @@ def timeout(
         TimeoutError: slow_operation timed out after 5.0 seconds
 
     """
+    # Security Enhancement: explicitly validate bounds using math.isfinite()
+    # and check for non-negative limits to prevent silent NaN propagation,
+    # unhandled ValueError exceptions from threading/asyncio primitives,
+    # or unexpected infinite blocking behaviors.
+    if not (math.isfinite(seconds) and seconds >= 0):
+        raise ValueError("timeout must be a finite non-negative number")
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
