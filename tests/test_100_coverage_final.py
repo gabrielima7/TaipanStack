@@ -8,7 +8,6 @@ import pytest
 from pydantic import SecretStr
 
 from taipanstack.security.password import hash_password, verify_password
-
 from taipanstack.security.sanitizers import sanitize_string
 from taipanstack.utils.subprocess import run_safe_command
 
