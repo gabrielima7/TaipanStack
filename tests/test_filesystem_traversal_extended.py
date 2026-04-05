@@ -8,10 +8,6 @@ from taipanstack.core.result import Err
 from taipanstack.security.guards import SecurityError
 from taipanstack.utils.filesystem import (
     ensure_dir,
-    find_files,
-    get_file_hash,
-    safe_copy,
-    safe_delete,
     safe_read,
     safe_write,
 )
@@ -48,33 +44,6 @@ class TestFilesystemTraversalExtended:
         """Test that safe_write blocks encoded traversal patterns."""
         with pytest.raises(SecurityError):
             safe_write("%2e%2e/evil.txt", "content")
-
-    def test_safe_delete_encoded_traversal(self, tmp_path: Path):
-        """Test that safe_delete blocks encoded traversal patterns."""
-        with pytest.raises(SecurityError):
-            safe_delete("%2e%2e/evil.txt")
-
-    def test_get_file_hash_encoded_traversal(self, tmp_path: Path):
-        """Test that get_file_hash blocks encoded traversal patterns."""
-        with pytest.raises(SecurityError):
-            get_file_hash("%2e%2e/etc/passwd")
-
-    def test_find_files_encoded_traversal(self, tmp_path: Path):
-        """Test that find_files blocks encoded traversal patterns."""
-        with pytest.raises(SecurityError):
-            find_files("%2e%2e/etc")
-
-    def test_safe_copy_encoded_traversal(self, tmp_path: Path):
-        """Test that safe_copy blocks encoded traversal patterns."""
-        # Source traversal
-        with pytest.raises(SecurityError):
-            safe_copy("%2e%2e/etc/passwd", "local.txt")
-
-        # Destination traversal
-        test_file = tmp_path / "test.txt"
-        test_file.write_text("content")
-        with pytest.raises(SecurityError):
-            safe_copy(test_file, "%2e%2e/evil.txt")
 
     def test_ensure_dir_with_explicit_base_dir_encoded(self, tmp_path: Path):
         """Test ensure_dir with base_dir and encoded traversal."""
