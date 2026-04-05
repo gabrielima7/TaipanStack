@@ -3,6 +3,9 @@
 from pathlib import Path
 
 import pytest
+from pydantic import SecretStr
+
+from taipanstack.security.password import hash_password, verify_password
 
 
 class TestAppMain:
@@ -305,3 +308,43 @@ class TestLoggingUncovered:
 
         # Just verify the flag is accessible
         assert isinstance(HAS_STRUCTLOG, bool)
+
+
+def test_password_empty_verify():
+    assert verify_password("", "hash") is False
+    assert verify_password(SecretStr(""), "hash") is False
+
+
+def test_password_length_verify():
+    assert verify_password("a" * 1025, "hash") is False
+    assert verify_password(SecretStr("a" * 1025), "hash") is False
+
+
+def test_password_hash_empty():
+    with pytest.raises(ValueError, match="cannot be empty"):
+        hash_password("")
+
+
+def test_password_hash_length():
+    with pytest.raises(ValueError, match="exceeds"):
+        hash_password("a" * 1025)
+
+
+def test_password_verify_wrong_type():
+    with pytest.raises(TypeError, match="must be a string or SecretStr"):
+        verify_password(None, "hash")
+
+
+def test_password_verify_wrong_type_2():
+    with pytest.raises(TypeError, match="must be a string"):
+        verify_password("a", 123)
+
+
+def test_password_hash_legacy_invalid():
+    assert verify_password("pass", "pbkdf2_sha256$invalid$123") is False
+    assert verify_password("pass", "pbkdf2_sha256$10000000$123$123") is False
+
+
+def test_password_hash_wrong_type():
+    with pytest.raises(TypeError, match="must be a string or SecretStr"):
+        hash_password(None)

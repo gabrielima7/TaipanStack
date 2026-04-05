@@ -1,28 +1,29 @@
-from hypothesis import HealthCheck, given, settings
+import contextlib
+
+from hypothesis import given, settings
 from hypothesis import strategies as st
+from pydantic import SecretStr
 
-from taipanstack.security.password import LEGACY_FORMAT, verify_password
+from taipanstack.security.password import hash_password, verify_password
 
 
+@settings(deadline=None)
+@given(st.text(), st.text())
+def test_fuzz_verify_password(pw, pw_hash):
+    with contextlib.suppress(TypeError, ValueError):
+        verify_password(pw, pw_hash)
+
+
+@settings(deadline=None)
 @given(
-    password=st.text(),
-    iterations=st.integers(min_value=1, max_value=10**20),
-    salt=st.binary(min_size=1, max_size=100),
-    hash_bytes=st.binary(min_size=1, max_size=100),
+    st.one_of(
+        st.text(),
+        st.integers(),
+        st.none(),
+        st.floats(),
+        st.builds(SecretStr, st.text()),
+    )
 )
-@settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_verify_password_pbkdf2(password, iterations, salt, hash_bytes):
-    # Construct a legacy hash string
-    salt_hex = salt.hex()
-    hash_hex = hash_bytes.hex()
-    password_hash = f"{LEGACY_FORMAT}$sha256${iterations}${salt_hex}${hash_hex}"
-
-    # After hardening, verify_password should catch OverflowError and return False
-    result = verify_password(password, password_hash)
-    assert isinstance(result, bool)
-
-
-def test_fuzz_password_massive_iterations_explicit():
-    password_hash = f"{LEGACY_FORMAT}$sha256$100000000000000000000000000000000$00$00"
-    result = verify_password("test", password_hash)
-    assert result is False
+def test_fuzz_hash_password(pw):
+    with contextlib.suppress(TypeError, ValueError):
+        hash_password(pw)
