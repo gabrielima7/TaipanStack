@@ -246,6 +246,7 @@ partial_branches = [
     "pragma: no branch",
     "case Err\\(",
     "case Ok\\(",
+    "case _:",
 ]
 fail_under = 100
 show_missing = true
