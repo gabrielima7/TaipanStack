@@ -250,25 +250,33 @@ def _clean_path_parts(path: Path) -> list[str]:
     parts: list[str] = []
     anchor = path.anchor
     for part in path.parts:
-        if part == "..":
-            if parts and parts[-1] != ".." and parts[-1] != anchor:
-                parts.pop()
-        elif part != ".":  # pragma: no branch
-            # fast-path bypass for perfectly safe segments (skip split/logic)
-            # Find the stem to check against reserved names
-            idx = part.rfind(".")
-            stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
-            if (
-                len(part) <= 255  # noqa: PLR2004
-                and part.isascii()
-                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
-                and stem.upper() not in _WINDOWS_RESERVED_NAMES
-            ):
-                parts.append(part)
-            else:
-                safe_part = sanitize_filename(part, preserve_extension=True)
-                if safe_part and safe_part != "..":  # pragma: no branch
-                    parts.append(safe_part)
+        match part:
+            case "..":
+                if parts and parts[-1] != ".." and parts[-1] != anchor:
+                    parts.pop()
+            case ".":
+                pass
+            case _:  # pragma: no branch
+                # fast-path bypass for perfectly safe segments (skip split/logic)
+                # Find the stem to check against reserved names
+                idx = part.rfind(".")
+                stem = (
+                    part[:idx] if idx > 0 and not all(c == "." for c in part) else part
+                )
+                if (
+                    len(part) <= 255  # noqa: PLR2004
+                    and part.isascii()
+                    and part.replace(".", "")
+                    .replace("-", "")
+                    .replace("_", "")
+                    .isalnum()
+                    and stem.upper() not in _WINDOWS_RESERVED_NAMES
+                ):
+                    parts.append(part)
+                else:
+                    safe_part = sanitize_filename(part, preserve_extension=True)
+                    if safe_part and safe_part != "..":  # pragma: no branch
+                        parts.append(safe_part)
     return parts
 
 
