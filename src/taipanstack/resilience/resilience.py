@@ -7,6 +7,7 @@ Provides tools for graceful fallback and timeouts using the Result monad.
 import asyncio
 import functools
 import inspect
+import math
 import threading
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
@@ -134,6 +135,14 @@ def timeout(seconds: float) -> TimeoutDecorator:
             async def async_wrapper(
                 *args: P.args, **kwargs: P.kwargs
             ) -> Result[T, TimeoutError | E]:
+                if not math.isfinite(seconds) or seconds < 0:
+                    return Err(
+                        cast(
+                            E,
+                            ValueError("Timeout must be a finite non-negative number"),
+                        )
+                    )
+
                 try:
                     func_coro = cast(
                         Callable[P, Awaitable[Result[T, TimeoutError | E]]],
@@ -154,6 +163,14 @@ def timeout(seconds: float) -> TimeoutDecorator:
         def sync_wrapper(
             *args: P.args, **kwargs: P.kwargs
         ) -> Result[T, TimeoutError | E]:
+            if not math.isfinite(seconds) or seconds < 0:
+                return Err(
+                    cast(
+                        E,
+                        ValueError("Timeout must be a finite non-negative number"),
+                    )
+                )
+
             result: list[Result[T, TimeoutError | E]] = []
             exception: list[BaseException] = []
 
