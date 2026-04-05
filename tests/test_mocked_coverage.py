@@ -198,19 +198,6 @@ class TestFilesystemBranches:
         backup_path = tmp_path / "test.txt.bak"
         assert not backup_path.exists()
 
-    def test_find_files_non_recursive(self, tmp_path: Path) -> None:
-        """Test find_files with recursive=False."""
-        from taipanstack.utils.filesystem import find_files
-
-        (tmp_path / "file.txt").touch()
-        (tmp_path / "subdir").mkdir()
-        (tmp_path / "subdir" / "nested.txt").touch()
-
-        results = list(find_files(tmp_path, pattern="*.txt", recursive=False))
-        names = [r.name for r in results]
-        assert "file.txt" in names
-        assert "nested.txt" not in names
-
 
 class TestRetryBranches:
     """Tests for retry module branches."""

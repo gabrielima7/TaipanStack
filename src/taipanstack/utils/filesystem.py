@@ -5,12 +5,9 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-import functools
-import hashlib
 import os
 import shutil
 import tempfile
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeAlias
@@ -19,7 +16,6 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security.guards import (
     TRAVERSAL_REGEX,
     SecurityError,
-    guard_hash_algorithm,
     guard_path_traversal,
 )
 from taipanstack.security.sanitizers import sanitize_filename
@@ -301,172 +297,3 @@ def ensure_dir(
         p.mkdir(mode=mode, exist_ok=True)
 
     return resolved_path
-
-
-def safe_copy(
-    src: Path | str,
-    dst: Path | str,
-    *,
-    base_dir: Path | str | None = None,
-    overwrite: bool = False,
-) -> Path:
-    """Copy a file safely.
-
-    Args:
-        src: Source file path.
-        dst: Destination file path.
-        base_dir: Base directory to constrain both paths to.
-        overwrite: Allow overwriting existing file.
-
-    Returns:
-        Path to the destination file.
-
-    Raises:
-        SecurityError: If path validation fails.
-        FileExistsError: If destination exists and overwrite=False.
-
-    """
-    src = Path(src)
-    dst = Path(dst)
-
-    # Validate paths
-    if base_dir is not None:
-        base = Path(base_dir)
-        src = guard_path_traversal(src, base)
-        # For dst, validate parent if file doesn't exist
-        if dst.exists():
-            dst = guard_path_traversal(dst, base)
-        else:
-            guard_path_traversal(dst.parent, base)
-    else:
-        src = _validate_path(src)
-        _validate_path(dst.parent if not dst.exists() else dst)
-
-    if not src.exists():
-        raise FileNotFoundError(f"Source file not found: {src}")
-
-    if dst.exists() and not overwrite:
-        raise FileExistsError(f"Destination already exists: {dst}")
-
-    # Ensure parent directory exists
-    dst.parent.mkdir(parents=True, exist_ok=True)
-
-    shutil.copy2(src, dst)
-    return dst.resolve()
-
-
-def safe_delete(
-    path: Path | str,
-    *,
-    base_dir: Path | str | None = None,
-    missing_ok: bool = True,
-    recursive: bool = False,
-) -> bool:
-    """Delete a file or directory safely.
-
-    Args:
-        path: Path to delete.
-        base_dir: Base directory to constrain to.
-        missing_ok: Don't raise if path doesn't exist.
-        recursive: Allow deleting directories recursively.
-
-    Returns:
-        True if something was deleted.
-
-    Raises:
-        SecurityError: If path validation fails.
-        FileNotFoundError: If path doesn't exist and missing_ok=False.
-
-    """
-    path = Path(path)
-
-    # Validate path
-    path = _validate_path(path, base_dir)
-
-    if not path.exists():
-        if missing_ok:
-            return False
-        raise FileNotFoundError(f"Path not found: {path}")
-
-    if path.is_dir():
-        if recursive:
-            shutil.rmtree(path)
-        else:
-            path.rmdir()
-    else:
-        path.unlink()
-
-    return True
-
-
-def get_file_hash(
-    path: Path | str,
-    *,
-    algorithm: str = "sha256",
-    base_dir: Path | str | None = None,
-) -> str:
-    """Get hash of a file.
-
-    Args:
-        path: Path to the file.
-        algorithm: Hash algorithm (sha256, sha512, etc).
-        base_dir: Base directory to constrain to.
-
-    Returns:
-        Hex digest of the file hash.
-
-    """
-    path = Path(path)
-
-    # Validate path
-    path = _validate_path(path, base_dir)
-
-    # Validate algorithm
-    algorithm = guard_hash_algorithm(algorithm)
-
-    hasher = hashlib.new(algorithm)
-
-    with path.open("rb") as f:
-        for chunk in iter(functools.partial(f.read, 8192), b""):
-            hasher.update(chunk)
-
-    return hasher.hexdigest()
-
-
-def find_files(
-    directory: Path | str,
-    pattern: str = "*",
-    *,
-    base_dir: Path | str | None = None,
-    recursive: bool = True,
-    include_hidden: bool = False,
-) -> Iterator[Path]:
-    """Find files matching a pattern.
-
-    Args:
-        directory: Directory to search in.
-        pattern: Glob pattern to match.
-        base_dir: Base directory to constrain to.
-        recursive: Search recursively.
-        include_hidden: Include hidden files (starting with .).
-
-    Returns:
-        Iterator of matching file paths.
-
-    """
-    directory = Path(directory)
-
-    # Validate path
-    directory = _validate_path(directory, base_dir)
-
-    if not directory.exists():
-        return iter([])
-
-    iterator = directory.rglob(pattern) if recursive else directory.glob(pattern)
-
-    return (
-        f
-        for f in iterator
-        if f.is_file()
-        and (include_hidden or not any(p.startswith(".") for p in f.parts))
-    )

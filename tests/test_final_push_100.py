@@ -1,7 +1,6 @@
 """Final tests to reach 100% coverage - pushing to the limit."""
 
 import subprocess as sp
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -107,22 +106,6 @@ class TestSanitizersFinalBranches:
 
 class TestFilesystemFinalBranches:
     """Final tests for filesystem module to reach 100%."""
-
-    def test_safe_delete_not_found_error(self, tmp_path: Path) -> None:
-        """Test safe_delete with missing_ok=False."""
-        from taipanstack.utils.filesystem import safe_delete
-
-        with pytest.raises(FileNotFoundError):
-            safe_delete(tmp_path / "nonexistent", missing_ok=False)
-
-    def test_find_files_base_dir(self, tmp_path: Path) -> None:
-        """Test find_files with base_dir constraint."""
-        from taipanstack.utils.filesystem import find_files
-
-        (tmp_path / "file.txt").touch()
-
-        results = list(find_files(tmp_path, pattern="*.txt", base_dir=tmp_path))
-        assert len(list(results)) >= 1
 
 
 class TestLoggingFinalBranches:
