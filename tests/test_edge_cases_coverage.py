@@ -58,6 +58,7 @@ class TestFilesystemEdgeCases:
             with pytest.raises(OSError):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
+
 class TestLoggingEdgeCases:
     """Edge case tests for logging module."""
 

@@ -198,6 +198,7 @@ class TestFilesystemBranches:
         backup_path = tmp_path / "test.txt.bak"
         assert not backup_path.exists()
 
+
 class TestRetryBranches:
     """Tests for retry module branches."""
 

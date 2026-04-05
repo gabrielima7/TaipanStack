@@ -343,5 +343,3 @@ class TestEnsureDir:
         monkeypatch.setattr(Path, "mkdir", mock_mkdir)
 
         ensure_dir(root)
-
-

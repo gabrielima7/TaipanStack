@@ -107,6 +107,7 @@ class TestSanitizersFinalBranches:
 class TestFilesystemFinalBranches:
     """Final tests for filesystem module to reach 100%."""
 
+
 class TestLoggingFinalBranches:
     """Final tests for logging module to reach 100%."""
 
