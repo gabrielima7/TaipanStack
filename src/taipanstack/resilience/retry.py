@@ -323,7 +323,7 @@ def retry(
                             delay,
                             config,
                         )
-                        await asyncio.sleep(delay)
+                        await asyncio.sleep(min(delay, 3600.0))
 
                 _raise_retry_error(
                     func_coro.__name__,
@@ -363,7 +363,7 @@ def retry(
                         delay,
                         config,
                     )
-                    time.sleep(delay)
+                    time.sleep(min(delay, 3600.0))
 
             _raise_retry_error(
                 func_sync.__name__,
@@ -476,6 +476,6 @@ class Retrier:
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        time.sleep(delay)
+        time.sleep(min(delay, 3600.0))
 
         return True  # Suppress exception and retry

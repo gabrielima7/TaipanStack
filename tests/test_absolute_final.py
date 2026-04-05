@@ -33,7 +33,7 @@ class TestValidatorsParseError:
         from taipanstack.security.validators import validate_url
 
         # Force urlparse to raise ValueError by patching
-        with patch("taipanstack.security.validators.urlparse") as mock_parse:
+        with patch("taipanstack.security.validators.urlsplit") as mock_parse:
             mock_parse.side_effect = ValueError("Parse failed")
             with pytest.raises(ValueError, match="Invalid URL"):
                 validate_url("http://valid.com")
