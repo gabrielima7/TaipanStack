@@ -5,12 +5,9 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-import functools
-import hashlib
 import os
 import shutil
 import tempfile
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeAlias
@@ -19,7 +16,6 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security.guards import (
     TRAVERSAL_REGEX,
     SecurityError,
-    guard_hash_algorithm,
     guard_path_traversal,
 )
 from taipanstack.security.sanitizers import sanitize_filename
