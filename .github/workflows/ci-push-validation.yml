@@ -76,6 +76,8 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Linux Distribution Testing via Docker containers
   test-linux-distros:
@@ -375,8 +377,7 @@ jobs:
         run: poetry install --with dev
 
       - name: '[Test] Run Hypothesis property-based tests'
-        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov
-          --timeout=300
+        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov  --timeout=300
 
   mutation-testing:
     name: '[Mutation-testing] Mutation Testing'
@@ -403,7 +404,7 @@ jobs:
 
       - name: '[Test] Run Mutmut'
         run: |
-          find . -xtype l -delete
+          python3 -c "import os; [os.unlink(p) for r, d, f in os.walk('.') for n in d+f if os.path.islink(p := os.path.join(r, n)) and not os.path.exists(p)]"
           poetry run mutmut run
           poetry run mutmut results
   benchmark:
@@ -425,8 +426,7 @@ jobs:
         run: poetry install --with dev
 
       - name: '[Test] Run pytest-benchmark'
-        run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v
-          --no-cov
+        run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v  --no-cov
 
   docker-build:
     name: '[Docker-build] Docker Hardened Build Validation'
@@ -439,5 +439,4 @@ jobs:
         run: docker build -t taipanstack:ci-test .
 
       - name: '[Test] Validate Container Run (Healthcheck)'
-        run: docker run --rm --read-only --entrypoint python taipanstack:ci-test
-          -c "import taipanstack; print('TaipanStack container OK')"
+        run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"
