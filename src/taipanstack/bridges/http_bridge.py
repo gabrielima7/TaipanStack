@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any
+from collections.abc import Awaitable, Callable, Mapping
+from typing import TYPE_CHECKING, TypedDict, Unpack
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -19,6 +19,52 @@ from taipanstack.resilience.circuit_breaker import (
     CircuitBreakerError,
 )
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
+
+if TYPE_CHECKING:
+    import ssl
+
+    import httpx
+
+    class HttpxClientKwargs(TypedDict, total=False):
+        """Type hints for httpx.AsyncClient initialization."""
+
+        auth: httpx._types.AuthTypes
+        params: httpx._types.QueryParamTypes
+        headers: httpx._types.HeaderTypes
+        cookies: httpx._types.CookieTypes
+        verify: ssl.SSLContext | str | bool
+        cert: httpx._types.CertTypes
+        http1: bool
+        http2: bool
+        proxy: httpx._types.ProxyTypes
+        mounts: Mapping[str, httpx.AsyncBaseTransport | None]
+        timeout: httpx._types.TimeoutTypes
+        follow_redirects: bool
+        limits: httpx.Limits
+        max_redirects: int
+        event_hooks: Mapping[str, list[Callable[..., Awaitable[None]]]]
+        base_url: httpx.URL | str
+        transport: httpx.AsyncBaseTransport
+        trust_env: bool
+        default_encoding: str
+
+    class HttpxRequestKwargs(TypedDict, total=False):
+        """Type hints for httpx request methods."""
+
+        content: httpx._types.RequestContent
+        data: httpx._types.RequestData
+        files: httpx._types.RequestFiles
+        json: object
+        params: httpx._types.QueryParamTypes
+        headers: httpx._types.HeaderTypes
+        cookies: httpx._types.CookieTypes
+        auth: httpx._types.AuthTypes
+        follow_redirects: bool
+        extensions: Mapping[str, object]
+else:
+    HttpxClientKwargs = dict
+    HttpxRequestKwargs = dict
+
 from taipanstack.security.guards import guard_ssrf
 
 logger = logging.getLogger("taipanstack.bridges.http")
@@ -169,7 +215,7 @@ async def safe_request(
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     timeout: float | None = 10.0,
-    **kwargs: Any,
+    **kwargs: Unpack[HttpxRequestKwargs],
 ) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
@@ -245,7 +291,7 @@ class SafeHttpClient:
         retry_config: RetryConfig | None = None,
         circuit_breaker: CircuitBreaker | None = None,
         retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
-        **client_kwargs: Any,
+        **client_kwargs: Unpack[HttpxClientKwargs],
     ) -> None:
         """Initialize the safe HTTP client.
 
@@ -275,10 +321,7 @@ class SafeHttpClient:
             )
             raise ImportError(msg)
         timeout = self._client_kwargs.pop("timeout", 10.0)
-        self._client = httpx.AsyncClient(
-            timeout=timeout,
-            **self._client_kwargs,
-        )  # nosemgrep
+        self._client = httpx.AsyncClient(timeout=timeout, **self._client_kwargs)  # type: ignore[misc]  # nosemgrep
         return self
 
     async def __aexit__(
@@ -296,7 +339,7 @@ class SafeHttpClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,
+        **kwargs: Unpack[HttpxRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
 
@@ -336,22 +379,32 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def get(
+        self, url: str, **kw: Unpack[HttpxRequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def post(
+        self, url: str, **kw: Unpack[HttpxRequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def put(
+        self, url: str, **kw: Unpack[HttpxRequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def delete(
+        self, url: str, **kw: Unpack[HttpxRequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def patch(
+        self, url: str, **kw: Unpack[HttpxRequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)
