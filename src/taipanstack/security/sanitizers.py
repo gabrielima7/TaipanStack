@@ -94,16 +94,16 @@ def sanitize_string(
 
     # Handle HTML
     if not allow_html and ("<" in result or ">" in result or "&" in result):
-            # Remove HTML tags
-            if "<" in result or ">" in result:
-                result = _HTML_TAGS_RE.sub("", result)
-            # Escape HTML entities
-            if "&" in result:
-                result = result.replace("&", "&amp;")
-            if "<" in result:
-                result = result.replace("<", "&lt;")
-            if ">" in result:
-                result = result.replace(">", "&gt;")
+        # Remove HTML tags
+        if "<" in result or ">" in result:
+            result = _HTML_TAGS_RE.sub("", result)
+        # Escape HTML entities
+        if "&" in result:
+            result = result.replace("&", "&amp;")
+        if "<" in result:
+            result = result.replace("<", "&lt;")
+        if ">" in result:
+            result = result.replace(">", "&gt;")
 
     # Handle unicode
     if not allow_unicode:
