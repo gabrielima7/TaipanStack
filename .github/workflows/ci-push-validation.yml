@@ -60,7 +60,7 @@ jobs:
           --cov-report=html --cov-report=term --timeout=60
 
       - name: '[Test] Upload HTML coverage report as artifact'
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: actions/upload-artifact@v7
         with:
           name: htmlcov
@@ -68,7 +68,7 @@ jobs:
           retention-days: 7
 
       - name: '[Test] Upload coverage to Codecov'
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -404,7 +404,7 @@ jobs:
 
       - name: '[Test] Run Mutmut'
         run: |
-          python3 -c "import os; [os.unlink(p) for r, d, f in os.walk('.') for n in d+f if os.path.islink(p := os.path.join(r, n)) and not os.path.exists(p)]"
+          find . -xtype l -delete
           poetry run mutmut run
           poetry run mutmut results
   benchmark:
