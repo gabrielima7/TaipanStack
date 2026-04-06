@@ -14,6 +14,7 @@ MIN_PYTHON_MINOR_VERSION = 10
 MAX_PYTHON_VERSION_LENGTH = 20
 MAX_EMAIL_LOCAL_LENGTH = 64
 MAX_EMAIL_DOMAIN_LENGTH = 255
+MAX_URL_LENGTH = 2048
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
 PROJECT_NAME_RESERVED = frozenset(
     {
@@ -279,6 +280,10 @@ def validate_url(
 
     if not url:
         msg = "URL cannot be empty"
+        raise ValueError(msg)
+
+    if len(url) > MAX_URL_LENGTH:
+        msg = f"URL exceeds maximum length of {MAX_URL_LENGTH} characters"
         raise ValueError(msg)
 
     try:

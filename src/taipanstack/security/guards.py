@@ -485,6 +485,7 @@ def guard_hash_algorithm(
 
 
 # ── SSRF Private-Range Constants ─────────────────────────────────────────────
+MAX_URL_LENGTH = 2048
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
@@ -498,6 +499,14 @@ def _validate_ssrf_url(
 
     if not url:
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
+
+    if len(url) > MAX_URL_LENGTH:
+        return Err(
+            SecurityError(
+                f"URL exceeds maximum length of {MAX_URL_LENGTH} characters",
+                guard_name="ssrf",
+            )
+        )
 
     try:
         parsed = urlsplit(url)
