@@ -93,13 +93,17 @@ def sanitize_string(
     result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
-    if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
+    if not allow_html and ("<" in result or ">" in result or "&" in result):
+            # Remove HTML tags
+            if "<" in result or ">" in result:
+                result = _HTML_TAGS_RE.sub("", result)
+            # Escape HTML entities
+            if "&" in result:
+                result = result.replace("&", "&amp;")
+            if "<" in result:
+                result = result.replace("<", "&lt;")
+            if ">" in result:
+                result = result.replace(">", "&gt;")
 
     # Handle unicode
     if not allow_unicode:
@@ -222,8 +226,8 @@ def sanitize_filename(
     if (
         len(filename) <= max_length
         and filename not in {"..", "."}
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
         and filename.isascii()
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
         and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
     ):
         return f"{stem}{suffix}"
@@ -261,8 +265,8 @@ def _clean_path_parts(path: Path) -> list[str]:
             if (
                 len(part) <= 255  # noqa: PLR2004
                 and part.isascii()
-                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
                 and stem.upper() not in _WINDOWS_RESERVED_NAMES
+                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
             ):
                 parts.append(part)
             else:
@@ -348,25 +352,6 @@ def sanitize_path(
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
 
 
-def _sanitize_env_multiline(value: str, max_length: int) -> str:
-    """Sanitize an environment value allowing multiline characters."""
-    if "\x00" not in value and len(value) <= max_length:
-        return value
-    return value.replace("\x00", "")
-
-
-def _sanitize_env_singleline(value: str, max_length: int) -> str:
-    """Sanitize an environment value, converting multiline to spaces."""
-    if (
-        "\x00" not in value
-        and "\n" not in value
-        and "\r" not in value
-        and len(value) <= max_length
-    ):
-        return value
-    return value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
-
-
 def sanitize_env_value(
     value: str,
     *,
@@ -394,40 +379,22 @@ def sanitize_env_value(
         return ""
 
     if allow_multiline:
-        result = _sanitize_env_multiline(value, max_length)
+        if "\x00" not in value and len(value) <= max_length:
+            result = value
+        else:
+            result = value.replace("\x00", "")
+    elif (
+        "\x00" not in value
+        and "\n" not in value
+        and "\r" not in value
+        and len(value) <= max_length
+    ):
+        result = value
     else:
-        result = _sanitize_env_singleline(value, max_length)
+        result = value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
 
     if len(result) > max_length:
         return result[:max_length]
-    return result
-
-
-def _is_valid_sql_identifier_fast_path(identifier: str) -> bool:
-    """Check if an identifier meets fast-path criteria."""
-    return (
-        identifier.isidentifier()
-        and identifier.isascii()
-        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-    )
-
-
-def _sanitize_sql_identifier_slow_path(identifier: str) -> str:
-    """Apply slow path sanitization for SQL identifiers."""
-    result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
-
-    # Must start with letter or underscore
-    if result and not result[0].isalpha() and result[0] != "_":
-        result = f"_{result}"
-
-    # Check length (most DBs limit to 128 chars)
-    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
-        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
-
-    if not result:
-        msg = "SQL identifier contains no valid characters"
-        raise ValueError(msg)
-
     return result
 
 
@@ -455,7 +422,25 @@ def sanitize_sql_identifier(identifier: str) -> str:
         raise ValueError(msg)
 
     # Fast path: already clean and valid
-    if _is_valid_sql_identifier_fast_path(identifier):
+    if (
+        identifier.isidentifier()
+        and identifier.isascii()
+        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+    ):
         return identifier
 
-    return _sanitize_sql_identifier_slow_path(identifier)
+    result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
+
+    # Must start with letter or underscore
+    if result and not result[0].isalpha() and result[0] != "_":
+        result = f"_{result}"
+
+    # Check length (most DBs limit to 128 chars)
+    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
+        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
+
+    if not result:
+        msg = "SQL identifier contains no valid characters"
+        raise ValueError(msg)
+
+    return result

@@ -207,7 +207,7 @@ def collect_results(
         # Python overhead in tight loop iteration for Result arrays, but we
         # use isinstance rather than explicit type check to maintain subclass support.
         if isinstance(result, Ok):
-            append(result.ok_value)
+            append(result._value)
         elif isinstance(result, Err):
             return result
         else:  # pragma: no cover

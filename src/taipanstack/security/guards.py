@@ -488,11 +488,50 @@ def guard_hash_algorithm(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def _validate_ssrf_url(
+@functools.lru_cache(maxsize=1024)
+def _is_ip_safe(raw_ip: str) -> bool:
+    """Check if a single IP address is safe (not private/loopback/reserved)."""
+    try:
+        addr = ipaddress.ip_address(raw_ip)
+    except ValueError:
+        return True
+
+    return not (
+        addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
+    )
+
+
+def guard_ssrf(  # noqa: PLR0911
     url: str,
-    allowed_schemes: frozenset[str],
+    *,
+    allowed_schemes: frozenset[str] = _ALLOWED_SSRF_SCHEMES,
 ) -> Result[str, SecurityError]:
-    """Validate the URL format, scheme, and presence of hostname."""
+    """Validate a URL against Server-Side Request Forgery (SSRF) attacks.
+
+    Parse the URL, resolve its hostname via DNS, and reject it when the
+    resulting IP address falls inside a private, loopback, link-local, or
+    otherwise reserved network range.
+
+    Args:
+        url: The URL string to validate.
+        allowed_schemes: Set of URL schemes considered safe.
+            Defaults to ``{"http", "https"}``.
+
+    Returns:
+        ``Ok(url)`` when the URL is safe to fetch.
+        ``Err(SecurityError)`` when an SSRF risk is detected.
+
+    Raises:
+        TypeError: If *url* is not a :class:`str`.
+
+    Example:
+        >>> guard_ssrf("https://example.com")
+        Ok('https://example.com')
+        >>> guard_ssrf("http://169.254.169.254/metadata")
+        Err(SecurityError('[ssrf] ...))
+
+    """
+    # 1. Validate format and scheme
     if not isinstance(url, str):
         raise TypeError(f"URL must be str, got {type(url).__name__}")
 
@@ -529,24 +568,7 @@ def _validate_ssrf_url(
             )
         )
 
-    return Ok(hostname)
-
-
-@functools.lru_cache(maxsize=1024)
-def _is_ip_safe(raw_ip: str) -> bool:
-    """Check if a single IP address is safe (not private/loopback/reserved)."""
-    try:
-        addr = ipaddress.ip_address(raw_ip)
-    except ValueError:
-        return True
-
-    return not (
-        addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
-    )
-
-
-def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
-    """Resolve hostname to IP addresses and check for SSRF risk."""
+    # 2. Check IP safety
     try:
         addr_infos = socket.getaddrinfo(hostname, None)
     except socket.gaierror:
@@ -567,47 +589,4 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
                 )
             )
 
-    return Ok(None)
-
-
-def guard_ssrf(
-    url: str,
-    *,
-    allowed_schemes: frozenset[str] = _ALLOWED_SSRF_SCHEMES,
-) -> Result[str, SecurityError]:
-    """Validate a URL against Server-Side Request Forgery (SSRF) attacks.
-
-    Parse the URL, resolve its hostname via DNS, and reject it when the
-    resulting IP address falls inside a private, loopback, link-local, or
-    otherwise reserved network range.
-
-    Args:
-        url: The URL string to validate.
-        allowed_schemes: Set of URL schemes considered safe.
-            Defaults to ``{"http", "https"}``.
-
-    Returns:
-        ``Ok(url)`` when the URL is safe to fetch.
-        ``Err(SecurityError)`` when an SSRF risk is detected.
-
-    Raises:
-        TypeError: If *url* is not a :class:`str`.
-
-    Example:
-        >>> guard_ssrf("https://example.com")
-        Ok('https://example.com')
-        >>> guard_ssrf("http://169.254.169.254/metadata")
-        Err(SecurityError('[ssrf] ...))
-
-    """
-    # 1. Validate format and scheme
-    match _validate_ssrf_url(url, allowed_schemes):
-        case Err(e):
-            return Err(e)
-        case Ok(hostname):
-            # 2. Check IP safety
-            match _check_ip_safety(hostname):
-                case Err(e):
-                    return Err(e)
-                case Ok():
-                    return Ok(url)
+    return Ok(url)
