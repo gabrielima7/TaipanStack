@@ -95,6 +95,8 @@ class TestSanitizeString:
         # Note: < and > inside text (not as tags) get escaped after tag stripping
         result = sanitize_string("text&more")
         assert "&amp;" in result
+        assert "&lt;" in sanitize_string("a < b")
+        assert "&gt;" in sanitize_string("a > b")
 
 
 class TestSanitizeFilename:
@@ -428,3 +430,10 @@ def test_sanitize_filename_value_error():
 def test_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
     assert sanitize_filename("foo/bar", replacement="") == "bar"
+
+
+def test_sanitize_filename_backslash_replacement():
+    from taipanstack.security.sanitizers import sanitize_filename
+
+    assert sanitize_filename("foo/bar", replacement="\\") == "bar"
+    assert sanitize_filename("foo<bar", replacement="\\") == "foo\\bar"
