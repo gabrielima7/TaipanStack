@@ -1,5 +1,7 @@
 """Tests for rate limiting utils."""
 
+import math
+
 import pytest
 
 from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
@@ -10,10 +12,17 @@ class TestRateLimiter:
 
     def test_invalid_initialization(self) -> None:
         """Test invalid args to RateLimiter."""
-        with pytest.raises(ValueError, match="must be > 0"):
+        with pytest.raises(ValueError, match="must be a finite number > 0.0"):
             RateLimiter(0, 1.0)
-        with pytest.raises(ValueError, match="must be > 0"):
+        with pytest.raises(ValueError, match="must be a finite number > 0.0"):
             RateLimiter(10, -1.0)
+
+    def test_chaos_invalid_initialization_nan(self) -> None:
+        """Test invalid NaN args to RateLimiter."""
+        with pytest.raises(ValueError, match="must be a finite number > 0.0"):
+            RateLimiter(math.nan, 1.0)
+        with pytest.raises(ValueError, match="must be a finite number > 0.0"):
+            RateLimiter(10, math.nan)
 
     def test_consume_success(self) -> None:
         """Test consuming tokens successfully."""
