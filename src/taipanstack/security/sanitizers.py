@@ -181,6 +181,17 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
+def _is_safe_filename_fast_path(filename: str, stem: str, max_length: int) -> bool:
+    """Check if a filename is perfectly safe to bypass slow regex operations."""
+    return (
+        len(filename) <= max_length
+        and filename not in {"..", "."}
+        and filename.isascii()
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+    )
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -219,13 +230,7 @@ def sanitize_filename(
     stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
 
     # Fast-path for already safe, typical filenames
-    if (
-        len(filename) <= max_length
-        and filename not in {"..", "."}
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename.isascii()
-        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-    ):
+    if _is_safe_filename_fast_path(filename, stem, max_length):
         return f"{stem}{suffix}"
 
     # Remove invalid characters using precompiled regex for performance
@@ -245,30 +250,33 @@ def sanitize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
+def _process_dot_dot_part(parts: list[str], anchor: str) -> None:
+    """Process a '..' path component, removing the last part if safe."""
+    if parts and parts[-1] != ".." and parts[-1] != anchor:
+        parts.pop()
+
+
+def _process_normal_part(part: str, parts: list[str]) -> None:
+    """Process a normal path component, sanitizing it if necessary."""
+    idx = part.rfind(".")
+    stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
+    if _is_safe_filename_fast_path(part, stem, 255):
+        parts.append(part)
+    else:
+        safe_part = sanitize_filename(part, preserve_extension=True)
+        if safe_part and safe_part != "..":  # pragma: no branch
+            parts.append(safe_part)
+
+
 def _clean_path_parts(path: Path) -> list[str]:
     """Clean and sanitize individual path components."""
     parts: list[str] = []
     anchor = path.anchor
     for part in path.parts:
         if part == "..":
-            if parts and parts[-1] != ".." and parts[-1] != anchor:
-                parts.pop()
+            _process_dot_dot_part(parts, anchor)
         elif part != ".":  # pragma: no branch
-            # fast-path bypass for perfectly safe segments (skip split/logic)
-            # Find the stem to check against reserved names
-            idx = part.rfind(".")
-            stem = part[:idx] if idx > 0 and not all(c == "." for c in part) else part
-            if (
-                len(part) <= 255  # noqa: PLR2004
-                and part.isascii()
-                and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
-                and stem.upper() not in _WINDOWS_RESERVED_NAMES
-            ):
-                parts.append(part)
-            else:
-                safe_part = sanitize_filename(part, preserve_extension=True)
-                if safe_part and safe_part != "..":  # pragma: no branch
-                    parts.append(safe_part)
+            _process_normal_part(part, parts)
     return parts
 
 
