@@ -200,6 +200,7 @@ class TestResultModuleBranches:
 
         async def dummy_func(x):
             from taipanstack.core.result import Ok
+
             return Ok(x)
 
         res = await and_then_async(dummy, dummy_func)
