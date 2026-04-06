@@ -11,7 +11,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
-from taipanstack.core.result import Ok, Result
+from taipanstack.core.result import Err, Ok, Result
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -97,7 +97,7 @@ def cached(ttl: float) -> CacheDecorator:
                 match result:
                     case Ok(value):
                         _cache[cache_key] = (now + ttl, value)
-                    case _:
+                    case Err(_):
                         pass
 
                 return result
@@ -125,7 +125,7 @@ def cached(ttl: float) -> CacheDecorator:
             match result:
                 case Ok(value):
                     _cache[cache_key] = (now + ttl, value)
-                case _:
+                case Err(_):
                     pass
 
             return result
