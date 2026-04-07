@@ -64,10 +64,6 @@ def test_bench_sanitize_path_traversal(benchmark: BenchmarkFixture) -> None:
     benchmark(sanitize_path, "safe/../../still/../ok/file.txt", max_depth=None)
 
 
-
-
-
-
 def _divide(a: int, b: int) -> float:
     """Test function for @safe decorator benchmarks."""
     return a / b
@@ -76,8 +72,6 @@ def _divide(a: int, b: int) -> float:
 def test_bench_safe_decorator_ok(benchmark: BenchmarkFixture) -> None:
     """Benchmark @safe decorator on successful call."""
     benchmark(_divide, 10, 2)
-
-
 
 
 def test_bench_collect_results_100(benchmark: BenchmarkFixture) -> None:

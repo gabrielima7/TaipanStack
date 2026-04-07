@@ -341,5 +341,3 @@ def sanitize_path(
 
     # Constrain to base_dir
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
-
-

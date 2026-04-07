@@ -294,6 +294,3 @@ class TestSanitizePath:
         monkeypatch.setattr("pathlib.Path.resolve", mock_resolve)
         with pytest.raises(ValueError, match="Cannot resolve path"):
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
-
-
-

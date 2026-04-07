@@ -261,5 +261,3 @@ class TestGuardEnvVariable:
         monkeypatch.setenv("MY_TOKEN", "allowed_token")
         result = guard_env_variable("MY_TOKEN", allowed_names=["MY_TOKEN"])
         assert result == "allowed_token"
-
-
