@@ -74,7 +74,9 @@ class TestFuzzJWT:
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
         secret_key=st.text(),
-        algorithm=st.text().filter(lambda x: x not in TestFuzzJWT._DEFAULT_ALGS and x.lower() != "none"),
+        algorithm=st.text().filter(
+            lambda x: x not in TestFuzzJWT._DEFAULT_ALGS and x.lower() != "none"
+        ),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
     def test_fuzz_encode_jwt_malformed_algorithm(self, payload, secret_key, algorithm):
