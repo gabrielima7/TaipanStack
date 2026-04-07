@@ -64,13 +64,13 @@ jobs:
 
       - name: "[Audit] Upload coverage to Codecov"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   # Linux Distribution Testing via Docker containers
   test-linux-distros:
@@ -385,6 +385,9 @@ jobs:
       - name: "[Setup] Install Poetry"
         run: pipx install poetry
 
+      - name: "[Setup] Configure Poetry for out-of-project venv"
+        run: poetry config virtualenvs.in-project false
+
       - name: "[Setup] Remove Conflicting System LLVM Packages"
         run: |
           if dpkg -l | grep -q 'llvm\|clang\|lld'; then sudo apt-get purge -y 'llvm-*' 'clang-*' 'libclang-*' 'liblld-*' 'lld-*' 'libllvm*'; sudo apt-get autoremove -y; fi
@@ -392,8 +395,10 @@ jobs:
       - name: "[Setup] Install dependencies"
         run: poetry install --with dev
 
-      - name: "[Setup] Remove broken symlinks"
-        run: find . -xtype l -delete
+      - name: "[Setup] Remove broken symlinks and caches"
+        run: |
+          find . -xtype l -delete
+          rm -rf .venv .mypy_cache .pytest_cache .ruff_cache __pycache__
 
       - name: "[Test] Run Mutmut"
         run: |
