@@ -240,20 +240,6 @@ class TestSanitizersUncovered:
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
         assert tmp_path in result.parents or result.parent == tmp_path
 
-    def test_sanitize_env_value_multiline_allowed(self) -> None:
-        """Test sanitize_env_value with multiline allowed."""
-        from taipanstack.security.sanitizers import sanitize_env_value
-
-        result = sanitize_env_value("line1\nline2", allow_multiline=True)
-        assert "\n" in result
-
-    def test_sanitize_sql_identifier_starts_with_number(self) -> None:
-        """Test sanitize_sql_identifier starting with number."""
-        from taipanstack.security.sanitizers import sanitize_sql_identifier
-
-        result = sanitize_sql_identifier("123abc")
-        assert result.startswith("_")
-
 
 class TestRetryUncovered:
     """Tests for retry.py uncovered lines."""

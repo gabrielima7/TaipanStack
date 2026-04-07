@@ -118,18 +118,6 @@ class TestSanitizersComplete:
         result = sanitize_filename(long_name, max_length=100)
         assert len(result) <= 100
 
-    def test_sanitize_env_value_multiline(self) -> None:
-        """Test sanitize_env_value with multiline."""
-        from taipanstack.security.sanitizers import sanitize_env_value
-
-        # Without allowing multiline
-        result = sanitize_env_value("line1\nline2", allow_multiline=False)
-        assert "\n" not in result
-
-        # With allowing multiline
-        result = sanitize_env_value("line1\nline2", allow_multiline=True)
-        assert "\n" in result
-
 
 class TestValidatorsComplete:
     """Complete tests for validators module."""

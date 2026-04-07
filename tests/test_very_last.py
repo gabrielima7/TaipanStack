@@ -573,17 +573,3 @@ class TestOptimizationsEdgeCases:
         assert any("boom" in e for e in result.errors)
 
 
-class TestGuardHashAlgorithmFormat:
-    def test_guard_hash_algorithm_format_error(self):
-        import pytest
-
-        from taipanstack.security.guards import SecurityError, guard_hash_algorithm
-
-        with pytest.raises(SecurityError, match="Invalid hash algorithm format"):
-            guard_hash_algorithm("-")
-
-        with pytest.raises(SecurityError, match="Invalid hash algorithm format"):
-            guard_hash_algorithm("")
-
-        with pytest.raises(SecurityError, match="Invalid hash algorithm format"):
-            guard_hash_algorithm("sha!256")

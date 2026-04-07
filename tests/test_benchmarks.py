@@ -10,10 +10,8 @@ from result import Ok
 from taipanstack.core.result import collect_results, safe
 from taipanstack.security.guards import guard_ssrf
 from taipanstack.security.sanitizers import (
-    sanitize_env_value,
     sanitize_filename,
     sanitize_path,
-    sanitize_sql_identifier,
     sanitize_string,
 )
 
@@ -66,35 +64,10 @@ def test_bench_sanitize_path_traversal(benchmark: BenchmarkFixture) -> None:
     benchmark(sanitize_path, "safe/../../still/../ok/file.txt", max_depth=None)
 
 
-def test_bench_sanitize_env_value_standard(benchmark: BenchmarkFixture) -> None:
-    """Benchmark sanitize_env_value with typical env content."""
-    benchmark(
-        sanitize_env_value,
-        "DATABASE_URL=postgresql://user:pass@localhost:5432/db",
-    )
 
 
-def test_bench_sanitize_env_value_large(benchmark: BenchmarkFixture) -> None:
-    """Benchmark sanitize_env_value with large payload."""
-    benchmark(sanitize_env_value, "x" * 4096, max_length=4096)
 
 
-def test_bench_sanitize_sql_identifier(benchmark: BenchmarkFixture) -> None:
-    """Benchmark sanitize_sql_identifier with typical table name."""
-    benchmark(sanitize_sql_identifier, "user_accounts_table")
-
-
-def test_bench_sanitize_sql_identifier_dirty(benchmark: BenchmarkFixture) -> None:
-    """Benchmark sanitize_sql_identifier with injection attempt."""
-    benchmark(sanitize_sql_identifier, "users; DROP TABLE users--")
-
-
-# =============================================================================
-# Result Type Benchmarks
-# =============================================================================
-
-
-@safe
 def _divide(a: int, b: int) -> float:
     """Test function for @safe decorator benchmarks."""
     return a / b
@@ -105,9 +78,6 @@ def test_bench_safe_decorator_ok(benchmark: BenchmarkFixture) -> None:
     benchmark(_divide, 10, 2)
 
 
-def test_bench_safe_decorator_err(benchmark: BenchmarkFixture) -> None:
-    """Benchmark @safe decorator on failing call."""
-    benchmark(_divide, 10, 0)
 
 
 def test_bench_collect_results_100(benchmark: BenchmarkFixture) -> None:

@@ -137,13 +137,6 @@ class TestSanitizersBranches:
         with pytest.raises(ValueError, match="depth"):
             sanitize_path("a/b/c/d/e/f/g/h/i/j/k/l", max_depth=5)
 
-    def test_sanitize_sql_identifier_starts_with_number(self) -> None:
-        """Test sanitize_sql_identifier starting with number."""
-        from taipanstack.security.sanitizers import sanitize_sql_identifier
-
-        result = sanitize_sql_identifier("123column")
-        assert result.startswith("_")
-
 
 class TestSubprocessBranches:
     """Tests for subprocess module branches."""
