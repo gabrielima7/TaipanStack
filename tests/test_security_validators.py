@@ -138,6 +138,13 @@ class TestValidateUrl:
         with pytest.raises(ValueError, match="must have a scheme"):
             validate_url("example.com")
 
+    def test_url_too_long_rejected(self) -> None:
+        """Test URLs that are too long are rejected."""
+        from taipanstack.security.guards import MAX_URL_LENGTH
+        long_url = "http://example.com/" + "a" * MAX_URL_LENGTH
+        with pytest.raises(ValueError, match="URL exceeds maximum length"):
+            validate_url(long_url)
+
     def test_invalid_scheme_rejected(self) -> None:
         """Test invalid schemes are rejected."""
         with pytest.raises(ValueError, match="not allowed"):

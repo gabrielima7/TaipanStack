@@ -26,6 +26,22 @@ class TestEncodeJWT:
         payload = {"sub": "user_123"}
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
 
+    def test_encode_rejects_short_hmac_key(self) -> None:
+        """Test that encoding explicitly rejects HMAC keys shorter than 32 bytes."""
+        payload = {"sub": "user_123"}
+        secret = "short"
+        result = encode_jwt(payload, secret, algorithm="HS256")
+        assert result.is_err()
+        assert isinstance(result.err_value, ValueError)
+        assert "HMAC keys must be at least 32 bytes" in str(result.err_value)
+
+    def test_encode_accepts_bytes_hmac_key(self) -> None:
+        """Test that encoding accepts bytes for HMAC keys."""
+        payload = {"sub": "user_123"}
+        secret = b"a" * 32
+        result = encode_jwt(payload, secret, algorithm="HS256")
+        assert result.is_ok()
+
         result = encode_jwt(payload, secret, algorithm="none")
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)

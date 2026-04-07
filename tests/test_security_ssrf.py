@@ -51,6 +51,17 @@ class TestGuardSsrfEmptyAndMalformed:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
+    def test_url_too_long_returns_err(self) -> None:
+        """URL exceeding MAX_URL_LENGTH returns Err."""
+        from taipanstack.security.guards import MAX_URL_LENGTH
+        long_url = "http://example.com/" + "a" * MAX_URL_LENGTH
+        result = guard_ssrf(long_url)
+        assert result.is_err()
+        err = result.err_value
+        assert isinstance(err, SecurityError)
+        assert "exceeds maximum allowed length" in str(err)
+        assert err.guard_name == "ssrf"
+
     def test_disallowed_scheme_ftp_returns_err(self) -> None:
         """FTP scheme is rejected as not allowed."""
         result = guard_ssrf("ftp://example.com/file")
