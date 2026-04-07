@@ -163,3 +163,24 @@ class TestRunSafeCommand:
         """Test that command duration is tracked."""
         result = run_safe_command(["echo", "test"])
         assert result.duration_seconds >= 0
+
+    def test_timeout_negative_value(self) -> None:
+        """Test timeout with negative seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            run_safe_command(["echo", "hello"], timeout=-1.0)
+
+    def test_timeout_nan_value(self) -> None:
+        """Test timeout with NaN seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            run_safe_command(["echo", "hello"], timeout=float("nan"))
+
+    def test_timeout_inf_value(self) -> None:
+        """Test timeout with Infinity seconds."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            run_safe_command(["echo", "hello"], timeout=float("inf"))
