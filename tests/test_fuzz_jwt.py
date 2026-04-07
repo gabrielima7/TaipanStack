@@ -3,6 +3,7 @@
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
+import jwt
 from taipanstack.security.jwt import decode_jwt, encode_jwt
 
 # Strategy for completely malformed, extreme payload types
@@ -71,7 +72,7 @@ class TestFuzzJWT:
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
         secret_key=st.text(),
-        algorithm=st.text(),
+        algorithm=st.text().filter(lambda x: x not in jwt.algorithms.get_default_algorithms() and x.lower() != "none"),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
     def test_fuzz_encode_jwt_malformed_algorithm(self, payload, secret_key, algorithm):
