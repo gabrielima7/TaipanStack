@@ -63,15 +63,16 @@ context:
 
 clean:
 	@echo "Cleaning cache and temporary files..."
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .mutmut-cache -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	find . -type f -name "*.pyo" -delete 2>/dev/null || true
-	find . -type f -name "*.bak" -delete 2>/dev/null || true
-	rm -rf htmlcov/ .coverage 2>/dev/null || true
+	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -type d -name .pytest_cache -exec rm -rf {} +
+	find . -type d -name .mypy_cache -exec rm -rf {} +
+	find . -type d -name .ruff_cache -exec rm -rf {} +
+	find . -type d -name .mutmut-cache -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+	find . -type f -name "*.pyo" -delete
+	find . -type f -name "*.bak" -delete
+	if [ -d htmlcov ]; then rm -rf htmlcov; fi
+	if [ -f .coverage ]; then rm -f .coverage; fi
 	@echo "Clean complete!"
 
 benchmark:

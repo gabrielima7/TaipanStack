@@ -18,32 +18,32 @@ permissions:
 
 jobs:
   sbom-and-sign:
-    name: Generate SBOM & Sign Artifacts
+    name: "[Release] Generate SBOM & Sign Artifacts"
     runs-on: ubuntu-latest
 
     steps:
       # ── Checkout ──────────────────────────────────────────────────────
-      - name: Check out code
+      - name: "[Setup] Check out code"
         uses: actions/checkout@v6
 
       # ── Python + Build ────────────────────────────────────────────────
-      - name: Set up Python
+      - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
-      - name: Install Poetry
+      - name: "[Setup] Install Poetry"
         run: pipx install poetry
 
-      - name: Build distribution
+      - name: "[Build] Build distribution"
         run: poetry build
 
       # ── SBOM Generation (syft → CycloneDX JSON) ──────────────────────
-      - name: Install syft
+      - name: "[Setup] Install syft"
         uses: anchore/sbom-action/download-syft@v0
         id: syft-install
 
-      - name: Generate SBOM (CycloneDX)
+      - name: "[Audit] Generate SBOM (CycloneDX)"
         run: |
           WHEEL=$(ls dist/*.whl | head -1)
           syft "${WHEEL}" -o cyclonedx-json=sbom.cdx.json
@@ -52,10 +52,10 @@ jobs:
           echo "wheel_name=$(basename ${WHEEL})" >> "$GITHUB_ENV"
 
       # ── Artifact Signing (cosign / Sigstore keyless) ──────────────────
-      - name: Install cosign
+      - name: "[Setup] Install cosign"
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign the wheel
+      - name: "[Audit] Sign the wheel"
         run: |
           cosign sign-blob \
             --yes \
@@ -63,7 +63,7 @@ jobs:
             --output-certificate "${wheel_name}.crt" \
             "${wheel_path}"
 
-      - name: Sign the SBOM
+      - name: "[Audit] Sign the SBOM"
         run: |
           cosign sign-blob \
             --yes \
@@ -72,7 +72,7 @@ jobs:
             sbom.cdx.json
 
       # ── Verification (sanity check) ──────────────────────────────────
-      - name: Verify wheel signature
+      - name: "[Audit] Verify wheel signature"
         run: |
           cosign verify-blob \
             --signature "${wheel_name}.sig" \
@@ -81,7 +81,7 @@ jobs:
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             "${wheel_path}"
 
-      - name: Verify SBOM signature
+      - name: "[Audit] Verify SBOM signature"
         run: |
           cosign verify-blob \
             --signature sbom.cdx.json.sig \
@@ -91,7 +91,7 @@ jobs:
             sbom.cdx.json
 
       # ── Upload to Release ─────────────────────────────────────────────
-      - name: Upload artifacts to release
+      - name: "[Release] Upload artifacts to release"
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
@@ -103,7 +103,7 @@ jobs:
             ${{ env.wheel_name }}.crt
 
       # ── Upload as workflow artifacts (for manual runs) ────────────────
-      - name: Upload workflow artifacts
+      - name: "[Release] Upload workflow artifacts"
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v7
         with:
