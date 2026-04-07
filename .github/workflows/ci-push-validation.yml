@@ -75,9 +75,9 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   # Linux Distribution Testing via Docker containers
-        token: ${{ secrets.CODECOV_TOKEN }}
   test-linux-distros:
     name: '[Test-linux-distros] Test on ${{ matrix.distro }}'
     runs-on: ubuntu-latest
