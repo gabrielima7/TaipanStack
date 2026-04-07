@@ -397,7 +397,7 @@ jobs:
 
       - name: "[Setup] Remove broken symlinks and caches"
         run: |
-          find . -xtype l -delete
+          find . -type l -delete
           rm -rf .venv .mypy_cache .pytest_cache .ruff_cache __pycache__
 
       - name: "[Test] Run Mutmut"
