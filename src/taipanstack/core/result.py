@@ -204,11 +204,11 @@ def collect_results(
     append = values.append
     for result in results:
         # We explicitly avoid structural pattern matching here to eliminate
-        # Python overhead in tight loop iteration for Result arrays, but we
-        # use isinstance rather than explicit type check to maintain subclass support.
-        if isinstance(result, Ok):
-            append(result.ok_value)
-        elif isinstance(result, Err):
+        # Python overhead in tight loop iteration for Result arrays, and we
+        # use explicit type check for extreme performance.
+        if type(result) is Ok:
+            append(result._value)
+        elif type(result) is Err:
             return result
         else:  # pragma: no cover
             return result
