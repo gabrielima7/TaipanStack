@@ -573,3 +573,51 @@ rules:
       - pattern-not-inside: |
           $DELAY = min(...)
           ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 39: Prevent DoS by enforcing length check before URL parsing
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-url-max-length
+    languages: [python]
+    severity: ERROR
+    message: >
+      To prevent Denial-of-Service (DoS) and integer conversion vulnerabilities,
+      enforce a strict maximum length check early in the validation function,
+      before parsing or applying regular expressions.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      owasp: "A05:2021 - Security Misconfiguration"
+      technology:
+        - python
+    patterns:
+      - pattern: urlsplit($URL)
+      - pattern-not-inside: |
+          if len($URL) > $MAX:
+              ...
+          ...
+          urlsplit($URL)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 40: Enforce parsed.hostname over manual netloc splitting
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-netloc-split
+    languages: [python]
+    severity: ERROR
+    message: >
+      When using urllib.parse.urlsplit to validate or extract domains from URLs,
+      explicitly use parsed.hostname instead of manually splitting parsed.netloc
+      to properly handle URLs with credentials and IPv6 addresses.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery (SSRF)"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: $PARSED.netloc.split(...)
+          - pattern: $PARSED.netloc.partition(...)
+          - pattern: $PARSED.netloc.rpartition(...)

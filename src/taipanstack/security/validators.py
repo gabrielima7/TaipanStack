@@ -14,6 +14,7 @@ MIN_PYTHON_MINOR_VERSION = 10
 MAX_PYTHON_VERSION_LENGTH = 20
 MAX_EMAIL_LOCAL_LENGTH = 64
 MAX_EMAIL_DOMAIN_LENGTH = 255
+MAX_URL_LENGTH = 2048
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
 PROJECT_NAME_RESERVED = frozenset(
     {
@@ -281,6 +282,10 @@ def validate_url(
         msg = "URL cannot be empty"
         raise ValueError(msg)
 
+    if len(url) > MAX_URL_LENGTH:
+        msg = f"URL exceeds maximum length of {MAX_URL_LENGTH} characters"
+        raise ValueError(msg)
+
     try:
         parsed = urlsplit(url)
         _ = parsed.port
@@ -296,13 +301,13 @@ def validate_url(
         msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
         raise ValueError(msg)
 
-    if not parsed.netloc:
+    if not parsed.hostname:
         msg = "URL must have a domain"
         raise ValueError(msg)
 
     if require_tld:
         # Check for TLD (at least one dot)
-        domain = parsed.netloc.split(":")[0]  # Remove port if present
+        domain = parsed.hostname
         has_no_tld = "." not in domain or domain.endswith(".")
         is_localhost = domain.lower() in LOCALHOST_DOMAINS
         if has_no_tld and not is_localhost:

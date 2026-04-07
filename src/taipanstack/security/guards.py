@@ -499,6 +499,14 @@ def _validate_ssrf_url(
     if not url:
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
 
+    if len(url) > 2048:
+        return Err(
+            SecurityError(
+                "URL exceeds maximum allowed length of 2048 characters",
+                guard_name="ssrf",
+            )
+        )
+
     try:
         parsed = urlsplit(url)
     except ValueError as exc:
