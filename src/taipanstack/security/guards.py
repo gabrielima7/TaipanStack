@@ -17,6 +17,8 @@ from urllib.parse import urlsplit
 
 from result import Err, Ok, Result
 
+MAX_URL_LENGTH = 2048
+
 # Build regex for traversal patterns.
 # Note: we handle ~ specially to only match at start of path or after a separator
 # to avoid false positives with Windows short paths (e.g., RUNNER~1).
@@ -499,10 +501,10 @@ def _validate_ssrf_url(
     if not url:
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
 
-    if len(url) > 2048:
+    if len(url) > MAX_URL_LENGTH:
         return Err(
             SecurityError(
-                "URL exceeds maximum allowed length of 2048 characters",
+                f"URL exceeds maximum allowed length of {MAX_URL_LENGTH} characters",
                 guard_name="ssrf",
             )
         )

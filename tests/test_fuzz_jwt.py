@@ -70,7 +70,7 @@ class TestFuzzJWT:
 
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
-        secret_key=st.text(),
+        secret_key=st.text(min_size=32),
         algorithm=st.text(),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])

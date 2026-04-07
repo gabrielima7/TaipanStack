@@ -19,6 +19,8 @@ __all__ = ["decode_jwt", "encode_jwt"]
 
 JWTPayload: TypeAlias = dict[str, object]
 
+MIN_HMAC_KEY_LENGTH = 32
+
 
 @safe_from(PyJWTError, ValueError, TypeError, NotImplementedError)
 def encode_jwt(
@@ -51,8 +53,8 @@ def encode_jwt(
     else:
         key_len = len(str(secret_key).encode("utf-8"))
 
-    if key_len < 32 and algorithm.startswith("HS"):
-        raise ValueError('HMAC keys must be at least 32 bytes (256 bits).')
+    if key_len < MIN_HMAC_KEY_LENGTH and algorithm.startswith("HS"):
+        raise ValueError("HMAC keys must be at least 32 bytes (256 bits).")
 
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 

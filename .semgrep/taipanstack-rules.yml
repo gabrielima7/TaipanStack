@@ -592,12 +592,19 @@ rules:
       technology:
         - python
     patterns:
-      - pattern: urlsplit($URL)
+      - pattern-either:
+          - pattern: urlsplit($URL)
+          - pattern: $PARSED = urlsplit($URL)
       - pattern-not-inside: |
           if len($URL) > $MAX:
               ...
           ...
           urlsplit($URL)
+      - pattern-not-inside: |
+          if len($URL) > $MAX:
+              ...
+          ...
+          $PARSED = urlsplit($URL)
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Rule 40: Enforce parsed.hostname over manual netloc splitting
