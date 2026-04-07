@@ -7,7 +7,7 @@ Run with: pytest tests/test_benchmarks.py --benchmark-only
 from pytest_benchmark.fixture import BenchmarkFixture
 from result import Ok
 
-from taipanstack.core.result import collect_results, safe
+from taipanstack.core.result import collect_results
 from taipanstack.security.guards import guard_ssrf
 from taipanstack.security.sanitizers import (
     sanitize_filename,
