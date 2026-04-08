@@ -9,13 +9,17 @@ import functools
 import inspect
 import time
 from collections.abc import Awaitable, Callable
-from typing import ParamSpec, Protocol, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
 P = ParamSpec("P")
 T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
+
+CacheKey: TypeAlias = tuple[object, ...]
+CacheValue: TypeAlias = tuple[float, object]
+CacheDict: TypeAlias = dict[CacheKey, CacheValue]
 
 
 class CacheDecorator(Protocol):
@@ -44,11 +48,11 @@ def cached(ttl: float) -> CacheDecorator:
         Decorator function.
 
     """
-    _cache: dict[tuple[object, ...], tuple[float, object]] = {}
+    _cache: CacheDict = {}
 
     def get_cache_key(
         func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
-    ) -> tuple[object, ...]:
+    ) -> CacheKey:
         def _make_hashable(val: object) -> object:
             match val:
                 case tuple() | list():
@@ -68,7 +72,7 @@ def cached(ttl: float) -> CacheDecorator:
         return (func_name, hashable_args, hashable_kwargs)
 
     def decorator(
-        func: (Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]),
+        func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
