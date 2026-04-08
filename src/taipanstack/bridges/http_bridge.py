@@ -11,7 +11,9 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from typing_extensions import TypedDict, Unpack
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -22,6 +24,47 @@ from taipanstack.resilience.retry import RetryConfig, calculate_delay
 from taipanstack.security.guards import guard_ssrf
 
 logger = logging.getLogger("taipanstack.bridges.http")
+
+class RequestKwargs(TypedDict, total=False):
+    """Keyword arguments passed to httpx.AsyncClient.request."""
+
+    content: object
+    data: object
+    files: object
+    json: object
+    params: object
+    headers: object
+    cookies: object
+    auth: object
+    follow_redirects: bool
+    timeout: object
+    extensions: object
+
+
+class ClientKwargs(TypedDict, total=False):
+    """Keyword arguments passed to httpx.AsyncClient."""
+
+    auth: object
+    params: object
+    headers: object
+    cookies: object
+    verify: object
+    cert: object
+    http1: bool
+    http2: bool
+    proxies: object
+    mounts: object
+    timeout: object
+    follow_redirects: bool
+    limits: object
+    max_redirects: int
+    event_hooks: object
+    base_url: object
+    transport: object
+    app: object
+    trust_env: bool
+    default_encoding: str
+
 
 # --- optional httpx import ------------------------------------------------
 
@@ -169,7 +212,7 @@ async def safe_request(
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     timeout: float | None = 10.0,
-    **kwargs: Any,
+    **kwargs: Unpack[RequestKwargs],
 ) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
@@ -245,7 +288,7 @@ class SafeHttpClient:
         retry_config: RetryConfig | None = None,
         circuit_breaker: CircuitBreaker | None = None,
         retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
-        **client_kwargs: Any,
+        **client_kwargs: Unpack[ClientKwargs],
     ) -> None:
         """Initialize the safe HTTP client.
 
@@ -296,7 +339,7 @@ class SafeHttpClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,
+        **kwargs: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
 
@@ -336,22 +379,32 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def get(
+        self, url: str, **kw: Unpack[RequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def post(
+        self, url: str, **kw: Unpack[RequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def put(
+        self, url: str, **kw: Unpack[RequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def delete(
+        self, url: str, **kw: Unpack[RequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def patch(
+        self, url: str, **kw: Unpack[RequestKwargs]
+    ) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)

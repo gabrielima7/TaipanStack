@@ -46,6 +46,9 @@ def encode_jwt(
     if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
+    if algorithm not in jwt.algorithms.get_default_algorithms():
+        raise NotImplementedError("Algorithm not supported")
+
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
