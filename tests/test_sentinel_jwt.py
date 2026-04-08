@@ -1,6 +1,6 @@
-import pytest
-from taipanstack.security.jwt import encode_jwt
 from taipanstack.core.result import Err
+from taipanstack.security.jwt import encode_jwt
+
 
 def test_encode_jwt_weak_key():
     payload = {"sub": "123"}
