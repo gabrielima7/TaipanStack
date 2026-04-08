@@ -9,6 +9,7 @@ or a ``RateLimitError`` error.
 
 import functools
 import inspect
+import math
 import threading
 import time
 from collections.abc import Awaitable, Callable
@@ -54,15 +55,31 @@ class RateLimiter:
         self.last_update: float = time.monotonic()
         self._lock = threading.Lock()
 
-    def consume(self) -> bool:
-        """Try to consume a single token.
+    def consume(self, tokens: float = 1.0) -> bool:
+        """Try to consume tokens.
+
+        Args:
+            tokens: Number of tokens to consume. Defaults to 1.0.
 
         Returns:
-            True if a token was consumed (allow), False otherwise (limit exceeded).
+            True if tokens were consumed (allow), False otherwise (limit exceeded).
 
         """
+        if tokens <= 0:
+            return True
+
         with self._lock:
             now = time.monotonic()
+
+            # Prevent time corruption from poisoning the bucket state.
+            if not math.isfinite(now):
+                # We do not update last_update or add tokens.
+                # We just check if there are currently enough tokens to consume.
+                if self.tokens >= tokens:
+                    self.tokens -= tokens
+                    return True
+                return False
+
             elapsed = max(0.0, now - self.last_update)
             self.last_update = now
 
@@ -70,8 +87,8 @@ class RateLimiter:
             self.tokens += elapsed * (self.capacity / self.time_window)
             self.tokens = min(self.tokens, self.capacity)
 
-            if self.tokens >= 1.0:
-                self.tokens -= 1.0
+            if self.tokens >= tokens:
+                self.tokens -= tokens
                 return True
             return False
 
