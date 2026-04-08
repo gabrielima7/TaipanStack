@@ -16,6 +16,9 @@ def test_fuzz_url_massive_strings_dos(url: str) -> None:
         validate_url(url)
 
 
+from hypothesis import settings, HealthCheck
+
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(

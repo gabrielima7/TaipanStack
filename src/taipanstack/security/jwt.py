@@ -43,8 +43,14 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
-    if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
+    alg_lower = str(algorithm).strip().lower()
+    if secrets.compare_digest(alg_lower, "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
+
+    if alg_lower.startswith("hs"):
+        key_bytes = secret_key.encode("utf-8") if isinstance(secret_key, str) else secret_key
+        if len(key_bytes) < 32:
+            raise ValueError("HMAC key must be at least 32 bytes to ensure cryptographic strength.")
 
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
