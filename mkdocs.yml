@@ -100,6 +100,7 @@ nav:
       - Config: api/config.md
       - Security: api/security.md
       - Utilities: api/utils.md
+      - Resilience: api/resilience.md
   - Patterns:
       - Security Patterns: patterns/security.md
   - Features (v0.4.2):

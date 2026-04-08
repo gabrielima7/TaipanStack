@@ -28,7 +28,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
     ---
 
-    Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, input sanitizers & validators, secret detection, SBOM + SLSA attestation.
+    Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, adaptive resilience pipeline, input sanitizers & validators, secret detection, SBOM + SLSA attestation.
 
 -   :zap: **High Performance**
 
@@ -110,16 +110,69 @@ safe_path = guard_path_traversal(user_input, base_dir="/app/data")
 safe_cmd = guard_command_injection(["git", "clone", repo_url], allowed_commands=["git"])
 ```
 
-### Retry + Circuit Breaker
+### 🔗 Combining Result + Circuit Breaker
 
 ```python
-from taipanstack.utils.retry import retry
-from taipanstack.utils.circuit_breaker import circuit_breaker
+from taipanstack.core.result import safe, Ok, Err
+from taipanstack.utils.circuit_breaker import CircuitBreaker
 
-@circuit_breaker(failure_threshold=5, timeout=30)
-@retry(max_attempts=3, on=(ConnectionError, TimeoutError))
-def call_external_service() -> dict:
-    return service.call()
+breaker = CircuitBreaker(failure_threshold=3, timeout=60, name="payments")
+
+@breaker
+@safe
+def charge_customer(customer_id: str, amount: float) -> dict:
+    return payment_gateway.charge(customer_id, amount)
+
+# Both circuit protection AND explicit error handling
+result = charge_customer("cust_123", 49.99)
+match result:
+    case Ok(receipt):
+        print(f"Payment successful: {receipt}")
+    case Err(error):
+        print(f"Payment failed safely: {error}")
+```
+
+### 🔗 Combining Result + Retry with Monitoring
+
+```python
+from taipanstack.core.result import safe, unwrap_or
+from taipanstack.utils.retry import retry
+
+@retry(
+    max_attempts=3,
+    on=(ConnectionError, TimeoutError),
+    on_retry=lambda attempt, max_a, exc, delay: print(
+        f"⚠️  Attempt {attempt}/{max_a} failed, retrying in {delay:.1f}s..."
+    ),
+)
+@safe
+def fetch_user_profile(user_id: str) -> dict:
+    return api_client.get(f"/users/{user_id}")
+
+# Retry handles transient failures, Result handles business errors
+profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
+```
+
+### 🔗 Adaptive Resilience Pipeline
+
+```python
+from taipanstack.core.result import Result, Ok, Err
+from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker, AdaptiveTimeout
+from taipanstack.resilience.retry import RetryConfig
+
+# Compose an intelligent pipeline: Bulkhead -> Breaker -> Retry -> Timeout -> Fallback
+orch = (
+    ResilienceOrchestrator("billing_api")
+    .with_bulkhead(max_concurrent=10, max_queue=50) # Prevent resource exhaustion
+    .with_circuit_breaker(AdaptiveCircuitBreaker("billing", target_error_rate=0.1)) # Auto-tunes thresholds
+    .with_timeout(AdaptiveTimeout(min_timeout=1.0, max_timeout=10.0))
+    .with_retry(RetryConfig(max_attempts=3, initial_delay=0.1))
+    .with_fallback({"status": "unavailable"})
+)
+
+async def process_billing() -> Result[dict, Exception]:
+    # The orchestrator handles all concurrency, retry, circuit breaking, and fallbacks
+    return await orch.execute(stripe_gateway.charge)
 ```
 
 ### Intelligent Caching
