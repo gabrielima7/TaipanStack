@@ -10,8 +10,15 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable, Iterable, AsyncIterable, Mapping, Sequence
-from typing import TYPE_CHECKING, IO, Any
+from collections.abc import (
+    AsyncIterable,
+    Awaitable,
+    Callable,
+    Iterable,
+    Mapping,
+    Sequence,
+)
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import TypedDict, Unpack
 
@@ -25,15 +32,16 @@ from taipanstack.security.guards import guard_ssrf
 
 logger = logging.getLogger("taipanstack.bridges.http")
 
+
 class RequestKwargs(TypedDict, total=False):
     """Keyword arguments passed to httpx.AsyncClient.request."""
 
     content: str | bytes | Iterable[bytes] | AsyncIterable[bytes] | None
     data: Mapping[str, Any] | None
-    files: Mapping[str, IO[bytes] | bytes | str | tuple[str | None, IO[bytes] | bytes | str] | tuple[str | None, IO[bytes] | bytes | str, str | None] | tuple[str | None, IO[bytes] | bytes | str, str | None, Mapping[str, str]]] | Sequence[tuple[str, IO[bytes] | bytes | str | tuple[str | None, IO[bytes] | bytes | str] | tuple[str | None, IO[bytes] | bytes | str, str | None] | tuple[str | None, IO[bytes] | bytes | str, str | None, Mapping[str, str]]]] | None
+    files: Mapping[str, Any] | Sequence[tuple[str, Any]] | None
     json: Any | None
-    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
-    headers: Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | Sequence[tuple[bytes, bytes]] | None
+    params: Mapping[str, Any] | Sequence[tuple[str, Any]] | str | bytes | None
+    headers: Mapping[str, str] | Sequence[tuple[str, str]] | None
     cookies: dict[str, str] | list[tuple[str, str]] | None
     auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
     follow_redirects: bool
@@ -44,8 +52,10 @@ class ClientKwargs(TypedDict, total=False):
     """Keyword arguments passed to httpx.AsyncClient."""
 
     auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
-    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
-    headers: Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | Sequence[tuple[bytes, bytes]] | None
+    params: Mapping[str, Any] | Sequence[tuple[str, Any]] | str | bytes | None
+    headers: (
+        Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | None
+    )
     cookies: dict[str, str] | list[tuple[str, str]] | None
     verify: Any | str | bool
     cert: str | tuple[str, str] | tuple[str, str, str] | None
