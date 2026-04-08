@@ -309,6 +309,19 @@ def _apply_base_dir_constraint(
     return sanitized
 
 
+def _reconstruct_path(path: Path, parts: list[str]) -> Path:
+    """Reconstruct a sanitized path from its parts."""
+    if path.is_absolute():  # pragma: no branch
+        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
+        anchor = Path(path.anchor)
+        return anchor.joinpath(*parts) if parts else anchor
+
+    if parts:  # pragma: no branch
+        return Path().joinpath(*parts)
+
+    return Path()
+
+
 def sanitize_path(
     path: str | Path,
     *,
@@ -342,14 +355,7 @@ def sanitize_path(
     parts = _clean_path_parts(path)
 
     # Reconstruct path
-    if path.is_absolute():  # pragma: no branch
-        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
-        anchor = Path(path.anchor)
-        sanitized = anchor.joinpath(*parts) if parts else anchor
-    elif parts:  # pragma: no branch
-        sanitized = Path().joinpath(*parts)
-    else:
-        sanitized = Path()
+    sanitized = _reconstruct_path(path, parts)
 
     # Check depth
     depth = len(sanitized.parts)
