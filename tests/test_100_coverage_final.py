@@ -160,6 +160,52 @@ class TestResultModuleBranches:
         assert Ok(5).unwrap_or_else(len) == 5
         assert Err("abc").unwrap_or_else(len) == 3
 
+    def test_collect_results_fallback(self) -> None:
+        """Test collect_results fallback branch for unexpected types."""
+        from taipanstack.core.result import collect_results
+
+        # Pass a list containing something that is not Ok or Err
+        class Dummy:
+            pass
+
+        dummy = Dummy()
+        res = collect_results(iter([dummy]))
+        assert res is dummy  # The fallback branch returns the object itself
+
+    @pytest.mark.asyncio
+    async def test_map_async_fallback(self) -> None:
+        """Test map_async fallback branch for unexpected types."""
+        from taipanstack.core.result import map_async
+
+        class Dummy:
+            pass
+
+        dummy = Dummy()
+
+        async def dummy_func(x):
+            return x
+
+        res = await map_async(dummy, dummy_func)
+        assert res is dummy
+
+    @pytest.mark.asyncio
+    async def test_and_then_async_fallback(self) -> None:
+        """Test and_then_async fallback branch for unexpected types."""
+        from taipanstack.core.result import and_then_async
+
+        class Dummy:
+            pass
+
+        dummy = Dummy()
+
+        async def dummy_func(x):
+            from taipanstack.core.result import Ok
+
+            return Ok(x)
+
+        res = await and_then_async(dummy, dummy_func)
+        assert res is dummy
+
 
 class TestConfigModelsUncovered:
     """Tests for config/models.py uncovered lines."""

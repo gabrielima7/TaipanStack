@@ -210,7 +210,7 @@ def collect_results(
             append(result.ok_value)
         elif isinstance(result, Err):
             return result
-        else:  # pragma: no cover
+        else:
             return result
     return Ok(values)
 
@@ -266,7 +266,7 @@ async def map_async(
         case Err(e):
             _ = e
             return result
-        case _:  # pragma: no cover
+        case _:
             return result
 
 
@@ -326,5 +326,5 @@ async def and_then_async(
         case Err(e):
             _ = e
             return result
-        case _:  # pragma: no cover
+        case _:
             return result
