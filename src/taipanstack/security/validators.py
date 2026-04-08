@@ -14,6 +14,7 @@ MIN_PYTHON_MINOR_VERSION = 10
 MAX_PYTHON_VERSION_LENGTH = 20
 MAX_EMAIL_LOCAL_LENGTH = 64
 MAX_EMAIL_DOMAIN_LENGTH = 255
+MAX_EMAIL_LENGTH = MAX_EMAIL_LOCAL_LENGTH + MAX_EMAIL_DOMAIN_LENGTH + 1
 MAX_URL_LENGTH = 2048
 LOCALHOST_DOMAINS = ("localhost", "127.0.0.1", "::1")
 PROJECT_NAME_RESERVED = frozenset(
@@ -233,6 +234,14 @@ def validate_email(email: str) -> str:
 
     if not email:
         msg = "Email cannot be empty"
+        raise ValueError(msg)
+
+    if len(email) > MAX_EMAIL_LENGTH:
+        msg = f"Email length exceeds maximum allowed length of {MAX_EMAIL_LENGTH}"
+        raise ValueError(msg)
+
+    if "\x00" in email or not email.isprintable():
+        msg = "Email contains invalid characters"
         raise ValueError(msg)
 
     # RFC 5322 compliant pattern (simplified)
