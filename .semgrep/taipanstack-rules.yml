@@ -573,3 +573,77 @@ rules:
       - pattern-not-inside: |
           $DELAY = min(...)
           ...
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 39: Detect unsafe tarfile.extractall (Zip Slip / Path Traversal)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-unsafe-tarfile-extractall
+    languages: [python]
+    severity: ERROR
+    message: >
+      Calling `tarfile.extractall()` without safely filtering members can lead to Path Traversal
+      (Zip Slip), allowing an attacker to write files anywhere on the filesystem.
+      Pass a safe `filter` argument (e.g., `filter="data"` or a custom validation function).
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      owasp: "A01:2021 - Broken Access Control"
+      technology:
+        - python
+    patterns:
+      - pattern: $TAR.extractall(...)
+      - pattern-not: $TAR.extractall(..., filter=$FILTER, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 40: Detect unsafe zipfile.extractall (Zip Slip / Path Traversal)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-unsafe-zipfile-extractall
+    languages: [python]
+    severity: WARNING
+    message: >
+      Calling `zipfile.extractall()` on untrusted archives can lead to Path Traversal
+      (Zip Slip) vulnerabilities if the archive contains malicious paths. While Python 3.12+
+      has improved defenses, ensure paths are strictly validated before extraction when handling
+      untrusted ZIP files.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      owasp: "A01:2021 - Broken Access Control"
+      technology:
+        - python
+    patterns:
+      - pattern: $ZIP.extractall(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 41: Detect insecure usage of `random` module
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-random
+    languages: [python]
+    severity: ERROR
+    message: >
+      The standard `random` module is not cryptographically secure. Use `secrets`
+      or `random.SystemRandom()` for security-sensitive operations (e.g., tokens,
+      passwords, session keys). If this is strictly for non-cryptographic purposes
+      (like jitter), consider using `secrets.SystemRandom()` anyway to maintain a
+      clean security baseline.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: random.random(...)
+          - pattern: random.randint(...)
+          - pattern: random.randrange(...)
+          - pattern: random.choice(...)
+          - pattern: random.choices(...)
+          - pattern: random.sample(...)
+          - pattern: random.uniform(...)
+          - pattern: random.shuffle(...)
+      - pattern-not-inside: |
+          random.SystemRandom().$METHOD(...)
