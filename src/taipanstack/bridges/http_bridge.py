@@ -40,7 +40,7 @@ class RequestKwargs(TypedDict, total=False):
     data: Mapping[str, Any] | None
     files: Mapping[str, Any] | Sequence[tuple[str, Any]] | None
     json: Any | None
-    params: Mapping[str, Any] | Sequence[tuple[str, Any]] | str | bytes | None
+    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
     headers: Mapping[str, str] | Sequence[tuple[str, str]] | None
     cookies: dict[str, str] | list[tuple[str, str]] | None
     auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
@@ -52,7 +52,7 @@ class ClientKwargs(TypedDict, total=False):
     """Keyword arguments passed to httpx.AsyncClient."""
 
     auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
-    params: Mapping[str, Any] | Sequence[tuple[str, Any]] | str | bytes | None
+    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
     headers: (
         Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | None
     )
