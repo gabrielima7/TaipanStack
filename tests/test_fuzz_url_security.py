@@ -25,6 +25,7 @@ def test_fuzz_url_massive_strings_dos(url: str) -> None:
         max_size=100,
     ).filter(lambda s: "\x00" in s)
 )
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 def test_fuzz_url_null_bytes(url: str) -> None:
     """Fuzz validate_url with strings containing null bytes."""
     with pytest.raises(ValueError, match="URL contains invalid characters"):
