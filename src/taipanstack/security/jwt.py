@@ -46,6 +46,15 @@ def encode_jwt(
     if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
+    # Prevent InsecureKeyLengthWarning and potential cryptographic vulnerabilities
+    if (
+        str(algorithm).strip().upper().startswith("HS")
+        and len(str(secret_key).encode("utf-8")) < 32  # noqa: PLR2004
+    ):
+        raise ValueError(
+            f"HMAC secret key must be at least 32 bytes for algorithm {algorithm}"
+        )
+
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
@@ -79,6 +88,15 @@ def decode_jwt(
         secrets.compare_digest(str(alg).strip().lower(), "none") for alg in algorithms
     ):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
+
+    # Prevent InsecureKeyLengthWarning for any HMAC algorithms
+    if (
+        any(str(alg).strip().upper().startswith("HS") for alg in algorithms)
+        and len(str(secret_key).encode("utf-8")) < 32  # noqa: PLR2004
+    ):
+        raise ValueError(
+            "HMAC secret key must be at least 32 bytes for decoding with HS* algorithms"
+        )
 
     # We enforce 'exp' and 'aud' through PyJWT's options parameter
     options = {

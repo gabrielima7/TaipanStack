@@ -21,6 +21,16 @@ class TestEncodeJWT:
         assert isinstance(token, str)
         assert len(token) > 0
 
+    def test_encode_rejects_short_hmac_key(self) -> None:
+        """Test that encoding rejects HMAC keys shorter than 32 bytes."""
+        payload = {"sub": "user_123"}
+        secret = "short"
+
+        result = encode_jwt(payload, secret, algorithm="HS256")
+        assert result.is_err()
+        assert isinstance(result.err_value, ValueError)
+        assert "must be at least 32 bytes" in str(result.err_value)
+
     def test_encode_rejects_none_algorithm(self) -> None:
         """Test that encoding explicitly rejects the 'none' algorithm."""
         payload = {"sub": "user_123"}
@@ -54,6 +64,16 @@ class TestDecodeJWT:
         decoded = result.unwrap()
         assert decoded["sub"] == "user_123"
         assert decoded["aud"] == "my_app"
+
+    def test_decode_rejects_short_hmac_key(self) -> None:
+        """Test that decoding rejects HMAC keys shorter than 32 bytes."""
+        secret = "short"
+        result = decode_jwt(
+            "some.token.str", secret, algorithms=["HS256"], audience="my_app"
+        )
+        assert result.is_err()
+        assert isinstance(result.err_value, ValueError)
+        assert "must be at least 32 bytes" in str(result.err_value)
 
     def test_decode_rejects_none_algorithm(self) -> None:
         """Test that mapping 'none' algorithm to decode is blocked."""
