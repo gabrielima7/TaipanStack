@@ -18,7 +18,7 @@
         <link rel="prev" href="../security/">
       
       
-        <link rel="next" href="../../patterns/security/">
+        <link rel="next" href="../resilience/">
       
       
         
@@ -2393,6 +2393,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resilience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resilience
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -10627,12 +10655,44 @@ or a <code>RateLimitError</code> error.</p>
 
 
 <a href="#taipanstack.utils.rate_limit.RateLimiter.consume" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">consume</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">consume</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Try to consume a single token.</p>
+        <p>Try to consume tokens.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>tokens</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of tokens to consume. Defaults to 1.0.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>1.0</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 <table>
@@ -10651,7 +10711,7 @@ or a <code>RateLimitError</code> error.</p>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>True if a token was consumed (allow), False otherwise (limit exceeded).</p>
+                <p>True if tokens were consumed (allow), False otherwise (limit exceeded).</p>
               </div>
             </td>
           </tr>

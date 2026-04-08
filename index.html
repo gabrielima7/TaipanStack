@@ -550,10 +550,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#retry-circuit-breaker" class="md-nav__link">
+  <a href="#combining-result-circuit-breaker" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retry + Circuit Breaker
+        🔗 Combining Result + Circuit Breaker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-result-retry-with-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Combining Result + Retry with Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adaptive-resilience-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Adaptive Resilience Pipeline
       
     </span>
   </a>
@@ -830,6 +852,34 @@
     
   
     Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/resilience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resilience
   
 
     
@@ -1997,10 +2047,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#retry-circuit-breaker" class="md-nav__link">
+  <a href="#combining-result-circuit-breaker" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retry + Circuit Breaker
+        🔗 Combining Result + Circuit Breaker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-result-retry-with-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Combining Result + Retry with Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adaptive-resilience-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Adaptive Resilience Pipeline
       
     </span>
   </a>
@@ -2129,7 +2201,7 @@
 <li>
 <p>:shield: <strong>Security First</strong></p>
 <hr />
-<p>Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, input sanitizers &amp; validators, secret detection, SBOM + SLSA attestation.</p>
+<p>Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, adaptive resilience pipeline, input sanitizers &amp; validators, secret detection, SBOM + SLSA attestation.</p>
 </li>
 <li>
 <p>:zap: <strong>High Performance</strong></p>
@@ -2189,52 +2261,99 @@
 </span><span id="__span-4-3"><span class="n">safe_path</span> <span class="o">=</span> <span class="n">guard_path_traversal</span><span class="p">(</span><span class="n">user_input</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="s2">&quot;/app/data&quot;</span><span class="p">)</span>
 </span><span id="__span-4-4"><span class="n">safe_cmd</span> <span class="o">=</span> <span class="n">guard_command_injection</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">],</span> <span class="n">allowed_commands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">])</span>
 </span></code></pre></div>
-<h3 id="retry-circuit-breaker">Retry + Circuit Breaker<a class="headerlink" href="#retry-circuit-breaker" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
-</span><span id="__span-5-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span>
+<h3 id="combining-result-circuit-breaker">🔗 Combining Result + Circuit Breaker<a class="headerlink" href="#combining-result-circuit-breaker" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
+</span><span id="__span-5-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
 </span><span id="__span-5-3">
-</span><span id="__span-5-4"><span class="nd">@circuit_breaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-</span><span id="__span-5-5"><span class="nd">@retry</span><span class="p">(</span><span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">))</span>
-</span><span id="__span-5-6"><span class="k">def</span><span class="w"> </span><span class="nf">call_external_service</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-5-7">    <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">call</span><span class="p">()</span>
+</span><span id="__span-5-4"><span class="n">breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;payments&quot;</span><span class="p">)</span>
+</span><span id="__span-5-5">
+</span><span id="__span-5-6"><span class="nd">@breaker</span>
+</span><span id="__span-5-7"><span class="nd">@safe</span>
+</span><span id="__span-5-8"><span class="k">def</span><span class="w"> </span><span class="nf">charge_customer</span><span class="p">(</span><span class="n">customer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-5-9">    <span class="k">return</span> <span class="n">payment_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
+</span><span id="__span-5-10">
+</span><span id="__span-5-11"><span class="c1"># Both circuit protection AND explicit error handling</span>
+</span><span id="__span-5-12"><span class="n">result</span> <span class="o">=</span> <span class="n">charge_customer</span><span class="p">(</span><span class="s2">&quot;cust_123&quot;</span><span class="p">,</span> <span class="mf">49.99</span><span class="p">)</span>
+</span><span id="__span-5-13"><span class="k">match</span> <span class="n">result</span><span class="p">:</span>
+</span><span id="__span-5-14">    <span class="k">case</span> <span class="n">Ok</span><span class="p">(</span><span class="n">receipt</span><span class="p">):</span>
+</span><span id="__span-5-15">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment successful: </span><span class="si">{</span><span class="n">receipt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-5-16">    <span class="k">case</span> <span class="n">Err</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+</span><span id="__span-5-17">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment failed safely: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="combining-result-retry-with-monitoring">🔗 Combining Result + Retry with Monitoring<a class="headerlink" href="#combining-result-retry-with-monitoring" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">unwrap_or</span>
+</span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
+</span><span id="__span-6-3">
+</span><span id="__span-6-4"><span class="nd">@retry</span><span class="p">(</span>
+</span><span id="__span-6-5">    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-6-6">    <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">),</span>
+</span><span id="__span-6-7">    <span class="n">on_retry</span><span class="o">=</span><span class="k">lambda</span> <span class="n">attempt</span><span class="p">,</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span>
+</span><span id="__span-6-8">        <span class="sa">f</span><span class="s2">&quot;⚠️  Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_a</span><span class="si">}</span><span class="s2"> failed, retrying in </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s...&quot;</span>
+</span><span id="__span-6-9">    <span class="p">),</span>
+</span><span id="__span-6-10"><span class="p">)</span>
+</span><span id="__span-6-11"><span class="nd">@safe</span>
+</span><span id="__span-6-12"><span class="k">def</span><span class="w"> </span><span class="nf">fetch_user_profile</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-6-13">    <span class="k">return</span> <span class="n">api_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-6-14">
+</span><span id="__span-6-15"><span class="c1"># Retry handles transient failures, Result handles business errors</span>
+</span><span id="__span-6-16"><span class="n">profile</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">fetch_user_profile</span><span class="p">(</span><span class="s2">&quot;usr_456&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">})</span>
+</span></code></pre></div>
+<h3 id="adaptive-resilience-pipeline">🔗 Adaptive Resilience Pipeline<a class="headerlink" href="#adaptive-resilience-pipeline" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
+</span><span id="__span-7-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResilienceOrchestrator</span><span class="p">,</span> <span class="n">AdaptiveCircuitBreaker</span><span class="p">,</span> <span class="n">AdaptiveTimeout</span>
+</span><span id="__span-7-3"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryConfig</span>
+</span><span id="__span-7-4">
+</span><span id="__span-7-5"><span class="c1"># Compose an intelligent pipeline: Bulkhead -&gt; Breaker -&gt; Retry -&gt; Timeout -&gt; Fallback</span>
+</span><span id="__span-7-6"><span class="n">orch</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-7-7">    <span class="n">ResilienceOrchestrator</span><span class="p">(</span><span class="s2">&quot;billing_api&quot;</span><span class="p">)</span>
+</span><span id="__span-7-8">    <span class="o">.</span><span class="n">with_bulkhead</span><span class="p">(</span><span class="n">max_concurrent</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_queue</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="c1"># Prevent resource exhaustion</span>
+</span><span id="__span-7-9">    <span class="o">.</span><span class="n">with_circuit_breaker</span><span class="p">(</span><span class="n">AdaptiveCircuitBreaker</span><span class="p">(</span><span class="s2">&quot;billing&quot;</span><span class="p">,</span> <span class="n">target_error_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span> <span class="c1"># Auto-tunes thresholds</span>
+</span><span id="__span-7-10">    <span class="o">.</span><span class="n">with_timeout</span><span class="p">(</span><span class="n">AdaptiveTimeout</span><span class="p">(</span><span class="n">min_timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">))</span>
+</span><span id="__span-7-11">    <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">RetryConfig</span><span class="p">(</span><span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">initial_delay</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+</span><span id="__span-7-12">    <span class="o">.</span><span class="n">with_fallback</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;unavailable&quot;</span><span class="p">})</span>
+</span><span id="__span-7-13"><span class="p">)</span>
+</span><span id="__span-7-14">
+</span><span id="__span-7-15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_billing</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
+</span><span id="__span-7-16">    <span class="c1"># The orchestrator handles all concurrency, retry, circuit breaking, and fallbacks</span>
+</span><span id="__span-7-17">    <span class="k">return</span> <span class="k">await</span> <span class="n">orch</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stripe_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="intelligent-caching">Intelligent Caching<a class="headerlink" href="#intelligent-caching" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached</span>
-</span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
-</span><span id="__span-6-3">
-</span><span id="__span-6-4"><span class="nd">@cached</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
-</span><span id="__span-6-5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_data</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
-</span><span id="__span-6-6">    <span class="k">return</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="c1"># Only Ok() results are cached</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached</span>
+</span><span id="__span-8-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
+</span><span id="__span-8-3">
+</span><span id="__span-8-4"><span class="nd">@cached</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</span><span id="__span-8-5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_data</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
+</span><span id="__span-8-6">    <span class="k">return</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="c1"># Only Ok() results are cached</span>
 </span></code></pre></div>
 <h3 id="fallbacks-timeouts">Fallbacks &amp; Timeouts<a class="headerlink" href="#fallbacks-timeouts" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.resilience</span><span class="w"> </span><span class="kn">import</span> <span class="n">fallback</span><span class="p">,</span> <span class="n">timeout</span>
-</span><span id="__span-7-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
-</span><span id="__span-7-3">
-</span><span id="__span-7-4"><span class="nd">@fallback</span><span class="p">(</span><span class="n">fallback_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;offline&quot;</span><span class="p">},</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,))</span>
-</span><span id="__span-7-5"><span class="nd">@timeout</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
-</span><span id="__span-7-6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_remote_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
-</span><span id="__span-7-7">    <span class="k">return</span> <span class="k">await</span> <span class="n">api</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.resilience</span><span class="w"> </span><span class="kn">import</span> <span class="n">fallback</span><span class="p">,</span> <span class="n">timeout</span>
+</span><span id="__span-9-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
+</span><span id="__span-9-3">
+</span><span id="__span-9-4"><span class="nd">@fallback</span><span class="p">(</span><span class="n">fallback_value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;offline&quot;</span><span class="p">},</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,))</span>
+</span><span id="__span-9-5"><span class="nd">@timeout</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</span><span id="__span-9-6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_remote_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
+</span><span id="__span-9-7">    <span class="k">return</span> <span class="k">await</span> <span class="n">api</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
 </span></code></pre></div>
 <hr />
 <h2 id="architecture">📐 Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1">                    ┌─────────────────────────────────────┐
-</span><span id="__span-8-2">                    │             Application             │
-</span><span id="__span-8-3">                    └─────────────────┬───────────────────┘
-</span><span id="__span-8-4">                                      │
-</span><span id="__span-8-5">          ┌───────────────────────────┼───────────────────────────┐
-</span><span id="__span-8-6">          ▼                           ▼                           ▼
-</span><span id="__span-8-7">┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-</span><span id="__span-8-8">│    Security     │       │     Config      │       │     Utils       │
-</span><span id="__span-8-9">│ guards, saniti- │       │    models,      │       │  logging, retry │
-</span><span id="__span-8-10">│ zers, validators│       │   generators    │       │ metrics, fs     │
-</span><span id="__span-8-11">└────────┬────────┘       └────────┬────────┘       └────────┬────────┘
-</span><span id="__span-8-12">         │                         │                         │
-</span><span id="__span-8-13">         └─────────────────────────┼─────────────────────────┘
-</span><span id="__span-8-14">                                   ▼
-</span><span id="__span-8-15">                    ┌─────────────────────────────────────┐
-</span><span id="__span-8-16">                    │              Core                   │
-</span><span id="__span-8-17">                    │    Result types, base patterns      │
-</span><span id="__span-8-18">                    └─────────────────────────────────────┘
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1">                    ┌─────────────────────────────────────┐
+</span><span id="__span-10-2">                    │             Application             │
+</span><span id="__span-10-3">                    └─────────────────┬───────────────────┘
+</span><span id="__span-10-4">                                      │
+</span><span id="__span-10-5">          ┌───────────────────────────┼───────────────────────────┐
+</span><span id="__span-10-6">          ▼                           ▼                           ▼
+</span><span id="__span-10-7">┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+</span><span id="__span-10-8">│    Security     │       │     Config      │       │     Utils       │
+</span><span id="__span-10-9">│ guards, saniti- │       │    models,      │       │  logging, retry │
+</span><span id="__span-10-10">│ zers, validators│       │   generators    │       │ metrics, fs     │
+</span><span id="__span-10-11">└────────┬────────┘       └────────┬────────┘       └────────┬────────┘
+</span><span id="__span-10-12">         │                         │                         │
+</span><span id="__span-10-13">         └─────────────────────────┼─────────────────────────┘
+</span><span id="__span-10-14">                                   ▼
+</span><span id="__span-10-15">                    ┌─────────────────────────────────────┐
+</span><span id="__span-10-16">                    │              Core                   │
+</span><span id="__span-10-17">                    │    Result types, base patterns      │
+</span><span id="__span-10-18">                    └─────────────────────────────────────┘
 </span></code></pre></div>
 <p><a href="architecture/">Read the full architecture guide →</a></p>
 <hr />
