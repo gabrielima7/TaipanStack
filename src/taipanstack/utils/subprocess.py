@@ -5,6 +5,7 @@ Provides secure wrappers around subprocess execution with
 command validation, timeout handling, and retry logic.
 """
 
+import math
 import os
 import shutil
 import subprocess  # nosec B404
@@ -283,6 +284,12 @@ def run_safe_command(
         ...     print("Installation complete!")
 
     """
+    # Security Enhancement: Prevent DoS via infinite blocking behaviors or
+    # unhandled exceptions from threading/asyncio primitives by explicitly
+    # validating that timeout is a finite, non-negative number.
+    if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
+        raise ValueError("timeout must be a finite non-negative number")
+
     validated_cmd = _validate_and_resolve_command(command, allowed_commands)
     safe_env = _filter_environment(env, allowed_env_vars)
 
