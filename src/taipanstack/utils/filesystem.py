@@ -166,6 +166,59 @@ def safe_read(
     return Ok(path.read_text(encoding=encoding))
 
 
+def _validate_safe_write_path(path: Path, opts: WriteOptions) -> None:
+    """Validate the path for safe_write."""
+    if opts.base_dir is not None:
+        base = Path(opts.base_dir).resolve()
+        # For new files, validate the parent
+        if not path.exists():
+            parent = path.parent
+            guard_path_traversal(parent, base)
+        else:
+            guard_path_traversal(path, base)
+    else:
+        _validate_path(path)
+
+
+def _sanitize_write_path(path: Path) -> Path:
+    """Sanitize the filename for safe_write."""
+    safe_name = sanitize_filename(path.name)
+    if safe_name != path.name:
+        raise SecurityError(
+            f"Unsafe or invalid characters in filename: '{path.name}'. "
+            f"Expected safe name: '{safe_name}'",
+            guard_name="sanitize_filename",
+            value=path.name,
+        )
+    return path.parent / safe_name
+
+
+def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
+    """Perform an atomic write operation."""
+    # Write to temp file first, then rename
+    _fd, temp_path = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    try:
+        # Close the file descriptor immediately - required for Windows
+        os.close(_fd)
+        temp_file = Path(temp_path)
+        temp_file.write_text(content, encoding=opts.encoding)
+        # Preserve permissions if original exists
+        if path.exists():
+            shutil.copymode(path, temp_file)
+        # On Windows, we need to remove the target first if it exists
+        if path.exists():
+            path.unlink()
+        temp_file.rename(path)
+    except Exception:
+        # Clean up temp file on error
+        Path(temp_path).unlink(missing_ok=True)
+        raise
+
+
 def safe_write(
     path: Path | str,
     content: str,
@@ -189,28 +242,8 @@ def safe_write(
     opts = options or WriteOptions()
     path = Path(path)
 
-    # Validate path
-    if opts.base_dir is not None:
-        base = Path(opts.base_dir).resolve()
-        # For new files, validate the parent
-        if not path.exists():
-            parent = path.parent
-            guard_path_traversal(parent, base)
-        else:
-            guard_path_traversal(path, base)
-    else:
-        _validate_path(path)
-
-    # Sanitize filename
-    safe_name = sanitize_filename(path.name)
-    if safe_name != path.name:
-        raise SecurityError(
-            f"Unsafe or invalid characters in filename: '{path.name}'. "
-            f"Expected safe name: '{safe_name}'",
-            guard_name="sanitize_filename",
-            value=path.name,
-        )
-    path = path.parent / safe_name
+    _validate_safe_write_path(path, opts)
+    path = _sanitize_write_path(path)
 
     # Create parents if needed
     if opts.create_parents:
@@ -223,28 +256,7 @@ def safe_write(
 
     # Write file
     if opts.atomic:
-        # Write to temp file first, then rename
-        _fd, temp_path = tempfile.mkstemp(
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-        )
-        try:
-            # Close the file descriptor immediately - required for Windows
-            os.close(_fd)
-            temp_file = Path(temp_path)
-            temp_file.write_text(content, encoding=opts.encoding)
-            # Preserve permissions if original exists
-            if path.exists():
-                shutil.copymode(path, temp_file)
-            # On Windows, we need to remove the target first if it exists
-            if path.exists():
-                path.unlink()
-            temp_file.rename(path)
-        except Exception:
-            # Clean up temp file on error
-            Path(temp_path).unlink(missing_ok=True)
-            raise
+        _perform_atomic_write(path, content, opts)
     else:
         path.write_text(content, encoding=opts.encoding)
 
