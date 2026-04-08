@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING
+from collections.abc import Awaitable, Callable, Iterable, AsyncIterable, Mapping, Sequence
+from typing import TYPE_CHECKING, IO, Any
 
 from typing_extensions import TypedDict, Unpack
 
@@ -28,40 +28,37 @@ logger = logging.getLogger("taipanstack.bridges.http")
 class RequestKwargs(TypedDict, total=False):
     """Keyword arguments passed to httpx.AsyncClient.request."""
 
-    content: object
-    data: object
-    files: object
-    json: object
-    params: object
-    headers: object
-    cookies: object
-    auth: object
+    content: str | bytes | Iterable[bytes] | AsyncIterable[bytes] | None
+    data: Mapping[str, Any] | None
+    files: Mapping[str, IO[bytes] | bytes | str | tuple[str | None, IO[bytes] | bytes | str] | tuple[str | None, IO[bytes] | bytes | str, str | None] | tuple[str | None, IO[bytes] | bytes | str, str | None, Mapping[str, str]]] | Sequence[tuple[str, IO[bytes] | bytes | str | tuple[str | None, IO[bytes] | bytes | str] | tuple[str | None, IO[bytes] | bytes | str, str | None] | tuple[str | None, IO[bytes] | bytes | str, str | None, Mapping[str, str]]]] | None
+    json: Any | None
+    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
+    headers: Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | Sequence[tuple[bytes, bytes]] | None
+    cookies: dict[str, str] | list[tuple[str, str]] | None
+    auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
     follow_redirects: bool
-    timeout: object
-    extensions: object
+    extensions: Mapping[str, Any] | None
 
 
 class ClientKwargs(TypedDict, total=False):
     """Keyword arguments passed to httpx.AsyncClient."""
 
-    auth: object
-    params: object
-    headers: object
-    cookies: object
-    verify: object
-    cert: object
+    auth: tuple[str | bytes, str | bytes] | Callable[[Any], Any] | Any | None
+    params: Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None
+    headers: Mapping[str, str] | Mapping[bytes, bytes] | Sequence[tuple[str, str]] | Sequence[tuple[bytes, bytes]] | None
+    cookies: dict[str, str] | list[tuple[str, str]] | None
+    verify: Any | str | bool
+    cert: str | tuple[str, str] | tuple[str, str, str] | None
     http1: bool
     http2: bool
-    proxies: object
-    mounts: object
-    timeout: object
+    proxy: str | Any | None
+    mounts: Mapping[str, Any | None] | None
     follow_redirects: bool
-    limits: object
+    limits: Any
     max_redirects: int
-    event_hooks: object
-    base_url: object
-    transport: object
-    app: object
+    event_hooks: Mapping[str, list[Callable[..., Any]]] | None
+    base_url: str | Any
+    transport: Any | None
     trust_env: bool
     default_encoding: str
 
@@ -288,6 +285,7 @@ class SafeHttpClient:
         retry_config: RetryConfig | None = None,
         circuit_breaker: CircuitBreaker | None = None,
         retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
+        timeout: float = 10.0,
         **client_kwargs: Unpack[ClientKwargs],
     ) -> None:
         """Initialize the safe HTTP client.
@@ -297,16 +295,16 @@ class SafeHttpClient:
             retry_config: Retry configuration.
             circuit_breaker: Circuit breaker instance.
             retryable_status_codes: Status codes to retry.
+            timeout: Explicit timeout in seconds.
             **client_kwargs: Keyword args for httpx.AsyncClient.
-                Default timeout is 10.0 seconds if not provided.
 
         """
         self._ssrf_protection = ssrf_protection
         self._retry_config = retry_config
         self._circuit_breaker = circuit_breaker
         self._retryable_status_codes = retryable_status_codes
+        self._timeout = timeout
         self._client_kwargs = client_kwargs
-        self._client_kwargs.setdefault("timeout", 10.0)
         self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self) -> SafeHttpClient:
@@ -317,9 +315,8 @@ class SafeHttpClient:
                 "Install with: pip install taipanstack[bridges-http]"
             )
             raise ImportError(msg)
-        timeout = self._client_kwargs.pop("timeout", 10.0)
         self._client = httpx.AsyncClient(
-            timeout=timeout,
+            timeout=self._timeout,
             **self._client_kwargs,
         )  # nosemgrep
         return self
