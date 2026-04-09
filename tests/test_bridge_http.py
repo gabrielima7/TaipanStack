@@ -321,6 +321,35 @@ class TestSafeHttpClient:
         mock_httpx.AsyncClient.assert_called_once_with(timeout=10.0)
 
     @pytest.mark.asyncio
+    async def test_client_timeout_custom_passed(self) -> None:
+        """Verifies that SafeHttpClient request passes custom timeout."""
+        from taipanstack.bridges.http_bridge import SafeHttpClient
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_client = AsyncMock()
+        mock_client.request = AsyncMock(return_value=mock_response)
+        mock_client.aclose = AsyncMock()
+
+        with (
+            patch("taipanstack.bridges.http_bridge._HAS_HTTPX", True),
+            patch("taipanstack.bridges.http_bridge.httpx") as mock_httpx,
+            patch(
+                "taipanstack.bridges.http_bridge.guard_ssrf",
+                return_value=Ok("https://example.com"),
+            ),
+        ):
+            mock_httpx.AsyncClient.return_value = mock_client
+
+            async with SafeHttpClient(ssrf_protection=False) as client:
+                result = await client.request("GET", "https://example.com", timeout=5.0)
+
+        assert isinstance(result, Ok)
+        mock_client.request.assert_awaited_once_with(
+            "GET", "https://example.com", timeout=5.0
+        )
+
+    @pytest.mark.asyncio
     async def test_no_httpx_raises(self) -> None:
         """Entering the context raises ImportError without httpx."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
