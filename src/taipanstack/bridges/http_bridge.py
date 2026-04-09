@@ -11,15 +11,16 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import (
-    Awaitable,
     AsyncIterable,
+    Awaitable,
     Callable,
     Iterable,
     Mapping,
     Sequence,
 )
-from typing import TYPE_CHECKING, IO, Any
-from typing_extensions import TypeAlias, TypedDict, Unpack
+from typing import IO, TYPE_CHECKING, Any, TypeAlias
+
+from typing_extensions import TypedDict, Unpack
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -54,22 +55,37 @@ JSONType: TypeAlias = (
 class ClientKwargs(TypedDict, total=False):
     """Keyword arguments for ``httpx.AsyncClient``."""
 
-    auth: tuple[str, str] | "httpx.Auth"
-    params: "httpx.QueryParams" | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes
+    auth: tuple[str, str] | httpx.Auth
+    params: (
+        httpx.QueryParams
+        | Mapping[
+            str,
+            str | int | float | bool | None | Sequence[str | int | float | bool | None],
+        ]
+        | list[tuple[str, str | int | float | bool | None]]
+        | tuple[tuple[str, str | int | float | bool | None], ...]
+        | str
+        | bytes
+    )
     headers: Mapping[str, str] | Mapping[bytes, bytes] | list[tuple[str, str]]
-    cookies: "httpx.Cookies" | "http.cookiejar.CookieJar" | dict[str, str] | list[tuple[str, str]]
-    verify: "ssl.SSLContext" | str | bool
+    cookies: (
+        httpx.Cookies
+        | http.cookiejar.CookieJar
+        | dict[str, str]
+        | list[tuple[str, str]]
+    )
+    verify: ssl.SSLContext | str | bool
     cert: str | tuple[str, str] | tuple[str, str, str]
     http1: bool
     http2: bool
-    proxy: "httpx.Proxy" | str
-    mounts: Mapping[str, "httpx.AsyncBaseTransport" | None]
+    proxy: httpx.Proxy | str
+    mounts: Mapping[str, httpx.AsyncBaseTransport | None]
     follow_redirects: bool
     max_redirects: int
-    base_url: "httpx.URL" | str
+    base_url: httpx.URL | str
     trust_env: bool
     default_encoding: str | Callable[[bytes], str]
-    timeout: float | tuple[float, float, float, float] | "httpx.Timeout"
+    timeout: float | tuple[float, float, float, float] | httpx.Timeout
 
 
 class RequestKwargs(TypedDict, total=False):
@@ -84,10 +100,25 @@ class RequestKwargs(TypedDict, total=False):
         ]
     )
     json: JSONType
-    params: "httpx.QueryParams" | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes
+    params: (
+        httpx.QueryParams
+        | Mapping[
+            str,
+            str | int | float | bool | None | Sequence[str | int | float | bool | None],
+        ]
+        | list[tuple[str, str | int | float | bool | None]]
+        | tuple[tuple[str, str | int | float | bool | None], ...]
+        | str
+        | bytes
+    )
     headers: Mapping[str, str] | Mapping[bytes, bytes] | list[tuple[str, str]]
-    cookies: "httpx.Cookies" | "http.cookiejar.CookieJar" | dict[str, str] | list[tuple[str, str]]
-    auth: tuple[str, str] | "httpx.Auth"
+    cookies: (
+        httpx.Cookies
+        | http.cookiejar.CookieJar
+        | dict[str, str]
+        | list[tuple[str, str]]
+    )
+    auth: tuple[str, str] | httpx.Auth
     follow_redirects: bool
     extensions: Mapping[str, object]
 
@@ -225,7 +256,7 @@ async def safe_request(
     retry_config: RetryConfig | None = None,
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
-    timeout: float | tuple[float, float, float, float] | "httpx.Timeout" = 10.0,
+    timeout: float | tuple[float, float, float, float] | httpx.Timeout = 10.0,
     **kwargs: Unpack[RequestKwargs],
 ) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
@@ -352,7 +383,10 @@ class SafeHttpClient:
         method: str,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
         **kwargs: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
@@ -401,8 +435,11 @@ class SafeHttpClient:
         self,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
-        **kw: Unpack[RequestKwargs]
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
+        **kw: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, timeout=timeout, **kw)
@@ -411,8 +448,11 @@ class SafeHttpClient:
         self,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
-        **kw: Unpack[RequestKwargs]
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
+        **kw: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, timeout=timeout, **kw)
@@ -421,8 +461,11 @@ class SafeHttpClient:
         self,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
-        **kw: Unpack[RequestKwargs]
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
+        **kw: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, timeout=timeout, **kw)
@@ -431,8 +474,11 @@ class SafeHttpClient:
         self,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
-        **kw: Unpack[RequestKwargs]
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
+        **kw: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, timeout=timeout, **kw)
@@ -441,8 +487,11 @@ class SafeHttpClient:
         self,
         url: str,
         *,
-        timeout: float | tuple[float, float, float, float] | "httpx.Timeout" | None = None,
-        **kw: Unpack[RequestKwargs]
+        timeout: float
+        | tuple[float, float, float, float]
+        | httpx.Timeout
+        | None = None,
+        **kw: Unpack[RequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, timeout=timeout, **kw)
