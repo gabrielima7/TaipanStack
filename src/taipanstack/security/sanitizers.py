@@ -89,20 +89,34 @@ def sanitize_string(
     if strip_whitespace:
         result = result.strip()
 
+    # Fast path for safe strings: if it's printable, has no HTML/entity chars,
+    # and either ascii or unicode is allowed, we can skip most checks.
+    if (
+        result.isprintable()
+        and ("<" not in result)
+        and (">" not in result)
+        and ("&" not in result)
+        and (allow_unicode or result.isascii())
+    ):
+        if max_length is not None and len(result) > max_length:
+            return result[:max_length]
+        return result
+
     # Remove null bytes and control characters
-    result = _CONTROL_CHARS_RE.sub("", result)
+    if not result.isprintable():
+        result = _CONTROL_CHARS_RE.sub("", result)
 
     # Handle HTML
     if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
+        # Remove HTML tags if potential tags exist
+        if "<" in result or ">" in result:
+            result = _HTML_TAGS_RE.sub("", result)
+        # Escape HTML entities if any exist
+        if "&" in result or "<" in result or ">" in result:
+            result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     # Handle unicode
-    if not allow_unicode:
+    if not allow_unicode and not result.isascii():
         result = result.encode("ascii", errors="ignore").decode("ascii")
 
     # Truncate if needed
@@ -361,25 +375,6 @@ def sanitize_path(
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
 
 
-def _sanitize_env_multiline(value: str, max_length: int) -> str:
-    """Sanitize an environment value allowing multiline characters."""
-    if "\x00" not in value and len(value) <= max_length:
-        return value
-    return value.replace("\x00", "")
-
-
-def _sanitize_env_singleline(value: str, max_length: int) -> str:
-    """Sanitize an environment value, converting multiline to spaces."""
-    if (
-        "\x00" not in value
-        and "\n" not in value
-        and "\r" not in value
-        and len(value) <= max_length
-    ):
-        return value
-    return value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
-
-
 def sanitize_env_value(
     value: str,
     *,
@@ -400,17 +395,31 @@ def sanitize_env_value(
         TypeError: If value is not a string.
 
     """
-    if not isinstance(value, str):
+    if type(value) is not str and not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
     if not value:
         return ""
 
-    if allow_multiline:
-        result = _sanitize_env_multiline(value, max_length)
-    else:
-        result = _sanitize_env_singleline(value, max_length)
+    v_len = len(value)
 
+    if not allow_multiline:
+        if (
+            v_len <= max_length
+            and "\n" not in value
+            and "\r" not in value
+            and "\x00" not in value
+        ):
+            return value
+        result = value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
+        if len(result) > max_length:
+            return result[:max_length]
+        return result
+
+    if v_len <= max_length and "\x00" not in value:
+        return value
+
+    result = value.replace("\x00", "")
     if len(result) > max_length:
         return result[:max_length]
     return result
