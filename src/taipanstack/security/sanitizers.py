@@ -181,6 +181,17 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
+def _is_safe_filename_fast_path(filename: str, stem: str, max_length: int) -> bool:
+    """Check if filename meets fast-path criteria."""
+    return (
+        len(filename) <= max_length
+        and filename.isascii()
+        and filename not in {"..", "."}
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+    )
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -219,13 +230,7 @@ def sanitize_filename(
     stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
 
     # Fast-path for already safe, typical filenames
-    if (
-        len(filename) <= max_length
-        and filename not in {"..", "."}
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename.isascii()
-        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-    ):
+    if _is_safe_filename_fast_path(filename, stem, max_length):
         return f"{stem}{suffix}"
 
     # Remove invalid characters using precompiled regex for performance
@@ -261,19 +266,29 @@ def _is_safe_path_part(part: str, stem: str) -> bool:
     )
 
 
+def _handle_parent_dir(parts: list[str], anchor: str) -> None:
+    """Handle a parent directory component ('..')."""
+    if parts and parts[-1] != ".." and parts[-1] != anchor:
+        parts.pop()
+
+
+def _handle_normal_part(part: str, parts: list[str]) -> None:
+    """Handle a standard directory or file component."""
+    stem = _get_stem(part)
+    if _is_safe_path_part(part, stem):
+        parts.append(part)
+    else:
+        safe_part = sanitize_filename(part, preserve_extension=True)
+        if safe_part and safe_part != "..":  # pragma: no branch
+            parts.append(safe_part)
+
+
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""
     if part == "..":
-        if parts and parts[-1] != ".." and parts[-1] != anchor:
-            parts.pop()
+        _handle_parent_dir(parts, anchor)
     elif part != ".":  # pragma: no branch
-        stem = _get_stem(part)
-        if _is_safe_path_part(part, stem):
-            parts.append(part)
-        else:
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part and safe_part != "..":  # pragma: no branch
-                parts.append(safe_part)
+        _handle_normal_part(part, parts)
 
 
 def _clean_path_parts(path: Path) -> list[str]:

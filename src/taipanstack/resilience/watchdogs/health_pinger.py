@@ -123,42 +123,46 @@ class HealthPinger(BaseWatcher):
         self._on_health_change = on_health_change
         self._last_status: dict[str, bool] = {}
 
+    async def _process_target(self, target: HealthTarget) -> None:
+        """Process health check for a single target."""
+        result = await check_target(target)
+
+        match result:
+            case Ok(healthy):
+                is_healthy = healthy
+            case Err(error):
+                logger.warning(
+                    "Health check for '%s' raised: %s",
+                    target.name,
+                    error,
+                )
+                is_healthy = False
+
+        previous = self._last_status.get(target.name)
+
+        if previous != is_healthy:
+            self._last_status[target.name] = is_healthy
+
+            if self._on_health_change is not None:
+                self._on_health_change(target.name, is_healthy)
+
+            if is_healthy:
+                logger.info("Target '%s' is now healthy", target.name)
+            else:
+                logger.warning("Target '%s' is now unhealthy", target.name)
+
+        # Open circuit breaker preventively on failure
+        if (
+            not is_healthy
+            and target.circuit_breaker is not None
+            and target.circuit_breaker.state != CircuitState.OPEN
+        ):
+            _force_open_breaker(target.circuit_breaker, target.name)
+
     async def _run(self) -> None:
         """Execute a single health-check cycle."""
         for target in self._targets:
-            result = await check_target(target)
-
-            match result:
-                case Ok(healthy):
-                    is_healthy = healthy
-                case Err(error):
-                    logger.warning(
-                        "Health check for '%s' raised: %s",
-                        target.name,
-                        error,
-                    )
-                    is_healthy = False
-
-            previous = self._last_status.get(target.name)
-
-            if previous != is_healthy:
-                self._last_status[target.name] = is_healthy
-
-                if self._on_health_change is not None:
-                    self._on_health_change(target.name, is_healthy)
-
-                if is_healthy:
-                    logger.info("Target '%s' is now healthy", target.name)
-                else:
-                    logger.warning("Target '%s' is now unhealthy", target.name)
-
-            # Open circuit breaker preventively on failure
-            if (
-                not is_healthy
-                and target.circuit_breaker is not None
-                and target.circuit_breaker.state != CircuitState.OPEN
-            ):
-                _force_open_breaker(target.circuit_breaker, target.name)
+            await self._process_target(target)
 
 
 def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
