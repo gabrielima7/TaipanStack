@@ -647,3 +647,34 @@ rules:
           - pattern: random.shuffle(...)
       - pattern-not-inside: |
           random.SystemRandom().$METHOD(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 42: Enforce 32-byte minimum secret key length for jwt.encode
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-jwt-insecure-key-length
+    languages: [python]
+    severity: ERROR
+    message: >
+      When encoding a JWT, the secret key must be explicitly validated to ensure it is at least
+      32 bytes (256 bits) long to prevent cryptographic vulnerabilities such as brute-force attacks.
+      Ensure you enforce `len(secret_key.encode('utf-8')) >= 32` before calling `jwt.encode`.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-326: Inadequate Encryption Strength"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+        - pyjwt
+    patterns:
+      - pattern: jwt.encode($PAYLOAD, $KEY, ...)
+      - pattern-not-inside: |
+          if len($KEY.encode('utf-8')) < 32:
+              ...
+          ...
+          jwt.encode($PAYLOAD, $KEY, ...)
+      - pattern-not-inside: |
+          if not (len($KEY.encode('utf-8')) >= 32):
+              ...
+          ...
+          jwt.encode($PAYLOAD, $KEY, ...)

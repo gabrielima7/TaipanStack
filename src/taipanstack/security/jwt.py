@@ -46,6 +46,12 @@ def encode_jwt(
     if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
+    if not isinstance(secret_key, str):
+        raise TypeError("Secret key must be a string.")
+
+    if len(secret_key.encode("utf-8")) < 32:  # noqa: PLR2004
+        raise ValueError("Secret key must be at least 32 bytes long.")
+
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
 
