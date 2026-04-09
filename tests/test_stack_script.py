@@ -194,9 +194,9 @@ def test_install_runtime_deps_flag(tmp_path, monkeypatch):
                 and "add" in str(call[0][0])
                 and any("pydantic" in str(arg) for arg in call[0][0])
             ]
-            assert len(poetry_add_calls) > 0, (
-                "Poetry add with pydantic should have been called"
-            )
+            assert (
+                len(poetry_add_calls) > 0
+            ), "Poetry add with pydantic should have been called"
 
 
 def test_python_version_detection(tmp_path):

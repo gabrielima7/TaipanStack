@@ -106,7 +106,7 @@ def _check_free_threading_available() -> bool:
             return bool(sys.flags.nogil)
 
         # Alternative check for 3.13+
-        import sysconfig  # noqa: PLC0415
+        import sysconfig
 
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
     except (AttributeError, TypeError):
@@ -124,7 +124,7 @@ def _check_mimalloc_available() -> bool:
         return False
 
     try:
-        import sysconfig  # noqa: PLC0415 - lazy import for optional module
+        import sysconfig
 
         # Check if built with mimalloc
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
@@ -338,7 +338,7 @@ def get_python_info() -> dict[str, object]:
         Dictionary with version, platform, and feature information.
 
     """
-    import platform  # noqa: PLC0415 - lazy import for optional module
+    import platform
 
     features = get_features()
 
