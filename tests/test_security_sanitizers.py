@@ -428,3 +428,15 @@ def test_sanitize_filename_value_error():
 def test_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
     assert sanitize_filename("foo/bar", replacement="") == "bar"
+
+def test_sanitize_env_value_multiline_null_byte_short() -> None:
+    """Test sanitize_env_value with allow_multiline=True, null byte, and length <= max_length."""
+    assert sanitize_env_value("a\x00b", max_length=5, allow_multiline=True) == "ab"
+
+def test_sanitize_env_value_multiline_no_null_byte_long() -> None:
+    """Test sanitize_env_value with allow_multiline=True, no null byte, and length > max_length."""
+    assert sanitize_env_value("abcdef", max_length=5, allow_multiline=True) == "abcde"
+
+def test_sanitize_env_value_multiline_null_byte_long() -> None:
+    """Test sanitize_env_value with allow_multiline=True, null byte, v_len > max_length, but result <= max_length."""
+    assert sanitize_env_value("a\x00\x00\x00\x00\x00b", max_length=5, allow_multiline=True) == "ab"
