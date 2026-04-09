@@ -175,9 +175,9 @@ class TestSanitizeFilenameProperties:
         stem = Path(result).stem
         reserved = set('<>:"|?*')
         for ch in stem:
-            assert (
-                ch not in reserved
-            ), f"Reserved char {ch!r} found in stem {stem!r} (full: {result!r})"
+            assert ch not in reserved, (
+                f"Reserved char {ch!r} found in stem {stem!r} (full: {result!r})"
+            )
 
     def test_mutmut_boundaries_and_limits(self) -> None:
         """Strict non-fuzzing bounds to trap and kill Mutmut surviving mutants.
@@ -192,9 +192,9 @@ class TestSanitizeFilenameProperties:
         # 2. Kill 'if len(result) > max_length' mutated to '>='
         res_exact = sanitize_filename("B" * 10, max_length=10)
         assert len(res_exact) == 10
-        assert (
-            res_exact == "B" * 10
-        ), "Mutant survived: strict '>' boundary mutated to '>='"
+        assert res_exact == "B" * 10, (
+            "Mutant survived: strict '>' boundary mutated to '>='"
+        )
 
         # 3. Kill 'if available > 0' mutated to '>=' or '-' to '+'
         # When suffix exactly equals max_length, available == 0.
@@ -226,9 +226,9 @@ class TestSanitizePathProperties:
         try:
             result = sanitize_path(text, max_depth=None)
             for part in Path(str(result)).parts:
-                assert (
-                    part != ".."
-                ), f"Traversal component '..' found as path part in: {result!r}"
+                assert part != "..", (
+                    f"Traversal component '..' found as path part in: {result!r}"
+                )
         except ValueError:
             pass  # Invalid paths raising ValueError is acceptable
 
