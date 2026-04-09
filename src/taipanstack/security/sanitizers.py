@@ -113,7 +113,9 @@ def sanitize_string(
             result = _HTML_TAGS_RE.sub("", result)
         # Escape HTML entities if any exist
         if "&" in result or "<" in result or ">" in result:
-            result = result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            result = (
+                result.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            )
 
     # Handle unicode
     if not allow_unicode and not result.isascii():
@@ -375,7 +377,7 @@ def sanitize_path(
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
 
 
-def sanitize_env_value(
+def sanitize_env_value(  # noqa: PLR0911
     value: str,
     *,
     max_length: int = 4096,
