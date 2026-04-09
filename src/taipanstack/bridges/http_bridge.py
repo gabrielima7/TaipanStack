@@ -362,8 +362,9 @@ class SafeHttpClient:
                 "Install with: pip install taipanstack[bridges-http]"
             )
             raise ImportError(msg)
+        timeout = self._client_kwargs.pop("timeout", 10.0)
         self._client = httpx.AsyncClient(
-            **self._client_kwargs,
+            timeout=timeout, **self._client_kwargs  # type: ignore[misc]
         )  # nosemgrep
         return self
 
