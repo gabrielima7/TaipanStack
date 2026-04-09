@@ -235,6 +235,10 @@ def validate_email(email: str) -> str:
         msg = "Email cannot be empty"
         raise ValueError(msg)
 
+    if "\x00" in email or not email.isprintable():
+        msg = "Email contains invalid characters"
+        raise ValueError(msg)
+
     # RFC 5322 compliant pattern (simplified)
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
 
