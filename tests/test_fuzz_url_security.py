@@ -19,9 +19,7 @@ def test_fuzz_url_massive_strings_dos(url: str) -> None:
 @settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
-        alphabet=st.characters(
-            exclude_categories=("Cc",), include_characters=["\x00"]
-        ),
+        alphabet=st.characters(exclude_categories=("Cc",), include_characters=["\x00"]),
         min_size=10,
         max_size=100,
     ).filter(lambda s: "\x00" in s)
