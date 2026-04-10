@@ -235,6 +235,16 @@ def validate_email(email: str) -> str:
         msg = "Email cannot be empty"
         raise ValueError(msg)
 
+    # Quick pre-validation to prevent DoS/ReDoS
+    max_total_length = MAX_EMAIL_LOCAL_LENGTH + 1 + MAX_EMAIL_DOMAIN_LENGTH
+    if len(email) > max_total_length:
+        msg = f"Email exceeds maximum length of {max_total_length}"
+        raise ValueError(msg)
+
+    if not email.isprintable():
+        msg = "Email contains invalid control characters"
+        raise ValueError(msg)
+
     # RFC 5322 compliant pattern (simplified)
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
 

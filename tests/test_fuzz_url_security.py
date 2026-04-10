@@ -16,10 +16,11 @@ def test_fuzz_url_massive_strings_dos(url: str) -> None:
         validate_url(url)
 
 
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
-            blacklist_categories=("Cc",), whitelist_characters=["\x00"]
+            exclude_categories=("Cc",), include_characters=["\x00"]
         ),
         min_size=10,
         max_size=100,
@@ -31,10 +32,11 @@ def test_fuzz_url_null_bytes(url: str) -> None:
         validate_url(url)
 
 
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
-            blacklist_characters=["\x00"], min_codepoint=0x200B, max_codepoint=0x200F
+            exclude_characters=["\x00"], min_codepoint=0x200B, max_codepoint=0x200F
         ),
         min_size=1,
         max_size=10,
