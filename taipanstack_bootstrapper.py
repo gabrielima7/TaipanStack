@@ -519,7 +519,7 @@ def _add_dependencies(args: argparse.Namespace) -> None:
 def _setup_pre_commit_hooks(args: argparse.Namespace) -> None:
     """Install and configure pre-commit hooks."""
     _log("⚙️  Installing pre-commit hooks...", args)
-    _run_command(["poetry", "run", "pre-commit", "install"], args)
+    _run_command(["poetry", "run", "pre-commit", "install", "--allow-missing-config"], args)
 
 
 def _setup_cli() -> argparse.Namespace:
