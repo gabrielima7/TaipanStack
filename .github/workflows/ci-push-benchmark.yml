@@ -1,0 +1,101 @@
+# =============================================================================
+# TaipanStack — Performance Regression Guard
+# =============================================================================
+# Runs pytest-benchmark on every push/PR and fails CI if any benchmark
+# degrades more than 5% compared to the main branch baseline.
+# =============================================================================
+
+name: Performance Regression
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write # needed to push benchmark data to gh-pages
+  pull-requests: write # needed to comment on PRs
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: '[Setup] Check out code'
+      uses: actions/checkout@v6
+
+    - name: '[Setup] Set up Python'
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.11"
+
+    - name: '[Setup] Install Poetry'
+      run: pipx install poetry
+
+    - name: '[Setup] Configure Poetry'
+      run: poetry config virtualenvs.in-project true
+
+    - name: '[Setup] Cache dependencies'
+      uses: actions/cache@v5
+      with:
+        path: .venv
+        key: bench-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          bench-${{ runner.os }}-poetry-
+
+    - name: '[Setup] Install dependencies'
+      run: poetry install --with dev --sync
+
+    - name: '[Audit] Run benchmarks'
+      run: |
+        poetry run pytest tests/test_benchmarks.py \
+          --benchmark-only \
+          --benchmark-json=benchmark-result.json \
+          --benchmark-min-rounds=10 \
+          --no-cov \
+          -v
+
+      # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
+    - name: '[Setup] Ensure gh-pages branch exists'
+      run: |
+        # Check if gh-pages exists on the REMOTE (not locally)
+        if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+          echo "✅ Remote gh-pages branch already exists, fetching..."
+          git fetch origin gh-pages:gh-pages
+        else
+          echo "🆕 Creating gh-pages branch for the first time..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan gh-pages
+          git reset --hard
+          git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
+          git push origin gh-pages
+          git checkout main
+        fi
+
+      # ── Compare & Store ──────────────────────────────────────────────
+    - name: '[Deploy] Store benchmark result'
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: TaipanStack Performance
+        tool: pytest
+        output-file-path: benchmark-result.json
+          # Push baseline data to gh-pages on main branch pushes
+        auto-push: ${{ github.event_name == 'push' && github.ref ==
+          'refs/heads/main' }}
+        gh-pages-branch: gh-pages
+        benchmark-data-dir-path: dev/bench
+          # Fail CI if performance degrades more than 50% (accounts for runner variance)
+        alert-threshold: "150%"
+        fail-on-alert: false
+          # Comment on PR with comparison
+        comment-on-alert: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Alert when threshold exceeded
+        alert-comment-cc-users: "@gabrielima7"

@@ -1,0 +1,80 @@
+# =============================================================================
+# TaipanStack — Documentation Deploy
+# =============================================================================
+# Builds MkDocs Material documentation and deploys to gh-pages.
+# CRITICAL: Uses keep_files to preserve existing htmlcov/ and dev/bench/.
+# =============================================================================
+
+name: Documentation
+
+on:
+  workflow_run:
+    workflows: ["TaipanStack CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read # needed to download artifacts from CI
+
+jobs:
+  deploy:
+    name: Build & Deploy Docs
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: '[Setup] Check out code'
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: '[Setup] Set up Python'
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.12"
+
+    - name: '[Setup] Install Poetry'
+      run: pipx install poetry
+
+    - name: '[Setup] Configure Poetry'
+      run: poetry config virtualenvs.in-project true
+
+    - name: '[Setup] Cache dependencies'
+      uses: actions/cache@v5
+      with:
+        path: .venv
+        key: docs-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          docs-${{ runner.os }}-poetry-
+
+    - name: '[Setup] Install dependencies'
+      run: poetry install --with docs --sync
+
+    - name: '[Build] Build documentation'
+      run: poetry run mkdocs build
+
+    - name: '[Setup] Download coverage HTML report from latest CI'
+      uses: dawidd6/action-download-artifact@v19
+      with:
+        name: htmlcov
+        path: site/htmlcov/
+        workflow: ci-push-test.yml
+        branch: main
+        if_no_artifact_found: warn
+
+    - name: '[Deploy] Deploy to GitHub Pages'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./site
+        publish_branch: gh-pages
+          # CRITICAL: Preserve existing benchmark results and coverage reports
+        keep_files: true
+        user_name: "github-actions[bot]"
+        user_email: "github-actions[bot]@users.noreply.github.com"
+        commit_message: "docs: deploy MkDocs for ${{ github.sha }}"
