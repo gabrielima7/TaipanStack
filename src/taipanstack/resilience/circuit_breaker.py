@@ -9,6 +9,7 @@ Python framework (sync and async).
 import functools
 import inspect
 import logging
+import math
 import threading
 import time
 from collections.abc import Awaitable, Callable
@@ -205,7 +206,14 @@ class CircuitBreaker:
 
                 case CircuitState.OPEN:
                     # Check if timeout has passed
-                    elapsed = time.monotonic() - self._state.last_failure_time
+                    now = time.monotonic()
+                    if not math.isfinite(now) or not math.isfinite(
+                        self._state.last_failure_time
+                    ):
+                        elapsed = float("inf")  # Force attempt if time is corrupted
+                    else:
+                        elapsed = now - self._state.last_failure_time
+
                     if elapsed >= self.config.timeout:
                         # Before transitioning, verify if we can make an attempt
                         # This happens in a lock, so it's thread-safe. However, once
@@ -275,7 +283,9 @@ class CircuitBreaker:
 
         with self._state.lock:
             self._state.failure_count += 1
-            self._state.last_failure_time = time.monotonic()
+            now = time.monotonic()
+            if math.isfinite(now):
+                self._state.last_failure_time = now
 
             match self._state.state:
                 case CircuitState.HALF_OPEN:
