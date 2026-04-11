@@ -15,7 +15,7 @@ env:
 
 jobs:
   test:
-    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: [Test] Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -24,23 +24,23 @@ jobs:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: [Setup] Set up Python ${{ matrix.python-version }}
         id: setup-python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Configure Poetry
+      - name: [Setup] Configure Poetry
         run: poetry config virtualenvs.in-project true
 
-      - name: Cache dependencies
+      - name: [Setup] Cache dependencies
         uses: actions/cache@v5
         with:
           path: .venv
@@ -48,13 +48,13 @@ jobs:
           restore-keys: |
             taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev --sync
 
-      - name: Run tests with pytest
+      - name: [Test] Run tests with pytest
         run: poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --cov=src --cov-report=xml --cov-report=html --cov-report=term --timeout=60
 
-      - name: Upload HTML coverage report as artifact
+      - name: [Report] Upload HTML coverage report as artifact
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         uses: actions/upload-artifact@v7
         with:
@@ -62,7 +62,7 @@ jobs:
           path: htmlcov/
           retention-days: 7
 
-      - name: Upload coverage to Codecov
+      - name: [Report] Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         uses: codecov/codecov-action@v6
         with:
@@ -73,7 +73,7 @@ jobs:
 
   # Linux Distribution Testing via Docker containers
   test-linux-distros:
-    name: Test on ${{ matrix.distro }}
+    name: [Test] on ${{ matrix.distro }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -109,18 +109,18 @@ jobs:
 
 
     steps:
-      - name: Install dependencies (apt-based)
+      - name: [Setup] Install dependencies (apt-based)
         if: matrix.pkg_manager == 'apt'
         run: |
           apt-get update
           apt-get install -y python3 python3-pip python3-venv git curl
 
-      - name: Install dependencies (dnf-based)
+      - name: [Setup] Install dependencies (dnf-based)
         if: matrix.pkg_manager == 'dnf'
         run: |
           dnf install -y python3 python3-pip git curl
 
-      - name: Install dependencies (zypper-based)
+      - name: [Setup] Install dependencies (zypper-based)
         if: matrix.pkg_manager == 'zypper'
         run: |
           zypper --non-interactive removerepo repo-openh264 || true
@@ -142,7 +142,7 @@ jobs:
             sleep 5
           done
 
-      - name: Install dependencies (pacman-based)
+      - name: [Setup] Install dependencies (pacman-based)
         if: matrix.pkg_manager == 'pacman'
         run: |
           pacman-key --init
@@ -150,15 +150,15 @@ jobs:
           pacman -Sy --noconfirm archlinux-keyring
           pacman -Syu --noconfirm --needed python python-pip git curl
 
-      - name: Install dependencies (apk-based)
+      - name: [Setup] Install dependencies (apk-based)
         if: matrix.pkg_manager == 'apk'
         run: |
           apk add --no-cache python3 py3-pip py3-virtualenv git curl bash
 
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Install Poetry via pip
+      - name: [Setup] Install Poetry via pip
         run: |
           # Use venv for distros enforcing PEP 668 (externally-managed-environment)
           python3 -m venv /opt/poetry-venv
@@ -167,82 +167,82 @@ jobs:
           # Use absolute symlink instead of GITHUB_PATH to avoid env issues in some distros
           ln -sf /opt/poetry-venv/bin/poetry /usr/local/bin/poetry
 
-      - name: Configure Poetry
+      - name: [Setup] Configure Poetry
         run: |
           poetry config virtualenvs.in-project true
 
-      - name: Install project dependencies
+      - name: [Setup] Install project dependencies
         run: |
           poetry install --with dev
 
-      - name: Run tests
+      - name: [Test] Run tests
         run: |
           poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
 
   lint:
-    name: Code Quality Checks
+    name: [Lint] Code Quality Checks
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install linter
+      - name: [Setup] Install linter
         run: pip install ruff
 
-      - name: Run ruff check
+      - name: [Lint] Run ruff check
         run: ruff check src/ tests/ taipanstack_bootstrapper.py
 
-      - name: Run ruff format check
+      - name: [Lint] Run ruff format check
         run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
 
   typecheck:
-    name: Type Checking
+    name: [Type] Type Checking
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run mypy
+      - name: [Type] Run mypy
         run: poetry run mypy src/ --strict
 
   security:
-    name: Security Scanning
+    name: [Audit] Security Scanning
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run Bandit security scanner
+      - name: [Audit] Run Bandit security scanner
         run: poetry run bandit -r src/ -ll -c pyproject.toml
 
-      - name: Run Semgrep
+      - name: [Audit] Run Semgrep
         uses: semgrep/semgrep-action@v1
         with:
           config: >-
@@ -250,68 +250,68 @@ jobs:
             .semgrep/taipanstack-rules.yml
 
   import-lint:
-    name: Architecture Check
+    name: [Audit] Architecture Check
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run Import Linter
+      - name: [Audit] Run Import Linter
         run: poetry run lint-imports
 
   dry-run:
-    name: Dry Run Test
+    name: [Test] Dry Run
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Run taipanstack_bootstrapper.py in dry-run mode
+      - name: [Test] Run taipanstack_bootstrapper.py in dry-run mode
         run: python taipanstack_bootstrapper.py --dry-run --verbose
 
   integration:
-    name: Integration Test
+    name: [Test] Integration
     runs-on: ubuntu-latest
     needs: [test, lint, typecheck]
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Create test directory
+      - name: [Setup] Create test directory
         run: mkdir -p /tmp/taipanstack-test && cd /tmp/taipanstack-test
 
-      - name: Run taipanstack_bootstrapper.py
+      - name: [Test] Run taipanstack_bootstrapper.py
         run: python $GITHUB_WORKSPACE/taipanstack_bootstrapper.py --verbose
         working-directory: /tmp/taipanstack-test
 
-      - name: Verify files created
+      - name: [Audit] Verify files created
         run: |
           test -f pyproject.toml
           test -f .pre-commit-config.yaml
@@ -322,7 +322,7 @@ jobs:
           test -d tests
         working-directory: /tmp/taipanstack-test
 
-      - name: Show project structure
+      - name: [Audit] Show project structure
         run: |
           echo "=== Project Structure ==="
           find . -type f -name "*.py" | head -20
@@ -331,104 +331,102 @@ jobs:
         working-directory: /tmp/taipanstack-test
 
   docstring-coverage:
-    name: Docstring Coverage
+    name: [Lint] Docstring Coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install interrogate
+      - name: [Setup] Install interrogate
         run: pip install interrogate
 
-      - name: Check docstring coverage
+      - name: [Lint] Check docstring coverage
         run: interrogate -v --fail-under=70 src/
-        continue-on-error: true
 
   property-testing:
-    name: Property-Based Testing
+    name: [Test] Property-Based
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run Hypothesis property-based tests
+      - name: [Test] Run Hypothesis property-based tests
         run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov --timeout=300
 
   mutation-testing:
-    name: Mutation Testing
+    name: [Test] Mutation
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Remove Conflicting System LLVM Packages
+      - name: [Setup] Remove Conflicting System LLVM Packages
         run: |
           sudo apt-get purge -y 'llvm-*' 'clang-*' 'libclang-*' 'liblld-*' 'lld-*' 'libllvm*' || true
           sudo apt-get autoremove -y || true
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run Mutmut
+      - name: [Test] Run Mutmut
         run: |
           poetry run mutmut run
           poetry run mutmut results
-        continue-on-error: true
 
   benchmark:
-    name: Performance Benchmarks
+    name: [Test] Performance Benchmarks
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: [Setup] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with dev
 
-      - name: Run pytest-benchmark
+      - name: [Test] Run pytest-benchmark
         run: poetry run pytest tests/test_benchmarks.py --benchmark-only -v --no-cov
 
   docker-build:
-    name: Docker Hardened Build Validation
+    name: [Build] Docker Hardened Validation
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: [Setup] Check out code
         uses: actions/checkout@v6
 
-      - name: Build Hardened Docker Image
+      - name: [Build] Build Hardened Docker Image
         run: docker build -t taipanstack:ci-test .
 
-      - name: Validate Container Run (Healthcheck)
+      - name: [Test] Validate Container Run (Healthcheck)
         run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"

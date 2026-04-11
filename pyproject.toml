@@ -29,6 +29,7 @@ dependencies = [
     "result (>=0.17.0)",
     "pyjwt (>=2.11.0,<3.0.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
+    "cryptography (>=46.0.7)",
 ]
 
 [project.urls]

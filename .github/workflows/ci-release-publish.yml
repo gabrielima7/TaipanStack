@@ -7,25 +7,25 @@ on:
 
 jobs:
     pypi-publish:
-        name: Build and upload release to PyPI
+        name: [Deploy] Build and upload release to PyPI
         runs-on: ubuntu-latest
         permissions:
             id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
             contents: read
         steps:
-            - name: Check out the repository
+            - name: [Setup] Check out the repository
               uses: actions/checkout@v6
 
-            - name: Set up Python
+            - name: [Setup] Set up Python
               uses: actions/setup-python@v6
               with:
                   python-version: "3.11"
 
-            - name: Install Poetry
+            - name: [Setup] Install Poetry
               run: pipx install poetry
 
-            - name: Build project
+            - name: [Build] Build project
               run: poetry build
 
-            - name: Publish to PyPI
+            - name: [Deploy] Publish to PyPI
               uses: pypa/gh-action-pypi-publish@release/v1
