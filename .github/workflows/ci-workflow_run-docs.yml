@@ -29,12 +29,12 @@ jobs:
 
     steps:
       - name: [Setup] Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: [Misc] Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -45,7 +45,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: [Setup] Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: .venv
           key: docs-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
@@ -59,7 +59,7 @@ jobs:
         run: poetry run mkdocs build
 
       - name: [Misc] Download coverage HTML report from latest CI
-        uses: dawidd6/action-download-artifact@v19
+        uses: dawidd6/action-download-artifact@v3
         with:
           name: htmlcov
           path: site/htmlcov/
