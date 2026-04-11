@@ -647,3 +647,52 @@ rules:
           - pattern: random.shuffle(...)
       - pattern-not-inside: |
           random.SystemRandom().$METHOD(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 42: Detect insecure use of `str` for passwords/secrets in Pydantic models
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-pydantic-secretstr
+    languages: [python]
+    severity: WARNING
+    message: >
+      Pydantic model fields that store sensitive information (e.g., passwords,
+      secrets, tokens) should use `pydantic.SecretStr` or `pydantic.SecretBytes`
+      instead of `str` or `bytes`. This prevents accidental leakage of sensitive
+      data in logs, tracebacks, or API responses when models are serialized.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-312: Cleartext Storage of Sensitive Information"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+        - pydantic
+    patterns:
+      - pattern-inside: |
+          class $MODEL(..., BaseModel, ...):
+              ...
+      - pattern-either:
+          - pattern: "password: str"
+          - pattern: "secret: str"
+          - pattern: "token: str"
+          - pattern: "api_key: str"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 43: Detect unsafe `shutil.rmtree` with `ignore_errors=True`
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-shutil-rmtree-ignore-errors
+    languages: [python]
+    severity: WARNING
+    message: >
+      Using `shutil.rmtree(..., ignore_errors=True)` ignores all errors during
+      directory deletion. If this directory contains sensitive temporary files,
+      failing to delete them silently could leave sensitive data on the disk
+      (e.g., TOCTOU vulnerabilities or incomplete cleanup). Handle errors explicitly.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-14: Compiler Removal of Code to Clear Buffers"
+      technology:
+        - python
+    patterns:
+      - pattern: shutil.rmtree(..., ignore_errors=True, ...)
