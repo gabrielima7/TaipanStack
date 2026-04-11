@@ -27,21 +27,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: [Setup] Checkout code
+      - name: "[Setup] Checkout code"
         uses: actions/checkout@v4
 
-      - name: [Misc] Set up Python
+      - name: "[Misc] Set up Python"
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: [Setup] Install Poetry
+      - name: "[Setup] Install Poetry"
         run: pipx install poetry
 
-      - name: [Setup] Configure Poetry
+      - name: "[Setup] Configure Poetry"
         run: poetry config virtualenvs.in-project true
 
-      - name: [Setup] Cache dependencies
+      - name: "[Setup] Cache dependencies"
         uses: actions/cache@v4
         with:
           path: .venv
@@ -49,10 +49,10 @@ jobs:
           restore-keys: |
             bench-${{ runner.os }}-poetry-
 
-      - name: [Setup] Install dependencies
+      - name: "[Setup] Install dependencies"
         run: poetry install --with dev --sync
 
-      - name: [Test] Run benchmarks
+      - name: "[Test] Run benchmarks"
         run: |
           poetry run pytest tests/test_benchmarks.py \
             --benchmark-only \
@@ -62,7 +62,7 @@ jobs:
             -v
 
       # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
-      - name: [Deploy] Ensure gh-pages branch exists
+      - name: "[Deploy] Ensure gh-pages branch exists"
         run: |
           # Check if gh-pages exists on the REMOTE (not locally)
           if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
@@ -80,7 +80,7 @@ jobs:
           fi
 
       # ── Compare & Store ──────────────────────────────────────────────
-      - name: [Test] Store benchmark result
+      - name: "[Test] Store benchmark result"
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: TaipanStack Performance
