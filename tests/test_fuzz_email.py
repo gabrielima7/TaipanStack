@@ -15,6 +15,7 @@ def test_fuzz_email_massive_strings_dos(email: str) -> None:
     with pytest.raises(ValueError, match="Email length exceeds maximum allowed"):
         validate_email(email)
 
+
 @settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
@@ -29,6 +30,7 @@ def test_fuzz_email_null_bytes(email: str) -> None:
     """Fuzz validate_email with strings containing null bytes."""
     with pytest.raises(ValueError, match="Email contains invalid characters"):
         validate_email(email)
+
 
 @settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
