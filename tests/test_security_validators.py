@@ -1,7 +1,7 @@
 """Tests for stack.security.validators module."""
 
 import pytest
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from taipanstack.security.validators import (
@@ -85,6 +85,7 @@ class TestValidatePythonVersion:
             validate_python_version(massive_version)
 
     @given(st.text(min_size=21, max_size=5000))
+    @settings(suppress_health_check=[HealthCheck.differing_executors])
     def test_validate_python_version_fuzzing_hypothesis(
         self, massive_version: str
     ) -> None:
