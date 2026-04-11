@@ -16,6 +16,7 @@ def test_fuzz_url_massive_strings_dos(url: str) -> None:
         validate_url(url)
 
 
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
@@ -31,6 +32,7 @@ def test_fuzz_url_null_bytes(url: str) -> None:
         validate_url(url)
 
 
+@settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
