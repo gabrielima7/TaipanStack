@@ -28,23 +28,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
+      - name: [Setup] Checkout code
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Set up Python
+      - name: [Misc] Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
+      - name: [Setup] Install Poetry
         run: pipx install poetry
 
-      - name: Configure Poetry
+      - name: [Setup] Configure Poetry
         run: poetry config virtualenvs.in-project true
 
-      - name: Cache dependencies
+      - name: [Setup] Cache dependencies
         uses: actions/cache@v5
         with:
           path: .venv
@@ -52,22 +52,22 @@ jobs:
           restore-keys: |
             docs-${{ runner.os }}-poetry-
 
-      - name: Install dependencies
+      - name: [Setup] Install dependencies
         run: poetry install --with docs --sync
 
-      - name: Build documentation
+      - name: [Build] Build documentation
         run: poetry run mkdocs build
 
-      - name: Download coverage HTML report from latest CI
+      - name: [Misc] Download coverage HTML report from latest CI
         uses: dawidd6/action-download-artifact@v19
         with:
           name: htmlcov
           path: site/htmlcov/
-          workflow: ci.yml
+          workflow: ci-push-main.yml
           branch: main
           if_no_artifact_found: warn
 
-      - name: Deploy to GitHub Pages
+      - name: [Deploy] Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
