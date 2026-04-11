@@ -196,9 +196,9 @@ def collect_results(
         Err("fail")
 
     """
-    if type(results) in (list, tuple):
+    if isinstance(results, (list, tuple)):
         try:
-            return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
+            return Ok([r.ok_value for r in results])
         except AttributeError:
             pass
 
