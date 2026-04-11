@@ -6,7 +6,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
-from urllib.parse import urlsplit
+from urllib.parse import SplitResult, urlsplit
 
 # Constants to avoid magic values (PLR2004)
 PYTHON_MAJOR_VERSION = 3
@@ -256,6 +256,60 @@ def validate_email(email: str) -> str:
     return email
 
 
+def _check_url_basics(url: str) -> None:
+    """Check basic URL invariants like length and characters."""
+    if not url:
+        msg = "URL cannot be empty"
+        raise ValueError(msg)
+
+    if len(url) > MAX_URL_LENGTH:
+        msg = f"URL length exceeds maximum allowed length of {MAX_URL_LENGTH}"
+        raise ValueError(msg)
+
+    if "\x00" in url or not url.isprintable():
+        msg = "URL contains invalid characters"
+        raise ValueError(msg)
+
+
+def _parse_url(url: str) -> SplitResult:
+    """Parse URL and validate its structure."""
+    try:
+        parsed = urlsplit(url)
+        _ = parsed.port
+    except ValueError as e:
+        msg = f"Invalid URL format: {e}"
+        raise ValueError(msg) from e
+    else:
+        return parsed
+
+
+def _check_url_scheme(parsed: SplitResult, allowed_schemes: tuple[str, ...]) -> None:
+    """Validate URL scheme against allowed list."""
+    if not parsed.scheme:
+        msg = "URL must have a scheme (e.g., https://)"
+        raise ValueError(msg)
+
+    if parsed.scheme not in allowed_schemes:
+        msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
+        raise ValueError(msg)
+
+
+def _check_url_domain(parsed: SplitResult, require_tld: bool) -> None:
+    """Validate URL domain and optional TLD requirement."""
+    if not parsed.hostname:
+        msg = "URL must have a domain"
+        raise ValueError(msg)
+
+    if require_tld:
+        # Check for TLD (at least one dot)
+        domain = parsed.hostname
+        has_no_tld = "." not in domain or domain.endswith(".")
+        is_localhost = domain.lower() in LOCALHOST_DOMAINS
+        if has_no_tld and not is_localhost:
+            msg = f"URL domain must have a TLD: {domain}"
+            raise ValueError(msg)
+
+
 def validate_url(
     url: str,
     *,
@@ -277,45 +331,10 @@ def validate_url(
 
     """
     _validate_type(url, str, "URL")
+    _check_url_basics(url)
 
-    if not url:
-        msg = "URL cannot be empty"
-        raise ValueError(msg)
-
-    if len(url) > MAX_URL_LENGTH:
-        msg = f"URL length exceeds maximum allowed length of {MAX_URL_LENGTH}"
-        raise ValueError(msg)
-
-    if "\x00" in url or not url.isprintable():
-        msg = "URL contains invalid characters"
-        raise ValueError(msg)
-
-    try:
-        parsed = urlsplit(url)
-        _ = parsed.port
-    except ValueError as e:
-        msg = f"Invalid URL format: {e}"
-        raise ValueError(msg) from e
-
-    if not parsed.scheme:
-        msg = "URL must have a scheme (e.g., https://)"
-        raise ValueError(msg)
-
-    if parsed.scheme not in allowed_schemes:
-        msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
-        raise ValueError(msg)
-
-    if not parsed.hostname:
-        msg = "URL must have a domain"
-        raise ValueError(msg)
-
-    if require_tld:
-        # Check for TLD (at least one dot)
-        domain = parsed.hostname
-        has_no_tld = "." not in domain or domain.endswith(".")
-        is_localhost = domain.lower() in LOCALHOST_DOMAINS
-        if has_no_tld and not is_localhost:
-            msg = f"URL domain must have a TLD: {domain}"
-            raise ValueError(msg)
+    parsed = _parse_url(url)
+    _check_url_scheme(parsed, allowed_schemes)
+    _check_url_domain(parsed, require_tld)
 
     return url
