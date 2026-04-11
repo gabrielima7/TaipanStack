@@ -5,6 +5,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from taipanstack.security.validators import (
+    _validate_type,
     validate_email,
     validate_project_name,
     validate_python_version,
@@ -12,8 +13,33 @@ from taipanstack.security.validators import (
 )
 
 
+class TestValidateType:
+    """Tests for _validate_type function."""
+
+    def test_tuple_expected_type(self) -> None:
+        """Test TypeError is raised with tuple of expected types."""
+        with pytest.raises(TypeError, match=r"must be int \| float, got str"):
+            _validate_type("test", (int, float), "Value")
+
+
 class TestValidateProjectName:
     """Tests for validate_project_name function."""
+
+    def test_allow_hyphen_false_rejected(self) -> None:
+        """Test hyphens are rejected when allow_hyphen is False."""
+        with pytest.raises(
+            ValueError,
+            match="Project name contains invalid characters. Allowed: letters, numbers, underscores",
+        ):
+            validate_project_name("my-project", allow_hyphen=False)
+
+    def test_allow_underscore_false_rejected(self) -> None:
+        """Test underscores are rejected when allow_underscore is False."""
+        with pytest.raises(
+            ValueError,
+            match="Project name contains invalid characters. Allowed: letters, numbers, hyphens",
+        ):
+            validate_project_name("my_project", allow_underscore=False)
 
     def test_valid_project_name(self) -> None:
         """Test valid project names pass."""
@@ -96,6 +122,18 @@ class TestValidatePythonVersion:
 class TestValidateEmail:
     """Tests for validate_email function."""
 
+    def test_local_part_too_long(self) -> None:
+        """Test emails with local part exceeding max length are rejected."""
+        long_local = "a" * 65
+        with pytest.raises(ValueError, match="Email local part exceeds 64 characters"):
+            validate_email(f"{long_local}@example.com")
+
+    def test_domain_part_too_long(self) -> None:
+        """Test emails with domain part exceeding max length are rejected."""
+        long_domain = "a" * 256
+        with pytest.raises(ValueError, match="Email domain exceeds 255 characters"):
+            validate_email(f"user@{long_domain}.com")
+
     def test_valid_emails(self) -> None:
         """Test valid emails pass."""
         assert validate_email("user@example.com") == "user@example.com"
@@ -118,6 +156,23 @@ class TestValidateEmail:
 
 class TestValidateUrl:
     """Tests for validate_url function."""
+
+    def test_missing_hostname(self) -> None:
+        """Test URLs without hostname are rejected."""
+        with pytest.raises(ValueError, match="URL must have a domain"):
+            validate_url("http:///path")
+
+    def test_require_tld_false(self) -> None:
+        """Test valid URLs without TLD pass when require_tld is False."""
+        assert (
+            validate_url("http://internal-host", require_tld=False)
+            == "http://internal-host"
+        )
+
+    def test_localhost_no_tld(self) -> None:
+        """Test localhost passes even if require_tld is True."""
+        assert validate_url("http://localhost") == "http://localhost"
+        assert validate_url("http://127.0.0.1") == "http://127.0.0.1"
 
     def test_valid_urls(self) -> None:
         """Test valid URLs pass."""
