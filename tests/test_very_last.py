@@ -571,5 +571,3 @@ class TestOptimizationsEdgeCases:
         assert not result.success
         assert len(result.errors) > 0
         assert any("boom" in e for e in result.errors)
-
-
