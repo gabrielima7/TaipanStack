@@ -90,6 +90,7 @@ def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
 
     assert breaker.state == CircuitState.OPEN
 
+
 def test_circuit_breaker_chaos_config_mutations():
     """Test chaos: Invalid configuration values cause fast failure.
 
@@ -98,10 +99,14 @@ def test_circuit_breaker_chaos_config_mutations():
     silently or getting stuck in an undefined state.
     """
 
-    with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+    with pytest.raises(
+        ValueError, match="timeout must be a finite non-negative number"
+    ):
         CircuitBreaker(timeout=float("nan"))
 
-    with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+    with pytest.raises(
+        ValueError, match="timeout must be a finite non-negative number"
+    ):
         CircuitBreaker(timeout=-1.0)
 
     with pytest.raises(ValueError, match="failure_threshold must be >= 1"):
