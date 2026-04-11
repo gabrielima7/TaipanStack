@@ -89,3 +89,28 @@ def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
         failing_service()
 
     assert breaker.state == CircuitState.OPEN
+
+
+def test_circuit_breaker_chaos_config_mutations():
+    """Test chaos: Invalid configuration values cause fast failure.
+
+    If instantiated with NaN timeout, negative timeout, or 0 thresholds,
+    the CircuitBreaker should refuse to initialize instead of failing
+    silently or getting stuck in an undefined state.
+    """
+
+    with pytest.raises(
+        ValueError, match="timeout must be a finite non-negative number"
+    ):
+        CircuitBreaker(timeout=float("nan"))
+
+    with pytest.raises(
+        ValueError, match="timeout must be a finite non-negative number"
+    ):
+        CircuitBreaker(timeout=-1.0)
+
+    with pytest.raises(ValueError, match="failure_threshold must be >= 1"):
+        CircuitBreaker(failure_threshold=0)
+
+    with pytest.raises(ValueError, match="success_threshold must be >= 1"):
+        CircuitBreaker(success_threshold=0)
