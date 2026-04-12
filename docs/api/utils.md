@@ -125,15 +125,6 @@ TaipanStack provides resilience and observability utilities for production appli
 
 ---
 
-## Adaptive Timeout
-
-::: taipanstack.resilience.adaptive.adaptive_timeout
-    options:
-      show_root_heading: false
-      members_order: source
-
----
-
 ## Bulkhead
 
 ::: taipanstack.resilience.adaptive.bulkhead

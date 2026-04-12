@@ -245,24 +245,6 @@ def sanitize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
-def _get_stem(part: str) -> str:
-    """Get the stem of a path part."""
-    idx = part.rfind(".")
-    if idx <= 0:
-        return part
-    return part[:idx] if part.replace(".", "") else part
-
-
-def _is_safe_path_part(part: str, stem: str) -> bool:
-    """Check if a path part is safe."""
-    if len(part) > 255:  # noqa: PLR2004
-        return False
-    if stem.upper() in _WINDOWS_RESERVED_NAMES:
-        return False
-    if not part.isascii():
-        return False
-    return part.replace(".", "").replace("-", "").replace("_", "").isalnum()
-
 
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""
