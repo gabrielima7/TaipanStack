@@ -696,3 +696,49 @@ rules:
         - python
     patterns:
       - pattern: shutil.rmtree(..., ignore_errors=True, ...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 44: Detect insecure hashing algorithms
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-hash
+    languages: [python]
+    severity: ERROR
+    message: >
+      Use of weak or insecure cryptographic hash functions like MD5 or SHA1 is forbidden.
+      These algorithms are vulnerable to collision attacks. Use SHA-256 or better
+      via hashlib.sha256(), hashlib.sha512(), or bcrypt/Argon2 for passwords.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-328: Reversible One-Way Hash"
+      owasp: "A02:2021 - Cryptographic Failures"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: hashlib.md5(...)
+          - pattern: hashlib.sha1(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 45: Detect insecure deserialization (Pickle/Marshal)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-insecure-deserialization
+    languages: [python]
+    severity: ERROR
+    message: >
+      The `pickle` and `marshal` modules are not secure. Unpickling data from an
+      untrusted source can result in arbitrary code execution. Use safer serialization
+      formats like JSON (`orjson` or `json`) or specialized safe loaders.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: pickle.load(...)
+          - pattern: pickle.loads(...)
+          - pattern: marshal.load(...)
+          - pattern: marshal.loads(...)
