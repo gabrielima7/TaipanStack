@@ -5,11 +5,11 @@
 # CRITICAL: Uses keep_files to preserve existing htmlcov/ and dev/bench/.
 # =============================================================================
 
-name: Documentation
+name: ci-workflow_run-docs
 
 on:
   workflow_run:
-    workflows: ["TaipanStack CI"]
+    workflows: ["ci-push-main"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Build & Deploy Docs
+    name: "[Deploy] Build & Deploy Docs"
     runs-on: ubuntu-latest
 
     steps:
