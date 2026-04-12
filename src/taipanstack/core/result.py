@@ -197,6 +197,9 @@ def collect_results(
 
     """
     if isinstance(results, (list, tuple)):
+        # Fast path using list comprehension which is faster in CPython
+        # It's an all-or-nothing extraction. If any result is Err, we fall back.
+        # This gives massive speedup for the common case where all are Ok.
         try:
             return Ok([r.ok_value for r in results])
         except AttributeError:
@@ -205,9 +208,6 @@ def collect_results(
     values: list[T] = []
     append = values.append
     for result in results:
-        # We explicitly avoid structural pattern matching here to eliminate
-        # Python overhead in tight loop iteration for Result arrays, but we
-        # use isinstance rather than explicit type check to maintain subclass support.
         if isinstance(result, Ok):
             append(result.ok_value)
         elif isinstance(result, Err):

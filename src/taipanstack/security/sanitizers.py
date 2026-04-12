@@ -248,17 +248,20 @@ def sanitize_filename(
 def _get_stem(part: str) -> str:
     """Get the stem of a path part."""
     idx = part.rfind(".")
-    return part[:idx] if idx > 0 and not all(c == "." for c in part) else part
+    if idx <= 0:
+        return part
+    return part[:idx] if part.replace(".", "") else part
 
 
 def _is_safe_path_part(part: str, stem: str) -> bool:
     """Check if a path part is safe."""
-    return (
-        len(part) <= 255  # noqa: PLR2004
-        and part.isascii()
-        and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-    )
+    if len(part) > 255:  # noqa: PLR2004
+        return False
+    if stem.upper() in _WINDOWS_RESERVED_NAMES:
+        return False
+    if not part.isascii():
+        return False
+    return part.replace(".", "").replace("-", "").replace("_", "").isalnum()
 
 
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
@@ -267,8 +270,16 @@ def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
         if parts and parts[-1] != ".." and parts[-1] != anchor:
             parts.pop()
     elif part != ".":  # pragma: no branch
-        stem = _get_stem(part)
-        if _is_safe_path_part(part, stem):
+        # Inline fast path optimizations
+        idx = part.rfind(".")
+        stem = part if idx <= 0 else (part[:idx] if part.replace(".", "") else part)
+
+        if (
+            len(part) <= 255  # noqa: PLR2004
+            and stem.upper() not in _WINDOWS_RESERVED_NAMES
+            and part.isascii()
+            and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
+        ):
             parts.append(part)
         else:
             safe_part = sanitize_filename(part, preserve_extension=True)
