@@ -6,6 +6,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
+import urllib.parse
 from urllib.parse import urlsplit
 
 # Constants to avoid magic values (PLR2004)
@@ -264,26 +265,8 @@ def validate_email(email: str) -> str:
     return email
 
 
-def validate_url(
-    url: str,
-    *,
-    allowed_schemes: tuple[str, ...] = ("http", "https"),
-    require_tld: bool = True,
-) -> str:
-    """Validate URL format and scheme.
-
-    Args:
-        url: The URL to validate.
-        allowed_schemes: Tuple of allowed URL schemes.
-        require_tld: Whether to require a TLD in the domain.
-
-    Returns:
-        The validated URL.
-
-    Raises:
-        ValueError: If URL format is invalid.
-
-    """
+def _check_url_basics(url: str) -> None:
+    """Check basic URL constraints like empty, length and invalid characters."""
     _validate_type(url, str, "URL")
 
     if not url:
@@ -298,13 +281,13 @@ def validate_url(
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 
-    try:
-        parsed = urlsplit(url)
-        _ = parsed.port
-    except ValueError as e:
-        msg = f"Invalid URL format: {e}"
-        raise ValueError(msg) from e
 
+def _check_url_domain(
+    parsed: urllib.parse.SplitResult,
+    allowed_schemes: tuple[str, ...],
+    require_tld: bool,
+) -> None:
+    """Validate URL scheme and domain."""
     if not parsed.scheme:
         msg = "URL must have a scheme (e.g., https://)"
         raise ValueError(msg)
@@ -325,5 +308,37 @@ def validate_url(
         if has_no_tld and not is_localhost:
             msg = f"URL domain must have a TLD: {domain}"
             raise ValueError(msg)
+
+
+def validate_url(
+    url: str,
+    *,
+    allowed_schemes: tuple[str, ...] = ("http", "https"),
+    require_tld: bool = True,
+) -> str:
+    """Validate URL format and scheme.
+
+    Args:
+        url: The URL to validate.
+        allowed_schemes: Tuple of allowed URL schemes.
+        require_tld: Whether to require a TLD in the domain.
+
+    Returns:
+        The validated URL.
+
+    Raises:
+        ValueError: If URL format is invalid.
+
+    """
+    _check_url_basics(url)
+
+    try:
+        parsed = urlsplit(url)
+        _ = parsed.port
+    except ValueError as e:
+        msg = f"Invalid URL format: {e}"
+        raise ValueError(msg) from e
+
+    _check_url_domain(parsed, allowed_schemes, require_tld)
 
     return url
