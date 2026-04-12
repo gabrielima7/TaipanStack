@@ -197,9 +197,6 @@ def collect_results(
 
     """
     if isinstance(results, (list, tuple)):
-        # Fast path using list comprehension which is faster in CPython
-        # It's an all-or-nothing extraction. If any result is Err, we fall back.
-        # This gives massive speedup for the common case where all are Ok.
         try:
             return Ok([r.ok_value for r in results])
         except AttributeError:
