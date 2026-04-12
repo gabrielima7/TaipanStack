@@ -109,8 +109,12 @@ def test_circuit_breaker_chaos_config_mutations():
     ):
         CircuitBreaker(timeout=-1.0)
 
-    with pytest.raises(ValueError, match="failure_threshold must be >= 1"):
+    with pytest.raises(
+        ValueError, match="failure_threshold must be a finite number >= 1"
+    ):
         CircuitBreaker(failure_threshold=0)
 
-    with pytest.raises(ValueError, match="success_threshold must be >= 1"):
+    with pytest.raises(
+        ValueError, match="success_threshold must be a finite number >= 1"
+    ):
         CircuitBreaker(success_threshold=0)

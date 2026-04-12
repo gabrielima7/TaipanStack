@@ -141,10 +141,10 @@ class CircuitBreaker:
         """
         if not math.isfinite(timeout) or timeout < 0:
             raise ValueError("timeout must be a finite non-negative number")
-        if failure_threshold < 1:
-            raise ValueError("failure_threshold must be >= 1")
-        if success_threshold < 1:
-            raise ValueError("success_threshold must be >= 1")
+        if not math.isfinite(failure_threshold) or failure_threshold < 1:
+            raise ValueError("failure_threshold must be a finite number >= 1")
+        if not math.isfinite(success_threshold) or success_threshold < 1:
+            raise ValueError("success_threshold must be a finite number >= 1")
 
         self.config = CircuitBreakerConfig(
             failure_threshold=failure_threshold,
