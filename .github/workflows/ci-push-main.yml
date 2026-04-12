@@ -327,7 +327,7 @@ jobs:
           echo "=== Project Structure ==="
           find . -type f -name "*.py" | head -20
           echo "=== Configuration Files ==="
-          for f in *.toml *.yaml *.yml; do [ -f "$f" ] && ls -la "$f"; done
+          for f in *.toml *.yaml *.yml; do if [ -f "$f" ]; then ls -la "$f"; fi; done
         working-directory: /tmp/taipanstack-test
 
   docstring-coverage:
