@@ -5,7 +5,7 @@
 # Triggered on every published release.
 # =============================================================================
 
-name: SBOM & SLSA
+name: ci-release-sbom_slsa
 
 on:
   release:
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   sbom-and-sign:
-    name: Generate SBOM & Sign Artifacts
+    name: "[Audit] Generate SBOM & Sign Artifacts"
     runs-on: ubuntu-latest
 
     steps:

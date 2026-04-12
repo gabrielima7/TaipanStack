@@ -5,7 +5,7 @@
 # degrades more than 5% compared to the main branch baseline.
 # =============================================================================
 
-name: Performance Regression
+name: ci-push-benchmark
 
 on:
   push:
