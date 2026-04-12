@@ -60,7 +60,46 @@ def hash_password(password: str | SecretStr) -> str:
     return _ph.hash(password_str)
 
 
-def verify_password(password: str | SecretStr, password_hash: str) -> bool:  # noqa: PLR0911
+def _verify_legacy_pbkdf2(password_str: str, password_hash: str) -> bool:
+    try:
+        parts = password_hash.split("$")
+        if len(parts) != 4:  # noqa: PLR2004
+            return False
+
+        _algorithm, iterations_str, salt_hex, hash_hex = parts
+
+        iterations = int(iterations_str)
+        if iterations > MAX_LEGACY_ITERATIONS:
+            return False
+
+        salt = bytes.fromhex(salt_hex)
+        stored_hash = bytes.fromhex(hash_hex)
+
+        new_hash = hashlib.pbkdf2_hmac(
+            LEGACY_HASH_ALGORITHM,
+            password_str.encode("utf-8"),
+            salt,
+            iterations,
+        )
+
+        return secrets.compare_digest(new_hash, stored_hash)
+    except (ValueError, TypeError, OverflowError):
+        return False
+
+
+def _verify_argon2(password_str: str, password_hash: str) -> bool:
+    try:
+        return _ph.verify(password_hash, password_str)
+    except (
+        VerifyMismatchError,
+        ValueError,
+        TypeError,
+        argon2.exceptions.InvalidHashError,
+    ):
+        return False
+
+
+def verify_password(password: str | SecretStr, password_hash: str) -> bool:
     """
     Verify a password against an Argon2 or legacy PBKDF2-HMAC-SHA256 hash.
 
@@ -95,39 +134,6 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:  # n
         return False
 
     if password_hash.startswith(LEGACY_FORMAT + "$"):
-        # Legacy PBKDF2 verification
-        try:
-            parts = password_hash.split("$")
-            if len(parts) != 4:  # noqa: PLR2004
-                return False
+        return _verify_legacy_pbkdf2(password_str, password_hash)
 
-            _algorithm, iterations_str, salt_hex, hash_hex = parts
-
-            iterations = int(iterations_str)
-            if iterations > MAX_LEGACY_ITERATIONS:
-                return False
-
-            salt = bytes.fromhex(salt_hex)
-            stored_hash = bytes.fromhex(hash_hex)
-
-            new_hash = hashlib.pbkdf2_hmac(
-                LEGACY_HASH_ALGORITHM,
-                password_str.encode("utf-8"),
-                salt,
-                iterations,
-            )
-
-            return secrets.compare_digest(new_hash, stored_hash)
-        except (ValueError, TypeError, OverflowError):
-            return False
-
-    # Argon2 verification
-    try:
-        return _ph.verify(password_hash, password_str)
-    except (
-        VerifyMismatchError,
-        ValueError,
-        TypeError,
-        argon2.exceptions.InvalidHashError,
-    ):
-        return False
+    return _verify_argon2(password_str, password_hash)
