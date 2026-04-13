@@ -10,9 +10,9 @@ class TestRateLimiter:
 
     def test_invalid_initialization(self) -> None:
         """Test invalid args to RateLimiter."""
-        with pytest.raises(ValueError, match="must be > 0"):
+        with pytest.raises(ValueError, match="must be finite and > 0.0"):
             RateLimiter(0, 1.0)
-        with pytest.raises(ValueError, match="must be > 0"):
+        with pytest.raises(ValueError, match="must be finite and > 0.0"):
             RateLimiter(10, -1.0)
 
     def test_consume_success(self) -> None:

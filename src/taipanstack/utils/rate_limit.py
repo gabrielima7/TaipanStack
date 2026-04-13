@@ -47,8 +47,13 @@ class RateLimiter:
             time_window: The time window in seconds.
 
         """
-        if max_calls <= 0 or time_window <= 0:
-            raise ValueError("max_calls and time_window must be > 0.0")
+        if (
+            not math.isfinite(max_calls)
+            or not math.isfinite(time_window)
+            or max_calls <= 0
+            or time_window <= 0
+        ):
+            raise ValueError("max_calls and time_window must be finite and > 0.0")
         self.capacity: float = float(max_calls)
         self.time_window: float = float(time_window)
         self.tokens: float = self.capacity
@@ -65,6 +70,8 @@ class RateLimiter:
             True if tokens were consumed (allow), False otherwise (limit exceeded).
 
         """
+        if not math.isfinite(tokens):
+            return False
         if tokens <= 0:
             return True
 
