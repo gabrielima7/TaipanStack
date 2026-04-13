@@ -742,3 +742,29 @@ rules:
           - pattern: pickle.loads(...)
           - pattern: marshal.load(...)
           - pattern: marshal.loads(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 46: Detect unsafe string arguments and shell=True in subprocess
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-subprocess-string-args
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using string arguments with subprocess functions can lead to OS command injection
+      or unexpected shell behaviors. Always pass arguments as a list of strings
+      (e.g., `["ls", "-la", "/tmp"]`) instead of a single string, and ensure `shell=True`
+      is not used.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-78: OS Command Injection"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.$METHOD("...", ...)
+          - pattern: subprocess.$METHOD(..., shell=True, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(run|Popen|call|check_call|check_output)$
