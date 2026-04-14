@@ -94,6 +94,37 @@ class RetryError(Exception):
         super().__init__(message)
 
 
+def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
+    """Calculate base delay with exponential backoff."""
+    safe_attempt = max(1, attempt)
+    try:
+        delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+    except OverflowError:
+        delay = config.max_delay
+
+    if not math.isfinite(delay):
+        delay = config.max_delay
+        if not math.isfinite(delay):
+            delay = 0.0
+
+    return min(delay, config.max_delay)
+
+
+def _apply_jitter(delay: float, config: RetryConfig) -> float:
+    """Apply jitter to delay."""
+    if not config.jitter or not math.isfinite(delay):
+        return delay
+
+    jitter_amount = delay * config.jitter_factor
+    if math.isfinite(jitter_amount):
+        try:
+            delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+        except Exception as e:
+            logger.warning("Failed to add jitter to delay: %s", str(e))
+
+    return delay
+
+
 def calculate_delay(
     attempt: int,
     config: RetryConfig,
@@ -108,33 +139,8 @@ def calculate_delay(
         Delay in seconds before next retry.
 
     """
-    safe_attempt = max(1, attempt)
-    # Exponential backoff
-    try:
-        delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
-    except OverflowError:
-        delay = config.max_delay
-
-    # Cap at max delay or fallback if NaN/Inf
-    if not math.isfinite(delay):
-        delay = config.max_delay
-        if not math.isfinite(delay):
-            delay = 0.0
-
-    delay = min(delay, config.max_delay)
-
-    # Add jitter if enabled
-    # Note: Using random for jitter is intentionally non-cryptographic.
-    # However, to maintain a clean security baseline and satisfy Bandit,
-    # we use secrets.SystemRandom() which provides cryptographically
-    # secure random numbers.
-    if config.jitter and math.isfinite(delay):
-        jitter_amount = delay * config.jitter_factor
-        if math.isfinite(jitter_amount):
-            try:
-                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-            except Exception as e:
-                logger.warning("Failed to add jitter to delay: %s", str(e))
+    delay = _calculate_base_delay(attempt, config)
+    delay = _apply_jitter(delay, config)
 
     if not math.isfinite(delay) or delay < 0:
         return 0.0
