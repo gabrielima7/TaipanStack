@@ -27,7 +27,7 @@ from taipanstack.utils.logging import _redact_dict
     )
 )
 @settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_redact_dict_extreme_keys(value):
+def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys_expected(value):
     """Bombard _redact_dict with extreme, non-string keys to test resilience.
 
     Keys generated include None, integers, floats, booleans, dates, and datetimes.

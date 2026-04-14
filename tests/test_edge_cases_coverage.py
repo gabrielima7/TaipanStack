@@ -12,7 +12,7 @@ from taipanstack.security.guards import SecurityError
 class TestFilesystemEdgeCases:
     """Edge case tests for filesystem module."""
 
-    def test_safe_read_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_read_with_traversal_no_base_dir_expected(self, tmp_path: Path) -> None:
         """Test safe_read with .. in path but no base_dir uses cwd."""
         from taipanstack.utils.filesystem import safe_read
 
@@ -28,7 +28,7 @@ class TestFilesystemEdgeCases:
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
-    def test_safe_write_existing_file_guarded(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_existing_file_guarded_expected(self, tmp_path: Path) -> None:
         """Test safe_write with existing file and base_dir."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -40,14 +40,14 @@ class TestFilesystemEdgeCases:
         )
         assert result.read_text() == "new content"
 
-    def test_safe_write_with_traversal_no_base_dir(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_with_traversal_no_base_dir_expected(self, tmp_path: Path) -> None:
         """Test safe_write with .. triggers guard."""
         from taipanstack.utils.filesystem import safe_write
 
         with pytest.raises(SecurityError):
             safe_write(tmp_path / ".." / "bad.txt", "content")
 
-    def test_safe_write_atomic_error_cleanup(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_atomic_error_cleanup_expected(self, tmp_path: Path) -> None:
         """Test atomic write cleans up temp file on error."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -62,7 +62,7 @@ class TestFilesystemEdgeCases:
 class TestLoggingEdgeCases:
     """Edge case tests for logging module."""
 
-    def test_stack_logger_bind_context(self) -> None:
+    def test_edge_cases_coverage_stack_logger_bind_context_expected(self) -> None:
         """Test StackLogger with bind context."""
         from taipanstack.utils.logging import StackLogger
 
@@ -72,7 +72,7 @@ class TestLoggingEdgeCases:
         # Log something - context should be in logs
         logger.info("Test message")
 
-    def test_stack_logger_unbind_context(self) -> None:
+    def test_edge_cases_coverage_stack_logger_unbind_context_expected(self) -> None:
         """Test unbinding logger context."""
         from taipanstack.utils.logging import StackLogger
 
@@ -82,13 +82,13 @@ class TestLoggingEdgeCases:
 
         logger.info("After unbind")
 
-    def test_setup_logging_basic(self) -> None:
+    def test_edge_cases_coverage_setup_logging_basic_expected(self) -> None:
         """Test setup_logging basic configuration."""
         from taipanstack.utils.logging import setup_logging
 
         setup_logging(level="DEBUG")
 
-    def test_log_operation_decorator(self) -> None:
+    def test_edge_cases_coverage_log_operation_decorator_expected(self) -> None:
         """Test log_operation decorator."""
         from taipanstack.utils.logging import log_operation
 
@@ -114,7 +114,7 @@ class TestLoggingEdgeCases:
 class TestDecoratorsEdgeCases:
     """Edge case tests for decorators module."""
 
-    def test_timeout_with_signal(self) -> None:
+    def test_edge_cases_coverage_timeout_with_signal_expected(self) -> None:
         """Test timeout with signal (Unix only)."""
         import platform
 
@@ -136,7 +136,7 @@ class TestDecoratorsEdgeCases:
 class TestGuardsEdgeCases:
     """Edge case tests for guards module."""
 
-    def test_guard_command_injection_with_whitelist(self) -> None:
+    def test_edge_cases_coverage_guard_command_injection_with_whitelist_expected(self) -> None:
         """Test guard_command_injection with custom whitelist."""
         from taipanstack.security.guards import guard_command_injection
 
@@ -148,14 +148,14 @@ class TestGuardsEdgeCases:
 class TestSanitizersEdgeCases:
     """Edge case tests for sanitizers module."""
 
-    def test_sanitize_string_with_null_bytes(self) -> None:
+    def test_edge_cases_coverage_sanitize_string_with_null_bytes_expected(self) -> None:
         """Test sanitizing string with null bytes."""
         from taipanstack.security.sanitizers import sanitize_string
 
         result = sanitize_string("hello\x00world")
         assert "\x00" not in result
 
-    def test_sanitize_path_with_special_chars(self) -> None:
+    def test_edge_cases_coverage_sanitize_path_with_special_chars_expected(self) -> None:
         """Test sanitizing path with special characters."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -166,14 +166,14 @@ class TestSanitizersEdgeCases:
 class TestValidatorsEdgeCases:
     """Edge case tests for validators module."""
 
-    def test_validate_project_name_reserved(self) -> None:
+    def test_edge_cases_coverage_validate_project_name_reserved_expected(self) -> None:
         """Test that reserved names are rejected."""
         from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="reserved"):
             validate_project_name("test")
 
-    def test_validate_url_with_ip(self) -> None:
+    def test_edge_cases_coverage_validate_url_with_ip_expected(self) -> None:
         """Test validating URL with IP address."""
         from taipanstack.security.validators import validate_url
 
@@ -184,7 +184,7 @@ class TestValidatorsEdgeCases:
 class TestRetryEdgeCases:
     """Edge case tests for retry module."""
 
-    def test_retrier_multiple_attempts(self) -> None:
+    def test_edge_cases_coverage_retrier_multiple_attempts_expected(self) -> None:
         """Test Retrier with a loop for multiple attempts."""
         from taipanstack.resilience.retry import Retrier
 
@@ -208,7 +208,7 @@ class TestRetryEdgeCases:
 class TestSubprocessEdgeCases:
     """Edge case tests for subprocess module."""
 
-    def test_run_safe_command_with_env(self) -> None:
+    def test_edge_cases_coverage_run_safe_command_with_env_expected(self) -> None:
         """Test run_safe_command with custom environment."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -222,7 +222,7 @@ class TestSubprocessEdgeCases:
 class TestCircuitBreakerEdgeCases:
     """Edge case tests for circuit breaker module."""
 
-    def test_circuit_breaker_half_open_success(self) -> None:
+    def test_edge_cases_coverage_circuit_breaker_half_open_success_expected(self) -> None:
         """Test circuit transitions from half-open to closed."""
         import time
 

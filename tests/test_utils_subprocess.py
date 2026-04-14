@@ -16,7 +16,7 @@ from taipanstack.utils.subprocess import (
 class TestSafeCommandResult:
     """Tests for SafeCommandResult dataclass."""
 
-    def test_success_true_when_returncode_zero(self) -> None:
+    def test_utils_subprocess_success_true_when_returncode_zero_expected(self) -> None:
         """Test success property returns True for returncode 0."""
         result = SafeCommandResult(
             command=["echo", "hello"],
@@ -26,7 +26,7 @@ class TestSafeCommandResult:
         )
         assert result.success is True
 
-    def test_success_false_when_returncode_nonzero(self) -> None:
+    def test_utils_subprocess_success_false_when_returncode_nonzero_expected(self) -> None:
         """Test success property returns False for non-zero returncode."""
         result = SafeCommandResult(
             command=["false"],
@@ -36,7 +36,7 @@ class TestSafeCommandResult:
         )
         assert result.success is False
 
-    def test_raise_on_error_success(self) -> None:
+    def test_utils_subprocess_raise_on_error_success_expected(self) -> None:
         """Test raise_on_error returns self on success."""
         result = SafeCommandResult(
             command=["echo", "test"],
@@ -45,7 +45,7 @@ class TestSafeCommandResult:
         )
         assert result.raise_on_error() is result
 
-    def test_raise_on_error_failure(self) -> None:
+    def test_utils_subprocess_raise_on_error_failure_expected(self) -> None:
         """Test raise_on_error raises CalledProcessError on failure."""
         result = SafeCommandResult(
             command=["bad", "command"],
@@ -58,7 +58,7 @@ class TestSafeCommandResult:
         assert exc_info.value.returncode == 1
         assert exc_info.value.cmd == ["bad", "command"]
 
-    def test_duration_seconds_default(self) -> None:
+    def test_utils_subprocess_duration_seconds_default_expected(self) -> None:
         """Test duration_seconds has default value."""
         result = SafeCommandResult(command=["test"], returncode=0)
         assert result.duration_seconds == 0.0
@@ -67,13 +67,13 @@ class TestSafeCommandResult:
 class TestDefaultAllowedCommands:
     """Tests for DEFAULT_ALLOWED_COMMANDS."""
 
-    def test_contains_essential_commands(self) -> None:
+    def test_utils_subprocess_contains_essential_commands_expected(self) -> None:
         """Test that essential commands are in the whitelist."""
         essential = ["python", "poetry", "git", "pytest", "mypy", "ruff"]
         for cmd in essential:
             assert cmd in DEFAULT_ALLOWED_COMMANDS
 
-    def test_is_frozenset(self) -> None:
+    def test_utils_subprocess_is_frozenset_expected(self) -> None:
         """Test that it's immutable."""
         assert isinstance(DEFAULT_ALLOWED_COMMANDS, frozenset)
 
@@ -81,21 +81,21 @@ class TestDefaultAllowedCommands:
 class TestRunSafeCommand:
     """Tests for run_safe_command function."""
 
-    def test_run_echo_command(self) -> None:
+    def test_utils_subprocess_run_echo_command_expected(self) -> None:
         """Test running a simple echo command."""
         result = run_safe_command(["echo", "hello"])
         assert result.success is True
         assert "hello" in result.stdout
         assert result.returncode == 0
 
-    def test_dry_run_mode(self) -> None:
+    def test_utils_subprocess_dry_run_mode_expected(self) -> None:
         """Test dry-run mode doesn't execute command."""
         result = run_safe_command(["rm", "-rf", "/"], dry_run=True)
         assert result.success is True
         assert "[DRY-RUN]" in result.stdout
         assert result.returncode == 0
 
-    def test_command_not_in_whitelist(self) -> None:
+    def test_utils_subprocess_command_not_in_whitelist_expected(self) -> None:
         """Test that commands not in whitelist are rejected."""
         with pytest.raises(SecurityError, match="Command not in allowed list"):
             run_safe_command(
@@ -103,7 +103,7 @@ class TestRunSafeCommand:
                 allowed_commands=["safe_command"],
             )
 
-    def test_empty_command_rejected(self) -> None:
+    def test_utils_subprocess_empty_command_rejected_expected(self) -> None:
         """Test that empty command raises SecurityError."""
         with pytest.raises(SecurityError, match="Empty command"):
             run_safe_command([])
@@ -113,7 +113,7 @@ class TestRunSafeCommand:
         with pytest.raises(SecurityError, match="Dangerous"):
             run_safe_command(["echo", "hello; rm -rf /"])
 
-    def test_command_not_found(self) -> None:
+    def test_utils_subprocess_command_not_found_expected(self) -> None:
         """Test that non-existent command raises SecurityError."""
         with pytest.raises(SecurityError, match="Command not found"):
             run_safe_command(
@@ -121,7 +121,7 @@ class TestRunSafeCommand:
                 allowed_commands=["nonexistent_command_xyz"],
             )
 
-    def test_timeout_handling(self) -> None:
+    def test_utils_subprocess_timeout_handling_expected(self) -> None:
         """Test command timeout is handled."""
         # Use sleep command which is safer than Python -c with semicolons
         result = run_safe_command(
@@ -133,7 +133,7 @@ class TestRunSafeCommand:
         assert result.returncode == -1
         assert "timed out" in result.stderr
 
-    def test_working_directory(self, tmp_path: Path) -> None:
+    def test_utils_subprocess_working_directory_expected(self, tmp_path: Path) -> None:
         """Test that working directory is respected."""
         # Create a file in tmp_path to verify we can access it
         test_file = tmp_path / "test_cwd.txt"
@@ -146,12 +146,12 @@ class TestRunSafeCommand:
         )
         assert result.success is True
 
-    def test_invalid_working_directory(self) -> None:
+    def test_utils_subprocess_invalid_working_directory_expected(self) -> None:
         """Test that non-existent working directory raises error."""
         with pytest.raises(SecurityError, match="Working directory does not exist"):
             run_safe_command(["echo", "test"], cwd="/nonexistent/path/xyz")
 
-    def test_custom_allowed_commands(self) -> None:
+    def test_utils_subprocess_custom_allowed_commands_expected(self) -> None:
         """Test custom allowed commands list."""
         result = run_safe_command(
             ["echo", "custom"],
@@ -159,26 +159,26 @@ class TestRunSafeCommand:
         )
         assert result.success is True
 
-    def test_duration_is_tracked(self) -> None:
+    def test_utils_subprocess_duration_is_tracked_expected(self) -> None:
         """Test that command duration is tracked."""
         result = run_safe_command(["echo", "test"])
         assert result.duration_seconds >= 0
 
-    def test_timeout_negative_value(self) -> None:
+    def test_utils_subprocess_timeout_negative_value_expected(self) -> None:
         """Test timeout with negative seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"
         ):
             run_safe_command(["echo", "hello"], timeout=-1.0)
 
-    def test_timeout_nan_value(self) -> None:
+    def test_utils_subprocess_timeout_nan_value_expected(self) -> None:
         """Test timeout with NaN seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"
         ):
             run_safe_command(["echo", "hello"], timeout=float("nan"))
 
-    def test_timeout_inf_value(self) -> None:
+    def test_utils_subprocess_timeout_inf_value_expected(self) -> None:
         """Test timeout with Infinity seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"

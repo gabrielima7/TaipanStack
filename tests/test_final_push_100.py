@@ -9,7 +9,7 @@ import pytest
 class TestSubprocessFinalBranches:
     """Final tests for subprocess module to reach 100%."""
 
-    def test_run_safe_command_timeout_branch_stdout_bytes(self) -> None:
+    def test_final_push_100_run_safe_command_timeout_branch_stdout_bytes_expected(self) -> None:
         """Test timeout exception with stdout as bytes."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -27,7 +27,7 @@ class TestSubprocessFinalBranches:
         assert result.returncode == -1
         assert "timed out" in result.stderr
 
-    def test_run_safe_command_timeout_branch_stdout_str(self) -> None:
+    def test_final_push_100_run_safe_command_timeout_branch_stdout_str_expected(self) -> None:
         """Test timeout exception with stdout as string."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -44,7 +44,7 @@ class TestSubprocessFinalBranches:
 class TestGuardsFinalBranches:
     """Final tests for guards module to reach 100%."""
 
-    def test_guard_env_variable_denied_pattern(
+    def test_final_push_100_guard_env_variable_denied_pattern_expected(
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -61,21 +61,21 @@ class TestGuardsFinalBranches:
 class TestValidatorsFinalBranches:
     """Final tests for validators module to reach 100%."""
 
-    def test_validate_project_name_starts_with_hyphen(self) -> None:
+    def test_final_push_100_validate_project_name_starts_with_hyphen_expected(self) -> None:
         """Test validate_project_name starting with hyphen."""
         from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("-myproject")
 
-    def test_validate_email_invalid_domain(self) -> None:
+    def test_final_push_100_validate_email_invalid_domain_expected(self) -> None:
         """Test validate_email with invalid domain."""
         from taipanstack.security.validators import validate_email
 
         with pytest.raises(ValueError):
             validate_email("user@")
 
-    def test_validate_url_invalid_protocol(self) -> None:
+    def test_final_push_100_validate_url_invalid_protocol_expected(self) -> None:
         """Test validate_url with invalid protocol."""
         from taipanstack.security.validators import validate_url
 
@@ -86,7 +86,7 @@ class TestValidatorsFinalBranches:
 class TestSanitizersFinalBranches:
     """Final tests for sanitizers module to reach 100%."""
 
-    def test_sanitize_filename_truncation_with_extension(self) -> None:
+    def test_final_push_100_sanitize_filename_truncation_with_extension_expected(self) -> None:
         """Test sanitize_filename truncation preserving extension."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -96,7 +96,7 @@ class TestSanitizersFinalBranches:
         assert len(result) <= 50
         assert result.endswith(".txt")
 
-    def test_sanitize_path_empty_parts(self) -> None:
+    def test_final_push_100_sanitize_path_empty_parts_expected(self) -> None:
         """Test sanitize_path handles empty parts."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -111,7 +111,7 @@ class TestFilesystemFinalBranches:
 class TestLoggingFinalBranches:
     """Final tests for logging module to reach 100%."""
 
-    def test_log_operation_with_custom_logger(self) -> None:
+    def test_final_push_100_log_operation_with_custom_logger_expected(self) -> None:
         """Test log_operation with custom logger."""
         from taipanstack.utils.logging import StackLogger, log_operation
 
@@ -123,7 +123,7 @@ class TestLoggingFinalBranches:
 class TestRetryFinalBranches:
     """Final tests for retry module to reach 100%."""
 
-    def test_retry_decorator_success_no_retry(self) -> None:
+    def test_final_push_100_retry_decorator_success_no_retry_expected(self) -> None:
         """Test retry decorator when function succeeds immediately."""
         from taipanstack.resilience.retry import retry
 
@@ -143,7 +143,7 @@ class TestRetryFinalBranches:
 class TestModelsFinalBranches:
     """Final tests for models module to reach 100%."""
 
-    def test_stack_config_with_all_options(self) -> None:
+    def test_final_push_100_stack_config_with_all_options_expected(self) -> None:
         """Test StackConfig with all options."""
         from taipanstack.config.models import StackConfig
 

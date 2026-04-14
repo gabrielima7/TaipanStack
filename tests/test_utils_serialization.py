@@ -10,7 +10,7 @@ from taipanstack.utils.serialization import default_encoder
 class TestDefaultEncoder:
     """Tests for the default_encoder with orjson."""
 
-    def test_encode_ok_with_dict(self) -> None:
+    def test_utils_serialization_encode_ok_with_dict_expected(self) -> None:
         """Test encoding Ok containing a dict."""
         res = Ok({"data": 1})
         encoded = orjson.dumps(res, default=default_encoder)
@@ -20,7 +20,7 @@ class TestDefaultEncoder:
         encoded2 = orjson.dumps(res2, default=default_encoder)
         assert encoded2 == b'{"status":"success","user":"test","id":42}'
 
-    def test_encode_ok_with_scalar(self) -> None:
+    def test_utils_serialization_encode_ok_with_scalar_expected(self) -> None:
         """Test encoding Ok containing a scalar or list."""
         res = Ok(42)
         encoded = orjson.dumps(res, default=default_encoder)
@@ -34,7 +34,7 @@ class TestDefaultEncoder:
         encoded_list = orjson.dumps(res_list, default=default_encoder)
         assert encoded_list == b'{"status":"success","data":[1,2,3]}'
 
-    def test_encode_err(self) -> None:
+    def test_utils_serialization_encode_err_expected(self) -> None:
         """Test encoding Err."""
         res = Err(ValueError("something went wrong"))
         encoded = orjson.dumps(res, default=default_encoder)
@@ -44,7 +44,7 @@ class TestDefaultEncoder:
         encoded_str = orjson.dumps(res_str, default=default_encoder)
         assert encoded_str == b'{"status":"error","message":"string error"}'
 
-    def test_encode_unsupported_type(self) -> None:
+    def test_utils_serialization_encode_unsupported_type_expected(self) -> None:
         """Test encoding an unsupported type."""
 
         class CustomObj:
@@ -72,7 +72,7 @@ class TestDefaultEncoder:
         with pytest.raises(TypeError, match="Type TypeError is not JSON serializable"):
             default_encoder(TypeError("type error"))
 
-    def test_encode_ok_with_status_override(self) -> None:
+    def test_utils_serialization_encode_ok_with_status_override_expected(self) -> None:
         """Test encoding Ok where dict contains 'status' key."""
         # The 'status' key in the dict will override the default 'success'
         res = Ok({"status": "overridden", "data": 1})

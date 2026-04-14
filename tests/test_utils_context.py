@@ -11,7 +11,7 @@ from taipanstack.utils.context import (
 )
 
 
-def test_get_set_correlation_id() -> None:
+def test_utils_context_get_set_correlation_id_expected() -> None:
     """Test standard get and set."""
     assert get_correlation_id() is None
     set_correlation_id("test-id-123")
@@ -20,7 +20,7 @@ def test_get_set_correlation_id() -> None:
     assert get_correlation_id() is None
 
 
-def test_correlation_scope() -> None:
+def test_utils_context_correlation_scope_expected() -> None:
     """Test correlation scope context manager."""
     set_correlation_id("outer-id")
 
@@ -33,7 +33,7 @@ def test_correlation_scope() -> None:
 
 
 @pytest.mark.asyncio
-async def test_correlation_id_async_isolation() -> None:
+async def test_utils_context_correlation_id_async_isolation_expected() -> None:
     """Test that correlation IDs are isolated across async tasks."""
 
     async def worker(worker_id: str, delay: float) -> str | None:

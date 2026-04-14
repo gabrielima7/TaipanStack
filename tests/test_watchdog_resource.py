@@ -16,14 +16,14 @@ from taipanstack.resilience.watchdogs.resource_watcher import (
 class TestResourceSnapshot:
     """Tests for the ResourceSnapshot dataclass."""
 
-    def test_creation(self) -> None:
+    def test_watchdog_resource_creation_expected(self) -> None:
         """Snapshot stores cpu, memory, and timestamp."""
         snap = ResourceSnapshot(cpu_percent=50.0, memory_percent=60.0, timestamp=1.0)
         assert snap.cpu_percent == 50.0
         assert snap.memory_percent == 60.0
         assert snap.timestamp == 1.0
 
-    def test_frozen(self) -> None:
+    def test_watchdog_resource_frozen_expected(self) -> None:
         """Snapshot is immutable."""
         snap = ResourceSnapshot(cpu_percent=1.0, memory_percent=2.0, timestamp=0.0)
         with pytest.raises(AttributeError):
@@ -33,7 +33,7 @@ class TestResourceSnapshot:
 class TestCheckResources:
     """Tests for the one-shot check_resources function."""
 
-    def test_ok_with_psutil(self) -> None:
+    def test_watchdog_resource_ok_with_psutil_expected(self) -> None:
         """Returns Ok(ResourceSnapshot) when psutil is available."""
         mock_vm = MagicMock()
         mock_vm.percent = 42.5
@@ -55,7 +55,7 @@ class TestCheckResources:
         assert snap.memory_percent == 42.5
         assert snap.timestamp > 0
 
-    def test_err_without_psutil(self) -> None:
+    def test_watchdog_resource_err_without_psutil_expected(self) -> None:
         """Returns Err(ImportError) when psutil is not installed."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False
@@ -81,7 +81,7 @@ class TestResourceWatcher:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_start_stop_lifecycle(self) -> None:
+    async def test_watchdog_resource_start_stop_lifecycle_expected(self) -> None:
         """Watcher can be started and stopped."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
@@ -130,7 +130,7 @@ class TestResourceWatcher:
                 await watcher.stop()
 
     @pytest.mark.asyncio
-    async def test_threshold_breach_callback(self) -> None:
+    async def test_watchdog_resource_threshold_breach_callback_expected(self) -> None:
         """Callback fires when thresholds are breached."""
         breaches: list[tuple[str, float]] = []
 
@@ -161,7 +161,7 @@ class TestResourceWatcher:
         assert any(r == "memory" for r, _ in breaches)
 
     @pytest.mark.asyncio
-    async def test_no_breach_below_threshold(self) -> None:
+    async def test_watchdog_resource_no_breach_below_threshold_expected(self) -> None:
         """No callback when values are below thresholds."""
         breaches: list[tuple[str, float]] = []
 
@@ -211,21 +211,21 @@ class TestResourceWatcher:
 class TestBaseWatcher:
     """Tests for BaseWatcher ABC."""
 
-    def test_repr(self) -> None:
+    def test_watchdog_resource_repr_expected(self) -> None:
         """Repr includes class name and interval."""
         watcher = ResourceWatcher(interval=3.0)
         assert "ResourceWatcher" in repr(watcher)
         assert "3.0" in repr(watcher)
 
     @pytest.mark.asyncio
-    async def test_stop_without_start(self) -> None:
+    async def test_watchdog_resource_stop_without_start_expected(self) -> None:
         """Stopping a watcher that was never started is safe."""
         watcher = ResourceWatcher(interval=1.0)
         await watcher.stop()
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_stop_timeout_cancels_task(self) -> None:
+    async def test_watchdog_resource_stop_timeout_cancels_task_expected(self) -> None:
         """When the task doesn't stop in time, it gets cancelled."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
@@ -259,7 +259,7 @@ class TestBaseWatcher:
             assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_run_err_branch_logged(self) -> None:
+    async def test_watchdog_resource_run_err_branch_logged_expected(self) -> None:
         """Err from check_resources in _run is handled gracefully."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher.check_resources"
@@ -271,7 +271,7 @@ class TestBaseWatcher:
             await watcher._run()
 
     @pytest.mark.asyncio
-    async def test_threshold_breach_without_callback(self) -> None:
+    async def test_watchdog_resource_threshold_breach_without_callback_expected(self) -> None:
         """Breach is logged but no crash when on_threshold_breach is None."""
         mock_vm = MagicMock()
         mock_vm.percent = 95.0
@@ -298,7 +298,7 @@ class TestBaseWatcher:
 
 
 @pytest.mark.asyncio
-async def test_resource_watcher_run_err_branch() -> None:
+async def test_watchdog_resource_resource_watcher_run_err_branch_expected() -> None:
     from unittest.mock import patch
 
     from taipanstack.core.result import Err

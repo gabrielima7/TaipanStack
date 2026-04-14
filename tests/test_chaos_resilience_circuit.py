@@ -9,7 +9,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_circuit_breaker_on_state_change_chaos():
+def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_expected():
     """Simulate a chaos scenario where the user-provided callback fails.
 
     If a user provides an `on_state_change` callback that raises an unhandled
@@ -61,7 +61,7 @@ def test_circuit_breaker_on_state_change_chaos():
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
+def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog_expected(monkeypatch):
     """Test the failure branch when structlog is missing."""
 
     # We patch the module-level variable by grabbing the actual module
@@ -91,7 +91,7 @@ def test_circuit_breaker_on_state_change_chaos_without_structlog(monkeypatch):
     assert breaker.state == CircuitState.OPEN
 
 
-def test_circuit_breaker_chaos_config_mutations():
+def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations_expected():
     """Test chaos: Invalid configuration values cause fast failure.
 
     If instantiated with NaN timeout, negative timeout, or 0 thresholds,

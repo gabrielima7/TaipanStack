@@ -13,7 +13,7 @@ class UnhashableDummy:
     __hash__ = None  # type: ignore
 
 
-def test_cache_unhashable_raises_typeerror():
+def test_utils_cache_unhashable_cache_unhashable_raises_typeerror_expected():
     """Ensure passing unhashable types directly raises a TypeError."""
     dummy1 = UnhashableDummy()
 

@@ -15,7 +15,7 @@ from taipanstack.utils.subprocess import run_safe_command
 class TestAppMain:
     """Tests for app/main.py uncovered lines 26-27."""
 
-    def test_main_function(self) -> None:
+    def test_100_coverage_final_main_function_expected(self) -> None:
         """Test main() function execution."""
         import structlog
         from structlog.testing import capture_logs
@@ -35,7 +35,7 @@ class TestAppMain:
 class TestConfigGeneratorsBranches:
     """Tests for config/generators.py branch coverage."""
 
-    def test_generate_pre_commit_without_bandit(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_without_bandit_expected(self) -> None:
         """Test pre-commit config without bandit enabled."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -52,7 +52,7 @@ class TestConfigGeneratorsBranches:
         result = generate_pre_commit_config(config)
         assert "bandit" not in result
 
-    def test_generate_pre_commit_with_safety_only(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_safety_only_expected(self) -> None:
         """Test pre-commit config with safety only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -70,7 +70,7 @@ class TestConfigGeneratorsBranches:
         assert "safety" in result
         assert "bandit" not in result
 
-    def test_generate_pre_commit_with_semgrep_only(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_semgrep_only_expected(self) -> None:
         """Test pre-commit config with semgrep only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -87,7 +87,7 @@ class TestConfigGeneratorsBranches:
         result = generate_pre_commit_config(config)
         assert "semgrep" in result
 
-    def test_generate_pre_commit_with_detect_secrets_only(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_detect_secrets_only_expected(self) -> None:
         """Test pre-commit config with detect-secrets only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -108,7 +108,7 @@ class TestConfigGeneratorsBranches:
 class TestCircuitBreakerOpenState:
     """Tests for circuit_breaker.py open state branch."""
 
-    def test_record_success_in_open_state(self) -> None:
+    def test_100_coverage_final_record_success_in_open_state_expected(self) -> None:
         """Test _record_success when circuit is OPEN (should be no-op)."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
@@ -120,7 +120,7 @@ class TestCircuitBreakerOpenState:
         # State should remain OPEN
         assert breaker.state == CircuitState.OPEN
 
-    def test_record_failure_in_open_state(self) -> None:
+    def test_100_coverage_final_record_failure_in_open_state_expected(self) -> None:
         """Test _record_failure when circuit is already OPEN."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
@@ -135,7 +135,7 @@ class TestCircuitBreakerOpenState:
 class TestResultModuleBranches:
     """Tests for result.py uncovered branches."""
 
-    def test_collect_results_match_patterns(self) -> None:
+    def test_100_coverage_final_collect_results_match_patterns_expected(self) -> None:
         """Test all match patterns in collect_results."""
         from taipanstack.core.result import Ok, collect_results
 
@@ -144,7 +144,7 @@ class TestResultModuleBranches:
         collected = collect_results(results)
         assert collected.is_ok()
 
-    def test_unwrap_or_match_patterns(self) -> None:
+    def test_100_coverage_final_unwrap_or_match_patterns_expected(self) -> None:
         """Test all match patterns in unwrap_or."""
         from taipanstack.core.result import Err, Ok
 
@@ -152,7 +152,7 @@ class TestResultModuleBranches:
         assert Ok(5).unwrap_or(0) == 5
         assert Err("x").unwrap_or(0) == 0
 
-    def test_unwrap_or_else_match_patterns(self) -> None:
+    def test_100_coverage_final_unwrap_or_else_match_patterns_expected(self) -> None:
         """Test all match patterns in unwrap_or_else."""
         from taipanstack.core.result import Err, Ok
 
@@ -160,7 +160,7 @@ class TestResultModuleBranches:
         assert Ok(5).unwrap_or_else(len) == 5
         assert Err("abc").unwrap_or_else(len) == 3
 
-    def test_collect_results_fallback(self) -> None:
+    def test_100_coverage_final_collect_results_fallback_expected(self) -> None:
         """Test collect_results fallback branch for unexpected types."""
         from taipanstack.core.result import collect_results
 
@@ -173,7 +173,7 @@ class TestResultModuleBranches:
         assert res is dummy  # The fallback branch returns the object itself
 
     @pytest.mark.asyncio
-    async def test_map_async_fallback(self) -> None:
+    async def test_100_coverage_final_map_async_fallback_expected(self) -> None:
         """Test map_async fallback branch for unexpected types."""
         from taipanstack.core.result import map_async
 
@@ -189,7 +189,7 @@ class TestResultModuleBranches:
         assert res is dummy
 
     @pytest.mark.asyncio
-    async def test_and_then_async_fallback(self) -> None:
+    async def test_100_coverage_final_and_then_async_fallback_expected(self) -> None:
         """Test and_then_async fallback branch for unexpected types."""
         from taipanstack.core.result import and_then_async
 
@@ -210,7 +210,7 @@ class TestResultModuleBranches:
 class TestConfigModelsUncovered:
     """Tests for config/models.py uncovered lines."""
 
-    def test_security_config_with_level(self) -> None:
+    def test_100_coverage_final_security_config_with_level_expected(self) -> None:
         """Test SecurityConfig with explicit level."""
         from taipanstack.config.models import SecurityConfig
 
@@ -246,7 +246,7 @@ class TestGuardsUncovered:
         result = guard_path_traversal(valid_path, tmp_path)
         assert result.exists()
 
-    def test_env_variable_not_set(self) -> None:
+    def test_100_coverage_final_env_variable_not_set_expected(self) -> None:
         """Test guard_env_variable when variable not set."""
         from taipanstack.security.guards import SecurityError, guard_env_variable
 
@@ -271,7 +271,7 @@ class TestValidatorsUncovered:
 class TestSanitizersUncovered:
     """Tests for sanitizers.py uncovered lines."""
 
-    def test_sanitize_filename_empty_after_sanitization(self) -> None:
+    def test_100_coverage_final_sanitize_filename_empty_after_sanitization_expected(self) -> None:
         """Test sanitize_filename with name that becomes empty."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -279,21 +279,21 @@ class TestSanitizersUncovered:
         result = sanitize_filename("...")
         assert result == "unnamed"
 
-    def test_sanitize_path_with_base_dir_not_absolute(self, tmp_path: Path) -> None:
+    def test_100_coverage_final_sanitize_path_with_base_dir_not_absolute_expected(self, tmp_path: Path) -> None:
         """Test sanitize_path with relative path and base_dir."""
         from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
         assert tmp_path in result.parents or result.parent == tmp_path
 
-    def test_sanitize_env_value_multiline_allowed(self) -> None:
+    def test_100_coverage_final_sanitize_env_value_multiline_allowed_expected(self) -> None:
         """Test sanitize_env_value with multiline allowed."""
         from taipanstack.security.sanitizers import sanitize_env_value
 
         result = sanitize_env_value("line1\nline2", allow_multiline=True)
         assert "\n" in result
 
-    def test_sanitize_sql_identifier_starts_with_number(self) -> None:
+    def test_100_coverage_final_sanitize_sql_identifier_starts_with_number_expected(self) -> None:
         """Test sanitize_sql_identifier starting with number."""
         from taipanstack.security.sanitizers import sanitize_sql_identifier
 
@@ -304,7 +304,7 @@ class TestSanitizersUncovered:
 class TestRetryUncovered:
     """Tests for retry.py uncovered lines."""
 
-    def test_retry_no_reraise(self) -> None:
+    def test_100_coverage_final_retry_no_reraise_expected(self) -> None:
         """Test retry with reraise=False still raises RetryError."""
         from taipanstack.resilience.retry import RetryError, retry
 
@@ -315,7 +315,7 @@ class TestRetryUncovered:
         with pytest.raises(RetryError):
             failing()
 
-    def test_retrier_context_wrong_exception(self) -> None:
+    def test_100_coverage_final_retrier_context_wrong_exception_expected(self) -> None:
         """Test Retrier with non-matching exception type."""
         from taipanstack.resilience.retry import Retrier
 
@@ -328,7 +328,7 @@ class TestRetryUncovered:
 class TestSubprocessUncovered:
     """Tests for subprocess.py uncovered lines."""
 
-    def test_run_safe_command_success(self) -> None:
+    def test_100_coverage_final_run_safe_command_success_expected(self) -> None:
         """Test run_safe_command with successful command."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -340,7 +340,7 @@ class TestSubprocessUncovered:
 class TestFilesystemUncovered:
     """Tests for filesystem.py uncovered lines."""
 
-    def test_safe_write_atomic_success(self, tmp_path: Path) -> None:
+    def test_100_coverage_final_safe_write_atomic_success_expected(self, tmp_path: Path) -> None:
         """Test atomic write success path."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -352,7 +352,7 @@ class TestFilesystemUncovered:
 class TestLoggingUncovered:
     """Tests for logging.py uncovered lines 20-21."""
 
-    def test_logging_fallback_branch(self) -> None:
+    def test_100_coverage_final_logging_fallback_branch_expected(self) -> None:
         """Test logging when structlog not available."""
         from taipanstack.utils.logging import HAS_STRUCTLOG
 
@@ -360,49 +360,49 @@ class TestLoggingUncovered:
         assert isinstance(HAS_STRUCTLOG, bool)
 
 
-def test_password_empty_verify():
+def test_100_coverage_final_password_empty_verify_expected():
     assert verify_password("", "hash") is False
     assert verify_password(SecretStr(""), "hash") is False
 
 
-def test_password_length_verify():
+def test_100_coverage_final_password_length_verify_expected():
     assert verify_password("a" * 1025, "hash") is False
     assert verify_password(SecretStr("a" * 1025), "hash") is False
 
 
-def test_password_hash_empty():
+def test_100_coverage_final_password_hash_empty_expected():
     with pytest.raises(ValueError, match="cannot be empty"):
         hash_password("")
 
 
-def test_password_hash_length():
+def test_100_coverage_final_password_hash_length_expected():
     with pytest.raises(ValueError, match="exceeds"):
         hash_password("a" * 1025)
 
 
-def test_password_verify_wrong_type():
+def test_100_coverage_final_password_verify_wrong_type_expected():
     with pytest.raises(TypeError, match="must be a string or SecretStr"):
         verify_password(None, "hash")
 
 
-def test_password_verify_wrong_type_2():
+def test_100_coverage_final_password_verify_wrong_type_2_expected():
     with pytest.raises(TypeError, match="must be a string"):
         verify_password("a", 123)
 
 
-def test_password_hash_legacy_invalid():
+def test_100_coverage_final_password_hash_legacy_invalid_expected():
     assert verify_password("pass", "pbkdf2_sha256$invalid$123") is False
     assert verify_password("pass", "pbkdf2_sha256$10000000$123$123") is False
 
 
-def test_password_hash_wrong_type():
+def test_100_coverage_final_password_hash_wrong_type_expected():
     with pytest.raises(TypeError, match="must be a string or SecretStr"):
         hash_password(None)
 
 
 class TestSupplementarySubprocess:
     @patch("taipanstack.utils.subprocess.subprocess.run")
-    def test_run_safe_command_mocked_timeout_no_stdout(self, mock_run):
+    def test_100_coverage_final_run_safe_command_mocked_timeout_no_stdout_expected(self, mock_run):
         # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
         class MockTimeoutExpired(subprocess.TimeoutExpired):
             def __init__(self):
@@ -426,7 +426,7 @@ class TestSupplementarySubprocess:
         assert "timed out after 1.0s" in result.stderr
 
     @patch("taipanstack.utils.subprocess.subprocess.run")
-    def test_run_safe_command_mocked_timeout_with_bytes_stdout(self, mock_run):
+    def test_100_coverage_final_run_safe_command_mocked_timeout_with_bytes_stdout_expected(self, mock_run):
         # Mock it as bytes to test the fallback decode branch.
         exc = subprocess.TimeoutExpired(cmd=["python"], timeout=1.0)
         exc.stdout = b"some bytes output"
@@ -438,19 +438,19 @@ class TestSupplementarySubprocess:
 
 
 class TestSupplementarySanitizer:
-    def test_sanitize_string_allow_html(self):
+    def test_100_coverage_final_sanitize_string_allow_html_expected(self):
         # With allow_html=True, it should NOT remove HTML tags, but still strip whitespace
         val = "   <script>alert(1)</script>   "
         res = sanitize_string(val, allow_html=True, strip_whitespace=True)
         assert res == "<script>alert(1)</script>"
 
-    def test_sanitize_string_disallow_unicode(self):
+    def test_100_coverage_final_sanitize_string_disallow_unicode_expected(self):
         # With allow_unicode=False, it should remove non-ASCII characters
         assert (
             sanitize_string("Hello\u200bWorld 😊", allow_unicode=False) == "HelloWorld "
         )
 
-    def test_sanitize_string_truncate_exact(self):
+    def test_100_coverage_final_sanitize_string_truncate_exact_expected(self):
         val = "12345"
         assert sanitize_string(val, max_length=5) == "12345"
         assert sanitize_string(val, max_length=4) == "1234"

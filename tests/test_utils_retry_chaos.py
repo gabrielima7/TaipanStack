@@ -5,7 +5,7 @@ import math
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
-def test_retry_chaos_extreme_attempt() -> None:
+def test_utils_retry_chaos_retry_chaos_extreme_attempt_expected() -> None:
     """Simulate a severe failure with a huge attempt number.
 
     A massively large attempt number can cause an OverflowError
@@ -29,7 +29,7 @@ def test_retry_chaos_extreme_attempt() -> None:
     assert delay >= 0.0
 
 
-def test_retry_chaos_nan_inf_config() -> None:
+def test_utils_retry_chaos_retry_chaos_nan_inf_config_expected() -> None:
     """Simulate NaN or Inf values in the retry configuration.
 
     If configuration parameters accidentally become NaN or Inf,

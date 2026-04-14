@@ -21,7 +21,7 @@ from taipanstack.resilience.retry import RetryError, retry
 class TestRetryAsyncSupport:
     """Verify @retry works transparently with async def functions."""
 
-    async def test_async_success_no_retry(self) -> None:
+    async def test_v034_async_retry_circuit_async_success_no_retry_expected(self) -> None:
         """Successful async function is called only once."""
         call_count = 0
 
@@ -35,7 +35,7 @@ class TestRetryAsyncSupport:
         assert result == "ok"
         assert call_count == 1
 
-    async def test_async_retries_then_succeeds(self) -> None:
+    async def test_v034_async_retry_circuit_async_retries_then_succeeds_expected(self) -> None:
         """Async function is retried and eventually succeeds."""
         call_count = 0
 
@@ -55,7 +55,7 @@ class TestRetryAsyncSupport:
         assert result == "done"
         assert call_count == 3
 
-    async def test_async_raises_retry_error_after_max_attempts(self) -> None:
+    async def test_v034_async_retry_circuit_async_raises_retry_error_after_max_attempts_expected(self) -> None:
         """RetryError is raised after all async attempts are exhausted."""
 
         @retry(max_attempts=2, initial_delay=0.0, jitter=False, on=(OSError,))
@@ -71,7 +71,7 @@ class TestRetryAsyncSupport:
         assert exc_info.value.attempts == 2
         assert exc_info.value.last_exception is not None
 
-    async def test_async_does_not_catch_unspecified_exception(self) -> None:
+    async def test_v034_async_retry_circuit_async_does_not_catch_unspecified_exception_expected(self) -> None:
         """Non-listed exceptions propagate immediately from async functions."""
 
         @retry(max_attempts=3, on=(ValueError,))
@@ -81,7 +81,7 @@ class TestRetryAsyncSupport:
         with pytest.raises(TypeError):
             await raises_type_error()
 
-    async def test_async_uses_asyncio_sleep_not_time_sleep(self) -> None:
+    async def test_v034_async_retry_circuit_async_uses_asyncio_sleep_not_time_sleep_expected(self) -> None:
         """Async retries use asyncio.sleep, not time.sleep, for non-blocking waits."""
         mock_asyncio_sleep = AsyncMock()
         mock_time_sleep = MagicMock()
@@ -105,7 +105,7 @@ class TestRetryAsyncSupport:
         mock_asyncio_sleep.assert_awaited_once()
         mock_time_sleep.assert_not_called()
 
-    async def test_async_on_retry_callback_is_called(self) -> None:
+    async def test_v034_async_retry_circuit_async_on_retry_callback_is_called_expected(self) -> None:
         """on_retry callback is invoked on each failed async attempt."""
         callback_calls: list[tuple[int, int, Exception, float]] = []
 
@@ -131,7 +131,7 @@ class TestRetryAsyncSupport:
         assert callback_calls[0][0] == 1  # first attempt index
         assert callback_calls[1][0] == 2  # second attempt index
 
-    async def test_async_structlog_warning_called_without_callback(self) -> None:
+    async def test_v034_async_retry_circuit_async_structlog_warning_called_without_callback_expected(self) -> None:
         """Without on_retry, structlog.warning is emitted for async retries."""
         mock_structlog_logger = MagicMock()
 
@@ -153,7 +153,7 @@ class TestRetryAsyncSupport:
         event = mock_structlog_logger.warning.call_args[0][0]
         assert event == "retry_attempted"
 
-    async def test_async_log_retries_false_skips_logging(self) -> None:
+    async def test_v034_async_retry_circuit_async_log_retries_false_skips_logging_expected(self) -> None:
         """log_retries=False suppresses stdlib log messages for async functions."""
         call_count = 0
 
@@ -203,7 +203,7 @@ class TestRetryAsyncSupport:
 class TestCircuitBreakerAsyncSupport:
     """Verify CircuitBreaker works transparently with async def functions."""
 
-    async def test_async_success_keeps_closed(self) -> None:
+    async def test_v034_async_retry_circuit_async_success_keeps_closed_expected(self) -> None:
         """Successful async calls keep circuit in CLOSED state."""
         breaker = CircuitBreaker(failure_threshold=3, name="test_async_closed")
 
@@ -216,7 +216,7 @@ class TestCircuitBreakerAsyncSupport:
 
         assert breaker.state == CircuitState.CLOSED
 
-    async def test_async_failures_open_circuit(self) -> None:
+    async def test_v034_async_retry_circuit_async_failures_open_circuit_expected(self) -> None:
         """Async failures trip the circuit after reaching the threshold."""
         breaker = CircuitBreaker(failure_threshold=2, name="test_async_open")
 
@@ -250,7 +250,7 @@ class TestCircuitBreakerAsyncSupport:
 
         assert exc_info.value.state == CircuitState.OPEN
 
-    async def test_async_half_open_success_closes_circuit(self) -> None:
+    async def test_v034_async_retry_circuit_async_half_open_success_closes_circuit_expected(self) -> None:
         """Async success in HALF_OPEN transitions circuit to CLOSED."""
         breaker = CircuitBreaker(
             failure_threshold=1,
@@ -279,7 +279,7 @@ class TestCircuitBreakerAsyncSupport:
         assert result == "recovered"
         assert breaker.state == CircuitState.CLOSED
 
-    async def test_async_half_open_failure_reopens_circuit(self) -> None:
+    async def test_v034_async_retry_circuit_async_half_open_failure_reopens_circuit_expected(self) -> None:
         """Async failure in HALF_OPEN transitions circuit back to OPEN."""
         breaker = CircuitBreaker(
             failure_threshold=1,
@@ -304,7 +304,7 @@ class TestCircuitBreakerAsyncSupport:
 
         assert breaker.state == CircuitState.OPEN
 
-    async def test_circuit_breaker_decorator_async(self) -> None:
+    async def test_v034_async_retry_circuit_circuit_breaker_decorator_async_expected(self) -> None:
         """@circuit_breaker decorator works with async functions."""
         call_count = 0
 
@@ -317,7 +317,7 @@ class TestCircuitBreakerAsyncSupport:
         assert await counted() == 1
         assert await counted() == 2
 
-    async def test_async_excluded_exceptions_dont_trip(self) -> None:
+    async def test_v034_async_retry_circuit_async_excluded_exceptions_dont_trip_expected(self) -> None:
         """Excluded exceptions don't count as failures for async functions."""
         breaker = CircuitBreaker(
             failure_threshold=2,
@@ -335,7 +335,7 @@ class TestCircuitBreakerAsyncSupport:
 
         assert breaker.state == CircuitState.CLOSED
 
-    async def test_async_on_state_change_callback_called(self) -> None:
+    async def test_v034_async_retry_circuit_async_on_state_change_callback_called_expected(self) -> None:
         """on_state_change callback fires on async-triggered state transitions."""
         transitions: list[tuple[CircuitState, CircuitState]] = []
 
@@ -355,7 +355,7 @@ class TestCircuitBreakerAsyncSupport:
         assert len(transitions) == 1
         assert transitions[0] == (CircuitState.CLOSED, CircuitState.OPEN)
 
-    async def test_async_structlog_called_on_state_change_no_callback(self) -> None:
+    async def test_v034_async_retry_circuit_async_structlog_called_on_state_change_no_callback_expected(self) -> None:
         """Without on_state_change, structlog.warning fires on async transitions."""
         mock_structlog_logger = MagicMock()
 

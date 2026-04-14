@@ -1,7 +1,7 @@
 from src.taipanstack.utils.logging import mask_sensitive_data_processor
 
 
-def test_coverage():
+def test_v034_logging_coverage_coverage_expected():
     from src.taipanstack.utils import logging as my_logging
 
     # Temporarily set regex to None to hit the branch
@@ -19,4 +19,4 @@ def test_coverage():
 
 
 if __name__ == "__main__":
-    test_coverage()
+    test_v034_logging_coverage_coverage_expected()

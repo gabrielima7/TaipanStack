@@ -6,7 +6,7 @@ import pytest
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_rate_limiter_chaos_time_corruption(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chaos_rl_nan_rate_limiter_chaos_time_corruption_expected(monkeypatch: pytest.MonkeyPatch) -> None:
     limiter = RateLimiter(max_calls=5, time_window=10.0)
 
     # Empty the bucket
@@ -27,7 +27,7 @@ def test_rate_limiter_chaos_time_corruption(monkeypatch: pytest.MonkeyPatch) -> 
     assert limiter.consume() is True, "Rate limiter permanently poisoned by NaN time"
 
 
-def test_rate_limiter_chaos_time_corruption_has_tokens(
+def test_chaos_rl_nan_rate_limiter_chaos_time_corruption_has_tokens_expected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     limiter = RateLimiter(max_calls=5, time_window=10.0)
@@ -45,7 +45,7 @@ def test_rate_limiter_chaos_time_corruption_has_tokens(
     assert limiter.tokens == initial_tokens - 1.0
 
 
-def test_rate_limiter_chaos_consume_zero_tokens() -> None:
+def test_chaos_rl_nan_rate_limiter_chaos_consume_zero_tokens_expected() -> None:
     limiter = RateLimiter(max_calls=5, time_window=10.0)
     assert limiter.consume(tokens=0) is True
     assert limiter.consume(tokens=-1) is True

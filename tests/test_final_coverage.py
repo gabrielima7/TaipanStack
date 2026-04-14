@@ -10,7 +10,7 @@ from taipanstack.security.guards import SecurityError
 class TestLoggingComplete:
     """Complete tests for logging module covering all branches."""
 
-    def test_logger_all_levels(self) -> None:
+    def test_final_coverage_logger_all_levels_expected(self) -> None:
         """Test StackLogger all log levels."""
         from taipanstack.utils.logging import StackLogger
 
@@ -23,7 +23,7 @@ class TestLoggingComplete:
         logger.error("error msg")
         logger.critical("critical msg")
 
-    def test_logger_exception(self) -> None:
+    def test_final_coverage_logger_exception_expected(self) -> None:
         """Test StackLogger exception method."""
         from taipanstack.utils.logging import StackLogger
 
@@ -33,7 +33,7 @@ class TestLoggingComplete:
         except RuntimeError:
             logger.exception("caught exception")
 
-    def test_log_operation_context_manager(self) -> None:
+    def test_final_coverage_log_operation_context_manager_expected(self) -> None:
         """Test log_operation context manager."""
         from taipanstack.utils.logging import log_operation
 
@@ -44,7 +44,7 @@ class TestLoggingComplete:
 class TestGuardsComplete:
     """Complete tests for guards module."""
 
-    def test_guard_env_variable_pattern_not_in_allowed(
+    def test_final_coverage_guard_env_variable_pattern_not_in_allowed_expected(
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -58,7 +58,7 @@ class TestGuardsComplete:
         with pytest.raises(SecurityError):
             guard_env_variable("CUSTOM_API_KEY")
 
-    def test_guard_env_variable_pattern_in_allowed(
+    def test_final_coverage_guard_env_variable_pattern_in_allowed_expected(
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -78,7 +78,7 @@ class TestGuardsComplete:
 class TestSubprocessComplete:
     """Complete tests for subprocess module."""
 
-    def test_run_safe_command_with_all_options(self) -> None:
+    def test_final_coverage_run_safe_command_with_all_options_expected(self) -> None:
         """Test run_safe_command with all options."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -95,7 +95,7 @@ class TestSubprocessComplete:
 class TestSanitizersComplete:
     """Complete tests for sanitizers module."""
 
-    def test_sanitize_string_with_unicode(self) -> None:
+    def test_final_coverage_sanitize_string_with_unicode_expected(self) -> None:
         """Test sanitize_string with allow_unicode=False."""
         from taipanstack.security.sanitizers import sanitize_string
 
@@ -103,14 +103,14 @@ class TestSanitizersComplete:
         assert "é" not in result
         assert "ö" not in result
 
-    def test_sanitize_string_with_max_length(self) -> None:
+    def test_final_coverage_sanitize_string_with_max_length_expected(self) -> None:
         """Test sanitize_string with max_length."""
         from taipanstack.security.sanitizers import sanitize_string
 
         result = sanitize_string("This is a long string", max_length=10)
         assert len(result) == 10
 
-    def test_sanitize_filename_long_name(self) -> None:
+    def test_final_coverage_sanitize_filename_long_name_expected(self) -> None:
         """Test sanitize_filename with very long name."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -118,7 +118,7 @@ class TestSanitizersComplete:
         result = sanitize_filename(long_name, max_length=100)
         assert len(result) <= 100
 
-    def test_sanitize_env_value_multiline(self) -> None:
+    def test_final_coverage_sanitize_env_value_multiline_expected(self) -> None:
         """Test sanitize_env_value with multiline."""
         from taipanstack.security.sanitizers import sanitize_env_value
 
@@ -134,14 +134,14 @@ class TestSanitizersComplete:
 class TestValidatorsComplete:
     """Complete tests for validators module."""
 
-    def test_validate_email_valid(self) -> None:
+    def test_final_coverage_validate_email_valid_expected(self) -> None:
         """Test validate_email with valid email."""
         from taipanstack.security.validators import validate_email
 
         result = validate_email("user@example.com")
         assert result == "user@example.com"
 
-    def test_validate_url_https(self) -> None:
+    def test_final_coverage_validate_url_https_expected(self) -> None:
         """Test validate_url with https."""
         from urllib.parse import urlparse
 
@@ -155,7 +155,7 @@ class TestValidatorsComplete:
 class TestFilesystemComplete:
     """Complete tests for filesystem module."""
 
-    def test_safe_write_non_atomic(self, tmp_path: Path) -> None:
+    def test_final_coverage_safe_write_non_atomic_expected(self, tmp_path: Path) -> None:
         """Test safe_write with atomic=False."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -167,7 +167,7 @@ class TestFilesystemComplete:
 class TestConfigModelsComplete:
     """Complete tests for config models."""
 
-    def test_stack_config_all_options(self) -> None:
+    def test_final_coverage_stack_config_all_options_expected(self) -> None:
         """Test StackConfig with all options."""
         from taipanstack.config.models import StackConfig
 
@@ -185,7 +185,7 @@ class TestConfigModelsComplete:
 class TestDecoratorsComplete:
     """Complete tests for decorators module."""
 
-    def test_validate_inputs_with_validation(self) -> None:
+    def test_final_coverage_validate_inputs_with_validation_expected(self) -> None:
         """Test validate_inputs with actual validation."""
         from taipanstack.security.decorators import ValidationError, validate_inputs
 
@@ -205,7 +205,7 @@ class TestDecoratorsComplete:
         with pytest.raises(ValidationError):
             process(value=-1)
 
-    def test_guard_exceptions_reraise_non_security(self) -> None:
+    def test_final_coverage_guard_exceptions_reraise_non_security_expected(self) -> None:
         """Test guard_exceptions with non-SecurityError reraise."""
         from taipanstack.security.decorators import guard_exceptions
 
@@ -216,7 +216,7 @@ class TestDecoratorsComplete:
         with pytest.raises(TypeError):
             raise_value_error()
 
-    def test_deprecated_with_removal_version(self) -> None:
+    def test_final_coverage_deprecated_with_removal_version_expected(self) -> None:
         """Test deprecated with removal_version."""
         import warnings
 
@@ -233,7 +233,7 @@ class TestDecoratorsComplete:
             assert len(w) == 1
             assert "3.0.0" in str(w[0].message)
 
-    def test_require_type_passes(self) -> None:
+    def test_final_coverage_require_type_passes_expected(self) -> None:
         """Test require_type with valid types."""
         from taipanstack.security.decorators import require_type
 
@@ -259,7 +259,7 @@ class TestDecoratorsComplete:
 class TestCircuitBreakerComplete:
     """Complete tests for circuit breaker."""
 
-    def test_excluded_exceptions_work(self) -> None:
+    def test_final_coverage_excluded_exceptions_work_expected(self) -> None:
         """Test that excluded exceptions don't trip circuit."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
@@ -284,7 +284,7 @@ class TestCircuitBreakerComplete:
 class TestRetryComplete:
     """Complete tests for retry module."""
 
-    def test_retry_backoff_exponential(self) -> None:
+    def test_final_coverage_retry_backoff_exponential_expected(self) -> None:
         """Test retry with exponential backoff."""
         from taipanstack.resilience.retry import RetryConfig, calculate_delay
 

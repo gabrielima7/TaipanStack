@@ -12,7 +12,7 @@ from taipanstack.utils.logging import REDACTED_VALUE
 class TestSecureBaseModel:
     """Tests for the SecureBaseModel."""
 
-    def test_model_dump_masks_sensitive_fields(self) -> None:
+    def test_security_models_model_dump_masks_sensitive_fields_expected(self) -> None:
         """Test that model_dump redacts sensitive keys."""
 
         class User(SecureBaseModel):
@@ -34,7 +34,7 @@ class TestSecureBaseModel:
         assert dumped["secret_token"] == REDACTED_VALUE
         assert dumped["api_key"] == REDACTED_VALUE
 
-    def test_model_dump_json_masks_sensitive_fields(self) -> None:
+    def test_security_models_model_dump_json_masks_sensitive_fields_expected(self) -> None:
         """Test that model_dump_json redacts sensitive keys."""
 
         class Config(SecureBaseModel):
@@ -48,7 +48,7 @@ class TestSecureBaseModel:
         assert parsed["app_name"] == "MyApp"
         assert parsed["db_password"] == REDACTED_VALUE
 
-    def test_nested_masking(self) -> None:
+    def test_security_models_nested_masking_expected(self) -> None:
         """Test masking works on nested models."""
 
         class DbConfig(BaseModel):
@@ -73,7 +73,7 @@ class TestSecureBaseModel:
         assert dumped["db"][0]["password"] == REDACTED_VALUE
         assert dumped["db"][1]["password"] == REDACTED_VALUE
 
-    def test_model_dump_json_with_indent(self) -> None:
+    def test_security_models_model_dump_json_with_indent_expected(self) -> None:
         """Test model_dump_json with indent."""
 
         class ApiKeyObj(SecureBaseModel):
@@ -84,7 +84,7 @@ class TestSecureBaseModel:
         assert "{\n" in json_str
         assert REDACTED_VALUE in json_str
 
-    def test_str_and_repr_mask_sensitive_fields(self) -> None:
+    def test_security_models_str_and_repr_mask_sensitive_fields_expected(self) -> None:
         """Test that str() and repr() redact sensitive keys."""
 
         class User(SecureBaseModel):
@@ -104,7 +104,7 @@ class TestSecureBaseModel:
         assert "super_secret_password" not in user_repr
         assert REDACTED_VALUE in user_repr
 
-    def test_masking_disabled_when_no_regex(
+    def test_security_models_masking_disabled_when_no_regex_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that data is returned verbatim when no regex is active."""

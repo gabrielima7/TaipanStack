@@ -78,7 +78,7 @@ class TestSafeRequest:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_ssrf_blocks_private_ip(self) -> None:
+    async def test_bridge_http_ssrf_blocks_private_ip_expected(self) -> None:
         """SSRF protection blocks requests to private IPs."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -88,7 +88,7 @@ class TestSafeRequest:
         assert isinstance(result.err_value, SecurityError)
 
     @pytest.mark.asyncio
-    async def test_ssrf_disabled(self) -> None:
+    async def test_bridge_http_ssrf_disabled_expected(self) -> None:
         """Requests pass when SSRF protection is disabled."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -110,7 +110,7 @@ class TestSafeRequest:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_ssrf_ok_path_calls_request(self) -> None:
+    async def test_bridge_http_ssrf_ok_path_calls_request_expected(self) -> None:
         """SSRF-enabled requests proceed when the guard returns Ok."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -231,7 +231,7 @@ class TestSafeRequest:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_all_retries_fail(self) -> None:
+    async def test_bridge_http_all_retries_fail_expected(self) -> None:
         """Returns Err when all retries are exhausted."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -272,7 +272,7 @@ class TestSafeRequest:
         assert str(result.err_value) == "Request failed"
 
     @pytest.mark.asyncio
-    async def test_circuit_breaker_records_failure_on_request_exception(self) -> None:
+    async def test_bridge_http_circuit_breaker_records_failure_on_request_exception_expected(self) -> None:
         """A closed circuit breaker records failures raised during the request."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -302,7 +302,7 @@ class TestSafeHttpClient:
     """Tests for the SafeHttpClient async context manager."""
 
     @pytest.mark.asyncio
-    async def test_client_timeout_default(self) -> None:
+    async def test_bridge_http_client_timeout_default_expected(self) -> None:
         """Verifies that SafeHttpClient uses a default timeout of 10.0."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -321,7 +321,7 @@ class TestSafeHttpClient:
         mock_httpx.AsyncClient.assert_called_once_with(timeout=10.0)
 
     @pytest.mark.asyncio
-    async def test_no_httpx_raises(self) -> None:
+    async def test_bridge_http_no_httpx_raises_expected(self) -> None:
         """Entering the context raises ImportError without httpx."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -331,7 +331,7 @@ class TestSafeHttpClient:
                     pass
 
     @pytest.mark.asyncio
-    async def test_lifecycle(self) -> None:
+    async def test_bridge_http_lifecycle_expected(self) -> None:
         """Client opens and closes properly."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -360,7 +360,7 @@ class TestSafeHttpClient:
         assert "not initialised" in str(result.err_value)
 
     @pytest.mark.asyncio
-    async def test_get_post_put_delete_patch(self) -> None:
+    async def test_bridge_http_get_post_put_delete_patch_expected(self) -> None:
         """Convenience methods delegate to request."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -382,7 +382,7 @@ class TestSafeHttpClient:
                     assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_ssrf_blocks_in_client(self) -> None:
+    async def test_bridge_http_ssrf_blocks_in_client_expected(self) -> None:
         """SSRF protection blocks requests in the client."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -400,7 +400,7 @@ class TestSafeHttpClient:
             assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_client_ssrf_ok_path_calls_request(self) -> None:
+    async def test_bridge_http_client_ssrf_ok_path_calls_request_expected(self) -> None:
         """SSRF-enabled client requests proceed when the guard returns Ok."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -427,7 +427,7 @@ class TestSafeHttpClient:
         mock_client.request.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_client_retry_on_status(self) -> None:
+    async def test_bridge_http_client_retry_on_status_expected(self) -> None:
         """Client retries on retryable status codes."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -466,7 +466,7 @@ class TestSafeHttpClient:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_client_retry_on_exception(self) -> None:
+    async def test_bridge_http_client_retry_on_exception_expected(self) -> None:
         """Client retries on connection exceptions."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -503,7 +503,7 @@ class TestSafeHttpClient:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_client_breaker_integration(self) -> None:
+    async def test_bridge_http_client_breaker_integration_expected(self) -> None:
         """Client respects circuit breaker state."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -528,7 +528,7 @@ class TestSafeHttpClient:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_client_all_retries_fail(self) -> None:
+    async def test_bridge_http_client_all_retries_fail_expected(self) -> None:
         """Client returns Err when all retries exhausted."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -580,7 +580,7 @@ class TestSafeHttpClient:
         assert str(result.err_value) == "Request failed"
 
     @pytest.mark.asyncio
-    async def test_aexit_without_client_is_noop(self) -> None:
+    async def test_bridge_http_aexit_without_client_is_noop_expected(self) -> None:
         """Exiting without an initialised client is a no-op."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 

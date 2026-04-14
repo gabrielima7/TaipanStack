@@ -28,11 +28,11 @@ from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger, setup_logging
 class TestLoggingImportFallback:
     """Test logging when structlog is not available."""
 
-    def test_has_structlog_constant_exists(self) -> None:
+    def test_full_coverage_has_structlog_constant_exists_expected(self) -> None:
         """Verify HAS_STRUCTLOG constant is defined."""
         assert isinstance(HAS_STRUCTLOG, bool)
 
-    def test_stack_logger_without_structlog(self) -> None:
+    def test_full_coverage_stack_logger_without_structlog_expected(self) -> None:
         """Test StackLogger falls back to standard logging."""
         logger = StackLogger("test", "DEBUG", use_structured=False)
         assert logger._structured is False
@@ -42,7 +42,7 @@ class TestLoggingImportFallback:
         logger.error("error message")
         logger.critical("critical message")
 
-    def test_setup_logging_without_structlog(self) -> None:
+    def test_full_coverage_setup_logging_without_structlog_expected(self) -> None:
         """Test setup_logging without structlog."""
         setup_logging("DEBUG", format_type="simple", use_structured=False)
         setup_logging("INFO", format_type="json", use_structured=False)
@@ -56,12 +56,12 @@ class TestLoggingImportFallback:
 class TestValidatorsPythonVersionEdgeCases:
     """Test edge cases in Python version validation."""
 
-    def test_validate_python_version_alpha_suffix(self) -> None:
+    def test_full_coverage_validate_python_version_alpha_suffix_expected(self) -> None:
         """Test version with non-numeric characters fails at regex."""
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.12a")
 
-    def test_validate_python_version_too_many_parts(self) -> None:
+    def test_full_coverage_validate_python_version_too_many_parts_expected(self) -> None:
         """Test version with too many parts."""
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.12.1")
@@ -86,7 +86,7 @@ class TestGuardsPathTraversalOSError:
 class TestGuardsEnvVariableAllowedBranch:
     """Test env variable guard with allowed_names for sensitive patterns."""
 
-    def test_guard_env_variable_sensitive_pattern_allowed(self) -> None:
+    def test_full_coverage_guard_env_variable_sensitive_pattern_allowed_expected(self) -> None:
         """Test sensitive pattern allowed when explicitly in allowed list."""
         with mock.patch.dict(os.environ, {"MY_API_TOKEN": "secret123"}):
             result = guard_env_variable(
@@ -95,7 +95,7 @@ class TestGuardsEnvVariableAllowedBranch:
             )
             assert result == "secret123"
 
-    def test_guard_env_variable_sensitive_pattern_not_in_allowed(self) -> None:
+    def test_full_coverage_guard_env_variable_sensitive_pattern_not_in_allowed_expected(self) -> None:
         """Test sensitive pattern rejected when not in allowed list."""
         with mock.patch.dict(os.environ, {"MY_API_TOKEN": "secret123"}):
             with pytest.raises(SecurityError, match="potentially sensitive"):
@@ -113,12 +113,12 @@ class TestGuardsEnvVariableAllowedBranch:
 class TestSanitizersFilenameEdgeCases:
     """Test edge cases in filename sanitization."""
 
-    def test_sanitize_filename_no_room_for_stem(self) -> None:
+    def test_full_coverage_sanitize_filename_no_room_for_stem_expected(self) -> None:
         """Test filename truncation when extension is longer than max."""
         result = sanitize_filename("abc.toolongext", max_length=4)
         assert len(result) <= 4
 
-    def test_sanitize_filename_extension_equals_max(self) -> None:
+    def test_full_coverage_sanitize_filename_extension_equals_max_expected(self) -> None:
         """Test when extension length equals max_length."""
         result = sanitize_filename("a.txt", max_length=4)
         assert len(result) <= 4
@@ -127,7 +127,7 @@ class TestSanitizersFilenameEdgeCases:
 class TestSanitizersPathEdgeCases:
     """Test edge cases in path sanitization."""
 
-    def test_sanitize_path_with_base_dir_relative(self) -> None:
+    def test_full_coverage_sanitize_path_with_base_dir_relative_expected(self) -> None:
         """Test sanitize_path with base_dir makes path absolute."""
         with tempfile.TemporaryDirectory() as tmpdir:
             base = Path(tmpdir).resolve()
@@ -147,7 +147,7 @@ class TestSanitizersPathEdgeCases:
 class TestFilesystemSizeLimit:
     """Test filesystem size limit branches."""
 
-    def test_safe_read_no_size_limit(self) -> None:
+    def test_full_coverage_safe_read_no_size_limit_expected(self) -> None:
         """Test safe_read with max_size_bytes=None."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write("test content")
@@ -165,7 +165,7 @@ class TestFilesystemSizeLimit:
 class TestFilesystemEnsureDir:
     """Test ensure_dir edge cases."""
 
-    def test_ensure_dir_nested(self) -> None:
+    def test_full_coverage_ensure_dir_nested_expected(self) -> None:
         """Test ensure_dir creates nested directories."""
         with tempfile.TemporaryDirectory() as tmpdir:
             result = ensure_dir(Path(tmpdir) / "subdir" / "nested")
@@ -181,7 +181,7 @@ class TestFilesystemEnsureDir:
 class TestRetryReraiseFlow:
     """Test retry reraise flow."""
 
-    def test_retry_reraise_false_still_raises(self) -> None:
+    def test_full_coverage_retry_reraise_false_still_raises_expected(self) -> None:
         """Test that retry with reraise=False still raises RetryError."""
         call_count = 0
 
@@ -205,12 +205,12 @@ class TestRetryReraiseFlow:
 class TestConfigModelsValidation:
     """Test config model validation edge cases."""
 
-    def test_stack_config_invalid_python_version(self) -> None:
+    def test_full_coverage_stack_config_invalid_python_version_expected(self) -> None:
         """Test StackConfig with invalid Python version format."""
         with pytest.raises(ValueError, match="invalid"):
             StackConfig(python_version="3.x")
 
-    def test_stack_config_old_python(self) -> None:
+    def test_full_coverage_stack_config_old_python_expected(self) -> None:
         """Test StackConfig with old Python version."""
         with pytest.raises(ValueError, match="not supported"):
             StackConfig(python_version="3.9")
@@ -224,7 +224,7 @@ class TestConfigModelsValidation:
 class TestResultCoreExits:
     """Test Result type exit flows."""
 
-    def test_result_unwrap_or_default(self) -> None:
+    def test_full_coverage_result_unwrap_or_default_expected(self) -> None:
         """Test unwrap_or uses default on error."""
         from taipanstack.core.result import Err, Ok
 
@@ -254,7 +254,7 @@ class TestResultCoreExits:
 class TestCircuitBreakerExits:
     """Test circuit breaker exit flows."""
 
-    def test_circuit_breaker_success(self) -> None:
+    def test_full_coverage_circuit_breaker_success_expected(self) -> None:
         """Test circuit breaker with successful operation."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
@@ -277,7 +277,7 @@ class TestCircuitBreakerExits:
 class TestDecoratorsPartialBranches:
     """Test decorator partial branches."""
 
-    def test_timeout_decorator_success(self) -> None:
+    def test_full_coverage_timeout_decorator_success_expected(self) -> None:
         """Test timeout decorator when function completes in time."""
         from taipanstack.security.decorators import timeout
 

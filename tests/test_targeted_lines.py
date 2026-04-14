@@ -8,7 +8,7 @@ import pytest
 class TestGuardsOSErrorBranch:
     """Test for guards.py line 97-98: OSError in path.resolve()."""
 
-    def test_guard_path_traversal_basic(self, tmp_path: Path) -> None:
+    def test_targeted_lines_guard_path_traversal_basic_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with basic path."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -22,7 +22,7 @@ class TestGuardsOSErrorBranch:
 class TestGuardsSymlinkBranch:
     """Test for guards.py line 118: symlink not allowed."""
 
-    def test_guard_path_symlink_allowed(self, tmp_path: Path) -> None:
+    def test_targeted_lines_guard_path_symlink_allowed_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal allows symlinks when permitted."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -40,14 +40,14 @@ class TestGuardsSymlinkBranch:
 class TestValidatorsVersionInvalidBranch:
     """Test for validators.py lines 128-130: invalid version format."""
 
-    def test_validate_python_version_invalid_numbers(self) -> None:
+    def test_targeted_lines_validate_python_version_invalid_numbers_expected(self) -> None:
         """Test validate_python_version with non-numeric version parts."""
         from taipanstack.security.validators import validate_python_version
 
         with pytest.raises(ValueError, match="Invalid version"):
             validate_python_version("3.abc")
 
-    def test_validate_python_version_python2(self) -> None:
+    def test_targeted_lines_validate_python_version_python2_expected(self) -> None:
         """Test validate_python_version rejects Python 2."""
         from taipanstack.security.validators import validate_python_version
 
@@ -58,7 +58,7 @@ class TestValidatorsVersionInvalidBranch:
 class TestSanitizersMissingBranch:
     """Test for sanitizers.py lines 154 and 221-223."""
 
-    def test_sanitize_filename_no_stem(self) -> None:
+    def test_targeted_lines_sanitize_filename_no_stem_expected(self) -> None:
         """Test sanitize_filename when stem becomes empty."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -80,7 +80,7 @@ class TestSanitizersMissingBranch:
 class TestLoggingLine1920:
     """Test for logging.py lines 19-20 (HAS_STRUCTLOG = False branch)."""
 
-    def test_logging_without_structlog_mock(self) -> None:
+    def test_targeted_lines_logging_without_structlog_mock_expected(self) -> None:
         """Test logging when structlog import fails (mocked)."""
         # This line is covered when structlog is NOT installed
         # Since structlog IS installed now, we test the True branch
@@ -92,7 +92,7 @@ class TestLoggingLine1920:
 class TestFilesystemLine175And259:
     """Test for filesystem.py lines 175 and 259."""
 
-    def test_safe_write_directory_exists(self, tmp_path: Path) -> None:
+    def test_targeted_lines_safe_write_directory_exists_expected(self, tmp_path: Path) -> None:
         """Test safe_write when parent directory already exists."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 

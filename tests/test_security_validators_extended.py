@@ -13,33 +13,33 @@ from taipanstack.security.validators import (
 class TestValidateProjectNameEdgeCases:
     """Additional tests for validate_project_name."""
 
-    def test_name_too_long(self) -> None:
+    def test_security_validators_extended_name_too_long_expected(self) -> None:
         """Test that names exceeding max_length are rejected."""
         long_name = "a" * 101
         with pytest.raises(ValueError, match="exceeds maximum"):
             validate_project_name(long_name, max_length=100)
 
-    def test_name_starts_with_number(self) -> None:
+    def test_security_validators_extended_name_starts_with_number_expected(self) -> None:
         """Test that names starting with numbers are rejected."""
         with pytest.raises(ValueError, match="start with a letter"):
             validate_project_name("123project")
 
-    def test_name_starts_with_hyphen(self) -> None:
+    def test_security_validators_extended_name_starts_with_hyphen_expected(self) -> None:
         """Test that names starting with hyphen are rejected."""
         with pytest.raises(ValueError, match="start with a letter"):
             validate_project_name("-myproject")
 
-    def test_hyphen_not_allowed(self) -> None:
+    def test_security_validators_extended_hyphen_not_allowed_expected(self) -> None:
         """Test that hyphens can be disallowed."""
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my-project", allow_hyphen=False)
 
-    def test_underscore_not_allowed(self) -> None:
+    def test_security_validators_extended_underscore_not_allowed_expected(self) -> None:
         """Test that underscores can be disallowed."""
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my_project", allow_underscore=False)
 
-    def test_empty_name(self) -> None:
+    def test_security_validators_extended_empty_name_expected(self) -> None:
         """Test that empty names are rejected."""
         with pytest.raises(ValueError):
             validate_project_name("")
@@ -48,12 +48,12 @@ class TestValidateProjectNameEdgeCases:
 class TestValidatePythonVersionEdgeCases:
     """Additional tests for validate_python_version."""
 
-    def test_unsupported_major_version(self) -> None:
+    def test_security_validators_extended_unsupported_major_version_expected(self) -> None:
         """Test that unsupported major versions are rejected."""
         with pytest.raises(ValueError, match="Python 3"):
             validate_python_version("2.7")
 
-    def test_unsupported_minor_version(self) -> None:
+    def test_security_validators_extended_unsupported_minor_version_expected(self) -> None:
         """Test that old minor versions are rejected."""
         with pytest.raises(ValueError, match="3.10"):
             validate_python_version("3.9")
@@ -64,7 +64,7 @@ class TestValidatePythonVersionEdgeCases:
         with pytest.raises(ValueError, match="Version string exceeds maximum length"):
             validate_python_version("1." + "9" * 5000)
 
-    def test_non_numeric_version_mock(self) -> None:
+    def test_security_validators_extended_non_numeric_version_mock_expected(self) -> None:
         """Test that a non-numeric version string correctly raises ValueError during integer conversion when bypassing regex."""
         from unittest.mock import patch
 
@@ -77,13 +77,13 @@ class TestValidatePythonVersionEdgeCases:
 class TestValidateEmailEdgeCases:
     """Additional tests for validate_email."""
 
-    def test_local_part_too_long(self) -> None:
+    def test_security_validators_extended_local_part_too_long_expected(self) -> None:
         """Test that local part exceeding max length is rejected."""
         long_local = "a" * 65
         with pytest.raises(ValueError):
             validate_email(f"{long_local}@example.com")
 
-    def test_domain_too_long(self) -> None:
+    def test_security_validators_extended_domain_too_long_expected(self) -> None:
         """Test that domain exceeding max length is rejected."""
         long_domain = "a" * 256
         with pytest.raises(ValueError):
@@ -93,17 +93,17 @@ class TestValidateEmailEdgeCases:
 class TestValidateUrlEdgeCases:
     """Additional tests for validate_url."""
 
-    def test_invalid_scheme(self) -> None:
+    def test_security_validators_extended_invalid_scheme_expected(self) -> None:
         """Test that invalid schemes are rejected."""
         with pytest.raises(ValueError, match="scheme"):
             validate_url("ftp://example.com")
 
-    def test_missing_domain(self) -> None:
+    def test_security_validators_extended_missing_domain_expected(self) -> None:
         """Test that URLs without domain are rejected."""
         with pytest.raises(ValueError):
             validate_url("http://")
 
-    def test_localhost_allowed(self) -> None:
+    def test_security_validators_extended_localhost_allowed_expected(self) -> None:
         """Test that localhost is allowed when TLD not required."""
         result = validate_url("http://localhost:8080", require_tld=False)
         assert "localhost" in result

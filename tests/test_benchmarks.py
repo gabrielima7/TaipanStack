@@ -22,12 +22,12 @@ from taipanstack.security.sanitizers import (
 # =============================================================================
 
 
-def test_bench_sanitize_string_simple(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_string_simple_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_string with typical input."""
     benchmark(sanitize_string, "Hello, World! This is a normal string.")
 
 
-def test_bench_sanitize_string_xss(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_string_xss_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_string with XSS payload."""
     benchmark(
         sanitize_string,
@@ -35,7 +35,7 @@ def test_bench_sanitize_string_xss(benchmark: BenchmarkFixture) -> None:
     )
 
 
-def test_bench_sanitize_string_unicode(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_string_unicode_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_string with heavy unicode content."""
     benchmark(
         sanitize_string,
@@ -43,7 +43,7 @@ def test_bench_sanitize_string_unicode(benchmark: BenchmarkFixture) -> None:
     )
 
 
-def test_bench_sanitize_filename_complex(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_filename_complex_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_filename with adversarial input."""
     benchmark(
         sanitize_filename,
@@ -51,22 +51,22 @@ def test_bench_sanitize_filename_complex(benchmark: BenchmarkFixture) -> None:
     )
 
 
-def test_bench_sanitize_filename_long(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_filename_long_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_filename with a very long name."""
     benchmark(sanitize_filename, "a" * 300 + ".txt", max_length=255)
 
 
-def test_bench_sanitize_path_nested(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_path_nested_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_path with nested directory structure."""
     benchmark(sanitize_path, "a/b/c/d/e/f/g/h/file.txt", max_depth=10)
 
 
-def test_bench_sanitize_path_traversal(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_path_traversal_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_path with traversal attempts stripped."""
     benchmark(sanitize_path, "safe/../../still/../ok/file.txt", max_depth=None)
 
 
-def test_bench_sanitize_env_value_standard(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_env_value_standard_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_env_value with typical env content."""
     benchmark(
         sanitize_env_value,
@@ -74,17 +74,17 @@ def test_bench_sanitize_env_value_standard(benchmark: BenchmarkFixture) -> None:
     )
 
 
-def test_bench_sanitize_env_value_large(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_env_value_large_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_env_value with large payload."""
     benchmark(sanitize_env_value, "x" * 4096, max_length=4096)
 
 
-def test_bench_sanitize_sql_identifier(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_sql_identifier_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_sql_identifier with typical table name."""
     benchmark(sanitize_sql_identifier, "user_accounts_table")
 
 
-def test_bench_sanitize_sql_identifier_dirty(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_sanitize_sql_identifier_dirty_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark sanitize_sql_identifier with injection attempt."""
     benchmark(sanitize_sql_identifier, "users; DROP TABLE users--")
 
@@ -110,13 +110,13 @@ def test_bench_safe_decorator_err(benchmark: BenchmarkFixture) -> None:
     benchmark(_divide, 10, 0)
 
 
-def test_bench_collect_results_100(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_collect_results_100_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark collect_results with 100 Ok values."""
     results = [Ok(i) for i in range(100)]
     benchmark(collect_results, results)
 
 
-def test_bench_unwrap_or(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_unwrap_or_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark unwrap_or with Ok value."""
     ok = Ok(42)
     benchmark(ok.unwrap_or, 0)
@@ -127,7 +127,7 @@ def test_bench_unwrap_or(benchmark: BenchmarkFixture) -> None:
 # =============================================================================
 
 
-def test_bench_guard_ssrf_public(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_guard_ssrf_public_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark guard_ssrf with public hostname."""
     # We mock getaddrinfo to avoid network I/O and measure only the guard logic
     import socket
@@ -143,7 +143,7 @@ def test_bench_guard_ssrf_public(benchmark: BenchmarkFixture) -> None:
         benchmark(guard_ssrf, "https://example.com")
 
 
-def test_bench_guard_ssrf_private(benchmark: BenchmarkFixture) -> None:
+def test_benchmarks_bench_guard_ssrf_private_expected(benchmark: BenchmarkFixture) -> None:
     """Benchmark guard_ssrf with private hostname."""
     import socket
     from unittest.mock import patch

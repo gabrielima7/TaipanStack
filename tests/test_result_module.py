@@ -17,14 +17,14 @@ from taipanstack.core.result import (
 class TestOkErr:
     """Tests for basic Ok/Err functionality."""
 
-    def test_ok_value(self) -> None:
+    def test_result_module_ok_value_expected(self) -> None:
         """Test Ok wraps value correctly."""
         result: Result[int, Exception] = Ok(42)
         assert result.is_ok()
         assert not result.is_err()
         assert result.ok_value == 42
 
-    def test_err_value(self) -> None:
+    def test_result_module_err_value_expected(self) -> None:
         """Test Err wraps error correctly."""
         error = ValueError("test error")
         result: Result[int, ValueError] = Err(error)
@@ -36,7 +36,7 @@ class TestOkErr:
 class TestSafeDecorator:
     """Tests for the @safe decorator."""
 
-    def test_safe_success(self) -> None:
+    def test_result_module_safe_success_expected(self) -> None:
         """Test safe decorator returns Ok on success."""
 
         @safe
@@ -47,7 +47,7 @@ class TestSafeDecorator:
         assert result.is_ok()
         assert result.ok_value == 5
 
-    def test_safe_exception(self) -> None:
+    def test_result_module_safe_exception_expected(self) -> None:
         """Test safe decorator returns Err on exception."""
 
         @safe
@@ -58,7 +58,7 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ZeroDivisionError)
 
-    def test_safe_basic_exception(self) -> None:
+    def test_result_module_safe_basic_exception_expected(self) -> None:
         """Test safe decorator returns Err on base Exception."""
 
         @safe
@@ -71,7 +71,7 @@ class TestSafeDecorator:
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
-    def test_safe_preserves_function_metadata(self) -> None:
+    def test_result_module_safe_preserves_function_metadata_expected(self) -> None:
         """Test safe decorator preserves function name and docstring."""
 
         @safe
@@ -86,7 +86,7 @@ class TestSafeDecorator:
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""
 
-    def test_safe_from_catches_specified_exception(self) -> None:
+    def test_result_module_safe_from_catches_specified_exception_expected(self) -> None:
         """Test safe_from catches specified exception types."""
 
         @safe_from(ValueError)
@@ -97,7 +97,7 @@ class TestSafeFromDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
 
-    def test_safe_from_propagates_unspecified_exception(self) -> None:
+    def test_result_module_safe_from_propagates_unspecified_exception_expected(self) -> None:
         """Test safe_from propagates unspecified exception types."""
 
         @safe_from(ValueError)
@@ -107,7 +107,7 @@ class TestSafeFromDecorator:
         with pytest.raises(ZeroDivisionError):
             divide(10, 0)
 
-    def test_safe_from_multiple_types(self) -> None:
+    def test_result_module_safe_from_multiple_types_expected(self) -> None:
         """Test safe_from with multiple exception types."""
 
         @safe_from(ValueError, TypeError)
@@ -124,7 +124,7 @@ class TestSafeFromDecorator:
         assert result2.is_err()
         assert isinstance(result2.err_value, TypeError)
 
-    def test_safe_from_explicit_raise(self) -> None:
+    def test_result_module_safe_from_explicit_raise_expected(self) -> None:
         """Test safe_from decorator catching explicitly raised exception."""
 
         @safe_from(ValueError)
@@ -136,7 +136,7 @@ class TestSafeFromDecorator:
         assert isinstance(result.err_value, ValueError)
         assert str(result.err_value) == "explicitly raised"
 
-    def test_safe_from_inheritance(self) -> None:
+    def test_result_module_safe_from_inheritance_expected(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
         class SubValueError(ValueError):
@@ -174,14 +174,14 @@ class TestCollectResults:
         assert isinstance(collected.err_value, ValueError)
         assert str(collected.err_value) == "error"
 
-    def test_collect_empty(self) -> None:
+    def test_result_module_collect_empty_expected(self) -> None:
         """Test collect_results with empty list."""
         results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok_value == []
 
-    def test_collect_first_err_returned(self) -> None:
+    def test_result_module_collect_first_err_returned_expected(self) -> None:
         """Test collect_results returns first Err encountered."""
         results: list[Result[int, ValueError]] = [
             Ok(1),
@@ -221,7 +221,7 @@ class TestUnwrapOrElse:
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or_else(lambda e: len(str(e))) == 5
 
-    def test_unwrap_or_else_with_exception(self) -> None:
+    def test_result_module_unwrap_or_else_with_exception_expected(self) -> None:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
@@ -231,7 +231,7 @@ class TestUnwrapOrElse:
 class TestMatchCase:
     """Tests for match/case pattern matching with Result."""
 
-    def test_match_ok(self) -> None:
+    def test_result_module_match_ok_expected(self) -> None:
         """Test match/case with Ok value."""
         result: Result[int, ValueError] = Ok(42)
         match result:
@@ -240,7 +240,7 @@ class TestMatchCase:
             case Err():
                 pytest.fail("Should not match Err")
 
-    def test_match_err(self) -> None:
+    def test_result_module_match_err_expected(self) -> None:
         """Test match/case with Err value."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         match result:
@@ -255,7 +255,7 @@ class TestSafeAsyncDecorator:
     """Tests for the @safe decorator with async functions."""
 
     @pytest.mark.asyncio
-    async def test_safe_async_success(self) -> None:
+    async def test_result_module_safe_async_success_expected(self) -> None:
         """Test safe decorator returns Ok on async success."""
 
         @safe
@@ -267,7 +267,7 @@ class TestSafeAsyncDecorator:
         assert result.ok_value == 5
 
     @pytest.mark.asyncio
-    async def test_safe_async_exception(self) -> None:
+    async def test_result_module_safe_async_exception_expected(self) -> None:
         """Test safe decorator returns Err on async exception."""
 
         @safe
@@ -279,7 +279,7 @@ class TestSafeAsyncDecorator:
         assert isinstance(result.err_value, ZeroDivisionError)
 
     @pytest.mark.asyncio
-    async def test_safe_async_preserves_metadata(self) -> None:
+    async def test_result_module_safe_async_preserves_metadata_expected(self) -> None:
         """Test safe decorator preserves async function name and docstring."""
 
         @safe
@@ -304,7 +304,7 @@ class TestSafeAsyncDecorator:
         assert isinstance(result.err_value, RuntimeError)
 
     @pytest.mark.asyncio
-    async def test_safe_async_basic_exception(self) -> None:
+    async def test_result_module_safe_async_basic_exception_expected(self) -> None:
         """Test safe decorator returns Err on base Exception in async function."""
 
         @safe
@@ -393,7 +393,7 @@ class TestAndThenAsync:
 
 class TestSafeFromAsyncDecorator:
     @pytest.mark.asyncio
-    async def test_safe_from_async_success(self) -> None:
+    async def test_result_module_safe_from_async_success_expected(self) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             return x * 2
@@ -402,7 +402,7 @@ class TestSafeFromAsyncDecorator:
         assert result == Ok(10)
 
     @pytest.mark.asyncio
-    async def test_safe_from_async_exception(self) -> None:
+    async def test_result_module_safe_from_async_exception_expected(self) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise ValueError("invalid")
@@ -412,7 +412,7 @@ class TestSafeFromAsyncDecorator:
         assert isinstance(result.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_safe_from_async_propagates_unspecified(self) -> None:
+    async def test_result_module_safe_from_async_propagates_unspecified_expected(self) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise TypeError("invalid type")

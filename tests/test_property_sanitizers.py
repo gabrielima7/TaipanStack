@@ -63,7 +63,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_never_contains_null_bytes(self, text: str) -> None:
+    def test_property_sanitizers_never_contains_null_bytes_expected(self, text: str) -> None:
         """Output must never contain null bytes."""
         result = sanitize_string(text)
         assert "\x00" not in result
@@ -73,7 +73,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_control_characters_except_whitespace(self, text: str) -> None:
+    def test_property_sanitizers_no_control_characters_except_whitespace_expected(self, text: str) -> None:
         """Output must not contain control characters (except newline, tab, CR)."""
         result = sanitize_string(text)
         allowed_controls = {"\n", "\r", "\t"}
@@ -88,7 +88,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_respects_max_length(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
         """Output length must not exceed max_length."""
         result = sanitize_string(text, max_length=max_len)
         assert len(result) <= max_len
@@ -98,7 +98,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_returns_string_type(self, text: str) -> None:
+    def test_property_sanitizers_returns_string_type_expected(self, text: str) -> None:
         """Output must always be a string."""
         result = sanitize_string(text)
         assert isinstance(result, str)
@@ -108,7 +108,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_html_tags_removed_by_default(self, text: str) -> None:
+    def test_property_sanitizers_html_tags_removed_by_default_expected(self, text: str) -> None:
         """Output must not contain HTML angle-bracket tags when allow_html=False."""
         import re
 
@@ -128,7 +128,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_never_empty(self, text: str) -> None:
+    def test_property_sanitizers_never_empty_expected(self, text: str) -> None:
         """Output filename must never be completely empty."""
         result = sanitize_filename(text)
         assert len(result) > 0
@@ -138,7 +138,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_path_separators(self, text: str) -> None:
+    def test_property_sanitizers_no_path_separators_expected(self, text: str) -> None:
         """Output stem must not contain path separator characters.
 
         Note: sanitize_filename sanitizes the *stem* only; the extension
@@ -155,7 +155,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_null_bytes(self, text: str) -> None:
+    def test_property_sanitizers_no_null_bytes_expected(self, text: str) -> None:
         """Stem portion of output must not contain null bytes.
 
         Note: sanitize_filename sanitizes the stem only; the extension
@@ -181,7 +181,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_respects_max_length(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
         """Output length must not exceed max_length for non-empty filenames.
 
         The 'unnamed' fallback for empty inputs bypasses max_length.
@@ -195,7 +195,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_windows_reserved_chars(self, text: str) -> None:
+    def test_property_sanitizers_no_windows_reserved_chars_expected(self, text: str) -> None:
         """Stem portion of output must not contain Windows-reserved characters.
 
         Note: sanitize_filename sanitizes the stem but preserves the
@@ -209,7 +209,7 @@ class TestSanitizeFilenameProperties:
                 f"Reserved char {ch!r} found in stem {stem!r} (full: {result!r})"
             )
 
-    def test_mutmut_boundaries_and_limits(self) -> None:
+    def test_property_sanitizers_mutmut_boundaries_and_limits_expected(self) -> None:
         """Strict non-fuzzing bounds to trap and kill Mutmut surviving mutants.
 
         This tests precise mathematical conditions (e.g. len == max_length)
@@ -248,7 +248,7 @@ class TestSanitizePathProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_traversal_in_output(self, text: str) -> None:
+    def test_property_sanitizers_no_traversal_in_output_expected(self, text: str) -> None:
         """Output path must not contain standalone '..' traversal components.
 
         Note: sanitize_path removes standalone '..' *path parts* (e.g. foo/../bar).
@@ -270,7 +270,7 @@ class TestSanitizePathProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_null_bytes(self, text: str) -> None:
+    def test_property_sanitizers_no_null_bytes_expected(self, text: str) -> None:
         """Output path must not contain null bytes."""
         try:
             result = sanitize_path(text, max_depth=None)
@@ -290,7 +290,9 @@ class TestSanitizePathProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_depth_enforcement(self, segments: list[str], max_depth: int) -> None:
+    def test_property_sanitizers_depth_enforcement_expected(
+        self, segments: list[str], max_depth: int
+    ) -> None:
         """Paths deeper than max_depth must raise ValueError."""
         path = "/".join(segments)
         if len(segments) > max_depth:
@@ -312,7 +314,7 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_null_bytes(self, text: str) -> None:
+    def test_property_sanitizers_no_null_bytes_expected(self, text: str) -> None:
         """Output must not contain null bytes."""
         result = sanitize_env_value(text)
         assert "\x00" not in result
@@ -322,7 +324,7 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_no_newlines_by_default(self, text: str) -> None:
+    def test_property_sanitizers_no_newlines_by_default_expected(self, text: str) -> None:
         """Output must not contain newlines when allow_multiline=False."""
         result = sanitize_env_value(text, allow_multiline=False)
         assert "\n" not in result
@@ -333,7 +335,7 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_respects_max_length(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
         """Output length must not exceed max_length."""
         result = sanitize_env_value(text, max_length=max_len)
         assert len(result) <= max_len
@@ -343,7 +345,7 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_returns_string_type(self, text: str) -> None:
+    def test_property_sanitizers_returns_string_type_expected(self, text: str) -> None:
         """Output must always be a string."""
         result = sanitize_env_value(text)
         assert isinstance(result, str)
@@ -376,7 +378,7 @@ class TestSanitizeSqlIdentifierProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_only_valid_chars_in_output(self, text: str) -> None:
+    def test_property_sanitizers_only_valid_chars_in_output_expected(self, text: str) -> None:
         """Output must contain only alphanumeric characters and underscores."""
         result = sanitize_sql_identifier(text)
         valid = set(string.ascii_letters + string.digits + "_")
@@ -388,7 +390,7 @@ class TestSanitizeSqlIdentifierProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_max_length_128(self, text: str) -> None:
+    def test_property_sanitizers_max_length_128_expected(self, text: str) -> None:
         """Output must not exceed 128 characters."""
         result = sanitize_sql_identifier(text)
         assert len(result) <= 128
@@ -398,7 +400,7 @@ class TestSanitizeSqlIdentifierProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_does_not_start_with_digit(self, text: str) -> None:
+    def test_property_sanitizers_does_not_start_with_digit_expected(self, text: str) -> None:
         """Output must not start with a digit."""
         result = sanitize_sql_identifier(text)
         assert not result[0].isdigit(), f"SQL identifier starts with digit: {result!r}"
@@ -408,7 +410,7 @@ class TestSanitizeSqlIdentifierProperties:
         with pytest.raises(ValueError, match="cannot be empty"):
             sanitize_sql_identifier("")
 
-    def test_only_invalid_chars_raises(self) -> None:
+    def test_property_sanitizers_only_invalid_chars_raises_expected(self) -> None:
         """Identifier with only invalid characters must raise ValueError."""
         with pytest.raises(ValueError, match="no valid characters"):
             sanitize_sql_identifier("!@#$%^&*()")

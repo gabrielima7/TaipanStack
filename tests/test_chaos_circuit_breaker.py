@@ -8,7 +8,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_circuit_breaker_thundering_herd_chaos():
+def test_chaos_circuit_breaker_circuit_breaker_thundering_herd_chaos_expected():
     """Simulate a thundering herd chaos scenario in the HALF_OPEN state.
 
     If multiple threads hit the HALF_OPEN state simultaneously, they might all

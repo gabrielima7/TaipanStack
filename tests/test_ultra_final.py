@@ -8,7 +8,7 @@ import pytest
 class TestValidators100Percent:
     """Tests to reach 100% for validators."""
 
-    def test_validate_project_name_no_hyphens_no_underscores(self) -> None:
+    def test_ultra_final_validate_project_name_no_hyphens_no_underscores_expected(self) -> None:
         """Test validate_project_name with both disabled."""
         from taipanstack.security.validators import validate_project_name
 
@@ -20,7 +20,7 @@ class TestValidators100Percent:
         )
         assert result == "myproject123"
 
-    def test_validate_url_http(self) -> None:
+    def test_ultra_final_validate_url_http_expected(self) -> None:
         """Test validate_url with http scheme."""
         from urllib.parse import urlparse
 
@@ -44,7 +44,7 @@ class TestGuards100Percent:
         result = guard_path_traversal(valid_file, tmp_path)
         assert result.exists()
 
-    def test_guard_file_extension_denied(self) -> None:
+    def test_ultra_final_guard_file_extension_denied_expected(self) -> None:
         """Test guard_file_extension with denied extension."""
         from taipanstack.security.guards import SecurityError, guard_file_extension
 
@@ -58,14 +58,14 @@ class TestGuards100Percent:
 class TestSanitizers100Percent:
     """Tests to reach 100% for sanitizers."""
 
-    def test_sanitize_string_no_whitespace_strip(self) -> None:
+    def test_ultra_final_sanitize_string_no_whitespace_strip_expected(self) -> None:
         """Test sanitize_string with strip_whitespace=False."""
         from taipanstack.security.sanitizers import sanitize_string
 
         result = sanitize_string("  hello  ", strip_whitespace=False)
         assert result == "  hello  "
 
-    def test_sanitize_filename_no_replacement(self) -> None:
+    def test_ultra_final_sanitize_filename_no_replacement_expected(self) -> None:
         """Test sanitize_filename with empty replacement."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -73,7 +73,7 @@ class TestSanitizers100Percent:
         assert "<" not in result
         assert ">" not in result
 
-    def test_sanitize_path_no_parts(self) -> None:
+    def test_ultra_final_sanitize_path_no_parts_expected(self) -> None:
         """Test sanitize_path with path that results in no parts."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -88,7 +88,7 @@ class TestFilesystem100Percent:
 class TestRetry100Percent:
     """Tests to reach 100% for retry."""
 
-    def test_retry_max_delay_applied(self) -> None:
+    def test_ultra_final_retry_max_delay_applied_expected(self) -> None:
         """Test that max_delay is actually applied."""
         from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
@@ -107,7 +107,7 @@ class TestRetry100Percent:
 class TestModels100Percent:
     """Tests to reach 100% for models."""
 
-    def test_stack_config_verbose(self) -> None:
+    def test_ultra_final_stack_config_verbose_expected(self) -> None:
         """Test StackConfig with verbose option."""
         from taipanstack.config.models import StackConfig
 
@@ -121,15 +121,15 @@ class TestModels100Percent:
 class TestCircuitBreaker100Percent:
     """Tests to reach 100% for circuit_breaker."""
 
-    def test_circuit_breaker_name(self) -> None:
+    def test_ultra_final_circuit_breaker_name_expected(self) -> None:
         """Test CircuitBreaker with custom name."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
         breaker = CircuitBreaker(name="custom_breaker")
 
         @breaker
-        def test_func() -> str:
+        def test_ultra_final_func_expected() -> str:
             return "ok"
 
-        assert test_func() == "ok"
+        assert test_ultra_final_func_expected() == "ok"
         assert breaker.name == "custom_breaker"

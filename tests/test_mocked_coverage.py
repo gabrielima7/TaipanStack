@@ -13,7 +13,7 @@ from taipanstack.utils.filesystem import FileTooLargeErr
 class TestLoggingStructlogBranches:
     """Tests for structlog branches in logging module."""
 
-    def test_has_structlog_true_when_installed(self) -> None:
+    def test_mocked_coverage_has_structlog_true_when_installed_expected(self) -> None:
         """Verify that HAS_STRUCTLOG is True when structlog is installed."""
         from taipanstack.utils.logging import HAS_STRUCTLOG
 
@@ -21,7 +21,7 @@ class TestLoggingStructlogBranches:
         assert HAS_STRUCTLOG is True
 
     @patch("taipanstack.utils.logging.HAS_STRUCTLOG", True)
-    def test_stack_logger_with_structured_mock(self) -> None:
+    def test_mocked_coverage_stack_logger_with_structured_mock_expected(self) -> None:
         """Test StackLogger with mocked structlog."""
         # Create mock structlog module
         mock_structlog = MagicMock()
@@ -38,7 +38,7 @@ class TestLoggingStructlogBranches:
 class TestDecoratorsThreadTimeoutBranches:
     """Tests for thread timeout exception branches in decorators."""
 
-    def test_timeout_thread_with_exception(self) -> None:
+    def test_mocked_coverage_timeout_thread_with_exception_expected(self) -> None:
         """Test thread timeout when function raises exception."""
         from taipanstack.security.decorators import timeout
 
@@ -49,7 +49,7 @@ class TestDecoratorsThreadTimeoutBranches:
         with pytest.raises(ValueError, match="Expected error"):
             raise_error()
 
-    def test_timeout_thread_success(self) -> None:
+    def test_mocked_coverage_timeout_thread_success_expected(self) -> None:
         """Test thread timeout with successful execution."""
         from taipanstack.security.decorators import timeout
 
@@ -64,21 +64,21 @@ class TestDecoratorsThreadTimeoutBranches:
 class TestValidatorsBranches:
     """Tests for validator branches."""
 
-    def test_validate_project_name_special_chars(self) -> None:
+    def test_mocked_coverage_validate_project_name_special_chars_expected(self) -> None:
         """Test validate_project_name with special characters."""
         from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError):
             validate_project_name("project@name")
 
-    def test_validate_python_version_invalid_format(self) -> None:
+    def test_mocked_coverage_validate_python_version_invalid_format_expected(self) -> None:
         """Test validate_python_version with invalid format."""
         from taipanstack.security.validators import validate_python_version
 
         with pytest.raises(ValueError):
             validate_python_version("invalid")
 
-    def test_validate_url_with_port(self) -> None:
+    def test_mocked_coverage_validate_url_with_port_expected(self) -> None:
         """Test validate_url with port number."""
         from taipanstack.security.validators import validate_url
 
@@ -102,7 +102,7 @@ class TestGuardsBranches:
         result = guard_path_traversal(test_file, tmp_path)
         assert result.exists()
 
-    def test_guard_file_extension_no_extension(self) -> None:
+    def test_mocked_coverage_guard_file_extension_no_extension_expected(self) -> None:
         """Test guard_file_extension with file without extension."""
         from taipanstack.security.guards import guard_file_extension
 
@@ -116,28 +116,28 @@ class TestGuardsBranches:
 class TestSanitizersBranches:
     """Tests for sanitizers module branches."""
 
-    def test_sanitize_filename_empty(self) -> None:
+    def test_mocked_coverage_sanitize_filename_empty_expected(self) -> None:
         """Test sanitize_filename with empty string."""
         from taipanstack.security.sanitizers import sanitize_filename
 
         result = sanitize_filename("")
         assert result == "unnamed"
 
-    def test_sanitize_filename_reserved_name(self) -> None:
+    def test_mocked_coverage_sanitize_filename_reserved_name_expected(self) -> None:
         """Test sanitize_filename with Windows reserved name."""
         from taipanstack.security.sanitizers import sanitize_filename
 
         result = sanitize_filename("CON")
         assert result != "CON"  # Should be modified
 
-    def test_sanitize_path_deep_nesting(self) -> None:
+    def test_mocked_coverage_sanitize_path_deep_nesting_expected(self) -> None:
         """Test sanitize_path with deep nesting."""
         from taipanstack.security.sanitizers import sanitize_path
 
         with pytest.raises(ValueError, match="depth"):
             sanitize_path("a/b/c/d/e/f/g/h/i/j/k/l", max_depth=5)
 
-    def test_sanitize_sql_identifier_starts_with_number(self) -> None:
+    def test_mocked_coverage_sanitize_sql_identifier_starts_with_number_expected(self) -> None:
         """Test sanitize_sql_identifier starting with number."""
         from taipanstack.security.sanitizers import sanitize_sql_identifier
 
@@ -148,7 +148,7 @@ class TestSanitizersBranches:
 class TestSubprocessBranches:
     """Tests for subprocess module branches."""
 
-    def test_run_safe_command_failure(self) -> None:
+    def test_mocked_coverage_run_safe_command_failure_expected(self) -> None:
         """Test run_safe_command with failing command."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -160,7 +160,7 @@ class TestSubprocessBranches:
 class TestFilesystemBranches:
     """Tests for filesystem module branches."""
 
-    def test_safe_read_max_size_exceeded(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_safe_read_max_size_exceeded_expected(self, tmp_path: Path) -> None:
         """Test safe_read when file exceeds max size."""
         from taipanstack.utils.filesystem import safe_read
 
@@ -174,7 +174,7 @@ class TestFilesystemBranches:
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
-    def test_ensure_dir_already_exists(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_ensure_dir_already_exists_expected(self, tmp_path: Path) -> None:
         """Test ensure_dir with directory that already exists."""
         from taipanstack.utils.filesystem import ensure_dir
 
@@ -184,7 +184,7 @@ class TestFilesystemBranches:
         result = ensure_dir(existing_dir)
         assert result == existing_dir.resolve()
 
-    def test_safe_write_no_backup(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_safe_write_no_backup_expected(self, tmp_path: Path) -> None:
         """Test safe_write with backup=False."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -202,7 +202,7 @@ class TestFilesystemBranches:
 class TestRetryBranches:
     """Tests for retry module branches."""
 
-    def test_calculate_delay_with_jitter(self) -> None:
+    def test_mocked_coverage_calculate_delay_with_jitter_expected(self) -> None:
         """Test calculate_delay produces different values with jitter."""
         from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
@@ -212,7 +212,7 @@ class TestRetryBranches:
         # With jitter, values should vary
         assert len(set(delays)) > 1
 
-    def test_retry_config_defaults(self) -> None:
+    def test_mocked_coverage_retry_config_defaults_expected(self) -> None:
         """Test RetryConfig defaults."""
         from taipanstack.resilience.retry import RetryConfig
 
@@ -224,7 +224,7 @@ class TestRetryBranches:
 class TestCircuitBreakerExitBranches:
     """Tests for circuit breaker exit branches."""
 
-    def test_circuit_breaker_success_resets_failures(self) -> None:
+    def test_mocked_coverage_circuit_breaker_success_resets_failures_expected(self) -> None:
         """Test circuit breaker resets failure count on success."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
@@ -252,7 +252,7 @@ class TestCircuitBreakerExitBranches:
 class TestConfigGeneratorsBranches:
     """Tests for config generators branches."""
 
-    def test_generate_pyproject_config(self) -> None:
+    def test_mocked_coverage_generate_pyproject_config_expected(self) -> None:
         """Test generate_pyproject_config."""
         from taipanstack.config.generators import generate_pyproject_config
         from taipanstack.config.models import StackConfig
@@ -267,7 +267,7 @@ class TestConfigGeneratorsBranches:
 class TestModelsEdgeCases:
     """Tests for models edge cases."""
 
-    def test_stack_config_to_target_version(self) -> None:
+    def test_mocked_coverage_stack_config_to_target_version_expected(self) -> None:
         """Test StackConfig.to_target_version method."""
         from taipanstack.config.models import StackConfig
 
@@ -275,7 +275,7 @@ class TestModelsEdgeCases:
         target = config.to_target_version()
         assert target == "py312"
 
-    def test_stack_config_default_values(self) -> None:
+    def test_mocked_coverage_stack_config_default_values_expected(self) -> None:
         """Test StackConfig defaults."""
         from taipanstack.config.models import StackConfig
 

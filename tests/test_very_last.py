@@ -21,7 +21,7 @@ import pytest
 class TestValidatorsVersionConversion:
     """Test for validators.py lines 128-130 (version conversion ValueError)."""
 
-    def test_validate_python_version_with_letters(self) -> None:
+    def test_very_last_validate_python_version_with_letters_expected(self) -> None:
         """Test validate_python_version with letters in version."""
         from taipanstack.security.validators import validate_python_version
 
@@ -45,7 +45,7 @@ class TestGuardsOSErrorMocked:
         result = guard_path_traversal(file, tmp_path)
         assert result.exists()
 
-    def test_guard_path_resolve_valueerror(self) -> None:
+    def test_very_last_guard_path_resolve_valueerror_expected(self) -> None:
         """Test guard_path_traversal catching ValueError from resolve (L97-98)."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
 
@@ -72,7 +72,7 @@ class TestGuardsOSErrorMocked:
 class TestGuardsSymlinkMocked:
     """Test for guards.py line 118 (symlink detection)."""
 
-    def test_guard_path_traversal_symlink_mocked(self, tmp_path: Path) -> None:
+    def test_very_last_guard_path_traversal_symlink_mocked_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal symlink detection with mock."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
 
@@ -98,7 +98,7 @@ class TestSanitizersResolveError:
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
 
-    def test_sanitize_path_resolve_oserror(self) -> None:
+    def test_very_last_sanitize_path_resolve_oserror_expected(self) -> None:
         """Test sanitize_path with resolve=True raising OSError (L241-243)."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -154,7 +154,7 @@ class TestSanitizersResolveError:
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
 
-    def test_safe_write_existing_permissions(self, tmp_path: Path) -> None:
+    def test_very_last_safe_write_existing_permissions_expected(self, tmp_path: Path) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -165,7 +165,7 @@ class TestFilesystemWriteError:
         result = safe_write(existing, "new", options=WriteOptions(atomic=True))
         assert result.read_text() == "new"
 
-    def test_ensure_dir_with_traversal(self, tmp_path: Path) -> None:
+    def test_very_last_ensure_dir_with_traversal_expected(self, tmp_path: Path) -> None:
         """Test ensure_dir with '..' in path string (L243)."""
         from taipanstack.security.guards import SecurityError
         from taipanstack.utils.filesystem import ensure_dir
@@ -181,7 +181,7 @@ class TestFilesystemWriteError:
 class TestRetryMaxAttemptsBranch:
     """Test for retry.py line 187/288."""
 
-    def test_retry_exhausts_all_attempts(self) -> None:
+    def test_very_last_retry_exhausts_all_attempts_expected(self) -> None:
         """Test retry when all attempts fail."""
         from taipanstack.resilience.retry import RetryError, retry
 
@@ -216,7 +216,7 @@ class TestSubprocessCheckCommand:
 class TestLoggingStructlogBranches:
     """Test for remaining logging.py coverage gaps."""
 
-    def test_logging_with_structlog_real(self) -> None:
+    def test_very_last_logging_with_structlog_real_expected(self) -> None:
         """Test logging with real structlog."""
         from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger
 
@@ -236,7 +236,7 @@ class TestLoggingStructlogBranches:
             logger.exception("Exception message", key="value")
         logger.unbind("test_key")
 
-    def test_logging_without_structlog(self) -> None:
+    def test_very_last_logging_without_structlog_expected(self) -> None:
         """Test the HAS_STRUCTLOG=False branch (L20-21)."""
         # We can't truly un-import structlog, but we can test that the
         # fallback path works by forcing use_structured=False
@@ -255,7 +255,7 @@ class TestLoggingStructlogBranches:
             logger.exception("Exception message", key="value")
         logger.unbind("test_key")
 
-    def test_setup_logging_with_log_file(self) -> None:
+    def test_very_last_setup_logging_with_log_file_expected(self) -> None:
         """Test setup_logging with a log_file parameter (L245)."""
         from taipanstack.utils.logging import setup_logging
 
@@ -288,7 +288,7 @@ class TestLoggingStructlogBranches:
 class TestGeneratorsParanoidLevel:
     """Test for generators.py line 165 (paranoid security level)."""
 
-    def test_pre_commit_config_paranoid_level(self) -> None:
+    def test_very_last_pre_commit_config_paranoid_level_expected(self) -> None:
         """Test generate_pre_commit_config with paranoid security level."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -323,7 +323,7 @@ class TestGeneratorsParanoidLevel:
 class TestCompatPy313FeatureDetection:
     """Test compat.py JIT/free-threading/mimalloc detection branches."""
 
-    def test_check_jit_available_on_py313(self) -> None:
+    def test_very_last_check_jit_available_on_py313_expected(self) -> None:
         """Test _check_jit_available when PY313=True (L91-96)."""
         from taipanstack.core import compat
 
@@ -346,7 +346,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_jit_available()
             assert result is False
 
-    def test_check_free_threading_with_nogil(self) -> None:
+    def test_very_last_check_free_threading_with_nogil_expected(self) -> None:
         """Test _check_free_threading_available with nogil flag (L107-120)."""
         from taipanstack.core import compat
 
@@ -360,7 +360,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_check_free_threading_sysconfig_disable_gil(self) -> None:
+    def test_very_last_check_free_threading_sysconfig_disable_gil_expected(self) -> None:
         """Test _check_free_threading_available via sysconfig CONFIG_ARGS (L114-120)."""
         from taipanstack.core import compat
 
@@ -398,7 +398,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_check_mimalloc_available_on_py313(self) -> None:
+    def test_very_last_check_mimalloc_available_on_py313_expected(self) -> None:
         """Test _check_mimalloc_available with mimalloc in config (L137-138)."""
         from taipanstack.core import compat
 
@@ -437,7 +437,7 @@ class TestCompatPy313FeatureDetection:
 class TestOptimizationsEdgeCases:
     """Test optimizations.py edge cases for coverage."""
 
-    def test_apply_gc_tuning_exception(self) -> None:
+    def test_very_last_apply_gc_tuning_exception_expected(self) -> None:
         """Test _apply_gc_tuning when gc.set_threshold raises (L253-254)."""
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_tuning
 
@@ -451,7 +451,7 @@ class TestOptimizationsEdgeCases:
         assert len(errors) == 1
         assert "GC error" in errors[0]
 
-    def test_apply_gc_freeze_not_py312(self) -> None:
+    def test_very_last_apply_gc_freeze_not_py312_expected(self) -> None:
         """Test _apply_gc_freeze skipped when not PY312 (L271-272)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -475,7 +475,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("requires Python 3.12" in s for s in skipped)
 
-    def test_apply_gc_freeze_success(self) -> None:
+    def test_very_last_apply_gc_freeze_success_expected(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -499,7 +499,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("gc_freeze" in a for a in applied)
 
-    def test_apply_gc_freeze_exception(self) -> None:
+    def test_very_last_apply_gc_freeze_exception_expected(self) -> None:
         """Test _apply_gc_freeze error handling (L269-270)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -526,7 +526,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("freeze failed" in e for e in errors)
 
-    def test_apply_experimental_with_jit_and_free_threading(self) -> None:
+    def test_very_last_apply_experimental_with_jit_and_free_threading_expected(self) -> None:
         """Test _apply_experimental when JIT and free-threading are available (L284, L286)."""
         from taipanstack.core.compat import PythonFeatures, VersionTier
         from taipanstack.core.optimizations import (
@@ -556,7 +556,7 @@ class TestOptimizationsEdgeCases:
         assert any("jit" in a for a in applied)
         assert any("free_threading" in a for a in applied)
 
-    def test_apply_optimizations_with_errors(self) -> None:
+    def test_very_last_apply_optimizations_with_errors_expected(self) -> None:
         """Test apply_optimizations logs errors (L346)."""
         from taipanstack.core.optimizations import (
             OptimizationProfile,

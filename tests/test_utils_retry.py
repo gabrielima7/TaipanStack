@@ -15,7 +15,7 @@ from taipanstack.resilience.retry import (
 class TestRetryConfig:
     """Tests for RetryConfig dataclass."""
 
-    def test_retry_no_structlog(self) -> None:
+    def test_utils_retry_retry_no_structlog_expected(self) -> None:
         """Test fallback when structlog is not installed."""
         import importlib.util
         from unittest import mock
@@ -26,7 +26,7 @@ class TestRetryConfig:
             spec.loader.exec_module(module)  # type: ignore
             assert module._HAS_STRUCTLOG is False
 
-    def test_default_values(self) -> None:
+    def test_utils_retry_default_values_expected(self) -> None:
         """Test default configuration values."""
         config = RetryConfig()
         assert config.max_attempts == 3
@@ -35,7 +35,7 @@ class TestRetryConfig:
         assert config.exponential_base == 2.0
         assert config.jitter is True
 
-    def test_custom_values(self) -> None:
+    def test_utils_retry_custom_values_expected(self) -> None:
         """Test custom configuration values."""
         config = RetryConfig(
             max_attempts=5,
@@ -46,7 +46,7 @@ class TestRetryConfig:
         assert config.initial_delay == 0.5
         assert config.max_delay == 30.0
 
-    def test_frozen(self) -> None:
+    def test_utils_retry_frozen_expected(self) -> None:
         """Test that config is immutable."""
         config = RetryConfig()
         with pytest.raises(AttributeError):
@@ -56,13 +56,13 @@ class TestRetryConfig:
 class TestCalculateDelay:
     """Tests for calculate_delay function."""
 
-    def test_first_attempt_uses_initial_delay(self) -> None:
+    def test_utils_retry_first_attempt_uses_initial_delay_expected(self) -> None:
         """Test that first attempt uses initial delay."""
         config = RetryConfig(initial_delay=1.0, jitter=False)
         delay = calculate_delay(1, config)
         assert delay == 1.0
 
-    def test_exponential_growth(self) -> None:
+    def test_utils_retry_exponential_growth_expected(self) -> None:
         """Test exponential backoff growth."""
         config = RetryConfig(
             initial_delay=1.0,
@@ -73,7 +73,7 @@ class TestCalculateDelay:
         assert calculate_delay(2, config) == 2.0
         assert calculate_delay(3, config) == 4.0
 
-    def test_max_delay_capped(self) -> None:
+    def test_utils_retry_max_delay_capped_expected(self) -> None:
         """Test that delay is capped at max_delay."""
         config = RetryConfig(
             initial_delay=1.0,
@@ -83,7 +83,7 @@ class TestCalculateDelay:
         delay = calculate_delay(10, config)
         assert delay == 5.0
 
-    def test_jitter_adds_randomness(self) -> None:
+    def test_utils_retry_jitter_adds_randomness_expected(self) -> None:
         """Test that jitter adds randomness."""
         config = RetryConfig(jitter=True, jitter_factor=0.5)
 
@@ -91,7 +91,7 @@ class TestCalculateDelay:
         # With 50% jitter, delays should vary
         assert len(set(delays)) > 1
 
-    def test_chaos_retry_negative_attempt_resource_exhaustion(self) -> None:
+    def test_utils_retry_chaos_retry_negative_attempt_resource_exhaustion_expected(self) -> None:
         """Test resilience against negative attempt counter.
 
         Simulates a rare production failure/state mutation where `attempt` becomes
@@ -109,7 +109,7 @@ class TestCalculateDelay:
 class TestRetryDecorator:
     """Tests for @retry decorator."""
 
-    def test_success_no_retry(self) -> None:
+    def test_utils_retry_success_no_retry_expected(self) -> None:
         """Test successful function doesn't retry."""
         call_count = 0
 
@@ -123,7 +123,7 @@ class TestRetryDecorator:
         assert result == "success"
         assert call_count == 1
 
-    def test_retry_on_failure(self) -> None:
+    def test_utils_retry_retry_on_failure_expected(self) -> None:
         """Test function retries on failure."""
         call_count = 0
 
@@ -139,7 +139,7 @@ class TestRetryDecorator:
         assert result == "success"
         assert call_count == 3
 
-    def test_max_attempts_exceeded(self) -> None:
+    def test_utils_retry_max_attempts_exceeded_expected(self) -> None:
         """Test RetryError when max attempts exceeded."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -150,7 +150,7 @@ class TestRetryDecorator:
             always_fail()
         assert exc_info.value.attempts == 2
 
-    def test_only_catches_specified_exceptions(self) -> None:
+    def test_utils_retry_only_catches_specified_exceptions_expected(self) -> None:
         """Test that only specified exceptions trigger retry."""
 
         @retry(max_attempts=3, on=(ValueError,))
@@ -161,7 +161,7 @@ class TestRetryDecorator:
         with pytest.raises(TypeError):
             raise_type_error()
 
-    def test_last_exception_preserved(self) -> None:
+    def test_utils_retry_last_exception_preserved_expected(self) -> None:
         """Test that last exception is preserved in RetryError."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -173,7 +173,7 @@ class TestRetryDecorator:
         assert exc_info.value.last_exception is not None
         assert "Original error" in str(exc_info.value.last_exception)
 
-    def test_on_retry_callback(self) -> None:
+    def test_utils_retry_on_retry_callback_expected(self) -> None:
         """Test that on_retry callback is called."""
         retries = []
 
@@ -194,7 +194,7 @@ class TestRetryDecorator:
         assert retries[0][0] == 1
         assert retries[1][0] == 2
 
-    def test_reraise_false(self) -> None:
+    def test_utils_retry_reraise_false_expected(self) -> None:
         """Test reraise=False option."""
 
         @retry(max_attempts=2, initial_delay=0.01, reraise=False)
@@ -206,7 +206,7 @@ class TestRetryDecorator:
         assert exc_info.value.__cause__ is None
         assert exc_info.value.last_exception is not None
 
-    def test_max_attempts_zero(self) -> None:
+    def test_utils_retry_max_attempts_zero_expected(self) -> None:
         """Test max_attempts=0."""
 
         @retry(max_attempts=0)
@@ -223,7 +223,7 @@ class TestAsyncRetryDecorator:
     """Tests for @retry decorator on async functions."""
 
     @pytest.mark.asyncio
-    async def test_success_no_retry(self) -> None:
+    async def test_utils_retry_success_no_retry_expected(self) -> None:
         """Test successful async function doesn't retry."""
         call_count = 0
 
@@ -238,7 +238,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 1
 
     @pytest.mark.asyncio
-    async def test_retry_on_failure(self) -> None:
+    async def test_utils_retry_retry_on_failure_expected(self) -> None:
         """Test async function retries on failure."""
         call_count = 0
 
@@ -255,7 +255,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 3
 
     @pytest.mark.asyncio
-    async def test_max_attempts_exceeded(self) -> None:
+    async def test_utils_retry_max_attempts_exceeded_expected(self) -> None:
         """Test RetryError when max attempts exceeded for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -267,7 +267,7 @@ class TestAsyncRetryDecorator:
         assert exc_info.value.attempts == 2
 
     @pytest.mark.asyncio
-    async def test_only_catches_specified_exceptions(self) -> None:
+    async def test_utils_retry_only_catches_specified_exceptions_expected(self) -> None:
         """Test that only specified exceptions trigger retry for async function."""
 
         @retry(max_attempts=3, on=(ValueError,))
@@ -279,7 +279,7 @@ class TestAsyncRetryDecorator:
             await raise_type_error()
 
     @pytest.mark.asyncio
-    async def test_last_exception_preserved(self) -> None:
+    async def test_utils_retry_last_exception_preserved_expected(self) -> None:
         """Test that last exception is preserved in RetryError for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -292,7 +292,7 @@ class TestAsyncRetryDecorator:
         assert "Original error" in str(exc_info.value.last_exception)
 
     @pytest.mark.asyncio
-    async def test_on_retry_callback(self) -> None:
+    async def test_utils_retry_on_retry_callback_expected(self) -> None:
         """Test that on_retry callback is called for async function."""
         retries = []
 
@@ -314,7 +314,7 @@ class TestAsyncRetryDecorator:
         assert retries[1][0] == 2
 
     @pytest.mark.asyncio
-    async def test_reraise_false(self) -> None:
+    async def test_utils_retry_reraise_false_expected(self) -> None:
         """Test reraise=False option for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, reraise=False)
@@ -329,7 +329,7 @@ class TestAsyncRetryDecorator:
 class TestRetryOnException:
     """Tests for retry_on_exception decorator."""
 
-    def test_simple_retry(self) -> None:
+    def test_utils_retry_simple_retry_expected(self) -> None:
         """Test simple retry with retry_on_exception."""
         call_count = 0
 
@@ -345,7 +345,7 @@ class TestRetryOnException:
         assert result == "success"
         assert call_count == 2
 
-    def test_max_attempts_exceeded(self) -> None:
+    def test_utils_retry_max_attempts_exceeded_expected(self) -> None:
         """Test RetryError is raised when max attempts are exceeded."""
         call_count = 0
 
@@ -362,7 +362,7 @@ class TestRetryOnException:
         assert call_count == 3
         assert isinstance(exc_info.value.last_exception, ValueError)
 
-    def test_other_exceptions_not_caught(self) -> None:
+    def test_utils_retry_other_exceptions_not_caught_expected(self) -> None:
         """Test that unlisted exceptions are not caught and bubble up immediately."""
         call_count = 0
 
@@ -381,7 +381,7 @@ class TestRetryOnException:
 class TestRetrier:
     """Tests for Retrier context manager."""
 
-    def test_successful_operation(self) -> None:
+    def test_utils_retry_successful_operation_expected(self) -> None:
         """Test successful operation without retry."""
         retrier = Retrier(max_attempts=3)
         result = None
@@ -392,7 +392,7 @@ class TestRetrier:
         assert result == "success"
         assert retrier.attempt == 0
 
-    def test_tracks_attempts(self) -> None:
+    def test_utils_retry_tracks_attempts_expected(self) -> None:
         """Test that retrier tracks attempt count."""
         # With max_attempts=1, exceção propaga na primeira tentativa
         retrier = Retrier(
@@ -409,7 +409,7 @@ class TestRetrier:
         # Attempt was tracked
         assert retrier.attempt == 1
 
-    def test_last_exception_stored(self) -> None:
+    def test_utils_retry_last_exception_stored_expected(self) -> None:
         """Test that last exception is stored."""
         retrier = Retrier(max_attempts=1, on=(ValueError,))
 
@@ -419,7 +419,7 @@ class TestRetrier:
 
         assert retrier.last_exception is not None
 
-    def test_retrier_unhandled_exception(self) -> None:
+    def test_utils_retry_retrier_unhandled_exception_expected(self) -> None:
         """Test that Retrier doesn't catch unhandled exceptions."""
         retrier = Retrier(max_attempts=3, on=(ValueError,))
 
@@ -429,7 +429,7 @@ class TestRetrier:
 
         assert retrier.attempt == 0
 
-    def test_retrier_suppression(self) -> None:
+    def test_utils_retry_retrier_suppression_expected(self) -> None:
         """Test that Retrier suppresses exception and sleeps."""
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
 
@@ -440,7 +440,7 @@ class TestRetrier:
         assert retrier.attempt == 1
         assert isinstance(retrier.last_exception, ValueError)
 
-    def test_retrier_exit_return_values(self) -> None:
+    def test_utils_retry_retrier_exit_return_values_expected(self) -> None:
         """Test Retrier.__exit__ return values for all logic branches."""
         retrier = Retrier(max_attempts=2, initial_delay=0.01, on=(ValueError,))
 
@@ -458,7 +458,7 @@ class TestRetrier:
         assert retrier.__exit__(ValueError, ValueError("fail 2"), None) is False
         assert retrier.attempt == 2
 
-    def test_retrier_manual_loop(self) -> None:
+    def test_utils_retry_retrier_manual_loop_expected(self) -> None:
         """Test Retrier in a manual retry loop."""
         retrier = Retrier(max_attempts=3, initial_delay=0.01, on=(ValueError,))
         attempts = 0
@@ -484,23 +484,23 @@ class TestRetrier:
 class TestRetryError:
     """Tests for RetryError exception."""
 
-    def test_has_attempts(self) -> None:
+    def test_utils_retry_has_attempts_expected(self) -> None:
         """Test RetryError has attempts count."""
         error = RetryError("Failed", attempts=5)
         assert error.attempts == 5
 
-    def test_has_last_exception(self) -> None:
+    def test_utils_retry_has_last_exception_expected(self) -> None:
         """Test RetryError has last exception."""
         original = ValueError("original")
         error = RetryError("Failed", attempts=3, last_exception=original)
         assert error.last_exception is original
 
-    def test_message(self) -> None:
+    def test_utils_retry_message_expected(self) -> None:
         """Test RetryError message."""
         error = RetryError("All attempts failed", attempts=3)
         assert "All attempts failed" in str(error)
 
-    def test_retry_for_loop_exhaustion(self) -> None:
+    def test_utils_retry_retry_for_loop_exhaustion_expected(self) -> None:
         """Test the retry loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
 
@@ -518,7 +518,7 @@ class TestRetryError:
         assert call_count == 0
 
     @pytest.mark.asyncio
-    async def test_retry_async_for_loop_exhaustion(self) -> None:
+    async def test_utils_retry_retry_async_for_loop_exhaustion_expected(self) -> None:
         """Test the retry async loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
 

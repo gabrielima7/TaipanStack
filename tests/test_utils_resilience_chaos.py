@@ -6,7 +6,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import timeout
 
 
-def test_timeout_sync_chaos_nan() -> None:
+def test_utils_resilience_chaos_timeout_sync_chaos_nan_expected() -> None:
     """Test chaos: NaN timeout causes system crash rather than safe degradation."""
 
     @timeout(float("nan"))
@@ -19,7 +19,7 @@ def test_timeout_sync_chaos_nan() -> None:
     assert "finite non-negative" in str(res.err_value).lower()
 
 
-def test_timeout_sync_chaos_negative() -> None:
+def test_utils_resilience_chaos_timeout_sync_chaos_negative_expected() -> None:
     """Test chaos: Negative timeout causes system crash."""
 
     @timeout(-1.0)
@@ -33,7 +33,7 @@ def test_timeout_sync_chaos_negative() -> None:
 
 
 @pytest.mark.asyncio
-async def test_timeout_async_chaos_nan() -> None:
+async def test_utils_resilience_chaos_timeout_async_chaos_nan_expected() -> None:
     """Test chaos: NaN timeout causes unhandled cancellation in async code."""
 
     @timeout(float("nan"))
@@ -47,7 +47,7 @@ async def test_timeout_async_chaos_nan() -> None:
 
 
 @pytest.mark.asyncio
-async def test_timeout_async_chaos_negative() -> None:
+async def test_utils_resilience_chaos_timeout_async_chaos_negative_expected() -> None:
     """Test chaos: Negative timeout on async."""
 
     @timeout(-1.0)

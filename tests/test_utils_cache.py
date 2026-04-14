@@ -9,7 +9,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.utils.cache import cached
 
 
-def test_cached_sync() -> None:
+def test_utils_cache_cached_sync_expected() -> None:
     """Test standard sync cache."""
     call_count = 0
 
@@ -46,7 +46,7 @@ def test_cached_sync() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cached_async() -> None:
+async def test_utils_cache_cached_async_expected() -> None:
     """Test async cache."""
     call_count = 0
 
@@ -77,7 +77,7 @@ async def test_cached_async() -> None:
     assert call_count == 3
 
 
-def test_cached_sync_err_branch() -> None:
+def test_utils_cache_cached_sync_err_branch_expected() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
@@ -93,7 +93,7 @@ def test_cached_sync_err_branch() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cached_async_err_branch() -> None:
+async def test_utils_cache_cached_async_err_branch_expected() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
