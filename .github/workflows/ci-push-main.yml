@@ -3,7 +3,7 @@ name: ci-push-main
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
   workflow_dispatch:
 
@@ -24,52 +24,57 @@ jobs:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python ${{ matrix.python-version }}"
-        id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
+    - name: "[Misc] Set up Python ${{ matrix.python-version }}"
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Configure Poetry"
-        run: poetry config virtualenvs.in-project true
+    - name: "[Setup] Configure Poetry"
+      run: poetry config virtualenvs.in-project true
 
-      - name: "[Setup] Cache dependencies"
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-
+    - name: "[Setup] Cache dependencies"
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: taipanstack-v3-${{ runner.os }}-poetry-${{
+          steps.setup-python.outputs.python-version }}-${{
+          hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev --sync
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev --sync
 
-      - name: "[Test] Run tests with pytest"
-        run: poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --cov=src --cov-report=xml --cov-report=html --cov-report=term --timeout=60
+    - name: "[Test] Run tests with pytest"
+      run: poetry run pytest tests/ -v
+        --ignore=tests/test_property_sanitizers.py
+        --ignore=tests/test_benchmarks.py --cov=src --cov-report=xml
+        --cov-report=html --cov-report=term --timeout=60
 
-      - name: "[Lint] Upload HTML coverage report as artifact"
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: actions/upload-artifact@v4
-        with:
-          name: htmlcov
-          path: htmlcov/
-          retention-days: 7
+    - name: "[Lint] Upload HTML coverage report as artifact"
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: actions/upload-artifact@v4
+      with:
+        name: htmlcov
+        path: htmlcov/
+        retention-days: 7
 
-      - name: "[Lint] Upload coverage to Codecov"
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+    - name: "[Lint] Upload coverage to Codecov"
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
 
   # Linux Distribution Testing via Docker containers
   test-linux-distros:
@@ -81,333 +86,335 @@ jobs:
         include:
           # Distributions shipping Python 3.11+
           # Excluded: Ubuntu 22.04 (Python 3.10), Debian 12/13 (Python 3.11 via venv issues)
-          - distro: ubuntu-24.04
-            image: ubuntu:24.04
-            pkg_manager: apt
+        - distro: ubuntu-24.04
+          image: ubuntu:24.04
+          pkg_manager: apt
           # Fedora versions (ship modern Python)
-          - distro: fedora-42
-            image: fedora:42
-            pkg_manager: dnf
-          - distro: fedora-43
-            image: fedora:43
-            pkg_manager: dnf
+        - distro: fedora-42
+          image: fedora:42
+          pkg_manager: dnf
+        - distro: fedora-43
+          image: fedora:43
+          pkg_manager: dnf
           # openSUSE Tumbleweed (ships Python 3.13)
-          - distro: opensuse-tumbleweed
-            image: opensuse/tumbleweed
-            pkg_manager: zypper
+        - distro: opensuse-tumbleweed
+          image: opensuse/tumbleweed
+          pkg_manager: zypper
           # Arch Linux (rolling release, always up-to-date)
-          - distro: archlinux
-            image: archlinux:latest
-            pkg_manager: pacman
+        - distro: archlinux
+          image: archlinux:latest
+          pkg_manager: pacman
           # Alpine 3.20 (ships Python 3.12)
-          - distro: alpine-3.20
-            image: alpine:3.20
-            pkg_manager: apk
+        - distro: alpine-3.20
+          image: alpine:3.20
+          pkg_manager: apk
 
     container:
       image: ${{ matrix.image }}
 
 
     steps:
-      - name: "[Setup] Install dependencies (apt-based)"
-        if: matrix.pkg_manager == 'apt'
-        run: |
-          apt-get update
-          apt-get install -y python3 python3-pip python3-venv git curl
+    - name: "[Setup] Install dependencies (apt-based)"
+      if: matrix.pkg_manager == 'apt'
+      run: |
+        apt-get update
+        apt-get install -y python3 python3-pip python3-venv git curl
 
-      - name: "[Setup] Install dependencies (dnf-based)"
-        if: matrix.pkg_manager == 'dnf'
-        run: |
-          dnf install -y python3 python3-pip git curl
+    - name: "[Setup] Install dependencies (dnf-based)"
+      if: matrix.pkg_manager == 'dnf'
+      run: |
+        dnf install -y python3 python3-pip git curl
 
-      - name: "[Setup] Install dependencies (zypper-based)"
-        if: matrix.pkg_manager == 'zypper'
-        run: |
-          if zypper lr | grep -q repo-openh264; then zypper --non-interactive removerepo repo-openh264; fi
+    - name: "[Setup] Install dependencies (zypper-based)"
+      if: matrix.pkg_manager == 'zypper'
+      run: |
+        if zypper lr | grep -q repo-openh264; then zypper --non-interactive removerepo repo-openh264; fi
+        zypper clean -a
+        zypper --gpg-auto-import-keys --non-interactive refresh --force
+        attempt=1
+        while [ "$attempt" -le 3 ]; do
+          if zypper --non-interactive install python3 python3-pip git curl bash; then
+            break
+          fi
+
+          if [ "$attempt" -eq 3 ]; then
+            exit 1
+          fi
+
+          attempt=$((attempt + 1))
           zypper clean -a
           zypper --gpg-auto-import-keys --non-interactive refresh --force
-          attempt=1
-          while [ "$attempt" -le 3 ]; do
-            if zypper --non-interactive install python3 python3-pip git curl bash; then
-              break
-            fi
+          sleep 5
+        done
 
-            if [ "$attempt" -eq 3 ]; then
-              exit 1
-            fi
+    - name: "[Setup] Install dependencies (pacman-based)"
+      if: matrix.pkg_manager == 'pacman'
+      run: |
+        pacman-key --init
+        pacman-key --populate archlinux
+        pacman -Sy --noconfirm archlinux-keyring
+        pacman -Syu --noconfirm --needed python python-pip git curl
 
-            attempt=$((attempt + 1))
-            zypper clean -a
-            zypper --gpg-auto-import-keys --non-interactive refresh --force
-            sleep 5
-          done
+    - name: "[Setup] Install dependencies (apk-based)"
+      if: matrix.pkg_manager == 'apk'
+      run: |
+        apk add --no-cache python3 py3-pip py3-virtualenv git curl bash
 
-      - name: "[Setup] Install dependencies (pacman-based)"
-        if: matrix.pkg_manager == 'pacman'
-        run: |
-          pacman-key --init
-          pacman-key --populate archlinux
-          pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm --needed python python-pip git curl
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Setup] Install dependencies (apk-based)"
-        if: matrix.pkg_manager == 'apk'
-        run: |
-          apk add --no-cache python3 py3-pip py3-virtualenv git curl bash
+    - name: "[Setup] Install Poetry via pip"
+      run: |
+        # Use venv for distros enforcing PEP 668 (externally-managed-environment)
+        python3 -m venv /opt/poetry-venv
+        /opt/poetry-venv/bin/pip install --upgrade pip
+        /opt/poetry-venv/bin/pip install poetry
+        # Use absolute symlink instead of GITHUB_PATH to avoid env issues in some distros
+        ln -sf /opt/poetry-venv/bin/poetry /usr/local/bin/poetry
 
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Configure Poetry"
+      run: |
+        poetry config virtualenvs.in-project true
 
-      - name: "[Setup] Install Poetry via pip"
-        run: |
-          # Use venv for distros enforcing PEP 668 (externally-managed-environment)
-          python3 -m venv /opt/poetry-venv
-          /opt/poetry-venv/bin/pip install --upgrade pip
-          /opt/poetry-venv/bin/pip install poetry
-          # Use absolute symlink instead of GITHUB_PATH to avoid env issues in some distros
-          ln -sf /opt/poetry-venv/bin/poetry /usr/local/bin/poetry
+    - name: "[Setup] Install project dependencies"
+      run: |
+        poetry install --with dev
 
-      - name: "[Setup] Configure Poetry"
-        run: |
-          poetry config virtualenvs.in-project true
-
-      - name: "[Setup] Install project dependencies"
-        run: |
-          poetry install --with dev
-
-      - name: "[Test] Run tests"
-        run: |
-          poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
+    - name: "[Test] Run tests"
+      run: |
+        poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
 
   lint:
     name: "[Lint] Quality Checks"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install linter"
-        run: pip install ruff
+    - name: "[Setup] Install linter"
+      run: pip install ruff
 
-      - name: "[Lint] Run ruff check"
-        run: ruff check src/ tests/ taipanstack_bootstrapper.py
+    - name: "[Lint] Run ruff check"
+      run: ruff check src/ tests/ taipanstack_bootstrapper.py
 
-      - name: "[Lint] Run ruff format check"
-        run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
+    - name: "[Lint] Run ruff format check"
+      run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
 
   typecheck:
     name: "[Lint] Type Checking"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev
 
-      - name: "[Lint] Run mypy"
-        run: poetry run mypy src/ --strict
+    - name: "[Lint] Run mypy"
+      run: poetry run mypy src/ --strict
 
   security:
     name: "[Audit] Security Scanning"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev
 
-      - name: "[Audit] Run Bandit security scanner"
-        run: poetry run bandit -r src/ -ll -c pyproject.toml
+    - name: "[Audit] Run Bandit security scanner"
+      run: poetry run bandit -r src/ -ll -c pyproject.toml
 
-      - name: "[Audit] Run Semgrep"
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >-
-            auto
-            .semgrep/taipanstack-rules.yml
+    - name: "[Audit] Run Semgrep"
+      uses: semgrep/semgrep-action@v1
+      with:
+        config: >-
+          auto
+          .semgrep/taipanstack-rules.yml
 
   import-lint:
     name: "[Lint] Architecture Check"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev
 
-      - name: "[Lint] Run Import Linter"
-        run: poetry run lint-imports
+    - name: "[Lint] Run Import Linter"
+      run: poetry run lint-imports
 
   dry-run:
     name: "[Test] Dry Run"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Misc] Run taipanstack_bootstrapper.py in dry-run mode"
-        run: python taipanstack_bootstrapper.py --dry-run --verbose
+    - name: "[Misc] Run taipanstack_bootstrapper.py in dry-run mode"
+      run: python taipanstack_bootstrapper.py --dry-run --verbose
 
   integration:
     name: "[Test] Integration"
     runs-on: ubuntu-latest
     needs: [test, lint, typecheck]
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Create test directory"
-        run: mkdir -p /tmp/taipanstack-test && cd /tmp/taipanstack-test
+    - name: "[Setup] Create test directory"
+      run: mkdir -p /tmp/taipanstack-test && cd /tmp/taipanstack-test
 
-      - name: "[Misc] Run taipanstack_bootstrapper.py"
-        run: python $GITHUB_WORKSPACE/taipanstack_bootstrapper.py --verbose
-        working-directory: /tmp/taipanstack-test
+    - name: "[Misc] Run taipanstack_bootstrapper.py"
+      run: python $GITHUB_WORKSPACE/taipanstack_bootstrapper.py --verbose
+      working-directory: /tmp/taipanstack-test
 
-      - name: "[Test] Verify files created"
-        run: |
-          test -f pyproject.toml
-          test -f .pre-commit-config.yaml
-          test -f SECURITY.md
-          test -d .github
-          test -f .github/dependabot.yml
-          test -d src
-          test -d tests
-        working-directory: /tmp/taipanstack-test
+    - name: "[Test] Verify files created"
+      run: |
+        test -f pyproject.toml
+        test -f .pre-commit-config.yaml
+        test -f SECURITY.md
+        test -d .github
+        test -f .github/dependabot.yml
+        test -d src
+        test -d tests
+      working-directory: /tmp/taipanstack-test
 
-      - name: "[Lint] Show project structure"
-        run: |
-          echo "=== Project Structure ==="
-          find . -type f -name "*.py" | head -20
-          echo "=== Configuration Files ==="
-          for f in *.toml *.yaml *.yml; do if [ -f "$f" ]; then ls -la "$f"; fi; done
-        working-directory: /tmp/taipanstack-test
+    - name: "[Lint] Show project structure"
+      run: |
+        echo "=== Project Structure ==="
+        find . -type f -name "*.py" | head -20
+        echo "=== Configuration Files ==="
+        for f in *.toml *.yaml *.yml; do if [ -f "$f" ]; then ls -la "$f"; fi; done
+      working-directory: /tmp/taipanstack-test
 
   docstring-coverage:
     name: "[Lint] Docstring Coverage"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install interrogate"
-        run: pip install interrogate
+    - name: "[Setup] Install interrogate"
+      run: pip install interrogate
 
-      - name: "[Lint] Check docstring coverage"
-        run: interrogate -v --fail-under=70 src/
+    - name: "[Lint] Check docstring coverage"
+      run: interrogate -v --fail-under=70 src/
 
 
   property-testing:
     name: "[Test] Property Testing"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev
 
-      - name: "[Test] Run Hypothesis property-based tests"
-        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov --timeout=300
+    - name: "[Test] Run Hypothesis property-based tests"
+      run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov
+        --timeout=300
 
   mutation-testing:
     name: "[Test] Mutation Testing"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+    - name: "[Misc] Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
+    - name: "[Setup] Install Poetry"
+      run: pipx install poetry
 
-      - name: "[Setup] Remove Conflicting System LLVM Packages"
-        run: |
-          if dpkg -l | grep -E '^ii  (llvm|clang|libclang|liblld|lld|libllvm)' > /dev/null; then sudo apt-get purge -y 'llvm-*' 'clang-*' 'libclang-*' 'liblld-*' 'lld-*' 'libllvm*'; fi
-          if [ "$(apt-get -s autoremove | grep -c ^Remv)" -gt 0 ]; then sudo apt-get autoremove -y; fi
+    - name: "[Setup] Remove Conflicting System LLVM Packages"
+      run: |
+        if dpkg -l | grep -E '^ii  (llvm|clang|libclang|liblld|lld|libllvm)' > /dev/null; then sudo apt-get purge -y 'llvm-*' 'clang-*' 'libclang-*' 'liblld-*' 'lld-*' 'libllvm*'; fi
+        if [ "$(apt-get -s autoremove | grep -c ^Remv)" -gt 0 ]; then sudo apt-get autoremove -y; fi
 
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
+    - name: "[Setup] Install dependencies"
+      run: poetry install --with dev
 
-      - name: "[Test] Run Mutmut"
-        run: |
-          poetry run mutmut run
-          poetry run mutmut results
+    - name: "[Test] Run Mutmut"
+      run: |
+        poetry run mutmut run
+        poetry run mutmut results
 
 
   docker-build:
     name: "[Build] Docker Validation"
     runs-on: ubuntu-latest
     steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+    - name: "[Setup] Checkout code"
+      uses: actions/checkout@v4
 
-      - name: "[Build] Build Hardened Docker Image"
-        run: docker build -t taipanstack:ci-test .
+    - name: "[Build] Build Hardened Docker Image"
+      run: docker build -t taipanstack:ci-test .
 
-      - name: "[Test] Validate Container Run (Healthcheck)"
-        run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"
+    - name: "[Test] Validate Container Run (Healthcheck)"
+      run: docker run --rm --read-only --entrypoint python taipanstack:ci-test
+        -c "import taipanstack; print('TaipanStack container OK')"
