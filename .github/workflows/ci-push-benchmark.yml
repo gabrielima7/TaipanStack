@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   benchmark:
-    name: Run Benchmarks
+    name: "[Test] Run Benchmarks"
     runs-on: ubuntu-latest
 
     steps:

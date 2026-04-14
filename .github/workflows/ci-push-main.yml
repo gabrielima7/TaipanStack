@@ -52,7 +52,7 @@ jobs:
         run: poetry install --with dev --sync
 
       - name: "[Test] Run tests with pytest"
-        run: poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --cov=src --cov-report=xml --cov-report=html --cov-report=term --timeout=60
+        run: poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-report=term --timeout=60
 
       - name: "[Lint] Upload HTML coverage report as artifact"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
@@ -72,7 +72,7 @@ jobs:
           fail_ci_if_error: false
 
   # Linux Distribution Testing via Docker containers
-  test-linux-distros:
+  container-distros:
     name: "[Test] Container Distros"
     runs-on: ubuntu-latest
     strategy:
@@ -177,7 +177,7 @@ jobs:
 
       - name: "[Test] Run tests"
         run: |
-          poetry run pytest tests/ -v --ignore=tests/test_property_sanitizers.py --ignore=tests/test_benchmarks.py --timeout=60
+          poetry run pytest tests/ -v --timeout=60
 
   lint:
     name: "[Lint] Quality Checks"
