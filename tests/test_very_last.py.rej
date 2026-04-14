@@ -1,0 +1,16 @@
+--- tests/test_very_last.py
++++ tests/test_very_last.py
+@@ -578,4 +578,14 @@
+         assert not result.success
+         assert len(result.errors) > 0
+         assert any("boom" in e for e in result.errors)
++
++    def test_apply_optimizations_with_errors2(self) -> None:
++        from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
++        profile = OptimizationProfile()
++        with patch("taipanstack.core.optimizations.sys") as mock_sys:
++            mock_sys.set_int_max_str_digits = MagicMock(side_effect=RuntimeError("boom"))
++            result = apply_optimizations(profile=profile, apply_gc=True)
++        assert not result.success
++        assert len(result.errors) > 0
++        assert any("boom" in e for e in result.errors)
