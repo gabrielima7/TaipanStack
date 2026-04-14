@@ -10,6 +10,7 @@ minimum throughput of requests has been met.
 from __future__ import annotations
 
 import logging
+import math
 import threading
 import time
 from collections import deque
@@ -78,6 +79,8 @@ class AdaptiveCircuitBreaker:
         self._window_size = window_size
         self._min_throughput = min_throughput
         self._target_error_rate = target_error_rate
+        if not math.isfinite(recovery_timeout) or recovery_timeout < 0:
+            raise ValueError("recovery_timeout must be a finite non-negative number")
         self._recovery_timeout = recovery_timeout
 
         # Rolling window: True = success, False = failure
