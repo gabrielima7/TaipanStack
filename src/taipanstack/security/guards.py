@@ -17,6 +17,8 @@ from urllib.parse import urlsplit
 
 from result import Err, Ok, Result
 
+from taipanstack.security.validators import MAX_URL_LENGTH
+
 # Build regex for traversal patterns.
 # Note: we handle ~ specially to only match at start of path or after a separator
 # to avoid false positives with Windows short paths (e.g., RUNNER~1).
@@ -446,6 +448,15 @@ def _validate_ssrf_url(
 
     if not url:
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
+
+    if len(url) > MAX_URL_LENGTH:
+        return Err(
+            SecurityError(
+                "URL length exceeds maximum allowed limit",
+                guard_name="ssrf",
+                value=url[:80],
+            )
+        )
 
     try:
         parsed = urlsplit(url)

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import math
 from collections.abc import Awaitable, Callable
 from typing import Generic, ParamSpec, TypeVar, cast
 
@@ -86,6 +87,8 @@ class ResilienceOrchestrator(Generic[T]):
             self for chaining.
 
         """
+        if not math.isfinite(timeout) or timeout < 0:
+            raise ValueError("timeout must be a finite non-negative number")
         self._bulkhead = Bulkhead(
             f"{self.name}-bulkhead",
             max_concurrent=max_concurrent,
@@ -144,6 +147,8 @@ class ResilienceOrchestrator(Generic[T]):
             self for chaining.
 
         """
+        if not math.isfinite(seconds) or seconds < 0:
+            raise ValueError("timeout must be a finite non-negative number")
         self._timeout = seconds
         return self
 

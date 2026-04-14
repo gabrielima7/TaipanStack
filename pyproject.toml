@@ -90,7 +90,6 @@ dev = [
     "pytest-xdist (>=3.6.0)",
     "vulture (>=2.11)",
     "interrogate (>=1.5.0)",
-    "hypothesis (>=6.100.0)",
     "polyfactory (>=2.0.0)",
     "structlog (>=25.5.0,<26.0.0)",
     "import-linter (>=2.1)",
@@ -107,6 +106,7 @@ dev = [
     # CVSS 1.9/10 Low - local attack vector only, no upstream patch available yet
     # Pinned to latest available; monitor for upstream fix in pygments >2.19.2
     "pygments (>=2.19.2)",
+    "hypothesis (>=6.151.12,<7.0.0)",
 ]
 
 

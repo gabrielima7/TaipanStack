@@ -742,3 +742,67 @@ rules:
           - pattern: pickle.loads(...)
           - pattern: marshal.load(...)
           - pattern: marshal.loads(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 46: Detect unsafe string arguments and shell=True in subprocess
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-subprocess-string-args
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using string arguments with subprocess functions can lead to OS command injection
+      or unexpected shell behaviors. Always pass arguments as a list of strings
+      (e.g., `["ls", "-la", "/tmp"]`) instead of a single string, and ensure `shell=True`
+      is not used.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-78: OS Command Injection"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.$METHOD("...", ...)
+          - pattern: subprocess.$METHOD(..., shell=True, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(run|Popen|call|check_call|check_output)$
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 47: Detect Missing isfinite Check for Timeout/Threshold Parameters
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-missing-isfinite
+    languages: [python]
+    severity: ERROR
+    message: >
+      Timeout or threshold validation checking for <= 0 without first checking math.isfinite()
+      can be bypassed by float('NaN'), leading to silent failures or logic bugs.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-20: Improper Input Validation"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: $X < 0
+          - pattern: $X <= 0
+          - pattern: $X > 0
+          - pattern: $X >= 0
+      - pattern-inside: |
+          def __init__(..., $X: float = ..., ...):
+              ...
+      - pattern-not-inside: |
+          if not math.isfinite($X) or ...:
+              ...
+      - pattern-not-inside: |
+          if math.isfinite($X) and ...:
+              ...
+      - pattern-not-inside: |
+          if not math.isfinite($X):
+              ...
+      - pattern-not-inside: |
+          if math.isfinite($X):
+              ...
