@@ -1,0 +1,18 @@
+rules:
+  - id: taipanstack.security-urllib-request-unsafe
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using `urllib.request.urlopen` or `urllib.request.urlretrieve` with untrusted URLs
+      can lead to SSRF (Server-Side Request Forgery) or local file read. Ensure URLs are
+      validated using `taipanstack.security.guards.guard_ssrf` before fetching.
+    metadata:
+      category: security
+      confidence: HIGH
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp: "A10:2021 - Server-Side Request Forgery (SSRF)"
+      technology: [python]
+    patterns:
+      - pattern-either:
+          - pattern: urllib.request.urlopen(...)
+          - pattern: urllib.request.urlretrieve(...)
