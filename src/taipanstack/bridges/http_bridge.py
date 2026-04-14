@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -33,7 +33,151 @@ except ImportError:  # pragma: no cover
     _HAS_HTTPX = False
 
 if TYPE_CHECKING:
+    import typing
+
     import httpx
+
+    class RequestKwargs(typing.TypedDict, total=False):
+        """Type hints for HTTP request keyword arguments."""
+
+        content: (
+            str | bytes | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None
+        )
+        data: typing.Mapping[str, object] | None
+        files: (
+            typing.Mapping[
+                str,
+                typing.IO[bytes]
+                | bytes
+                | str
+                | tuple[str | None, typing.IO[bytes] | bytes | str]
+                | tuple[str | None, typing.IO[bytes] | bytes | str, str | None]
+                | tuple[
+                    str | None,
+                    typing.IO[bytes] | bytes | str,
+                    str | None,
+                    typing.Mapping[str, str],
+                ],
+            ]
+            | typing.Sequence[
+                tuple[
+                    str,
+                    typing.IO[bytes]
+                    | bytes
+                    | str
+                    | tuple[str | None, typing.IO[bytes] | bytes | str]
+                    | tuple[str | None, typing.IO[bytes] | bytes | str, str | None]
+                    | tuple[
+                        str | None,
+                        typing.IO[bytes] | bytes | str,
+                        str | None,
+                        typing.Mapping[str, str],
+                    ],
+                ]
+            ]
+            | None
+        )
+        json: object | None
+        params: (
+            httpx.QueryParams
+            | typing.Mapping[
+                str,
+                str
+                | int
+                | float
+                | bool
+                | None
+                | typing.Sequence[str | int | float | bool | None],
+            ]
+            | list[tuple[str, str | int | float | bool | None]]
+            | tuple[tuple[str, str | int | float | bool | None], ...]
+            | str
+            | bytes
+            | None
+        )
+        headers: (
+            httpx.Headers
+            | typing.Mapping[str, str]
+            | typing.Mapping[bytes, bytes]
+            | typing.Sequence[tuple[str, str]]
+            | typing.Sequence[tuple[bytes, bytes]]
+            | None
+        )
+        cookies: httpx.Cookies | dict[str, str] | list[tuple[str, str]] | None
+        auth: (
+            tuple[str | bytes, str | bytes]
+            | typing.Callable[[httpx.Request], httpx.Request]
+            | httpx.Auth
+            | None
+        )
+        follow_redirects: bool
+        timeout: (
+            float
+            | tuple[float | None, float | None, float | None, float | None]
+            | httpx.Timeout
+            | None
+        )
+
+    class ClientKwargs(typing.TypedDict, total=False):
+        """Type hints for HTTP client keyword arguments."""
+
+        auth: (
+            tuple[str | bytes, str | bytes]
+            | typing.Callable[[httpx.Request], httpx.Request]
+            | httpx.Auth
+            | None
+        )
+        params: (
+            httpx.QueryParams
+            | typing.Mapping[
+                str,
+                str
+                | int
+                | float
+                | bool
+                | None
+                | typing.Sequence[str | int | float | bool | None],
+            ]
+            | list[tuple[str, str | int | float | bool | None]]
+            | tuple[tuple[str, str | int | float | bool | None], ...]
+            | str
+            | bytes
+            | None
+        )
+        headers: (
+            httpx.Headers
+            | typing.Mapping[str, str]
+            | typing.Mapping[bytes, bytes]
+            | typing.Sequence[tuple[str, str]]
+            | typing.Sequence[tuple[bytes, bytes]]
+            | None
+        )
+        cookies: httpx.Cookies | dict[str, str] | list[tuple[str, str]] | None
+        verify: object | str | bool
+        cert: str | tuple[str, str] | tuple[str, str, str] | None
+        http1: bool
+        http2: bool
+        proxy: httpx.URL | str | httpx.Proxy | None
+        mounts: typing.Mapping[str, httpx.AsyncBaseTransport | None] | None
+        timeout: (
+            float
+            | tuple[float | None, float | None, float | None, float | None]
+            | httpx.Timeout
+            | None
+        )
+        follow_redirects: bool
+        limits: httpx.Limits
+        max_redirects: int
+        event_hooks: (
+            typing.Mapping[str, list[typing.Callable[..., typing.Awaitable[object]]]]
+            | None
+        )
+        base_url: httpx.URL | str
+        transport: httpx.AsyncBaseTransport | None
+        app: typing.Callable[..., object] | None
+        trust_env: bool
+        default_encoding: str | typing.Callable[[bytes], str]
+
 
 # Default status codes that trigger a retry
 _RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({500, 502, 503, 504, 429})
@@ -169,7 +313,7 @@ async def safe_request(
     circuit_breaker: CircuitBreaker | None = None,
     retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
     timeout: float | None = 10.0,
-    **kwargs: Any,
+    **kwargs: object,
 ) -> Result[httpx.Response, Exception]:
     """Perform a one-shot HTTP request with safety features.
 
@@ -208,7 +352,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
-            response = await client.request(method, url, **kwargs)
+            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]  # type: ignore[arg-type]
             return response
 
     return await _execute_with_retries(
@@ -245,7 +389,7 @@ class SafeHttpClient:
         retry_config: RetryConfig | None = None,
         circuit_breaker: CircuitBreaker | None = None,
         retryable_status_codes: frozenset[int] = _RETRYABLE_STATUS_CODES,
-        **client_kwargs: Any,
+        **client_kwargs: object,
     ) -> None:
         """Initialize the safe HTTP client.
 
@@ -276,9 +420,9 @@ class SafeHttpClient:
             raise ImportError(msg)
         timeout = self._client_kwargs.pop("timeout", 10.0)
         self._client = httpx.AsyncClient(
-            timeout=timeout,
-            **self._client_kwargs,
-        )  # nosemgrep
+            timeout=timeout,  # type: ignore[arg-type]  # type: ignore[arg-type]
+            **self._client_kwargs,  # type: ignore[arg-type]  # type: ignore[arg-type]
+        )  # nosemgrep  # type: ignore[arg-type]
         return self
 
     async def __aexit__(
@@ -296,7 +440,7 @@ class SafeHttpClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,
+        **kwargs: object,
     ) -> Result[httpx.Response, Exception]:
         """Send an HTTP request with safety features.
 
@@ -326,7 +470,7 @@ class SafeHttpClient:
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above
             client: httpx.AsyncClient = self._client  # type: ignore[assignment]
-            response = await client.request(method, url, **kwargs)
+            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]  # type: ignore[arg-type]
             return response
 
         return await _execute_with_retries(
@@ -336,22 +480,22 @@ class SafeHttpClient:
             self._retryable_status_codes,
         )
 
-    async def get(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def get(self, url: str, **kw: object) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
-    async def post(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def post(self, url: str, **kw: object) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
-    async def put(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def put(self, url: str, **kw: object) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
-    async def delete(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def delete(self, url: str, **kw: object) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
-    async def patch(self, url: str, **kw: Any) -> Result[httpx.Response, Exception]:
+    async def patch(self, url: str, **kw: object) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)
