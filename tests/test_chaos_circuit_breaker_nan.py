@@ -1,5 +1,8 @@
 import pytest
 
+from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
+from taipanstack.resilience.adaptive.bulkhead import Bulkhead
+from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
@@ -26,9 +29,6 @@ def test_circuit_breaker_rejects_inf_success_threshold():
     with pytest.raises(ValueError, match="must be a finite"):
         CircuitBreaker(success_threshold=float("inf"))
 
-from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
-from taipanstack.resilience.adaptive.bulkhead import Bulkhead
-from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 
 def test_adaptive_breaker_rejects_nan_recovery_timeout():
     with pytest.raises(ValueError, match="must be a finite"):
