@@ -31,10 +31,10 @@
 
 TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.4.2
-- **Subprocess Isolation Environment**: Isolates child execution environments to prevent implicit credential leaks via `allowed_env_vars`.
-- **Obfuscation for Models**: Hardens Pydantic models by suppressing sensitive secrets (`SecretStr`, `SecretBytes`) in `repr()` and `str()`.
-- **Adaptive Limiters**: Restricts computationally intensive hashing arrays (Argon2id) to cap length overrides and prevent Denial of Service (DoS).
+### ✨ What's New in v0.4.3
+- **Strict Static Typing**: Project-wide refactoring to eliminate all `Any` types, ensuring 100% type safety with `Mypy` strict mode.
+- **SSRF & DoS Hardening**: Mitigates `urlparse` SSRF risks and algorithmic complexity DoS via bounded length and value validation.
+- **Total Core Coverage**: Achieved true 100% branch and statement coverage in the core result module with 1,205 passing tests.
 
 <table>
 <tr>
@@ -72,7 +72,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1175 tests)
+- **100% code coverage** (1205 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -114,7 +114,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1175 tests)
+# Run tests with 100% coverage (1205 tests)
 make test
 
 # Check architecture contracts
@@ -169,7 +169,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1175 tests, 100% coverage
+├── tests/                # ✅ 1205 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
