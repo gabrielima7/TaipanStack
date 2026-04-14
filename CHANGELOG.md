@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-04-14
+
+### Security
+- **Fix (High)**: Patched URL validation bypasses and DoS edge cases in `validate_url` (PR #487).
+- **Fix (High)**: Mitigated `urlparse` SSRF risks and unbounded sleep delays in `guard_ssrf`.
+- **Fix (High)**: Resolved URL length DoS vulnerability in `guard_ssrf` via Hypothesis fuzzing (PR #544).
+- **Fix (Medium)**: Hardened `validate_python_version` and `validate_email` against extreme inputs and DoS vectors (PR #423, #526, #551).
+- **Fix (Medium)**: Hardened `RateLimiter` against time corruption and state poisoning (PR #489).
+- **Fix (Medium)**: Remedied DoS vector in `run_safe_command` timeout (PR #490).
+- **Hardening**: Enforced `math.isfinite` checks on all timeout parameters across decorators and circuit breakers (PR #558).
+- **SAST**: Introduced custom Semgrep rules for Pydantic secrets, unsafe temp file removal, path traversal, and insecure hashing/deserialization (PR #486, #507).
+- **Hardening**: Patched `ensure_dir` and added Semgrep rules for insecure `mkdir` modes (PR #420).
+
+### Resilience
+- **Hardening**: Enforced finite thresholds in `CircuitBreaker` states to prevent NaN-induced logic corruption (PR #537).
+- **Hardening**: Stabilized retry exponential backoff against chaos anomalies and state drifting (PR #450).
+- **Hardening**: Hardened `@timeout` decorator against NaN and negative bounds (PR #254).
+- **Chore**: Eliminated unused `AdaptiveTimeout` dead code (PR #510).
+
+### Performance
+- **Optimization**: Optimized path and filename sanitization hot paths by hoisting regex initialization.
+- **Optimization**: Optimized `@safe` and `@safe_from` decorators by hoisting type casts and reducing closure overhead (PR #532).
+- **Optimization**: Batch performance improvements across core and security modules (PR #452).
+
+### Changed & Refactoring
+- **Refactoring (Breaking)**: Strictly typed the entire codebase and completely eliminated `Any` usages (PR #465, #543).
+- **Refactoring**: Modernized `src/taipanstack/core/result.py` with modern container type checks (PR #518).
+- **Refactoring**: Adopted `match/case` syntax in security models for better maintainability.
+- **Complexity**: Significantly reduced cyclomatic complexity across bridges and filesystem utilities (PR #453, #494).
+- **Dead Code**: Removed `guard_hash_algorithm` and other orphaned filesystem helpers (PR #527).
+
+### QA & CI/CD
+- **Coverage**: Achieved true 100% test coverage in core `result` module with 1205 passing tests (PR #481).
+- **CI/CD**: Standardized workflows, removed bypasses, and enforced strict execution naming (PR #531, #546).
+- **Tests**: Corrected JWT fuzzer properties and fixed Hypothesis health checks in CI (PR #547).
+
 ## [0.4.2] - 2026-03-31
 
 ### Security
@@ -484,7 +520,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...v0.4.0
