@@ -91,7 +91,9 @@ class TestCalculateDelay:
         # With 50% jitter, delays should vary
         assert len(set(delays)) > 1
 
-    def test_utils_retry_chaos_retry_negative_attempt_resource_exhaustion_expected(self) -> None:
+    def test_utils_retry_chaos_retry_negative_attempt_resource_exhaustion_expected(
+        self,
+    ) -> None:
         """Test resilience against negative attempt counter.
 
         Simulates a rare production failure/state mutation where `attempt` becomes

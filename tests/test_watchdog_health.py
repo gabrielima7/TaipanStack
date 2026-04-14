@@ -90,7 +90,9 @@ class TestCheckAll:
         assert result.ok_value["cache"] is False
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_exploding_counted_as_unhealthy_expected(self) -> None:
+    async def test_watchdog_health_exploding_counted_as_unhealthy_expected(
+        self,
+    ) -> None:
         """An exception from check is treated as unhealthy."""
         targets = [HealthTarget(name="svc", check=_exploding)]
         result = await check_all(targets)
@@ -177,7 +179,9 @@ class TestHealthPinger:
         assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_does_not_close_breaker_on_recovery_expected(self) -> None:
+    async def test_watchdog_health_does_not_close_breaker_on_recovery_expected(
+        self,
+    ) -> None:
         """Recovery does NOT force-close the circuit breaker.
 
         Natural recovery (half-open → closed) is handled by CircuitBreaker itself.
@@ -205,7 +209,9 @@ class TestHealthPinger:
         assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_exception_in_check_treated_as_unhealthy_expected(self) -> None:
+    async def test_watchdog_health_exception_in_check_treated_as_unhealthy_expected(
+        self,
+    ) -> None:
         """An exception from the check coroutine is treated as unhealthy."""
         changes: list[tuple[str, bool]] = []
 
@@ -221,7 +227,9 @@ class TestHealthPinger:
         assert any(h is False for _, h in changes)
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_no_duplicate_callback_on_same_status_expected(self) -> None:
+    async def test_watchdog_health_no_duplicate_callback_on_same_status_expected(
+        self,
+    ) -> None:
         """Callback only fires on *transitions*, not every cycle."""
         changes: list[tuple[str, bool]] = []
 

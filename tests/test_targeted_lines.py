@@ -8,7 +8,9 @@ import pytest
 class TestGuardsOSErrorBranch:
     """Test for guards.py line 97-98: OSError in path.resolve()."""
 
-    def test_targeted_lines_guard_path_traversal_basic_expected(self, tmp_path: Path) -> None:
+    def test_targeted_lines_guard_path_traversal_basic_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with basic path."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -22,7 +24,9 @@ class TestGuardsOSErrorBranch:
 class TestGuardsSymlinkBranch:
     """Test for guards.py line 118: symlink not allowed."""
 
-    def test_targeted_lines_guard_path_symlink_allowed_expected(self, tmp_path: Path) -> None:
+    def test_targeted_lines_guard_path_symlink_allowed_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal allows symlinks when permitted."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -40,7 +44,9 @@ class TestGuardsSymlinkBranch:
 class TestValidatorsVersionInvalidBranch:
     """Test for validators.py lines 128-130: invalid version format."""
 
-    def test_targeted_lines_validate_python_version_invalid_numbers_expected(self) -> None:
+    def test_targeted_lines_validate_python_version_invalid_numbers_expected(
+        self,
+    ) -> None:
         """Test validate_python_version with non-numeric version parts."""
         from taipanstack.security.validators import validate_python_version
 
@@ -92,7 +98,9 @@ class TestLoggingLine1920:
 class TestFilesystemLine175And259:
     """Test for filesystem.py lines 175 and 259."""
 
-    def test_targeted_lines_safe_write_directory_exists_expected(self, tmp_path: Path) -> None:
+    def test_targeted_lines_safe_write_directory_exists_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write when parent directory already exists."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 

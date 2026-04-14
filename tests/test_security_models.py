@@ -34,7 +34,9 @@ class TestSecureBaseModel:
         assert dumped["secret_token"] == REDACTED_VALUE
         assert dumped["api_key"] == REDACTED_VALUE
 
-    def test_security_models_model_dump_json_masks_sensitive_fields_expected(self) -> None:
+    def test_security_models_model_dump_json_masks_sensitive_fields_expected(
+        self,
+    ) -> None:
         """Test that model_dump_json redacts sensitive keys."""
 
         class Config(SecureBaseModel):

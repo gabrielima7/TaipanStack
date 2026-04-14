@@ -83,7 +83,9 @@ def test_security_password_verify_legacy_password_expected() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_legacy_password_too_many_iterations_expected() -> None:
+def test_security_password_verify_legacy_password_too_many_iterations_expected() -> (
+    None
+):
     """Test that legacy PBKDF2 hashes with too many iterations are rejected."""
     password = "my_password"
     salt = b"1234567890123456"

@@ -36,7 +36,9 @@ class TestLoggingWithMockedStructlog:
             logger.error("error message")
             logger.critical("critical message")
 
-    def test_structlog_branches_stack_logger_bind_with_structured_expected(self) -> None:
+    def test_structlog_branches_stack_logger_bind_with_structured_expected(
+        self,
+    ) -> None:
         """Test StackLogger.bind when _structured is True."""
         mock_structlog = MagicMock()
         mock_logger = MagicMock()
@@ -53,7 +55,9 @@ class TestLoggingWithMockedStructlog:
             logger = logging_module.StackLogger(use_structured=True)
             logger.bind(user="test")
 
-    def test_structlog_branches_stack_logger_unbind_with_structured_expected(self) -> None:
+    def test_structlog_branches_stack_logger_unbind_with_structured_expected(
+        self,
+    ) -> None:
         """Test StackLogger.unbind when _structured is True."""
         mock_structlog = MagicMock()
         mock_logger = MagicMock()
@@ -109,7 +113,9 @@ class TestSubprocessTimeoutBranches:
 class TestGuardsRemainingBranches:
     """Tests for remaining guards module branches."""
 
-    def test_structlog_branches_guard_path_traversal_symlink_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_guard_path_traversal_symlink_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with symlinks."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -125,7 +131,9 @@ class TestGuardsRemainingBranches:
 class TestFilesystemRemainingBranches:
     """Tests for remaining filesystem module branches."""
 
-    def test_structlog_branches_safe_write_create_parents_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_safe_write_create_parents_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with create_parents=True."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -138,7 +146,9 @@ class TestFilesystemRemainingBranches:
         assert result.exists()
         assert result.read_text() == "content"
 
-    def test_structlog_branches_safe_write_atomic_with_existing_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_safe_write_atomic_with_existing_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write atomic with existing file copies permissions."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -155,7 +165,9 @@ class TestFilesystemRemainingBranches:
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
 
-    def test_structlog_branches_sanitize_path_absolute_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_sanitize_path_absolute_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with absolute path."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -176,7 +188,9 @@ class TestSanitizersRemainingBranches:
 class TestValidatorsRemainingBranches:
     """Tests for remaining validators module branches."""
 
-    def test_structlog_branches_validate_project_name_starts_with_digit_expected(self) -> None:
+    def test_structlog_branches_validate_project_name_starts_with_digit_expected(
+        self,
+    ) -> None:
         """Test validate_project_name starting with digit."""
         from taipanstack.security.validators import validate_project_name
 

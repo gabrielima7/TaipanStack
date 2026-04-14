@@ -105,7 +105,9 @@ class TestGuardExceptions:
 
         assert safe_func() == "success"
 
-    def test_security_decorators_caught_exception_returns_default_expected(self) -> None:
+    def test_security_decorators_caught_exception_returns_default_expected(
+        self,
+    ) -> None:
         """Test that caught exception returns default."""
 
         @guard_exceptions(catch=(ValueError,), default="fallback")
@@ -213,7 +215,9 @@ class TestTimeout:
             def func() -> None:
                 pass
 
-    def test_security_decorators_timeout_with_exception_in_thread_expected(self) -> None:
+    def test_security_decorators_timeout_with_exception_in_thread_expected(
+        self,
+    ) -> None:
         @timeout(1.0, use_signal=False)
         def func_raises() -> None:
             raise ValueError("Thread error")

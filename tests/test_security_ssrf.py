@@ -27,7 +27,9 @@ class TestGuardSsrfTypeContract:
             guard_ssrf(b"http://example.com")  # type: ignore[arg-type]
 
     @patch("taipanstack.security.guards.urlsplit")
-    def test_security_ssrf_raises_value_error_from_urlparse_expected(self, mock_urlparse) -> None:
+    def test_security_ssrf_raises_value_error_from_urlparse_expected(
+        self, mock_urlparse
+    ) -> None:
         """Return Err when urlparse raises ValueError."""
         mock_urlparse.side_effect = ValueError("Mocked error")
         result = guard_ssrf("http://example.com")

@@ -136,24 +136,32 @@ class TestStackConfig:
         config = StackConfig(project_dir=tmp_path)
         assert config.project_dir == tmp_path.resolve()
 
-    def test_config_models_path_traversal_rejected_expected(self, tmp_path: Path) -> None:
+    def test_config_models_path_traversal_rejected_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test path traversal in project_dir is rejected."""
         with pytest.raises(ValidationError, match="Path traversal"):
             StackConfig(project_dir=Path("../../../etc"))
 
-    def test_config_models_absolute_path_accepted_expected(self, tmp_path: Path) -> None:
+    def test_config_models_absolute_path_accepted_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test absolute path is accepted and resolved."""
         abs_path = tmp_path.resolve()
         config = StackConfig(project_dir=abs_path)
         assert config.project_dir == abs_path
 
-    def test_config_models_path_with_dots_not_traversal_accepted_expected(self, tmp_path: Path) -> None:
+    def test_config_models_path_with_dots_not_traversal_accepted_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test paths with dots that are not traversal are accepted."""
         dot_path = tmp_path / "my.project.dir"
         config = StackConfig(project_dir=dot_path)
         assert config.project_dir == dot_path.resolve()
 
-    def test_config_models_non_existent_path_accepted_expected(self, tmp_path: Path) -> None:
+    def test_config_models_non_existent_path_accepted_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test non-existent path is accepted (resolve handles it)."""
         non_existent = tmp_path / "new_project_dir"
         config = StackConfig(project_dir=non_existent)
@@ -165,12 +173,16 @@ class TestStackConfig:
         resolved = StackConfig.validate_project_dir(test_path)
         assert resolved == test_path.resolve()
 
-    def test_config_models_validate_project_dir_traversal_direct_call_expected(self) -> None:
+    def test_config_models_validate_project_dir_traversal_direct_call_expected(
+        self,
+    ) -> None:
         """Test direct call to validate_project_dir with traversal."""
         with pytest.raises(ValueError, match="Path traversal"):
             StackConfig.validate_project_dir(Path("safe/../unsafe"))
 
-    def test_config_models_path_with_double_dots_in_name_rejected_expected(self) -> None:
+    def test_config_models_path_with_double_dots_in_name_rejected_expected(
+        self,
+    ) -> None:
         """Test that paths with '..' in the name are currently rejected.
 
         Note: This is current behavior due to simple string check.

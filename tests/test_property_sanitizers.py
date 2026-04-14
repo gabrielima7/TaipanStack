@@ -63,7 +63,9 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_never_contains_null_bytes_expected(self, text: str) -> None:
+    def test_property_sanitizers_never_contains_null_bytes_expected(
+        self, text: str
+    ) -> None:
         """Output must never contain null bytes."""
         result = sanitize_string(text)
         assert "\x00" not in result
@@ -73,7 +75,9 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_control_characters_except_whitespace_expected(self, text: str) -> None:
+    def test_property_sanitizers_no_control_characters_except_whitespace_expected(
+        self, text: str
+    ) -> None:
         """Output must not contain control characters (except newline, tab, CR)."""
         result = sanitize_string(text)
         allowed_controls = {"\n", "\r", "\t"}
@@ -88,7 +92,9 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(
+        self, text: str, max_len: int
+    ) -> None:
         """Output length must not exceed max_length."""
         result = sanitize_string(text, max_length=max_len)
         assert len(result) <= max_len
@@ -108,7 +114,9 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_html_tags_removed_by_default_expected(self, text: str) -> None:
+    def test_property_sanitizers_html_tags_removed_by_default_expected(
+        self, text: str
+    ) -> None:
         """Output must not contain HTML angle-bracket tags when allow_html=False."""
         import re
 
@@ -181,7 +189,9 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(
+        self, text: str, max_len: int
+    ) -> None:
         """Output length must not exceed max_length for non-empty filenames.
 
         The 'unnamed' fallback for empty inputs bypasses max_length.
@@ -195,7 +205,9 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_windows_reserved_chars_expected(self, text: str) -> None:
+    def test_property_sanitizers_no_windows_reserved_chars_expected(
+        self, text: str
+    ) -> None:
         """Stem portion of output must not contain Windows-reserved characters.
 
         Note: sanitize_filename sanitizes the stem but preserves the
@@ -248,7 +260,9 @@ class TestSanitizePathProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_traversal_in_output_expected(self, text: str) -> None:
+    def test_property_sanitizers_no_traversal_in_output_expected(
+        self, text: str
+    ) -> None:
         """Output path must not contain standalone '..' traversal components.
 
         Note: sanitize_path removes standalone '..' *path parts* (e.g. foo/../bar).
@@ -324,7 +338,9 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_newlines_by_default_expected(self, text: str) -> None:
+    def test_property_sanitizers_no_newlines_by_default_expected(
+        self, text: str
+    ) -> None:
         """Output must not contain newlines when allow_multiline=False."""
         result = sanitize_env_value(text, allow_multiline=False)
         assert "\n" not in result
@@ -335,7 +351,9 @@ class TestSanitizeEnvValueProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_respects_max_length_expected(self, text: str, max_len: int) -> None:
+    def test_property_sanitizers_respects_max_length_expected(
+        self, text: str, max_len: int
+    ) -> None:
         """Output length must not exceed max_length."""
         result = sanitize_env_value(text, max_length=max_len)
         assert len(result) <= max_len
@@ -378,7 +396,9 @@ class TestSanitizeSqlIdentifierProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_only_valid_chars_in_output_expected(self, text: str) -> None:
+    def test_property_sanitizers_only_valid_chars_in_output_expected(
+        self, text: str
+    ) -> None:
         """Output must contain only alphanumeric characters and underscores."""
         result = sanitize_sql_identifier(text)
         valid = set(string.ascii_letters + string.digits + "_")
@@ -400,7 +420,9 @@ class TestSanitizeSqlIdentifierProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_does_not_start_with_digit_expected(self, text: str) -> None:
+    def test_property_sanitizers_does_not_start_with_digit_expected(
+        self, text: str
+    ) -> None:
         """Output must not start with a digit."""
         result = sanitize_sql_identifier(text)
         assert not result[0].isdigit(), f"SQL identifier starts with digit: {result!r}"

@@ -6,7 +6,9 @@ import pytest
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_chaos_rl_nan_rate_limiter_chaos_time_corruption_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chaos_rl_nan_rate_limiter_chaos_time_corruption_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     limiter = RateLimiter(max_calls=5, time_window=10.0)
 
     # Empty the bucket

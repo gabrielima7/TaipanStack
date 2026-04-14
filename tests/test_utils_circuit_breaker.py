@@ -34,7 +34,9 @@ class TestCircuitBreakerState:
             spec.loader.exec_module(module)  # type: ignore
             assert module._HAS_STRUCTLOG is False
 
-    def test_utils_circuit_breaker_circuit_breaker_unreachable_state_expected(self) -> None:
+    def test_utils_circuit_breaker_circuit_breaker_unreachable_state_expected(
+        self,
+    ) -> None:
         """Test unreachable state block."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
@@ -123,7 +125,9 @@ class TestCircuitBreaker:
         # Should be back to open after failure in half-open
         assert breaker.state == CircuitState.OPEN
 
-    def test_utils_circuit_breaker_half_open_thundering_herd_chaos_expected(self) -> None:
+    def test_utils_circuit_breaker_half_open_thundering_herd_chaos_expected(
+        self,
+    ) -> None:
         """Test that half-open state prevents thundering herd attacks.
 
         Simulates an extreme thundering herd failure scenario where
@@ -336,7 +340,9 @@ class TestCircuitBreakerDecorator:
 
         assert await my_async_func() == "async_ok"
 
-    async def test_utils_circuit_breaker_decorator_async_failure_opens_circuit_expected(self) -> None:
+    async def test_utils_circuit_breaker_decorator_async_failure_opens_circuit_expected(
+        self,
+    ) -> None:
         """Test that failures in async functions open the circuit."""
 
         @circuit_breaker(failure_threshold=2)

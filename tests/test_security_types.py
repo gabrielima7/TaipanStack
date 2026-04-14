@@ -259,7 +259,9 @@ class TestSafeHtml:
         assert m.content == "&lt;script&gt;alert(1)&lt;/script&gt;"
 
     @given(st.text())
-    def test_security_types_property_all_strings_escaped_expected(self, text: str) -> None:
+    def test_security_types_property_all_strings_escaped_expected(
+        self, text: str
+    ) -> None:
         """All arbitrary text is safely processed."""
         # Using html.escape, the characters <, >, &, ", ' are escaped
         # unless quote=False is passed (we use default quote=True)
@@ -297,12 +299,16 @@ class TestSafeSqlIdentifier:
             SqlModel(column="users; DROP TABLE users")
 
     @given(st.from_regex(r"^[a-zA-Z_][a-zA-Z0-9_]*$", fullmatch=True))
-    def test_security_types_property_valid_identifiers_pass_expected(self, text: str) -> None:
+    def test_security_types_property_valid_identifiers_pass_expected(
+        self, text: str
+    ) -> None:
         """Valid generated identifiers pass."""
         assert SqlModel(column=text).column == text
 
     @given(st.text())
-    def test_security_types_property_any_string_validation_expected(self, text: str) -> None:
+    def test_security_types_property_any_string_validation_expected(
+        self, text: str
+    ) -> None:
         """Arbitrary strings are correctly accepted or rejected based on regex."""
         import re
 

@@ -20,7 +20,9 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.security import verify_password
 
 
-def test_secure_system_create_user_success_expected(caplog: pytest.LogCaptureFixture) -> None:
+def test_secure_system_create_user_success_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test creating a user with valid data."""
     repository = InMemoryUserRepository()
     service = UserService(repository)
@@ -56,7 +58,9 @@ def test_secure_system_create_user_success_expected(caplog: pytest.LogCaptureFix
     assert f"user_id={user.id}" in caplog.text
 
 
-def test_secure_system_create_user_failure_expected(caplog: pytest.LogCaptureFixture) -> None:
+def test_secure_system_create_user_failure_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test user creation failure handled gracefully."""
 
     # Mock repository to raise an error
@@ -83,7 +87,9 @@ def test_secure_system_create_user_failure_expected(caplog: pytest.LogCaptureFix
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_create_user_already_exists_expected(caplog: pytest.LogCaptureFixture) -> None:
+def test_secure_system_create_user_already_exists_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
 
     class AlreadyExistsRepository(UserRepository):
@@ -133,7 +139,9 @@ def test_secure_system_create_user_invalid_username_expected() -> None:
         )
 
 
-def test_secure_system_get_non_existent_user_expected(caplog: pytest.LogCaptureFixture) -> None:
+def test_secure_system_get_non_existent_user_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test retrieving a non-existent user returns Err with UserNotFoundError."""
     repository = InMemoryUserRepository()
     service = UserService(repository)

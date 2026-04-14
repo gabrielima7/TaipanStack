@@ -97,7 +97,9 @@ class TestSafeFromDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
 
-    def test_result_module_safe_from_propagates_unspecified_exception_expected(self) -> None:
+    def test_result_module_safe_from_propagates_unspecified_exception_expected(
+        self,
+    ) -> None:
         """Test safe_from propagates unspecified exception types."""
 
         @safe_from(ValueError)
@@ -412,7 +414,9 @@ class TestSafeFromAsyncDecorator:
         assert isinstance(result.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_from_async_propagates_unspecified_expected(self) -> None:
+    async def test_result_module_safe_from_async_propagates_unspecified_expected(
+        self,
+    ) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise TypeError("invalid type")

@@ -52,7 +52,9 @@ class TestSafeRead:
             case Err():
                 pytest.fail("Expected Ok but got Err")
 
-    def test_utils_filesystem_read_nonexistent_file_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_read_nonexistent_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test reading non-existent file returns Err."""
         result = safe_read(tmp_path / "nonexistent.txt")
         match result:
@@ -72,7 +74,9 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(NotAFileErr)")
 
-    def test_utils_filesystem_read_file_too_large_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_read_file_too_large_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test reading file exceeding max_size returns Err."""
         test_file = tmp_path / "large.txt"
         test_file.write_text("A" * 1000, encoding="utf-8")
@@ -86,7 +90,9 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
-    def test_utils_filesystem_read_with_custom_encoding_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_read_with_custom_encoding_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test reading with custom encoding."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("ÄÖÅÜ", encoding="utf-8")
@@ -128,7 +134,9 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
-    def test_utils_filesystem_write_existing_file_with_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_write_existing_file_with_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test writing an existing file with base_dir."""
         test_file = tmp_path / "existing.txt"
         test_file.write_text("old")
@@ -138,7 +146,9 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "new"
 
-    def test_utils_filesystem_write_no_create_parents_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_write_no_create_parents_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test writing a file with create_parents=False."""
         test_file = tmp_path / "direct.txt"
         result = safe_write(
@@ -148,7 +158,9 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
-    def test_utils_filesystem_write_empty_content_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_write_empty_content_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test writing an empty string."""
         test_file = tmp_path / "empty.txt"
         result = safe_write(test_file, "")
@@ -156,14 +168,18 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == ""
 
-    def test_utils_filesystem_write_creates_parent_dirs_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_write_creates_parent_dirs_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that parent directories are created."""
         test_file = tmp_path / "subdir" / "nested" / "file.txt"
         safe_write(test_file, "nested content")
 
         assert test_file.exists()
 
-    def test_utils_filesystem_write_creates_backup_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_write_creates_backup_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that backup is created for existing file."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
@@ -198,7 +214,9 @@ class TestSafeWrite:
 
         assert test_file.read_text() == "direct content"
 
-    def test_utils_filesystem_safe_write_cleanup_propagates_oserror_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_safe_write_cleanup_propagates_oserror_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that cleanup during write propagates critical OSErrors like PermissionError."""
         test_file = tmp_path / "protected.txt"
 
@@ -213,7 +231,9 @@ class TestSafeWrite:
                 with pytest.raises(PermissionError, match="Permission denied"):
                     safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
-    def test_utils_filesystem_safe_write_cleanup_succeeds_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_safe_write_cleanup_succeeds_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that cleanup during write unlinks the temp file."""
         test_file = tmp_path / "cleanup.txt"
 
@@ -250,7 +270,9 @@ class TestSafeWrite:
 class TestEnsureDir:
     """Tests for ensure_dir function."""
 
-    def test_utils_filesystem_create_new_directory_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_create_new_directory_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test creating a new directory."""
         new_dir = tmp_path / "new_dir"
         result = ensure_dir(new_dir)
@@ -263,7 +285,9 @@ class TestEnsureDir:
         result = ensure_dir(tmp_path)
         assert result.exists()
 
-    def test_utils_filesystem_create_nested_directories_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_create_nested_directories_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test creating nested directories."""
         nested = tmp_path / "a" / "b" / "c"
         result = ensure_dir(nested)
@@ -281,7 +305,9 @@ class TestEnsureDir:
         with pytest.raises(SecurityError):
             ensure_dir("../etc/evil_dir")
 
-    def test_utils_filesystem_file_exists_error_when_path_is_file_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_file_exists_error_when_path_is_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that FileExistsError is raised if intermediate path is a file."""
         conflict_file = tmp_path / "conflict"
         conflict_file.write_text("content")
@@ -303,7 +329,9 @@ class TestEnsureDir:
         result = ensure_dir(root)
         assert result == root
 
-    def test_utils_filesystem_missing_intermediate_directory_created_expected(self, tmp_path: Path) -> None:
+    def test_utils_filesystem_missing_intermediate_directory_created_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test creating a directory with a missing intermediate parent."""
         target = tmp_path / "missing" / "leaf"
         result = ensure_dir(target)
@@ -312,7 +340,9 @@ class TestEnsureDir:
         assert result.is_dir()
         assert (tmp_path / "missing").is_dir()
 
-    def test_utils_filesystem_root_parent_loop_break_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_utils_filesystem_root_parent_loop_break_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test the break condition when looping up to root."""
         import sys
 

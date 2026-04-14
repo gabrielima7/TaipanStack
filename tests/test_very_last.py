@@ -72,7 +72,9 @@ class TestGuardsOSErrorMocked:
 class TestGuardsSymlinkMocked:
     """Test for guards.py line 118 (symlink detection)."""
 
-    def test_very_last_guard_path_traversal_symlink_mocked_expected(self, tmp_path: Path) -> None:
+    def test_very_last_guard_path_traversal_symlink_mocked_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal symlink detection with mock."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
 
@@ -154,7 +156,9 @@ class TestSanitizersResolveError:
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
 
-    def test_very_last_safe_write_existing_permissions_expected(self, tmp_path: Path) -> None:
+    def test_very_last_safe_write_existing_permissions_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -360,7 +364,9 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_very_last_check_free_threading_sysconfig_disable_gil_expected(self) -> None:
+    def test_very_last_check_free_threading_sysconfig_disable_gil_expected(
+        self,
+    ) -> None:
         """Test _check_free_threading_available via sysconfig CONFIG_ARGS (L114-120)."""
         from taipanstack.core import compat
 
@@ -526,7 +532,9 @@ class TestOptimizationsEdgeCases:
 
         assert any("freeze failed" in e for e in errors)
 
-    def test_very_last_apply_experimental_with_jit_and_free_threading_expected(self) -> None:
+    def test_very_last_apply_experimental_with_jit_and_free_threading_expected(
+        self,
+    ) -> None:
         """Test _apply_experimental when JIT and free-threading are available (L284, L286)."""
         from taipanstack.core.compat import PythonFeatures, VersionTier
         from taipanstack.core.optimizations import (

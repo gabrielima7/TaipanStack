@@ -61,7 +61,9 @@ class TestValidatorsPythonVersionEdgeCases:
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.12a")
 
-    def test_full_coverage_validate_python_version_too_many_parts_expected(self) -> None:
+    def test_full_coverage_validate_python_version_too_many_parts_expected(
+        self,
+    ) -> None:
         """Test version with too many parts."""
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.12.1")
@@ -86,7 +88,9 @@ class TestGuardsPathTraversalOSError:
 class TestGuardsEnvVariableAllowedBranch:
     """Test env variable guard with allowed_names for sensitive patterns."""
 
-    def test_full_coverage_guard_env_variable_sensitive_pattern_allowed_expected(self) -> None:
+    def test_full_coverage_guard_env_variable_sensitive_pattern_allowed_expected(
+        self,
+    ) -> None:
         """Test sensitive pattern allowed when explicitly in allowed list."""
         with mock.patch.dict(os.environ, {"MY_API_TOKEN": "secret123"}):
             result = guard_env_variable(
@@ -95,7 +99,9 @@ class TestGuardsEnvVariableAllowedBranch:
             )
             assert result == "secret123"
 
-    def test_full_coverage_guard_env_variable_sensitive_pattern_not_in_allowed_expected(self) -> None:
+    def test_full_coverage_guard_env_variable_sensitive_pattern_not_in_allowed_expected(
+        self,
+    ) -> None:
         """Test sensitive pattern rejected when not in allowed list."""
         with mock.patch.dict(os.environ, {"MY_API_TOKEN": "secret123"}):
             with pytest.raises(SecurityError, match="potentially sensitive"):
@@ -118,7 +124,9 @@ class TestSanitizersFilenameEdgeCases:
         result = sanitize_filename("abc.toolongext", max_length=4)
         assert len(result) <= 4
 
-    def test_full_coverage_sanitize_filename_extension_equals_max_expected(self) -> None:
+    def test_full_coverage_sanitize_filename_extension_equals_max_expected(
+        self,
+    ) -> None:
         """Test when extension length equals max_length."""
         result = sanitize_filename("a.txt", max_length=4)
         assert len(result) <= 4

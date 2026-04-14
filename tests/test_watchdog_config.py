@@ -151,7 +151,9 @@ class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_start_stop_lifecycle_expected(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_start_stop_lifecycle_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Watcher can be started and stopped."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -170,7 +172,9 @@ class TestConfigWatcher:
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_detects_file_change_expected(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_detects_file_change_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Callback fires when a config file changes."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "old", "port": 1}))
@@ -198,7 +202,9 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_invalid_config_calls_error_callback_expected(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_invalid_config_calls_error_callback_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Validation error callback fires on bad config."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
@@ -222,7 +228,9 @@ class TestConfigWatcher:
         assert len(errors) >= 1
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_missing_file_does_not_crash_expected(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_missing_file_does_not_crash_expected(
+        self, tmp_path: Path
+    ) -> None:
         """A watched file that disappears is handled gracefully."""
         f = tmp_path / "will_vanish.json"
         f.write_text(json.dumps({"host": "x", "port": 1}))
@@ -239,7 +247,9 @@ class TestConfigWatcher:
         await asyncio.sleep(0.15)
         await watcher.stop()
 
-    def test_watchdog_config_detect_changes_no_change_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_detect_changes_no_change_expected(
+        self, tmp_path: Path
+    ) -> None:
         """No changed paths when files haven't been modified."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -259,7 +269,9 @@ class TestConfigWatcher:
         assert isinstance(result2, Ok)
         assert result2.ok_value == []
 
-    def test_watchdog_config_validate_and_apply_with_env_file_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_validate_and_apply_with_env_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Hot-reload works for .env files."""
 
         class EnvConfig(BaseModel):
@@ -280,7 +292,9 @@ class TestConfigWatcher:
         assert isinstance(result, Ok)
         assert len(changes) == 1
 
-    def test_watchdog_config_validate_and_apply_missing_file_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_validate_and_apply_missing_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """_validate_and_apply returns Err when file can't be loaded."""
         watcher = ConfigWatcher(
             config_paths=[],
@@ -345,7 +359,9 @@ def test_watchdog_config_config_watcher_hash_err_branch_expected() -> None:
     watcher._detect_changes()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> None:
+def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel
@@ -371,7 +387,9 @@ def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_cal
     Path("test_bad_validate.json").unlink()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> None:
+def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel

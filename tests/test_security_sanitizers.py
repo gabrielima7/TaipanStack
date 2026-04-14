@@ -41,7 +41,9 @@ class TestSanitizeString:
             " \t\n\r ",  # Mixed whitespace
         ],
     )
-    def test_security_sanitizers_strips_various_whitespace_expected(self, whitespace: str) -> None:
+    def test_security_sanitizers_strips_various_whitespace_expected(
+        self, whitespace: str
+    ) -> None:
         """Test various whitespace characters are stripped correctly."""
         # Test leading/trailing whitespace
         assert sanitize_string(f"{whitespace}hello{whitespace}") == "hello"
@@ -172,7 +174,9 @@ class TestSanitizeFilename:
 class TestSanitizePath:
     """Tests for sanitize_path function."""
 
-    def test_security_sanitizers_sanitize_path_absolute_with_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_security_sanitizers_sanitize_path_absolute_with_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path when sanitized is absolute and base_dir is given."""
         # When `sanitized.is_absolute()` is True, `_apply_base_dir_constraint` returns `sanitized`
         # if `base_dir` is not None and resolve is False.
@@ -185,7 +189,9 @@ class TestSanitizePath:
         assert result.is_absolute()
         assert result.parts[-2:] == ("absolute", "path")
 
-    def test_security_sanitizers_sanitize_path_absolute_with_parts_expected(self, tmp_path: Path) -> None:
+    def test_security_sanitizers_sanitize_path_absolute_with_parts_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path when path is absolute and has parts."""
         # Covers path reconstruction when path.is_absolute() is True and parts is truthy
         path = tmp_path / "absolute/path"
@@ -237,7 +243,9 @@ class TestSanitizePath:
         assert "bar" in str(result)
         assert "foo" not in str(result)
 
-    def test_security_sanitizers_removes_multiple_parent_traversals_expected(self) -> None:
+    def test_security_sanitizers_removes_multiple_parent_traversals_expected(
+        self,
+    ) -> None:
         """Test path traversal with multiple parent directories."""
         result = sanitize_path("foo/bar/../../baz")
         assert "baz" in str(result)
@@ -268,7 +276,9 @@ class TestSanitizePath:
         assert "unnamed" in result.parts
         assert "bar" in result.parts
 
-    def test_security_sanitizers_resolve_with_base_dir_success_expected(self, tmp_path: Path) -> None:
+    def test_security_sanitizers_resolve_with_base_dir_success_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test resolving path with base directory."""
         base = tmp_path / "base"
         base.mkdir()

@@ -139,7 +139,9 @@ class TestStackLogger:
                 logger.exception("caught error")
         assert "caught error" in caplog.text
 
-    def test_utils_logging_context_in_message_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_context_in_message_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that context appears in log message."""
         with caplog.at_level(logging.INFO):
             logger = StackLogger()
@@ -162,14 +164,18 @@ class TestStackLoggerStructured:
         assert structured_logger.name == "test_struct"
         assert structured_logger._structured
 
-    def test_utils_logging_structured_bind_unbind_expected(self, structured_logger: StackLogger) -> None:
+    def test_utils_logging_structured_bind_unbind_expected(
+        self, structured_logger: StackLogger
+    ) -> None:
         structured_logger.bind(test_key="test_val")
         assert structured_logger._context["test_key"] == "test_val"
 
         structured_logger.unbind("test_key")
         assert "test_key" not in structured_logger._context
 
-    def test_utils_logging_structured_logging_methods_expected(self, structured_logger: StackLogger) -> None:
+    def test_utils_logging_structured_logging_methods_expected(
+        self, structured_logger: StackLogger
+    ) -> None:
         # Just verifying they don't break.
         # Actual structlog output capture can be tricky without heavily mocking structlog,
         # but calling them gives us coverage.
@@ -299,7 +305,9 @@ class TestLogOperation:
 
         assert "Failed: unexpected_op" not in caplog.text
 
-    def test_utils_logging_logs_start_and_end_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_logs_start_and_end_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that operation start and end are logged."""
         with caplog.at_level(logging.INFO):
             with log_operation("test_operation"):
@@ -327,7 +335,9 @@ class TestLogOperation:
         assert "custom_op" in caplog.text
         assert "custom_op_logger" in caplog.text
 
-    def test_utils_logging_logs_exception_on_failure_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_logs_exception_on_failure_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that exception is logged on failure."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError):

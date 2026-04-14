@@ -12,7 +12,9 @@ from taipanstack.security.guards import SecurityError
 class TestFilesystemEdgeCases:
     """Edge case tests for filesystem module."""
 
-    def test_edge_cases_coverage_safe_read_with_traversal_no_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_read_with_traversal_no_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_read with .. in path but no base_dir uses cwd."""
         from taipanstack.utils.filesystem import safe_read
 
@@ -28,7 +30,9 @@ class TestFilesystemEdgeCases:
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
-    def test_edge_cases_coverage_safe_write_existing_file_guarded_expected(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_existing_file_guarded_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with existing file and base_dir."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -40,14 +44,18 @@ class TestFilesystemEdgeCases:
         )
         assert result.read_text() == "new content"
 
-    def test_edge_cases_coverage_safe_write_with_traversal_no_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_with_traversal_no_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with .. triggers guard."""
         from taipanstack.utils.filesystem import safe_write
 
         with pytest.raises(SecurityError):
             safe_write(tmp_path / ".." / "bad.txt", "content")
 
-    def test_edge_cases_coverage_safe_write_atomic_error_cleanup_expected(self, tmp_path: Path) -> None:
+    def test_edge_cases_coverage_safe_write_atomic_error_cleanup_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test atomic write cleans up temp file on error."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -136,7 +144,9 @@ class TestDecoratorsEdgeCases:
 class TestGuardsEdgeCases:
     """Edge case tests for guards module."""
 
-    def test_edge_cases_coverage_guard_command_injection_with_whitelist_expected(self) -> None:
+    def test_edge_cases_coverage_guard_command_injection_with_whitelist_expected(
+        self,
+    ) -> None:
         """Test guard_command_injection with custom whitelist."""
         from taipanstack.security.guards import guard_command_injection
 
@@ -155,7 +165,9 @@ class TestSanitizersEdgeCases:
         result = sanitize_string("hello\x00world")
         assert "\x00" not in result
 
-    def test_edge_cases_coverage_sanitize_path_with_special_chars_expected(self) -> None:
+    def test_edge_cases_coverage_sanitize_path_with_special_chars_expected(
+        self,
+    ) -> None:
         """Test sanitizing path with special characters."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -222,7 +234,9 @@ class TestSubprocessEdgeCases:
 class TestCircuitBreakerEdgeCases:
     """Edge case tests for circuit breaker module."""
 
-    def test_edge_cases_coverage_circuit_breaker_half_open_success_expected(self) -> None:
+    def test_edge_cases_coverage_circuit_breaker_half_open_success_expected(
+        self,
+    ) -> None:
         """Test circuit transitions from half-open to closed."""
         import time
 
