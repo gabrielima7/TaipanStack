@@ -12,3 +12,48 @@ TaipanStack's resilience module provides components for ensuring system stabilit
     options:
       show_root_heading: false
       members_order: source
+
+---
+
+## Adaptive Circuit Breaker
+
+::: taipanstack.resilience.adaptive.adaptive_breaker
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Adaptive Retry
+
+::: taipanstack.resilience.adaptive.adaptive_retry
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Bulkhead
+
+::: taipanstack.resilience.adaptive.bulkhead
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Orchestrator
+
+::: taipanstack.resilience.adaptive.orchestrator
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Watchdogs
+
+::: taipanstack.resilience.watchdogs
+    options:
+      show_root_heading: false
+      members_order: source
