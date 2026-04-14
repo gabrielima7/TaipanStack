@@ -742,3 +742,41 @@ rules:
           - pattern: pickle.loads(...)
           - pattern: marshal.load(...)
           - pattern: marshal.loads(...)
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rule 46: Detect Missing isfinite Check for Timeout/Threshold Parameters
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: taipanstack.security-missing-isfinite
+    languages: [python]
+    severity: ERROR
+    message: >
+      Timeout or threshold validation checking for <= 0 without first checking math.isfinite()
+      can be bypassed by float('NaN'), leading to silent failures or logic bugs.
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-20: Improper Input Validation"
+      owasp: "A03:2021 - Injection"
+      technology:
+        - python
+    patterns:
+      - pattern-either:
+          - pattern: $X < 0
+          - pattern: $X <= 0
+          - pattern: $X > 0
+          - pattern: $X >= 0
+      - pattern-inside: |
+          def __init__(..., $X: float = ..., ...):
+              ...
+      - pattern-not-inside: |
+          if not math.isfinite($X) or ...:
+              ...
+      - pattern-not-inside: |
+          if math.isfinite($X) and ...:
+              ...
+      - pattern-not-inside: |
+          if not math.isfinite($X):
+              ...
+      - pattern-not-inside: |
+          if math.isfinite($X):
+              ...
