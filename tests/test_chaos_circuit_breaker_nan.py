@@ -31,13 +31,18 @@ def test_circuit_breaker_rejects_inf_success_threshold():
 
 
 def test_adaptive_breaker_rejects_nan_recovery_timeout():
+    """Chaos test: Inject NaN for recovery timeout."""
     with pytest.raises(ValueError, match="must be a finite"):
         AdaptiveCircuitBreaker(recovery_timeout=float("nan"))
 
+
 def test_bulkhead_rejects_nan_timeout():
+    """Chaos test: Inject NaN for timeout."""
     with pytest.raises(ValueError, match="must be a finite"):
-        Bulkhead(timeout=float("nan"))
+        Bulkhead("default", timeout=float("nan"))
+
 
 def test_orchestrator_rejects_nan_timeout():
+    """Chaos test: Inject NaN for orchestrator timeout."""
     with pytest.raises(ValueError, match="must be a finite"):
         ResilienceOrchestrator().with_timeout(float("nan"))
