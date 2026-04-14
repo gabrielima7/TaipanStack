@@ -188,6 +188,14 @@ def validate_python_version(version: str) -> str:
         msg = "Version string exceeds maximum length"
         raise ValueError(msg)
 
+    if "\x00" in version or not version.isprintable():
+        msg = "Version contains invalid characters"
+        raise ValueError(msg)
+
+    if not version.isascii():
+        msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
+        raise ValueError(msg)
+
     pattern = r"^\d+\.\d+\Z"
 
     if not re.match(pattern, version):
