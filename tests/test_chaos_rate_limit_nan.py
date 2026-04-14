@@ -1,4 +1,3 @@
-
 import pytest
 
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
