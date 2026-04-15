@@ -16,9 +16,6 @@ permissions:
   contents: write # upload release assets
   id-token: write # Sigstore OIDC keyless signing
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   sbom-and-sign:
     name: "[Audit] Generate SBOM & Sign Artifacts"
@@ -27,11 +24,11 @@ jobs:
     steps:
       # ── Checkout ──────────────────────────────────────────────────────
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ── Python + Build ────────────────────────────────────────────────
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -96,7 +93,7 @@ jobs:
       # ── Upload to Release ─────────────────────────────────────────────
       - name: "[Deploy] Upload artifacts to release"
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             sbom.cdx.json
@@ -108,7 +105,7 @@ jobs:
       # ── Upload as workflow artifacts (for manual runs) ────────────────
       - name: "[Deploy] Upload workflow artifacts"
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-slsa-artifacts
           path: |

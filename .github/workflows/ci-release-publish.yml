@@ -5,9 +5,6 @@ on:
         types:
             - published
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
     pypi-publish:
         name: "[Deploy] Build and upload release to PyPI"
@@ -18,10 +15,10 @@ jobs:
             contents: read
         steps:
             - name: "[Setup] Checkout repository"
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: "[Misc] Set up Python"
-              uses: actions/setup-python@v5
+              uses: actions/setup-python@v6
               with:
                   python-version: "3.11"
 
