@@ -3,28 +3,26 @@
 import socket
 from unittest.mock import patch
 
-import pytest
-
 from taipanstack.security.guards import SecurityError, guard_ssrf
 
 
 class TestGuardSsrfTypeContract:
     """Test TypeError enforcement for non-string inputs."""
 
-    def test_raises_type_error_for_int(self) -> None:
-        """Raise TypeError when URL is an integer."""
-        with pytest.raises(TypeError, match="URL must be str"):
-            guard_ssrf(123)  # type: ignore[arg-type]
+    def test_raises_err_for_int(self) -> None:
+        """Return Err when URL is an integer."""
+        result = guard_ssrf(123)
+        assert result.is_err()
 
-    def test_raises_type_error_for_none(self) -> None:
-        """Raise TypeError when URL is None."""
-        with pytest.raises(TypeError, match="URL must be str"):
-            guard_ssrf(None)  # type: ignore[arg-type]
+    def test_raises_err_for_none(self) -> None:
+        """Return Err when URL is None."""
+        result = guard_ssrf(None)
+        assert result.is_err()
 
-    def test_raises_type_error_for_bytes(self) -> None:
-        """Raise TypeError when URL is bytes."""
-        with pytest.raises(TypeError, match="URL must be str"):
-            guard_ssrf(b"http://example.com")  # type: ignore[arg-type]
+    def test_raises_err_for_bytes(self) -> None:
+        """Return Err when URL is bytes."""
+        result = guard_ssrf(b"http://example.com")
+        assert result.is_err()
 
     @patch("taipanstack.security.guards.urlsplit")
     def test_raises_value_error_from_urlparse(self, mock_urlparse) -> None:
