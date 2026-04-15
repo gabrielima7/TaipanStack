@@ -177,7 +177,21 @@ def _log_retry_attempt(
 
     # Invoke callback or emit structured log if no callback set
     if config.on_retry is not None:
-        config.on_retry(attempt, config.max_attempts, exc, delay)
+        try:
+            config.on_retry(attempt, config.max_attempts, exc, delay)
+        except Exception as e:
+            if _HAS_STRUCTLOG and _structlog_logger is not None:
+                _structlog_logger.error(
+                    "retry_callback_failed",
+                    function=func_name,
+                    error=str(e),
+                )
+            else:
+                logger.error(
+                    "Retry callback failed for %s: %s",
+                    func_name,
+                    str(e),
+                )
     elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
         _structlog_logger.warning(
             "retry_attempted",
