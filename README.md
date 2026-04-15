@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🐍 TaipanStack
+# 🐍 Taipan Stack
 
 ### **The Modern Python Foundation**
 
@@ -25,11 +25,11 @@
 
 ---
 
-## ✨ Why TaipanStack?
+## ✨ Why Taipan Stack?
 
 > **"Write less, build better."**
 
-TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
+Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
 ### ✨ What's New in v0.4.3
 - **Strict Static Typing**: Project-wide refactoring to eliminate all `Any` types, ensuring 100% type safety with `Mypy` strict mode.
@@ -134,7 +134,7 @@ make benchmark
 
 ## 📐 Architecture
 
-TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
+Taipan Stack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
 ```
                     ┌─────────────────────────────────────┐
@@ -180,7 +180,7 @@ TaipanStack/
 
 ## 🔐 DevSecOps
 
-TaipanStack integrates security and quality at every level:
+Taipan Stack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
@@ -312,7 +312,7 @@ profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
 
 ```python
 from taipanstack.core.result import Result, Ok, Err
-from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker, AdaptiveTimeout
+from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker
 from taipanstack.resilience.retry import RetryConfig
 
 # Compose an intelligent pipeline: Bulkhead -> Breaker -> Retry -> Timeout -> Fallback
@@ -320,7 +320,6 @@ orch = (
     ResilienceOrchestrator("billing_api")
     .with_bulkhead(max_concurrent=10, max_queue=50) # Prevent resource exhaustion
     .with_circuit_breaker(AdaptiveCircuitBreaker("billing", target_error_rate=0.1)) # Auto-tunes thresholds
-    .with_timeout(AdaptiveTimeout(min_timeout=1.0, max_timeout=10.0))
     .with_retry(RetryConfig(max_attempts=3, initial_delay=0.1))
     .with_fallback({"status": "unavailable"})
 )

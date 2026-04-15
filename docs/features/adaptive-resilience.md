@@ -64,13 +64,13 @@ The ultimate way to secure a dependency is by composing multiple patterns:
 
 ```python
 from taipanstack.core.result import Result
-from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveTimeout
+from taipanstack.resilience.adaptive import ResilienceOrchestrator
 
 orch = (
     ResilienceOrchestrator("ai-service")
     .with_bulkhead(max_concurrent=5)
     .with_circuit_breaker(AdaptiveCircuitBreaker("ai", window_size=50))
-    .with_timeout(AdaptiveTimeout(min_timeout=1.0, max_timeout=10.0))
+
     .with_fallback({"status": "cached", "data": []})
 )
 
