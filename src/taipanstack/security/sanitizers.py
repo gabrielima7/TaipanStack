@@ -181,6 +181,32 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
+def _is_filename_safe(filename: str, max_length: int, stem: str) -> bool:
+    """Check if a filename is already safe without any modifications."""
+    return (
+        len(filename) <= max_length
+        and filename not in {"..", "."}
+        and stem.upper() not in _WINDOWS_RESERVED_NAMES
+        and filename.isascii()
+        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+    )
+
+
+def _finalize_filename(
+    safe_stem: str, replacement: str, suffix: str, max_length: int
+) -> str:
+    """Finalize the sanitized filename by handling reserved names and empty results."""
+    # Handle reserved names (Windows)
+    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
+        safe_stem = f"{replacement}{safe_stem}"
+
+    # Handle empty result
+    if not safe_stem:
+        safe_stem = "unnamed"
+
+    return _truncate_filename(safe_stem, suffix, max_length)
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -218,31 +244,13 @@ def sanitize_filename(
 
     stem, suffix = _extract_stem_and_suffix(filename, preserve_extension)
 
-    # Fast-path for already safe, typical filenames
-    if (
-        len(filename) <= max_length
-        and filename not in {"..", "."}
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename.isascii()
-        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-    ):
+    if _is_filename_safe(filename, max_length, stem):
         return f"{stem}{suffix}"
 
-    # Remove invalid characters using precompiled regex for performance
     safe_stem = _remove_invalid_chars(stem, replacement)
-
-    # Collapse multiple replacement chars
     safe_stem = _collapse_replacements(safe_stem, replacement)
 
-    # Handle reserved names (Windows)
-    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
-        safe_stem = f"{replacement}{safe_stem}"
-
-    # Handle empty result
-    if not safe_stem:
-        safe_stem = "unnamed"
-
-    return _truncate_filename(safe_stem, suffix, max_length)
+    return _finalize_filename(safe_stem, replacement, suffix, max_length)
 
 
 def _get_stem(part: str) -> str:
@@ -261,19 +269,29 @@ def _is_safe_path_part(part: str, stem: str) -> bool:
     )
 
 
+def _handle_dot_dot(parts: list[str], anchor: str) -> None:
+    """Handle '..' by popping the last part if safe."""
+    if parts and parts[-1] != ".." and parts[-1] != anchor:
+        parts.pop()
+
+
+def _handle_normal_part(part: str, parts: list[str]) -> None:
+    """Handle a normal part by checking if it's safe or sanitizing it."""
+    stem = _get_stem(part)
+    if _is_safe_path_part(part, stem):
+        parts.append(part)
+    else:
+        safe_part = sanitize_filename(part, preserve_extension=True)
+        if safe_part and safe_part != "..":  # pragma: no branch
+            parts.append(safe_part)
+
+
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""
     if part == "..":
-        if parts and parts[-1] != ".." and parts[-1] != anchor:
-            parts.pop()
+        _handle_dot_dot(parts, anchor)
     elif part != ".":  # pragma: no branch
-        stem = _get_stem(part)
-        if _is_safe_path_part(part, stem):
-            parts.append(part)
-        else:
-            safe_part = sanitize_filename(part, preserve_extension=True)
-            if safe_part and safe_part != "..":  # pragma: no branch
-                parts.append(safe_part)
+        _handle_normal_part(part, parts)
 
 
 def _clean_path_parts(path: Path) -> list[str]:

@@ -273,40 +273,33 @@ class ResilienceOrchestrator(Generic[T]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
-        """Execute through breaker → retry → timeout → fn layers.
-
-        Args:
-            fn: Async callable.
-            *args: Positional arguments.
-            **kwargs: Keyword arguments.
-
-        Returns:
-            ``Ok(result)`` or ``Err`` with fallback applied if configured.
-
-        """
-        # Layer 2: Circuit breaker gate
+        """Execute through breaker → retry → timeout → fn layers."""
         cb_err = self._evaluate_circuit_breaker()
         if cb_err is not None:
             return self._apply_fallback(cb_err)
 
-        # Layer 3: Retry
         max_attempts = (
             self._retry_config.max_attempts if self._retry_config is not None else 1
         )
-        last_error: Exception | None = None
+        return await self._execute_with_retries(max_attempts, fn, *args, **kwargs)
 
+    async def _execute_with_retries(
+        self,
+        max_attempts: int,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        last_error: Exception | None = None
         for attempt in range(1, max_attempts + 1):
             result = await self._execute_with_timeout(fn, *args, **kwargs)
-
             match result:
                 case Ok():
                     self._record_success_outcome(attempt)
                     return result
-
                 case Err(error):
                     last_error = error
                     self._record_failure_outcome(error, attempt)
-
                     if self._retry_config is not None and attempt < max_attempts:
                         delay = self._calculate_retry_delay(attempt)
                         await asyncio.sleep(min(delay, 3600.0))
