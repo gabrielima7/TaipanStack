@@ -312,7 +312,7 @@ profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
 
 ```python
 from taipanstack.core.result import Result, Ok, Err
-from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker, AdaptiveTimeout
+from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker
 from taipanstack.resilience.retry import RetryConfig
 
 # Compose an intelligent pipeline: Bulkhead -> Breaker -> Retry -> Timeout -> Fallback
@@ -320,7 +320,6 @@ orch = (
     ResilienceOrchestrator("billing_api")
     .with_bulkhead(max_concurrent=10, max_queue=50) # Prevent resource exhaustion
     .with_circuit_breaker(AdaptiveCircuitBreaker("billing", target_error_rate=0.1)) # Auto-tunes thresholds
-    .with_timeout(AdaptiveTimeout(min_timeout=1.0, max_timeout=10.0))
     .with_retry(RetryConfig(max_attempts=3, initial_delay=0.1))
     .with_fallback({"status": "unavailable"})
 )
