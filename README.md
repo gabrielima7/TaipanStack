@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🐍 TaipanStack
+# 🐍 Taipan Stack
 
 ### **The Modern Python Foundation**
 
@@ -25,11 +25,11 @@
 
 ---
 
-## ✨ Why TaipanStack?
+## ✨ Why Taipan Stack?
 
 > **"Write less, build better."**
 
-TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
+Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
 ### ✨ What's New in v0.4.3
 - **Strict Static Typing**: Project-wide refactoring to eliminate all `Any` types, ensuring 100% type safety with `Mypy` strict mode.
@@ -134,7 +134,7 @@ make benchmark
 
 ## 📐 Architecture
 
-TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
+Taipan Stack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
 ```
                     ┌─────────────────────────────────────┐
@@ -180,7 +180,7 @@ TaipanStack/
 
 ## 🔐 DevSecOps
 
-TaipanStack integrates security and quality at every level:
+Taipan Stack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
