@@ -438,13 +438,18 @@ def guard_env_variable(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def _validate_ssrf_url(
+def _validate_ssrf_url(  # noqa: PLR0911
     url: str,
     allowed_schemes: frozenset[str],
 ) -> Result[str, SecurityError]:
     """Validate the URL format, scheme, and presence of hostname."""
     if not isinstance(url, str):
-        raise TypeError(f"URL must be str, got {type(url).__name__}")
+        return Err(
+            SecurityError(
+                f"URL must be str, got {type(url).__name__}",
+                guard_name="ssrf",
+            )
+        )
 
     if not url:
         return Err(SecurityError("URL cannot be empty", guard_name="ssrf"))
