@@ -27,8 +27,11 @@ def test_retry_chaos_faulty_callback():
 
     assert recovering_service() == "success"
 
+
 def test_retry_chaos_faulty_callback_without_structlog(monkeypatch):
-    monkeypatch.setattr(sys.modules["taipanstack.resilience.retry"], "_HAS_STRUCTLOG", False)
+    monkeypatch.setattr(
+        sys.modules["taipanstack.resilience.retry"], "_HAS_STRUCTLOG", False
+    )
 
     def faulty_callback(attempt, max_attempts, exc, delay):
         raise ValueError("Simulated failure without structlog")
