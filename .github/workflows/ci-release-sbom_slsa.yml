@@ -16,6 +16,9 @@ permissions:
   contents: write # upload release assets
   id-token: write # Sigstore OIDC keyless signing
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   sbom-and-sign:
     name: "[Audit] Generate SBOM & Sign Artifacts"

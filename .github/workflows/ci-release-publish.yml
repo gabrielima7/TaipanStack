@@ -5,6 +5,9 @@ on:
         types:
             - published
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
     pypi-publish:
         name: "[Deploy] Build and upload release to PyPI"

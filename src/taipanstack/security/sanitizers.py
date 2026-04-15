@@ -181,9 +181,7 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
-def _is_filename_safe(
-    filename: str, max_length: int, stem: str
-) -> bool:
+def _is_filename_safe(filename: str, max_length: int, stem: str) -> bool:
     """Check if a filename is already safe without any modifications."""
     return (
         len(filename) <= max_length
@@ -192,6 +190,7 @@ def _is_filename_safe(
         and filename.isascii()
         and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
     )
+
 
 def _finalize_filename(
     safe_stem: str, replacement: str, suffix: str, max_length: int
@@ -206,6 +205,7 @@ def _finalize_filename(
         safe_stem = "unnamed"
 
     return _truncate_filename(safe_stem, suffix, max_length)
+
 
 def sanitize_filename(
     filename: str,
@@ -274,6 +274,7 @@ def _handle_dot_dot(parts: list[str], anchor: str) -> None:
     if parts and parts[-1] != ".." and parts[-1] != anchor:
         parts.pop()
 
+
 def _handle_normal_part(part: str, parts: list[str]) -> None:
     """Handle a normal part by checking if it's safe or sanitizing it."""
     stem = _get_stem(part)
@@ -283,6 +284,7 @@ def _handle_normal_part(part: str, parts: list[str]) -> None:
         safe_part = sanitize_filename(part, preserve_extension=True)
         if safe_part and safe_part != "..":  # pragma: no branch
             parts.append(safe_part)
+
 
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""

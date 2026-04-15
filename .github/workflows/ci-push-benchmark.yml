@@ -21,6 +21,9 @@ permissions:
   contents: write # needed to push benchmark data to gh-pages
   pull-requests: write # needed to comment on PRs
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   benchmark:
     name: "[Test] Run Benchmarks"
