@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_f5892e6d05cfc1f3_retry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-16 20:47 +0000
+            created at 2026-04-16 20:49 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -177,7 +177,7 @@
     <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">        <span class="key">return</span> <span class="nam">sync_wrapper</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="key">return</span> <span class="nam">decorator</span>  <span class="com"># type: ignore[return-value]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="key">return</span> <span class="nam">cast</span><span class="op">(</span><span class="nam">FallbackDecorator</span><span class="op">,</span> <span class="nam">decorator</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="key">class</span> <span class="nam">TimeoutDecorator</span><span class="op">(</span><span class="nam">Protocol</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -281,7 +281,7 @@
     <p class="pln"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">        <span class="key">return</span> <span class="nam">sync_wrapper</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">    <span class="key">return</span> <span class="nam">decorator</span>  <span class="com"># type: ignore[return-value]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">    <span class="key">return</span> <span class="nam">cast</span><span class="op">(</span><span class="nam">TimeoutDecorator</span><span class="op">,</span> <span class="nam">decorator</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -291,7 +291,7 @@
             <a class="nav" href="z_f5892e6d05cfc1f3_retry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-16 20:47 +0000
+            created at 2026-04-16 20:49 +0000
         </p>
     </div>
 </footer>

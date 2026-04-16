@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_9654db7cff7d4490_context_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-16 20:47 +0000
+            created at 2026-04-16 20:49 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -95,7 +95,7 @@
     <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">import</span> <span class="nam">inspect</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">import</span> <span class="nam">threading</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="key">from</span> <span class="nam">collections</span><span class="op">.</span><span class="nam">abc</span> <span class="key">import</span> <span class="nam">Awaitable</span><span class="op">,</span> <span class="nam">Callable</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">ParamSpec</span><span class="op">,</span> <span class="nam">Protocol</span><span class="op">,</span> <span class="nam">TypeVar</span><span class="op">,</span> <span class="nam">overload</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">ParamSpec</span><span class="op">,</span> <span class="nam">Protocol</span><span class="op">,</span> <span class="nam">TypeVar</span><span class="op">,</span> <span class="nam">cast</span><span class="op">,</span> <span class="nam">overload</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="key">from</span> <span class="nam">taipanstack</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">result</span> <span class="key">import</span> <span class="nam">Err</span><span class="op">,</span> <span class="nam">Ok</span><span class="op">,</span> <span class="nam">Result</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -236,12 +236,12 @@
     <p class="run run2"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">        <span class="key">return</span> <span class="nam">_handle_sync_concurrency</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">            <span class="nam">func</span><span class="op">,</span>  <span class="com"># type: ignore[arg-type]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">            <span class="nam">cast</span><span class="op">(</span><span class="nam">Callable</span><span class="op">[</span><span class="nam">P</span><span class="op">,</span> <span class="nam">T</span><span class="op">]</span><span class="op">,</span> <span class="nam">func</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">max_tasks</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">            <span class="nam">timeout</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">    <span class="key">return</span> <span class="nam">decorator</span>  <span class="com"># type: ignore[return-value]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">    <span class="key">return</span> <span class="nam">cast</span><span class="op">(</span><span class="nam">ConcurrencyLimitDecorator</span><span class="op">,</span> <span class="nam">decorator</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -251,7 +251,7 @@
             <a class="nav" href="z_9654db7cff7d4490_context_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-16 20:47 +0000
+            created at 2026-04-16 20:49 +0000
         </p>
     </div>
 </footer>
