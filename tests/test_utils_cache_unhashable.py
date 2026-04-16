@@ -8,8 +8,10 @@ from taipanstack.utils.cache import cached
 def my_func(*args, **kwargs):
     return Ok(args)
 
+
 class UnhashableDummy:
     __hash__ = None
+
 
 def test_cache_unhashable_raises_typeerror_expected():
     """Ensure passing unhashable types directly raises a TypeError."""

@@ -17,13 +17,18 @@ def setup_teardown(tmp_path, monkeypatch):
     """
     monkeypatch.chdir(tmp_path)
     mock_run = MagicMock(return_value=subprocess.CompletedProcess([], 0))
-    with patch("subprocess.run", mock_run), patch("taipanstack_bootstrapper._check_connectivity", return_value=None):
+    with (
+        patch("subprocess.run", mock_run),
+        patch("taipanstack_bootstrapper._check_connectivity", return_value=None),
+    ):
         yield mock_run
+
 
 def run_main_with_args(args):
     """Helper to run the script's main function with specific arguments."""
     with patch.object(sys, "argv", ["taipanstack_bootstrapper.py", *args]):
         taipanstack.main()
+
 
 def test_dry_run_does_not_create_files_expected(tmp_path):
     """
@@ -34,6 +39,7 @@ def test_dry_run_does_not_create_files_expected(tmp_path):
     assert not (tmp_path / ".pre-commit-config.yaml").exists()
     assert not (tmp_path / "SECURITY.md").exists()
     assert not (tmp_path / ".github" / "dependabot.yml").exists()
+
 
 def test_safe_write_creates_backup_expected(tmp_path):
     """
@@ -48,6 +54,7 @@ def test_safe_write_creates_backup_expected(tmp_path):
     assert dummy_file.exists()
     assert "pre-commit-hooks" in dummy_file.read_text()
 
+
 def test_force_mode_overwrites_without_backup_expected(tmp_path):
     """
     Verifies that the --force flag overwrites the file directly without creating a backup.
@@ -59,6 +66,7 @@ def test_force_mode_overwrites_without_backup_expected(tmp_path):
     assert not backup_file.exists()
     assert dummy_file.exists()
     assert "pre-commit-hooks" in dummy_file.read_text()
+
 
 def test_idempotency_for_pyproject_toml_expected(tmp_path):
     """
@@ -76,12 +84,14 @@ def test_idempotency_for_pyproject_toml_expected(tmp_path):
     assert content_after_first_run == content_after_second_run
     assert content_after_second_run.count("[tool.ruff]") == 1
 
+
 def test_stack_script_git_initialization_expected(tmp_path):
     """
     Verifies that Git is initialized automatically when it does not exist.
     """
     assert not (tmp_path / ".git").exists()
     run_main_with_args([])
+
 
 def test_project_structure_creation_expected(tmp_path):
     """
@@ -98,6 +108,7 @@ def test_project_structure_creation_expected(tmp_path):
     assert (tmp_path / "src" / "my_test_project" / "main.py").exists()
     assert (tmp_path / "tests" / "test_example.py").exists()
 
+
 def test_optional_dependencies_flag_expected(tmp_path, monkeypatch):
     """
     Verifies that the --install-runtime-deps flag controls dependency installation.
@@ -107,8 +118,13 @@ def test_optional_dependencies_flag_expected(tmp_path, monkeypatch):
     with patch("subprocess.run") as mock_run:
         mock_run.return_value = subprocess.CompletedProcess([], 0)
         run_main_with_args([])
-        poetry_add_calls = [call for call in mock_run.call_args_list if call[0][0][0:2] == ["poetry", "add"] and "--group" not in call[0][0]]
+        poetry_add_calls = [
+            call
+            for call in mock_run.call_args_list
+            if call[0][0][0:2] == ["poetry", "add"] and "--group" not in call[0][0]
+        ]
         assert len(poetry_add_calls) == 0
+
 
 def test_install_runtime_deps_flag_expected(tmp_path, monkeypatch):
     """
@@ -120,8 +136,18 @@ def test_install_runtime_deps_flag_expected(tmp_path, monkeypatch):
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = subprocess.CompletedProcess([], 0)
             run_main_with_args(["--install-runtime-deps"])
-            poetry_add_calls = [call for call in mock_run.call_args_list if len(call[0]) > 0 and "poetry" in str(call[0][0]) and ("add" in str(call[0][0])) and any("pydantic" in str(arg) for arg in call[0][0])]
-            assert len(poetry_add_calls) > 0, "Poetry add with pydantic should have been called"
+            poetry_add_calls = [
+                call
+                for call in mock_run.call_args_list
+                if len(call[0]) > 0
+                and "poetry" in str(call[0][0])
+                and ("add" in str(call[0][0]))
+                and any("pydantic" in str(arg) for arg in call[0][0])
+            ]
+            assert len(poetry_add_calls) > 0, (
+                "Poetry add with pydantic should have been called"
+            )
+
 
 def test_python_version_detection_expected(tmp_path):
     """
@@ -132,8 +158,10 @@ def test_python_version_detection_expected(tmp_path):
     run_main_with_args([])
     content = pyproject_toml.read_text()
     import sys
+
     expected_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     assert f'python_version = "{expected_version}"' in content
+
 
 def test_setup_pre_commit_expected():
     """
@@ -155,6 +183,7 @@ def test_setup_pre_commit_expected():
         assert "safety" in content
         assert "semgrep" in content
         assert "detect-secrets" in content
+
 
 def test_setup_pre_commit_dry_run_expected():
     """

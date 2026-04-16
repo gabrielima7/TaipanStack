@@ -1,4 +1,5 @@
 """Final tests to reach 100% coverage - pushing to the limit."""
+
 import subprocess as sp
 from unittest.mock import patch
 
@@ -11,6 +12,7 @@ class TestSubprocessFinalBranches:
     def test_run_safe_command_timeout_branch_stdout_bytes_expected(self) -> None:
         """Test timeout exception with stdout as bytes."""
         from taipanstack.utils.subprocess import run_safe_command
+
         mock_exc = sp.TimeoutExpired(cmd=["test"], timeout=1.0)
         mock_exc.stdout = b"partial output"
         with patch("subprocess.run", side_effect=mock_exc):
@@ -22,6 +24,7 @@ class TestSubprocessFinalBranches:
     def test_run_safe_command_timeout_branch_stdout_str_expected(self) -> None:
         """Test timeout exception with stdout as string."""
         from taipanstack.utils.subprocess import run_safe_command
+
         mock_exc = sp.TimeoutExpired(cmd=["test"], timeout=1.0)
         mock_exc.stdout = "partial string output"
         with patch("subprocess.run", side_effect=mock_exc):
@@ -29,15 +32,20 @@ class TestSubprocessFinalBranches:
         assert not result.success
         assert "timed out" in result.stderr
 
+
 class TestGuardsFinalBranches:
     """Final tests for guards module to reach 100%."""
 
-    def test_guard_env_variable_denied_pattern_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_guard_env_variable_denied_pattern_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test guard_env_variable with denied pattern."""
         from taipanstack.security.guards import guard_env_variable
+
         monkeypatch.setenv("MY_SAFE_VAR", "safe_value")
         result = guard_env_variable("MY_SAFE_VAR")
         assert result == "safe_value"
+
 
 class TestValidatorsFinalBranches:
     """Final tests for validators module to reach 100%."""
@@ -45,20 +53,24 @@ class TestValidatorsFinalBranches:
     def test_validate_project_name_starts_with_hyphen_expected(self) -> None:
         """Test validate_project_name starting with hyphen."""
         from taipanstack.security.validators import validate_project_name
+
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("-myproject")
 
     def test_validate_email_invalid_domain_expected(self) -> None:
         """Test validate_email with invalid domain."""
         from taipanstack.security.validators import validate_email
+
         with pytest.raises(ValueError):
             validate_email("user@")
 
     def test_validate_url_invalid_protocol_expected(self) -> None:
         """Test validate_url with invalid protocol."""
         from taipanstack.security.validators import validate_url
+
         with pytest.raises(ValueError):
             validate_url("ftp://example.com", allowed_schemes=["http", "https"])
+
 
 class TestSanitizersFinalBranches:
     """Final tests for sanitizers module to reach 100%."""
@@ -66,6 +78,7 @@ class TestSanitizersFinalBranches:
     def test_sanitize_filename_truncation_with_extension_expected(self) -> None:
         """Test sanitize_filename truncation preserving extension."""
         from taipanstack.security.sanitizers import sanitize_filename
+
         long_name = "a" * 300 + ".txt"
         result = sanitize_filename(long_name, max_length=50)
         assert len(result) <= 50
@@ -74,11 +87,14 @@ class TestSanitizersFinalBranches:
     def test_sanitize_path_empty_parts_expected(self) -> None:
         """Test sanitize_path handles empty parts."""
         from taipanstack.security.sanitizers import sanitize_path
+
         result = sanitize_path("a//b/c")
         assert "//" not in str(result)
 
+
 class TestFilesystemFinalBranches:
     """Final tests for filesystem module to reach 100%."""
+
 
 class TestLoggingFinalBranches:
     """Final tests for logging module to reach 100%."""
@@ -86,9 +102,11 @@ class TestLoggingFinalBranches:
     def test_log_operation_with_custom_logger_expected(self) -> None:
         """Test log_operation with custom logger."""
         from taipanstack.utils.logging import StackLogger, log_operation
+
         custom_logger = StackLogger(name="custom")
         with log_operation("test_op", logger=custom_logger) as log:
             log.info("custom logger message")
+
 
 class TestRetryFinalBranches:
     """Final tests for retry module to reach 100%."""
@@ -96,6 +114,7 @@ class TestRetryFinalBranches:
     def test_retry_decorator_success_no_retry_expected(self) -> None:
         """Test retry decorator when function succeeds immediately."""
         from taipanstack.resilience.retry import retry
+
         call_count = 0
 
         @retry(max_attempts=3, initial_delay=0.01, on=(ValueError,))
@@ -103,9 +122,11 @@ class TestRetryFinalBranches:
             nonlocal call_count
             call_count += 1
             return "ok"
+
         result = immediate_success()
         assert result == "ok"
         assert call_count == 1
+
 
 class TestModelsFinalBranches:
     """Final tests for models module to reach 100%."""
@@ -113,7 +134,14 @@ class TestModelsFinalBranches:
     def test_stack_config_with_all_options_expected(self) -> None:
         """Test StackConfig with all options."""
         from taipanstack.config.models import StackConfig
-        config = StackConfig(project_name="full_test", python_version="3.10", dry_run=True, force=True, verbose=True)
+
+        config = StackConfig(
+            project_name="full_test",
+            python_version="3.10",
+            dry_run=True,
+            force=True,
+            verbose=True,
+        )
         assert config.project_name == "full_test"
         assert config.dry_run is True
         target = config.to_target_version()

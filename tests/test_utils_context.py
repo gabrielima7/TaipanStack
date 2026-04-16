@@ -1,4 +1,5 @@
 """Tests for the context module."""
+
 import asyncio
 
 import pytest
@@ -18,6 +19,7 @@ def test_get_set_correlation_id_expected() -> None:
     set_correlation_id(None)
     assert get_correlation_id() is None
 
+
 def test_utils_context_correlation_scope_expected() -> None:
     """Test correlation scope context manager."""
     set_correlation_id("outer-id")
@@ -25,6 +27,7 @@ def test_utils_context_correlation_scope_expected() -> None:
         assert get_correlation_id() == "inner-id"
     assert get_correlation_id() == "outer-id"
     set_correlation_id(None)
+
 
 @pytest.mark.asyncio
 async def test_correlation_id_async_isolation_expected() -> None:
@@ -34,6 +37,7 @@ async def test_correlation_id_async_isolation_expected() -> None:
         set_correlation_id(worker_id)
         await asyncio.sleep(delay)
         return get_correlation_id()
+
     task1 = asyncio.create_task(worker("worker-1", 0.02))
     task2 = asyncio.create_task(worker("worker-2", 0.01))
     results = await asyncio.gather(task1, task2)

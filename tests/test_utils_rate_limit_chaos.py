@@ -1,4 +1,5 @@
 """Chaos test for rate limiter race conditions."""
+
 import threading
 import time
 
@@ -16,7 +17,6 @@ def test_rate_limiter_chaos_race_condition_expected() -> None:
     """
 
     class ChaosLimiter(RateLimiter):
-
         def consume(self) -> bool:
             now = 100.0
             if hasattr(self, "_lock"):
@@ -35,6 +35,7 @@ def test_rate_limiter_chaos_race_condition_expected() -> None:
                 self.tokens -= 1.0
                 return True
             return False
+
     limiter = ChaosLimiter(1, 1000.0)
     limiter.tokens = 1.0
     limiter.last_update = 100.0
@@ -44,15 +45,21 @@ def test_rate_limiter_chaos_race_condition_expected() -> None:
         nonlocal successes
         if limiter.consume():
             successes += 1
+
     threads = [threading.Thread(target=worker) for _ in range(10)]
     for t in threads:
         t.start()
     for t in threads:
         t.join()
-    assert successes == 1, f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    assert successes == 1, (
+        f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    )
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
 
-def test_rate_limiter_chaos_backward_clock_jump_expected(monkeypatch: "pytest.MonkeyPatch") -> None:
+
+def test_rate_limiter_chaos_backward_clock_jump_expected(
+    monkeypatch: "pytest.MonkeyPatch",
+) -> None:
     """Simulate a severe NTP anomaly/backward clock jump in RateLimiter.
 
     If `time.monotonic()` returns a value smaller than `self.last_update`
@@ -68,6 +75,7 @@ def test_rate_limiter_chaos_backward_clock_jump_expected(monkeypatch: "pytest.Mo
 
     def fake_monotonic_backward() -> float:
         return -900.0
+
     monkeypatch.setattr(time, "monotonic", fake_monotonic_backward)
     assert limiter.consume() is True, "Rate limiter failed due to backward clock jump"
     assert limiter.tokens >= 0.0, "Token count became negative due to clock jump"

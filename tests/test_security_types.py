@@ -1,4 +1,5 @@
 """Tests for Pydantic v2 security type aliases (security/types.py)."""
+
 from unittest.mock import patch
 
 import pytest
@@ -19,7 +20,9 @@ from taipanstack.security.types import (
 
 class UrlModel(BaseModel):
     """Model using SafeUrl."""
+
     url: SafeUrl
+
 
 class TestSafeUrl:
     """Tests for SafeUrl Pydantic type."""
@@ -71,12 +74,21 @@ class TestSafeUrl:
 
     def test_safe_url_returns_guarded_value_expected(self) -> None:
         """The SSRF validator returns the Ok value from the guard."""
-        with patch("taipanstack.security.types.guard_ssrf", return_value=Ok("https://safe.example.com")):
-            assert UrlModel(url="https://safe.example.com").url == "https://safe.example.com"
+        with patch(
+            "taipanstack.security.types.guard_ssrf",
+            return_value=Ok("https://safe.example.com"),
+        ):
+            assert (
+                UrlModel(url="https://safe.example.com").url
+                == "https://safe.example.com"
+            )
+
 
 class PathModel(BaseModel):
     """Model using SafePath."""
+
     path: SafePath
+
 
 class TestSafePath:
     """Tests for SafePath Pydantic type."""
@@ -106,13 +118,17 @@ class TestSafePath:
     def test_absolute_path_in_base_passes_expected(self) -> None:
         """Absolute path within cwd passes validation."""
         import pathlib
+
         safe_path = str(pathlib.Path.cwd() / "somefile.txt")
         m = PathModel(path=safe_path)
         assert m.path == safe_path
 
+
 class CommandModel(BaseModel):
     """Model using SafeCommand."""
+
     command: SafeCommand
+
 
 class TestSafeCommand:
     """Tests for SafeCommand Pydantic type."""
@@ -154,9 +170,12 @@ class TestSafeCommand:
         with pytest.raises(ValidationError):
             CommandModel(command="echo hacked > /etc/cron.d/pwn")
 
+
 class ProjectModel(BaseModel):
     """Model using SafeProjectName."""
+
     name: SafeProjectName
+
 
 class TestSafeProjectName:
     """Tests for SafeProjectName Pydantic type."""
@@ -198,9 +217,12 @@ class TestSafeProjectName:
         with pytest.raises(ValidationError):
             ProjectModel(name="a" * 101)
 
+
 class HtmlModel(BaseModel):
     """Model using SafeHtml."""
+
     content: SafeHtml
+
 
 class TestSafeHtml:
     """Tests for SafeHtml Pydantic type."""
@@ -217,9 +239,12 @@ class TestSafeHtml:
         assert "<" not in m.content
         assert ">" not in m.content
 
+
 class SqlModel(BaseModel):
     """Model using SafeSqlIdentifier."""
+
     column: SafeSqlIdentifier
+
 
 class TestSafeSqlIdentifier:
     """Tests for SafeSqlIdentifier Pydantic type."""
@@ -247,12 +272,14 @@ class TestSafeSqlIdentifier:
     def test_property_any_string_validation_expected(self, text: str) -> None:
         """Arbitrary strings are correctly accepted or rejected based on regex."""
         import re
+
         is_valid = bool(re.match("^[a-zA-Z_][a-zA-Z0-9_]*\\Z", text))
         if is_valid:
             assert SqlModel(column=text).column == text
         else:
             with pytest.raises(ValidationError):
                 SqlModel(column=text)
+
 
 def test_safe_url_err_branch_expected() -> None:
     import pytest
@@ -262,5 +289,6 @@ def test_safe_url_err_branch_expected() -> None:
 
     class DummyModel(BaseModel):
         url: SafeUrl
+
     with pytest.raises(ValidationError):
         DummyModel(url="http://169.254.169.254/metadata")

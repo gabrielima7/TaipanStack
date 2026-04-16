@@ -1,4 +1,5 @@
 """Extended tests for path traversal in filesystem utilities."""
+
 from pathlib import Path
 
 import pytest
@@ -18,7 +19,9 @@ class TestFilesystemTraversalExtended:
             ensure_dir(f"{pattern}/evil_dir")
         assert "path_traversal" in str(exc_info.value).lower()
 
-    def test_ensure_dir_absolute_path_not_blocked_by_default_expected(self, tmp_path: Path):
+    def test_ensure_dir_absolute_path_not_blocked_by_default_expected(
+        self, tmp_path: Path
+    ):
         """Test that ensure_dir allows absolute paths when no base_dir is provided.
 
         This is required for backward compatibility and internal usage.

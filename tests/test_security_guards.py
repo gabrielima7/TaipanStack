@@ -1,4 +1,5 @@
 """Tests for stack.security.guards module."""
+
 from pathlib import Path
 
 import pytest
@@ -86,6 +87,7 @@ class TestGuardPathTraversal:
             guard_path_traversal(outside_file, subdir)
         assert "path_traversal" in str(exc_info.value).lower()
 
+
 class TestGuardCommandInjection:
     """Tests for guard_command_injection function."""
 
@@ -139,6 +141,7 @@ class TestGuardCommandInjection:
             guard_command_injection(["ls"], allowed_commands=[])
         assert "not in allowed list" in str(exc_info.value)
 
+
 class TestGuardFileExtension:
     """Tests for guard_file_extension function."""
 
@@ -176,7 +179,10 @@ class TestGuardFileExtension:
     def test_extension_not_in_allowed_list_blocked_expected(self) -> None:
         """Test that extensions not in allowed_extensions are blocked."""
         with pytest.raises(SecurityError, match="not in allowed list"):
-            guard_file_extension("file.CSV", allowed_extensions=["txt", ".json", "YAML"])
+            guard_file_extension(
+                "file.CSV", allowed_extensions=["txt", ".json", "YAML"]
+            )
+
 
 class TestGuardEnvVariable:
     """Tests for guard_env_variable function."""
@@ -184,6 +190,7 @@ class TestGuardEnvVariable:
     def test_safe_env_variable_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test that safe environment variables are returned."""
         from taipanstack.security.guards import guard_env_variable
+
         monkeypatch.setenv("SAFE_VAR", "safe_value")
         result = guard_env_variable("SAFE_VAR")
         assert result == "safe_value"
@@ -191,50 +198,66 @@ class TestGuardEnvVariable:
     def test_blocked_default_sensitive_expected(self) -> None:
         """Test that default sensitive variables are blocked."""
         from taipanstack.security.guards import guard_env_variable
+
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("AWS_SECRET_ACCESS_KEY")
 
     def test_blocked_password_pattern_expected(self) -> None:
         """Test that PASSWORD pattern is blocked."""
         from taipanstack.security.guards import guard_env_variable
+
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("DB_PASSWORD")
 
     def test_blocked_token_pattern_expected(self) -> None:
         """Test that TOKEN pattern is blocked."""
         from taipanstack.security.guards import guard_env_variable
+
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("GITHUB_TOKEN")
 
-    def test_missing_env_variable_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_missing_env_variable_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that missing variables raise error."""
         from taipanstack.security.guards import guard_env_variable
+
         monkeypatch.delenv("NONEXISTENT_VAR", raising=False)
         with pytest.raises(SecurityError, match="not set"):
             guard_env_variable("NONEXISTENT_VAR")
 
-    def test_custom_denied_names_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_custom_denied_names_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test custom denied names."""
         from taipanstack.security.guards import guard_env_variable
+
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("CUSTOM_SECRET", denied_names=["CUSTOM_SECRET"])
 
-    def test_allowed_names_override_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_allowed_names_override_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that allowed_names override pattern blocking."""
         from taipanstack.security.guards import guard_env_variable
+
         monkeypatch.setenv("MY_TOKEN", "allowed_token")
         result = guard_env_variable("MY_TOKEN", allowed_names=["MY_TOKEN"])
         assert result == "allowed_token"
 
+
 def test_guard_ssrf_ok_and_other_branches_expected() -> None:
     from taipanstack.core.result import Ok
     from taipanstack.security.guards import guard_ssrf
+
     res = guard_ssrf("https://www.google.com")
     assert isinstance(res, Ok)
+
 
 def test_guard_ssrf_internal_err_branches_expected() -> None:
     from taipanstack.core.result import Err
     from taipanstack.security.guards import guard_ssrf
+
     res = guard_ssrf("invalid_url:")
     assert isinstance(res, Err)
     res2 = guard_ssrf("http://127.0.0.1")

@@ -4,6 +4,7 @@ Full Coverage Tests - Achieving 100% Coverage.
 This module provides targeted tests for all uncovered lines and branches
 identified in the coverage report.
 """
+
 import os
 import tempfile
 from pathlib import Path
@@ -42,6 +43,7 @@ class TestLoggingImportFallback:
         setup_logging("DEBUG", format_type="simple", use_structured=False)
         setup_logging("INFO", format_type="json", use_structured=False)
 
+
 class TestValidatorsPythonVersionEdgeCases:
     """Test edge cases in Python version validation."""
 
@@ -55,6 +57,7 @@ class TestValidatorsPythonVersionEdgeCases:
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.12.1")
 
+
 class TestGuardsPathTraversalOSError:
     """Test path traversal guard OSError handling."""
 
@@ -64,6 +67,7 @@ class TestGuardsPathTraversalOSError:
         The actual code handles OSError and ValueError.
         This is covered by other tests that exercise the error handling branch.
         """
+
 
 class TestGuardsEnvVariableAllowedBranch:
     """Test env variable guard with allowed_names for sensitive patterns."""
@@ -80,6 +84,7 @@ class TestGuardsEnvVariableAllowedBranch:
             with pytest.raises(SecurityError, match="potentially sensitive"):
                 guard_env_variable("MY_API_TOKEN", allowed_names=["OTHER_VAR"])
 
+
 class TestSanitizersFilenameEdgeCases:
     """Test edge cases in filename sanitization."""
 
@@ -93,6 +98,7 @@ class TestSanitizersFilenameEdgeCases:
         result = sanitize_filename("a.txt", max_length=4)
         assert len(result) <= 4
 
+
 class TestSanitizersPathEdgeCases:
     """Test edge cases in path sanitization."""
 
@@ -104,6 +110,7 @@ class TestSanitizersPathEdgeCases:
             result_str = str(Path(result).resolve())
             base_str = str(base)
             assert base_str in result_str or result_str.startswith(base_str)
+
 
 class TestFilesystemSizeLimit:
     """Test filesystem size limit branches."""
@@ -121,6 +128,7 @@ class TestFilesystemSizeLimit:
         finally:
             temp_path.unlink()
 
+
 class TestFilesystemEnsureDir:
     """Test ensure_dir edge cases."""
 
@@ -129,6 +137,7 @@ class TestFilesystemEnsureDir:
         with tempfile.TemporaryDirectory() as tmpdir:
             result = ensure_dir(Path(tmpdir) / "subdir" / "nested")
             assert result.exists()
+
 
 class TestRetryReraiseFlow:
     """Test retry reraise flow."""
@@ -142,9 +151,11 @@ class TestRetryReraiseFlow:
             nonlocal call_count
             call_count += 1
             raise ValueError("always fails")
+
         with pytest.raises(RetryError):
             failing_func()
         assert call_count == 2
+
 
 class TestConfigModelsValidation:
     """Test config model validation edge cases."""
@@ -159,12 +170,14 @@ class TestConfigModelsValidation:
         with pytest.raises(ValueError, match="not supported"):
             StackConfig(python_version="3.9")
 
+
 class TestResultCoreExits:
     """Test Result type exit flows."""
 
     def test_result_unwrap_or_default_expected(self) -> None:
         """Test unwrap_or uses default on error."""
         from taipanstack.core.result import Err, Ok
+
         ok_result = Ok(42)
         err_result = Err("error")
         assert ok_result.unwrap_or(0) == 42
@@ -173,11 +186,13 @@ class TestResultCoreExits:
     def test_result_map_err_expected(self) -> None:
         """Test map_err transforms error."""
         from taipanstack.core.result import Err, Ok
+
         ok_result: Ok[int] = Ok(42)
         err_result: Err[str] = Err("original")
         assert ok_result.map_err(str.upper).unwrap() == 42
         mapped = err_result.map_err(str.upper)
         assert mapped.unwrap_err() == "ORIGINAL"
+
 
 class TestCircuitBreakerExits:
     """Test circuit breaker exit flows."""
@@ -185,14 +200,17 @@ class TestCircuitBreakerExits:
     def test_circuit_breaker_success(self) -> None:
         """Test circuit breaker with successful operation."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
         cb = CircuitBreaker(failure_threshold=3, timeout=1.0)
 
         @cb
         def successful_func() -> int:
             return 42
+
         result = successful_func()
         assert result == 42
         assert cb.state.value == "closed"
+
 
 class TestDecoratorsPartialBranches:
     """Test decorator partial branches."""
@@ -204,5 +222,6 @@ class TestDecoratorsPartialBranches:
         @timeout(seconds=5)
         def quick_func() -> str:
             return "done"
+
         result = quick_func()
         assert result == "done"

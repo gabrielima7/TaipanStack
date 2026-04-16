@@ -1,4 +1,5 @@
 """Tests for the HealthPinger and related utilities."""
+
 import asyncio
 
 import pytest
@@ -17,11 +18,14 @@ from taipanstack.resilience.watchdogs.health_pinger import (
 async def _healthy() -> bool:
     return True
 
+
 async def _unhealthy() -> bool:
     return False
 
+
 async def _exploding() -> bool:
     raise ConnectionError("boom")
+
 
 class TestCheckTarget:
     """Tests for the one-shot check_target function."""
@@ -50,13 +54,17 @@ class TestCheckTarget:
         assert isinstance(result, Err)
         assert isinstance(result.err_value, ConnectionError)
 
+
 class TestCheckAll:
     """Tests for check_all function."""
 
     @pytest.mark.asyncio
     async def test_watchdog_health_all_healthy_expected(self) -> None:
         """All targets healthy."""
-        targets = [HealthTarget(name="db", check=_healthy), HealthTarget(name="cache", check=_healthy)]
+        targets = [
+            HealthTarget(name="db", check=_healthy),
+            HealthTarget(name="cache", check=_healthy),
+        ]
         result = await check_all(targets)
         assert isinstance(result, Ok)
         assert result.ok_value == {"db": True, "cache": True}
@@ -64,7 +72,10 @@ class TestCheckAll:
     @pytest.mark.asyncio
     async def test_watchdog_health_mixed_health_expected(self) -> None:
         """Mix of healthy and unhealthy."""
-        targets = [HealthTarget(name="db", check=_healthy), HealthTarget(name="cache", check=_unhealthy)]
+        targets = [
+            HealthTarget(name="db", check=_healthy),
+            HealthTarget(name="cache", check=_unhealthy),
+        ]
         result = await check_all(targets)
         assert isinstance(result, Ok)
         assert result.ok_value["db"] is True
@@ -78,6 +89,7 @@ class TestCheckAll:
         assert isinstance(result, Ok)
         assert result.ok_value["svc"] is False
 
+
 class TestForceOpenBreaker:
     """Tests for _force_open_breaker helper."""
 
@@ -88,13 +100,16 @@ class TestForceOpenBreaker:
         _force_open_breaker(breaker, "db")
         assert breaker.state.value == CircuitState.OPEN.value
 
+
 class TestHealthPinger:
     """Tests for the HealthPinger background task."""
 
     @pytest.mark.asyncio
     async def test_start_stop_lifecycle_expected(self) -> None:
         """Pinger can be started and stopped."""
-        pinger = HealthPinger(targets=[HealthTarget(name="db", check=_healthy)], interval=0.05)
+        pinger = HealthPinger(
+            targets=[HealthTarget(name="db", check=_healthy)], interval=0.05
+        )
         result = await pinger.start()
         assert isinstance(result, Ok)
         assert pinger.is_running
@@ -112,7 +127,12 @@ class TestHealthPinger:
             nonlocal call_count
             call_count += 1
             return call_count > 2
-        pinger = HealthPinger(targets=[HealthTarget(name="svc", check=flaky)], interval=0.05, on_health_change=lambda n, h: changes.append((n, h)))
+
+        pinger = HealthPinger(
+            targets=[HealthTarget(name="svc", check=flaky)],
+            interval=0.05,
+            on_health_change=lambda n, h: changes.append((n, h)),
+        )
         await pinger.start()
         await asyncio.sleep(0.3)
         await pinger.stop()
@@ -123,7 +143,12 @@ class TestHealthPinger:
     async def test_opens_breaker_on_failure_expected(self) -> None:
         """Circuit breaker is opened when target is unhealthy."""
         breaker = CircuitBreaker(name="db_breaker", failure_threshold=2)
-        pinger = HealthPinger(targets=[HealthTarget(name="db", check=_unhealthy, circuit_breaker=breaker)], interval=0.05)
+        pinger = HealthPinger(
+            targets=[
+                HealthTarget(name="db", check=_unhealthy, circuit_breaker=breaker)
+            ],
+            interval=0.05,
+        )
         await pinger.start()
         await asyncio.sleep(0.15)
         await pinger.stop()
@@ -142,7 +167,13 @@ class TestHealthPinger:
             nonlocal call_count
             call_count += 1
             return call_count > 2
-        pinger = HealthPinger(targets=[HealthTarget(name="db", check=recovering, circuit_breaker=breaker)], interval=0.05)
+
+        pinger = HealthPinger(
+            targets=[
+                HealthTarget(name="db", check=recovering, circuit_breaker=breaker)
+            ],
+            interval=0.05,
+        )
         await pinger.start()
         await asyncio.sleep(0.3)
         await pinger.stop()
@@ -152,7 +183,11 @@ class TestHealthPinger:
     async def test_exception_in_check_treated_as_unhealthy_expected(self) -> None:
         """An exception from the check coroutine is treated as unhealthy."""
         changes: list[tuple[str, bool]] = []
-        pinger = HealthPinger(targets=[HealthTarget(name="svc", check=_exploding)], interval=0.05, on_health_change=lambda n, h: changes.append((n, h)))
+        pinger = HealthPinger(
+            targets=[HealthTarget(name="svc", check=_exploding)],
+            interval=0.05,
+            on_health_change=lambda n, h: changes.append((n, h)),
+        )
         await pinger.start()
         await asyncio.sleep(0.15)
         await pinger.stop()
@@ -162,12 +197,17 @@ class TestHealthPinger:
     async def test_no_duplicate_callback_on_same_status_expected(self) -> None:
         """Callback only fires on *transitions*, not every cycle."""
         changes: list[tuple[str, bool]] = []
-        pinger = HealthPinger(targets=[HealthTarget(name="stable", check=_healthy)], interval=0.05, on_health_change=lambda n, h: changes.append((n, h)))
+        pinger = HealthPinger(
+            targets=[HealthTarget(name="stable", check=_healthy)],
+            interval=0.05,
+            on_health_change=lambda n, h: changes.append((n, h)),
+        )
         await pinger.start()
         await asyncio.sleep(0.25)
         await pinger.stop()
         assert len(changes) == 1
         assert changes[0] == ("stable", True)
+
 
 @pytest.mark.asyncio
 async def test_health_pinger_check_all_err_branch_expected() -> None:
@@ -175,10 +215,13 @@ async def test_health_pinger_check_all_err_branch_expected() -> None:
 
     async def always_fail():
         raise RuntimeError("boom")
+
     targets = [HealthTarget(name="t1", check=always_fail)]
     res = await check_all(targets)
     from taipanstack.core.result import Ok
+
     assert res == Ok({"t1": False})
+
 
 @pytest.mark.asyncio
 async def test_health_pinger_run_err_branch_expected() -> None:
@@ -189,6 +232,7 @@ async def test_health_pinger_run_err_branch_expected() -> None:
 
     async def always_fail():
         raise RuntimeError("fail_run")
+
     targets = [HealthTarget(name="t2", check=always_fail)]
     pinger = HealthPinger(targets=targets, interval=0.1)
     await pinger._run()

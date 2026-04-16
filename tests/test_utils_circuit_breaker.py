@@ -1,4 +1,5 @@
 """Tests for circuit breaker module."""
+
 import time
 
 import pytest
@@ -24,6 +25,7 @@ class TestCircuitBreakerState:
         """Test fallback when structlog is not installed."""
         import importlib.util
         from unittest import mock
+
         with mock.patch.dict("sys.modules", {"structlog": None}):
             spec = importlib.util.find_spec("taipanstack.resilience.circuit_breaker")
             module = importlib.util.module_from_spec(spec)
@@ -33,9 +35,11 @@ class TestCircuitBreakerState:
     def test_circuit_breaker_unreachable_state_expected(self) -> None:
         """Test unreachable state block."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
         breaker = CircuitBreaker()
         breaker._state.state = "INVALID_STATE"
         assert breaker._should_attempt() is False
+
 
 class TestCircuitBreaker:
     """Tests for CircuitBreaker class."""
@@ -52,6 +56,7 @@ class TestCircuitBreaker:
         @breaker
         def success_func() -> str:
             return "ok"
+
         for _ in range(10):
             assert success_func() == "ok"
         assert breaker.state == CircuitState.CLOSED
@@ -63,6 +68,7 @@ class TestCircuitBreaker:
         @breaker
         def failing_func() -> None:
             raise ValueError("fail")
+
         for _ in range(3):
             with pytest.raises(ValueError):
                 failing_func()
@@ -75,6 +81,7 @@ class TestCircuitBreaker:
         @breaker
         def failing_func() -> None:
             raise ValueError("fail")
+
         for _ in range(2):
             with pytest.raises(ValueError):
                 failing_func()
@@ -88,6 +95,7 @@ class TestCircuitBreaker:
         @breaker
         def failing_func() -> None:
             raise ValueError("fail")
+
         with pytest.raises(ValueError):
             failing_func()
         assert breaker.state == CircuitState.OPEN
@@ -105,6 +113,7 @@ class TestCircuitBreaker:
         number of requests (equal to success_threshold) actually proceed.
         """
         import concurrent.futures
+
         breaker = CircuitBreaker(failure_threshold=1, success_threshold=3, timeout=0.05)
         active_calls = 0
         max_active_calls = 0
@@ -124,6 +133,7 @@ class TestCircuitBreaker:
             time.sleep(0.5)
             active_calls -= 1
             return "ok"
+
         with pytest.raises(ValueError):
             api_call()
         assert breaker.state == CircuitState.OPEN
@@ -132,11 +142,13 @@ class TestCircuitBreaker:
         successes = 0
         circuit_open_errors = 0
         import threading
+
         start_event = threading.Event()
 
         def synchronized_call() -> str:
             start_event.wait()
             return api_call()
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             futures = [executor.submit(synchronized_call) for _ in range(num_requests)]
             time.sleep(0.1)
@@ -168,6 +180,7 @@ class TestCircuitBreaker:
             if call_count == 1:
                 raise ValueError("first fail")
             return "ok"
+
         with pytest.raises(ValueError):
             flaky_func()
         time.sleep(0.1)
@@ -181,6 +194,7 @@ class TestCircuitBreaker:
         @breaker
         def failing_func() -> None:
             raise ValueError("fail")
+
         with pytest.raises(ValueError):
             failing_func()
         assert breaker.state == CircuitState.OPEN
@@ -194,10 +208,12 @@ class TestCircuitBreaker:
         @breaker
         def failing_func() -> None:
             raise ValueError("ignored")
+
         for _ in range(5):
             with pytest.raises(ValueError):
                 failing_func()
         assert breaker.state == CircuitState.CLOSED
+
 
 class TestCircuitBreakerDecorator:
     """Tests for @circuit_breaker decorator."""
@@ -208,6 +224,7 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=2)
         def my_func() -> str:
             return "ok"
+
         assert my_func() == "ok"
 
     def test_decorator_with_name_expected(self) -> None:
@@ -216,6 +233,7 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=2, name="custom_breaker")
         def my_func() -> str:
             return "ok"
+
         assert my_func() == "ok"
 
     async def test_decorator_async_success(self) -> None:
@@ -224,6 +242,7 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=2)
         async def my_async_func() -> str:
             return "async_ok"
+
         assert await my_async_func() == "async_ok"
 
     async def test_decorator_async_failure_opens_circuit_expected(self) -> None:
@@ -232,12 +251,14 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=2)
         async def my_async_func() -> None:
             raise ValueError("async_fail")
+
         for _ in range(2):
             with pytest.raises(ValueError):
                 await my_async_func()
         with pytest.raises(CircuitBreakerError) as exc_info:
             await my_async_func()
         assert exc_info.value.state == CircuitState.OPEN
+
 
 class TestCircuitBreakerError:
     """Tests for CircuitBreakerError."""

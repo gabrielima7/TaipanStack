@@ -1,4 +1,5 @@
 """Tests for the ResourceWatcher and related utilities."""
+
 import asyncio
 from unittest.mock import MagicMock, patch
 
@@ -28,6 +29,7 @@ class TestResourceSnapshot:
         with pytest.raises(AttributeError):
             snap.cpu_percent = 99.0
 
+
 class TestCheckResources:
     """Tests for the one-shot check_resources function."""
 
@@ -35,7 +37,14 @@ class TestCheckResources:
         """Returns Ok(ResourceSnapshot) when psutil is available."""
         mock_vm = MagicMock()
         mock_vm.percent = 42.5
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 33.0
             mock_psutil.virtual_memory.return_value = mock_vm
             result = check_resources()
@@ -47,10 +56,13 @@ class TestCheckResources:
 
     def test_err_without_psutil_expected(self) -> None:
         """Returns Err(ImportError) when psutil is not installed."""
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False):
+        with patch(
+            "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False
+        ):
             result = check_resources()
         assert isinstance(result, Err)
         assert isinstance(result.err_value, ImportError)
+
 
 class TestResourceWatcher:
     """Tests for the ResourceWatcher background task."""
@@ -59,7 +71,9 @@ class TestResourceWatcher:
     async def test_start_without_psutil_returns_err_expected(self) -> None:
         """Start returns Err when psutil is unavailable."""
         watcher = ResourceWatcher()
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False):
+        with patch(
+            "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False
+        ):
             result = await watcher.start()
         assert isinstance(result, Err)
         assert isinstance(result.err_value, ImportError)
@@ -69,7 +83,14 @@ class TestResourceWatcher:
         """Watcher can be started and stopped."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 5.0
             mock_psutil.virtual_memory.return_value = mock_vm
             watcher = ResourceWatcher(interval=0.05)
@@ -85,7 +106,14 @@ class TestResourceWatcher:
         """Starting an already-running watcher returns Err."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 5.0
             mock_psutil.virtual_memory.return_value = mock_vm
             watcher = ResourceWatcher(interval=0.05)
@@ -102,10 +130,22 @@ class TestResourceWatcher:
         breaches: list[tuple[str, float]] = []
         mock_vm = MagicMock()
         mock_vm.percent = 90.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 95.0
             mock_psutil.virtual_memory.return_value = mock_vm
-            watcher = ResourceWatcher(interval=0.05, cpu_threshold=80.0, memory_threshold=80.0, on_threshold_breach=lambda r, v: breaches.append((r, v)))
+            watcher = ResourceWatcher(
+                interval=0.05,
+                cpu_threshold=80.0,
+                memory_threshold=80.0,
+                on_threshold_breach=lambda r, v: breaches.append((r, v)),
+            )
             await watcher.start()
             await asyncio.sleep(0.15)
             await watcher.stop()
@@ -118,10 +158,19 @@ class TestResourceWatcher:
         breaches: list[tuple[str, float]] = []
         mock_vm = MagicMock()
         mock_vm.percent = 30.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 20.0
             mock_psutil.virtual_memory.return_value = mock_vm
-            watcher = ResourceWatcher(interval=0.05, on_threshold_breach=lambda r, v: breaches.append((r, v)))
+            watcher = ResourceWatcher(
+                interval=0.05, on_threshold_breach=lambda r, v: breaches.append((r, v))
+            )
             await watcher.start()
             await asyncio.sleep(0.15)
             await watcher.stop()
@@ -130,12 +179,20 @@ class TestResourceWatcher:
     @pytest.mark.asyncio
     async def test_run_handles_check_error(self) -> None:
         """Error from check_resources is logged, not raised."""
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.side_effect = OSError("sensor fail")
             watcher = ResourceWatcher(interval=0.05)
             await watcher.start()
             await asyncio.sleep(0.15)
             await watcher.stop()
+
 
 class TestBaseWatcher:
     """Tests for BaseWatcher ABC."""
@@ -158,7 +215,14 @@ class TestBaseWatcher:
         """When the task doesn't stop in time, it gets cancelled."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 5.0
             mock_psutil.virtual_memory.return_value = mock_vm
             watcher = ResourceWatcher(interval=0.05)
@@ -169,6 +233,7 @@ class TestBaseWatcher:
 
             async def never_ends() -> None:
                 await asyncio.sleep(9999)
+
             watcher._task = asyncio.create_task(never_ends())
             await watcher.stop()
             assert not watcher.is_running
@@ -176,7 +241,9 @@ class TestBaseWatcher:
     @pytest.mark.asyncio
     async def test_run_err_branch_logged_expected(self) -> None:
         """Err from check_resources in _run is handled gracefully."""
-        with patch("taipanstack.resilience.watchdogs.resource_watcher.check_resources") as mock_check:
+        with patch(
+            "taipanstack.resilience.watchdogs.resource_watcher.check_resources"
+        ) as mock_check:
             mock_check.return_value = Err(ImportError("no psutil"))
             watcher = ResourceWatcher(interval=0.05)
             await watcher._run()
@@ -186,13 +253,23 @@ class TestBaseWatcher:
         """Breach is logged but no crash when on_threshold_breach is None."""
         mock_vm = MagicMock()
         mock_vm.percent = 95.0
-        with patch("taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True), patch("taipanstack.resilience.watchdogs.resource_watcher.psutil") as mock_psutil:
+        with (
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", True
+            ),
+            patch(
+                "taipanstack.resilience.watchdogs.resource_watcher.psutil"
+            ) as mock_psutil,
+        ):
             mock_psutil.cpu_percent.return_value = 99.0
             mock_psutil.virtual_memory.return_value = mock_vm
-            watcher = ResourceWatcher(interval=0.05, cpu_threshold=80.0, memory_threshold=80.0)
+            watcher = ResourceWatcher(
+                interval=0.05, cpu_threshold=80.0, memory_threshold=80.0
+            )
             await watcher.start()
             await asyncio.sleep(0.1)
             await watcher.stop()
+
 
 @pytest.mark.asyncio
 async def test_resource_watcher_run_err_branch_expected() -> None:
@@ -200,6 +277,10 @@ async def test_resource_watcher_run_err_branch_expected() -> None:
 
     from taipanstack.core.result import Err
     from taipanstack.resilience.watchdogs.resource_watcher import ResourceWatcher
+
     watcher = ResourceWatcher(interval=0.1)
-    with patch("taipanstack.resilience.watchdogs.resource_watcher.check_resources", return_value=Err(RuntimeError("mock_err"))):
+    with patch(
+        "taipanstack.resilience.watchdogs.resource_watcher.check_resources",
+        return_value=Err(RuntimeError("mock_err")),
+    ):
         await watcher._run()

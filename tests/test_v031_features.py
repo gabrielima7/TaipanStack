@@ -3,6 +3,7 @@
 Covers: TypeError guards, SecurityError edge cases, on_retry callback,
 and on_state_change callback.
 """
+
 import time
 
 import pytest
@@ -39,6 +40,7 @@ class TestGuardPathTraversalTypeCheck:
         with pytest.raises(TypeError, match="got list"):
             guard_path_traversal(["/foo"])
 
+
 class TestGuardCommandInjectionTypeCheck:
     """Tests for guard_command_injection item type validation."""
 
@@ -49,6 +51,7 @@ class TestGuardCommandInjectionTypeCheck:
     def test_rejects_none_item_expected(self) -> None:
         with pytest.raises(TypeError, match="got NoneType at index 0"):
             guard_command_injection([None, "foo"])
+
 
 class TestGuardEnvVariableEdgeCases:
     """Tests for guard_env_variable edge-case validation."""
@@ -65,6 +68,7 @@ class TestGuardEnvVariableEdgeCases:
         with pytest.raises(SecurityError, match="empty or whitespace"):
             guard_env_variable("   ")
 
+
 class TestSanitizeStringTypeCheck:
     """Tests for sanitize_string input type validation."""
 
@@ -76,6 +80,7 @@ class TestSanitizeStringTypeCheck:
         with pytest.raises(TypeError, match="got int"):
             sanitize_string(42)
 
+
 class TestSanitizeFilenameTypeCheck:
     """Tests for sanitize_filename input type validation."""
 
@@ -86,6 +91,7 @@ class TestSanitizeFilenameTypeCheck:
     def test_v031_features_rejects_int_expected(self) -> None:
         with pytest.raises(TypeError, match="got int"):
             sanitize_filename(123)
+
 
 class TestValidatorTypeChecks:
     """Tests for TypeError validation in validators."""
@@ -106,6 +112,7 @@ class TestValidatorTypeChecks:
         with pytest.raises(TypeError, match="URL must be str, got NoneType"):
             validate_url(None)
 
+
 class TestOnRetryCallback:
     """Tests for the on_retry callback in retry decorator."""
 
@@ -113,17 +120,23 @@ class TestOnRetryCallback:
         """Verify on_retry is called with correct arguments on each retry."""
         callback_calls: list[tuple[int, int, Exception, float]] = []
 
-        def capture_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def capture_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             callback_calls.append((attempt, max_attempts, exc, delay))
+
         call_count = 0
 
-        @retry(max_attempts=3, initial_delay=0.01, on=(ValueError,), on_retry=capture_retry)
+        @retry(
+            max_attempts=3, initial_delay=0.01, on=(ValueError,), on_retry=capture_retry
+        )
         def flaky() -> str:
             nonlocal call_count
             call_count += 1
             if call_count < 3:
                 raise ValueError("fail")
             return "ok"
+
         result = flaky()
         assert result == "ok"
         assert len(callback_calls) == 2
@@ -131,6 +144,7 @@ class TestOnRetryCallback:
         assert callback_calls[0][1] == 3
         assert isinstance(callback_calls[0][2], ValueError)
         assert callback_calls[0][3] > 0
+
 
 class TestOnStateChangeCallback:
     """Tests for the on_state_change callback in CircuitBreaker."""
@@ -141,11 +155,15 @@ class TestOnStateChangeCallback:
 
         def capture(old: CircuitState, new: CircuitState) -> None:
             transitions.append((old, new))
-        breaker = CircuitBreaker(failure_threshold=2, timeout=0.1, name="test_cb", on_state_change=capture)
+
+        breaker = CircuitBreaker(
+            failure_threshold=2, timeout=0.1, name="test_cb", on_state_change=capture
+        )
 
         @breaker
         def failing() -> str:
             raise RuntimeError("boom")
+
         for _ in range(2):
             with pytest.raises(RuntimeError):
                 failing()
@@ -158,7 +176,14 @@ class TestOnStateChangeCallback:
 
         def capture(old: CircuitState, new: CircuitState) -> None:
             transitions.append((old, new))
-        breaker = CircuitBreaker(failure_threshold=2, success_threshold=1, timeout=0.05, name="lifecycle", on_state_change=capture)
+
+        breaker = CircuitBreaker(
+            failure_threshold=2,
+            success_threshold=1,
+            timeout=0.05,
+            name="lifecycle",
+            on_state_change=capture,
+        )
         call_should_fail = True
 
         @breaker
@@ -166,6 +191,7 @@ class TestOnStateChangeCallback:
             if call_should_fail:
                 raise RuntimeError("down")
             return "ok"
+
         for _ in range(2):
             with pytest.raises(RuntimeError):
                 service()

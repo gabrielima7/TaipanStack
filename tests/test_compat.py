@@ -1,4 +1,5 @@
 """Comprehensive tests for core.compat module (Python version compatibility)."""
+
 import os
 import sys
 from unittest.mock import patch
@@ -46,6 +47,7 @@ class TestVersionConstants:
         expected = sys.version_info >= (3, 14)
         assert expected == PY314
 
+
 class TestVersionTier:
     """Test VersionTier enum."""
 
@@ -60,6 +62,7 @@ class TestVersionTier:
         """Test VersionTier members are strings."""
         assert isinstance(VersionTier.STABLE, str)
         assert isinstance(VersionTier.ENHANCED, str)
+
 
 class TestExperimentalFeatures:
     """Test experimental feature detection."""
@@ -98,6 +101,7 @@ class TestExperimentalFeatures:
         """Test experimental check is case-insensitive."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "TRUE"}):
             assert is_experimental_enabled(force_refresh=True)
+
 
 class TestOptimizationLevel:
     """Test optimization level detection."""
@@ -143,6 +147,7 @@ class TestOptimizationLevel:
             else:
                 assert get_optimization_level(force_refresh=True) == 2
 
+
 class TestPythonFeatures:
     """Test PythonFeatures dataclass."""
 
@@ -154,8 +159,15 @@ class TestPythonFeatures:
     def test_compat_features_version_expected(self) -> None:
         """Test features includes correct version."""
         features = get_features()
-        assert features.version == (PY_VERSION.major, PY_VERSION.minor, PY_VERSION.micro)
-        assert features.version_string == f"{PY_VERSION.major}.{PY_VERSION.minor}.{PY_VERSION.micro}"
+        assert features.version == (
+            PY_VERSION.major,
+            PY_VERSION.minor,
+            PY_VERSION.micro,
+        )
+        assert (
+            features.version_string
+            == f"{PY_VERSION.major}.{PY_VERSION.minor}.{PY_VERSION.micro}"
+        )
 
     def test_features_tier_stable_expected(self) -> None:
         """Test version tier for Python 3.11."""
@@ -244,6 +256,7 @@ class TestPythonFeatures:
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             features2 = get_features(force_refresh=True)
             assert features1 is not features2
+
 
 class TestGetPythonInfo:
     """Test get_python_info function."""

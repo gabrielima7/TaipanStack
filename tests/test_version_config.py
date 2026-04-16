@@ -1,4 +1,5 @@
 """Comprehensive tests for config.version_config module."""
+
 from unittest.mock import patch
 
 from taipanstack.config.version_config import (
@@ -13,14 +14,46 @@ class TestVersionRecommendations:
 
     def test_version_config_recommendations_creation_expected(self) -> None:
         """Test creating version recommendations."""
-        rec = VersionRecommendations(version_tier=VersionTier.STABLE, min_version="3.11.0", max_version="3.11.x", recommended_thread_pool_size=32, supports_true_parallelism=False, recommended_gc_mode="default", use_mimalloc=False, use_type_params=False, use_exception_groups=True, use_match_statements=True, use_override_decorator=False, use_deprecated_decorator=False, jit_available=False, recommended_optimization_level=1, notes=("Test note",))
+        rec = VersionRecommendations(
+            version_tier=VersionTier.STABLE,
+            min_version="3.11.0",
+            max_version="3.11.x",
+            recommended_thread_pool_size=32,
+            supports_true_parallelism=False,
+            recommended_gc_mode="default",
+            use_mimalloc=False,
+            use_type_params=False,
+            use_exception_groups=True,
+            use_match_statements=True,
+            use_override_decorator=False,
+            use_deprecated_decorator=False,
+            jit_available=False,
+            recommended_optimization_level=1,
+            notes=("Test note",),
+        )
         assert rec.version_tier == VersionTier.STABLE
         assert rec.min_version == "3.11.0"
         assert not rec.supports_true_parallelism
 
     def test_recommendations_to_dict_expected(self) -> None:
         """Test converting recommendations to dictionary."""
-        rec = VersionRecommendations(version_tier=VersionTier.ENHANCED, min_version="3.12.0", max_version="3.12.x", recommended_thread_pool_size=32, supports_true_parallelism=False, recommended_gc_mode="default", use_mimalloc=False, use_type_params=True, use_exception_groups=True, use_match_statements=True, use_override_decorator=True, use_deprecated_decorator=False, jit_available=False, recommended_optimization_level=1, notes=("Note 1", "Note 2"))
+        rec = VersionRecommendations(
+            version_tier=VersionTier.ENHANCED,
+            min_version="3.12.0",
+            max_version="3.12.x",
+            recommended_thread_pool_size=32,
+            supports_true_parallelism=False,
+            recommended_gc_mode="default",
+            use_mimalloc=False,
+            use_type_params=True,
+            use_exception_groups=True,
+            use_match_statements=True,
+            use_override_decorator=True,
+            use_deprecated_decorator=False,
+            jit_available=False,
+            recommended_optimization_level=1,
+            notes=("Note 1", "Note 2"),
+        )
         data = rec.to_dict()
         assert data["version_tier"] == "enhanced"
         assert "version_range" in data
@@ -29,6 +62,7 @@ class TestVersionRecommendations:
         assert data["code_style"]["type_params"] is True
         assert data["performance"]["jit_available"] is False
         assert len(data["notes"]) == 2
+
 
 class TestGetVersionRecommendations:
     """Test get_version_recommendations function."""
@@ -76,8 +110,20 @@ class TestGetVersionRecommendations:
         with patch("taipanstack.config.version_config.PY313", True):
             with patch("taipanstack.config.version_config.PY314", False):
                 from taipanstack.core.compat import PythonFeatures, VersionTier
-                mock_features = PythonFeatures(version=(3, 13, 0), version_string="3.13.0", tier=VersionTier.MODERN, has_jit=True, has_free_threading=True, has_mimalloc=True, experimental_enabled=True)
-                with patch("taipanstack.config.version_config.get_features", return_value=mock_features):
+
+                mock_features = PythonFeatures(
+                    version=(3, 13, 0),
+                    version_string="3.13.0",
+                    tier=VersionTier.MODERN,
+                    has_jit=True,
+                    has_free_threading=True,
+                    has_mimalloc=True,
+                    experimental_enabled=True,
+                )
+                with patch(
+                    "taipanstack.config.version_config.get_features",
+                    return_value=mock_features,
+                ):
                     rec = get_version_recommendations()
                     assert rec.jit_available
                     assert rec.supports_true_parallelism
@@ -90,8 +136,20 @@ class TestGetVersionRecommendations:
         with patch("taipanstack.config.version_config.PY313", True):
             with patch("taipanstack.config.version_config.PY314", False):
                 from taipanstack.core.compat import PythonFeatures, VersionTier
-                mock_features = PythonFeatures(version=(3, 13, 0), version_string="3.13.0", tier=VersionTier.MODERN, has_jit=False, has_free_threading=False, has_mimalloc=False, experimental_enabled=False)
-                with patch("taipanstack.config.version_config.get_features", return_value=mock_features):
+
+                mock_features = PythonFeatures(
+                    version=(3, 13, 0),
+                    version_string="3.13.0",
+                    tier=VersionTier.MODERN,
+                    has_jit=False,
+                    has_free_threading=False,
+                    has_mimalloc=False,
+                    experimental_enabled=False,
+                )
+                with patch(
+                    "taipanstack.config.version_config.get_features",
+                    return_value=mock_features,
+                ):
                     rec = get_version_recommendations()
                     assert not rec.jit_available
                     assert not rec.supports_true_parallelism
@@ -114,8 +172,22 @@ class TestGetVersionRecommendations:
         """Test recommendations for Python 3.14 with experimental features."""
         with patch("taipanstack.config.version_config.PY314", True):
             from taipanstack.core.compat import PythonFeatures, VersionTier
-            mock_features = PythonFeatures(version=(3, 14, 0), version_string="3.14.0", tier=VersionTier.CUTTING_EDGE, has_jit=True, has_free_threading=True, has_mimalloc=True, has_tail_call_interpreter=True, has_deferred_annotations=True, experimental_enabled=True)
-            with patch("taipanstack.config.version_config.get_features", return_value=mock_features):
+
+            mock_features = PythonFeatures(
+                version=(3, 14, 0),
+                version_string="3.14.0",
+                tier=VersionTier.CUTTING_EDGE,
+                has_jit=True,
+                has_free_threading=True,
+                has_mimalloc=True,
+                has_tail_call_interpreter=True,
+                has_deferred_annotations=True,
+                experimental_enabled=True,
+            )
+            with patch(
+                "taipanstack.config.version_config.get_features",
+                return_value=mock_features,
+            ):
                 rec = get_version_recommendations()
                 assert rec.jit_available
                 assert rec.supports_true_parallelism

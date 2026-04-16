@@ -1,4 +1,5 @@
 """Tests for safe subprocess execution utilities."""
+
 import subprocess
 from pathlib import Path
 
@@ -17,22 +18,30 @@ class TestSafeCommandResult:
 
     def test_success_true_when_returncode_zero_expected(self) -> None:
         """Test success property returns True for returncode 0."""
-        result = SafeCommandResult(command=["echo", "hello"], returncode=0, stdout="hello\n", stderr="")
+        result = SafeCommandResult(
+            command=["echo", "hello"], returncode=0, stdout="hello\n", stderr=""
+        )
         assert result.success is True
 
     def test_success_false_when_returncode_nonzero_expected(self) -> None:
         """Test success property returns False for non-zero returncode."""
-        result = SafeCommandResult(command=["false"], returncode=1, stdout="", stderr="error")
+        result = SafeCommandResult(
+            command=["false"], returncode=1, stdout="", stderr="error"
+        )
         assert result.success is False
 
     def test_raise_on_error_success(self) -> None:
         """Test raise_on_error returns self on success."""
-        result = SafeCommandResult(command=["echo", "test"], returncode=0, stdout="test\n")
+        result = SafeCommandResult(
+            command=["echo", "test"], returncode=0, stdout="test\n"
+        )
         assert result.raise_on_error() is result
 
     def test_raise_on_error_failure_expected(self) -> None:
         """Test raise_on_error raises CalledProcessError on failure."""
-        result = SafeCommandResult(command=["bad", "command"], returncode=1, stdout="", stderr="error message")
+        result = SafeCommandResult(
+            command=["bad", "command"], returncode=1, stdout="", stderr="error message"
+        )
         with pytest.raises(subprocess.CalledProcessError) as exc_info:
             result.raise_on_error()
         assert exc_info.value.returncode == 1
@@ -42,6 +51,7 @@ class TestSafeCommandResult:
         """Test duration_seconds has default value."""
         result = SafeCommandResult(command=["test"], returncode=0)
         assert result.duration_seconds == 0.0
+
 
 class TestDefaultAllowedCommands:
     """Tests for DEFAULT_ALLOWED_COMMANDS."""
@@ -55,6 +65,7 @@ class TestDefaultAllowedCommands:
     def test_utils_subprocess_is_frozenset_expected(self) -> None:
         """Test that it's immutable."""
         assert isinstance(DEFAULT_ALLOWED_COMMANDS, frozenset)
+
 
 class TestRunSafeCommand:
     """Tests for run_safe_command function."""
@@ -91,11 +102,16 @@ class TestRunSafeCommand:
     def test_command_not_found_expected(self) -> None:
         """Test that non-existent command raises SecurityError."""
         with pytest.raises(SecurityError, match="Command not found"):
-            run_safe_command(["nonexistent_command_xyz"], allowed_commands=["nonexistent_command_xyz"])
+            run_safe_command(
+                ["nonexistent_command_xyz"],
+                allowed_commands=["nonexistent_command_xyz"],
+            )
 
     def test_utils_subprocess_timeout_handling_expected(self) -> None:
         """Test command timeout is handled."""
-        result = run_safe_command(["sleep", "5"], timeout=0.1, allowed_commands=["sleep"])
+        result = run_safe_command(
+            ["sleep", "5"], timeout=0.1, allowed_commands=["sleep"]
+        )
         assert result.success is False
         assert result.returncode == -1
         assert "timed out" in result.stderr
@@ -124,15 +140,21 @@ class TestRunSafeCommand:
 
     def test_timeout_negative_value_expected(self) -> None:
         """Test timeout with negative seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
             run_safe_command(["echo", "hello"], timeout=-1.0)
 
     def test_timeout_nan_value_expected(self) -> None:
         """Test timeout with NaN seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
             run_safe_command(["echo", "hello"], timeout=float("nan"))
 
     def test_timeout_inf_value_expected(self) -> None:
         """Test timeout with Infinity seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
             run_safe_command(["echo", "hello"], timeout=float("inf"))

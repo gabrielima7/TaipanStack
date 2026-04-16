@@ -1,4 +1,5 @@
 """Tests for retry utilities."""
+
 import pytest
 
 from taipanstack.resilience.retry import (
@@ -18,6 +19,7 @@ class TestRetryConfig:
         """Test fallback when structlog is not installed."""
         import importlib.util
         from unittest import mock
+
         with mock.patch.dict("sys.modules", {"structlog": None}):
             spec = importlib.util.find_spec("taipanstack.resilience.retry")
             module = importlib.util.module_from_spec(spec)
@@ -45,6 +47,7 @@ class TestRetryConfig:
         config = RetryConfig()
         with pytest.raises(AttributeError):
             config.max_attempts = 10
+
 
 class TestCalculateDelay:
     """Tests for calculate_delay function."""
@@ -85,6 +88,7 @@ class TestCalculateDelay:
         delay = calculate_delay(-5, config)
         assert delay == 1.0
 
+
 class TestRetryDecorator:
     """Tests for @retry decorator."""
 
@@ -97,6 +101,7 @@ class TestRetryDecorator:
             nonlocal call_count
             call_count += 1
             return "success"
+
         result = success_func()
         assert result == "success"
         assert call_count == 1
@@ -112,6 +117,7 @@ class TestRetryDecorator:
             if call_count < 3:
                 raise ValueError("Not yet")
             return "success"
+
         result = failing_then_success()
         assert result == "success"
         assert call_count == 3
@@ -122,6 +128,7 @@ class TestRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         def always_fail() -> None:
             raise ValueError("Always fails")
+
         with pytest.raises(RetryError) as exc_info:
             always_fail()
         assert exc_info.value.attempts == 2
@@ -132,6 +139,7 @@ class TestRetryDecorator:
         @retry(max_attempts=3, on=(ValueError,))
         def raise_type_error() -> None:
             raise TypeError("Wrong type")
+
         with pytest.raises(TypeError):
             raise_type_error()
 
@@ -141,6 +149,7 @@ class TestRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         def failing_func() -> None:
             raise ValueError("Original error")
+
         with pytest.raises(RetryError) as exc_info:
             failing_func()
         assert exc_info.value.last_exception is not None
@@ -150,7 +159,9 @@ class TestRetryDecorator:
         """Test that on_retry callback is called."""
         retries = []
 
-        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def on_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             retries.append((attempt, max_attempts, exc, delay))
 
         @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
@@ -158,6 +169,7 @@ class TestRetryDecorator:
             if len(retries) < 2:
                 raise ValueError("fail")
             return "ok"
+
         result = flaky()
         assert result == "ok"
         assert len(retries) == 2
@@ -170,6 +182,7 @@ class TestRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, reraise=False)
         def always_fail() -> None:
             raise ValueError("original")
+
         with pytest.raises(RetryError) as exc_info:
             always_fail()
         assert exc_info.value.__cause__ is None
@@ -181,10 +194,12 @@ class TestRetryDecorator:
         @retry(max_attempts=0)
         def never_runs() -> str:
             return "ok"
+
         with pytest.raises(RetryError) as exc_info:
             never_runs()
         assert exc_info.value.attempts == 0
         assert exc_info.value.last_exception is None
+
 
 class TestAsyncRetryDecorator:
     """Tests for @retry decorator on async functions."""
@@ -199,6 +214,7 @@ class TestAsyncRetryDecorator:
             nonlocal call_count
             call_count += 1
             return "success"
+
         result = await success_func()
         assert result == "success"
         assert call_count == 1
@@ -215,6 +231,7 @@ class TestAsyncRetryDecorator:
             if call_count < 3:
                 raise ValueError("Not yet")
             return "success"
+
         result = await failing_then_success()
         assert result == "success"
         assert call_count == 3
@@ -226,6 +243,7 @@ class TestAsyncRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         async def always_fail() -> None:
             raise ValueError("Always fails")
+
         with pytest.raises(RetryError) as exc_info:
             await always_fail()
         assert exc_info.value.attempts == 2
@@ -237,6 +255,7 @@ class TestAsyncRetryDecorator:
         @retry(max_attempts=3, on=(ValueError,))
         async def raise_type_error() -> None:
             raise TypeError("Wrong type")
+
         with pytest.raises(TypeError):
             await raise_type_error()
 
@@ -247,6 +266,7 @@ class TestAsyncRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
         async def failing_func() -> None:
             raise ValueError("Original error")
+
         with pytest.raises(RetryError) as exc_info:
             await failing_func()
         assert exc_info.value.last_exception is not None
@@ -257,7 +277,9 @@ class TestAsyncRetryDecorator:
         """Test that on_retry callback is called for async function."""
         retries = []
 
-        def on_retry(attempt: int, max_attempts: int, exc: Exception, delay: float) -> None:
+        def on_retry(
+            attempt: int, max_attempts: int, exc: Exception, delay: float
+        ) -> None:
             retries.append((attempt, max_attempts, exc, delay))
 
         @retry(max_attempts=3, initial_delay=0.01, on_retry=on_retry)
@@ -265,6 +287,7 @@ class TestAsyncRetryDecorator:
             if len(retries) < 2:
                 raise ValueError("fail")
             return "ok"
+
         result = await flaky()
         assert result == "ok"
         assert len(retries) == 2
@@ -278,9 +301,11 @@ class TestAsyncRetryDecorator:
         @retry(max_attempts=2, initial_delay=0.01, reraise=False)
         async def always_fail() -> None:
             raise ValueError("original")
+
         with pytest.raises(RetryError) as exc_info:
             await always_fail()
         assert exc_info.value.__cause__ is None
+
 
 class TestRetryOnException:
     """Tests for retry_on_exception decorator."""
@@ -296,6 +321,7 @@ class TestRetryOnException:
             if call_count < 2:
                 raise ValueError("First fail")
             return "success"
+
         result = flaky_func()
         assert result == "success"
         assert call_count == 2
@@ -309,6 +335,7 @@ class TestRetryOnException:
             nonlocal call_count
             call_count += 1
             raise ValueError("Always fails")
+
         with pytest.raises(RetryError) as exc_info:
             always_fail()
         assert exc_info.value.attempts == 3
@@ -324,9 +351,11 @@ class TestRetryOnException:
             nonlocal call_count
             call_count += 1
             raise TypeError("Wrong type")
+
         with pytest.raises(TypeError):
             raise_type_error()
         assert call_count == 1
+
 
 class TestRetrier:
     """Tests for Retrier context manager."""
@@ -400,6 +429,7 @@ class TestRetrier:
         assert attempts == 3
         assert retrier.attempt == 2
 
+
 class TestRetryError:
     """Tests for RetryError exception."""
 
@@ -422,12 +452,14 @@ class TestRetryError:
     def test_retry_for_loop_exhaustion_expected(self) -> None:
         """Test the retry loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
+
         call_count = 0
 
         @retry(max_attempts=0)
         def will_not_run() -> None:
             nonlocal call_count
             call_count += 1
+
         with pytest.raises(RetryError) as exc_info:
             will_not_run()
         assert "All 0 attempts failed" in str(exc_info.value)
@@ -437,12 +469,14 @@ class TestRetryError:
     async def test_retry_async_for_loop_exhaustion_expected(self) -> None:
         """Test the retry async loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
+
         call_count = 0
 
         @retry(max_attempts=0)
         async def will_not_run() -> None:
             nonlocal call_count
             call_count += 1
+
         with pytest.raises(RetryError) as exc_info:
             await will_not_run()
         assert "All 0 attempts failed" in str(exc_info.value)

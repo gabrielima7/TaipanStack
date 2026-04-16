@@ -1,4 +1,5 @@
 """Tests for safe filesystem operations."""
+
 from pathlib import Path
 
 import pytest
@@ -110,6 +111,7 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
+
 class TestSafeWrite:
     """Tests for safe_write function."""
 
@@ -131,7 +133,9 @@ class TestSafeWrite:
     def test_write_no_create_parents_expected(self, tmp_path: Path) -> None:
         """Test writing a file with create_parents=False."""
         test_file = tmp_path / "direct.txt"
-        result = safe_write(test_file, "content", options=WriteOptions(create_parents=False))
+        result = safe_write(
+            test_file, "content", options=WriteOptions(create_parents=False)
+        )
         assert result.exists()
         assert result.read_text() == "content"
 
@@ -177,12 +181,17 @@ class TestSafeWrite:
         safe_write(test_file, "direct content", options=WriteOptions(atomic=False))
         assert test_file.read_text() == "direct content"
 
-    def test_safe_write_cleanup_propagates_oserror_expected(self, tmp_path: Path) -> None:
+    def test_safe_write_cleanup_propagates_oserror_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that cleanup during write propagates critical OSErrors like PermissionError."""
         test_file = tmp_path / "protected.txt"
         from unittest.mock import patch
+
         with patch("pathlib.Path.rename", side_effect=ValueError("Rename failed")):
-            with patch("pathlib.Path.unlink", side_effect=PermissionError("Permission denied")):
+            with patch(
+                "pathlib.Path.unlink", side_effect=PermissionError("Permission denied")
+            ):
                 with pytest.raises(PermissionError, match="Permission denied"):
                     safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
@@ -190,6 +199,7 @@ class TestSafeWrite:
         """Test that cleanup during write unlinks the temp file."""
         test_file = tmp_path / "cleanup.txt"
         from unittest.mock import patch
+
         with patch("pathlib.Path.rename", side_effect=ValueError("Rename failed")):
             with pytest.raises(ValueError, match="Rename failed"):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
@@ -197,7 +207,11 @@ class TestSafeWrite:
     def test_path_traversal_blocked_expected(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
-            safe_write(tmp_path / ".." / "etc" / "evil.txt", "malicious", options=WriteOptions(base_dir=tmp_path))
+            safe_write(
+                tmp_path / ".." / "etc" / "evil.txt",
+                "malicious",
+                options=WriteOptions(base_dir=tmp_path),
+            )
 
     def test_path_traversal_without_base_dir_blocked_expected(self) -> None:
         """Test that path traversal is blocked when no base_dir is provided."""
@@ -207,8 +221,11 @@ class TestSafeWrite:
     def test_write_invalid_filename_blocked_expected(self, tmp_path: Path) -> None:
         """Test that writing to an invalid filename raises an error instead of silently mutating."""
         test_file = tmp_path / "report:2023.txt"
-        with pytest.raises(SecurityError, match="Unsafe or invalid characters in filename"):
+        with pytest.raises(
+            SecurityError, match="Unsafe or invalid characters in filename"
+        ):
             safe_write(test_file, "content")
+
 
 class TestEnsureDir:
     """Tests for ensure_dir function."""
@@ -254,11 +271,14 @@ class TestEnsureDir:
     def test_root_directory_already_exists_expected(self) -> None:
         """Test ensuring the root directory to cover the root parent check."""
         import sys
+
         root = Path("C:\\") if sys.platform == "win32" else Path("/")
         result = ensure_dir(root)
         assert result == root
 
-    def test_missing_intermediate_directory_created_expected(self, tmp_path: Path) -> None:
+    def test_missing_intermediate_directory_created_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test creating a directory with a missing intermediate parent."""
         target = tmp_path / "missing" / "leaf"
         result = ensure_dir(target)
@@ -266,9 +286,12 @@ class TestEnsureDir:
         assert result.is_dir()
         assert (tmp_path / "missing").is_dir()
 
-    def test_root_parent_loop_break_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_root_parent_loop_break_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test the break condition when looping up to root."""
         import sys
+
         root = Path("C:\\") if sys.platform == "win32" else Path("/")
         original_is_dir = Path.is_dir
         original_exists = Path.exists
@@ -282,10 +305,12 @@ class TestEnsureDir:
             if self == root:
                 return False
             return original_exists(self)
+
         monkeypatch.setattr(Path, "is_dir", mock_is_dir)
         monkeypatch.setattr(Path, "exists", mock_exists)
 
         def mock_mkdir(*args, **kwargs) -> None:
             assert True
+
         monkeypatch.setattr(Path, "mkdir", mock_mkdir)
         ensure_dir(root)

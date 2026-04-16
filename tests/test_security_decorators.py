@@ -1,4 +1,5 @@
 """Tests for security decorators."""
+
 import time
 import warnings
 
@@ -30,6 +31,7 @@ class TestValidateInputs:
         @validate_inputs(n=positive_int)
         def double(n: int) -> int:
             return n * 2
+
         assert double(5) == 10
 
     def test_invalid_input_raises_validation_error(self) -> None:
@@ -43,6 +45,7 @@ class TestValidateInputs:
         @validate_inputs(n=positive_int)
         def double(n: int) -> int:
             return n * 2
+
         with pytest.raises(ValidationError, match="Must be positive"):
             double(-5)
 
@@ -55,6 +58,7 @@ class TestValidateInputs:
         @validate_inputs(name=always_fail)
         def greet(name: str) -> str:
             return f"Hello {name}"
+
         with pytest.raises(ValidationError) as exc_info:
             greet("test")
         assert exc_info.value.param_name == "name"
@@ -75,12 +79,14 @@ class TestValidateInputs:
         @validate_inputs(name=min_length, age=max_value)
         def register(name: str, age: int) -> dict:
             return {"name": name, "age": age}
+
         result = register("Alice", 30)
         assert result["name"] == "Alice"
         with pytest.raises(ValidationError, match="Too short"):
             register("Al", 30)
         with pytest.raises(ValidationError, match="Too large"):
             register("Alice", 150)
+
 
 class TestGuardExceptions:
     """Tests for @guard_exceptions decorator."""
@@ -91,6 +97,7 @@ class TestGuardExceptions:
         @guard_exceptions(catch=(ValueError,))
         def safe_func() -> str:
             return "success"
+
         assert safe_func() == "success"
 
     def test_caught_exception_returns_default_expected(self) -> None:
@@ -99,6 +106,7 @@ class TestGuardExceptions:
         @guard_exceptions(catch=(ValueError,), default="fallback")
         def failing_func() -> str:
             raise ValueError("error")
+
         assert failing_func() == "fallback"
 
     def test_uncaught_exception_propagates_expected(self) -> None:
@@ -107,6 +115,7 @@ class TestGuardExceptions:
         @guard_exceptions(catch=(ValueError,))
         def failing_func() -> str:
             raise TypeError("wrong type")
+
         with pytest.raises(TypeError):
             failing_func()
 
@@ -116,6 +125,7 @@ class TestGuardExceptions:
         @guard_exceptions(catch=(IOError,), reraise_as=SecurityError)
         def read_file() -> str:
             raise OSError("file not found")
+
         with pytest.raises(SecurityError):
             read_file()
 
@@ -128,8 +138,10 @@ class TestGuardExceptions:
         @guard_exceptions(catch=(ValueError,), reraise_as=CustomError)
         def failing_func() -> str:
             raise ValueError("original")
+
         with pytest.raises(CustomError):
             failing_func()
+
 
 class TestTimeout:
     """Tests for @timeout decorator."""
@@ -140,6 +152,7 @@ class TestTimeout:
         @timeout(5.0)
         def fast_func() -> str:
             return "done"
+
         assert fast_func() == "done"
 
     def test_slow_function_times_out_expected(self) -> None:
@@ -149,6 +162,7 @@ class TestTimeout:
         def slow_func() -> str:
             time.sleep(1)
             return "done"
+
         with pytest.raises(OperationTimeoutError):
             slow_func()
 
@@ -158,6 +172,7 @@ class TestTimeout:
         @timeout(0.1, use_signal=False)
         def named_func() -> None:
             time.sleep(1)
+
         with pytest.raises(OperationTimeoutError) as exc_info:
             named_func()
         assert exc_info.value.seconds == 0.1
@@ -165,7 +180,9 @@ class TestTimeout:
 
     def test_timeout_negative_value_expected(self) -> None:
         """Test timeout with negative seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
 
             @timeout(-1.0)
             def func() -> None:
@@ -173,7 +190,9 @@ class TestTimeout:
 
     def test_timeout_nan_value_expected(self) -> None:
         """Test timeout with NaN seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
 
             @timeout(float("nan"))
             def func() -> None:
@@ -181,7 +200,9 @@ class TestTimeout:
 
     def test_timeout_inf_value_expected(self) -> None:
         """Test timeout with Infinity seconds."""
-        with pytest.raises(ValueError, match="timeout must be a finite non-negative number"):
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
 
             @timeout(float("inf"))
             def func() -> None:
@@ -192,6 +213,7 @@ class TestTimeout:
         @timeout(1.0, use_signal=False)
         def func_raises() -> None:
             raise ValueError("Thread error")
+
         with pytest.raises(ValueError, match="Thread error"):
             func_raises()
 
@@ -200,7 +222,9 @@ class TestTimeout:
         @timeout(1.0, use_signal=False)
         def func_success() -> str:
             return "success"
+
         assert func_success() == "success"
+
 
 class TestDeprecated:
     """Tests for @deprecated decorator."""
@@ -211,6 +235,7 @@ class TestDeprecated:
         @deprecated("Use new_func instead")
         def old_func() -> str:
             return "old"
+
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             result = old_func()
@@ -225,10 +250,12 @@ class TestDeprecated:
         @deprecated(removal_version="2.0")
         def old_func() -> None:
             assert True
+
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             old_func()
         assert "version 2.0" in str(w[0].message)
+
 
 class TestRequireType:
     """Tests for @require_type decorator."""
@@ -239,6 +266,7 @@ class TestRequireType:
         @require_type(name=str, count=int)
         def greet(name: str, count: int) -> str:
             return f"Hello {name}" * count
+
         assert greet("World", 2) == "Hello WorldHello World"
 
     def test_wrong_type_raises_type_error(self) -> None:
@@ -247,6 +275,7 @@ class TestRequireType:
         @require_type(name=str)
         def greet(name: str) -> str:
             return f"Hello {name}"
+
         with pytest.raises(TypeError, match="expected str, got int"):
             greet(123)
 
@@ -256,6 +285,7 @@ class TestRequireType:
         @require_type(a=int, b=int)
         def add(a: int, b: int) -> int:
             return a + b
+
         assert add(1, 2) == 3
         with pytest.raises(TypeError):
             add("1", 2)

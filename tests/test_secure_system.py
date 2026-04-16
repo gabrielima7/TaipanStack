@@ -1,4 +1,5 @@
 """Tests for the secure_system module."""
+
 import logging
 from uuid import UUID, uuid4
 
@@ -23,7 +24,12 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     """Test creating a user with valid data."""
     repository = InMemoryUserRepository()
     service = UserService(repository)
-    user_create = UserCreate(username="valid_user", email="user@example.com", password=SecretStr("secure_password"), ip_address=None)
+    user_create = UserCreate(
+        username="valid_user",
+        email="user@example.com",
+        password=SecretStr("secure_password"),
+        ip_address=None,
+    )
     with caplog.at_level(logging.INFO):
         result = service.create_user(user_create)
     user = result.unwrap()
@@ -42,18 +48,24 @@ def test_create_user_success(caplog: pytest.LogCaptureFixture) -> None:
     assert "User created successfully" in caplog.text
     assert f"user_id={user.id}" in caplog.text
 
+
 def test_create_user_failure_expected(caplog: pytest.LogCaptureFixture) -> None:
     """Test user creation failure handled gracefully."""
 
     class FailingRepository(UserRepository):
-
         def save(self, user: object) -> None:
             raise UserAlreadyExistsError("Database error")
 
         def get_by_id(self, user_id: UUID) -> None:
             return None
+
     service = UserService(FailingRepository())
-    user_create = UserCreate(username="fail_user", email="fail@example.com", password=SecretStr("password"), ip_address=None)
+    user_create = UserCreate(
+        username="fail_user",
+        email="fail@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
     result = service.create_user(user_create)
     match result:
         case Err(UserCreationError(message=msg)):
@@ -61,18 +73,24 @@ def test_create_user_failure_expected(caplog: pytest.LogCaptureFixture) -> None:
         case _:
             pytest.fail("Expected Err(UserCreationError)")
 
+
 def test_create_user_already_exists_expected(caplog: pytest.LogCaptureFixture) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
 
     class AlreadyExistsRepository(UserRepository):
-
         def save(self, user: object) -> None:
             raise UserAlreadyExistsError("User already exists")
 
         def get_by_id(self, user_id: UUID) -> None:
             return None
+
     service = UserService(AlreadyExistsRepository())
-    user_create = UserCreate(username="existing_user", email="existing@example.com", password=SecretStr("password"), ip_address=None)
+    user_create = UserCreate(
+        username="existing_user",
+        email="existing@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
     with caplog.at_level(logging.WARNING):
         result = service.create_user(user_create)
     match result:
@@ -82,15 +100,26 @@ def test_create_user_already_exists_expected(caplog: pytest.LogCaptureFixture) -
             pytest.fail("Expected Err(UserCreationError)")
     assert "Failed to create user" in caplog.text
 
+
 def test_create_user_invalid_email_expected() -> None:
     """Test creating a user with an invalid email raises ValidationError."""
     with pytest.raises(ValidationError):
-        UserCreate(username="valid_user", email="invalid-email", password=SecretStr("secure_password"))
+        UserCreate(
+            username="valid_user",
+            email="invalid-email",
+            password=SecretStr("secure_password"),
+        )
+
 
 def test_create_user_invalid_username_expected() -> None:
     """Test creating a user with an invalid username raises ValidationError."""
     with pytest.raises(ValidationError):
-        UserCreate(username="invalid user name", email="user@example.com", password=SecretStr("secure_password"))
+        UserCreate(
+            username="invalid user name",
+            email="user@example.com",
+            password=SecretStr("secure_password"),
+        )
+
 
 def test_get_non_existent_user_expected(caplog: pytest.LogCaptureFixture) -> None:
     """Test retrieving a non-existent user returns Err with UserNotFoundError."""
@@ -109,16 +138,26 @@ def test_get_non_existent_user_expected(caplog: pytest.LogCaptureFixture) -> Non
     assert "User lookup failed" in caplog.text
     assert f"user_id={user_id}" in caplog.text
 
+
 def test_secure_system_models_redaction_expected() -> None:
     """Test that UserCreate and UserInDB models redact sensitive fields."""
-    user_create = UserCreate(username="testuser", email="test@example.com", password=SecretStr("my_secret_password"))
+    user_create = UserCreate(
+        username="testuser",
+        email="test@example.com",
+        password=SecretStr("my_secret_password"),
+    )
     dumped_create = user_create.model_dump()
     assert dumped_create["password"] == "***REDACTED***"
     assert "my_secret_password" not in str(dumped_create)
     json_create = user_create.model_dump_json()
     assert "***REDACTED***" in json_create
     assert "my_secret_password" not in json_create
-    user_in_db = UserInDB(id=uuid4(), username="testuser", email="test@example.com", password_hash="some_hashed_value")
+    user_in_db = UserInDB(
+        id=uuid4(),
+        username="testuser",
+        email="test@example.com",
+        password_hash="some_hashed_value",
+    )
     dumped_user = user_in_db.model_dump()
     assert dumped_user["password_hash"] == "***REDACTED***"
     assert "some_hashed_value" not in str(dumped_user)

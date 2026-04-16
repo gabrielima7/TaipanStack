@@ -1,4 +1,5 @@
 """Tests for stack.config.models module."""
+
 from pathlib import Path
 
 import pytest
@@ -41,6 +42,7 @@ class TestSecurityConfig:
         with pytest.raises(ValidationError):
             SecurityConfig(invalid_field="value")
 
+
 class TestDependencyConfig:
     """Tests for DependencyConfig model."""
 
@@ -54,9 +56,12 @@ class TestDependencyConfig:
 
     def test_config_models_custom_dependencies_expected(self) -> None:
         """Test custom dependencies."""
-        config = DependencyConfig(dev_dependencies=["pytest", "mypy"], runtime_dependencies=["fastapi"])
+        config = DependencyConfig(
+            dev_dependencies=["pytest", "mypy"], runtime_dependencies=["fastapi"]
+        )
         assert config.dev_dependencies == ["pytest", "mypy"]
         assert config.runtime_dependencies == ["fastapi"]
+
 
 class TestLoggingConfig:
     """Tests for LoggingConfig model."""
@@ -78,6 +83,7 @@ class TestLoggingConfig:
         """Test invalid log level is rejected."""
         with pytest.raises(ValidationError):
             LoggingConfig(level="INVALID")
+
 
 class TestStackConfig:
     """Tests for StackConfig model."""
@@ -133,7 +139,9 @@ class TestStackConfig:
         config = StackConfig(project_dir=abs_path)
         assert config.project_dir == abs_path
 
-    def test_path_with_dots_not_traversal_accepted_expected(self, tmp_path: Path) -> None:
+    def test_path_with_dots_not_traversal_accepted_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test paths with dots that are not traversal are accepted."""
         dot_path = tmp_path / "my.project.dir"
         config = StackConfig(project_dir=dot_path)
@@ -176,6 +184,9 @@ class TestStackConfig:
 
     def test_config_models_nested_configs_expected(self) -> None:
         """Test nested configuration objects."""
-        config = StackConfig(security=SecurityConfig(level="paranoid"), logging=LoggingConfig(level="DEBUG"))
+        config = StackConfig(
+            security=SecurityConfig(level="paranoid"),
+            logging=LoggingConfig(level="DEBUG"),
+        )
         assert config.security.level == "paranoid"
         assert config.logging.level == "DEBUG"

@@ -1,4 +1,5 @@
 """Tests with mocked structlog for 100% logging.py coverage."""
+
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -13,8 +14,13 @@ class TestLoggingWithMockedStructlog:
         mock_structlog = MagicMock()
         mock_logger = MagicMock()
         mock_structlog.get_logger.return_value = mock_logger
-        with patch.dict("sys.modules", {"structlog": mock_structlog}), patch("taipanstack.utils.logging.HAS_STRUCTLOG", True), patch("taipanstack.utils.logging.structlog", mock_structlog, create=True):
+        with (
+            patch.dict("sys.modules", {"structlog": mock_structlog}),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
+        ):
             import taipanstack.utils.logging as logging_module
+
             logger = logging_module.StackLogger(use_structured=True)
             logger.debug("debug message", key="value")
             logger.info("info message")
@@ -28,8 +34,13 @@ class TestLoggingWithMockedStructlog:
         mock_logger = MagicMock()
         mock_logger.bind.return_value = mock_logger
         mock_structlog.get_logger.return_value = mock_logger
-        with patch.dict("sys.modules", {"structlog": mock_structlog}), patch("taipanstack.utils.logging.HAS_STRUCTLOG", True), patch("taipanstack.utils.logging.structlog", mock_structlog, create=True):
+        with (
+            patch.dict("sys.modules", {"structlog": mock_structlog}),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
+        ):
             import taipanstack.utils.logging as logging_module
+
             logger = logging_module.StackLogger(use_structured=True)
             logger.bind(user="test")
 
@@ -39,11 +50,17 @@ class TestLoggingWithMockedStructlog:
         mock_logger = MagicMock()
         mock_logger.unbind.return_value = mock_logger
         mock_structlog.get_logger.return_value = mock_logger
-        with patch.dict("sys.modules", {"structlog": mock_structlog}), patch("taipanstack.utils.logging.HAS_STRUCTLOG", True), patch("taipanstack.utils.logging.structlog", mock_structlog, create=True):
+        with (
+            patch.dict("sys.modules", {"structlog": mock_structlog}),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
+        ):
             import taipanstack.utils.logging as logging_module
+
             logger = logging_module.StackLogger(use_structured=True)
             logger._context = {"key": "value"}
             logger.unbind("key")
+
 
 class TestSetupLoggingStructlog:
     """Tests for setup_logging with structlog."""
@@ -51,10 +68,16 @@ class TestSetupLoggingStructlog:
     def test_setup_logging_with_structlog_expected(self) -> None:
         """Test setup_logging when HAS_STRUCTLOG is True and use_structured=True."""
         mock_structlog = MagicMock()
-        with patch.dict("sys.modules", {"structlog": mock_structlog}), patch("taipanstack.utils.logging.HAS_STRUCTLOG", True), patch("taipanstack.utils.logging.structlog", mock_structlog, create=True):
+        with (
+            patch.dict("sys.modules", {"structlog": mock_structlog}),
+            patch("taipanstack.utils.logging.HAS_STRUCTLOG", True),
+            patch("taipanstack.utils.logging.structlog", mock_structlog, create=True),
+        ):
             import taipanstack.utils.logging as logging_module
+
             logging_module.setup_logging(use_structured=True)
             mock_structlog.configure.assert_called_once()
+
 
 class TestSubprocessTimeoutBranches:
     """Tests for subprocess timeout branches."""
@@ -62,9 +85,11 @@ class TestSubprocessTimeoutBranches:
     def test_run_safe_command_with_failure_expected(self) -> None:
         """Test run_safe_command with failing command."""
         from taipanstack.utils.subprocess import run_safe_command
+
         result = run_safe_command(["python", "-c", "exit(42)"])
         assert not result.success
         assert result.returncode == 42
+
 
 class TestGuardsRemainingBranches:
     """Tests for remaining guards module branches."""
@@ -72,10 +97,12 @@ class TestGuardsRemainingBranches:
     def test_guard_path_traversal_symlink_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with symlinks."""
         from taipanstack.security.guards import guard_path_traversal
+
         target = tmp_path / "target.txt"
         target.write_text("content")
         result = guard_path_traversal(target, tmp_path)
         assert result.exists()
+
 
 class TestFilesystemRemainingBranches:
     """Tests for remaining filesystem module branches."""
@@ -83,18 +110,25 @@ class TestFilesystemRemainingBranches:
     def test_safe_write_create_parents_expected(self, tmp_path: Path) -> None:
         """Test safe_write with create_parents=True."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
+
         nested_file = tmp_path / "a" / "b" / "c" / "file.txt"
-        result = safe_write(nested_file, "content", options=WriteOptions(create_parents=True))
+        result = safe_write(
+            nested_file, "content", options=WriteOptions(create_parents=True)
+        )
         assert result.exists()
         assert result.read_text() == "content"
 
     def test_safe_write_atomic_with_existing_expected(self, tmp_path: Path) -> None:
         """Test safe_write atomic with existing file copies permissions."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
+
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
-        result = safe_write(existing, "new", options=WriteOptions(atomic=True, backup=False))
+        result = safe_write(
+            existing, "new", options=WriteOptions(atomic=True, backup=False)
+        )
         assert result.read_text() == "new"
+
 
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
@@ -102,14 +136,17 @@ class TestSanitizersRemainingBranches:
     def test_sanitize_path_absolute_expected(self, tmp_path: Path) -> None:
         """Test sanitize_path with absolute path."""
         from taipanstack.security.sanitizers import sanitize_path
+
         result = sanitize_path("file.txt", base_dir=tmp_path, max_depth=None)
         assert "file.txt" in str(result) or "file" in str(result)
 
     def test_sanitize_path_relative_expected(self) -> None:
         """Test sanitize_path with relative path."""
         from taipanstack.security.sanitizers import sanitize_path
+
         result = sanitize_path("some/relative/path")
         assert not result.is_absolute()
+
 
 class TestValidatorsRemainingBranches:
     """Tests for remaining validators module branches."""
@@ -117,11 +154,13 @@ class TestValidatorsRemainingBranches:
     def test_validate_project_name_starts_with_digit_expected(self) -> None:
         """Test validate_project_name starting with digit."""
         from taipanstack.security.validators import validate_project_name
+
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("123project")
 
     def test_validate_project_name_max_length_expected(self) -> None:
         """Test validate_project_name with max_length parameter."""
         from taipanstack.security.validators import validate_project_name
+
         result = validate_project_name("validproject")
         assert result == "validproject"

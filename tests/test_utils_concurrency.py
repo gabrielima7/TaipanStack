@@ -1,4 +1,5 @@
 """Tests for concurrency utilities."""
+
 import asyncio
 import time
 
@@ -23,6 +24,7 @@ class TestConcurrencyLimiter:
         @limit_concurrency(max_tasks=1)
         def process() -> int:
             return 42
+
         res = process()
         assert res.is_ok()
         assert res.ok_value == 42
@@ -33,6 +35,7 @@ class TestConcurrencyLimiter:
         @limit_concurrency(max_tasks=1, timeout=0.1)
         def process() -> int:
             return 42
+
         res = process()
         assert res.is_ok()
         assert res.ok_value == 42
@@ -40,6 +43,7 @@ class TestConcurrencyLimiter:
     def test_sync_limit_concurrency_no_timeout_failure_expected(self) -> None:
         """Test sync limit_concurrency blocking immediately (no timeout)."""
         import threading
+
         start_event = threading.Event()
 
         @limit_concurrency(max_tasks=1)
@@ -47,6 +51,7 @@ class TestConcurrencyLimiter:
             start_event.set()
             time.sleep(0.1)
             return "done"
+
         t = threading.Thread(target=slow_process)
         t.start()
         if not start_event.wait(timeout=2.0):
@@ -59,6 +64,7 @@ class TestConcurrencyLimiter:
     def test_sync_limit_concurrency_with_timeout_failure_expected(self) -> None:
         """Test sync limit_concurrency blocking and failing after timeout."""
         import threading
+
         start_event = threading.Event()
         finish_event = threading.Event()
 
@@ -67,6 +73,7 @@ class TestConcurrencyLimiter:
             start_event.set()
             finish_event.wait(timeout=2.0)
             return "done"
+
         t = threading.Thread(target=slow_process)
         t.start()
         if not start_event.wait(timeout=2.0):
@@ -84,6 +91,7 @@ class TestConcurrencyLimiter:
         @limit_concurrency(max_tasks=1)
         async def fetch_data() -> str:
             return "async data"
+
         res = await fetch_data()
         assert res.is_ok()
         assert res.ok_value == "async data"
@@ -95,6 +103,7 @@ class TestConcurrencyLimiter:
         @limit_concurrency(max_tasks=1, timeout=0.1)
         async def fetch_data() -> str:
             return "async data"
+
         res = await fetch_data()
         assert res.is_ok()
         assert res.ok_value == "async data"
@@ -109,6 +118,7 @@ class TestConcurrencyLimiter:
             started_event.set()
             await asyncio.sleep(0.1)
             return "done"
+
         task = asyncio.create_task(slow_fetch())
         await asyncio.wait_for(started_event.wait(), timeout=2.0)
         res = await slow_fetch()
@@ -126,6 +136,7 @@ class TestConcurrencyLimiter:
             started_event.set()
             await asyncio.sleep(0.2)
             return "done"
+
         task = asyncio.create_task(slow_fetch())
         await asyncio.wait_for(started_event.wait(), timeout=2.0)
         res = await slow_fetch()

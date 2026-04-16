@@ -1,4 +1,5 @@
 """Tests for the ConfigWatcher and related utilities."""
+
 import asyncio
 import json
 from pathlib import Path
@@ -19,8 +20,10 @@ from taipanstack.resilience.watchdogs.config_watcher import (
 
 class SampleConfig(BaseModel):
     """Minimal Pydantic model for testing."""
+
     host: str = Field(default="localhost")
     port: int = Field(default=8080)
+
 
 class TestParseEnv:
     """Tests for _parse_env helper."""
@@ -39,7 +42,7 @@ class TestParseEnv:
 
     def test_watchdog_config_strips_quotes_expected(self) -> None:
         """Surrounding quotes are removed from values."""
-        text = 'KEY="quoted"\nK2=\'single\'\n'
+        text = "KEY=\"quoted\"\nK2='single'\n"
         result = _parse_env(text)
         assert result["KEY"] == "quoted"
         assert result["K2"] == "single"
@@ -49,6 +52,7 @@ class TestParseEnv:
         text = "invalid_line\nKEY=value\n"
         result = _parse_env(text)
         assert result == {"KEY": "value"}
+
 
 class TestParseJson:
     """Tests for _parse_json helper."""
@@ -70,6 +74,7 @@ class TestParseJson:
         assert isinstance(result, Err)
         assert isinstance(result.err_value, TypeError)
 
+
 class TestHashFile:
     """Tests for _hash_file helper."""
 
@@ -86,6 +91,7 @@ class TestHashFile:
         result = _hash_file(tmp_path / "missing.txt")
         assert isinstance(result, Err)
         assert isinstance(result.err_value, OSError)
+
 
 class TestLoadFileData:
     """Tests for _load_file_data helper."""
@@ -106,7 +112,9 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["HOST"] == "db"
 
-    def test_watchdog_config_unsupported_extension_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_unsupported_extension_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Returns Err for unsupported file extensions."""
         f = tmp_path / "config.xml"
         f.write_text("<config/>")
@@ -119,6 +127,7 @@ class TestLoadFileData:
         result = _load_file_data(tmp_path / "nope.json")
         assert isinstance(result, Err)
         assert isinstance(result.err_value, OSError)
+
 
 class TestValidateConfig:
     """Tests for validate_config."""
@@ -137,6 +146,7 @@ class TestValidateConfig:
         result = validate_config({"port": "not_a_number"}, SampleConfig)
         assert isinstance(result, Err)
 
+
 class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
@@ -145,7 +155,9 @@ class TestConfigWatcher:
         """Watcher can be started and stopped."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
-        watcher = ConfigWatcher(config_paths=[f], config_model=SampleConfig, interval=0.05)
+        watcher = ConfigWatcher(
+            config_paths=[f], config_model=SampleConfig, interval=0.05
+        )
         result = await watcher.start()
         assert isinstance(result, Ok)
         assert watcher.is_running
@@ -159,7 +171,12 @@ class TestConfigWatcher:
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "old", "port": 1}))
         changes: list[BaseModel] = []
-        watcher = ConfigWatcher(config_paths=[f], config_model=SampleConfig, interval=0.05, on_config_change=changes.append)
+        watcher = ConfigWatcher(
+            config_paths=[f],
+            config_model=SampleConfig,
+            interval=0.05,
+            on_config_change=changes.append,
+        )
         await watcher.start()
         await asyncio.sleep(0.1)
         f.write_text(json.dumps({"host": "new", "port": 2}))
@@ -171,12 +188,19 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_invalid_config_calls_error_callback_expected(self, tmp_path: Path) -> None:
+    async def test_invalid_config_calls_error_callback_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Validation error callback fires on bad config."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
         errors: list[Exception] = []
-        watcher = ConfigWatcher(config_paths=[f], config_model=SampleConfig, interval=0.05, on_validation_error=errors.append)
+        watcher = ConfigWatcher(
+            config_paths=[f],
+            config_model=SampleConfig,
+            interval=0.05,
+            on_validation_error=errors.append,
+        )
         await watcher.start()
         await asyncio.sleep(0.1)
         f.write_text(json.dumps({"port": "bad"}))
@@ -189,7 +213,9 @@ class TestConfigWatcher:
         """A watched file that disappears is handled gracefully."""
         f = tmp_path / "will_vanish.json"
         f.write_text(json.dumps({"host": "x", "port": 1}))
-        watcher = ConfigWatcher(config_paths=[f], config_model=SampleConfig, interval=0.05)
+        watcher = ConfigWatcher(
+            config_paths=[f], config_model=SampleConfig, interval=0.05
+        )
         await watcher.start()
         await asyncio.sleep(0.1)
         f.unlink()
@@ -213,11 +239,15 @@ class TestConfigWatcher:
 
         class EnvConfig(BaseModel):
             """Simple env config."""
+
             HOST: str = "localhost"
+
         f = tmp_path / ".env"
         f.write_text("HOST=myhost\n")
         changes: list[BaseModel] = []
-        watcher = ConfigWatcher(config_paths=[f], config_model=EnvConfig, on_config_change=changes.append)
+        watcher = ConfigWatcher(
+            config_paths=[f], config_model=EnvConfig, on_config_change=changes.append
+        )
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Ok)
         assert len(changes) == 1
@@ -229,7 +259,9 @@ class TestConfigWatcher:
         assert isinstance(result, Err)
         assert isinstance(result.err_value, OSError)
 
-    def test_validate_and_apply_invalid_without_error_callback_expected(self, tmp_path: Path) -> None:
+    def test_validate_and_apply_invalid_without_error_callback_expected(
+        self, tmp_path: Path
+    ) -> None:
         """No crash when validation fails and on_validation_error is None."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"port": "not_a_number"}))
@@ -237,13 +269,16 @@ class TestConfigWatcher:
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Err)
 
-    def test_validate_and_apply_valid_without_change_callback_expected(self, tmp_path: Path) -> None:
+    def test_validate_and_apply_valid_without_change_callback_expected(
+        self, tmp_path: Path
+    ) -> None:
         """No crash when config is valid and on_config_change is None."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
         watcher = ConfigWatcher(config_paths=[f], config_model=SampleConfig)
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Ok)
+
 
 def test_config_watcher_hash_err_branch_expected() -> None:
     from pydantic import BaseModel
@@ -255,11 +290,20 @@ def test_config_watcher_hash_err_branch_expected() -> None:
 
     def mock_on_error(err):
         assert True
+
     from pathlib import Path
-    watcher = ConfigWatcher(config_paths=[Path("nonexistent_file_xyz.json")], config_model=DummyConfig, on_validation_error=mock_on_error)
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("nonexistent_file_xyz.json")],
+        config_model=DummyConfig,
+        on_validation_error=mock_on_error,
+    )
     watcher._detect_changes()
 
-def test_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> None:
+
+def test_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel
@@ -268,15 +312,25 @@ def test_config_watcher_validate_and_apply_err_without_error_callback_branch_exp
 
     class DummyConfig(BaseModel):
         val: int
+
     from pathlib import Path
+
     with Path("test_bad_validate.json").open("w") as f:
         json.dump({"val": "not an int"}, f)
     from pathlib import Path
-    watcher = ConfigWatcher(config_paths=[Path("test_bad_validate.json")], config_model=DummyConfig, on_validation_error=None)
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("test_bad_validate.json")],
+        config_model=DummyConfig,
+        on_validation_error=None,
+    )
     watcher._validate_and_apply(Path("test_bad_validate.json"))
     Path("test_bad_validate.json").unlink()
 
-def test_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> None:
+
+def test_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel
@@ -285,10 +339,17 @@ def test_config_watcher_validate_and_apply_ok_without_change_callback_branch_exp
 
     class DummyConfig(BaseModel):
         val: int
+
     from pathlib import Path
+
     with Path("test_good_validate.json").open("w") as f:
         json.dump({"val": 1}, f)
     from pathlib import Path
-    watcher = ConfigWatcher(config_paths=[Path("test_good_validate.json")], config_model=DummyConfig, on_config_change=None)
+
+    watcher = ConfigWatcher(
+        config_paths=[Path("test_good_validate.json")],
+        config_model=DummyConfig,
+        on_config_change=None,
+    )
     watcher._validate_and_apply(Path("test_good_validate.json"))
     Path("test_good_validate.json").unlink()

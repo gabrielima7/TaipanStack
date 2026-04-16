@@ -1,4 +1,5 @@
 """Tests for the Bulkhead concurrency limiter."""
+
 import asyncio
 import contextlib
 
@@ -18,6 +19,7 @@ class TestBulkhead:
 
         async def task() -> str:
             return "done"
+
         result = await bulk.execute(task)
         assert isinstance(result, Ok)
         assert result.ok_value == "done"
@@ -30,6 +32,7 @@ class TestBulkhead:
         async def failing() -> str:
             msg = "boom"
             raise RuntimeError(msg)
+
         result = await bulk.execute(failing)
         assert isinstance(result, Err)
 
@@ -50,6 +53,7 @@ class TestBulkhead:
             async with lock:
                 current -= 1
             return 1
+
         tasks = [bulk.execute(tracked_task) for _ in range(5)]
         results = await asyncio.gather(*tasks)
         assert all(isinstance(r, Ok) for r in results)
@@ -63,6 +67,7 @@ class TestBulkhead:
 
         async def blocking() -> None:
             await gate.wait()
+
         t1 = asyncio.create_task(bulk.execute(blocking))
         await asyncio.sleep(0.05)
         t2 = asyncio.create_task(bulk.execute(blocking))
@@ -83,6 +88,7 @@ class TestBulkhead:
 
         async def blocking() -> None:
             await asyncio.sleep(10)
+
         task = asyncio.create_task(bulk.execute(blocking))
         await asyncio.sleep(0.01)
         result = await bulk.execute(blocking)
@@ -107,6 +113,7 @@ class TestBulkhead:
 
         async def add(a: int, b: int) -> int:
             return a + b
+
         result = await bulk.execute(add, 3, b=4)
         assert isinstance(result, Ok)
         assert result.ok_value == 7

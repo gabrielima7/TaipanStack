@@ -13,4 +13,5 @@ def test_chaos_rate_limit_nan_expected():
         @rate_limit(max_calls=float("inf"), time_window=1.0)
         def my_func():
             assert True
+
         my_func()

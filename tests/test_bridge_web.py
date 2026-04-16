@@ -1,4 +1,5 @@
 """Tests for the Web Bridge ASGI middleware."""
+
 import json
 from typing import Any
 from unittest.mock import AsyncMock
@@ -17,13 +18,21 @@ from taipanstack.utils.rate_limit import RateLimiter
 
 async def _make_dummy_app(scope: dict[str, Any], receive: Any, send: Any) -> None:
     """Minimal ASGI app that returns 200 OK."""
-    await send({"type": "http.response.start", "status": 200, "headers": [(b"content-type", b"text/plain")]})
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 200,
+            "headers": [(b"content-type", b"text/plain")],
+        }
+    )
     await send({"type": "http.response.body", "body": b"OK"})
+
 
 async def _make_crashing_app(scope: dict[str, Any], receive: Any, send: Any) -> None:
     """ASGI app that raises an unhandled exception."""
     msg = "boom"
     raise RuntimeError(msg)
+
 
 class _ResponseCapture:
     """Capture ASGI send messages."""
@@ -60,6 +69,7 @@ class _ResponseCapture:
                     result[name.decode()] = value.decode()
         return result
 
+
 class TestResultToResponse:
     """Tests for result_to_response."""
 
@@ -82,6 +92,7 @@ class TestResultToResponse:
         resp_err = result_to_response(Err(RuntimeError("x")), status_err=422)
         assert resp_err["status"] == 422
 
+
 class TestSecurityHeadersConfig:
     """Tests for SecurityHeadersConfig."""
 
@@ -99,6 +110,7 @@ class TestSecurityHeadersConfig:
         config = SecurityHeadersConfig(x_frame_options="SAMEORIGIN")
         headers = dict(config.to_headers())
         assert headers[b"x-frame-options"] == b"SAMEORIGIN"
+
 
 class TestTaipanMiddleware:
     """Tests for the ASGI middleware."""
@@ -119,6 +131,7 @@ class TestTaipanMiddleware:
         async def ws_app(scope: Any, receive: Any, send: Any) -> None:
             nonlocal called
             called = True
+
         mw = TaipanMiddleware(ws_app)
         await mw({"type": "websocket"}, AsyncMock(), AsyncMock())
         assert called
@@ -127,7 +140,9 @@ class TestTaipanMiddleware:
     async def test_rate_limit_returns_429_expected(self) -> None:
         """429 when rate limit is exceeded."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
-        mw = TaipanMiddleware(_make_dummy_app, rate_limiter=limiter, security_headers=False)
+        mw = TaipanMiddleware(
+            _make_dummy_app, rate_limiter=limiter, security_headers=False
+        )
         cap1 = _ResponseCapture()
         await mw({"type": "http"}, AsyncMock(), cap1)
         assert cap1.status == 200
@@ -151,7 +166,9 @@ class TestTaipanMiddleware:
     async def test_security_headers_on_429_expected(self) -> None:
         """Security headers are also on 429 responses."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
-        mw = TaipanMiddleware(_make_dummy_app, rate_limiter=limiter, security_headers=True)
+        mw = TaipanMiddleware(
+            _make_dummy_app, rate_limiter=limiter, security_headers=True
+        )
         limiter.consume()
         capture = _ResponseCapture()
         await mw({"type": "http"}, AsyncMock(), capture)
@@ -167,6 +184,7 @@ class TestTaipanMiddleware:
         assert capture.status == 500
         body = json.loads(capture.body)
         assert "Internal server error" in body["error"]
+
 
 class TestSendJsonResponse:
     """Tests for _send_json_response helper."""
@@ -184,8 +202,14 @@ class TestSendJsonResponse:
     async def test_bridge_web_extra_headers_expected(self) -> None:
         """Extra headers are included."""
         capture = _ResponseCapture()
-        await _send_json_response(capture, status=200, body={"ok": True}, extra_headers=[(b"x-custom", b"value")])
+        await _send_json_response(
+            capture,
+            status=200,
+            body={"ok": True},
+            extra_headers=[(b"x-custom", b"value")],
+        )
         assert capture.headers.get("x-custom") == "value"
+
 
 def test_send_json_response_err_expected() -> None:
     import asyncio
@@ -199,6 +223,9 @@ def test_send_json_response_err_expected() -> None:
 
             async def __call__(self, message):
                 self.called = True
+
         from taipanstack.bridges.web_bridge import result_to_response
+
         result_to_response(Err(ValueError("err")))
+
     asyncio.run(run_test())

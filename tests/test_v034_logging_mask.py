@@ -1,4 +1,5 @@
 """Tests for the mask_sensitive_data_processor structlog processor."""
+
 from taipanstack.utils.logging import (
     REDACTED_VALUE,
     SENSITIVE_KEY_PATTERNS,
@@ -66,7 +67,12 @@ class TestMaskSensitiveDataProcessor:
 
     def test_non_sensitive_keys_are_untouched_expected(self) -> None:
         """Keys not matching any sensitive pattern are left as-is."""
-        event_dict = {"event": "startup", "user": "alice", "request_id": "req-001", "duration": 1.23}
+        event_dict = {
+            "event": "startup",
+            "user": "alice",
+            "request_id": "req-001",
+            "duration": 1.23,
+        }
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["event"] == "startup"
         assert result["user"] == "alice"
@@ -87,7 +93,13 @@ class TestMaskSensitiveDataProcessor:
 
     def test_multiple_sensitive_keys_all_redacted_expected(self) -> None:
         """Multiple sensitive keys in one event dict are all redacted."""
-        event_dict = {"event": "multi", "password": "pass1", "token": "tok1", "api_key": "key1", "name": "alice"}
+        event_dict = {
+            "event": "multi",
+            "password": "pass1",
+            "token": "tok1",
+            "api_key": "key1",
+            "name": "alice",
+        }
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["password"] == REDACTED_VALUE
         assert result["token"] == REDACTED_VALUE
@@ -103,6 +115,7 @@ class TestMaskSensitiveDataProcessor:
         assert result1["secret"] == REDACTED_VALUE
         assert result2["secret"] == REDACTED_VALUE
 
+
 class TestSensitiveKeyPatternsConstant:
     """Tests for the SENSITIVE_KEY_PATTERNS constant."""
 
@@ -116,6 +129,7 @@ class TestSensitiveKeyPatternsConstant:
         for pattern in SENSITIVE_KEY_PATTERNS:
             assert pattern == pattern.lower(), f"Pattern '{pattern}' is not lowercase"
 
+
 class TestMaskSensitiveDataProcessorStructlogIntegration:
     """Integration tests: processor wired into a real structlog configuration."""
 
@@ -124,8 +138,17 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         import io
 
         import structlog
+
         output = io.StringIO()
-        structlog.configure(processors=[mask_sensitive_data_processor, structlog.dev.ConsoleRenderer(colors=False)], logger_factory=structlog.PrintLoggerFactory(file=output), wrapper_class=structlog.BoundLogger, cache_logger_on_first_use=False)
+        structlog.configure(
+            processors=[
+                mask_sensitive_data_processor,
+                structlog.dev.ConsoleRenderer(colors=False),
+            ],
+            logger_factory=structlog.PrintLoggerFactory(file=output),
+            wrapper_class=structlog.BoundLogger,
+            cache_logger_on_first_use=False,
+        )
         log = structlog.get_logger()
         log.info("user_login", password="hunter2", username="alice")
         captured = output.getvalue()
@@ -137,8 +160,17 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         import io
 
         import structlog
+
         output = io.StringIO()
-        structlog.configure(processors=[mask_sensitive_data_processor, structlog.dev.ConsoleRenderer(colors=False)], logger_factory=structlog.PrintLoggerFactory(file=output), wrapper_class=structlog.BoundLogger, cache_logger_on_first_use=False)
+        structlog.configure(
+            processors=[
+                mask_sensitive_data_processor,
+                structlog.dev.ConsoleRenderer(colors=False),
+            ],
+            logger_factory=structlog.PrintLoggerFactory(file=output),
+            wrapper_class=structlog.BoundLogger,
+            cache_logger_on_first_use=False,
+        )
         log = structlog.get_logger()
         log.warning("http_request", authorization="Bearer secret-jwt-token")
         captured = output.getvalue()
@@ -150,8 +182,17 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         import io
 
         import structlog
+
         output = io.StringIO()
-        structlog.configure(processors=[mask_sensitive_data_processor, structlog.dev.ConsoleRenderer(colors=False)], logger_factory=structlog.PrintLoggerFactory(file=output), wrapper_class=structlog.BoundLogger, cache_logger_on_first_use=False)
+        structlog.configure(
+            processors=[
+                mask_sensitive_data_processor,
+                structlog.dev.ConsoleRenderer(colors=False),
+            ],
+            logger_factory=structlog.PrintLoggerFactory(file=output),
+            wrapper_class=structlog.BoundLogger,
+            cache_logger_on_first_use=False,
+        )
         log = structlog.get_logger()
         log.info("startup", service="api", version="0.3.4")
         captured = output.getvalue()
@@ -163,8 +204,17 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         import io
 
         import structlog
+
         output = io.StringIO()
-        structlog.configure(processors=[mask_sensitive_data_processor, structlog.dev.ConsoleRenderer(colors=False)], logger_factory=structlog.PrintLoggerFactory(file=output), wrapper_class=structlog.BoundLogger, cache_logger_on_first_use=False)
+        structlog.configure(
+            processors=[
+                mask_sensitive_data_processor,
+                structlog.dev.ConsoleRenderer(colors=False),
+            ],
+            logger_factory=structlog.PrintLoggerFactory(file=output),
+            wrapper_class=structlog.BoundLogger,
+            cache_logger_on_first_use=False,
+        )
         log = structlog.get_logger()
         log.info("api_request", api_key="sk-abc-xyz-123")
         captured = output.getvalue()
@@ -176,8 +226,17 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         import io
 
         import structlog
+
         output = io.StringIO()
-        structlog.configure(processors=[mask_sensitive_data_processor, structlog.dev.ConsoleRenderer(colors=False)], logger_factory=structlog.PrintLoggerFactory(file=output), wrapper_class=structlog.BoundLogger, cache_logger_on_first_use=False)
+        structlog.configure(
+            processors=[
+                mask_sensitive_data_processor,
+                structlog.dev.ConsoleRenderer(colors=False),
+            ],
+            logger_factory=structlog.PrintLoggerFactory(file=output),
+            wrapper_class=structlog.BoundLogger,
+            cache_logger_on_first_use=False,
+        )
         log = structlog.get_logger()
         log.debug("token_refresh", token="eyJhbGciOiJIUzI1NiJ9.payload")
         captured = output.getvalue()

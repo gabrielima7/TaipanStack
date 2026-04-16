@@ -1,4 +1,5 @@
 """Tests for rate limiting utils."""
+
 import pytest
 
 from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
@@ -21,13 +22,17 @@ class TestRateLimiter:
         assert limiter.consume() is True
         assert limiter.consume() is False
 
-    def test_utils_rate_limit_consume_refill_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_utils_rate_limit_consume_refill_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test token refill logic."""
         import time
+
         mock_time = 100.0
 
         def fake_monotonic() -> float:
             return mock_time
+
         monkeypatch.setattr(time, "monotonic", fake_monotonic)
         limiter = RateLimiter(max_calls=1, time_window=1.0)
         assert limiter.consume() is True
@@ -39,6 +44,7 @@ class TestRateLimiter:
         assert limiter.consume() is True
         assert limiter.consume() is False
 
+
 class TestRateLimitDecorator:
     """Tests for the @rate_limit decorator."""
 
@@ -48,6 +54,7 @@ class TestRateLimitDecorator:
         @rate_limit(max_calls=2, time_window=10.0)
         def process() -> int:
             return 42
+
         res1 = process()
         assert res1.is_ok()
         assert res1.ok_value == 42
@@ -65,6 +72,7 @@ class TestRateLimitDecorator:
         @rate_limit(max_calls=1, time_window=10.0)
         async def fetch_data() -> str:
             return "async data"
+
         res1 = await fetch_data()
         assert res1.is_ok()
         assert res1.ok_value == "async data"

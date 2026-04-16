@@ -31,6 +31,7 @@ def test_half_open_thundering_herd_chaos_expected():
         time.sleep(0.05)
         success_call_count += 1
         return "success"
+
     results = []
     exceptions = []
 
@@ -39,6 +40,7 @@ def test_half_open_thundering_herd_chaos_expected():
             results.append(slow_service())
         except CircuitBreakerError as e:
             exceptions.append(e)
+
     threads = [threading.Thread(target=worker) for _ in range(5)]
     for t in threads:
         t.start()
@@ -46,6 +48,7 @@ def test_half_open_thundering_herd_chaos_expected():
         t.join()
     assert breaker.state == CircuitState.CLOSED
     assert success_call_count <= breaker.config.success_threshold
+
 
 def test_half_open_exhaustion_with_system_exit_expected():
     """Simulate uncatchable exception bypassing normal state updates in HALF_OPEN.
@@ -69,12 +72,14 @@ def test_half_open_exhaustion_with_system_exit_expected():
     def worker():
         with contextlib.suppress(SystemExit):
             suicidal_service()
+
     t = threading.Thread(target=worker)
     t.start()
     t.join()
     for _ in range(3):
         assert successful_service() == "success"
     assert breaker.state == CircuitState.CLOSED
+
 
 @pytest.mark.asyncio
 async def test_async_half_open_exhaustion_with_cancelled_error():
@@ -90,6 +95,7 @@ async def test_async_half_open_exhaustion_with_cancelled_error():
     @breaker
     async def successful_service():
         return "success"
+
     with contextlib.suppress(asyncio.CancelledError):
         await suicidal_service()
     for _ in range(3):

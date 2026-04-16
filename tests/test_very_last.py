@@ -3,6 +3,7 @@
 Covers edge cases, error branches, and version-specific code paths
 that are not exercised by the main test suite.
 """
+
 import gc
 import logging
 import subprocess
@@ -20,8 +21,10 @@ class TestValidatorsVersionConversion:
     def test_validate_python_version_with_letters_expected(self) -> None:
         """Test validate_python_version with letters in version."""
         from taipanstack.security.validators import validate_python_version
+
         with pytest.raises(ValueError, match="Invalid version"):
             validate_python_version("3.x")
+
 
 class TestGuardsOSErrorMocked:
     """Test for guards.py lines 97-98 (OSError in resolve)."""
@@ -29,6 +32,7 @@ class TestGuardsOSErrorMocked:
     def test_guard_path_basic_works_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal with basic case."""
         from taipanstack.security.guards import guard_path_traversal
+
         file = tmp_path / "test.txt"
         file.write_text("test")
         result = guard_path_traversal(file, tmp_path)
@@ -37,14 +41,19 @@ class TestGuardsOSErrorMocked:
     def test_guard_path_resolve_valueerror(self) -> None:
         """Test guard_path_traversal catching ValueError from resolve (L97-98)."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
+
         mock_path = MagicMock(spec=Path)
         mock_path.__str__ = MagicMock(return_value="safe_file.txt")
         mock_path.is_absolute.return_value = False
         mock_joined = MagicMock(spec=Path)
         mock_joined.resolve.side_effect = ValueError("embedded null byte")
-        with patch.object(Path, "__truediv__", return_value=mock_joined), patch.object(Path, "resolve", return_value=Path("/mock/safe_base")):
+        with (
+            patch.object(Path, "__truediv__", return_value=mock_joined),
+            patch.object(Path, "resolve", return_value=Path("/mock/safe_base")),
+        ):
             with pytest.raises(SecurityError, match="Invalid path"):
                 guard_path_traversal("safe_file.txt", "/mock/safe_base")
+
 
 class TestGuardsSymlinkMocked:
     """Test for guards.py line 118 (symlink detection)."""
@@ -52,11 +61,13 @@ class TestGuardsSymlinkMocked:
     def test_guard_path_traversal_symlink_mocked_expected(self, tmp_path: Path) -> None:
         """Test guard_path_traversal symlink detection with mock."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
+
         target = tmp_path / "real_file.txt"
         target.write_text("content")
         with patch.object(Path, "is_symlink", return_value=True):
             with pytest.raises(SecurityError, match="Symlinks"):
                 guard_path_traversal(target, tmp_path, allow_symlinks=False)
+
 
 class TestSanitizersResolveError:
     """Test for sanitizers.py lines 241-243 (resolve error)."""
@@ -64,12 +75,14 @@ class TestSanitizersResolveError:
     def test_sanitize_path_works_expected(self, tmp_path: Path) -> None:
         """Test sanitize_path with valid path."""
         from taipanstack.security.sanitizers import sanitize_path
+
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
 
     def test_sanitize_path_resolve_oserror_expected(self) -> None:
         """Test sanitize_path with resolve=True raising OSError (L241-243)."""
         from taipanstack.security.sanitizers import sanitize_path
+
         call_count = 0
         original_resolve = Path.resolve
 
@@ -79,13 +92,17 @@ class TestSanitizersResolveError:
             if call_count >= 2:
                 raise OSError("No such file")
             return original_resolve(self_path, *a, **kw)
+
         with patch.object(Path, "resolve", selective_resolve):
             with pytest.raises(ValueError, match="Cannot resolve path"):
-                sanitize_path("file.txt", base_dir="/mock/safe", resolve=True, max_depth=None)
+                sanitize_path(
+                    "file.txt", base_dir="/mock/safe", resolve=True, max_depth=None
+                )
 
     def test_sanitize_path_resolve_runtime_error(self) -> None:
         """Test sanitize_path with resolve=True raising RuntimeError (L241-243)."""
         from taipanstack.security.sanitizers import sanitize_path
+
         call_count = 0
         original_resolve = Path.resolve
 
@@ -95,9 +112,13 @@ class TestSanitizersResolveError:
             if call_count >= 2:
                 raise RuntimeError("Recursion")
             return original_resolve(self_path, *a, **kw)
+
         with patch.object(Path, "resolve", selective_resolve):
             with pytest.raises(ValueError, match="Cannot resolve path"):
-                sanitize_path("file.txt", base_dir="/mock/safe", resolve=True, max_depth=None)
+                sanitize_path(
+                    "file.txt", base_dir="/mock/safe", resolve=True, max_depth=None
+                )
+
 
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
@@ -105,6 +126,7 @@ class TestFilesystemWriteError:
     def test_safe_write_existing_permissions_expected(self, tmp_path: Path) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
+
         existing = tmp_path / "existing.txt"
         existing.write_text("old")
         result = safe_write(existing, "new", options=WriteOptions(atomic=True))
@@ -114,8 +136,10 @@ class TestFilesystemWriteError:
         """Test ensure_dir with '..' in path string (L243)."""
         from taipanstack.security.guards import SecurityError
         from taipanstack.utils.filesystem import ensure_dir
+
         with pytest.raises(SecurityError, match="traversal"):
             ensure_dir("../../../escape_dir")
+
 
 class TestRetryMaxAttemptsBranch:
     """Test for retry.py line 187/288."""
@@ -127,8 +151,10 @@ class TestRetryMaxAttemptsBranch:
         @retry(max_attempts=2, initial_delay=0.001, on=(ValueError,))
         def always_fails() -> None:
             raise ValueError("fail!")
+
         with pytest.raises(RetryError):
             always_fails()
+
 
 class TestSubprocessCheckCommand:
     """Test for subprocess.py coverage gaps."""
@@ -136,8 +162,10 @@ class TestSubprocessCheckCommand:
     def test_run_safe_command_check_true_fails(self) -> None:
         """Test run_safe_command with check=True when command fails (L231)."""
         from taipanstack.utils.subprocess import run_safe_command
+
         with pytest.raises(subprocess.CalledProcessError):
             run_safe_command(["python", "-c", "raise SystemExit(1)"], check=True)
+
 
 class TestLoggingStructlogBranches:
     """Test for remaining logging.py coverage gaps."""
@@ -145,6 +173,7 @@ class TestLoggingStructlogBranches:
     def test_logging_with_structlog_real_expected(self) -> None:
         """Test logging with real structlog."""
         from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger
+
         assert HAS_STRUCTLOG is True
         logger = StackLogger(use_structured=True)
         logger.bind(test_key="test_value")
@@ -162,6 +191,7 @@ class TestLoggingStructlogBranches:
     def test_logging_without_structlog_expected(self) -> None:
         """Test the HAS_STRUCTLOG=False branch (L20-21)."""
         from taipanstack.utils.logging import StackLogger
+
         logger = StackLogger(use_structured=False)
         logger.bind(test_key="test_value")
         logger.debug("Should use standard logging", key="value")
@@ -178,6 +208,7 @@ class TestLoggingStructlogBranches:
     def test_setup_logging_with_log_file_expected(self) -> None:
         """Test setup_logging with a log_file parameter (L245)."""
         from taipanstack.utils.logging import setup_logging
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False) as f:
             log_path = f.name
         try:
@@ -194,6 +225,7 @@ class TestLoggingStructlogBranches:
             Path(log_path).unlink(missing_ok=True)
             setup_logging(level="INFO")
 
+
 class TestGeneratorsParanoidLevel:
     """Test for generators.py line 165 (paranoid security level)."""
 
@@ -201,7 +233,18 @@ class TestGeneratorsParanoidLevel:
         """Test generate_pre_commit_config with paranoid security level."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
-        config = StackConfig(project_name="test-project", python_version="3.12", security=SecurityConfig(level="paranoid", enable_bandit=True, enable_safety=True, enable_semgrep=True, enable_detect_secrets=True))
+
+        config = StackConfig(
+            project_name="test-project",
+            python_version="3.12",
+            security=SecurityConfig(
+                level="paranoid",
+                enable_bandit=True,
+                enable_safety=True,
+                enable_semgrep=True,
+                enable_detect_secrets=True,
+            ),
+        )
         result = generate_pre_commit_config(config)
         assert "pip-audit" in result
         assert "vulture" in result
@@ -211,12 +254,14 @@ class TestGeneratorsParanoidLevel:
         assert "semgrep" in result
         assert "detect-secrets" in result
 
+
 class TestCompatPy313FeatureDetection:
     """Test compat.py JIT/free-threading/mimalloc detection branches."""
 
     def test_check_jit_available_on_py313_expected(self) -> None:
         """Test _check_jit_available when PY313=True (L91-96)."""
         from taipanstack.core import compat
+
         with patch.object(compat, "PY313", True):
             result = compat._check_jit_available()
             assert isinstance(result, bool)
@@ -224,35 +269,57 @@ class TestCompatPy313FeatureDetection:
     def test_check_jit_available_type_error(self) -> None:
         """Test _check_jit_available catches TypeError (L95)."""
         from taipanstack.core import compat
-        with patch.object(compat, "PY313", True), patch("builtins.hasattr", side_effect=TypeError("broken")):
+
+        with (
+            patch.object(compat, "PY313", True),
+            patch("builtins.hasattr", side_effect=TypeError("broken")),
+        ):
             result = compat._check_jit_available()
             assert result is False
 
     def test_check_free_threading_with_nogil_expected(self) -> None:
         """Test _check_free_threading_available with nogil flag (L107-120)."""
         from taipanstack.core import compat
+
         mock_flags = MagicMock()
         mock_flags.nogil = False
-        with patch.object(compat, "PY313", True), patch.object(sys, "flags", mock_flags):
+        with (
+            patch.object(compat, "PY313", True),
+            patch.object(sys, "flags", mock_flags),
+        ):
             result = compat._check_free_threading_available()
             assert result is False
 
     def test_check_free_threading_sysconfig_disable_gil_expected(self) -> None:
         """Test _check_free_threading_available via sysconfig CONFIG_ARGS (L114-120)."""
         from taipanstack.core import compat
+
         mock_flags = MagicMock(spec=[])
-        with patch.object(compat, "PY313", True), patch.object(sys, "flags", mock_flags), patch.dict("sys.modules", {"sysconfig": MagicMock()}):
+        with (
+            patch.object(compat, "PY313", True),
+            patch.object(sys, "flags", mock_flags),
+            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+        ):
             import sysconfig
-            sysconfig.get_config_var = MagicMock(return_value="--disable-gil --with-pydebug")
+
+            sysconfig.get_config_var = MagicMock(
+                return_value="--disable-gil --with-pydebug"
+            )
             result = compat._check_free_threading_available()
             assert result is True
 
     def test_check_free_threading_attribute_error(self) -> None:
         """Test _check_free_threading_available catches AttributeError (L117-118)."""
         from taipanstack.core import compat
+
         mock_flags = MagicMock(spec=[])
-        with patch.object(compat, "PY313", True), patch.object(sys, "flags", mock_flags), patch.dict("sys.modules", {"sysconfig": MagicMock()}):
+        with (
+            patch.object(compat, "PY313", True),
+            patch.object(sys, "flags", mock_flags),
+            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+        ):
             import sysconfig
+
             sysconfig.get_config_var = MagicMock(side_effect=AttributeError)
             result = compat._check_free_threading_available()
             assert result is False
@@ -260,8 +327,13 @@ class TestCompatPy313FeatureDetection:
     def test_check_mimalloc_available_on_py313_expected(self) -> None:
         """Test _check_mimalloc_available with mimalloc in config (L137-138)."""
         from taipanstack.core import compat
-        with patch.object(compat, "PY313", True), patch.dict("sys.modules", {"sysconfig": MagicMock()}):
+
+        with (
+            patch.object(compat, "PY313", True),
+            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+        ):
             import sysconfig
+
             sysconfig.get_config_var = MagicMock(return_value="--with-mimalloc")
             result = compat._check_mimalloc_available()
             assert result is True
@@ -269,11 +341,17 @@ class TestCompatPy313FeatureDetection:
     def test_check_mimalloc_attribute_error(self) -> None:
         """Test _check_mimalloc_available catches AttributeError (L137-138)."""
         from taipanstack.core import compat
-        with patch.object(compat, "PY313", True), patch.dict("sys.modules", {"sysconfig": MagicMock()}):
+
+        with (
+            patch.object(compat, "PY313", True),
+            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+        ):
             import sysconfig
+
             sysconfig.get_config_var = MagicMock(side_effect=AttributeError)
             result = compat._check_mimalloc_available()
             assert result is False
+
 
 class TestOptimizationsEdgeCases:
     """Test optimizations.py edge cases for coverage."""
@@ -281,6 +359,7 @@ class TestOptimizationsEdgeCases:
     def test_apply_gc_tuning_exception(self) -> None:
         """Test _apply_gc_tuning when gc.set_threshold raises (L253-254)."""
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_tuning
+
         profile = OptimizationProfile()
         applied: list[str] = []
         errors: list[str] = []
@@ -293,36 +372,60 @@ class TestOptimizationsEdgeCases:
         """Test _apply_gc_freeze skipped when not PY312 (L271-272)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
+
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
         skipped: list[str] = []
         errors: list[str] = []
         with patch.object(optimizations, "PY312", False):
-            _apply_gc_freeze(profile, freeze_after=True, applied=applied, skipped=skipped, errors=errors)
+            _apply_gc_freeze(
+                profile,
+                freeze_after=True,
+                applied=applied,
+                skipped=skipped,
+                errors=errors,
+            )
         assert any("requires Python 3.12" in s for s in skipped)
 
     def test_apply_gc_freeze_success(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
+
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
         skipped: list[str] = []
         errors: list[str] = []
         with patch.object(optimizations, "PY312", True):
-            _apply_gc_freeze(profile, freeze_after=True, applied=applied, skipped=skipped, errors=errors)
+            _apply_gc_freeze(
+                profile,
+                freeze_after=True,
+                applied=applied,
+                skipped=skipped,
+                errors=errors,
+            )
         assert any("gc_freeze" in a for a in applied)
 
     def test_apply_gc_freeze_exception(self) -> None:
         """Test _apply_gc_freeze error handling (L269-270)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
+
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
         skipped: list[str] = []
         errors: list[str] = []
-        with patch.object(optimizations, "PY312", True), patch.object(gc, "freeze", side_effect=RuntimeError("freeze failed")):
-            _apply_gc_freeze(profile, freeze_after=True, applied=applied, skipped=skipped, errors=errors)
+        with (
+            patch.object(optimizations, "PY312", True),
+            patch.object(gc, "freeze", side_effect=RuntimeError("freeze failed")),
+        ):
+            _apply_gc_freeze(
+                profile,
+                freeze_after=True,
+                applied=applied,
+                skipped=skipped,
+                errors=errors,
+            )
         assert any("freeze failed" in e for e in errors)
 
     def test_apply_experimental_with_jit_and_free_threading_expected(self) -> None:
@@ -332,11 +435,21 @@ class TestOptimizationsEdgeCases:
             OptimizationProfile,
             _apply_experimental,
         )
+
         profile = OptimizationProfile(enable_experimental=True)
         applied: list[str] = []
         skipped: list[str] = []
-        mock_features = PythonFeatures(version=(3, 13, 0), version_string="3.13.0", tier=VersionTier.MODERN, has_jit=True, has_free_threading=True, experimental_enabled=True)
-        with patch("taipanstack.core.optimizations.get_features", return_value=mock_features):
+        mock_features = PythonFeatures(
+            version=(3, 13, 0),
+            version_string="3.13.0",
+            tier=VersionTier.MODERN,
+            has_jit=True,
+            has_free_threading=True,
+            experimental_enabled=True,
+        )
+        with patch(
+            "taipanstack.core.optimizations.get_features", return_value=mock_features
+        ):
             _apply_experimental(profile, applied, skipped)
         assert any("jit" in a for a in applied)
         assert any("free_threading" in a for a in applied)
@@ -347,6 +460,7 @@ class TestOptimizationsEdgeCases:
             OptimizationProfile,
             apply_optimizations,
         )
+
         profile = OptimizationProfile()
         with patch.object(gc, "set_threshold", side_effect=RuntimeError("boom")):
             result = apply_optimizations(profile=profile, apply_gc=True)

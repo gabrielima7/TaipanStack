@@ -1,4 +1,5 @@
 """Tests for the secure JWT module."""
+
 import datetime
 
 import jwt
@@ -31,6 +32,7 @@ class TestEncodeJWT:
         assert result2.is_err()
         assert isinstance(result2.err_value, ValueError)
 
+
 class TestDecodeJWT:
     """Tests for decode_jwt."""
 
@@ -49,7 +51,9 @@ class TestDecodeJWT:
     def test_decode_rejects_none_algorithm_expected(self) -> None:
         """Test that mapping 'none' algorithm to decode is blocked."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
-        result = decode_jwt("some.token.str", secret, algorithms=["HS256", "none"], audience="my_app")
+        result = decode_jwt(
+            "some.token.str", secret, algorithms=["HS256", "none"], audience="my_app"
+        )
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
         assert "explicitly disallowed" in str(result.err_value)
@@ -79,7 +83,12 @@ class TestDecodeJWT:
         exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
         payload = {"sub": "user_123", "aud": "my_app", "exp": exp_time}
         token = jwt.encode(payload, secret, algorithm="HS256")
-        result = decode_jwt(token, "wrong_secret_that_is_at_least_32_bytes_long", algorithms=["HS256"], audience="my_app")
+        result = decode_jwt(
+            token,
+            "wrong_secret_that_is_at_least_32_bytes_long",
+            algorithms=["HS256"],
+            audience="my_app",
+        )
         assert result.is_err()
         assert isinstance(result.err_value, jwt.exceptions.InvalidSignatureError)
 

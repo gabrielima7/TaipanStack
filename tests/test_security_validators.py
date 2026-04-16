@@ -1,4 +1,5 @@
 """Tests for stack.security.validators module."""
+
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -41,6 +42,7 @@ class TestValidateProjectName:
         with pytest.raises(ValueError, match="exceeds maximum length"):
             validate_project_name("a" * 101)
 
+
 class TestValidatePythonVersion:
     """Tests for validate_python_version function."""
 
@@ -67,6 +69,7 @@ class TestValidatePythonVersion:
     def test_invalid_version_numbers_value_error(self) -> None:
         """Test ValueError is raised when version numbers are invalid."""
         from unittest.mock import patch
+
         with patch("taipanstack.security.validators.re.match") as mock_match:
             mock_match.return_value = True
             with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
@@ -80,10 +83,13 @@ class TestValidatePythonVersion:
 
     @given(st.text(min_size=21, max_size=5000))
     @settings(suppress_health_check=[HealthCheck.differing_executors])
-    def test_validate_python_version_fuzzing_hypothesis_expected(self, massive_version: str) -> None:
+    def test_validate_python_version_fuzzing_hypothesis_expected(
+        self, massive_version: str
+    ) -> None:
         """Property-based test: bombard with massive strings to ensure no DoS crashes."""
         with pytest.raises(ValueError):
             validate_python_version(massive_version)
+
 
 class TestValidateEmail:
     """Tests for validate_email function."""
@@ -106,6 +112,7 @@ class TestValidateEmail:
         with pytest.raises(ValueError, match="Invalid email format"):
             validate_email("user@")
 
+
 class TestValidateUrl:
     """Tests for validate_url function."""
 
@@ -113,7 +120,10 @@ class TestValidateUrl:
         """Test valid URLs pass."""
         assert validate_url("https://example.com") == "https://example.com"
         assert validate_url("http://localhost:8080") == "http://localhost:8080"
-        assert validate_url("https://api.github.com/repos") == "https://api.github.com/repos"
+        assert (
+            validate_url("https://api.github.com/repos")
+            == "https://api.github.com/repos"
+        )
 
     def test_empty_url_rejected_expected(self) -> None:
         """Test empty URLs are rejected."""

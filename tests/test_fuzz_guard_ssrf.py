@@ -4,7 +4,15 @@ from hypothesis import strategies as st
 from taipanstack.security.guards import guard_ssrf
 
 
-@settings(suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large, HealthCheck.too_slow], max_examples=10, deadline=None)
+@settings(
+    suppress_health_check=[
+        HealthCheck.large_base_example,
+        HealthCheck.data_too_large,
+        HealthCheck.too_slow,
+    ],
+    max_examples=10,
+    deadline=None,
+)
 @given(st.text(min_size=2049, max_size=8192))
 def test_fuzz_guard_ssrf_massive_strings_dos_expected(url: str) -> None:
     """Fuzz guard_ssrf with massive strings to ensure DoS protection limits are active."""

@@ -1,4 +1,5 @@
 """Tests for the _imports lazy import helpers."""
+
 import types
 
 from taipanstack.bridges._imports import get_attr_or_err, require_dependency
@@ -27,12 +28,14 @@ class TestRequireDependency:
         assert isinstance(result, Err)
         assert "pip install taipanstack[bridges-http]" in str(result.err_value)
 
+
 class TestGetAttrOrErr:
     """Tests for get_attr_or_err."""
 
     def test_bridge_imports_existing_attr_expected(self) -> None:
         """Returns Ok for existing attributes."""
         import json
+
         result = get_attr_or_err(json, "dumps")
         assert isinstance(result, Ok)
         assert result.ok_value is json.dumps
@@ -40,6 +43,7 @@ class TestGetAttrOrErr:
     def test_bridge_imports_missing_attr_expected(self) -> None:
         """Returns Err for missing attributes."""
         import json
+
         result = get_attr_or_err(json, "nonexistent_attr_xyz")
         assert isinstance(result, Err)
         assert isinstance(result.err_value, AttributeError)

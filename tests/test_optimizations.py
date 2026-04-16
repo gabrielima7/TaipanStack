@@ -1,4 +1,5 @@
 """Comprehensive tests for core.optimizations module."""
+
 import gc
 import os
 from unittest.mock import patch
@@ -19,7 +20,9 @@ class TestOptimizationProfile:
 
     def test_optimizations_profile_creation_expected(self) -> None:
         """Test creating an optimization profile."""
-        profile = OptimizationProfile(gc_threshold_0=700, gc_threshold_1=10, gc_threshold_2=10)
+        profile = OptimizationProfile(
+            gc_threshold_0=700, gc_threshold_1=10, gc_threshold_2=10
+        )
         assert profile.gc_threshold_0 == 700
         assert profile.gc_threshold_1 == 10
         assert profile.gc_threshold_2 == 10
@@ -30,12 +33,15 @@ class TestOptimizationProfile:
         with pytest.raises(AttributeError):
             profile.gc_threshold_0 = 999
 
+
 class TestOptimizationResult:
     """Test OptimizationResult dataclass."""
 
     def test_optimizations_result_creation_expected(self) -> None:
         """Test creating an optimization result."""
-        result = OptimizationResult(success=True, applied=("gc_threshold",), skipped=("perf_hints",), errors=())
+        result = OptimizationResult(
+            success=True, applied=("gc_threshold",), skipped=("perf_hints",), errors=()
+        )
         assert result.success
         assert "gc_threshold" in result.applied
         assert "perf_hints" in result.skipped
@@ -43,12 +49,15 @@ class TestOptimizationResult:
 
     def test_result_to_dict_expected(self) -> None:
         """Test converting result to dictionary."""
-        result = OptimizationResult(success=True, applied=("opt1", "opt2"), skipped=("opt3",), errors=())
+        result = OptimizationResult(
+            success=True, applied=("opt1", "opt2"), skipped=("opt3",), errors=()
+        )
         data = result.to_dict()
         assert data["success"] is True
         assert data["applied"] == ["opt1", "opt2"]
         assert data["skipped"] == ["opt3"]
         assert data["errors"] == []
+
 
 class TestGetOptimizationProfile:
     """Test get_optimization_profile function."""
@@ -105,9 +114,13 @@ class TestGetOptimizationProfile:
 
     def test_profile_opt_level_aggressive_with_experimental_expected(self) -> None:
         """Test aggressive level with experimental enables features."""
-        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"}):
+        with patch.dict(
+            os.environ,
+            {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"},
+        ):
             profile = get_optimization_profile(force_refresh=True)
             assert profile.enable_experimental
+
 
 class TestApplyOptimizations:
     """Test apply_optimizations function."""
@@ -120,7 +133,9 @@ class TestApplyOptimizations:
 
     def test_apply_with_custom_profile_expected(self) -> None:
         """Test applying optimizations with custom profile."""
-        custom_profile = OptimizationProfile(gc_threshold_0=999, gc_threshold_1=20, gc_threshold_2=20)
+        custom_profile = OptimizationProfile(
+            gc_threshold_0=999, gc_threshold_1=20, gc_threshold_2=20
+        )
         result = apply_optimizations(profile=custom_profile)
         assert result.success
         thresholds = gc.get_threshold()
@@ -162,6 +177,7 @@ class TestApplyOptimizations:
         result = apply_optimizations(profile=profile)
         assert any("perf_hints: disabled" in s for s in result.skipped)
 
+
 class TestUtilityFunctions:
     """Test utility functions."""
 
@@ -194,7 +210,10 @@ class TestUtilityFunctions:
 
     def test_optimization_profile_cached_expected(self) -> None:
         """Test get_optimization_profile is cached."""
-        with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"}):
+        with patch.dict(
+            os.environ,
+            {"STACK_OPTIMIZATION_LEVEL": "2", "STACK_ENABLE_EXPERIMENTAL": "1"},
+        ):
             prof1 = get_optimization_profile(force_refresh=True)
             prof2 = get_optimization_profile()
             assert prof1 is prof2

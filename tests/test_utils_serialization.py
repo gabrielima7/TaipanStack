@@ -1,4 +1,5 @@
 """Tests for serialization utilities."""
+
 import orjson
 import pytest
 
@@ -44,7 +45,10 @@ class TestDefaultEncoder:
 
         class CustomObj:
             pass
-        with pytest.raises(orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"):
+
+        with pytest.raises(
+            orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"
+        ):
             orjson.dumps(CustomObj(), default=default_encoder)
 
     def test_default_encoder_direct_type_error(self) -> None:

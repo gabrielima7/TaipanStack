@@ -1,4 +1,5 @@
 """Chaos test for retry calculation resiliency."""
+
 import math
 
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
@@ -15,6 +16,7 @@ def test_retry_chaos_extreme_attempt_expected() -> None:
     delay = calculate_delay(2000, config)
     assert delay <= 66.0
     assert delay >= 0.0
+
 
 def test_retry_chaos_nan_inf_config_expected() -> None:
     """Simulate NaN or Inf values in the retry configuration.

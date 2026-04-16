@@ -1,4 +1,5 @@
 """Tests for structured logging utilities."""
+
 import logging
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,7 @@ class TestStackLogger:
         """Test fallback when structlog is not installed."""
         import importlib.util
         from unittest import mock
+
         with mock.patch.dict("sys.modules", {"structlog": None}):
             spec = importlib.util.find_spec("taipanstack.utils.logging")
             module = importlib.util.module_from_spec(spec)
@@ -80,42 +82,54 @@ class TestStackLogger:
         result = logger.unbind("key")
         assert result is logger
 
-    def test_utils_logging_debug_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_debug_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test debug logging."""
         with caplog.at_level(logging.DEBUG):
             logger = StackLogger(level="DEBUG")
             logger.debug("debug message")
         assert "debug message" in caplog.text
 
-    def test_utils_logging_info_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_info_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test info logging."""
         with caplog.at_level(logging.INFO):
             logger = StackLogger(level="INFO")
             logger.info("info message")
         assert "info message" in caplog.text
 
-    def test_utils_logging_warning_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_warning_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test warning logging."""
         with caplog.at_level(logging.WARNING):
             logger = StackLogger(level="WARNING")
             logger.warning("warning message")
         assert "warning message" in caplog.text
 
-    def test_utils_logging_error_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_error_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test error logging."""
         with caplog.at_level(logging.ERROR):
             logger = StackLogger(level="ERROR")
             logger.error("error message")
         assert "error message" in caplog.text
 
-    def test_utils_logging_critical_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_critical_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test critical logging."""
         with caplog.at_level(logging.CRITICAL):
             logger = StackLogger(level="CRITICAL")
             logger.critical("critical message")
         assert "critical message" in caplog.text
 
-    def test_utils_logging_exception_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_exception_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test exception logging with traceback."""
         with caplog.at_level(logging.ERROR):
             logger = StackLogger()
@@ -125,13 +139,16 @@ class TestStackLogger:
                 logger.exception("caught error")
         assert "caught error" in caplog.text
 
-    def test_context_in_message_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_context_in_message_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that context appears in log message."""
         with caplog.at_level(logging.INFO):
             logger = StackLogger()
             logger.bind(request_id="abc123")
             logger.info("test message")
         assert "request_id=abc123" in caplog.text
+
 
 class TestStackLoggerStructured:
     """Tests for StackLogger with structlog enabled."""
@@ -141,17 +158,23 @@ class TestStackLoggerStructured:
         """Return a structured StackLogger instance."""
         return StackLogger("test_struct", use_structured=True)
 
-    def test_utils_logging_structured_init_expected(self, structured_logger: StackLogger) -> None:
+    def test_utils_logging_structured_init_expected(
+        self, structured_logger: StackLogger
+    ) -> None:
         assert structured_logger.name == "test_struct"
         assert structured_logger._structured
 
-    def test_structured_bind_unbind_expected(self, structured_logger: StackLogger) -> None:
+    def test_structured_bind_unbind_expected(
+        self, structured_logger: StackLogger
+    ) -> None:
         structured_logger.bind(test_key="test_val")
         assert structured_logger._context["test_key"] == "test_val"
         structured_logger.unbind("test_key")
         assert "test_key" not in structured_logger._context
 
-    def test_structured_logging_methods_expected(self, structured_logger: StackLogger) -> None:
+    def test_structured_logging_methods_expected(
+        self, structured_logger: StackLogger
+    ) -> None:
         structured_logger.debug("debug message", extra="info")
         structured_logger.info("info message", extra="info")
         structured_logger.warning("warning message", extra="info")
@@ -171,11 +194,19 @@ class TestStackLoggerStructured:
         logger = get_logger("test", use_structured=True)
         assert logger._structured
 
+
 class TestMaskSensitiveDataProcessor:
     """Tests for mask_sensitive_data_processor."""
 
     def test_mask_sensitive_data_expected(self) -> None:
-        event_dict = {"message": "User login", "password": "my_secret_password", "API_KEY": "12345ABC", "user_token": "tokenStringABC", "safe_field": "safe_value", "Authorization": "Bearer 1234"}
+        event_dict = {
+            "message": "User login",
+            "password": "my_secret_password",
+            "API_KEY": "12345ABC",
+            "user_token": "tokenStringABC",
+            "safe_field": "safe_value",
+            "Authorization": "Bearer 1234",
+        }
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["message"] == "User login"
         assert result["password"] == REDACTED_VALUE
@@ -183,6 +214,7 @@ class TestMaskSensitiveDataProcessor:
         assert result["user_token"] == REDACTED_VALUE
         assert result["Authorization"] == REDACTED_VALUE
         assert result["safe_field"] == "safe_value"
+
 
 class TestGetLogger:
     """Tests for get_logger function."""
@@ -201,6 +233,7 @@ class TestGetLogger:
         """Test logger with custom level."""
         logger = get_logger(level="DEBUG")
         assert logger.level == "DEBUG"
+
 
 class TestSetupLogging:
     """Tests for setup_logging function."""
@@ -231,10 +264,13 @@ class TestSetupLogging:
         setup_logging(log_file=str(log_file))
         assert log_file.exists()
 
+
 class TestLogOperation:
     """Tests for log_operation context manager."""
 
-    def test_expected_exceptions_handling_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_expected_exceptions_handling_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that only expected_exceptions are caught and logged as failures."""
 
         class ExpectedError(Exception):
@@ -242,6 +278,7 @@ class TestLogOperation:
 
         class UnexpectedError(Exception):
             pass
+
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ExpectedError):
                 with log_operation("expected_op", expected_exceptions=ExpectedError):
@@ -254,7 +291,9 @@ class TestLogOperation:
                     raise UnexpectedError("This is unexpected")
         assert "Failed: unexpected_op" not in caplog.text
 
-    def test_logs_start_and_end_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_logs_start_and_end_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that operation start and end are logged."""
         with caplog.at_level(logging.INFO):
             with log_operation("test_operation"):
@@ -262,14 +301,18 @@ class TestLogOperation:
         assert "Starting: test_operation" in caplog.text
         assert "Completed: test_operation" in caplog.text
 
-    def test_utils_logging_logs_duration_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_logs_duration_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that duration is logged."""
         with caplog.at_level(logging.INFO):
             with log_operation("test_operation"):
                 pass
         assert "duration_seconds" in caplog.text
 
-    def test_utils_logging_custom_logger_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_custom_logger_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that log_operation uses the provided custom logger."""
         custom_logger = get_logger("custom_op_logger")
         with caplog.at_level(logging.INFO):
@@ -278,7 +321,9 @@ class TestLogOperation:
         assert "custom_op" in caplog.text
         assert "custom_op_logger" in caplog.text
 
-    def test_logs_exception_on_failure_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_logs_exception_on_failure_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that exception is logged on failure."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError):
@@ -292,7 +337,9 @@ class TestLogOperation:
             with log_operation("test"):
                 raise ValueError("original")
 
-    def test_expected_exceptions_caught_and_logged_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_expected_exceptions_caught_and_logged_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that specified expected exceptions are caught and logged."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(ValueError, match="expected"):
@@ -300,13 +347,16 @@ class TestLogOperation:
                     raise ValueError("expected")
         assert "Failed: test_expected" in caplog.text
 
-    def test_unexpected_exceptions_bypass_catch_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_unexpected_exceptions_bypass_catch_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test that unexpected exceptions bypass the catch block and are not logged."""
         with caplog.at_level(logging.ERROR):
             with pytest.raises(TypeError, match="unexpected"):
                 with log_operation("test_unexpected", expected_exceptions=ValueError):
                     raise TypeError("unexpected")
         assert "Failed: test_unexpected" not in caplog.text
+
 
 class TestFormatConstants:
     """Tests for format string constants."""
@@ -324,6 +374,7 @@ class TestFormatConstants:
         assert "level" in JSON_FORMAT
         assert "logger" in JSON_FORMAT
         assert "message" in JSON_FORMAT
+
 
 class TestCorrelationId:
     """Tests for correlation_id contextvars."""

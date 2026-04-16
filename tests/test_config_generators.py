@@ -1,4 +1,5 @@
 """Tests for configuration generators."""
+
 from taipanstack.config.generators import (
     generate_pyproject_config,
     generate_security_policy,
@@ -28,6 +29,7 @@ class TestGeneratePyprojectConfig:
         config = StackConfig(project_name="test-project")
         result = generate_pyproject_config(config)
         assert "[tool.pytest" in result
+
 
 class TestGenerateSecurityPolicy:
     """Tests for generate_security_policy function."""

@@ -1,4 +1,5 @@
 """Tests for secure models."""
+
 import json
 
 import pytest
@@ -19,7 +20,13 @@ class TestSecureBaseModel:
             password: str
             secret_token: str
             api_key: SecretStr
-        user = User(username="testuser", password="supersecretpassword", secret_token="tok_12345", api_key=SecretStr("real_api_key"))
+
+        user = User(
+            username="testuser",
+            password="supersecretpassword",
+            secret_token="tok_12345",
+            api_key=SecretStr("real_api_key"),
+        )
         dumped = user.model_dump()
         assert dumped["username"] == "testuser"
         assert dumped["password"] == REDACTED_VALUE
@@ -32,6 +39,7 @@ class TestSecureBaseModel:
         class Config(SecureBaseModel):
             app_name: str
             db_password: str
+
         config = Config(app_name="MyApp", db_password="db_secret_pass")
         json_str = config.model_dump_json()
         parsed = json.loads(json_str)
@@ -48,7 +56,14 @@ class TestSecureBaseModel:
         class AppConfig(SecureBaseModel):
             debug: bool
             db: list[DbConfig]
-        config = AppConfig(debug=True, db=[DbConfig(password="pass1", port=5432), DbConfig(password="pass2", port=5433)])
+
+        config = AppConfig(
+            debug=True,
+            db=[
+                DbConfig(password="pass1", port=5432),
+                DbConfig(password="pass2", port=5433),
+            ],
+        )
         dumped = config.model_dump()
         assert dumped["debug"] is True
         assert dumped["db"][0]["port"] == 5432
@@ -60,6 +75,7 @@ class TestSecureBaseModel:
 
         class ApiKeyObj(SecureBaseModel):
             api_key: str
+
         obj = ApiKeyObj(api_key="123")
         json_str = obj.model_dump_json(indent=2)
         assert "{\n" in json_str
@@ -71,6 +87,7 @@ class TestSecureBaseModel:
         class User(SecureBaseModel):
             username: str
             password: str
+
         user = User(username="admin", password="super_secret_password")
         user_str = str(user)
         user_repr = repr(user)
@@ -81,13 +98,17 @@ class TestSecureBaseModel:
         assert "super_secret_password" not in user_repr
         assert REDACTED_VALUE in user_repr
 
-    def test_masking_disabled_when_no_regex_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_masking_disabled_when_no_regex_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that data is returned verbatim when no regex is active."""
         from taipanstack.security import models
+
         monkeypatch.setattr(models, "_SENSITIVE_KEY_REGEX", None)
 
         class SimpleModel(SecureBaseModel):
             password: str
+
         obj = SimpleModel(password="will_not_be_masked")
         dumped = obj.model_dump()
         assert dumped["password"] == "will_not_be_masked"

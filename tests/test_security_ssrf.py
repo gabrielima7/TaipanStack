@@ -1,4 +1,5 @@
 """Tests for guard_ssrf — SSRF protection guard."""
+
 import socket
 from unittest.mock import patch
 
@@ -36,6 +37,7 @@ class TestGuardSsrfTypeContract:
         assert "Malformed URL" in msg
         assert "Mocked error" in msg
 
+
 class TestGuardSsrfEmptyAndMalformed:
     """Test empty or scheme-less inputs return Err."""
 
@@ -68,7 +70,10 @@ class TestGuardSsrfEmptyAndMalformed:
     def test_unresolvable_hostname_returns_err_expected(self) -> None:
         """Hostname that cannot be resolved returns Err. Verifies platform-independent error and truncation."""
         long_hostname = "a" * 100 + ".invalid"
-        with patch("taipanstack.security.guards.socket.getaddrinfo", side_effect=socket.gaierror("mocked error")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            side_effect=socket.gaierror("mocked error"),
+        ):
             result = guard_ssrf(f"https://{long_hostname}/path")
         assert result.is_err()
         err = result.err_value
@@ -77,41 +82,59 @@ class TestGuardSsrfEmptyAndMalformed:
         assert "Hostname could not be resolved" in str(err)
         assert err.value is None
 
+
 class TestGuardSsrfPrivateIpv4:
     """Test SSRF detection for private IPv4 ranges."""
 
-    def _mock_getaddrinfo(self, ip: str) -> list[tuple[int, int, int, str, tuple[str, int]]]:
+    def _mock_getaddrinfo(
+        self, ip: str
+    ) -> list[tuple[int, int, int, str, tuple[str, int]]]:
         """Return a fake getaddrinfo response for the given IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
     def test_loopback_127_0_0_1_blocked_expected(self) -> None:
         """127.0.0.1 (loopback) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("127.0.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("127.0.0.1"),
+        ):
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
         assert "SSRF" in str(result.err_value)
 
     def test_private_10_network_blocked_expected(self) -> None:
         """10.0.0.1 (RFC-1918 class A) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("10.0.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("10.0.0.1"),
+        ):
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
     def test_private_172_16_network_blocked_expected(self) -> None:
         """172.16.0.1 (RFC-1918 class B) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("172.16.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("172.16.0.1"),
+        ):
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
     def test_private_192_168_network_blocked_expected(self) -> None:
         """192.168.1.1 (RFC-1918 class C) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("192.168.1.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("192.168.1.1"),
+        ):
             result = guard_ssrf("https://my-service.local/")
         assert result.is_err()
 
     def test_aws_metadata_endpoint_blocked_expected(self) -> None:
         """169.254.169.254 (AWS EC2 metadata) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("169.254.169.254")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("169.254.169.254"),
+        ):
             result = guard_ssrf("http://169.254.169.254/latest/meta-data/")
         assert result.is_err()
         err = result.err_value
@@ -120,40 +143,59 @@ class TestGuardSsrfPrivateIpv4:
 
     def test_link_local_169_254_blocked_expected(self) -> None:
         """169.254.0.1 (link-local range) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("169.254.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("169.254.0.1"),
+        ):
             result = guard_ssrf("http://host.local/")
         assert result.is_err()
 
     def test_localhost_string_blocked_expected(self) -> None:
         """'localhost' resolving to 127.0.0.1 must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("127.0.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("127.0.0.1"),
+        ):
             result = guard_ssrf("http://localhost:8080/admin")
         assert result.is_err()
+
 
 class TestGuardSsrfPrivateIpv6:
     """Test SSRF detection for private IPv6 addresses."""
 
-    def _mock_getaddrinfo_v6(self, ip: str) -> list[tuple[int, int, int, str, tuple[str, int, int, int]]]:
+    def _mock_getaddrinfo_v6(
+        self, ip: str
+    ) -> list[tuple[int, int, int, str, tuple[str, int, int, int]]]:
         """Return a fake getaddrinfo response for an IPv6 address."""
         return [(socket.AF_INET6, socket.SOCK_STREAM, 0, "", (ip, 0, 0, 0))]
 
     def test_ipv6_loopback_blocked_expected(self) -> None:
         """::1 (IPv6 loopback) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo_v6("::1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo_v6("::1"),
+        ):
             result = guard_ssrf("http://[::1]/path")
         assert result.is_err()
 
     def test_ipv6_unique_local_blocked_expected(self) -> None:
         """fc00:: unique local (ULA) must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo_v6("fc00::1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo_v6("fc00::1"),
+        ):
             result = guard_ssrf("https://host.example.com/")
         assert result.is_err()
 
     def test_ipv6_link_local_blocked_expected(self) -> None:
         """fe80:: link-local must be blocked."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo_v6("fe80::1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo_v6("fe80::1"),
+        ):
             result = guard_ssrf("https://host.example.com/")
         assert result.is_err()
+
 
 class TestGuardSsrfSafeUrls:
     """Test that safe, public URLs pass the guard."""
@@ -164,30 +206,45 @@ class TestGuardSsrfSafeUrls:
 
     def test_public_http_url_accepted_expected(self) -> None:
         """A URL resolving to a public IP returns Ok."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_public_ip()):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_public_ip(),
+        ):
             result = guard_ssrf("http://example.com/api")
         assert result.is_ok()
         assert result.ok_value == "http://example.com/api"
 
     def test_public_https_url_accepted_expected(self) -> None:
         """A HTTPS URL resolving to a public IP returns Ok."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_public_ip()):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_public_ip(),
+        ):
             result = guard_ssrf("https://example.com/api")
         assert result.is_ok()
 
     def test_custom_allowed_schemes_accepted_expected(self) -> None:
         """A URL with a custom-allowed scheme passes when explicitly permitted."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_public_ip()):
-            result = guard_ssrf("ftp://files.example.com/", allowed_schemes=frozenset({"ftp", "ftps"}))
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_public_ip(),
+        ):
+            result = guard_ssrf(
+                "ftp://files.example.com/", allowed_schemes=frozenset({"ftp", "ftps"})
+            )
         assert result.is_ok()
 
     def test_invalid_ip_in_addr_info_skipped_expected(self) -> None:
         """Invalid IP strings inside addr_info are skipped gracefully."""
         bad_entry = (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("not-an-ip", 0))
         good_entry = (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 0))
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=[bad_entry, good_entry]):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=[bad_entry, good_entry],
+        ):
             result = guard_ssrf("https://example.com/")
         assert result.is_ok()
+
 
 class TestGuardSsrfErrorAttrs:
     """Verify SecurityError attributes emitted by guard_ssrf."""
@@ -197,7 +254,10 @@ class TestGuardSsrfErrorAttrs:
 
     def test_security_error_guard_name_is_ssrf_expected(self) -> None:
         """SecurityError.guard_name must equal 'ssrf'."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_loopback()):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_loopback(),
+        ):
             result = guard_ssrf("http://internal/")
         err = result.err_value
         assert isinstance(err, SecurityError)
@@ -205,22 +265,31 @@ class TestGuardSsrfErrorAttrs:
 
     def test_security_error_value_is_ip_string_expected(self) -> None:
         """SecurityError.value must not expose the offending IP address anymore."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_loopback()):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_loopback(),
+        ):
             result = guard_ssrf("http://internal/")
         err = result.err_value
         assert isinstance(err, SecurityError)
         assert err.value is None
 
+
 class TestGuardSsrfCatchAllReserved:
     """Test the catch-all branch for reserved addresses outside explicit nets."""
 
-    def _mock_getaddrinfo(self, ip: str) -> list[tuple[int, int, int, str, tuple[str, int]]]:
+    def _mock_getaddrinfo(
+        self, ip: str
+    ) -> list[tuple[int, int, int, str, tuple[str, int]]]:
         """Return a fake getaddrinfo response for the given IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
     def test_zero_address_blocked_by_catchall_expected(self) -> None:
         """0.0.0.0 is is_private but not in explicit network list — hits catch-all."""
-        with patch("taipanstack.security.guards.socket.getaddrinfo", return_value=self._mock_getaddrinfo("192.168.0.1")):
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("192.168.0.1"),
+        ):
             result = guard_ssrf("http://some-host.example.com/")
         assert result.is_err()
         err = result.err_value

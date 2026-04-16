@@ -1,4 +1,5 @@
 """Tests for the DB Bridge."""
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -20,11 +21,13 @@ def _setup_sqlalchemy_mock() -> AsyncMock:
     db_mod.sa_text = MagicMock(return_value="SELECT 1")
     return mock_session
 
+
 def _teardown_sqlalchemy_mock() -> None:
     """Remove installed mocks."""
     for attr in ("AsyncSession", "sa_text"):
         if hasattr(db_mod, attr):
             delattr(db_mod, attr)
+
 
 class TestResilientDatabase:
     """Tests for the ResilientDatabase wrapper."""
@@ -72,11 +75,17 @@ class TestResilientDatabase:
             if call_count == 1:
                 raise ConnectionError("temp fail")
             return mock_result
+
         mock_session = _setup_sqlalchemy_mock()
         mock_session.execute = fake_execute
         try:
             with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-                db = ResilientDatabase(engine=MagicMock(), retry_config=RetryConfig(max_attempts=2, initial_delay=0.01, max_delay=0.02, jitter=False))
+                db = ResilientDatabase(
+                    engine=MagicMock(),
+                    retry_config=RetryConfig(
+                        max_attempts=2, initial_delay=0.01, max_delay=0.02, jitter=False
+                    ),
+                )
                 result = await db.execute("SELECT 1")
             assert isinstance(result, Ok)
         finally:
@@ -90,7 +99,13 @@ class TestResilientDatabase:
         breaker = CircuitBreaker(name="db_fail", failure_threshold=10)
         try:
             with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-                db = ResilientDatabase(engine=MagicMock(), retry_config=RetryConfig(max_attempts=2, initial_delay=0.01, max_delay=0.02, jitter=False), circuit_breaker=breaker)
+                db = ResilientDatabase(
+                    engine=MagicMock(),
+                    retry_config=RetryConfig(
+                        max_attempts=2, initial_delay=0.01, max_delay=0.02, jitter=False
+                    ),
+                    circuit_breaker=breaker,
+                )
                 result = await db.execute("SELECT 1")
             assert isinstance(result, Err)
         finally:
@@ -102,7 +117,10 @@ class TestResilientDatabase:
         _setup_sqlalchemy_mock()
         try:
             with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-                db = ResilientDatabase(engine=MagicMock(), retry_config=RetryConfig(max_attempts=0, jitter=False))
+                db = ResilientDatabase(
+                    engine=MagicMock(),
+                    retry_config=RetryConfig(max_attempts=0, jitter=False),
+                )
                 result = await db.execute("SELECT 1")
             assert isinstance(result, Err)
             assert isinstance(result.err_value, RuntimeError)
@@ -143,6 +161,7 @@ class TestResilientDatabase:
             assert isinstance(result, Err)
         finally:
             _teardown_sqlalchemy_mock()
+
 
 class TestResilientRedis:
     """Tests for the ResilientRedis wrapper."""

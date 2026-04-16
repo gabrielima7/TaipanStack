@@ -3,6 +3,7 @@
 Ensures the old import paths (utils.circuit_breaker, utils.retry,
 utils.resilience) still work via re-export shims.
 """
+
 from taipanstack.utils.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
@@ -48,6 +49,7 @@ class TestBackwardCompatShims:
         """Shim symbols are identical to the canonical resilience module."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker as CanonicalCB
         from taipanstack.resilience.circuit_breaker import CircuitState as CanonicalCS
+
         assert CircuitBreaker is CanonicalCB
         assert CircuitState is CanonicalCS
 
@@ -76,6 +78,7 @@ class TestBackwardCompatShims:
         from taipanstack.resilience.retry import (
             retry_on_exception as canonical_retry_on_exception,
         )
+
         assert Retrier is CanonicalRetrier
         assert RetryConfig is CanonicalRetryConfig
         assert RetryDecorator is CanonicalRetryDecorator
@@ -107,6 +110,7 @@ class TestBackwardCompatShims:
         )
         from taipanstack.resilience.resilience import fallback as canonical_fallback
         from taipanstack.resilience.resilience import timeout as canonical_timeout
+
         assert AsyncResultFunc is CanonicalAsyncResultFunc
         assert FallbackDecorator is CanonicalFallbackDecorator
         assert ResultFunc is CanonicalResultFunc

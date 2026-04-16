@@ -1,4 +1,5 @@
 """Tests for input sanitizers."""
+
 from pathlib import Path
 
 import pytest
@@ -27,7 +28,9 @@ class TestSanitizeString:
         """Test whitespace is stripped by default."""
         assert sanitize_string("  hello  ") == "hello"
 
-    @pytest.mark.parametrize("whitespace", [" ", "\t", "\n", "\r", "\x0b", "\x0c", "\xa0", " \t\n\r "])
+    @pytest.mark.parametrize(
+        "whitespace", [" ", "\t", "\n", "\r", "\x0b", "\x0c", "\xa0", " \t\n\r "]
+    )
     def test_strips_various_whitespace_expected(self, whitespace: str) -> None:
         """Test various whitespace characters are stripped correctly."""
         assert sanitize_string(f"{whitespace}hello{whitespace}") == "hello"
@@ -79,6 +82,7 @@ class TestSanitizeString:
         """Test HTML entities are escaped after tag removal."""
         result = sanitize_string("text&more")
         assert "&amp;" in result
+
 
 class TestSanitizeFilename:
     """Tests for sanitize_filename function."""
@@ -150,10 +154,13 @@ class TestSanitizeFilename:
         result = sanitize_filename("a:::b.txt")
         assert "___" not in result
 
+
 class TestSanitizePath:
     """Tests for sanitize_path function."""
 
-    def test_sanitize_path_absolute_with_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_sanitize_path_absolute_with_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path when sanitized is absolute and base_dir is given."""
         path = tmp_path / "absolute/path"
         base_dir = tmp_path / "base"
@@ -239,10 +246,14 @@ class TestSanitizePath:
         base.mkdir()
         subdir = tmp_path / "subdir"
         subdir.mkdir()
-        result = sanitize_path(subdir.name, base_dir=tmp_path, max_depth=None, resolve=True)
+        result = sanitize_path(
+            subdir.name, base_dir=tmp_path, max_depth=None, resolve=True
+        )
         assert isinstance(result, Path)
 
-    def test_resolve_with_base_dir_error(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_resolve_with_base_dir_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test resolving path with base directory raises ValueError on error."""
         base = tmp_path / "base"
         base.mkdir()
@@ -252,9 +263,11 @@ class TestSanitizePath:
             if "subdir" in str(self):
                 raise OSError("Mocked error")
             return original_resolve(self, *args, **kwargs)
+
         monkeypatch.setattr("pathlib.Path.resolve", mock_resolve)
         with pytest.raises(ValueError, match="Cannot resolve path"):
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
+
 
 class TestSanitizeEnvValue:
     """Tests for sanitize_env_value function."""
@@ -295,14 +308,23 @@ class TestSanitizeEnvValue:
     def test_sanitize_env_value_fast_path_expected(self) -> None:
         """Test sanitize_env_value fast path for coverage."""
         assert sanitize_env_value("hello", max_length=10) == "hello"
-        assert sanitize_env_value("line1\nline2", allow_multiline=True) == "line1\nline2"
+        assert (
+            sanitize_env_value("line1\nline2", allow_multiline=True) == "line1\nline2"
+        )
 
     def test_sanitize_env_value_slow_path_expected(self) -> None:
         """Test sanitize_env_value slow path for coverage."""
         assert sanitize_env_value("hel\x00lo", max_length=10) == "hello"
-        assert sanitize_env_value("line1\nline2", max_length=20, allow_multiline=False) == "line1 line2"
+        assert (
+            sanitize_env_value("line1\nline2", max_length=20, allow_multiline=False)
+            == "line1 line2"
+        )
         assert sanitize_env_value("a" * 15, max_length=10) == "a" * 10
-        assert sanitize_env_value("line1\nline2", max_length=5, allow_multiline=True) == "line1"
+        assert (
+            sanitize_env_value("line1\nline2", max_length=5, allow_multiline=True)
+            == "line1"
+        )
+
 
 class TestSanitizeSqlIdentifier:
     """Tests for sanitize_sql_identifier function."""
@@ -354,15 +376,20 @@ class TestSanitizeSqlIdentifier:
         result = sanitize_sql_identifier("user_name")
         assert result == "user_name"
 
+
 def test_sanitize_string_value_error():
     import pytest
+
     with pytest.raises(TypeError):
         sanitize_string(123)
 
+
 def test_sanitize_filename_value_error():
     import pytest
+
     with pytest.raises(TypeError):
         sanitize_filename(123)
+
 
 def test_sanitize_filename_no_replacement_expected():
     assert sanitize_filename("foo/bar", replacement="") == "bar"

@@ -1,4 +1,5 @@
 """Additional tests for validators to achieve 100% coverage."""
+
 import pytest
 
 from taipanstack.security.validators import (
@@ -43,6 +44,7 @@ class TestValidateProjectNameEdgeCases:
         with pytest.raises(ValueError):
             validate_project_name("")
 
+
 class TestValidatePythonVersionEdgeCases:
     """Additional tests for validate_python_version."""
 
@@ -64,10 +66,12 @@ class TestValidatePythonVersionEdgeCases:
     def test_non_numeric_version_mock_expected(self) -> None:
         """Test that a non-numeric version string correctly raises ValueError during integer conversion when bypassing regex."""
         from unittest.mock import patch
+
         with patch("taipanstack.security.validators.re.match") as mock_match:
             mock_match.return_value = True
             with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
                 validate_python_version("a.b")
+
 
 class TestValidateEmailEdgeCases:
     """Additional tests for validate_email."""
@@ -83,6 +87,7 @@ class TestValidateEmailEdgeCases:
         long_domain = "a" * 256
         with pytest.raises(ValueError):
             validate_email(f"test@{long_domain}.com")
+
 
 class TestValidateUrlEdgeCases:
     """Additional tests for validate_url."""

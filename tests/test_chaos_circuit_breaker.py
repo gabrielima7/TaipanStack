@@ -27,6 +27,7 @@ def test_circuit_breaker_thundering_herd_chaos_expected():
         time.sleep(0.05)
         success_call_count += 1
         return "success"
+
     results = []
     exceptions = []
 
@@ -35,6 +36,7 @@ def test_circuit_breaker_thundering_herd_chaos_expected():
             results.append(slow_service())
         except CircuitBreakerError as e:
             exceptions.append(e)
+
     threads = [threading.Thread(target=worker) for _ in range(5)]
     for t in threads:
         t.start()
