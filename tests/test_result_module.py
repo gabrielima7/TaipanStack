@@ -1,5 +1,4 @@
 """Tests for the Result module (functional error handling)."""
-
 import pytest
 
 from taipanstack.core.result import (
@@ -17,14 +16,14 @@ from taipanstack.core.result import (
 class TestOkErr:
     """Tests for basic Ok/Err functionality."""
 
-    def test_ok_value(self) -> None:
+    def test_result_module_ok_value_expected(self) -> None:
         """Test Ok wraps value correctly."""
         result: Result[int, Exception] = Ok(42)
         assert result.is_ok()
         assert not result.is_err()
         assert result.ok_value == 42
 
-    def test_err_value(self) -> None:
+    def test_result_module_err_value_expected(self) -> None:
         """Test Err wraps error correctly."""
         error = ValueError("test error")
         result: Result[int, ValueError] = Err(error)
@@ -32,28 +31,25 @@ class TestOkErr:
         assert not result.is_ok()
         assert result.err_value == error
 
-
 class TestSafeDecorator:
     """Tests for the @safe decorator."""
 
-    def test_safe_success(self) -> None:
+    def test_result_module_safe_success_expected(self) -> None:
         """Test safe decorator returns Ok on success."""
 
         @safe
         def add(a: int, b: int) -> int:
             return a + b
-
         result = add(2, 3)
         assert result.is_ok()
         assert result.ok_value == 5
 
-    def test_safe_exception(self) -> None:
+    def test_result_module_safe_exception_expected(self) -> None:
         """Test safe decorator returns Err on exception."""
 
         @safe
         def divide(a: int, b: int) -> float:
             return a / b
-
         result = divide(10, 0)
         assert result.is_err()
         assert isinstance(result.err_value, ZeroDivisionError)
@@ -63,25 +59,22 @@ class TestSafeDecorator:
 
         @safe
         def raise_exception() -> None:
-            raise Exception("Basic exception occurred")  # noqa: TRY002
-
+            raise Exception("Basic exception occurred")
         result = raise_exception()
         assert result.is_err()
         err = result.err_value
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
-    def test_safe_preserves_function_metadata(self) -> None:
+    def test_safe_preserves_function_metadata_expected(self) -> None:
         """Test safe decorator preserves function name and docstring."""
 
         @safe
         def my_function() -> int:
             """My docstring."""
             return 42
-
         assert my_function.__name__ == "my_function"
         assert my_function.__doc__ == "My docstring."
-
 
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""
@@ -92,7 +85,6 @@ class TestSafeFromDecorator:
         @safe_from(ValueError)
         def parse(s: str) -> int:
             return int(s)
-
         result = parse("not_a_number")
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
@@ -103,11 +95,10 @@ class TestSafeFromDecorator:
         @safe_from(ValueError)
         def divide(a: int, b: int) -> float:
             return a / b
-
         with pytest.raises(ZeroDivisionError):
             divide(10, 0)
 
-    def test_safe_from_multiple_types(self) -> None:
+    def test_safe_from_multiple_types_expected(self) -> None:
         """Test safe_from with multiple exception types."""
 
         @safe_from(ValueError, TypeError)
@@ -115,28 +106,25 @@ class TestSafeFromDecorator:
             if isinstance(x, str):
                 return int(x)
             raise TypeError("Expected string")
-
         result1 = process("abc")
         assert result1.is_err()
         assert isinstance(result1.err_value, ValueError)
-
         result2 = process(123)
         assert result2.is_err()
         assert isinstance(result2.err_value, TypeError)
 
-    def test_safe_from_explicit_raise(self) -> None:
+    def test_safe_from_explicit_raise_expected(self) -> None:
         """Test safe_from decorator catching explicitly raised exception."""
 
         @safe_from(ValueError)
         def process(data: str) -> int:
             raise ValueError("explicitly raised")
-
         result = process("abc")
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
         assert str(result.err_value) == "explicitly raised"
 
-    def test_safe_from_inheritance(self) -> None:
+    def test_safe_from_inheritance_expected(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
         class SubValueError(ValueError):
@@ -145,12 +133,10 @@ class TestSafeFromDecorator:
         @safe_from(ValueError)
         def fail() -> None:
             raise SubValueError("subclass error")
-
         result = fail()
         assert result.is_err()
         assert isinstance(result.err_value, SubValueError)
         assert str(result.err_value) == "subclass error"
-
 
 class TestCollectResults:
     """Tests for collect_results function."""
@@ -162,37 +148,28 @@ class TestCollectResults:
         assert collected.is_ok()
         assert collected.ok_value == [1, 2, 3]
 
-    def test_collect_with_err(self) -> None:
+    def test_collect_with_err_expected(self) -> None:
         """Test collect_results stops at first Err."""
-        results: list[Result[int, ValueError]] = [
-            Ok(1),
-            Err(ValueError("error")),
-            Ok(3),
-        ]
+        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("error")), Ok(3)]
         collected = collect_results(results)
         assert collected.is_err()
         assert isinstance(collected.err_value, ValueError)
         assert str(collected.err_value) == "error"
 
-    def test_collect_empty(self) -> None:
+    def test_result_module_collect_empty_expected(self) -> None:
         """Test collect_results with empty list."""
         results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok_value == []
 
-    def test_collect_first_err_returned(self) -> None:
+    def test_collect_first_err_returned_expected(self) -> None:
         """Test collect_results returns first Err encountered."""
-        results: list[Result[int, ValueError]] = [
-            Ok(1),
-            Err(ValueError("first")),
-            Err(ValueError("second")),
-        ]
+        results: list[Result[int, ValueError]] = [Ok(1), Err(ValueError("first")), Err(ValueError("second"))]
         collected = collect_results(results)
         assert collected.is_err()
         assert isinstance(collected.err_value, ValueError)
         assert str(collected.err_value) == "first"
-
 
 class TestUnwrapOr:
     """Tests for unwrap_or function."""
@@ -202,11 +179,10 @@ class TestUnwrapOr:
         result: Result[int, ValueError] = Ok(42)
         assert result.unwrap_or(0) == 42
 
-    def test_unwrap_or_err(self) -> None:
+    def test_unwrap_or_err_expected(self) -> None:
         """Test unwrap_or returns default on Err."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or(0) == 0
-
 
 class TestUnwrapOrElse:
     """Tests for unwrap_or_else function."""
@@ -216,7 +192,7 @@ class TestUnwrapOrElse:
         result: Result[int, ValueError] = Ok(42)
         assert result.unwrap_or_else(len) == 42
 
-    def test_unwrap_or_else_err(self) -> None:
+    def test_unwrap_or_else_err_expected(self) -> None:
         """Test unwrap_or_else computes default from error."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or_else(lambda e: len(str(e))) == 5
@@ -225,13 +201,12 @@ class TestUnwrapOrElse:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
-        assert result.unwrap_or_else(lambda e: len(str(e))) == 12  # len("test message")
-
+        assert result.unwrap_or_else(lambda e: len(str(e))) == 12
 
 class TestMatchCase:
     """Tests for match/case pattern matching with Result."""
 
-    def test_match_ok(self) -> None:
+    def test_result_module_match_ok_expected(self) -> None:
         """Test match/case with Ok value."""
         result: Result[int, ValueError] = Ok(42)
         match result:
@@ -240,7 +215,7 @@ class TestMatchCase:
             case Err():
                 pytest.fail("Should not match Err")
 
-    def test_match_err(self) -> None:
+    def test_result_module_match_err_expected(self) -> None:
         """Test match/case with Err value."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         match result:
@@ -249,7 +224,6 @@ class TestMatchCase:
             case Err(error):
                 assert isinstance(error, ValueError)
                 assert str(error) == "error"
-
 
 class TestSafeAsyncDecorator:
     """Tests for the @safe decorator with async functions."""
@@ -261,7 +235,6 @@ class TestSafeAsyncDecorator:
         @safe
         async def async_add(a: int, b: int) -> int:
             return a + b
-
         result = await async_add(2, 3)
         assert result.is_ok()
         assert result.ok_value == 5
@@ -273,20 +246,18 @@ class TestSafeAsyncDecorator:
         @safe
         async def async_divide(a: int, b: int) -> float:
             return a / b
-
         result = await async_divide(10, 0)
         assert result.is_err()
         assert isinstance(result.err_value, ZeroDivisionError)
 
     @pytest.mark.asyncio
-    async def test_safe_async_preserves_metadata(self) -> None:
+    async def test_safe_async_preserves_metadata_expected(self) -> None:
         """Test safe decorator preserves async function name and docstring."""
 
         @safe
         async def my_async_function() -> int:
             """Async docstring."""
             return 42
-
         assert my_async_function.__name__ == "my_async_function"
         assert my_async_function.__doc__ == "Async docstring."
 
@@ -298,7 +269,6 @@ class TestSafeAsyncDecorator:
         async def async_fail() -> str:
             msg = "something went wrong"
             raise RuntimeError(msg)
-
         result = await async_fail()
         assert result.is_err()
         assert isinstance(result.err_value, RuntimeError)
@@ -309,14 +279,12 @@ class TestSafeAsyncDecorator:
 
         @safe
         async def async_raise_exception() -> None:
-            raise Exception("Basic async exception occurred")  # noqa: TRY002
-
+            raise Exception("Basic async exception occurred")
         result = await async_raise_exception()
         assert result.is_err()
         err = result.err_value
         assert type(err) is Exception
         assert str(err) == "Basic async exception occurred"
-
 
 class TestMapAsync:
     """Tests for map_async function."""
@@ -327,24 +295,21 @@ class TestMapAsync:
 
         async def double(x: int) -> int:
             return x * 2
-
         result: Result[int, ValueError] = Ok(21)
         mapped = await map_async(result, double)
         assert mapped.is_ok()
         assert mapped.ok_value == 42
 
     @pytest.mark.asyncio
-    async def test_map_async_err(self) -> None:
+    async def test_map_async_err_expected(self) -> None:
         """Test map_async with Err value."""
 
         async def double(x: int) -> int:
             return x * 2
-
         result: Result[int, ValueError] = Err(ValueError("error"))
         mapped: Result[int, ValueError] = await map_async(result, double)
         assert mapped.is_err()
         assert isinstance(mapped.err_value, ValueError)
-
 
 class TestAndThenAsync:
     """Tests for and_then_async function."""
@@ -355,67 +320,63 @@ class TestAndThenAsync:
 
         async def process(x: int) -> Result[str, ValueError]:
             return Ok(str(x * 2))
-
         result: Result[int, ValueError] = Ok(21)
         chained = await and_then_async(result, process)
         assert chained.is_ok()
         assert chained.ok_value == "42"
 
     @pytest.mark.asyncio
-    async def test_and_then_async_ok_to_err(self) -> None:
+    async def test_and_then_async_ok_to_err_expected(self) -> None:
         """Test and_then_async mapping Ok to Err."""
 
         async def process(x: int) -> Result[str, ValueError]:
             return Err(ValueError("validation failed"))
-
         result: Result[int, ValueError] = Ok(21)
         chained = await and_then_async(result, process)
         assert chained.is_err()
         assert isinstance(chained.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_and_then_async_err(self) -> None:
+    async def test_and_then_async_err_expected(self) -> None:
         """Test and_then_async with Err value skips execution."""
-
         executed = False
 
         async def process(x: int) -> Result[str, ValueError]:
             nonlocal executed
             executed = True
             return Ok(str(x))
-
         result: Result[int, ValueError] = Err(ValueError("initial error"))
         chained: Result[str, ValueError] = await and_then_async(result, process)
         assert chained.is_err()
         assert isinstance(chained.err_value, ValueError)
         assert not executed
 
-
 class TestSafeFromAsyncDecorator:
+
     @pytest.mark.asyncio
     async def test_safe_from_async_success(self) -> None:
+
         @safe_from(ValueError)
         async def process(x: int) -> int:
             return x * 2
-
         result = await process(5)
         assert result == Ok(10)
 
     @pytest.mark.asyncio
     async def test_safe_from_async_exception(self) -> None:
+
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise ValueError("invalid")
-
         result = await process(5)
         assert isinstance(result, Err)
         assert isinstance(result.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_safe_from_async_propagates_unspecified(self) -> None:
+    async def test_safe_from_async_propagates_unspecified_expected(self) -> None:
+
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise TypeError("invalid type")
-
         with pytest.raises(TypeError):
             await process(5)
