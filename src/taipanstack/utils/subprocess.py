@@ -217,10 +217,10 @@ def _execute_command(
     except subprocess.TimeoutExpired as e:
         duration = time.time() - start_time
         stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:  # pragma: no branch
+        if hasattr(e, "stdout") and e.stdout is not None:
             if isinstance(e.stdout, str):
                 stdout_str = e.stdout
-            else:  # pragma: no cover
+            else:
                 stdout_str = e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,
