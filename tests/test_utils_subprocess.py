@@ -2,6 +2,7 @@
 
 import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -9,6 +10,7 @@ from taipanstack.security.guards import SecurityError
 from taipanstack.utils.subprocess import (
     DEFAULT_ALLOWED_COMMANDS,
     SafeCommandResult,
+    _execute_command,
     run_safe_command,
 )
 
@@ -184,3 +186,29 @@ class TestRunSafeCommand:
             ValueError, match="timeout must be a finite non-negative number"
         ):
             run_safe_command(["echo", "hello"], timeout=float("inf"))
+
+
+def test_execute_command_timeout_with_bytes_stdout() -> None:
+    """Test _execute_command timeout handling when stdout is bytes."""
+    with patch("subprocess.run") as mock_run:
+        err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
+        err.stdout = b"some bytes output"
+        mock_run.side_effect = err
+
+        result = _execute_command(["sleep", "10"], None, 1.0, True, {})
+
+        assert result.returncode == -1
+        assert result.stdout == "some bytes output"
+
+
+def test_execute_command_timeout_without_stdout() -> None:
+    """Test _execute_command timeout handling when stdout is None."""
+    with patch("subprocess.run") as mock_run:
+        err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
+        err.stdout = None
+        mock_run.side_effect = err
+
+        result = _execute_command(["sleep", "10"], None, 1.0, True, {})
+
+        assert result.returncode == -1
+        assert result.stdout == ""
