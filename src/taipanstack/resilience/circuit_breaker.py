@@ -450,4 +450,4 @@ def circuit_breaker(
         )
         return breaker(func)
 
-    return decorator  # type: ignore[return-value]
+    return cast(CircuitBreakerDecorator, decorator)
