@@ -168,21 +168,8 @@ def validate_project_name(
     return name
 
 
-def validate_python_version(version: str) -> str:
-    """Validate Python version string.
-
-    Args:
-        version: Version string like "3.12" or "3.10".
-
-    Returns:
-        The validated version string.
-
-    Raises:
-        ValueError: If version format is invalid or unsupported.
-
-    """
-    _validate_type(version, str, "Version")
-
+def _check_version_format(version: str) -> None:
+    """Check the basic formatting and safety of a version string."""
     # Prevent DoS from massive integer string conversion limit in Python
     if len(version) > MAX_PYTHON_VERSION_LENGTH:
         msg = "Version string exceeds maximum length"
@@ -202,6 +189,9 @@ def validate_python_version(version: str) -> str:
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
 
+
+def _check_version_numbers(version: str) -> None:
+    """Check the major and minor version numbers."""
     try:
         major, minor = map(int, version.split("."))
     except ValueError as e:
@@ -219,27 +209,28 @@ def validate_python_version(version: str) -> str:
         )
         raise ValueError(msg)
 
+
+def validate_python_version(version: str) -> str:
+    """Validate Python version string.
+
+    Args:
+        version: Version string like "3.12" or "3.10".
+
+    Returns:
+        The validated version string.
+
+    Raises:
+        ValueError: If version format is invalid or unsupported.
+
+    """
+    _validate_type(version, str, "Version")
+    _check_version_format(version)
+    _check_version_numbers(version)
     return version
 
 
-def validate_email(email: str) -> str:
-    """Validate email address format.
-
-    Uses a reasonable regex pattern that covers most valid emails
-    without being overly strict.
-
-    Args:
-        email: The email address to validate.
-
-    Returns:
-        The validated email address.
-
-    Raises:
-        ValueError: If email format is invalid.
-
-    """
-    _validate_type(email, str, "Email")
-
+def _check_email_format(email: str) -> None:
+    """Check email format and basic constraints."""
     if not email:
         msg = "Email cannot be empty"
         raise ValueError(msg)
@@ -259,7 +250,9 @@ def validate_email(email: str) -> str:
         msg = f"Invalid email format: {email}"
         raise ValueError(msg)
 
-    # Additional checks
+
+def _check_email_parts(email: str) -> None:
+    """Check local and domain parts of the email."""
     local, domain = email.rsplit("@", 1)
 
     if len(local) > MAX_EMAIL_LOCAL_LENGTH:
@@ -270,6 +263,26 @@ def validate_email(email: str) -> str:
         msg = f"Email domain exceeds {MAX_EMAIL_DOMAIN_LENGTH} characters"
         raise ValueError(msg)
 
+
+def validate_email(email: str) -> str:
+    """Validate email address format.
+
+    Uses a reasonable regex pattern that covers most valid emails
+    without being overly strict.
+
+    Args:
+        email: The email address to validate.
+
+    Returns:
+        The validated email address.
+
+    Raises:
+        ValueError: If email format is invalid.
+
+    """
+    _validate_type(email, str, "Email")
+    _check_email_format(email)
+    _check_email_parts(email)
     return email
 
 

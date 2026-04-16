@@ -24,6 +24,26 @@ _SENSITIVE_KEY_REGEX = (
 _MAX_RECURSION_DEPTH = 100
 
 
+def _mask_dict(data: dict[str, JSONValue], depth: int) -> dict[str, JSONValue]:
+    """Mask sensitive keys in a dictionary."""
+    masked: dict[str, JSONValue] = {}
+    for k, v in data.items():
+        if (
+            isinstance(k, str)
+            and _SENSITIVE_KEY_REGEX is not None
+            and _SENSITIVE_KEY_REGEX.search(k)
+        ):
+            masked[k] = REDACTED_VALUE
+        else:
+            masked[k] = _mask_data(v, depth)
+    return masked
+
+
+def _mask_list(data: list[JSONValue], depth: int) -> list[JSONValue]:
+    """Mask sensitive keys in a list."""
+    return [_mask_data(item, depth) for item in data]
+
+
 def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
     """Recursively mask sensitive keys in data."""
     if _SENSITIVE_KEY_REGEX is None:
@@ -35,15 +55,9 @@ def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
 
     match data:
         case dict():
-            masked: dict[str, JSONValue] = {}
-            for k, v in data.items():
-                if isinstance(k, str) and _SENSITIVE_KEY_REGEX.search(k):
-                    masked[k] = REDACTED_VALUE
-                else:
-                    masked[k] = _mask_data(v, _depth + 1)
-            return masked
+            return _mask_dict(data, _depth + 1)
         case list():
-            return [_mask_data(item, _depth + 1) for item in data]
+            return _mask_list(data, _depth + 1)
         case _:
             return data
 
