@@ -29,7 +29,10 @@ def test_circuit_breaker_chaos_time_corruption(monkeypatch: pytest.MonkeyPatch) 
     assert breaker._should_attempt() is False
     assert breaker._state.state == CircuitState.OPEN
 
-def test_circuit_breaker_chaos_time_corruption_record_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_circuit_breaker_chaos_time_corruption_record_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     breaker = CircuitBreaker(failure_threshold=2, timeout=10.0)
 
     monkeypatch.setattr(time, "monotonic", lambda: float("nan"))
@@ -38,4 +41,4 @@ def test_circuit_breaker_chaos_time_corruption_record_failure(monkeypatch: pytes
     except ValueError as e:
         breaker._record_failure(e)
 
-    assert breaker._state.last_failure_time == 0.0 # Default value
+    assert breaker._state.last_failure_time == 0.0  # Default value
