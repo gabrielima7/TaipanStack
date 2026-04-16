@@ -59,11 +59,11 @@ class TestSafeDecorator:
 
         @safe
         def raise_exception() -> None:
-            raise Exception("Basic exception occurred")
+            raise ValueError("Basic exception occurred")
         result = raise_exception()
         assert result.is_err()
         err = result.err_value
-        assert type(err) is Exception
+        assert isinstance(err, ValueError)
         assert str(err) == "Basic exception occurred"
 
     def test_safe_preserves_function_metadata_expected(self) -> None:
@@ -279,11 +279,11 @@ class TestSafeAsyncDecorator:
 
         @safe
         async def async_raise_exception() -> None:
-            raise Exception("Basic async exception occurred")
+            raise ValueError("Basic async exception occurred")
         result = await async_raise_exception()
         assert result.is_err()
         err = result.err_value
-        assert type(err) is Exception
+        assert isinstance(err, ValueError)
         assert str(err) == "Basic async exception occurred"
 
 class TestMapAsync:
