@@ -29,6 +29,9 @@ dependencies = [
     "result (>=0.17.0)",
     "pyjwt (>=2.11.0,<3.0.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
+    "cryptography (>=46.0.7)",
+    "authlib (>=1.6.9)",
+    "nltk (>=3.9.4)",
 ]
 
 [project.urls]
@@ -89,7 +92,6 @@ dev = [
     "pytest-timeout (>=2.3.0)",
     "pytest-xdist (>=3.6.0)",
     "vulture (>=2.11)",
-    "interrogate (>=1.5.0)",
     "polyfactory (>=2.0.0)",
     "structlog (>=25.5.0,<26.0.0)",
     "import-linter (>=2.1)",
