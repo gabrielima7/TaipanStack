@@ -394,7 +394,7 @@ def retry(
 
         return wrapper
 
-    return decorator  # type: ignore[return-value]
+    return cast(RetryDecorator, decorator)
 
 
 def retry_on_exception(

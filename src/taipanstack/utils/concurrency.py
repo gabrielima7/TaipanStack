@@ -11,7 +11,7 @@ import functools
 import inspect
 import threading
 from collections.abc import Awaitable, Callable
-from typing import ParamSpec, Protocol, TypeVar, overload
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -152,9 +152,9 @@ def limit_concurrency(
             )
 
         return _handle_sync_concurrency(
-            func,  # type: ignore[arg-type]
+            cast(Callable[P, T], func),
             max_tasks,
             timeout,
         )
 
-    return decorator  # type: ignore[return-value]
+    return cast(ConcurrencyLimitDecorator, decorator)

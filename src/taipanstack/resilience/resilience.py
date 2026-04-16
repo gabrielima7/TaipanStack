@@ -93,7 +93,7 @@ def fallback(
 
         return sync_wrapper
 
-    return decorator  # type: ignore[return-value]
+    return cast(FallbackDecorator, decorator)
 
 
 class TimeoutDecorator(Protocol):
@@ -197,4 +197,4 @@ def timeout(seconds: float) -> TimeoutDecorator:
 
         return sync_wrapper
 
-    return decorator  # type: ignore[return-value]
+    return cast(TimeoutDecorator, decorator)

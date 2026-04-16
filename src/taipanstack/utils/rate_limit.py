@@ -13,7 +13,7 @@ import math
 import threading
 import time
 from collections.abc import Awaitable, Callable
-from typing import ParamSpec, Protocol, TypeVar, overload
+from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -163,8 +163,9 @@ def rate_limit(
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
             if not limiter.consume():
                 return Err(RateLimitError())
-            return Ok(func(*args, **kwargs))  # type: ignore[arg-type]
+            func_sync = cast(Callable[P, T], func)
+            return Ok(func_sync(*args, **kwargs))
 
         return wrapper
 
-    return decorator  # type: ignore[return-value]
+    return cast(RateLimitDecorator, decorator)

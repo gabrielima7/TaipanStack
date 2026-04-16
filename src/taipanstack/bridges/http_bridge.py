@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypedDict, Unpack
 
@@ -196,7 +196,8 @@ async def _execute_with_retries(
                 attempt,
                 max_attempts,
             ):
-                delay = calculate_delay(attempt, retry_config)  # type: ignore[arg-type]
+                # Config is not None if we reach here
+                delay = calculate_delay(attempt, cast(RetryConfig, retry_config))
                 await asyncio.sleep(min(delay, 3600.0))
                 continue
             return Ok(response)
@@ -260,7 +261,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
-            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]
+            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
             return response
 
     return await _execute_with_retries(
@@ -377,8 +378,8 @@ class SafeHttpClient:
 
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above
-            client: httpx.AsyncClient = self._client  # type: ignore[assignment]
-            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]
+            client: httpx.AsyncClient = cast(httpx.AsyncClient, self._client)
+            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
             return response
 
         return await _execute_with_retries(

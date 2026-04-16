@@ -132,4 +132,4 @@ def cached(ttl: float) -> CacheDecorator:
 
         return sync_wrapper
 
-    return decorator  # type: ignore[return-value]
+    return cast(CacheDecorator, decorator)
