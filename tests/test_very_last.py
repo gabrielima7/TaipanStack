@@ -571,3 +571,15 @@ class TestOptimizationsEdgeCases:
         assert not result.success
         assert len(result.errors) > 0
         assert any("boom" in e for e in result.errors)
+
+def test_guard_path_traversal_is_symlink_oserror(monkeypatch):
+    from taipanstack.security.guards import guard_path_traversal, SecurityError
+    from pathlib import Path
+
+    def mock_is_symlink(self):
+        raise OSError("Mocked OSError in is_symlink")
+
+    monkeypatch.setattr(Path, "is_symlink", mock_is_symlink)
+
+    with pytest.raises(SecurityError, match="Invalid path encountered during symlink check: Mocked OSError in is_symlink"):
+        guard_path_traversal("some/path", Path("/tmp"))
