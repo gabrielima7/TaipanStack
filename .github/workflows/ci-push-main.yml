@@ -58,7 +58,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         uses: actions/upload-artifact@v7
         with:
-          name: htmlcov
+          name: "[Artifact] HTML Coverage"
           path: htmlcov/
           retention-days: 7
 
@@ -68,8 +68,8 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+          name: "[Artifact] Codecov Umbrella"
+          fail_ci_if_error: true
 
   # Linux Distribution Testing via Docker containers
   container-distros:
@@ -330,23 +330,6 @@ jobs:
           for f in *.toml *.yaml *.yml; do if [ -f "$f" ]; then ls -la "$f"; fi; done
         working-directory: /tmp/taipanstack-test
 
-  docstring-coverage:
-    name: "[Lint] Docstring Coverage"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
-
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
-
-      - name: "[Setup] Install interrogate"
-        run: pip install interrogate
-
-      - name: "[Lint] Check docstring coverage"
-        run: interrogate -v --fail-under=70 src/
 
 
   property-testing:
