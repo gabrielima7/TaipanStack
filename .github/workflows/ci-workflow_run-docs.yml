@@ -61,7 +61,7 @@ jobs:
       - name: "[Misc] Download coverage HTML report from latest CI"
         uses: dawidd6/action-download-artifact@v20
         with:
-          name: htmlcov
+          name: "[Artifact] HTML Coverage"
           path: site/htmlcov/
           workflow: ci-push-main.yml
           branch: main

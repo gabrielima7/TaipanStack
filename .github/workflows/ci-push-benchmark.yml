@@ -83,7 +83,7 @@ jobs:
       - name: "[Test] Store benchmark result"
         uses: benchmark-action/github-action-benchmark@v1
         with:
-          name: TaipanStack Performance
+          name: "[Artifact] TaipanStack Performance"
           tool: pytest
           output-file-path: benchmark-result.json
           # Push baseline data to gh-pages on main branch pushes
@@ -92,7 +92,7 @@ jobs:
           benchmark-data-dir-path: dev/bench
           # Fail CI if performance degrades more than 50% (accounts for runner variance)
           alert-threshold: "150%"
-          fail-on-alert: false
+          fail-on-alert: true
           # Comment on PR with comparison
           comment-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
