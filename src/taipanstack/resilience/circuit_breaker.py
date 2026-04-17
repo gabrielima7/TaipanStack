@@ -216,6 +216,11 @@ class CircuitBreaker:
                     now = time.monotonic()
                     elapsed = now - self._state.last_failure_time
                     # Safe check against NaN and Inf time corruption
+                    # If elapsed < 0, a backward clock jump occurred. We should
+                    # allow a transition to prevent permanent lockout.
+                    if elapsed < 0:
+                        elapsed = self.config.timeout
+
                     if math.isfinite(now) and elapsed >= self.config.timeout:
                         # Before transitioning, verify if we can make an attempt
                         # This happens in a lock, so it's thread-safe. However, once
