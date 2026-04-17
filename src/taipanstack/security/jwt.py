@@ -8,10 +8,11 @@ All operations return ``Result`` types.
 
 import secrets
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, TypeAlias, cast
+from typing import TYPE_CHECKING, TypeAlias, cast
 
 if TYPE_CHECKING:
     import jwt
+    from jwt.types import Options
 
 import jwt
 from jwt.exceptions import PyJWTError
@@ -96,5 +97,5 @@ def decode_jwt(
         secret_key,
         algorithms=algorithms,
         audience=audience,
-        options=cast(Any, options),
+        options=cast("Options", options),
     )

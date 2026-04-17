@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from typing_extensions import TypedDict, Unpack
 
@@ -30,13 +30,7 @@ class HttpRequestKwargs(TypedDict, total=False):
     """Type definitions for HTTP request kwargs."""
 
     content: bytes | str | None
-    data: (
-        dict[str, str | int | float | bool | None]
-        | list[tuple[str, str]]
-        | bytes
-        | str
-        | None
-    )
+    data: RequestData
     files: dict[str, bytes | tuple[str, bytes]]
     json: dict[str, object] | list[object] | str | int | float | bool | None
     params: (
@@ -86,6 +80,7 @@ except ImportError:  # pragma: no cover
 
 if TYPE_CHECKING:
     import httpx
+    from httpx._types import RequestData
 
 # Default status codes that trigger a retry
 _RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({500, 502, 503, 504, 429})
@@ -261,7 +256,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
-            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
+            response = await client.request(method, url, **kwargs)
             return response
 
     return await _execute_with_retries(
@@ -379,7 +374,7 @@ class SafeHttpClient:
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above
             client: httpx.AsyncClient = cast(httpx.AsyncClient, self._client)
-            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
+            response = await client.request(method, url, **kwargs)
             return response
 
         return await _execute_with_retries(

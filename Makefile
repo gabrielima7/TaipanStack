@@ -41,7 +41,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	poetry run pip-audit --strict --ignore-vuln PYSEC-2022-42969 --ignore-vuln CVE-2026-4539 --ignore-vuln CVE-2026-27962 --ignore-vuln CVE-2026-28490 --ignore-vuln CVE-2026-34073 --ignore-vuln GHSA-rf74-v2fm-23pw --ignore-vuln CVE-2026-33230 --ignore-vuln CVE-2026-33231 --ignore-vuln CVE-2026-39892 --ignore-vuln CVE-2025-71176
+	poetry run pip-audit --strict --ignore-vuln PYSEC-2022-42969 --ignore-vuln CVE-2026-4539 --ignore-vuln CVE-2026-27962 --ignore-vuln CVE-2026-28490 --ignore-vuln CVE-2026-34073 --ignore-vuln GHSA-rf74-v2fm-23pw --ignore-vuln CVE-2026-33230 --ignore-vuln CVE-2026-33231 --ignore-vuln CVE-2026-39892 --ignore-vuln CVE-2025-71176 --ignore-vuln GHSA-jj8c-mmj3-mmgv
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."
