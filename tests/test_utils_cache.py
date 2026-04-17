@@ -106,3 +106,26 @@ async def test_cached_async_err_branch() -> None:
     assert call_count == 1
     assert isinstance(await compute(), Err)
     assert call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_async_cache_stampede_prevention() -> None:
+    """Test that multiple concurrent requests for the same key don't stampede."""
+    call_count = 0
+
+    @cached(ttl=1.0)
+    async def compute_async(val: int) -> Result[int, ValueError]:
+        nonlocal call_count
+        call_count += 1
+        await asyncio.sleep(0.1)
+        return Ok(val * 2)
+
+    # Fire 100 concurrent requests with the exact same arguments
+    results = await asyncio.gather(*(compute_async(5) for _ in range(100)))
+
+    # All should return Ok(10)
+    for result in results:
+        assert result == Ok(10)
+
+    # The actual computation should only run EXACTLY once due to locking
+    assert call_count == 1

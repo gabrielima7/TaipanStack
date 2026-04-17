@@ -5,6 +5,7 @@ Provides in-memory caching that respects the Result monad and TTL,
 ignoring caching for Err() results.
 """
 
+import asyncio
 import functools
 import inspect
 import time
@@ -36,7 +37,7 @@ class CacheDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...  # pragma: no cover
 
 
-def cached(ttl: float) -> CacheDecorator:
+def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
     """Cache the Ok() results of a function for a given TTL.
 
     Err() results are not cached. Supports both async and sync functions.
@@ -49,6 +50,8 @@ def cached(ttl: float) -> CacheDecorator:
 
     """
     _cache: CacheDict = {}
+    _locks: dict[CacheKey, asyncio.Lock] = {}
+    _lock_waiters: dict[CacheKey, int] = {}
 
     def get_cache_key(
         func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
@@ -83,24 +86,46 @@ def cached(ttl: float) -> CacheDecorator:
                     cast(tuple[object, ...], args),
                     cast(dict[str, object], kwargs),
                 )
-                now = time.monotonic()
 
+                # Check cache before acquiring lock
+                now = time.monotonic()
                 if cache_key in _cache:
                     expiry, value = _cache[cache_key]
                     if now < expiry:
                         return Ok(cast(T, value))
-                    del _cache[cache_key]
 
-                func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
-                result = await func_coro(*args, **kwargs)
+                if cache_key not in _locks:
+                    _locks[cache_key] = asyncio.Lock()
+                    _lock_waiters[cache_key] = 0
 
-                match result:
-                    case Ok(value):
-                        _cache[cache_key] = (now + ttl, value)
-                    case Err(_):
-                        pass
+                _lock_waiters[cache_key] += 1
+                lock = _locks[cache_key]
 
-                return result
+                try:
+                    async with lock:
+                        # Double-check cache after acquiring lock
+                        now = time.monotonic()
+                        if cache_key in _cache:
+                            expiry, value = _cache[cache_key]
+                            if now < expiry:
+                                return Ok(cast(T, value))
+                            del _cache[cache_key]
+
+                        func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
+                        result = await func_coro(*args, **kwargs)
+
+                        match result:
+                            case Ok(value):
+                                _cache[cache_key] = (now + ttl, value)
+                            case Err(_):
+                                pass
+
+                        return result
+                finally:
+                    _lock_waiters[cache_key] -= 1
+                    if _lock_waiters[cache_key] == 0:
+                        _locks.pop(cache_key, None)
+                        _lock_waiters.pop(cache_key, None)
 
             return async_wrapper
 
