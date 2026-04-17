@@ -51,14 +51,16 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
 
 
 def _sanitize_html(value: str) -> str:
-    result = _HTML_TAGS_RE.sub('', value)
-    result = result.replace('&', '&amp;')
-    result = result.replace('<', '&lt;')
-    result = result.replace('>', '&gt;')
+    result = _HTML_TAGS_RE.sub("", value)
+    result = result.replace("&", "&amp;")
+    result = result.replace("<", "&lt;")
+    result = result.replace(">", "&gt;")
     return result
 
+
 def _sanitize_unicode(value: str) -> str:
-    return value.encode('ascii', errors='ignore').decode('ascii')
+    return value.encode("ascii", errors="ignore").decode("ascii")
+
 
 def sanitize_string(
     value: str,
