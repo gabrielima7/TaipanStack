@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1776458406789,
+  "lastUpdate": 1776458524791,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -21277,6 +21277,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00036236806548003314",
             "extra": "mean: 10.422912212097074 usec\nrounds: 14068"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4653deb28af042723620b5f731505f25d4424db8",
+          "message": "fix(resilience): harden circuit breaker against NTP backward clock jumps (#572)\n\n* fix(resilience): handle backward clock jumps in CircuitBreaker\n\nHardened the `CircuitBreaker._should_attempt` logic against severe NTP anomalies (e.g., backward clock jumps). Previously, if `time.monotonic()` jumped backward, the elapsed time became negative, preventing the circuit from ever reaching the timeout threshold and trapping it permanently in the `OPEN` state.\n\nThis commit implements a safeguard to detect negative elapsed time and default it to the timeout threshold, ensuring the circuit safely transitions to `HALF_OPEN` and continues recovery attempts. Also added a dedicated chaos test suite mimicking an extreme NTP backward time shift.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* ci: harden apt-get commands against network flakes\n\nAdded `--fix-missing` and `-o Acquire::Retries=3` flags to `apt-get` commands in `.github/workflows/ci-push-main.yml` to prevent transient network errors when connecting to Ubuntu archive servers during CI runs.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* ci: bound apt-get retry loops to prevent infinite SRE failures\n\nRefactored the previously introduced `until` loop for `apt-get update/install` to be a bounded `for i in 1 2 3 4 5` loop. This prevents an infinite hang on the GitHub runner if the remote package registry goes down entirely.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* ci: hard-fail apt-get retry loops on failure\n\nAppended `if [ $i -eq 5 ]; then exit 1; fi` to the `apt-get` retry loops in `.github/workflows/ci-push-main.yml`. This ensures the workflow step correctly fails fast if the package registry is permanently unreachable, rather than silently swallowing the error and failing downstream on missing binaries.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-04-17T20:39:32Z",
+          "tree_id": "257da1e8f0df65a8213b85379f62ec983266946e",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/4653deb28af042723620b5f731505f25d4424db8"
+        },
+        "date": 1776458524066,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_simple",
+            "value": 1042752.8901376486,
+            "unit": "iter/sec",
+            "range": "stddev: 3.55040867542115e-7",
+            "extra": "mean: 958.9999792453177 nsec\nrounds: 48145"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_xss",
+            "value": 684350.7459235275,
+            "unit": "iter/sec",
+            "range": "stddev: 5.783351684564175e-7",
+            "extra": "mean: 1.4612390005515457 usec\nrounds: 115983"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_string_unicode",
+            "value": 468790.65036875074,
+            "unit": "iter/sec",
+            "range": "stddev: 4.921548659799826e-7",
+            "extra": "mean: 2.133148345030772 usec\nrounds: 117193"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_complex",
+            "value": 262450.9946325127,
+            "unit": "iter/sec",
+            "range": "stddev: 7.092526673638888e-7",
+            "extra": "mean: 3.810235131325042 usec\nrounds: 33241"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_filename_long",
+            "value": 203073.21621676444,
+            "unit": "iter/sec",
+            "range": "stddev: 8.236094302530892e-7",
+            "extra": "mean: 4.924332310434182 usec\nrounds: 57353"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_nested",
+            "value": 66173.29071502008,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000015366479083735381",
+            "extra": "mean: 15.111837256311919 usec\nrounds: 12363"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_path_traversal",
+            "value": 89296.04275147745,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000012217074497914323",
+            "extra": "mean: 11.198704547111124 usec\nrounds: 27402"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_standard",
+            "value": 3100977.7619251516,
+            "unit": "iter/sec",
+            "range": "stddev: 2.007638529484829e-7",
+            "extra": "mean: 322.4789330250402 nsec\nrounds: 196967"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_env_value_large",
+            "value": 1863138.46434182,
+            "unit": "iter/sec",
+            "range": "stddev: 3.478764982107842e-7",
+            "extra": "mean: 536.7287612481686 nsec\nrounds: 46660"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier",
+            "value": 3235928.29037323,
+            "unit": "iter/sec",
+            "range": "stddev: 1.8929138453815049e-7",
+            "extra": "mean: 309.0303338843954 nsec\nrounds: 145349"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_sanitize_sql_identifier_dirty",
+            "value": 724061.616979804,
+            "unit": "iter/sec",
+            "range": "stddev: 3.943084820418321e-7",
+            "extra": "mean: 1.381097929443058 usec\nrounds: 76453"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_ok",
+            "value": 2443990.2842631014,
+            "unit": "iter/sec",
+            "range": "stddev: 2.289069432538285e-7",
+            "extra": "mean: 409.1669293609792 nsec\nrounds: 165591"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_safe_decorator_err",
+            "value": 1102211.012661805,
+            "unit": "iter/sec",
+            "range": "stddev: 3.786176646739325e-7",
+            "extra": "mean: 907.267291391901 nsec\nrounds: 153140"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_collect_results_100",
+            "value": 146019.613186753,
+            "unit": "iter/sec",
+            "range": "stddev: 9.078027681100083e-7",
+            "extra": "mean: 6.848395076358965 usec\nrounds: 66658"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_unwrap_or",
+            "value": 11438055.598978868,
+            "unit": "iter/sec",
+            "range": "stddev: 1.007984699015945e-8",
+            "extra": "mean: 87.42744702942969 nsec\nrounds: 110816"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_public",
+            "value": 64931.56603074829,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0004833416260480833",
+            "extra": "mean: 15.40082984486237 usec\nrounds: 8122"
+          },
+          {
+            "name": "tests/test_benchmarks.py::test_bench_guard_ssrf_private",
+            "value": 105540.61533036358,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000058555444226047295",
+            "extra": "mean: 9.475025295899563 usec\nrounds: 9883"
           }
         ]
       }
