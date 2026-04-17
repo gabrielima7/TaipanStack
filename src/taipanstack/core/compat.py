@@ -262,6 +262,16 @@ class PythonFeatures:
 _cached_features: PythonFeatures | None = None
 
 
+def _determine_version_tier() -> VersionTier:
+    if PY314:
+        return VersionTier.CUTTING_EDGE
+    if PY313:
+        return VersionTier.MODERN
+    if PY312:
+        return VersionTier.ENHANCED
+    return VersionTier.STABLE
+
+
 def get_features(*, force_refresh: bool = False) -> PythonFeatures:
     """Detect and return available Python features.
 
@@ -279,16 +289,7 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
     if _cached_features is not None and not force_refresh:
         return _cached_features
 
-    # Determine version tier
-    if PY314:
-        tier = VersionTier.CUTTING_EDGE
-    elif PY313:
-        tier = VersionTier.MODERN
-    elif PY312:
-        tier = VersionTier.ENHANCED
-    else:
-        tier = VersionTier.STABLE
-
+    tier = _determine_version_tier()
     experimental = is_experimental_enabled(force_refresh=force_refresh)
 
     # Build features (only if experimental is enabled for safety)

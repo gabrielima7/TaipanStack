@@ -148,6 +148,35 @@ def calculate_delay(
     return delay
 
 
+def _execute_retry_callback(
+    func_name: str, attempt: int, exc: Exception, delay: float, config: RetryConfig
+) -> None:
+    try:
+        if config.on_retry:
+            config.on_retry(attempt, config.max_attempts, exc, delay)
+    except Exception as e:
+        if _HAS_STRUCTLOG and _structlog_logger is not None:
+            _structlog_logger.error(
+                "retry_callback_failed", function=func_name, error=str(e)
+            )
+        else:
+            logger.error("Retry callback failed for %s: %s", func_name, str(e))
+
+
+def _log_standard_retry_warning(
+    func_name: str, attempt: int, exc: Exception, delay: float, config: RetryConfig
+) -> None:
+    if _HAS_STRUCTLOG and _structlog_logger is not None:
+        _structlog_logger.warning(
+            "retry_attempted",
+            function=func_name,
+            attempt=attempt,
+            max_attempts=config.max_attempts,
+            error=str(exc),
+            delay_seconds=round(delay, 3),
+        )
+
+
 def _log_retry_attempt(
     func_name: str,
     attempt: int,
@@ -175,32 +204,10 @@ def _log_retry_attempt(
             delay,
         )
 
-    # Invoke callback or emit structured log if no callback set
     if config.on_retry is not None:
-        try:
-            config.on_retry(attempt, config.max_attempts, exc, delay)
-        except Exception as e:
-            if _HAS_STRUCTLOG and _structlog_logger is not None:
-                _structlog_logger.error(
-                    "retry_callback_failed",
-                    function=func_name,
-                    error=str(e),
-                )
-            else:
-                logger.error(
-                    "Retry callback failed for %s: %s",
-                    func_name,
-                    str(e),
-                )
-    elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
-        _structlog_logger.warning(
-            "retry_attempted",
-            function=func_name,
-            attempt=attempt,
-            max_attempts=config.max_attempts,
-            error=str(exc),
-            delay_seconds=round(delay, 3),
-        )
+        _execute_retry_callback(func_name, attempt, exc, delay, config)
+    else:
+        _log_standard_retry_warning(func_name, attempt, exc, delay, config)
 
 
 def _log_all_failed(

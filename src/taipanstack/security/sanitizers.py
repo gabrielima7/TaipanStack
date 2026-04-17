@@ -50,6 +50,16 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
 )
 
 
+def _sanitize_html(value: str) -> str:
+    result = _HTML_TAGS_RE.sub('', value)
+    result = result.replace('&', '&amp;')
+    result = result.replace('<', '&lt;')
+    result = result.replace('>', '&gt;')
+    return result
+
+def _sanitize_unicode(value: str) -> str:
+    return value.encode('ascii', errors='ignore').decode('ascii')
+
 def sanitize_string(
     value: str,
     *,
@@ -92,19 +102,10 @@ def sanitize_string(
     # Remove null bytes and control characters
     result = _CONTROL_CHARS_RE.sub("", result)
 
-    # Handle HTML
     if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
-
-    # Handle unicode
+        result = _sanitize_html(result)
     if not allow_unicode:
-        result = result.encode("ascii", errors="ignore").decode("ascii")
-
+        result = _sanitize_unicode(result)
     # Truncate if needed
     if max_length is not None and len(result) > max_length:
         result = result[:max_length]
