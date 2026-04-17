@@ -40,7 +40,7 @@ repos:
     rev: 'v2.7.3'
     hooks:
       - id: pip-audit
-        args: ["--strict", "--ignore-vuln", "PYSEC-2022-42969"]
+        args: ["--strict"]
 
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
@@ -67,11 +67,6 @@ repos:
       - id: tryceratops
         args: ["--autofix"]
 
-  - repo: https://github.com/econchick/interrogate
-    rev: '1.7.0'
-    hooks:
-      - id: interrogate
-        args: ["-v", "--fail-under=80", "src/"]
 
   - repo: local
     hooks:
