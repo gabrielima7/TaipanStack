@@ -119,7 +119,7 @@ class TestSanitizersResolveError:
             with pytest.raises(ValueError, match="Cannot resolve path"):
                 sanitize_path(
                     "file.txt",
-                    base_dir="/tmp",  # noqa: S108
+                    base_dir="/safe_tmp",
                     resolve=True,
                     max_depth=None,
                 )
@@ -142,7 +142,7 @@ class TestSanitizersResolveError:
             with pytest.raises(ValueError, match="Cannot resolve path"):
                 sanitize_path(
                     "file.txt",
-                    base_dir="/tmp",  # noqa: S108
+                    base_dir="/safe_tmp",
                     resolve=True,
                     max_depth=None,
                 )
@@ -572,14 +572,19 @@ class TestOptimizationsEdgeCases:
         assert len(result.errors) > 0
         assert any("boom" in e for e in result.errors)
 
+
 def test_guard_path_traversal_is_symlink_oserror(monkeypatch):
-    from taipanstack.security.guards import guard_path_traversal, SecurityError
     from pathlib import Path
+
+    from taipanstack.security.guards import SecurityError, guard_path_traversal
 
     def mock_is_symlink(self):
         raise OSError("Mocked OSError in is_symlink")
 
     monkeypatch.setattr(Path, "is_symlink", mock_is_symlink)
 
-    with pytest.raises(SecurityError, match="Invalid path encountered during symlink check: Mocked OSError in is_symlink"):
-        guard_path_traversal("some/path", Path("/tmp"))
+    with pytest.raises(
+        SecurityError,
+        match="Invalid path encountered during symlink check: Mocked OSError in is_symlink",
+    ):
+        guard_path_traversal("some/path", Path("/safe_tmp"))
