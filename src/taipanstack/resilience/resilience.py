@@ -182,8 +182,11 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     exception.append(e)
 
             thread = threading.Thread(target=worker, daemon=True)
-            thread.start()
-            thread.join(timeout=seconds)
+            try:
+                thread.start()
+                thread.join(timeout=seconds)
+            except RuntimeError as e:
+                return Err(cast(E, RuntimeError(f"Thread exhaustion: {e!s}")))
 
             if thread.is_alive():
                 return Err(
