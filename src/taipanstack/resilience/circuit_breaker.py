@@ -216,8 +216,7 @@ class CircuitBreaker:
             self._state.success_count = 0
             self._state.half_open_attempts = 1
             logger.info(
-                "Circuit %s entering half-open state "
-                "(was open for %.1fs, failures=%d)",
+                "Circuit %s entering half-open state (was open for %.1fs, failures=%d)",
                 self.name,
                 elapsed,
                 self._state.failure_count,
@@ -256,8 +255,7 @@ class CircuitBreaker:
             self._state.failure_count = 0
             self._state.half_open_attempts = 0
             logger.info(
-                "Circuit %s closed after recovery "
-                "(%d consecutive successes)",
+                "Circuit %s closed after recovery (%d consecutive successes)",
                 self.name,
                 self._state.success_count,
             )
@@ -282,8 +280,7 @@ class CircuitBreaker:
         self._state.state = CircuitState.OPEN
         self._state.half_open_attempts = 0
         logger.warning(
-            "Circuit %s reopened after failure in half-open "
-            "(total failures=%d)",
+            "Circuit %s reopened after failure in half-open (total failures=%d)",
             self.name,
             self._state.failure_count,
         )
