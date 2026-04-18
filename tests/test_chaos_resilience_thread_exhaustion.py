@@ -9,10 +9,13 @@ def test_timeout_thread_exhaustion():
     def my_func():
         return Ok("done")
 
-    with mock.patch("threading.Thread.start", side_effect=RuntimeError("can't start new thread")):
+    with mock.patch(
+        "threading.Thread.start", side_effect=RuntimeError("can't start new thread")
+    ):
         result = my_func()
         assert isinstance(result, Err)
         assert "Thread exhaustion: can't start new thread" in str(result.unwrap_err())
+
 
 if __name__ == "__main__":
     test_timeout_thread_exhaustion()
