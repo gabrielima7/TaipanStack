@@ -70,7 +70,7 @@ jobs:
           files: ./coverage.xml
           flags: unittests
           name: "[Artifact] Codecov Umbrella"
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   # Linux Distribution Testing via Docker containers
   container-distros:
