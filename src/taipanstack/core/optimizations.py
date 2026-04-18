@@ -175,6 +175,45 @@ _PROFILE_314 = OptimizationProfile(
 _cached_optimization_profile: OptimizationProfile | None = None
 
 
+def _get_base_profile() -> OptimizationProfile:
+    """Get the base optimization profile for the current Python version."""
+    if PY314:
+        return _PROFILE_314
+    elif PY313:
+        return _PROFILE_313
+    elif PY312:
+        return _PROFILE_312
+    return _PROFILE_311
+
+
+def _adjust_profile(
+    profile: OptimizationProfile, opt_level: int, experimental: bool
+) -> OptimizationProfile:
+    """Adjust the optimization profile based on optimization level."""
+    match opt_level:
+        case opt if opt == OPT_LEVEL_NONE:
+            return _PROFILE_311
+        case opt if opt == OPT_LEVEL_AGGRESSIVE and experimental:
+            return OptimizationProfile(
+                gc_threshold_0=profile.gc_threshold_0,
+                gc_threshold_1=profile.gc_threshold_1,
+                gc_threshold_2=profile.gc_threshold_2,
+                gc_freeze_enabled=profile.gc_freeze_enabled,
+                thread_pool_multiplier=profile.thread_pool_multiplier,
+                max_thread_pool_size=profile.max_thread_pool_size,
+                prefer_slots=profile.prefer_slots,
+                use_frozen_dataclasses=profile.use_frozen_dataclasses,
+                prefer_match_statements=profile.prefer_match_statements,
+                prefer_exception_groups=profile.prefer_exception_groups,
+                prefer_type_params=profile.prefer_type_params,
+                enable_perf_hints=profile.enable_perf_hints,
+                aggressive_inlining=profile.aggressive_inlining,
+                enable_experimental=True,
+            )
+        case _:
+            return profile
+
+
 def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProfile:
     """Get the optimization profile for the current Python version.
 
@@ -194,41 +233,10 @@ def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProf
     experimental = is_experimental_enabled(force_refresh=force_refresh)
     opt_level = get_optimization_level(force_refresh=force_refresh)
 
-    # Select base profile by version
-    if PY314:
-        profile = _PROFILE_314
-    elif PY313:
-        profile = _PROFILE_313
-    elif PY312:
-        profile = _PROFILE_312
-    else:
-        profile = _PROFILE_311
-
-    # Adjust for optimization level
-    match opt_level:
-        case opt if opt == OPT_LEVEL_NONE:
-            # Minimal optimizations - use 3.11 baseline
-            _cached_optimization_profile = _PROFILE_311
-        case opt if opt == OPT_LEVEL_AGGRESSIVE and experimental:
-            # Aggressive mode - enable experimental features
-            _cached_optimization_profile = OptimizationProfile(
-                gc_threshold_0=profile.gc_threshold_0,
-                gc_threshold_1=profile.gc_threshold_1,
-                gc_threshold_2=profile.gc_threshold_2,
-                gc_freeze_enabled=profile.gc_freeze_enabled,
-                thread_pool_multiplier=profile.thread_pool_multiplier,
-                max_thread_pool_size=profile.max_thread_pool_size,
-                prefer_slots=profile.prefer_slots,
-                use_frozen_dataclasses=profile.use_frozen_dataclasses,
-                prefer_match_statements=profile.prefer_match_statements,
-                prefer_exception_groups=profile.prefer_exception_groups,
-                prefer_type_params=profile.prefer_type_params,
-                enable_perf_hints=profile.enable_perf_hints,
-                aggressive_inlining=profile.aggressive_inlining,
-                enable_experimental=True,
-            )
-        case _:
-            _cached_optimization_profile = profile
+    base_profile = _get_base_profile()
+    _cached_optimization_profile = _adjust_profile(
+        base_profile, opt_level, experimental
+    )
 
     return _cached_optimization_profile
 
