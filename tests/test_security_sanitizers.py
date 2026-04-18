@@ -428,3 +428,24 @@ def test_sanitize_filename_value_error():
 def test_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
     assert sanitize_filename("foo/bar", replacement="") == "bar"
+
+
+def test_sanitizers_re_error_coverage() -> None:
+    """Test sanitizers filename validation fallback on re.error."""
+    import re
+
+    import taipanstack.security.sanitizers as sanitizers_mod
+
+    original_re = sanitizers_mod._INVALID_FILENAME_CHARS_RE
+
+    class MockRe:
+        def sub(self, repl: str, string: str, count: int = 0) -> str:
+            raise re.error("mock error")
+
+    sanitizers_mod._INVALID_FILENAME_CHARS_RE = MockRe()  # type: ignore
+
+    try:
+        result = sanitize_filename("test.txt")
+        assert result == "test.txt"
+    finally:
+        sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re

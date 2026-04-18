@@ -393,3 +393,30 @@ def test_config_watcher_validate_and_apply_ok_without_change_callback_branch() -
     )
     watcher._validate_and_apply(Path("test_good_validate.json"))
     Path("test_good_validate.json").unlink()
+
+
+@pytest.mark.asyncio
+async def test_config_watcher_change_detection_error_coverage() -> None:
+    """Test config_watcher change detection error logging."""
+    from unittest.mock import MagicMock, patch
+
+    from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
+
+    class MockConfig(BaseModel):
+        pass
+
+    watcher = ConfigWatcher(config_paths=["foo.json"], config_model=MockConfig)
+    watcher._detect_changes = MagicMock(return_value=Err(RuntimeError("mock error")))
+
+    with patch(
+        "taipanstack.resilience.watchdogs.config_watcher.logger.error"
+    ) as mock_logger:
+        with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
+            import contextlib
+
+            with contextlib.suppress(asyncio.CancelledError):
+                await watcher._run()
+        mock_logger.assert_called_with(
+            "Change detection failed: %s",
+            watcher._detect_changes.return_value.err_value,
+        )
