@@ -589,3 +589,23 @@ class TestSafeHttpClient:
         await client.__aexit__(None, None, None)
 
         assert client._client is None
+
+
+def test_http_bridge_import_error_coverage() -> None:
+    """Test http_bridge import error fallback branches."""
+    import importlib
+    import sys
+
+    original_httpx = sys.modules.pop("httpx", None)
+    sys.modules["httpx"] = None  # type: ignore
+    try:
+        import taipanstack.bridges.http_bridge as http_mod
+
+        importlib.reload(http_mod)
+        assert http_mod._HAS_HTTPX is False
+    finally:
+        if original_httpx is not None:
+            sys.modules["httpx"] = original_httpx
+        else:
+            sys.modules.pop("httpx", None)
+        importlib.reload(http_mod)
