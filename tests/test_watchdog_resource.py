@@ -312,3 +312,23 @@ async def test_resource_watcher_run_err_branch() -> None:
     ):
         # Calls the watcher's loop manually once to hit the `Err` branch
         await watcher._run()
+
+
+def test_resource_watcher_import_error_coverage() -> None:
+    """Test resource_watcher import error fallback branches."""
+    import importlib
+    import sys
+
+    original_psutil = sys.modules.pop("psutil", None)
+    sys.modules["psutil"] = None  # type: ignore
+    try:
+        import taipanstack.resilience.watchdogs.resource_watcher as res_mod
+
+        importlib.reload(res_mod)
+        assert res_mod._HAS_PSUTIL is False
+    finally:
+        if original_psutil is not None:
+            sys.modules["psutil"] = original_psutil
+        else:
+            sys.modules.pop("psutil", None)
+        importlib.reload(res_mod)
