@@ -573,13 +573,13 @@ def guard_ssrf(
 
     """
     # 1. Validate format and scheme
-    match _validate_ssrf_url(url, allowed_schemes):
-        case Err(e):
-            return Err(e)
-        case Ok(hostname):
-            # 2. Check IP safety
-            match _check_ip_safety(hostname):
-                case Err(e):
-                    return Err(e)
-                case Ok():
-                    return Ok(url)
+    val_res = _validate_ssrf_url(url, allowed_schemes)
+    if not isinstance(val_res, Ok):
+        return val_res
+
+    # 2. Check IP safety
+    ip_res = _check_ip_safety(val_res.ok_value)
+    if not isinstance(ip_res, Ok):
+        return ip_res
+
+    return Ok(url)
