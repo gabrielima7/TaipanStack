@@ -34,7 +34,7 @@ from result import Err, Ok
 
 from taipanstack.core.result import safe
 from taipanstack.security.guards import SecurityError, guard_ssrf
-from taipanstack.utils.retry import retry
+from taipanstack.resilience.retry import retry
 
 app = FastAPI(title="TaipanStack Demo")
 
@@ -130,7 +130,7 @@ from result import Err, Ok
 
 from taipanstack.core.result import safe
 from taipanstack.security.guards import guard_path_traversal, guard_ssrf
-from taipanstack.utils.retry import retry
+from taipanstack.resilience.retry import retry
 
 app = FastAPI()
 

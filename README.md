@@ -248,7 +248,7 @@ safe_cmd = guard_command_injection(
 ### Retry with Exponential Backoff
 
 ```python
-from taipanstack.utils.retry import retry
+from taipanstack.resilience.retry import retry
 
 @retry(max_attempts=3, on=(ConnectionError, TimeoutError))
 async def fetch_data(url: str) -> dict:
@@ -258,7 +258,7 @@ async def fetch_data(url: str) -> dict:
 ### Circuit Breaker
 
 ```python
-from taipanstack.utils.circuit_breaker import circuit_breaker
+from taipanstack.resilience.circuit_breaker import circuit_breaker
 
 @circuit_breaker(failure_threshold=5, timeout=30)
 def call_external_service() -> Response:
@@ -269,7 +269,7 @@ def call_external_service() -> Response:
 
 ```python
 from taipanstack.core.result import safe, Ok, Err
-from taipanstack.utils.circuit_breaker import CircuitBreaker
+from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 breaker = CircuitBreaker(failure_threshold=3, timeout=60, name="payments")
 
@@ -291,7 +291,7 @@ match result:
 
 ```python
 from taipanstack.core.result import safe, unwrap_or
-from taipanstack.utils.retry import retry
+from taipanstack.resilience.retry import retry
 
 @retry(
     max_attempts=3,
@@ -343,10 +343,10 @@ async def get_user_data(user_id: int) -> Result[dict, Exception]:
 ### Fallbacks & Timeouts
 
 ```python
-from taipanstack.utils.resilience import fallback, timeout
+from taipanstack.resilience.resilience import fallback, timeout
 from taipanstack.core.result import Result
 
-@fallback(fallback_value={"status": "offline"}, exceptions=(TimeoutError,))
+@fallback({"status": "offline"}, exceptions=(TimeoutError,))
 @timeout(seconds=5.0)
 async def fetch_remote_status() -> Result[dict, Exception]:
     return await api.get_status()
