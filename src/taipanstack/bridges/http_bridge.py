@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 from typing_extensions import TypedDict, Unpack
 
@@ -261,7 +261,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
-            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
+            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]
             return response
 
     return await _execute_with_retries(
@@ -379,7 +379,7 @@ class SafeHttpClient:
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above
             client: httpx.AsyncClient = cast(httpx.AsyncClient, self._client)
-            response = await client.request(method, url, **cast(dict[str, Any], kwargs))
+            response = await client.request(method, url, **kwargs)  # type: ignore[arg-type]
             return response
 
         return await _execute_with_retries(
