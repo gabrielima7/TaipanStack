@@ -8,7 +8,9 @@ All operations return ``Result`` types.
 
 import secrets
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, TypeAlias, cast
+from typing import TYPE_CHECKING, TypeAlias
+
+from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
     import jwt
@@ -83,8 +85,14 @@ def decode_jwt(
     ):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
 
+    class JWTOptions(TypedDict, total=False):
+        require: list[str]
+        verify_signature: bool
+        verify_exp: bool
+        verify_aud: bool
+
     # We enforce 'exp' and 'aud' through PyJWT's options parameter
-    options = {
+    options: JWTOptions = {
         "require": ["exp", "aud"],
         "verify_signature": True,
         "verify_exp": True,
@@ -96,5 +104,5 @@ def decode_jwt(
         secret_key,
         algorithms=algorithms,
         audience=audience,
-        options=cast(Any, options),
+        options=options,  # type: ignore[arg-type]
     )
