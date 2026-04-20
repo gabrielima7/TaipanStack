@@ -6,7 +6,6 @@
 
 *Launch secure, high-performance Python applications in seconds.*
 
-[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
