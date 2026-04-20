@@ -22,7 +22,9 @@ class TestRateLimiter:
         assert limiter.consume() is True
         assert limiter.consume() is False
 
-    def test_utils_rate_limit_consume_refill_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_utils_rate_limit_consume_refill_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test token refill logic."""
         import time
 

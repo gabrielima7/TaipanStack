@@ -48,17 +48,23 @@ class TestSafeUrl:
         errors = exc_info.value.errors()
         assert len(errors) >= 1
 
-    def test_security_types_private_ip_url_raises_validation_error_expected(self) -> None:
+    def test_security_types_private_ip_url_raises_validation_error_expected(
+        self,
+    ) -> None:
         """A URL pointing to a private IP raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://192.168.1.1/secret")
 
-    def test_security_types_metadata_endpoint_raises_validation_error_expected(self) -> None:
+    def test_security_types_metadata_endpoint_raises_validation_error_expected(
+        self,
+    ) -> None:
         """AWS metadata endpoint raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.169.254/latest/meta-data/")
 
-    def test_security_types_invalid_scheme_raises_validation_error_expected(self) -> None:
+    def test_security_types_invalid_scheme_raises_validation_error_expected(
+        self,
+    ) -> None:
         """A non-http/https scheme raises ValidationError."""
         with pytest.raises(ValidationError):
             UrlModel(url="ftp://example.com/file.txt")
@@ -73,7 +79,9 @@ class TestSafeUrl:
         with pytest.raises(ValidationError):
             UrlModel(url="https://")
 
-    def test_security_types_link_local_address_raises_validation_error_expected(self) -> None:
+    def test_security_types_link_local_address_raises_validation_error_expected(
+        self,
+    ) -> None:
         """Link-local IP address raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.0.1/data")
@@ -259,7 +267,9 @@ class TestSafeHtml:
         assert m.content == "&lt;script&gt;alert(1)&lt;/script&gt;"
 
     @given(st.text())
-    def test_security_types_property_all_strings_escaped_expected(self, text: str) -> None:
+    def test_security_types_property_all_strings_escaped_expected(
+        self, text: str
+    ) -> None:
         """All arbitrary text is safely processed."""
         # Using html.escape, the characters <, >, &, ", ' are escaped
         # unless quote=False is passed (we use default quote=True)
@@ -297,12 +307,16 @@ class TestSafeSqlIdentifier:
             SqlModel(column="users; DROP TABLE users")
 
     @given(st.from_regex(r"^[a-zA-Z_][a-zA-Z0-9_]*$", fullmatch=True))
-    def test_security_types_property_valid_identifiers_pass_expected(self, text: str) -> None:
+    def test_security_types_property_valid_identifiers_pass_expected(
+        self, text: str
+    ) -> None:
         """Valid generated identifiers pass."""
         assert SqlModel(column=text).column == text
 
     @given(st.text())
-    def test_security_types_property_any_string_validation_expected(self, text: str) -> None:
+    def test_security_types_property_any_string_validation_expected(
+        self, text: str
+    ) -> None:
         """Arbitrary strings are correctly accepted or rejected based on regex."""
         import re
 

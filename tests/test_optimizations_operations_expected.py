@@ -116,13 +116,17 @@ class TestGetOptimizationProfile:
             # Should return 3.11 baseline
             assert profile.gc_threshold_0 == 700
 
-    def test_optimizations_profile_opt_level_aggressive_without_experimental_expected(self) -> None:
+    def test_optimizations_profile_opt_level_aggressive_without_experimental_expected(
+        self,
+    ) -> None:
         """Test aggressive level without experimental returns normal profile."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
             profile = get_optimization_profile(force_refresh=True)
             assert not profile.enable_experimental
 
-    def test_optimizations_profile_opt_level_aggressive_with_experimental_expected(self) -> None:
+    def test_optimizations_profile_opt_level_aggressive_with_experimental_expected(
+        self,
+    ) -> None:
         """Test aggressive level with experimental enables features."""
         with patch.dict(
             os.environ,

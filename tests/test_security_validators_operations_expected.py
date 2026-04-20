@@ -68,7 +68,9 @@ class TestValidatePythonVersion:
         with pytest.raises(ValueError, match="Only Python 3.x"):
             validate_python_version("2.7")
 
-    def test_security_validators_invalid_version_numbers_value_error_expected(self) -> None:
+    def test_security_validators_invalid_version_numbers_value_error_expected(
+        self,
+    ) -> None:
         """Test ValueError is raised when version numbers are invalid."""
         from unittest.mock import patch
 

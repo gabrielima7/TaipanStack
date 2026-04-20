@@ -71,7 +71,9 @@ class TestValidatorsBranches:
         with pytest.raises(ValueError):
             validate_project_name("project@name")
 
-    def test_mocked_coverage_validate_python_version_invalid_format_expected(self) -> None:
+    def test_mocked_coverage_validate_python_version_invalid_format_expected(
+        self,
+    ) -> None:
         """Test validate_python_version with invalid format."""
         from taipanstack.security.validators import validate_python_version
 
@@ -90,7 +92,9 @@ class TestValidatorsBranches:
 class TestGuardsBranches:
     """Tests for guards module branches."""
 
-    def test_mocked_coverage_guard_path_traversal_os_error_expected(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_guard_path_traversal_os_error_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal when resolve raises OSError."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -137,7 +141,9 @@ class TestSanitizersBranches:
         with pytest.raises(ValueError, match="depth"):
             sanitize_path("a/b/c/d/e/f/g/h/i/j/k/l", max_depth=5)
 
-    def test_mocked_coverage_sanitize_sql_identifier_starts_with_number_expected(self) -> None:
+    def test_mocked_coverage_sanitize_sql_identifier_starts_with_number_expected(
+        self,
+    ) -> None:
         """Test sanitize_sql_identifier starting with number."""
         from taipanstack.security.sanitizers import sanitize_sql_identifier
 
@@ -160,7 +166,9 @@ class TestSubprocessBranches:
 class TestFilesystemBranches:
     """Tests for filesystem module branches."""
 
-    def test_mocked_coverage_safe_read_max_size_exceeded_expected(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_safe_read_max_size_exceeded_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_read when file exceeds max size."""
         from taipanstack.utils.filesystem import safe_read
 
@@ -174,7 +182,9 @@ class TestFilesystemBranches:
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
-    def test_mocked_coverage_ensure_dir_already_exists_expected(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_ensure_dir_already_exists_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test ensure_dir with directory that already exists."""
         from taipanstack.utils.filesystem import ensure_dir
 
@@ -184,7 +194,9 @@ class TestFilesystemBranches:
         result = ensure_dir(existing_dir)
         assert result == existing_dir.resolve()
 
-    def test_mocked_coverage_safe_write_no_backup_expected(self, tmp_path: Path) -> None:
+    def test_mocked_coverage_safe_write_no_backup_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with backup=False."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -224,7 +236,9 @@ class TestRetryBranches:
 class TestCircuitBreakerExitBranches:
     """Tests for circuit breaker exit branches."""
 
-    def test_mocked_coverage_circuit_breaker_success_resets_failures_expected(self) -> None:
+    def test_mocked_coverage_circuit_breaker_success_resets_failures_expected(
+        self,
+    ) -> None:
         """Test circuit breaker resets failure count on success."""
         from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 

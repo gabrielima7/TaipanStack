@@ -155,7 +155,9 @@ class TestValidatorsComplete:
 class TestFilesystemComplete:
     """Complete tests for filesystem module."""
 
-    def test_final_coverage_safe_write_non_atomic_expected(self, tmp_path: Path) -> None:
+    def test_final_coverage_safe_write_non_atomic_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with atomic=False."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -205,7 +207,9 @@ class TestDecoratorsComplete:
         with pytest.raises(ValidationError):
             process(value=-1)
 
-    def test_final_coverage_guard_exceptions_reraise_non_security_expected(self) -> None:
+    def test_final_coverage_guard_exceptions_reraise_non_security_expected(
+        self,
+    ) -> None:
         """Test guard_exceptions with non-SecurityError reraise."""
         from taipanstack.security.decorators import guard_exceptions
 

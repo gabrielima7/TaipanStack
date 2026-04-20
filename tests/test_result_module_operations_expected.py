@@ -97,7 +97,9 @@ class TestSafeFromDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
 
-    def test_result_module_safe_from_propagates_unspecified_exception_expected(self) -> None:
+    def test_result_module_safe_from_propagates_unspecified_exception_expected(
+        self,
+    ) -> None:
         """Test safe_from propagates unspecified exception types."""
 
         @safe_from(ValueError)
@@ -139,8 +141,7 @@ class TestSafeFromDecorator:
     def test_result_module_safe_from_inheritance_expected(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
-        class SubValueError(ValueError):
-            ...
+        class SubValueError(ValueError): ...
 
         @safe_from(ValueError)
         def fail() -> None:

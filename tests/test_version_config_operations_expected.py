@@ -106,7 +106,9 @@ class TestGetVersionRecommendations:
                 assert rec.use_deprecated_decorator
                 assert rec.recommended_optimization_level >= 1
 
-    def test_version_config_recommendations_for_313_with_features_expected(self) -> None:
+    def test_version_config_recommendations_for_313_with_features_expected(
+        self,
+    ) -> None:
         """Test recommendations for Python 3.13 with features detected."""
         with patch("taipanstack.config.version_config.PY313", True):
             with patch("taipanstack.config.version_config.PY314", False):
@@ -134,7 +136,9 @@ class TestGetVersionRecommendations:
                     assert rec.recommended_gc_mode == "tuned"
                     assert rec.recommended_optimization_level == 2
 
-    def test_version_config_recommendations_for_313_without_experimental_expected(self) -> None:
+    def test_version_config_recommendations_for_313_without_experimental_expected(
+        self,
+    ) -> None:
         """Test recommendations for Python 3.13 without experimental."""
         with patch("taipanstack.config.version_config.PY313", True):
             with patch("taipanstack.config.version_config.PY314", False):
@@ -172,7 +176,9 @@ class TestGetVersionRecommendations:
             assert rec.recommended_gc_mode == "incremental"
             assert len(rec.notes) >= 4  # Should have comprehensive notes
 
-    def test_version_config_recommendations_for_314_with_features_expected(self) -> None:
+    def test_version_config_recommendations_for_314_with_features_expected(
+        self,
+    ) -> None:
         """Test recommendations for Python 3.14 with experimental features."""
         with patch("taipanstack.config.version_config.PY314", True):
             from taipanstack.core.compat import PythonFeatures, VersionTier
@@ -198,7 +204,9 @@ class TestGetVersionRecommendations:
                 assert rec.supports_true_parallelism
                 assert rec.recommended_optimization_level == 2
 
-    def test_version_config_recommendations_always_returns_valid_data_expected(self) -> None:
+    def test_version_config_recommendations_always_returns_valid_data_expected(
+        self,
+    ) -> None:
         """Test that recommendations always return valid data."""
         rec = get_version_recommendations()
 

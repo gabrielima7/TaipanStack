@@ -35,7 +35,9 @@ class TestAppMain:
 class TestConfigGeneratorsBranches:
     """Tests for config/generators.py branch coverage."""
 
-    def test_100_coverage_final_generate_pre_commit_without_bandit_expected(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_without_bandit_expected(
+        self,
+    ) -> None:
         """Test pre-commit config without bandit enabled."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -52,7 +54,9 @@ class TestConfigGeneratorsBranches:
         result = generate_pre_commit_config(config)
         assert "bandit" not in result
 
-    def test_100_coverage_final_generate_pre_commit_with_safety_only_expected(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_safety_only_expected(
+        self,
+    ) -> None:
         """Test pre-commit config with safety only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -70,7 +74,9 @@ class TestConfigGeneratorsBranches:
         assert "safety" in result
         assert "bandit" not in result
 
-    def test_100_coverage_final_generate_pre_commit_with_semgrep_only_expected(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_semgrep_only_expected(
+        self,
+    ) -> None:
         """Test pre-commit config with semgrep only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -87,7 +93,9 @@ class TestConfigGeneratorsBranches:
         result = generate_pre_commit_config(config)
         assert "semgrep" in result
 
-    def test_100_coverage_final_generate_pre_commit_with_detect_secrets_only_expected(self) -> None:
+    def test_100_coverage_final_generate_pre_commit_with_detect_secrets_only_expected(
+        self,
+    ) -> None:
         """Test pre-commit config with detect-secrets only."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -236,7 +244,9 @@ class TestGuardsUncovered:
             assert "Malformed URL" in str(err)
             assert "Mocked error" in str(err)
 
-    def test_100_coverage_final_path_traversal_resolution_error_expected(self, tmp_path: Path) -> None:
+    def test_100_coverage_final_path_traversal_resolution_error_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with resolution error."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -271,7 +281,9 @@ class TestValidatorsUncovered:
 class TestSanitizersUncovered:
     """Tests for sanitizers.py uncovered lines."""
 
-    def test_100_coverage_final_sanitize_filename_empty_after_sanitization_expected(self) -> None:
+    def test_100_coverage_final_sanitize_filename_empty_after_sanitization_expected(
+        self,
+    ) -> None:
         """Test sanitize_filename with name that becomes empty."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -279,21 +291,27 @@ class TestSanitizersUncovered:
         result = sanitize_filename("...")
         assert result == "unnamed"
 
-    def test_100_coverage_final_sanitize_path_with_base_dir_not_absolute_expected(self, tmp_path: Path) -> None:
+    def test_100_coverage_final_sanitize_path_with_base_dir_not_absolute_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with relative path and base_dir."""
         from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
         assert tmp_path in result.parents or result.parent == tmp_path
 
-    def test_100_coverage_final_sanitize_env_value_multiline_allowed_expected(self) -> None:
+    def test_100_coverage_final_sanitize_env_value_multiline_allowed_expected(
+        self,
+    ) -> None:
         """Test sanitize_env_value with multiline allowed."""
         from taipanstack.security.sanitizers import sanitize_env_value
 
         result = sanitize_env_value("line1\nline2", allow_multiline=True)
         assert "\n" in result
 
-    def test_100_coverage_final_sanitize_sql_identifier_starts_with_number_expected(self) -> None:
+    def test_100_coverage_final_sanitize_sql_identifier_starts_with_number_expected(
+        self,
+    ) -> None:
         """Test sanitize_sql_identifier starting with number."""
         from taipanstack.security.sanitizers import sanitize_sql_identifier
 
@@ -340,7 +358,9 @@ class TestSubprocessUncovered:
 class TestFilesystemUncovered:
     """Tests for filesystem.py uncovered lines."""
 
-    def test_100_coverage_final_safe_write_atomic_success_expected(self, tmp_path: Path) -> None:
+    def test_100_coverage_final_safe_write_atomic_success_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test atomic write success path."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -402,7 +422,9 @@ def test_100_coverage_final_password_hash_wrong_type_expected():
 
 class TestSupplementarySubprocess:
     @patch("taipanstack.utils.subprocess.subprocess.run")
-    def test_100_coverage_final_run_safe_command_mocked_timeout_no_stdout_expected(self, mock_run):
+    def test_100_coverage_final_run_safe_command_mocked_timeout_no_stdout_expected(
+        self, mock_run
+    ):
         # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
         class MockTimeoutExpired(subprocess.TimeoutExpired):
             def __init__(self):
@@ -426,7 +448,9 @@ class TestSupplementarySubprocess:
         assert "timed out after 1.0s" in result.stderr
 
     @patch("taipanstack.utils.subprocess.subprocess.run")
-    def test_100_coverage_final_run_safe_command_mocked_timeout_with_bytes_stdout_expected(self, mock_run):
+    def test_100_coverage_final_run_safe_command_mocked_timeout_with_bytes_stdout_expected(
+        self, mock_run
+    ):
         # Mock it as bytes to test the fallback decode branch.
         exc = subprocess.TimeoutExpired(cmd=["python"], timeout=1.0)
         exc.stdout = b"some bytes output"

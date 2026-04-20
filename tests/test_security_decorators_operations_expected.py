@@ -34,7 +34,9 @@ class TestValidateInputs:
 
         assert double(5) == 10
 
-    def test_security_decorators_invalid_input_raises_validation_error_expected(self) -> None:
+    def test_security_decorators_invalid_input_raises_validation_error_expected(
+        self,
+    ) -> None:
         """Test that invalid input raises ValidationError."""
 
         def positive_int(x: int) -> int:
@@ -105,7 +107,9 @@ class TestGuardExceptions:
 
         assert safe_func() == "success"
 
-    def test_security_decorators_caught_exception_returns_default_expected(self) -> None:
+    def test_security_decorators_caught_exception_returns_default_expected(
+        self,
+    ) -> None:
         """Test that caught exception returns default."""
 
         @guard_exceptions(catch=(ValueError,), default="fallback")
@@ -137,8 +141,7 @@ class TestGuardExceptions:
     def test_security_decorators_reraise_as_custom_exception_expected(self) -> None:
         """Test reraising as custom exception type."""
 
-        class CustomError(Exception):
-            ...
+        class CustomError(Exception): ...
 
         @guard_exceptions(catch=(ValueError,), reraise_as=CustomError)
         def failing_func() -> str:
@@ -213,7 +216,9 @@ class TestTimeout:
             def func() -> None:
                 return None
 
-    def test_security_decorators_timeout_with_exception_in_thread_expected(self) -> None:
+    def test_security_decorators_timeout_with_exception_in_thread_expected(
+        self,
+    ) -> None:
         @timeout(1.0, use_signal=False)
         def func_raises() -> None:
             raise ValueError("Thread error")

@@ -112,7 +112,9 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["HOST"] == "db"
 
-    def test_watchdog_config_unsupported_extension_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_unsupported_extension_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Returns Err for unsupported file extensions."""
         f = tmp_path / "config.xml"
         f.write_text("<config/>")
@@ -237,7 +239,9 @@ class TestConfigWatcher:
         await asyncio.sleep(0.15)
         await watcher.stop()
 
-    def test_watchdog_config_detect_changes_no_change_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_detect_changes_no_change_expected(
+        self, tmp_path: Path
+    ) -> None:
         """No changed paths when files haven't been modified."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -257,7 +261,9 @@ class TestConfigWatcher:
         assert isinstance(result2, Ok)
         assert result2.ok_value == []
 
-    def test_watchdog_config_validate_and_apply_with_env_file_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_validate_and_apply_with_env_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Hot-reload works for .env files."""
 
         class EnvConfig(BaseModel):
@@ -278,7 +284,9 @@ class TestConfigWatcher:
         assert isinstance(result, Ok)
         assert len(changes) == 1
 
-    def test_watchdog_config_validate_and_apply_missing_file_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_validate_and_apply_missing_file_expected(
+        self, tmp_path: Path
+    ) -> None:
         """_validate_and_apply returns Err when file can't be loaded."""
         watcher = ConfigWatcher(
             config_paths=[],
@@ -343,7 +351,9 @@ def test_watchdog_config_config_watcher_hash_err_branch_expected() -> None:
     watcher._detect_changes()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> None:
+def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel
@@ -369,7 +379,9 @@ def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_cal
     Path("test_bad_validate.json").unlink()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> None:
+def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch_expected() -> (
+    None
+):
     import json
 
     from pydantic import BaseModel
@@ -402,8 +414,7 @@ async def test_config_watcher_change_detection_error_coverage() -> None:
 
     from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
-    class MockConfig(BaseModel):
-        ...
+    class MockConfig(BaseModel): ...
 
     watcher = ConfigWatcher(config_paths=["foo.json"], config_model=MockConfig)
     watcher._detect_changes = MagicMock(return_value=Err(RuntimeError("mock error")))

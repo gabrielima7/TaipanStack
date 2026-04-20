@@ -42,7 +42,9 @@ class TestValidatorsParseError:
 class TestGuardsSymlinkDenied:
     """Tests for guards symlink denied (line 118)."""
 
-    def test_absolute_final_guard_path_traversal_symlink_param_expected(self, tmp_path: Path) -> None:
+    def test_absolute_final_guard_path_traversal_symlink_param_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with allow_symlinks parameter."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -78,7 +80,9 @@ class TestSanitizersEmptyParts:
         )
         assert result == "unnamed"
 
-    def test_absolute_final_sanitize_path_base_dir_constraint_expected(self, tmp_path: Path) -> None:
+    def test_absolute_final_sanitize_path_base_dir_constraint_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with base_dir and non-existent path."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -90,7 +94,9 @@ class TestSanitizersEmptyParts:
 class TestFilesystemLine175:
     """Test for filesystem.py line 175."""
 
-    def test_absolute_final_safe_write_different_encoding_expected(self, tmp_path: Path) -> None:
+    def test_absolute_final_safe_write_different_encoding_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with different encoding."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 

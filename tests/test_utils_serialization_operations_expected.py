@@ -47,15 +47,16 @@ class TestDefaultEncoder:
     def test_utils_serialization_encode_unsupported_type_expected(self) -> None:
         """Test encoding an unsupported type."""
 
-        class CustomObj:
-            ...
+        class CustomObj: ...
 
         with pytest.raises(
             orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"
         ):
             orjson.dumps(CustomObj(), default=default_encoder)
 
-    def test_utils_serialization_default_encoder_direct_type_error_expected(self) -> None:
+    def test_utils_serialization_default_encoder_direct_type_error_expected(
+        self,
+    ) -> None:
         """Test calling default_encoder directly with unsupported types."""
         with pytest.raises(TypeError, match="Type str is not JSON serializable"):
             default_encoder("string")

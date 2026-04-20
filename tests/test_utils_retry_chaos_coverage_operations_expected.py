@@ -3,7 +3,9 @@ import secrets
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(monkeypatch) -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(
+    monkeypatch,
+) -> None:
     # Test line 133 -> 139 where math.isfinite(jitter_amount) is False
     config = RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
     # The exponential backoff will give finite delay, but jitter_amount = delay * inf = inf
@@ -12,7 +14,9 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(monkeypatch)
     assert delay == 1.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(monkeypatch) -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(
+    monkeypatch,
+) -> None:
     # Test lines 136-137 exception logging
     config = RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=0.1)
 
