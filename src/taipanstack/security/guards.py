@@ -150,7 +150,7 @@ def _resolve_and_check_bounds(path: Path, base_dir: Path) -> tuple[Path, Path]:
     try:
         full_path = path if path.is_absolute() else (base_dir / path)
         resolved = full_path.resolve()
-    except (OSError, ValueError) as e:
+    except (OSError, ValueError, RuntimeError) as e:
         raise SecurityError(
             f"Invalid path: {e}",
             guard_name="path_traversal",
