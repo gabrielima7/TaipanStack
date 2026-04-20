@@ -204,6 +204,69 @@ class CircuitBreaker:
                 failure_count=self._state.failure_count,
             )
 
+    def _transition_to_closed(self) -> None:
+        self._state.state = CircuitState.CLOSED
+        self._state.failure_count = 0
+        self._state.half_open_attempts = 0
+        logger.info(
+            "Circuit %s closed after recovery "
+            "(%d consecutive successes)",
+            self.name,
+            self._state.success_count,
+        )
+        self._notify_state_change(
+            CircuitState.HALF_OPEN,
+            CircuitState.CLOSED,
+        )
+
+    def _transition_to_half_open(self, elapsed: float) -> None:
+        self._state.state = CircuitState.HALF_OPEN
+        self._state.success_count = 0
+        self._state.half_open_attempts = 1
+        logger.info(
+            "Circuit %s entering half-open state "
+            "(was open for %.1fs, failures=%d)",
+            self.name,
+            elapsed,
+            self._state.failure_count,
+        )
+        self._notify_state_change(
+            CircuitState.OPEN,
+            CircuitState.HALF_OPEN,
+        )
+
+    def _transition_to_open(self, old_state: CircuitState) -> None:
+        self._state.state = CircuitState.OPEN
+        self._state.half_open_attempts = 0
+        if old_state == CircuitState.HALF_OPEN:
+            logger.warning(
+                "Circuit %s reopened after failure in half-open "
+                "(total failures=%d)",
+                self.name,
+                self._state.failure_count,
+            )
+        else:
+            logger.warning(
+                "Circuit %s opened after %d failures (threshold=%d)",
+                self.name,
+                self._state.failure_count,
+                self.config.failure_threshold,
+            )
+        self._notify_state_change(
+            old_state,
+            CircuitState.OPEN,
+        )
+
+    def _evaluate_open_state(self, now: float) -> bool:
+        elapsed = now - self._state.last_failure_time
+        if elapsed < 0:
+            elapsed = self.config.timeout
+
+        if math.isfinite(now) and elapsed >= self.config.timeout:
+            self._transition_to_half_open(elapsed)
+            return True
+        return False
+
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
         with self._state.lock:
@@ -212,38 +275,7 @@ class CircuitBreaker:
                     return True
 
                 case CircuitState.OPEN:
-                    # Check if timeout has passed
-                    now = time.monotonic()
-                    elapsed = now - self._state.last_failure_time
-                    # Safe check against NaN and Inf time corruption
-                    # If elapsed < 0, a backward clock jump occurred. We should
-                    # allow a transition to prevent permanent lockout.
-                    if elapsed < 0:
-                        elapsed = self.config.timeout
-
-                    if math.isfinite(now) and elapsed >= self.config.timeout:
-                        # Before transitioning, verify if we can make an attempt
-                        # This happens in a lock, so it's thread-safe. However, once
-                        # the state changes to HALF_OPEN, subsequent threads in the
-                        # same lock block will hit the HALF_OPEN case.
-                        self._state.state = CircuitState.HALF_OPEN
-                        self._state.success_count = 0
-                        # Initialize half_open_attempts to 1 because this first call
-                        # that transitions the state is also an attempt.
-                        self._state.half_open_attempts = 1
-                        logger.info(
-                            "Circuit %s entering half-open state "
-                            "(was open for %.1fs, failures=%d)",
-                            self.name,
-                            elapsed,
-                            self._state.failure_count,
-                        )
-                        self._notify_state_change(
-                            CircuitState.OPEN,
-                            CircuitState.HALF_OPEN,
-                        )
-                        return True
-                    return False
+                    return self._evaluate_open_state(time.monotonic())
 
                 case CircuitState.HALF_OPEN:
                     # Allow limited attempts to prevent thundering herd
@@ -261,19 +293,7 @@ class CircuitBreaker:
                 case CircuitState.HALF_OPEN:
                     self._state.success_count += 1
                     if self._state.success_count >= self.config.success_threshold:
-                        self._state.state = CircuitState.CLOSED
-                        self._state.failure_count = 0
-                        self._state.half_open_attempts = 0
-                        logger.info(
-                            "Circuit %s closed after recovery "
-                            "(%d consecutive successes)",
-                            self.name,
-                            self._state.success_count,
-                        )
-                        self._notify_state_change(
-                            CircuitState.HALF_OPEN,
-                            CircuitState.CLOSED,
-                        )
+                        self._transition_to_closed()
 
                 case CircuitState.CLOSED:
                     # Reset failure count on success
@@ -296,33 +316,11 @@ class CircuitBreaker:
 
             match self._state.state:
                 case CircuitState.HALF_OPEN:
-                    # Any failure in half-open reopens circuit
-                    self._state.state = CircuitState.OPEN
-                    self._state.half_open_attempts = 0
-                    logger.warning(
-                        "Circuit %s reopened after failure in half-open "
-                        "(total failures=%d)",
-                        self.name,
-                        self._state.failure_count,
-                    )
-                    self._notify_state_change(
-                        CircuitState.HALF_OPEN,
-                        CircuitState.OPEN,
-                    )
+                    self._transition_to_open(CircuitState.HALF_OPEN)
 
                 case CircuitState.CLOSED:
                     if self._state.failure_count >= self.config.failure_threshold:
-                        self._state.state = CircuitState.OPEN
-                        logger.warning(
-                            "Circuit %s opened after %d failures (threshold=%d)",
-                            self.name,
-                            self._state.failure_count,
-                            self.config.failure_threshold,
-                        )
-                        self._notify_state_change(
-                            CircuitState.CLOSED,
-                            CircuitState.OPEN,
-                        )
+                        self._transition_to_open(CircuitState.CLOSED)
 
                 case CircuitState.OPEN:  # pragma: no branch
                     pass  # Already open, nothing to do
