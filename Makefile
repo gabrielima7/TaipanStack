@@ -76,11 +76,11 @@ clean:
 
 benchmark:
 	@echo "Running performance benchmarks..."
-	poetry run pytest tests/test_benchmarks.py --benchmark-only -v
+	poetry run pytest tests/test_benchmarks_operations_expected.py --benchmark-only -v
 
 property-test:
 	@echo "Running property-based fuzz tests..."
-	poetry run pytest tests/test_property_sanitizers.py -v
+	poetry run pytest tests/test_property_sanitizers_operations_expected.py -v
 
 all: lint typecheck security lint-imports test
 	@echo ""
