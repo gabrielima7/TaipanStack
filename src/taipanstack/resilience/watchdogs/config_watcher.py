@@ -179,6 +179,18 @@ class ConfigWatcher(BaseWatcher):
         self._on_validation_error = on_validation_error
         self._file_hashes: dict[Path, str] = {}
 
+    def _process_hash_result(
+        self, path: Path, current_hash: str, changed: list[Path]
+    ) -> None:
+        """Process successful hash result and update changed list."""
+        previous = self._file_hashes.get(path)
+        if previous is None:
+            # First time seeing this file — record hash
+            self._file_hashes[path] = current_hash
+        elif current_hash != previous:
+            self._file_hashes[path] = current_hash
+            changed.append(path)
+
     def _detect_changes(self) -> Result[list[Path], Exception]:
         """Detect which watched files have changed since last check.
 
@@ -191,16 +203,35 @@ class ConfigWatcher(BaseWatcher):
             hash_result = _hash_file(path)
             match hash_result:
                 case Ok(current_hash):
-                    previous = self._file_hashes.get(path)
-                    if previous is None:
-                        # First time seeing this file — record hash
-                        self._file_hashes[path] = current_hash
-                    elif current_hash != previous:
-                        self._file_hashes[path] = current_hash
-                        changed.append(path)
+                    self._process_hash_result(path, current_hash, changed)
                 case Err(error):
                     logger.warning("Cannot hash %s: %s", path, error)
         return Ok(changed)
+
+    def _handle_validation_success(
+        self, path: Path, model: BaseModel
+    ) -> Result[BaseModel, Exception]:
+        """Handle successful validation."""
+        logger.info(
+            "Config hot-reloaded from %s",
+            path,
+        )
+        if self._on_config_change is not None:
+            self._on_config_change(model)
+        return Ok(model)
+
+    def _handle_validation_failure(
+        self, path: Path, val_error: Exception
+    ) -> Result[BaseModel, Exception]:
+        """Handle validation failure."""
+        logger.error(
+            "Config validation failed for %s: %s",
+            path,
+            val_error,
+        )
+        if self._on_validation_error is not None:
+            self._on_validation_error(val_error)
+        return Err(val_error)
 
     def _validate_and_apply(self, path: Path) -> Result[BaseModel, Exception]:
         """Load, validate, and apply configuration from a file.
@@ -220,22 +251,9 @@ class ConfigWatcher(BaseWatcher):
                 validation = validate_config(data, self._config_model)
                 match validation:
                     case Ok(model):
-                        logger.info(
-                            "Config hot-reloaded from %s",
-                            path,
-                        )
-                        if self._on_config_change is not None:
-                            self._on_config_change(model)
-                        return Ok(model)
+                        return self._handle_validation_success(path, model)
                     case Err(val_error):
-                        logger.error(
-                            "Config validation failed for %s: %s",
-                            path,
-                            val_error,
-                        )
-                        if self._on_validation_error is not None:
-                            self._on_validation_error(val_error)
-                        return Err(val_error)
+                        return self._handle_validation_failure(path, val_error)
 
     async def _run(self) -> None:
         """Execute a single config-check cycle."""
