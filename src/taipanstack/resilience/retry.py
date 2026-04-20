@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from types import TracebackType
 from typing import NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
 
+from taipanstack.core.result import Err
+
 P = ParamSpec("P")
 R = TypeVar("R")
 
@@ -320,10 +322,17 @@ def retry(
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
                 last_exception: Exception | None = None
+                last_result: R | None = None
 
                 for attempt in range(1, max_attempts + 1):  # pragma: no branch
+                    last_result = None
                     try:
-                        return await func_coro(*args, **kwargs)
+                        last_result = await func_coro(*args, **kwargs)
+                        if isinstance(last_result, Err):
+                            err_val = last_result.unwrap_err()
+                            if isinstance(err_val, on):
+                                raise err_val
+                        return last_result
                     except on as e:
                         last_exception = e
 
@@ -345,6 +354,8 @@ def retry(
                         )
                         await asyncio.sleep(min(delay, 3600.0))
 
+                if last_result is not None and isinstance(last_result, Err):
+                    return cast(R, last_result)
                 _raise_retry_error(
                     func_coro.__name__,
                     max_attempts,
@@ -359,10 +370,17 @@ def retry(
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             last_exception: Exception | None = None
+            last_result: R | None = None
 
             for attempt in range(1, max_attempts + 1):  # pragma: no branch
+                last_result = None
                 try:
-                    return func_sync(*args, **kwargs)
+                    last_result = func_sync(*args, **kwargs)
+                    if isinstance(last_result, Err):
+                        err_val = last_result.unwrap_err()
+                        if isinstance(err_val, on):
+                            raise err_val
+                    return last_result
                 except on as e:
                     last_exception = e
 
@@ -385,6 +403,8 @@ def retry(
                     )
                     time.sleep(min(delay, 3600.0))
 
+            if last_result is not None and isinstance(last_result, Err):
+                return cast(R, last_result)
             _raise_retry_error(
                 func_sync.__name__,
                 max_attempts,
