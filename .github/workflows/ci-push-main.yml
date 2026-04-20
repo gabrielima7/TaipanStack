@@ -352,7 +352,7 @@ jobs:
         run: poetry install --with dev
 
       - name: "[Test] Run Hypothesis property-based tests"
-        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov --timeout=300
+        run: poetry run pytest tests/test_property_sanitizers_operations_expected.py -v --no-cov --timeout=300
 
   mutation-testing:
     name: "[Test] Mutation Testing"
