@@ -1,0 +1,190 @@
+"""Performance benchmarks for TaipanStack critical-path functions.
+
+Used by pytest-benchmark to detect performance regressions (>5%).
+Run with: pytest tests/test_benchmarks.py --benchmark-only
+"""
+
+from pytest_benchmark.fixture import BenchmarkFixture
+from result import Ok
+
+from taipanstack.core.result import collect_results, safe
+from taipanstack.security.guards import guard_ssrf
+from taipanstack.security.sanitizers import (
+    sanitize_env_value,
+    sanitize_filename,
+    sanitize_path,
+    sanitize_sql_identifier,
+    sanitize_string,
+)
+
+# =============================================================================
+# Sanitizer Benchmarks
+# =============================================================================
+
+
+def test_benchmarks_bench_sanitize_string_simple_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_string with typical input."""
+    benchmark(sanitize_string, "Hello, World! This is a normal string.")
+
+
+def test_benchmarks_bench_sanitize_string_xss_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_string with XSS payload."""
+    benchmark(
+        sanitize_string,
+        "<script>alert('xss')</script><img onerror=alert(1) src=x>",
+    )
+
+
+def test_benchmarks_bench_sanitize_string_unicode_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_string with heavy unicode content."""
+    benchmark(
+        sanitize_string,
+        "Héllo Wörld こんにちは 🌍 café résumé naïve" * 5,
+    )
+
+
+def test_benchmarks_bench_sanitize_filename_complex_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_filename with adversarial input."""
+    benchmark(
+        sanitize_filename,
+        '../../../etc/passwd<>:"|?*CON.txt',
+    )
+
+
+def test_benchmarks_bench_sanitize_filename_long_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_filename with a very long name."""
+    benchmark(sanitize_filename, "a" * 300 + ".txt", max_length=255)
+
+
+def test_benchmarks_bench_sanitize_path_nested_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_path with nested directory structure."""
+    benchmark(sanitize_path, "a/b/c/d/e/f/g/h/file.txt", max_depth=10)
+
+
+def test_benchmarks_bench_sanitize_path_traversal_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_path with traversal attempts stripped."""
+    benchmark(sanitize_path, "safe/../../still/../ok/file.txt", max_depth=None)
+
+
+def test_benchmarks_bench_sanitize_env_value_standard_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_env_value with typical env content."""
+    benchmark(
+        sanitize_env_value,
+        "DATABASE_URL=postgresql://user:pass@localhost:5432/db",
+    )
+
+
+def test_benchmarks_bench_sanitize_env_value_large_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_env_value with large payload."""
+    benchmark(sanitize_env_value, "x" * 4096, max_length=4096)
+
+
+def test_benchmarks_bench_sanitize_sql_identifier_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_sql_identifier with typical table name."""
+    benchmark(sanitize_sql_identifier, "user_accounts_table")
+
+
+def test_benchmarks_bench_sanitize_sql_identifier_dirty_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark sanitize_sql_identifier with injection attempt."""
+    benchmark(sanitize_sql_identifier, "users; DROP TABLE users--")
+
+
+# =============================================================================
+# Result Type Benchmarks
+# =============================================================================
+
+
+@safe
+def _divide(a: int, b: int) -> float:
+    """Test function for @safe decorator benchmarks."""
+    return a / b
+
+
+def test_benchmarks_bench_safe_decorator_ok_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark @safe decorator on successful call."""
+    benchmark(_divide, 10, 2)
+
+
+def test_benchmarks_bench_safe_decorator_err_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark @safe decorator on failing call."""
+    benchmark(_divide, 10, 0)
+
+
+def test_benchmarks_bench_collect_results_100_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark collect_results with 100 Ok values."""
+    results = [Ok(i) for i in range(100)]
+    benchmark(collect_results, results)
+
+
+def test_benchmarks_bench_unwrap_or_expected(benchmark: BenchmarkFixture) -> None:
+    """Benchmark unwrap_or with Ok value."""
+    ok = Ok(42)
+    benchmark(ok.unwrap_or, 0)
+
+
+# =============================================================================
+# Guard Benchmarks
+# =============================================================================
+
+
+def test_benchmarks_bench_guard_ssrf_public_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark guard_ssrf with public hostname."""
+    # We mock getaddrinfo to avoid network I/O and measure only the guard logic
+    import socket
+    from unittest.mock import patch
+
+    public_ip = [
+        (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 80)),
+    ]
+
+    with patch(
+        "taipanstack.security.guards.socket.getaddrinfo", return_value=public_ip
+    ):
+        benchmark(guard_ssrf, "https://example.com")
+
+
+def test_benchmarks_bench_guard_ssrf_private_expected(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Benchmark guard_ssrf with private hostname."""
+    import socket
+    from unittest.mock import patch
+
+    private_ip = [
+        (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("10.0.0.1", 80)),
+    ]
+
+    with patch(
+        "taipanstack.security.guards.socket.getaddrinfo", return_value=private_ip
+    ):
+        benchmark(guard_ssrf, "http://internal.local")

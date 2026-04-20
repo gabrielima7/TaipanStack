@@ -54,7 +54,7 @@ jobs:
 
       - name: "[Test] Run benchmarks"
         run: |
-          poetry run pytest tests/test_benchmarks.py \
+          poetry run pytest tests/test_benchmarks_operations_expected.py \
             --benchmark-only \
             --benchmark-json=benchmark-result.json \
             --benchmark-min-rounds=10 \
