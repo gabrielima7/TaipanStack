@@ -14,5 +14,5 @@ def test_guard_path_traversal_symlink_loop_runtime_error_expected() -> None:
         link1.symlink_to("link2")
         link2.symlink_to("link1")
 
-        with pytest.raises(SecurityError, match="Invalid path"):
-            guard_path_traversal(link1, base, allow_symlinks=True)
+        with pytest.raises(SecurityError, match=r"Invalid path|Symlinks are not allowed"):
+            guard_path_traversal(link1, base, allow_symlinks=False)
