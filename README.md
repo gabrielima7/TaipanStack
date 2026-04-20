@@ -34,7 +34,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 ### ✨ What's New in v0.4.3
 - **Strict Static Typing**: Project-wide refactoring to eliminate all `Any` types, ensuring 100% type safety with `Mypy` strict mode.
 - **SSRF & DoS Hardening**: Mitigates `urlparse` SSRF risks and algorithmic complexity DoS via bounded length and value validation.
-- **Total Core Coverage**: Achieved true 100% branch and statement coverage in the core result module with 1,199 passing tests.
+- **Total Core Coverage**: Achieved true 100% branch and statement coverage in the core result module with 1,207 passing tests.
 
 <table>
 <tr>
@@ -72,7 +72,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1199 tests)
+- **100% code coverage** (1207 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -114,7 +114,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1199 tests)
+# Run tests with 100% coverage (1207 tests)
 make test
 
 # Check architecture contracts
@@ -169,7 +169,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1199 tests, 100% coverage
+├── tests/                # ✅ 1207 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
