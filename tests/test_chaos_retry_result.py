@@ -59,6 +59,7 @@ async def test_retry_result_monad_chaos_coverage_async():
     with pytest.raises(Exception, match="All 1 attempts failed"):
         await fail_with_exception()
 
+
 def test_retry_result_monad_chaos_sync_not_on():
     @retry(max_attempts=3, on=(ValueError,))
     def failing_func():
@@ -66,6 +67,7 @@ def test_retry_result_monad_chaos_sync_not_on():
 
     result = failing_func()
     assert isinstance(result, Err)
+
 
 @pytest.mark.asyncio
 async def test_retry_result_monad_chaos_async_not_on():
@@ -76,6 +78,7 @@ async def test_retry_result_monad_chaos_async_not_on():
     result = await failing_func()
     assert isinstance(result, Err)
 
+
 @pytest.mark.asyncio
 async def test_retry_result_monad_chaos_exhaust_async():
     @retry(max_attempts=2, on=(ValueError,))
@@ -84,6 +87,7 @@ async def test_retry_result_monad_chaos_exhaust_async():
 
     result = await failing_func()
     assert isinstance(result, Err)
+
 
 def test_retry_result_monad_chaos_exhaust_sync():
     @retry(max_attempts=2, on=(ValueError,))
