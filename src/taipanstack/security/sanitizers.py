@@ -434,15 +434,6 @@ def sanitize_env_value(
     return result
 
 
-def _is_valid_sql_identifier_fast_path(identifier: str) -> bool:
-    """Check if an identifier meets fast-path criteria."""
-    return (
-        identifier.isidentifier()
-        and identifier.isascii()
-        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-    )
-
-
 def _sanitize_sql_identifier_slow_path(identifier: str) -> str:
     """Apply slow path sanitization for SQL identifiers."""
     result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
@@ -485,8 +476,12 @@ def sanitize_sql_identifier(identifier: str) -> str:
         msg = "SQL identifier cannot be empty"
         raise ValueError(msg)
 
-    # Fast path: already clean and valid
-    if _is_valid_sql_identifier_fast_path(identifier):
+    # Fast path: inline to save function call overhead
+    if (
+        identifier.isidentifier()
+        and identifier.isascii()
+        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+    ):
         return identifier
 
     return _sanitize_sql_identifier_slow_path(identifier)
