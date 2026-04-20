@@ -43,7 +43,9 @@ class TestLoggingWithRealStructlog:
         logger.unbind("key1")
         logger.info("after unbind")
 
-    def test_100_percent_coverage_stack_logger_structured_exception_expected(self) -> None:
+    def test_100_percent_coverage_stack_logger_structured_exception_expected(
+        self,
+    ) -> None:
         """Test StackLogger.exception in structured mode."""
         from taipanstack.utils.logging import StackLogger
 
@@ -78,14 +80,18 @@ class TestSubprocessTimeoutEdgeCases:
 class TestValidatorsMissingBranches:
     """Tests for validators missing branches."""
 
-    def test_100_percent_coverage_validate_project_name_with_hyphen_false_expected(self) -> None:
+    def test_100_percent_coverage_validate_project_name_with_hyphen_false_expected(
+        self,
+    ) -> None:
         """Test validate_project_name with allow_hyphen=False."""
         from taipanstack.security.validators import validate_project_name
 
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my-project", allow_hyphen=False)
 
-    def test_100_percent_coverage_validate_project_name_with_underscore_false_expected(self) -> None:
+    def test_100_percent_coverage_validate_project_name_with_underscore_false_expected(
+        self,
+    ) -> None:
         """Test validate_project_name with allow_underscore=False."""
         from taipanstack.security.validators import validate_project_name
 
@@ -110,7 +116,9 @@ class TestValidatorsMissingBranches:
 class TestGuardsMissingBranches:
     """Tests for guards missing branches."""
 
-    def test_100_percent_coverage_guard_command_injection_allowed_expected(self) -> None:
+    def test_100_percent_coverage_guard_command_injection_allowed_expected(
+        self,
+    ) -> None:
         """Test guard_command_injection with allowed commands."""
         from taipanstack.security.guards import guard_command_injection
 
@@ -125,7 +133,9 @@ class TestGuardsMissingBranches:
 class TestSanitizersMissingBranches:
     """Tests for sanitizers missing branches."""
 
-    def test_100_percent_coverage_sanitize_filename_preserve_extension_false_expected(self) -> None:
+    def test_100_percent_coverage_sanitize_filename_preserve_extension_false_expected(
+        self,
+    ) -> None:
         """Test sanitize_filename with preserve_extension=False."""
         from taipanstack.security.sanitizers import sanitize_filename
 
@@ -133,14 +143,18 @@ class TestSanitizersMissingBranches:
         # Should not have the extension
         assert not result.endswith(".txt") or result == "file.txt"
 
-    def test_100_percent_coverage_sanitize_path_with_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_100_percent_coverage_sanitize_path_with_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with base_dir."""
         from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert str(tmp_path) in str(result)
 
-    def test_100_percent_coverage_sanitize_path_resolve_true_expected(self, tmp_path: Path) -> None:
+    def test_100_percent_coverage_sanitize_path_resolve_true_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with resolve=True."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -157,7 +171,9 @@ class TestSanitizersMissingBranches:
 class TestFilesystemMissingBranches:
     """Tests for filesystem missing branches."""
 
-    def test_100_percent_coverage_safe_read_with_base_dir_traversal_expected(self, tmp_path: Path) -> None:
+    def test_100_percent_coverage_safe_read_with_base_dir_traversal_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_read when path has .. but base_dir guards it."""
         from taipanstack.utils.filesystem import safe_read
 
@@ -168,7 +184,9 @@ class TestFilesystemMissingBranches:
         result = safe_read(test_file, base_dir=tmp_path)
         assert result.unwrap() == "content"
 
-    def test_100_percent_coverage_ensure_dir_with_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_100_percent_coverage_ensure_dir_with_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test ensure_dir with base_dir constraint."""
         from taipanstack.utils.filesystem import ensure_dir
 

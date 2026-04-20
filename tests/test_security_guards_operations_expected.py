@@ -23,7 +23,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(safe_file, tmp_path)
         assert result == safe_file.resolve()
 
-    def test_security_guards_relative_path_within_base_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_relative_path_within_base_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that relative paths within base dir pass."""
         subdir = tmp_path / "subdir"
         subdir.mkdir()
@@ -33,7 +35,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(Path("subdir/test.txt"), tmp_path)
         assert result == test_file.resolve()
 
-    def test_security_guards_path_traversal_blocked_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_traversal_blocked_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that path traversal attempts are blocked."""
         with pytest.raises(SecurityError) as exc_info:
             guard_path_traversal("../etc/passwd", tmp_path)
@@ -46,12 +50,16 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal("foo/../../../etc/passwd", tmp_path)
 
-    def test_security_guards_url_encoded_traversal_blocked_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_url_encoded_traversal_blocked_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that URL encoded traversal is blocked."""
         with pytest.raises(SecurityError):
             guard_path_traversal("%2e%2e/etc/passwd", tmp_path)
 
-    def test_security_guards_path_escapes_base_dir_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that paths escaping base dir are blocked."""
         # Create a separate base directory
         subdir = tmp_path / "allowed"
@@ -64,7 +72,9 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal(outside_file, subdir)
 
-    def test_security_guards_symlinks_blocked_by_default_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_symlinks_blocked_by_default_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that symlinks are blocked by default."""
         real_file = tmp_path / "real.txt"
         real_file.touch()
@@ -78,7 +88,9 @@ class TestGuardPathTraversal:
         assert "Symlinks are not allowed" in str(exc_info.value)
         assert exc_info.value.guard_name == "path_traversal"
 
-    def test_security_guards_symlinks_allowed_when_enabled_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_symlinks_allowed_when_enabled_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that symlinks are allowed when allow_symlinks=True."""
         real_file = tmp_path / "real.txt"
         real_file.touch()
@@ -89,7 +101,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(symlink_path, tmp_path, allow_symlinks=True)
         assert result == real_file.resolve()
 
-    def test_security_guards_path_escapes_base_dir_msg_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_msg_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test the exact error msg for path escape."""
         subdir = tmp_path / "allowed"
         subdir.mkdir()
@@ -152,7 +166,9 @@ class TestGuardCommandInjection:
             )
         assert "not in allowed list" in str(exc_info.value)
 
-    def test_security_guards_empty_allowed_commands_whitelist_blocks_all_expected(self) -> None:
+    def test_security_guards_empty_allowed_commands_whitelist_blocks_all_expected(
+        self,
+    ) -> None:
         """Test that empty whitelist blocks all commands."""
         with pytest.raises(SecurityError) as exc_info:
             guard_command_injection(
@@ -198,7 +214,9 @@ class TestGuardFileExtension:
         result = guard_file_extension("file.txt", allowed_extensions=[".TXT"])
         assert result == Path("file.txt")
 
-    def test_security_guards_extension_not_in_allowed_list_blocked_expected(self) -> None:
+    def test_security_guards_extension_not_in_allowed_list_blocked_expected(
+        self,
+    ) -> None:
         """Test that extensions not in allowed_extensions are blocked."""
         # Testing normalization of input extension vs allowed extensions
         with pytest.raises(SecurityError, match="not in allowed list"):
@@ -210,7 +228,9 @@ class TestGuardFileExtension:
 class TestGuardEnvVariable:
     """Tests for guard_env_variable function."""
 
-    def test_security_guards_safe_env_variable_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_security_guards_safe_env_variable_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that safe environment variables are returned."""
         from taipanstack.security.guards import guard_env_variable
 
@@ -239,7 +259,9 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("GITHUB_TOKEN")
 
-    def test_security_guards_missing_env_variable_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_security_guards_missing_env_variable_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that missing variables raise error."""
         from taipanstack.security.guards import guard_env_variable
 
@@ -247,14 +269,18 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="not set"):
             guard_env_variable("NONEXISTENT_VAR")
 
-    def test_security_guards_custom_denied_names_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_security_guards_custom_denied_names_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test custom denied names."""
         from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("CUSTOM_SECRET", denied_names=["CUSTOM_SECRET"])
 
-    def test_security_guards_allowed_names_override_expected(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_security_guards_allowed_names_override_expected(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test that allowed_names override pattern blocking."""
         from taipanstack.security.guards import guard_env_variable
 

@@ -8,7 +8,9 @@ import pytest
 class TestRetryStructlogIntegration:
     """Test structlog auto-logging in the @retry decorator."""
 
-    def test_v033_structlog_integration_retry_calls_structlog_warning_on_retry_without_callback_expected(self) -> None:
+    def test_v033_structlog_integration_retry_calls_structlog_warning_on_retry_without_callback_expected(
+        self,
+    ) -> None:
         """When no on_retry callback is provided, structlog.warning is called."""
         mock_structlog_logger = MagicMock()
 
@@ -40,7 +42,9 @@ class TestRetryStructlogIntegration:
         # First positional arg should be the event key
         assert call_kwargs[0][0] == "retry_attempted"
 
-    def test_v033_structlog_integration_retry_does_not_call_structlog_when_callback_provided_expected(self) -> None:
+    def test_v033_structlog_integration_retry_does_not_call_structlog_when_callback_provided_expected(
+        self,
+    ) -> None:
         """When on_retry callback is provided, structlog should NOT be called."""
         mock_structlog_logger = MagicMock()
 
@@ -72,7 +76,9 @@ class TestRetryStructlogIntegration:
         # structlog warning must NOT have been called
         mock_structlog_logger.warning.assert_not_called()
 
-    def test_v033_structlog_integration_retry_structlog_warning_has_expected_fields_expected(self) -> None:
+    def test_v033_structlog_integration_retry_structlog_warning_has_expected_fields_expected(
+        self,
+    ) -> None:
         """Verify that structlog.warning receives all expected kwargs."""
         mock_structlog_logger = MagicMock()
 
@@ -104,7 +110,9 @@ class TestRetryStructlogIntegration:
         assert "delay_seconds" in kwargs
         assert kwargs["function"] == "named_failing_fn"
 
-    def test_v033_structlog_integration_retry_no_structlog_no_crash_expected(self) -> None:
+    def test_v033_structlog_integration_retry_no_structlog_no_crash_expected(
+        self,
+    ) -> None:
         """When _HAS_STRUCTLOG is False, retries must still work silently."""
         with (
             patch("taipanstack.resilience.retry._HAS_STRUCTLOG", False),
@@ -161,7 +169,9 @@ class TestCircuitBreakerStructlogIntegration:
         assert call_args is not None
         assert call_args[0][0] == "circuit_state_changed"
 
-    def test_v033_structlog_integration_circuit_breaker_structlog_fields_are_correct_expected(self) -> None:
+    def test_v033_structlog_integration_circuit_breaker_structlog_fields_are_correct_expected(
+        self,
+    ) -> None:
         """Verify structlog.warning kwargs contain expected circuit fields."""
         mock_structlog_logger = MagicMock()
 
@@ -231,7 +241,9 @@ class TestCircuitBreakerStructlogIntegration:
         # But our callback should have recorded the transition
         assert len(transitions) >= 1
 
-    def test_v033_structlog_integration_circuit_breaker_no_structlog_no_crash_expected(self) -> None:
+    def test_v033_structlog_integration_circuit_breaker_no_structlog_no_crash_expected(
+        self,
+    ) -> None:
         """Without structlog, circuit breaker must operate normally."""
         with (
             patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", False),

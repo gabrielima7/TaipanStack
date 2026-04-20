@@ -18,7 +18,9 @@ from taipanstack.security.validators import (
         max_size=MAX_PYTHON_VERSION_LENGTH + 1000,
     )
 )
-def test_fuzz_python_version_fuzz_version_massive_strings_dos_expected(version: str) -> None:
+def test_fuzz_python_version_fuzz_version_massive_strings_dos_expected(
+    version: str,
+) -> None:
     """Fuzz validate_python_version with massive strings to ensure DoS protection limits are active."""
     with pytest.raises(ValueError, match="Version string exceeds maximum length"):
         validate_python_version(version)
@@ -50,7 +52,9 @@ def test_fuzz_python_version_fuzz_version_null_bytes_expected(version: str) -> N
         max_size=10,
     )
 )
-def test_fuzz_python_version_fuzz_version_unprintable_chars_expected(chars: str) -> None:
+def test_fuzz_python_version_fuzz_version_unprintable_chars_expected(
+    chars: str,
+) -> None:
     """Fuzz validate_python_version with zero-width characters and unprintable unicode."""
     version = f"3.{chars}"
     with pytest.raises(ValueError, match="Version contains invalid characters"):

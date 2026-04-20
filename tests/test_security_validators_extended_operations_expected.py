@@ -19,12 +19,16 @@ class TestValidateProjectNameEdgeCases:
         with pytest.raises(ValueError, match="exceeds maximum"):
             validate_project_name(long_name, max_length=100)
 
-    def test_security_validators_extended_name_starts_with_number_expected(self) -> None:
+    def test_security_validators_extended_name_starts_with_number_expected(
+        self,
+    ) -> None:
         """Test that names starting with numbers are rejected."""
         with pytest.raises(ValueError, match="start with a letter"):
             validate_project_name("123project")
 
-    def test_security_validators_extended_name_starts_with_hyphen_expected(self) -> None:
+    def test_security_validators_extended_name_starts_with_hyphen_expected(
+        self,
+    ) -> None:
         """Test that names starting with hyphen are rejected."""
         with pytest.raises(ValueError, match="start with a letter"):
             validate_project_name("-myproject")
@@ -48,23 +52,31 @@ class TestValidateProjectNameEdgeCases:
 class TestValidatePythonVersionEdgeCases:
     """Additional tests for validate_python_version."""
 
-    def test_security_validators_extended_unsupported_major_version_expected(self) -> None:
+    def test_security_validators_extended_unsupported_major_version_expected(
+        self,
+    ) -> None:
         """Test that unsupported major versions are rejected."""
         with pytest.raises(ValueError, match="Python 3"):
             validate_python_version("2.7")
 
-    def test_security_validators_extended_unsupported_minor_version_expected(self) -> None:
+    def test_security_validators_extended_unsupported_minor_version_expected(
+        self,
+    ) -> None:
         """Test that old minor versions are rejected."""
         with pytest.raises(ValueError, match="3.10"):
             validate_python_version("3.9")
 
-    def test_security_validators_extended_version_number_conversion_error_expected(self) -> None:
+    def test_security_validators_extended_version_number_conversion_error_expected(
+        self,
+    ) -> None:
         """Test that extremely long version numbers are rejected."""
         # This now triggers the length boundary check preventing DoS
         with pytest.raises(ValueError, match="Version string exceeds maximum length"):
             validate_python_version("1." + "9" * 5000)
 
-    def test_security_validators_extended_non_numeric_version_mock_expected(self) -> None:
+    def test_security_validators_extended_non_numeric_version_mock_expected(
+        self,
+    ) -> None:
         """Test that a non-numeric version string correctly raises ValueError during integer conversion when bypassing regex."""
         from unittest.mock import patch
 

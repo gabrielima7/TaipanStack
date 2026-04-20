@@ -61,7 +61,9 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_expected
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog_expected(monkeypatch):
+def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog_expected(
+    monkeypatch,
+):
     """Test the failure branch when structlog is missing."""
 
     # We patch the module-level variable by grabbing the actual module

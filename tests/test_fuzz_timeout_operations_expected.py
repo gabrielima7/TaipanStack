@@ -3,14 +3,15 @@ import pytest
 from taipanstack.security.decorators import timeout
 
 
-class CustomBaseException(BaseException):
-    ...
+class CustomBaseException(BaseException): ...
 
 
 @pytest.mark.parametrize(
     "exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException]
 )
-def test_fuzz_timeout_timeout_fuzz_base_exceptions_expected(exc_class: type[BaseException]):
+def test_fuzz_timeout_timeout_fuzz_base_exceptions_expected(
+    exc_class: type[BaseException],
+):
     """
     Fuzz the timeout decorator with uncatchable BaseExceptions.
 

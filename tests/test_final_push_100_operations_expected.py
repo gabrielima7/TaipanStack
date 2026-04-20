@@ -9,7 +9,9 @@ import pytest
 class TestSubprocessFinalBranches:
     """Final tests for subprocess module to reach 100%."""
 
-    def test_final_push_100_run_safe_command_timeout_branch_stdout_bytes_expected(self) -> None:
+    def test_final_push_100_run_safe_command_timeout_branch_stdout_bytes_expected(
+        self,
+    ) -> None:
         """Test timeout exception with stdout as bytes."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -27,7 +29,9 @@ class TestSubprocessFinalBranches:
         assert result.returncode == -1
         assert "timed out" in result.stderr
 
-    def test_final_push_100_run_safe_command_timeout_branch_stdout_str_expected(self) -> None:
+    def test_final_push_100_run_safe_command_timeout_branch_stdout_str_expected(
+        self,
+    ) -> None:
         """Test timeout exception with stdout as string."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -61,7 +65,9 @@ class TestGuardsFinalBranches:
 class TestValidatorsFinalBranches:
     """Final tests for validators module to reach 100%."""
 
-    def test_final_push_100_validate_project_name_starts_with_hyphen_expected(self) -> None:
+    def test_final_push_100_validate_project_name_starts_with_hyphen_expected(
+        self,
+    ) -> None:
         """Test validate_project_name starting with hyphen."""
         from taipanstack.security.validators import validate_project_name
 
@@ -86,7 +92,9 @@ class TestValidatorsFinalBranches:
 class TestSanitizersFinalBranches:
     """Final tests for sanitizers module to reach 100%."""
 
-    def test_final_push_100_sanitize_filename_truncation_with_extension_expected(self) -> None:
+    def test_final_push_100_sanitize_filename_truncation_with_extension_expected(
+        self,
+    ) -> None:
         """Test sanitize_filename truncation preserving extension."""
         from taipanstack.security.sanitizers import sanitize_filename
 

@@ -45,7 +45,9 @@ class TestMaskSensitiveDataProcessor:
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["api_key"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_case_insensitive_matching_password_expected(self) -> None:
+    def test_v034_logging_mask_case_insensitive_matching_password_expected(
+        self,
+    ) -> None:
         """Keys containing 'PASSWORD' (uppercase) are also redacted."""
         event_dict = {"USER_PASSWORD": "p4ssw0rd", "event": "test"}
         result = mask_sensitive_data_processor(None, "info", event_dict)
@@ -83,7 +85,9 @@ class TestMaskSensitiveDataProcessor:
         assert result["request_id"] == "req-001"
         assert result["duration"] == 1.23
 
-    def test_v034_logging_mask_empty_event_dict_is_returned_unchanged_expected(self) -> None:
+    def test_v034_logging_mask_empty_event_dict_is_returned_unchanged_expected(
+        self,
+    ) -> None:
         """An empty event dict passes through without error."""
         event_dict: dict[str, object] = {}
         result = mask_sensitive_data_processor(None, "info", event_dict)
@@ -95,7 +99,9 @@ class TestMaskSensitiveDataProcessor:
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result is event_dict
 
-    def test_v034_logging_mask_multiple_sensitive_keys_all_redacted_expected(self) -> None:
+    def test_v034_logging_mask_multiple_sensitive_keys_all_redacted_expected(
+        self,
+    ) -> None:
         """Multiple sensitive keys in one event dict are all redacted."""
         event_dict = {
             "event": "multi",
@@ -168,7 +174,9 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         assert "hunter2" not in captured, "Raw password must not appear in log output"
         assert REDACTED_VALUE in captured, "Redacted sentinel must appear in log output"
 
-    def test_v034_logging_mask_structlog_pipeline_masks_authorization_header_expected(self) -> None:
+    def test_v034_logging_mask_structlog_pipeline_masks_authorization_header_expected(
+        self,
+    ) -> None:
         """Authorization header value is masked in the structlog pipeline."""
         import io
 
@@ -193,7 +201,9 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         assert "secret-jwt-token" not in captured
         assert REDACTED_VALUE in captured
 
-    def test_v034_logging_mask_structlog_pipeline_preserves_non_sensitive_fields_expected(self) -> None:
+    def test_v034_logging_mask_structlog_pipeline_preserves_non_sensitive_fields_expected(
+        self,
+    ) -> None:
         """Non-sensitive fields are preserved untouched in the pipeline."""
         import io
 

@@ -8,7 +8,9 @@ import pytest
 class TestValidators100Percent:
     """Tests to reach 100% for validators."""
 
-    def test_ultra_final_validate_project_name_no_hyphens_no_underscores_expected(self) -> None:
+    def test_ultra_final_validate_project_name_no_hyphens_no_underscores_expected(
+        self,
+    ) -> None:
         """Test validate_project_name with both disabled."""
         from taipanstack.security.validators import validate_project_name
 
@@ -33,7 +35,9 @@ class TestValidators100Percent:
 class TestGuards100Percent:
     """Tests to reach 100% for guards."""
 
-    def test_ultra_final_guard_path_traversal_resolve_error_expected(self, tmp_path: Path) -> None:
+    def test_ultra_final_guard_path_traversal_resolve_error_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal when path resolution fails."""
         from taipanstack.security.guards import guard_path_traversal
 

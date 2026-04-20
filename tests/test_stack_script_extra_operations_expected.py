@@ -63,7 +63,9 @@ def test_stack_script_extra_safe_write_write_error_expected(tmp_path):
         assert "Could not write to file" in mock_error.call_args[0][0]
 
 
-def test_stack_script_extra_generate_pyproject_config_dry_run_with_config_expected(tmp_path, monkeypatch):
+def test_stack_script_extra_generate_pyproject_config_dry_run_with_config_expected(
+    tmp_path, monkeypatch
+):
     args = argparse.Namespace(dry_run=True, verbose=True, force=False)
     monkeypatch.chdir(tmp_path)
     with patch("taipanstack_bootstrapper._log") as mock_log:

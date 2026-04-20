@@ -45,7 +45,9 @@ class TestBackwardCompatShims:
         assert CircuitState is not None
         assert circuit_breaker is not None
 
-    def test_backward_compat_shims_circuit_breaker_shim_matches_canonical_expected(self) -> None:
+    def test_backward_compat_shims_circuit_breaker_shim_matches_canonical_expected(
+        self,
+    ) -> None:
         """Shim symbols are identical to the canonical resilience module."""
         from taipanstack.resilience.circuit_breaker import (
             CircuitBreaker as CanonicalCB,
@@ -108,7 +110,9 @@ class TestBackwardCompatShims:
         assert fallback is not None
         assert timeout is not None
 
-    def test_backward_compat_shims_resilience_shim_matches_canonical_expected(self) -> None:
+    def test_backward_compat_shims_resilience_shim_matches_canonical_expected(
+        self,
+    ) -> None:
         """Resilience shim symbols are identical to the canonical module."""
         from taipanstack.resilience.resilience import (
             AsyncResultFunc as CanonicalAsyncResultFunc,

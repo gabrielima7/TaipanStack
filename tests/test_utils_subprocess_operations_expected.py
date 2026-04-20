@@ -28,7 +28,9 @@ class TestSafeCommandResult:
         )
         assert result.success is True
 
-    def test_utils_subprocess_success_false_when_returncode_nonzero_expected(self) -> None:
+    def test_utils_subprocess_success_false_when_returncode_nonzero_expected(
+        self,
+    ) -> None:
         """Test success property returns False for non-zero returncode."""
         result = SafeCommandResult(
             command=["false"],

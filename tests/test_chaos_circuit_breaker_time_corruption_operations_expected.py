@@ -5,7 +5,9 @@ import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_time_corruption_circuit_breaker_chaos_time_corruption_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chaos_circuit_breaker_time_corruption_circuit_breaker_chaos_time_corruption_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Chaos test: simulate time.monotonic() returning NaN or Inf."""
     breaker = CircuitBreaker(failure_threshold=1, timeout=10.0)
 

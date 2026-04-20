@@ -18,7 +18,9 @@ class TestConcurrencyLimiter:
         with pytest.raises(ValueError, match="must be >= 0"):
             limit_concurrency(max_tasks=1, timeout=-1.0)
 
-    def test_utils_concurrency_sync_limit_concurrency_no_timeout_success_expected(self) -> None:
+    def test_utils_concurrency_sync_limit_concurrency_no_timeout_success_expected(
+        self,
+    ) -> None:
         """Test sync limit_concurrency with no timeout."""
 
         @limit_concurrency(max_tasks=1)
@@ -29,7 +31,9 @@ class TestConcurrencyLimiter:
         assert res.is_ok()
         assert res.ok_value == 42
 
-    def test_utils_concurrency_sync_limit_concurrency_timeout_success_expected(self) -> None:
+    def test_utils_concurrency_sync_limit_concurrency_timeout_success_expected(
+        self,
+    ) -> None:
         """Test sync limit_concurrency with timeout."""
 
         @limit_concurrency(max_tasks=1, timeout=0.1)
@@ -40,7 +44,9 @@ class TestConcurrencyLimiter:
         assert res.is_ok()
         assert res.ok_value == 42
 
-    def test_utils_concurrency_sync_limit_concurrency_no_timeout_failure_expected(self) -> None:
+    def test_utils_concurrency_sync_limit_concurrency_no_timeout_failure_expected(
+        self,
+    ) -> None:
         """Test sync limit_concurrency blocking immediately (no timeout)."""
         import threading
 
@@ -69,7 +75,9 @@ class TestConcurrencyLimiter:
         assert res.is_err()
         assert isinstance(res.err_value, OverloadError)
 
-    def test_utils_concurrency_sync_limit_concurrency_with_timeout_failure_expected(self) -> None:
+    def test_utils_concurrency_sync_limit_concurrency_with_timeout_failure_expected(
+        self,
+    ) -> None:
         """Test sync limit_concurrency blocking and failing after timeout."""
         import threading
 
