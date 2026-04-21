@@ -472,14 +472,14 @@ def sanitize_sql_identifier(identifier: str) -> str:
         if (
             identifier.isidentifier()
             and identifier.isascii()
-            and len(identifier) <= 128
+            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
         ):
             return identifier
-        
+
         if not identifier:
             msg = "SQL identifier cannot be empty"
             raise ValueError(msg)
-            
+
         return _sanitize_sql_identifier_slow_path(identifier)
 
     raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
