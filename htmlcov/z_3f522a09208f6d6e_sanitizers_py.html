@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_3f522a09208f6d6e_types_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-21 19:09 +0000
+            created at 2026-04-21 19:45 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -551,22 +551,22 @@
     <p class="pln"><span class="n"><a id="t467" href="#t467">467</a></span><span class="t"><span class="str">        ValueError: If identifier is empty or too long.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t468" href="#t468">468</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t469" href="#t469">469</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t470" href="#t470">470</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">identifier</span><span class="op">,</span> <span class="nam">str</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t471" href="#t471">471</a></span><span class="t">        <span class="key">raise</span> <span class="nam">TypeError</span><span class="op">(</span><span class="str">f"identifier must be str, got {type(identifier).__name__}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t472" href="#t472">472</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t473" href="#t473">473</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">identifier</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t474" href="#t474">474</a></span><span class="t">        <span class="nam">msg</span> <span class="op">=</span> <span class="str">"SQL identifier cannot be empty"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t475" href="#t475">475</a></span><span class="t">        <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="nam">msg</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t476" href="#t476">476</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t477" href="#t477">477</a></span><span class="t">    <span class="com"># Fast path: inline to save function call overhead</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t478" href="#t478">478</a></span><span class="t">    <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t479" href="#t479">479</a></span><span class="t">        <span class="nam">identifier</span><span class="op">.</span><span class="nam">isidentifier</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t480" href="#t480">480</a></span><span class="t">        <span class="key">and</span> <span class="nam">identifier</span><span class="op">.</span><span class="nam">isascii</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t481" href="#t481">481</a></span><span class="t">        <span class="key">and</span> <span class="nam">len</span><span class="op">(</span><span class="nam">identifier</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="nam">MAX_SQL_IDENTIFIER_LENGTH</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t482" href="#t482">482</a></span><span class="t">    <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t483" href="#t483">483</a></span><span class="t">        <span class="key">return</span> <span class="nam">identifier</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t470" href="#t470">470</a></span><span class="t">    <span class="key">if</span> <span class="nam">type</span><span class="op">(</span><span class="nam">identifier</span><span class="op">)</span> <span class="key">is</span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t471" href="#t471">471</a></span><span class="t">        <span class="com"># Fast path: inline to save function call overhead</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t472" href="#t472">472</a></span><span class="t">        <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t473" href="#t473">473</a></span><span class="t">            <span class="nam">identifier</span><span class="op">.</span><span class="nam">isidentifier</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t474" href="#t474">474</a></span><span class="t">            <span class="key">and</span> <span class="nam">identifier</span><span class="op">.</span><span class="nam">isascii</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t475" href="#t475">475</a></span><span class="t">            <span class="key">and</span> <span class="nam">len</span><span class="op">(</span><span class="nam">identifier</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="nam">MAX_SQL_IDENTIFIER_LENGTH</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t476" href="#t476">476</a></span><span class="t">        <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t477" href="#t477">477</a></span><span class="t">            <span class="key">return</span> <span class="nam">identifier</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t478" href="#t478">478</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t479" href="#t479">479</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">identifier</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t480" href="#t480">480</a></span><span class="t">            <span class="nam">msg</span> <span class="op">=</span> <span class="str">"SQL identifier cannot be empty"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t481" href="#t481">481</a></span><span class="t">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="nam">msg</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t482" href="#t482">482</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t483" href="#t483">483</a></span><span class="t">        <span class="key">return</span> <span class="nam">_sanitize_sql_identifier_slow_path</span><span class="op">(</span><span class="nam">identifier</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t484" href="#t484">484</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t485" href="#t485">485</a></span><span class="t">    <span class="key">return</span> <span class="nam">_sanitize_sql_identifier_slow_path</span><span class="op">(</span><span class="nam">identifier</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t485" href="#t485">485</a></span><span class="t">    <span class="key">raise</span> <span class="nam">TypeError</span><span class="op">(</span><span class="str">f"identifier must be str, got {type(identifier).__name__}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -576,7 +576,7 @@
             <a class="nav" href="z_3f522a09208f6d6e_types_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-04-21 19:09 +0000
+            created at 2026-04-21 19:45 +0000
         </p>
     </div>
 </footer>
