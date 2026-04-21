@@ -35,11 +35,12 @@ class TestSafeUrl:
         """A well-formed public HTTPS URL passes validation."""
         # Using a well-known public domain that DNS resolves to a public IP
         # Guard against environments with no network by catching ValidationError
-        try:
+        from unittest.mock import patch
+
+        with patch("socket.gethostbyname") as mock_dns:
+            mock_dns.return_value = "93.184.216.34"
             m = UrlModel(url="https://example.com")
             assert m.url == "https://example.com"
-        except ValidationError:
-            pytest.skip("Network not available in this environment")
 
     def test_security_types_loopback_url_raises_validation_error_expected(self) -> None:
         """A URL resolving to a loopback address raises ValidationError (SSRF)."""
