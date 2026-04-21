@@ -174,7 +174,8 @@ class TestResultModuleBranches:
 
         # Pass a list containing something that is not Ok or Err
         class Dummy:
-            pass
+            def __init__(self):
+                self.val = 1
 
         dummy = Dummy()
         res = collect_results(iter([dummy]))
@@ -186,7 +187,8 @@ class TestResultModuleBranches:
         from taipanstack.core.result import map_async
 
         class Dummy:
-            pass
+            def __init__(self):
+                self.val = 1
 
         dummy = Dummy()
 
@@ -202,7 +204,8 @@ class TestResultModuleBranches:
         from taipanstack.core.result import and_then_async
 
         class Dummy:
-            pass
+            def __init__(self):
+                self.val = 1
 
         dummy = Dummy()
 
