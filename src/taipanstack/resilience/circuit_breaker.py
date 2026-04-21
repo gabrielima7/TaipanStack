@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import ParamSpec, Protocol, TypeVar, cast, overload
 
+from taipanstack.core.result import Err
+
 P = ParamSpec("P")
 R = TypeVar("R")
 
@@ -363,6 +365,11 @@ class CircuitBreaker:
 
                 try:
                     result = await func_coro(*args, **kwargs)
+                    if isinstance(result, Err):
+                        err_val = result.unwrap_err()
+                        if isinstance(err_val, self.config.failure_exceptions):
+                            self._record_failure(err_val)
+                            return result
                     self._record_success()
                     return result
                 except self.config.failure_exceptions as e:
@@ -393,6 +400,11 @@ class CircuitBreaker:
 
             try:
                 result = func_sync(*args, **kwargs)
+                if isinstance(result, Err):
+                    err_val = result.unwrap_err()
+                    if isinstance(err_val, self.config.failure_exceptions):
+                        self._record_failure(err_val)
+                        return result
                 self._record_success()
                 return result
             except self.config.failure_exceptions as e:
