@@ -25,8 +25,8 @@ class TestFilesystemEdgeCases:
         # This should fail because .. triggers guard with cwd
         result = safe_read(tmp_path / ".." / "etc" / "passwd")
         match result:
-            case Err(SecurityError()):
-                pass
+            case Err(err) if isinstance(err, SecurityError):
+                assert err.guard_name == "path_traversal"
             case _:
                 pytest.fail("Expected Err(SecurityError)")
 
@@ -124,10 +124,6 @@ class TestDecoratorsEdgeCases:
 
     def test_edge_cases_coverage_timeout_with_signal_expected(self) -> None:
         """Test timeout with signal (Unix only)."""
-        import platform
-
-        if platform.system() == "Windows":
-            pytest.skip("Signal timeout not available on Windows")
 
         from taipanstack.security.decorators import OperationTimeoutError, timeout
 
