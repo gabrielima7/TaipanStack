@@ -19,6 +19,7 @@ def test_circuit_breaker_with_err_monad_expected():
     with pytest.raises(CircuitBreakerError, match="is open"):
         flaky_function(True)
 
+
 @pytest.mark.asyncio
 async def test_async_circuit_breaker_with_err_monad_expected():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
@@ -35,6 +36,7 @@ async def test_async_circuit_breaker_with_err_monad_expected():
     with pytest.raises(CircuitBreakerError, match="is open"):
         await async_flaky_function(True)
 
+
 def test_circuit_breaker_with_err_monad_not_in_exceptions_expected():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     def flaky_function(fail: bool) -> Result[str, Exception]:
@@ -50,6 +52,7 @@ def test_circuit_breaker_with_err_monad_not_in_exceptions_expected():
     # Should not open because KeyError is not in failure_exceptions
     res3 = flaky_function(True)
     assert isinstance(res3, Err)
+
 
 @pytest.mark.asyncio
 async def test_async_circuit_breaker_with_err_monad_not_in_exceptions_expected():
