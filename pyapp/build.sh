@@ -6,11 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Configuration
-export PYAPP_PROJECT_NAME="stack-bootstrapper"
-export PYAPP_PROJECT_VERSION="2.0.0"
+export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
+export PYAPP_PROJECT_VERSION="0.4.3"
 export PYAPP_PROJECT_PATH="$PROJECT_ROOT"
 export PYAPP_PYTHON_VERSION="3.11"
-export PYAPP_EXEC_SCRIPT="stack_bootstrapper.py"
+export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
 export PYAPP_DISTRIBUTION_EMBED="true"
 export PYAPP_FULL_ISOLATION="true"
 
@@ -37,12 +37,12 @@ cargo build --release
 
 # Copy output
 mkdir -p "$SCRIPT_DIR/dist"
-cp "$PYAPP_DIR/target/release/pyapp" "$SCRIPT_DIR/dist/stack-bootstrapper"
-chmod +x "$SCRIPT_DIR/dist/stack-bootstrapper"
+cp "$PYAPP_DIR/target/release/pyapp" "$SCRIPT_DIR/dist/taipanstack-bootstrapper"
+chmod +x "$SCRIPT_DIR/dist/taipanstack-bootstrapper"
 
 echo ""
-echo "Build complete! Executable: $SCRIPT_DIR/dist/stack-bootstrapper"
+echo "Build complete! Executable: $SCRIPT_DIR/dist/taipanstack-bootstrapper"
 echo ""
 echo "Usage:"
-echo "  ./dist/stack-bootstrapper --help"
-echo "  ./dist/stack-bootstrapper --dry-run"
+echo "  ./dist/taipanstack-bootstrapper --help"
+echo "  ./dist/taipanstack-bootstrapper --dry-run"

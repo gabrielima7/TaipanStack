@@ -5,11 +5,11 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
 
 # Configuration
-$env:PYAPP_PROJECT_NAME = "stack-bootstrapper"
-$env:PYAPP_PROJECT_VERSION = "2.0.0"
+$env:PYAPP_PROJECT_NAME = "taipanstack-bootstrapper"
+$env:PYAPP_PROJECT_VERSION = "0.4.3"
 $env:PYAPP_PROJECT_PATH = $ProjectRoot
 $env:PYAPP_PYTHON_VERSION = "3.11"
-$env:PYAPP_EXEC_SCRIPT = "stack_bootstrapper.py"
+$env:PYAPP_EXEC_SCRIPT = "taipanstack_bootstrapper.py"
 $env:PYAPP_DISTRIBUTION_EMBED = "true"
 $env:PYAPP_FULL_ISOLATION = "true"
 
@@ -37,11 +37,11 @@ cargo build --release
 # Copy output
 $DistDir = Join-Path $ScriptDir "dist"
 New-Item -ItemType Directory -Force -Path $DistDir | Out-Null
-Copy-Item (Join-Path $PyAppDir "target\release\pyapp.exe") (Join-Path $DistDir "stack-bootstrapper.exe")
+Copy-Item (Join-Path $PyAppDir "target\release\pyapp.exe") (Join-Path $DistDir "taipanstack-bootstrapper.exe")
 
 Write-Host ""
-Write-Host "Build complete! Executable: $DistDir\stack-bootstrapper.exe"
+Write-Host "Build complete! Executable: $DistDir\taipanstack-bootstrapper.exe"
 Write-Host ""
 Write-Host "Usage:"
-Write-Host "  .\dist\stack-bootstrapper.exe --help"
-Write-Host "  .\dist\stack-bootstrapper.exe --dry-run"
+Write-Host "  .\dist\taipanstack-bootstrapper.exe --help"
+Write-Host "  .\dist\taipanstack-bootstrapper.exe --dry-run"
