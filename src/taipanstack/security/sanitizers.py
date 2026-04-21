@@ -50,6 +50,23 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
 )
 
 
+def _handle_html(result: str, allow_html: bool) -> str:
+    """Remove HTML tags and escape entities if not allowed."""
+    if allow_html:
+        return result
+    result = _HTML_TAGS_RE.sub("", result)
+    result = result.replace("&", "&amp;")
+    result = result.replace("<", "&lt;")
+    return result.replace(">", "&gt;")
+
+
+def _handle_unicode(result: str, allow_unicode: bool) -> str:
+    """Filter out non-ASCII characters if unicode is not allowed."""
+    if allow_unicode:
+        return result
+    return result.encode("ascii", errors="ignore").decode("ascii")
+
+
 def sanitize_string(
     value: str,
     *,
@@ -83,32 +100,13 @@ def sanitize_string(
     if not value:
         return ""
 
-    result = value
-
-    # Strip whitespace first
-    if strip_whitespace:
-        result = result.strip()
-
-    # Remove null bytes and control characters
+    result = value.strip() if strip_whitespace else value
     result = _CONTROL_CHARS_RE.sub("", result)
+    result = _handle_html(result, allow_html)
+    result = _handle_unicode(result, allow_unicode)
 
-    # Handle HTML
-    if not allow_html:
-        # Remove HTML tags
-        result = _HTML_TAGS_RE.sub("", result)
-        # Escape HTML entities
-        result = result.replace("&", "&amp;")
-        result = result.replace("<", "&lt;")
-        result = result.replace(">", "&gt;")
-
-    # Handle unicode
-    if not allow_unicode:
-        result = result.encode("ascii", errors="ignore").decode("ascii")
-
-    # Truncate if needed
     if max_length is not None and len(result) > max_length:
-        result = result[:max_length]
-
+        return result[:max_length]
     return result
 
 
