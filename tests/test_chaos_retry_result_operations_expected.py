@@ -4,7 +4,7 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.retry import retry
 
 
-def test_retry_result_monad_chaos():
+def test_retry_result_monad_chaos_expected():
     attempts = 0
 
     @retry(max_attempts=3, on=(ValueError,))
@@ -19,7 +19,7 @@ def test_retry_result_monad_chaos():
     assert attempts == 3, f"Expected 3 attempts, got {attempts}"
 
 
-def test_retry_result_monad_chaos_coverage():
+def test_retry_result_monad_chaos_coverage_expected():
     attempts = 0
 
     @retry(max_attempts=1, on=(ValueError,))
@@ -40,7 +40,7 @@ def test_retry_result_monad_chaos_coverage():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_coverage_async():
+async def test_retry_result_monad_chaos_coverage_async_expected():
     attempts = 0
 
     @retry(max_attempts=1, on=(ValueError,))
@@ -60,7 +60,7 @@ async def test_retry_result_monad_chaos_coverage_async():
         await fail_with_exception()
 
 
-def test_retry_result_monad_chaos_sync_not_on():
+def test_retry_result_monad_chaos_sync_not_on_expected():
     @retry(max_attempts=3, on=(ValueError,))
     def failing_func():
         return Err(TypeError("Not on"))
@@ -70,7 +70,7 @@ def test_retry_result_monad_chaos_sync_not_on():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_async_not_on():
+async def test_retry_result_monad_chaos_async_not_on_expected():
     @retry(max_attempts=3, on=(ValueError,))
     async def failing_func():
         return Err(TypeError("Not on"))
@@ -80,7 +80,7 @@ async def test_retry_result_monad_chaos_async_not_on():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_exhaust_async():
+async def test_retry_result_monad_chaos_exhaust_async_expected():
     @retry(max_attempts=2, on=(ValueError,))
     async def failing_func():
         return Err(ValueError("Chaos failure wrapped in Result"))
@@ -89,7 +89,7 @@ async def test_retry_result_monad_chaos_exhaust_async():
     assert isinstance(result, Err)
 
 
-def test_retry_result_monad_chaos_exhaust_sync():
+def test_retry_result_monad_chaos_exhaust_sync_expected():
     @retry(max_attempts=2, on=(ValueError,))
     def failing_func():
         return Err(ValueError("Chaos failure wrapped in Result"))
