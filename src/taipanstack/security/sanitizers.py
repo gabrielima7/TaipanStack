@@ -441,8 +441,8 @@ def _sanitize_sql_identifier_slow_path(identifier: str) -> str:
         result = f"_{result}"
 
     # Check length (most DBs limit to 128 chars)
-    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
-        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
+    if len(result) > 128:
+        result = result[:128]
 
     if not result:
         msg = "SQL identifier contains no valid characters"
@@ -468,11 +468,10 @@ def sanitize_sql_identifier(identifier: str) -> str:
 
     """
     if type(identifier) is str:
-        # Fast path: inline to save function call overhead
         if (
             identifier.isidentifier()
             and identifier.isascii()
-            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+            and len(identifier) <= 128
         ):
             return identifier
 
