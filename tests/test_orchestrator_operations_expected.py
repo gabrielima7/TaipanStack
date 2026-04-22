@@ -35,7 +35,7 @@ class TestResilienceOrchestrator:
     """Tests for the orchestrator pipeline."""
 
     @pytest.mark.asyncio
-    async def test_simple_execute(self) -> None:
+    async def test_simple_execute_expected(self) -> None:
         """Executes a function without any patterns."""
         orch = ResilienceOrchestrator("test")
         result = await orch.execute(_ok_fn)
@@ -43,14 +43,14 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "success"
 
     @pytest.mark.asyncio
-    async def test_execute_failure(self) -> None:
+    async def test_execute_failure_expected(self) -> None:
         """Returns Err on function failure."""
         orch = ResilienceOrchestrator("test")
         result = await orch.execute(_fail_fn)
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_with_timeout(self) -> None:
+    async def test_with_timeout_expected(self) -> None:
         """Timeout triggers Err."""
         orch = ResilienceOrchestrator("test").with_timeout(0.05)
         result = await orch.execute(_slow_fn)
@@ -58,7 +58,7 @@ class TestResilienceOrchestrator:
         assert "timed out" in str(result.err_value)
 
     @pytest.mark.asyncio
-    async def test_with_fallback(self) -> None:
+    async def test_with_fallback_expected(self) -> None:
         """Fallback replaces Err with Ok."""
         orch = ResilienceOrchestrator("test").with_fallback("cached")
         result = await orch.execute(_fail_fn)
@@ -66,7 +66,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "cached"
 
     @pytest.mark.asyncio
-    async def test_with_retry(self) -> None:
+    async def test_with_retry_expected(self) -> None:
         """Retries on failure then succeeds."""
         call_count = 0
 
@@ -86,7 +86,7 @@ class TestResilienceOrchestrator:
         assert call_count == 3
 
     @pytest.mark.asyncio
-    async def test_with_circuit_breaker(self) -> None:
+    async def test_with_circuit_breaker_expected(self) -> None:
         """Circuit breaker blocks calls when open."""
         breaker = CircuitBreaker(name="orch", failure_threshold=1)
         breaker._record_failure(Exception("trip"))
@@ -97,7 +97,7 @@ class TestResilienceOrchestrator:
         assert "open" in str(result.err_value).lower()
 
     @pytest.mark.asyncio
-    async def test_with_adaptive_breaker(self) -> None:
+    async def test_with_adaptive_breaker_expected(self) -> None:
         """Adaptive breaker integrates with orchestrator."""
         ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         for _ in range(5):
@@ -108,7 +108,7 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_adaptive_breaker_records_success(self) -> None:
+    async def test_adaptive_breaker_records_success_expected(self) -> None:
         """Successful execution records a success on the adaptive breaker."""
         ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
@@ -120,7 +120,7 @@ class TestResilienceOrchestrator:
         assert ab.metrics.error_count == 0
 
     @pytest.mark.asyncio
-    async def test_adaptive_breaker_records_failure(self) -> None:
+    async def test_adaptive_breaker_records_failure_expected(self) -> None:
         """Failing execution records a failure on the adaptive breaker."""
         ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         orch = ResilienceOrchestrator("test").with_circuit_breaker(ab)
@@ -132,7 +132,7 @@ class TestResilienceOrchestrator:
         assert ab.metrics.error_count == 1
 
     @pytest.mark.asyncio
-    async def test_with_adaptive_retry(self) -> None:
+    async def test_with_adaptive_retry_expected(self) -> None:
         """Adaptive retry integrates with orchestrator."""
         ar = AdaptiveRetry(min_delay=0.01, max_delay=0.1, max_attempts=3)
         ar.record_outcome(attempt=1, success=True, elapsed=0.01)
@@ -152,7 +152,7 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_with_bulkhead(self) -> None:
+    async def test_with_bulkhead_expected(self) -> None:
         """Bulkhead limits concurrency in pipeline."""
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=2, max_queue=5
@@ -161,7 +161,7 @@ class TestResilienceOrchestrator:
         assert all(isinstance(r, Ok) for r in results)
 
     @pytest.mark.asyncio
-    async def test_bulkhead_queue_full_returns_err(self) -> None:
+    async def test_bulkhead_queue_full_returns_err_expected(self) -> None:
         """Queue saturation returns a bulkhead error before execution starts."""
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=1, max_queue=0
@@ -173,7 +173,7 @@ class TestResilienceOrchestrator:
         assert "bulkhead" in str(result.err_value).lower()
 
     @pytest.mark.asyncio
-    async def test_bulkhead_acquire_timeout_returns_err(self) -> None:
+    async def test_bulkhead_acquire_timeout_returns_err_expected(self) -> None:
         """Semaphore acquisition timeout returns an error result."""
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=1, max_queue=1, timeout=0.01
@@ -190,7 +190,7 @@ class TestResilienceOrchestrator:
         assert "timed out" in str(result.err_value)
 
     @pytest.mark.asyncio
-    async def test_full_pipeline(self) -> None:
+    async def test_full_pipeline_expected(self) -> None:
         """Full pipeline: bulkhead + breaker + retry + timeout + fallback."""
         call_count = 0
 
@@ -215,7 +215,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "recovered"
 
     @pytest.mark.asyncio
-    async def test_fallback_on_breaker_open(self) -> None:
+    async def test_fallback_on_breaker_open_expected(self) -> None:
         """Fallback is applied when breaker is open."""
         breaker = CircuitBreaker(name="fb", failure_threshold=1)
         breaker._record_failure(Exception("trip"))
@@ -230,7 +230,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "safe"
 
     @pytest.mark.asyncio
-    async def test_retry_exhaustion(self) -> None:
+    async def test_retry_exhaustion_expected(self) -> None:
         """Returns Err when all retries fail."""
         orch = ResilienceOrchestrator("test").with_retry(
             RetryConfig(max_attempts=2, initial_delay=0.01, jitter=False)
@@ -239,7 +239,7 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_zero_retry_attempts_returns_runtime_error(self) -> None:
+    async def test_zero_retry_attempts_returns_runtime_error_expected(self) -> None:
         """A zero-attempt retry config returns the synthetic execution error."""
         orch = ResilienceOrchestrator("test").with_retry(
             RetryConfig(max_attempts=0, initial_delay=0.01, jitter=False)
@@ -252,7 +252,7 @@ class TestResilienceOrchestrator:
         assert str(result.err_value) == "Execution failed"
 
     @pytest.mark.asyncio
-    async def test_chaining_returns_self(self) -> None:
+    async def test_chaining_returns_self_expected(self) -> None:
         """Builder methods return self for chaining."""
         orch = ResilienceOrchestrator("test")
         assert orch.with_bulkhead() is orch
@@ -268,7 +268,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "live"
 
     @pytest.mark.asyncio
-    async def test_calculate_retry_delay_no_config(self) -> None:
+    async def test_calculate_retry_delay_no_config_expected(self) -> None:
         orch = ResilienceOrchestrator("test")
         # Should return 0.0 when no retry config is set
         delay = orch._calculate_retry_delay(1)
@@ -276,7 +276,7 @@ class TestResilienceOrchestrator:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_fallback_err_branch() -> None:
+async def test_orchestrator_fallback_err_branch_expected() -> None:
     from taipanstack.core.result import Ok
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 
@@ -292,7 +292,7 @@ async def test_orchestrator_fallback_err_branch() -> None:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_timeout_err_branch() -> None:
+async def test_orchestrator_execute_timeout_err_branch_expected() -> None:
     from taipanstack.core.result import Err
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig

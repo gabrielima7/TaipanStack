@@ -46,7 +46,7 @@ def test_utils_cache_cached_sync_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cached_async() -> None:
+async def test_cached_async_expected() -> None:
     """Test async cache."""
     call_count = 0
 
@@ -93,7 +93,7 @@ def test_utils_cache_cached_sync_err_branch_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cached_async_err_branch() -> None:
+async def test_cached_async_err_branch_expected() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
@@ -109,7 +109,7 @@ async def test_cached_async_err_branch() -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_cache_stampede_prevention() -> None:
+async def test_async_cache_stampede_prevention_expected() -> None:
     """Test that multiple concurrent requests for the same key don't stampede."""
     call_count = 0
 

@@ -41,7 +41,7 @@ class TestResilientDatabase:
     """Tests for the ResilientDatabase wrapper."""
 
     @pytest.mark.asyncio
-    async def test_execute_no_sqlalchemy(self) -> None:
+    async def test_execute_no_sqlalchemy_expected(self) -> None:
         """Returns Err when SQLAlchemy not installed."""
         db = ResilientDatabase(engine=MagicMock())
         with patch.object(db_mod, "_HAS_SQLALCHEMY", False):
@@ -50,7 +50,7 @@ class TestResilientDatabase:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_execute_ok(self) -> None:
+    async def test_execute_ok_expected(self) -> None:
         """Successful execution returns Ok."""
         _setup_sqlalchemy_mock()
         try:
@@ -63,7 +63,7 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_execute_with_circuit_breaker_open(self) -> None:
+    async def test_execute_with_circuit_breaker_open_expected(self) -> None:
         """Returns Err when circuit breaker is OPEN."""
         breaker = CircuitBreaker(name="db", failure_threshold=1)
         breaker._record_failure(Exception("fail"))
@@ -75,7 +75,7 @@ class TestResilientDatabase:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_execute_with_retry(self) -> None:
+    async def test_execute_with_retry_expected(self) -> None:
         """Retries on failure then succeeds."""
         mock_result = MagicMock()
         call_count = 0
@@ -104,7 +104,7 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_execute_all_retries_fail(self) -> None:
+    async def test_execute_all_retries_fail_expected(self) -> None:
         """Returns Err when all retries exhaust."""
         mock_session = _setup_sqlalchemy_mock()
         mock_session.execute = AsyncMock(side_effect=ConnectionError("fail"))
@@ -127,7 +127,7 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_execute_zero_attempts_returns_runtime_error(self) -> None:
+    async def test_execute_zero_attempts_returns_runtime_error_expected(self) -> None:
         """A zero-attempt retry config returns the synthetic DB error."""
         _setup_sqlalchemy_mock()
         try:
@@ -145,7 +145,7 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_health_check_no_sqlalchemy(self) -> None:
+    async def test_health_check_no_sqlalchemy_expected(self) -> None:
         """Health check returns Err without SQLAlchemy."""
         db = ResilientDatabase(engine=MagicMock())
         with patch.object(db_mod, "_HAS_SQLALCHEMY", False):
@@ -153,7 +153,7 @@ class TestResilientDatabase:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_health_check_ok(self) -> None:
+    async def test_health_check_ok_expected(self) -> None:
         """Health check returns Ok when DB is reachable."""
         _setup_sqlalchemy_mock()
         try:
@@ -167,7 +167,7 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_health_check_fails(self) -> None:
+    async def test_health_check_fails_expected(self) -> None:
         """Health check returns Err on DB failure."""
         mock_session = _setup_sqlalchemy_mock()
         mock_session.execute = AsyncMock(side_effect=ConnectionError("db down"))
@@ -188,7 +188,7 @@ class TestResilientRedis:
     """Tests for the ResilientRedis wrapper."""
 
     @pytest.mark.asyncio
-    async def test_execute_no_redis(self) -> None:
+    async def test_execute_no_redis_expected(self) -> None:
         """Returns Err when redis not installed."""
         r = ResilientRedis(client=MagicMock())
         with patch.object(db_mod, "_HAS_REDIS", False):
@@ -197,7 +197,7 @@ class TestResilientRedis:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_execute_ok(self) -> None:
+    async def test_execute_ok_expected(self) -> None:
         """Successful Redis command returns Ok."""
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=b"value")
@@ -210,7 +210,7 @@ class TestResilientRedis:
         assert result.ok_value == b"value"
 
     @pytest.mark.asyncio
-    async def test_execute_with_breaker_open(self) -> None:
+    async def test_execute_with_breaker_open_expected(self) -> None:
         """Returns Err when circuit breaker is OPEN."""
         breaker = CircuitBreaker(name="redis", failure_threshold=1)
         breaker._record_failure(Exception("fail"))
@@ -222,7 +222,7 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_execute_failure_records_breaker(self) -> None:
+    async def test_execute_failure_records_breaker_expected(self) -> None:
         """Failed command records failure on circuit breaker."""
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=ConnectionError("lost"))
@@ -236,7 +236,7 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_execute_failure_without_breaker_returns_err(self) -> None:
+    async def test_execute_failure_without_breaker_returns_err_expected(self) -> None:
         """Failed commands still return Err when no breaker is configured."""
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=ConnectionError("lost"))
@@ -248,7 +248,7 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_health_check_no_redis(self) -> None:
+    async def test_health_check_no_redis_expected(self) -> None:
         """Health check returns Err without redis."""
         r = ResilientRedis(client=MagicMock())
         with patch.object(db_mod, "_HAS_REDIS", False):
@@ -256,7 +256,7 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_health_check_ok(self) -> None:
+    async def test_health_check_ok_expected(self) -> None:
         """Health check returns Ok on PONG."""
         mock_client = AsyncMock()
         mock_client.ping = AsyncMock(return_value=True)
@@ -269,7 +269,7 @@ class TestResilientRedis:
         assert result.ok_value is True
 
     @pytest.mark.asyncio
-    async def test_health_check_fails(self) -> None:
+    async def test_health_check_fails_expected(self) -> None:
         """Health check returns Err when Redis is down."""
         mock_client = AsyncMock()
         mock_client.ping = AsyncMock(side_effect=ConnectionError("redis down"))
