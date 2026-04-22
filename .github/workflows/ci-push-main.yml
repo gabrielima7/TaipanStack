@@ -25,11 +25,11 @@ jobs:
 
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python ${{ matrix.python-version }}"
         id: setup-python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -66,7 +66,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: "${{ secrets.CODECOV_TOKEN }}"
           file: ./coverage.xml
           flags: unittests
           name: "Artifact_Codecov_Umbrella"
@@ -157,7 +157,7 @@ jobs:
           apk add --no-cache python3 py3-pip py3-virtualenv git curl bash
 
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Install Poetry via pip"
         run: |
@@ -185,10 +185,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -206,10 +206,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -227,10 +227,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -255,10 +255,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -277,10 +277,10 @@ jobs:
     needs: [test, lint, typecheck]
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -320,10 +320,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -341,10 +341,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -370,7 +370,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Build] Build Hardened Docker Image"
         run: docker build -t taipanstack:ci-test .
