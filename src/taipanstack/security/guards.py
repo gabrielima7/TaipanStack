@@ -262,6 +262,14 @@ def guard_command_injection(
 
     cmd_list = list(command)
 
+    for arg in cmd_list:
+        if isinstance(arg, str) and "\x00" in arg:
+            raise SecurityError(
+                "Dangerous shell character detected: null byte",
+                guard_name="command_injection",
+                value=arg[:50],
+            )
+
     # Validate all items are strings and check for dangerous patterns
     for i, arg in enumerate(cmd_list):
         if not isinstance(arg, str):
@@ -422,6 +430,12 @@ def guard_env_variable(
     if not name or not name.strip():
         raise SecurityError(
             "Environment variable name cannot be empty or whitespace",
+            guard_name="env_variable",
+        )
+
+    if "\x00" in name:
+        raise SecurityError(
+            "Environment variable name cannot contain null bytes",
             guard_name="env_variable",
         )
 
