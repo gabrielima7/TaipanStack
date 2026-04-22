@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Iterator
-from typing import TypeAlias
+from typing import Any, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -85,7 +85,7 @@ class SecureBaseModel(BaseModel):
 
     def model_dump(
         self,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -96,12 +96,12 @@ class SecureBaseModel(BaseModel):
             The redacting dictionary representation of the model.
 
         """
-        data = super().model_dump(**kwargs)  # type: ignore[arg-type]
-        return _mask_data(data)  # type: ignore[return-value]
+        data = super().model_dump(**kwargs)
+        return cast(dict[str, object], _mask_data(data))
 
     def model_dump_json(
         self,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -115,10 +115,10 @@ class SecureBaseModel(BaseModel):
         # Extract indent if any, as model_dump does not accept it
         indent = kwargs.pop("indent", None)
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(mode="json", **kwargs)  # type: ignore[arg-type]
+        dumped_dict = super().model_dump(mode="json", **kwargs)
         masked_dict = _mask_data(dumped_dict)
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
         if indent is not None:
-            return json.dumps(masked_dict, indent=indent)  # type: ignore[arg-type]
+            return json.dumps(masked_dict, indent=cast(int | str, indent))
         return json.dumps(masked_dict)
