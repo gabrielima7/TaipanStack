@@ -182,7 +182,7 @@ class TestResultModuleBranches:
         assert res is dummy  # The fallback branch returns the object itself
 
     @pytest.mark.asyncio
-    async def test_map_async_fallback(self) -> None:
+    async def test_map_async_fallback_expected(self) -> None:
         """Test map_async fallback branch for unexpected types."""
         from taipanstack.core.result import map_async
 
@@ -199,7 +199,7 @@ class TestResultModuleBranches:
         assert res is dummy
 
     @pytest.mark.asyncio
-    async def test_and_then_async_fallback(self) -> None:
+    async def test_and_then_async_fallback_expected(self) -> None:
         """Test and_then_async fallback branch for unexpected types."""
         from taipanstack.core.result import and_then_async
 
@@ -431,15 +431,26 @@ class TestSupplementarySubprocess:
         # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
         class MockTimeoutExpired(subprocess.TimeoutExpired):
             def __init__(self):
-                pass
+                super().__init__(cmd=["python"], timeout=30)
+                # Override the standard properties that were set in super
+                self._cmd = ["python"]
+                self._timeout = 1.0
 
             @property
             def cmd(self):
-                return ["python"]
+                return self._cmd
+
+            @cmd.setter
+            def cmd(self, value):
+                self._cmd = value
 
             @property
             def timeout(self):
-                return 1.0
+                return self._timeout
+
+            @timeout.setter
+            def timeout(self, value):
+                self._timeout = value
 
         exc = MockTimeoutExpired()
         # Ensure hasattr(exc, "stdout") is False
