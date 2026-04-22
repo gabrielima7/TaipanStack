@@ -468,7 +468,6 @@ def sanitize_sql_identifier(identifier: str) -> str:
 
     """
     if type(identifier) is str:
-        # Fast path: inline to save function call overhead
         if (
             identifier.isidentifier()
             and identifier.isascii()
