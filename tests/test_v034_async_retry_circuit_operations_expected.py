@@ -131,7 +131,9 @@ class TestRetryAsyncSupport:
         assert callback_calls[0][0] == 1  # first attempt index
         assert callback_calls[1][0] == 2  # second attempt index
 
-    async def test_async_structlog_warning_called_without_callback_expected(self) -> None:
+    async def test_async_structlog_warning_called_without_callback_expected(
+        self,
+    ) -> None:
         """Without on_retry, structlog.warning is emitted for async retries."""
         mock_structlog_logger = MagicMock()
 
@@ -230,7 +232,9 @@ class TestCircuitBreakerAsyncSupport:
 
         assert breaker.state == CircuitState.OPEN
 
-    async def test_async_open_circuit_raises_circuit_breaker_error_expected(self) -> None:
+    async def test_async_open_circuit_raises_circuit_breaker_error_expected(
+        self,
+    ) -> None:
         """Open circuit blocks calls and raises CircuitBreakerError for async."""
         breaker = CircuitBreaker(
             failure_threshold=1, timeout=60.0, name="test_async_block"
@@ -355,7 +359,9 @@ class TestCircuitBreakerAsyncSupport:
         assert len(transitions) == 1
         assert transitions[0] == (CircuitState.CLOSED, CircuitState.OPEN)
 
-    async def test_async_structlog_called_on_state_change_no_callback_expected(self) -> None:
+    async def test_async_structlog_called_on_state_change_no_callback_expected(
+        self,
+    ) -> None:
         """Without on_state_change, structlog.warning fires on async transitions."""
         mock_structlog_logger = MagicMock()
 

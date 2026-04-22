@@ -198,7 +198,9 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_invalid_config_calls_error_callback_expected(self, tmp_path: Path) -> None:
+    async def test_invalid_config_calls_error_callback_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Validation error callback fires on bad config."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
