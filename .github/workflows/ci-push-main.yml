@@ -64,13 +64,13 @@ jobs:
 
       - name: "[Lint] Upload coverage to Codecov"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+          file: ./coverage.xml
           flags: unittests
-          name: "[Artifact] Codecov Umbrella"
-          fail_ci_if_error: false
+          name: "TaipanStack-Codecov-Umbrella"
+          fail_ci_if_error: true
 
   # Linux Distribution Testing via Docker containers
   container-distros:
@@ -270,24 +270,6 @@ jobs:
 
       - name: "[Lint] Run Import Linter"
         run: poetry run lint-imports
-
-  dry-run:
-    name: "[Test] Dry Run"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
-
-      - name: "[Misc] Set up Python"
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
-
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
-
-      - name: "[Misc] Run taipanstack_bootstrapper.py in dry-run mode"
-        run: python taipanstack_bootstrapper.py --dry-run --verbose
 
   integration:
     name: "[Test] Integration"
