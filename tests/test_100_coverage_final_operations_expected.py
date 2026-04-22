@@ -430,12 +430,12 @@ class TestSupplementarySubprocess:
     ):
         # Create a mock exception that behaves like TimeoutExpired but has no stdout attribute
         class MockTimeoutExpired(subprocess.TimeoutExpired):
-            def __init__(self):
-                pass
+            def __init__(self) -> None:
+                self._cmd = ["python"]
 
             @property
             def cmd(self):
-                return ["python"]
+                return self._cmd
 
             @property
             def timeout(self):
