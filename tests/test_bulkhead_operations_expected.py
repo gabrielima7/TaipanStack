@@ -16,7 +16,7 @@ class TestBulkhead:
     """Tests for the Bulkhead pattern."""
 
     @pytest.mark.asyncio
-    async def test_execute_success(self) -> None:
+    async def test_execute_success_expected(self) -> None:
         """Successful execution returns Ok."""
         bulk = Bulkhead("test", max_concurrent=5)
 
@@ -28,7 +28,7 @@ class TestBulkhead:
         assert result.ok_value == "done"
 
     @pytest.mark.asyncio
-    async def test_execute_failure(self) -> None:
+    async def test_execute_failure_expected(self) -> None:
         """Failed execution returns Err."""
         bulk = Bulkhead("test")
 
@@ -40,7 +40,7 @@ class TestBulkhead:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_concurrency_limit(self) -> None:
+    async def test_concurrency_limit_expected(self) -> None:
         """Only max_concurrent tasks run simultaneously."""
         max_seen = 0
         current = 0
@@ -65,7 +65,7 @@ class TestBulkhead:
         assert max_seen <= 2
 
     @pytest.mark.asyncio
-    async def test_queue_overflow(self) -> None:
+    async def test_queue_overflow_expected(self) -> None:
         """Returns Err when queue is full."""
         # max_concurrent=1 + max_queue=1 means: 1 running + 1 waiting = full
         bulk = Bulkhead("test", max_concurrent=1, max_queue=1, timeout=1.0)
@@ -95,7 +95,7 @@ class TestBulkhead:
             await t2
 
     @pytest.mark.asyncio
-    async def test_timeout(self) -> None:
+    async def test_timeout_expected(self) -> None:
         """Returns Err on permit acquisition timeout."""
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.05)
 
@@ -116,7 +116,7 @@ class TestBulkhead:
             await task
 
     @pytest.mark.asyncio
-    async def test_permits_tracking(self) -> None:
+    async def test_permits_tracking_expected(self) -> None:
         """Permits are correctly tracked."""
         bulk = Bulkhead("test", max_concurrent=5)
         assert bulk.available_permits == 5
@@ -124,7 +124,7 @@ class TestBulkhead:
         assert bulk.active == 0
 
     @pytest.mark.asyncio
-    async def test_with_arguments(self) -> None:
+    async def test_with_arguments_expected(self) -> None:
         """Execute passes args/kwargs correctly."""
         bulk = Bulkhead("test")
 

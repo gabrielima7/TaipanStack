@@ -98,7 +98,7 @@ def test_utils_circuit_breaker_chaos_half_open_exhaustion_with_system_exit_expec
 
 
 @pytest.mark.asyncio
-async def test_async_half_open_exhaustion_with_cancelled_error():
+async def test_async_half_open_exhaustion_with_cancelled_error_expected():
     """Simulate uncatchable exception in async bypassing normal state updates."""
     breaker = CircuitBreaker(failure_threshold=1, success_threshold=3, timeout=0.01)
 
