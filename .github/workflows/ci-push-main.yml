@@ -64,12 +64,12 @@ jobs:
 
       - name: "[Lint] Upload coverage to Codecov"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           flags: unittests
-          name: "[Artifact] Codecov Umbrella"
+          name: "TaipanStack-Codecov-Umbrella"
           fail_ci_if_error: true
 
   # Linux Distribution Testing via Docker containers
