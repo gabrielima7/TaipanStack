@@ -20,3 +20,17 @@ def test_guard_command_injection_fuzz_expected(cmd):
 def test_guard_env_variable_fuzz_expected(env):
     with contextlib.suppress(SecurityError):
         guard_env_variable(env)
+
+
+def test_guard_command_injection_null_byte_expected():
+    import pytest
+
+    with pytest.raises(SecurityError, match="null byte"):
+        guard_command_injection(["\x00"])
+
+
+def test_guard_env_variable_null_byte_expected():
+    import pytest
+
+    with pytest.raises(SecurityError, match="null byte"):
+        guard_env_variable("\x00")
