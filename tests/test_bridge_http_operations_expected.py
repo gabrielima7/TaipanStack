@@ -272,7 +272,9 @@ class TestSafeRequest:
         assert str(result.err_value) == "Request failed"
 
     @pytest.mark.asyncio
-    async def test_circuit_breaker_records_failure_on_request_exception_expected(self) -> None:
+    async def test_circuit_breaker_records_failure_on_request_exception_expected(
+        self,
+    ) -> None:
         """A closed circuit breaker records failures raised during the request."""
         from taipanstack.bridges.http_bridge import safe_request
 
