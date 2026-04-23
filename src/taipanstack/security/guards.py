@@ -229,6 +229,61 @@ def guard_path_traversal(
     return resolved
 
 
+def _check_command_not_empty(command: Sequence[str]) -> None:
+    if not command:
+        raise SecurityError(
+            "Empty command is not allowed",
+            guard_name="command_injection",
+        )
+
+
+def _check_command_null_bytes(cmd_list: list[str]) -> None:
+    for arg in cmd_list:
+        if isinstance(arg, str) and "\x00" in arg:
+            raise SecurityError(
+                "Dangerous shell character detected: null byte",
+                guard_name="command_injection",
+                value=arg[:50],
+            )
+
+
+def _check_command_patterns(cmd_list: list[str]) -> None:
+    for i, arg in enumerate(cmd_list):
+        if not isinstance(arg, str):
+            raise TypeError(
+                f"All command arguments must be strings, "
+                f"got {type(arg).__name__} at index {i}"
+            )
+
+        match = _DANGEROUS_COMMAND_RE.search(arg)
+        if match:
+            description = _DANGEROUS_COMMAND_LOOKUP[match.group(0)]
+            raise SecurityError(
+                f"Dangerous shell character detected: {description}",
+                guard_name="command_injection",
+                value=arg[:50],
+            )
+
+
+def _check_allowed_commands(
+    cmd_list: list[str], allowed_commands: Sequence[str] | None
+) -> None:
+    if allowed_commands is None:
+        return
+
+    base_command = cmd_list[0]
+    command_name = Path(base_command).name
+    cmd_not_allowed = (
+        command_name not in allowed_commands and base_command not in allowed_commands
+    )
+    if cmd_not_allowed:
+        raise SecurityError(
+            f"Command not in allowed list: {command_name}",
+            guard_name="command_injection",
+            value=command_name,
+        )
+
+
 def guard_command_injection(
     command: Sequence[str],
     *,
@@ -254,58 +309,13 @@ def guard_command_injection(
         SecurityError: [command_injection] Dangerous characters detected
 
     """
-    if not command:
-        raise SecurityError(
-            "Empty command is not allowed",
-            guard_name="command_injection",
-        )
+    _check_command_not_empty(command)
 
     cmd_list = list(command)
 
-    for arg in cmd_list:
-        if isinstance(arg, str) and "\x00" in arg:
-            raise SecurityError(
-                "Dangerous shell character detected: null byte",
-                guard_name="command_injection",
-                value=arg[:50],
-            )
-
-    # Validate all items are strings and check for dangerous patterns
-    for i, arg in enumerate(cmd_list):
-        if not isinstance(arg, str):
-            raise TypeError(
-                f"All command arguments must be strings, "
-                f"got {type(arg).__name__} at index {i}"
-            )
-
-        match = _DANGEROUS_COMMAND_RE.search(arg)
-        if match:
-            # We use the matched substring to look up the description.
-            # Because the regex is an alternation of the patterns in order,
-            # this preserves the existing behavior where earlier patterns
-            # in the list take precedence (e.g. '>' matches before '>>').
-            description = _DANGEROUS_COMMAND_LOOKUP[match.group(0)]
-            raise SecurityError(
-                f"Dangerous shell character detected: {description}",
-                guard_name="command_injection",
-                value=arg[:50],
-            )
-
-    # Check against allowed commands whitelist
-    if allowed_commands is not None:
-        base_command = cmd_list[0]
-        # Get just the command name without path
-        command_name = Path(base_command).name
-        cmd_not_allowed = (
-            command_name not in allowed_commands
-            and base_command not in allowed_commands
-        )
-        if cmd_not_allowed:
-            raise SecurityError(
-                f"Command not in allowed list: {command_name}",
-                guard_name="command_injection",
-                value=command_name,
-            )
+    _check_command_null_bytes(cmd_list)
+    _check_command_patterns(cmd_list)
+    _check_allowed_commands(cmd_list, allowed_commands)
 
     return cmd_list
 
