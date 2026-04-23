@@ -69,7 +69,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: unittests
-          name: "TaipanStack-Codecov-Umbrella"
+          name: TaipanStack-Codecov-Umbrella
           fail_ci_if_error: true
 
   # Linux Distribution Testing via Docker containers
@@ -242,6 +242,11 @@ jobs:
 
       - name: "[Audit] Run Bandit security scanner"
         run: poetry run bandit -r src/ -ll -c pyproject.toml
+
+      - name: "[Audit] Run pip-audit"
+        run: |
+          poetry run pip uninstall py -y || true
+          poetry run pip-audit --strict
 
       - name: "[Audit] Run Semgrep"
         uses: semgrep/semgrep-action@v1
