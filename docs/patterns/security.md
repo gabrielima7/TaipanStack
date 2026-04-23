@@ -207,15 +207,15 @@ You can override this behaviour at any time by passing `on_retry` or `on_state_c
 
 ```mermaid
 flowchart TD
-    A[Incoming Request] --> B{guard_ssrf}
-    B -- Err --> C[Return 400 SSRF Blocked]
-    B -- Ok --> D{@retry wrapper}
-    D --> E[@safe wrapper]
-    E --> F{guard_path_traversal}
-    F -- SecurityError --> G[Raise ValueError → Err]
-    F -- Path ok --> H[Business Logic]
-    H --> I[Ok result]
-    G --> J[Err propagated to endpoint]
-    I --> K[Return 200 Response]
-    J --> L[Return 400/500 Response]
+    A["Incoming Request"] --> B{"guard_ssrf"}
+    B -- Err --> C["Return 400 SSRF Blocked"]
+    B -- Ok --> D{"@retry wrapper"}
+    D --> E{"@safe wrapper"}
+    E --> F{"guard_path_traversal"}
+    F -- SecurityError --> G["Raise ValueError → Err"]
+    F -- Path ok --> H["Business Logic"]
+    H --> I["Ok result"]
+    G --> J["Err propagated to endpoint"]
+    I --> K["Return 200 Response"]
+    J --> L["Return 400/500 Response"]
 ```
