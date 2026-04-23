@@ -469,9 +469,9 @@ def sanitize_sql_identifier(identifier: str) -> str:
     """
     if type(identifier) is str:
         if (
-            identifier.isidentifier()
+            len(identifier) <= 128  # noqa: PLR2004
             and identifier.isascii()
-            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+            and identifier.isidentifier()
         ):
             return identifier
 
