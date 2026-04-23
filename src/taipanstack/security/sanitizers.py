@@ -467,18 +467,19 @@ def sanitize_sql_identifier(identifier: str) -> str:
         ValueError: If identifier is empty or too long.
 
     """
-    if type(identifier) is str:
-        if (
-            identifier.isidentifier()
-            and identifier.isascii()
-            and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-        ):
-            return identifier
+    if type(identifier) is not str:
+        raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
 
-        if not identifier:
-            msg = "SQL identifier cannot be empty"
-            raise ValueError(msg)
+    if not identifier:
+        msg = "SQL identifier cannot be empty"
+        raise ValueError(msg)
 
-        return _sanitize_sql_identifier_slow_path(identifier)
+    # Fast path: inline to save function call overhead
+    if (
+        identifier.isidentifier()
+        and identifier.isascii()
+        and len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
+    ):
+        return identifier
 
-    raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
+    return _sanitize_sql_identifier_slow_path(identifier)
