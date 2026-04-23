@@ -316,8 +316,11 @@ async def test_resource_watcher_run_err_branch_expected() -> None:
 
 def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> None:
     """Test resource_watcher import error fallback branches."""
+    import asyncio
     import importlib
     import sys
+
+    from taipanstack.core.result import Err
 
     original_psutil = sys.modules.pop("psutil", None)
     sys.modules["psutil"] = None  # type: ignore
@@ -326,6 +329,46 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> 
 
         importlib.reload(res_mod)
         assert res_mod._HAS_PSUTIL is False
+
+        # Test the start error branch where psutil is not available
+        watcher = res_mod.ResourceWatcher()
+
+        async def test_run():
+            result = await watcher.start()
+            assert isinstance(result, Err)
+            # To test the unhandled _run case, we manually toggle _is_running
+            watcher._is_running = True
+            await watcher._run()
+
+            # Test check_resources directly
+            res = res_mod.check_resources()
+            assert isinstance(res, Err)
+
+        asyncio.run(test_run())
+    finally:
+        if original_psutil is not None:
+            sys.modules["psutil"] = original_psutil
+        else:
+            sys.modules.pop("psutil", None)
+        importlib.reload(res_mod)
+
+
+def test_watchdog_resource_resource_watcher_import_success_coverage_expected() -> None:
+    """Test resource_watcher import success branch."""
+    import importlib
+    import sys
+    import types
+
+    # Create a mock module for psutil
+    mock_psutil = types.ModuleType("psutil")
+
+    original_psutil = sys.modules.pop("psutil", None)
+    sys.modules["psutil"] = mock_psutil
+    try:
+        import taipanstack.resilience.watchdogs.resource_watcher as res_mod
+
+        importlib.reload(res_mod)
+        assert res_mod._HAS_PSUTIL is True
     finally:
         if original_psutil is not None:
             sys.modules["psutil"] = original_psutil

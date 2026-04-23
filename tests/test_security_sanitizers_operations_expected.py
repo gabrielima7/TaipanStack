@@ -449,13 +449,46 @@ def test_security_sanitizers_sanitizers_re_error_coverage_expected() -> None:
     original_re = sanitizers_mod._INVALID_FILENAME_CHARS_RE
 
     class MockRe:
-        def sub(self, repl: str, string: str, count: int = 0) -> str:
-            raise re.error("mock error")
+        def __init__(self):
+            self.calls = 0
+
+        def sub(self, repl, string, count: int = 0) -> str:
+            if self.calls == 0:
+                self.calls += 1
+                raise re.error("mock error")
+            return original_re.sub("_", string)
 
     sanitizers_mod._INVALID_FILENAME_CHARS_RE = MockRe()  # type: ignore
 
     try:
-        result = sanitize_filename("test.txt")
-        assert result == "test.txt"
+        result = sanitize_filename("test<>txt", replacement=chr(92))
+        assert result == "test__txt"
+    finally:
+        sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
+
+
+def test_security_sanitizers_sanitizers_re_error_coverage_expected_no_slash() -> None:
+    """Test sanitizers filename validation fallback on re.error with normal replacement."""
+    import re
+
+    import taipanstack.security.sanitizers as sanitizers_mod
+
+    original_re = sanitizers_mod._INVALID_FILENAME_CHARS_RE
+
+    class MockRe:
+        def __init__(self):
+            self.calls = 0
+
+        def sub(self, repl, string, count: int = 0) -> str:
+            if self.calls == 0:
+                self.calls += 1
+                raise re.error("mock error")
+            return original_re.sub("_", string)
+
+    sanitizers_mod._INVALID_FILENAME_CHARS_RE = MockRe()  # type: ignore
+
+    try:
+        result = sanitize_filename("test<>txt", replacement="!")
+        assert result == "test__txt"
     finally:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
