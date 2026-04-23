@@ -27,7 +27,8 @@ try:
     import sqlalchemy  # noqa: F401
     from sqlalchemy import text as sa_text  # pragma: no cover
     from sqlalchemy.ext.asyncio import AsyncSession  # pragma: no cover
-  # pragma: no cover
+
+    # pragma: no cover
     _HAS_SQLALCHEMY = True  # pragma: no cover
 except ImportError:
     _HAS_SQLALCHEMY = False
