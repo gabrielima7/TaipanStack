@@ -26,14 +26,10 @@ class FallbackDecorator(Protocol):
     """Protocol for the fallback decorator."""
 
     @overload
-    def __call__(
-        self, func: ResultFunc[P, T, E]
-    ) -> ResultFunc[P, T, E]: ...  # pragma: no cover
+    def __call__(self, func: ResultFunc[P, T, E]) -> ResultFunc[P, T, E]: ...
 
     @overload
-    def __call__(
-        self, func: AsyncResultFunc[P, T, E]
-    ) -> AsyncResultFunc[P, T, E]: ...  # pragma: no cover
+    def __call__(self, func: AsyncResultFunc[P, T, E]) -> AsyncResultFunc[P, T, E]: ...
 
 
 def fallback(
@@ -72,7 +68,7 @@ def fallback(
                             return result
                 except exceptions:
                     return Ok(fallback_value)
-                return Err(cast(E, RuntimeError("Unreachable")))  # pragma: no cover
+                return Err(cast(E, RuntimeError("Unreachable")))
 
             return async_wrapper
 
@@ -89,7 +85,7 @@ def fallback(
                         return result
             except exceptions:
                 return Ok(fallback_value)
-            return Err(cast(E, RuntimeError("Unreachable")))  # pragma: no cover
+            return Err(cast(E, RuntimeError("Unreachable")))
 
         return sync_wrapper
 
@@ -102,12 +98,12 @@ class TimeoutDecorator(Protocol):
     @overload
     def __call__(
         self, func: ResultFunc[P, T, E]
-    ) -> Callable[P, Result[T, TimeoutError | E]]: ...  # pragma: no cover
+    ) -> Callable[P, Result[T, TimeoutError | E]]: ...
 
     @overload
     def __call__(
         self, func: AsyncResultFunc[P, T, E]
-    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...
 
 
 def timeout(seconds: float) -> TimeoutDecorator:

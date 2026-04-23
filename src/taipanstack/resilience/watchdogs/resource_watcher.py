@@ -19,7 +19,7 @@ try:
     import psutil
 
     _HAS_PSUTIL = True  # pragma: no cover
-except ImportError:  # pragma: no cover
+except ImportError:
     psutil = None
     _HAS_PSUTIL = False
 
