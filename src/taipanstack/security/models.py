@@ -2,12 +2,52 @@
 
 import json
 import re
-from collections.abc import Iterator
-from typing import Any, TypeAlias, cast
+from collections.abc import Callable, Iterator
+from typing import Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
+from pydantic.main import IncEx
+from typing_extensions import TypedDict, Unpack
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
+
+
+class ModelDumpKwargs(TypedDict, total=False):
+    """Type definitions for Pydantic model_dump kwargs."""
+
+    mode: Literal["json", "python"] | str
+    include: IncEx | None
+    exclude: IncEx | None
+    context: dict[str, object] | None
+    by_alias: bool | None
+    exclude_unset: bool
+    exclude_defaults: bool
+    exclude_none: bool
+    exclude_computed_fields: bool
+    round_trip: bool
+    warnings: bool | Literal["none", "warn", "error"]
+    fallback: Callable[[object], object] | None
+    serialize_as_any: bool
+    polymorphic_serialization: bool | None
+
+class ModelDumpJsonKwargs(TypedDict, total=False):
+    """Type definitions for Pydantic model_dump_json kwargs."""
+
+    indent: int | None
+    ensure_ascii: bool
+    fallback: Callable[[object], object] | None
+    polymorphic_serialization: bool | None
+    include: IncEx | None
+    exclude: IncEx | None
+    context: dict[str, object] | None
+    by_alias: bool | None
+    exclude_unset: bool
+    exclude_defaults: bool
+    exclude_none: bool
+    exclude_computed_fields: bool
+    round_trip: bool
+    warnings: bool | Literal["none", "warn", "error"]
+    serialize_as_any: bool
 
 JSONValue: TypeAlias = (
     dict[str, "JSONValue"] | list["JSONValue"] | str | int | float | bool | None
@@ -85,7 +125,7 @@ class SecureBaseModel(BaseModel):
 
     def model_dump(
         self,
-        **kwargs: Any,
+        **kwargs: Unpack[ModelDumpKwargs],
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -101,7 +141,7 @@ class SecureBaseModel(BaseModel):
 
     def model_dump_json(
         self,
-        **kwargs: Any,
+        **kwargs: Unpack[ModelDumpJsonKwargs],
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -115,7 +155,9 @@ class SecureBaseModel(BaseModel):
         # Extract indent if any, as model_dump does not accept it
         indent = kwargs.pop("indent", None)
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(mode="json", **kwargs)
+        dump_kwargs = cast(dict[str, object], kwargs.copy())
+        dump_kwargs["mode"] = "json"
+        dumped_dict = super().model_dump(**cast(ModelDumpKwargs, dump_kwargs))
         masked_dict = _mask_data(dumped_dict)
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
