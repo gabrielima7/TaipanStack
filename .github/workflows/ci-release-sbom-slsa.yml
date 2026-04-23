@@ -5,7 +5,7 @@
 # Triggered on every published release.
 # =============================================================================
 
-name: ci-release-sbom_slsa
+name: ci-release-sbom-slsa
 
 on:
   release:

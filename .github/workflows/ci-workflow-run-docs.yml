@@ -5,7 +5,7 @@
 # CRITICAL: Uses keep_files to preserve existing htmlcov/ and dev/bench/.
 # =============================================================================
 
-name: ci-workflow_run-docs
+name: ci-workflow-run-docs
 
 on:
   workflow_run:
