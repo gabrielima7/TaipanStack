@@ -2123,17 +2123,17 @@
 <hr />
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    A[Incoming Request] --&gt; B{guard_ssrf}
-    B -- Err --&gt; C[Return 400 SSRF Blocked]
-    B -- Ok --&gt; D{@retry wrapper}
-    D --&gt; E[@safe wrapper]
-    E --&gt; F{guard_path_traversal}
-    F -- SecurityError --&gt; G[Raise ValueError → Err]
-    F -- Path ok --&gt; H[Business Logic]
-    H --&gt; I[Ok result]
-    G --&gt; J[Err propagated to endpoint]
-    I --&gt; K[Return 200 Response]
-    J --&gt; L[Return 400/500 Response]</code></pre>
+    A["Incoming Request"] --&gt; B{"guard_ssrf"}
+    B -- Err --&gt; C["Return 400 SSRF Blocked"]
+    B -- Ok --&gt; D{"@retry wrapper"}
+    D --&gt; E{"@safe wrapper"}
+    E --&gt; F{"guard_path_traversal"}
+    F -- SecurityError --&gt; G["Raise ValueError → Err"]
+    F -- Path ok --&gt; H["Business Logic"]
+    H --&gt; I["Ok result"]
+    G --&gt; J["Err propagated to endpoint"]
+    I --&gt; K["Return 200 Response"]
+    J --&gt; L["Return 400/500 Response"]</code></pre>
 
 
 
