@@ -70,6 +70,9 @@ plugins:
 # ── Markdown Extensions ─────────────────────────────────────────────────────
 markdown_extensions:
   - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
@@ -147,3 +150,13 @@ extra:
 
 hooks:
   - docs/overrides/hooks.py
+
+# ── Validation ───────────────────────────────────────────────────────────────
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    unrecognized_links: warn
