@@ -352,6 +352,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> 
             sys.modules.pop("psutil", None)
         importlib.reload(res_mod)
 
+
 def test_watchdog_resource_resource_watcher_import_success_coverage_expected() -> None:
     """Test resource_watcher import success branch."""
     import importlib
@@ -365,6 +366,7 @@ def test_watchdog_resource_resource_watcher_import_success_coverage_expected() -
     sys.modules["psutil"] = mock_psutil
     try:
         import taipanstack.resilience.watchdogs.resource_watcher as res_mod
+
         importlib.reload(res_mod)
         assert res_mod._HAS_PSUTIL is True
     finally:
