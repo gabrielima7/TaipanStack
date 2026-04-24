@@ -6,12 +6,10 @@ from taipanstack.resilience.retry import RetryConfig, calculate_delay
 def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(
     monkeypatch,
 ) -> None:
+    import pytest
     # Test line 133 -> 139 where math.isfinite(jitter_amount) is False
-    config = RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
-    # The exponential backoff will give finite delay, but jitter_amount = delay * inf = inf
-    # This should bypass the jitter block and go to line 139
-    delay = calculate_delay(1, config)
-    assert delay == 1.0
+    with pytest.raises(ValueError, match="finite"):
+        RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
 
 
 def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(
@@ -36,3 +34,12 @@ def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_expected() -> Non
     config = RetryConfig(initial_delay=-10.0, jitter=False)
     delay = calculate_delay(1, config)
     assert delay == 0.0
+
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected_2(
+    monkeypatch,
+) -> None:
+    # Test line 134 -> 140 where math.isfinite(jitter_amount) is False
+    config = RetryConfig(initial_delay=1.0, jitter=True)
+    object.__setattr__(config, "jitter_factor", float("inf"))
+    delay = calculate_delay(1, config)
+    assert delay == 1.0
