@@ -85,7 +85,13 @@ def safe(
         Err(ValueError("invalid literal for int()..."))
 
     """
+    # Pre-cache constructors for minor speedup in tight loops
+    # (LOAD_DEREF is faster than LOAD_GLOBAL)
+    ok_cls = Ok
+    err_cls = Err
+
     if inspect.iscoroutinefunction(func):
+        # Cast once here to satisfy mypy inside the closure
         func_coro = cast(Callable[P, Awaitable[T]], func)
 
         @functools.wraps(func)
@@ -94,20 +100,21 @@ def safe(
             **kwargs: P.kwargs,
         ) -> Result[T, Exception]:
             try:
-                return Ok(await func_coro(*args, **kwargs))
+                return ok_cls(await func_coro(*args, **kwargs))
             except Exception as e:
-                return Err(e)
+                return err_cls(e)
 
         return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
 
+    # Cast once here to satisfy mypy inside the closure
     func_sync = cast(Callable[P, T], func)
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
         try:
-            return Ok(func_sync(*args, **kwargs))
+            return ok_cls(func_sync(*args, **kwargs))
         except Exception as e:
-            return Err(e)
+            return err_cls(e)
 
     return cast(Callable[P, Result[T, Exception]], wrapper)
 
@@ -202,19 +209,21 @@ def collect_results(
         except AttributeError:
             pass
 
+    ok_cls = Ok
+    err_cls = Err
     values: list[T] = []
     append = values.append
     for result in results:
-        # We explicitly avoid structural pattern matching here to eliminate
-        # Python overhead in tight loop iteration for Result arrays, but we
-        # use isinstance rather than explicit type check to maintain subclass support.
-        if isinstance(result, Ok):
+        # We use explicit type checks (isinstance) but pre-cache the constructors.
+        # type(result) is ok_cls would be even faster but breaks subclassing.
+        if isinstance(result, ok_cls):
             append(result.ok_value)
-        elif isinstance(result, Err):
+        elif isinstance(result, err_cls):
             return result
         else:
+            # Fallback for structural compatibility
             return result
-    return Ok(values)
+    return ok_cls(values)
 
 
 @overload
