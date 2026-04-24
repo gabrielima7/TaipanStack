@@ -137,7 +137,17 @@ jobs:
 
       - name: "[Audit] Run pip-audit"
         run: |
-          poetry run pip-audit --strict
+          # CVE-2026-3219: affects pip 26.0.1 (confused install via concatenated tar+ZIP).
+          # No fix version available on PyPI yet (fix expected in pip>=26.1).
+          # Ignored explicitly here pending upstream patch release. Monitor: https://github.com/pypa/pip/issues
+          #
+          # PYSEC-2022-42969: affects py 1.11.0 (ReDoS via svn blame parsing).
+          # py is a transitive dependency of pytest with no upstream fix version available.
+          # Attack vector is local (requires attacker-controlled SVN output). Low real-world risk.
+          # Monitor: https://github.com/pytest-dev/py/issues
+          poetry run pip-audit --strict \
+            --ignore-vuln CVE-2026-3219 \
+            --ignore-vuln PYSEC-2022-42969
 
       - name: "[Audit] Run Semgrep"
         uses: semgrep/semgrep-action@v1
