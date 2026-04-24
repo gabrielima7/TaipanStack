@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: github-pages
+  group: ci-push-benchmark-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -76,7 +76,8 @@ jobs:
             git reset --hard
             git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
             git push origin gh-pages
-            git checkout main
+            # Return to main: fetch remote tracking ref first, then recreate local branch
+            git fetch origin main:main 2>/dev/null || git checkout -B main "refs/remotes/origin/main"
           fi
 
       # ── Compare & Store ──────────────────────────────────────────────
