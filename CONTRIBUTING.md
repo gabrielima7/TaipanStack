@@ -135,7 +135,7 @@ make all
 ### Testing
 
 - Write tests for all new functionality
-- Aim for high test coverage (80%+)
+- Aim for 100% test coverage (enforced by CI)
 - Use descriptive test names: `test_<what>_<condition>_<expected>`
 - Use fixtures for setup/teardown
 - Mock external dependencies
