@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1777056339988,
+  "lastUpdate": 1777063323646,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -25283,6 +25283,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00031459638286056004",
             "extra": "mean: 10.877778350853257 usec\nrounds: 15317"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabriel",
+            "username": "gabrielima7"
+          },
+          "distinct": true,
+          "id": "897bcb1e95dc2bbd6d14b838a1579fd93117f2b3",
+          "message": "fix(ci): correct pip-audit and benchmark workflow failures\n\n[Audit] Security Scanning fix:\n- Replace  with\n  to avoid fatal failure when the local package\n  (installed in editable mode via poetry install) cannot be\n  found on PyPI.\n- Root cause: pip-audit>=2.10.0 --strict + --skip-editable conflict;\n  strict treats editable skip as a collection failure (exit code 1).\n- Security posture unchanged: all third-party deps are still fully\n  audited; the project source is covered by Bandit.\n- Updated Makefile Running Bandit security scanner...\npoetry run bandit -r src/ -ll -c pyproject.toml\nWorking... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00\nRun started:2026-04-24 20:41:12.431758+00:00\n\nTest results:\n\tNo issues identified.\n\nCode scanned:\n\tTotal lines of code: 8315\n\tTotal lines skipped (#nosec): 0\n\tTotal potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 3\n\nRun metrics:\n\tTotal issues (by severity):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\n\tTotal issues (by confidence):\n\t\tUndefined: 0\n\t\tLow: 0\n\t\tMedium: 0\n\t\tHigh: 0\nFiles skipped (0):\n\nRunning Pip-Audit dependency checker...\n# CVE-2026-3219: affects pip 26.0.1 (confused install via concatenated tar+ZIP).\n# No fix version available on PyPI yet (fix expected in pip>=26.1).\n# Ignored explicitly pending upstream patch. Monitor: https://github.com/pypa/pip/issues\n#\n# PYSEC-2022-42969: affects py 1.11.0 (ReDoS via svn blame). Transitive dep of pytest.\n# No fix version available upstream. Local attack vector only. Low real-world risk.\n# Monitor: https://github.com/pytest-dev/py/issues\npoetry run pip-audit \\\n\t--skip-editable \\\n\t--ignore-vuln CVE-2026-3219 \\\n\t--ignore-vuln PYSEC-2022-42969\nName        Skip Reason\n----------- -------------------------------\ntaipanstack distribution marked as editable target for local consistency.\n\n[Test] Run Benchmarks fix:\n- Fix  -> scoped to workflow ref\n  to prevent global concurrency conflicts across runs.\n- Fix M\t.github/workflows/ci-push-benchmark.yml\nM\t.github/workflows/ci-push-main.yml\nM\tMakefile\nYour branch is up to date with 'origin/main'. after --orphan bootstrap which fails in CI\n  because the local branch 'main' doesn't exist after the orphan switch;\n  replaced with M\t.github/workflows/ci-push-benchmark.yml\nM\t.github/workflows/ci-push-main.yml\nM\tMakefile\nYour branch is up to date with 'origin/main'. for robust branch recovery.\n\nValidated locally:\n- bandit: No issues identified (8315 LOC)\n- pip-audit: No known vulnerabilities found, 2 ignored, taipanstack skipped\n- pytest benchmarks: 17 passed in ~16s",
+          "timestamp": "2026-04-24T17:41:14-03:00",
+          "tree_id": "17213eaa266cf75f67b926dc4eee7dfda424e0a9",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/897bcb1e95dc2bbd6d14b838a1579fd93117f2b3"
+        },
+        "date": 1777063322910,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_simple_expected",
+            "value": 965634.6889862516,
+            "unit": "iter/sec",
+            "range": "stddev: 3.1015528429446646e-7",
+            "extra": "mean: 1.0355883145103517 usec\nrounds: 75735"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_xss_expected",
+            "value": 689124.5308224257,
+            "unit": "iter/sec",
+            "range": "stddev: 3.836360735757757e-7",
+            "extra": "mean: 1.4511165330402105 usec\nrounds: 120395"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_unicode_expected",
+            "value": 440669.3874448817,
+            "unit": "iter/sec",
+            "range": "stddev: 4.974416414551805e-7",
+            "extra": "mean: 2.2692749450971985 usec\nrounds: 132732"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_filename_complex_expected",
+            "value": 267169.2278618792,
+            "unit": "iter/sec",
+            "range": "stddev: 7.185647576645345e-7",
+            "extra": "mean: 3.742946027141189 usec\nrounds: 45245"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_filename_long_expected",
+            "value": 215939.87566475853,
+            "unit": "iter/sec",
+            "range": "stddev: 8.84950561001714e-7",
+            "extra": "mean: 4.6309186616022515 usec\nrounds: 73938"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_path_nested_expected",
+            "value": 63959.03749019655,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000019523821323456226",
+            "extra": "mean: 15.635007017628698 usec\nrounds: 18382"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_path_traversal_expected",
+            "value": 87371.58949202992,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000014288667181453203",
+            "extra": "mean: 11.445368063164521 usec\nrounds: 30598"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_env_value_standard_expected",
+            "value": 2898057.9689290696,
+            "unit": "iter/sec",
+            "range": "stddev: 1.9600007776950974e-7",
+            "extra": "mean: 345.0586602204972 nsec\nrounds: 188680"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_env_value_large_expected",
+            "value": 2330187.094418864,
+            "unit": "iter/sec",
+            "range": "stddev: 4.8824278405196855e-8",
+            "extra": "mean: 429.1500894478338 nsec\nrounds: 103972"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_sql_identifier_expected",
+            "value": 5628499.811422567,
+            "unit": "iter/sec",
+            "range": "stddev: 3.1845475418945144e-8",
+            "extra": "mean: 177.66723523212076 nsec\nrounds: 154512"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_sql_identifier_dirty_expected",
+            "value": 741429.3244775955,
+            "unit": "iter/sec",
+            "range": "stddev: 3.8431106188519656e-7",
+            "extra": "mean: 1.3487462216369592 usec\nrounds: 99315"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_safe_decorator_ok_expected",
+            "value": 3043311.360805672,
+            "unit": "iter/sec",
+            "range": "stddev: 4.138626648759519e-8",
+            "extra": "mean: 328.5894479542339 nsec\nrounds: 114338"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_safe_decorator_err_expected",
+            "value": 1121706.0298852364,
+            "unit": "iter/sec",
+            "range": "stddev: 3.0837571682432504e-7",
+            "extra": "mean: 891.4991747903073 nsec\nrounds: 172088"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_collect_results_100_expected",
+            "value": 145136.60097841648,
+            "unit": "iter/sec",
+            "range": "stddev: 8.58687022231506e-7",
+            "extra": "mean: 6.8900607652284185 usec\nrounds: 77676"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_unwrap_or_expected",
+            "value": 12569540.150607016,
+            "unit": "iter/sec",
+            "range": "stddev: 1.0190184791781562e-8",
+            "extra": "mean: 79.55740528440225 nsec\nrounds: 123686"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_guard_ssrf_public_expected",
+            "value": 77523.97321912122,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003901218761080384",
+            "extra": "mean: 12.89923566189653 usec\nrounds: 9921"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_guard_ssrf_private_expected",
+            "value": 87964.33150570843,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003531117047252249",
+            "extra": "mean: 11.368244183554163 usec\nrounds: 14313"
           }
         ]
       }
