@@ -6,24 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.4.4] - 2026-04-24
+
 ### Security
 - **Fix (High)**: Hardened `guard_file_extension` against null bytes (`\x00`) and trailing whitespace/dots bypasses (PR #619).
+- **Fix (High)**: Handled unhandled `RuntimeError` on symlink loops in `guard_path_traversal` (PR #589).
 - **Hardening**: Enforced `math.isfinite` validation in `RetryConfig` to prevent NaN/Inf induced infinite loops or crashes (PR #618).
+- **Hardening**: Mitigated potential thread exhaustion in timeout decorators (PR #578).
+- **Fuzzing**: Extensive security guards stress testing and stress-testing via Hypothesis (PR #597).
+- **Fuzzing**: Detected and mitigated ReDoS in `sanitize_filename` via Hypothesis fuzzing (PR #605).
 - **Audit**: Addressed critical `pip` vulnerability (CVE-2026-3219) via explicit `pip-audit` ignore-vuln strategy and detailed documentation.
 - **Audit**: Addressed transitive legacy dependency vulnerability (PYSEC-2022-42969) in `py` library.
 - **Dependencies**: Upgraded `pytest` to `9.0.3` to remediate CVE-2025-71176.
 
-### Performance
-- **CI/CD**: Streamlined GitHub Actions by removing redundant container distribution tests and cleaning up bypass scripts (PR #614).
+### Resilience
+- **Chaos**: Integrated `Result` monad into `CircuitBreaker` state change notifications (PR #593).
+- **Chaos**: Resolved unhandled errors in `CircuitBreaker` during untracked state transitions (PR #598).
+- **Chaos**: Resolved micro-chaos issues in `Retry` monad propagation (PR #592).
+
+### Performance & CI/CD
+- **CI/CD**: Streamlined GitHub Actions by removing redundant container distribution tests and cleaning up bypass scripts (PR #610, #614).
+- **CI/CD**: Optimized infrastructure isolation and hardened pipeline execution model (PR #599).
+- **Docs**: Fixed MkDocs configuration and Mermaid syntax rendering issues (PR #613).
 
 ### Changed & Refactoring
 - **Typing**: Eliminated remaining `Any` usage in `taipanstack.security.models` enforcing strict Pydantic model dump signatures (PR #615).
-- **Clean Code**: Synchronized and standardized bootstrapper naming references across tests and documentation (PR #616).
+- **Typing**: Comprehensive static typing improvements in security models and core utilities (PR #585, #601).
+- **Clean Code**: Synchronized and standardized bootstrapper naming references across tests and documentation (PR #616, #596).
+- **Complexity**: Significantly reduced cyclomatic complexity across security guards and internal utilities (PR #591, #594, #606).
+- **Docs**: Resolved deprecated imports in documentation examples and synchronized test count (PR #586, #587).
 
-### QA & CI/CD
+### QA & Testing
+- **Coverage**: Achieved true 100% test coverage by resolving coverage bypasses and removing `pragma: no cover` (PR #579, #590, #611).
 - **Coverage**: Fixed bridge component test coverage for database and HTTP fallback states (PR #620).
+- **Refactoring**: Comprehensive test suite refactor and standardization for environment isolation (PR #595, #600).
 - **Tests**: Reached 1237 passing tests with 100% code coverage.
-- **Infrastructure**: Hardened CI/CD workflows with standardized naming conventions and zero-bypass security policies (PR #614).
 
 ## [0.4.3] - 2026-04-14
 
