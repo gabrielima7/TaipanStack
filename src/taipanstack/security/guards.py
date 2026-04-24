@@ -11,6 +11,7 @@ import ipaddress
 import os
 import re
 import socket
+import unicodedata
 from collections.abc import Sequence
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -340,8 +341,28 @@ def guard_file_extension(
         SecurityError: If extension is not allowed or is denied.
 
     """
+    filename_str = str(filename)
+    if "\x00" in filename_str:
+        raise SecurityError(
+            "Filename contains null bytes",
+            guard_name="file_extension",
+            value=filename_str,
+        )
+
     path = Path(filename)
-    ext = path.suffix.lower().lstrip(".")
+    clean_name = path.name
+    while clean_name:
+        char = clean_name[-1]
+        if (
+            char == "."
+            or unicodedata.category(char).startswith(("Z", "C"))
+            or char == "\xad"
+        ):
+            clean_name = clean_name[:-1]
+        else:
+            break
+
+    ext = "" if not clean_name else Path(clean_name).suffix.lower().lstrip(".")
 
     # Normalize extension lists
     def normalize_ext(e: str) -> str:
