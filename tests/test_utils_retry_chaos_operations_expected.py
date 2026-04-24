@@ -1,7 +1,5 @@
 """Chaos test for retry calculation resiliency."""
 
-import math
-
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
@@ -36,23 +34,52 @@ def test_utils_retry_chaos_retry_chaos_nan_inf_config_expected() -> None:
     the calculated delay could become NaN, crashing time.sleep() with ValueError,
     or blocking infinitely with Inf.
     """
-    config = RetryConfig(
-        initial_delay=float("nan"),
-        max_delay=float("inf"),
-    )
-    delay = calculate_delay(2, config)
+    import pytest
 
-    # We expect the system to sanitize this and ensure delay is finite and >= 0.
-    assert math.isfinite(delay)
-    assert delay >= 0.0
+    with pytest.raises(ValueError, match="finite"):
+        RetryConfig(
+            initial_delay=float("nan"),
+            max_delay=float("inf"),
+        )
 
     # Also test an explicit inf config value
-    config_inf = RetryConfig(
-        initial_delay=float("inf"),
-        max_delay=60.0,
-    )
-    delay_inf = calculate_delay(2, config_inf)
+    with pytest.raises(ValueError, match="finite"):
+        RetryConfig(
+            initial_delay=float("inf"),
+            max_delay=60.0,
+        )
 
-    assert math.isfinite(delay_inf)
-    assert delay_inf >= 0.0
-    assert delay_inf <= 66.0  # max_delay + jitter
+
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan_expected() -> None:
+    # Test line 121-123.
+    # The config now catches this, so we bypass config to hit calculate delay directly.
+    config = RetryConfig()
+    object.__setattr__(config, "initial_delay", float("nan"))
+    object.__setattr__(config, "max_delay", float("nan"))
+    delay = calculate_delay(2, config)
+    assert delay == 0.0
+
+
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected_2() -> None:
+    # Test line 134-140. Jitter exception.
+    import pytest
+
+    config = RetryConfig(jitter=True)
+    with pytest.MonkeyPatch.context() as m:
+        import secrets
+
+        def mock_uniform(*args, **kwargs):
+            raise ValueError("Mocked jitter exception")
+
+        m.setattr(secrets.SystemRandom, "uniform", mock_uniform)
+
+        delay = calculate_delay(2, config)
+        assert delay == config.initial_delay * config.exponential_base
+
+
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_finite_expected() -> None:
+    # Test line 122->125 where delay is NOT finite but max_delay IS finite.
+    config = RetryConfig(max_delay=60.0, jitter=False)
+    object.__setattr__(config, "initial_delay", float("nan"))
+    delay = calculate_delay(2, config)
+    assert delay == 60.0
