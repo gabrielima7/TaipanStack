@@ -73,6 +73,19 @@ class RetryConfig:
     log_retries: bool = True
     on_retry: Callable[[int, int, Exception, float], None] | None = None
 
+    def __post_init__(self) -> None:
+        """Validate configuration parameters."""
+        if not math.isfinite(self.max_attempts):
+            raise ValueError("max_attempts must be a finite number")
+        if not math.isfinite(self.initial_delay):
+            raise ValueError("initial_delay must be a finite number")
+        if not math.isfinite(self.max_delay):
+            raise ValueError("max_delay must be a finite number")
+        if not math.isfinite(self.exponential_base):
+            raise ValueError("exponential_base must be a finite number")
+        if not math.isfinite(self.jitter_factor):
+            raise ValueError("jitter_factor must be a finite number")
+
 
 class RetryError(Exception):
     """Raised when all retry attempts have failed."""
