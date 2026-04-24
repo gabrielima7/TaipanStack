@@ -1,3 +1,24 @@
+CI/CD Audit & Refactoring Report
+
+1. Insights from agents.md:
+   - Deployment targets and environments require strict, fast, and high-performance validation.
+   - Core Stack focuses on Python 3.11+ up to 3.14.
+   - Strict security guidelines prohibit bypass methods, silent failures, and cheating in tests/pipelines. Zero bypass is required.
+
+2. Deleted pipelines/steps and justifications:
+   - Deleted `container-distros` job from `.github/workflows/ci-push-main.yml`: The test job already performs comprehensive OS matrix testing across ubuntu, macos, and windows with versions 3.11 to 3.14. Testing multiple container distributions is redundant, overly slow, and not essential for the core stack.
+   - Removed `poetry run pip uninstall py -y || true` from `ci-push-main.yml` and `Makefile`: Explicitly violates the 'ZERO Bypass Methods' and security guidelines, which strictly forbids hiding vulnerabilities or masking errors.
+
+3. Naming Convention:
+   - Workflow files follow `ci-<trigger>-<action>.yml` (e.g., `ci-push-main.yml`, `ci-push-benchmark.yml`).
+   - Jobs and individual steps use standard bracketed prefixes, such as `[Setup]`, `[Test]`, `[Lint]`, `[Audit]`, `[Build]`, or `[Deploy]`, followed by a descriptive name (e.g. `[Test] Python Matrix`, `[Audit] Run Bandit Scan`). This is strictly adhered to in all CI/CD configuration files.
+
+4. Self-Correction Loops:
+   - During the refactoring of `.github/workflows/ci-push-main.yml`, an initial script approach using `split` and tracking `skip` state was complex and error-prone. A self-correction loop was applied by re-reading the file and switching to a robust Regex pattern (`re.sub`) to precisely match and slice out the `container-distros` block without removing trailing newlines improperly.
+   - Verified that `pip-audit --strict` successfully completes locally without failure after the `pip uninstall py -y || true` hack was removed, confirming that the underlying environment dependencies are sound.
+
+5. Final CI/CD Pipeline Code (ci-push-main.yml):
+```yaml
 name: ci-push-main
 
 on:
@@ -273,3 +294,5 @@ jobs:
 
       - name: "[Test] Validate Container Run (Healthcheck)"
         run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"
+
+```

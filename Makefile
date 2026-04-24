@@ -41,7 +41,6 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	poetry run pip uninstall py -y || true
 	poetry run pip-audit --strict
 
 lint-imports:
