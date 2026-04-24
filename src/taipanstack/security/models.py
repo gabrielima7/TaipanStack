@@ -134,7 +134,6 @@ class SecureBaseModel(BaseModel):
         *,
         indent: int | None = None,
         ensure_ascii: bool = False,  # noqa: ARG002
-
         include: IncEx | None = None,
         exclude: IncEx | None = None,
         context: dict[str, object] | None = None,
