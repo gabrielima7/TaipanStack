@@ -6,7 +6,7 @@ import pytest
 import taipanstack_bootstrapper as taipanstack
 
 
-def test_stack_script_extra_handle_error_expected(capsys):
+def test_taipanstack_script_extra_handle_error_expected(capsys):
     with pytest.raises(SystemExit) as exc:
         taipanstack._handle_error("Test error")
     assert exc.value.code == 1
@@ -14,7 +14,7 @@ def test_stack_script_extra_handle_error_expected(capsys):
     assert "Error: Test error\n" in captured.err
 
 
-def test_stack_script_extra_run_command_file_not_found_expected():
+def test_taipanstack_script_extra_run_command_file_not_found_expected():
     args = argparse.Namespace(dry_run=False, verbose=False)
     with (
         patch("subprocess.run", side_effect=FileNotFoundError),
@@ -25,7 +25,7 @@ def test_stack_script_extra_run_command_file_not_found_expected():
         assert "not found" in mock_error.call_args[0][0]
 
 
-def test_stack_script_extra_run_command_called_process_error_expected():
+def test_taipanstack_script_extra_run_command_called_process_error_expected():
     args = argparse.Namespace(dry_run=False, verbose=False)
     err = subprocess.CalledProcessError(1, ["cmd"], stderr="some error")
     with (
@@ -38,7 +38,7 @@ def test_stack_script_extra_run_command_called_process_error_expected():
         assert "some error" in mock_error.call_args[0][0]
 
 
-def test_stack_script_extra_safe_write_rename_error_expected(tmp_path):
+def test_taipanstack_script_extra_safe_write_rename_error_expected(tmp_path):
     args = argparse.Namespace(dry_run=False, verbose=False, force=False)
     file_path = tmp_path / "test.txt"
     file_path.write_text("old")
@@ -51,7 +51,7 @@ def test_stack_script_extra_safe_write_rename_error_expected(tmp_path):
         assert "Could not create backup" in mock_error.call_args[0][0]
 
 
-def test_stack_script_extra_safe_write_write_error_expected(tmp_path):
+def test_taipanstack_script_extra_safe_write_write_error_expected(tmp_path):
     args = argparse.Namespace(dry_run=False, verbose=False, force=False)
     file_path = tmp_path / "test.txt"
     with (
@@ -63,7 +63,7 @@ def test_stack_script_extra_safe_write_write_error_expected(tmp_path):
         assert "Could not write to file" in mock_error.call_args[0][0]
 
 
-def test_stack_script_extra_generate_pyproject_config_dry_run_with_config_expected(
+def test_taipanstack_script_extra_generate_pyproject_config_dry_run_with_config_expected(
     tmp_path, monkeypatch
 ):
     args = argparse.Namespace(dry_run=True, verbose=True, force=False)
