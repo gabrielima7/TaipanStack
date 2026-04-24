@@ -386,7 +386,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Translated `taipanstack_bootstrapper.py` fully to English (strings, comments, docstrings)
-- Translated `tests/test_stack_script.py` fully to English
+- Translated `tests/test_taipanstack_script.py` fully to English
 - Converted all docstrings to imperative mood for D401 Ruff compliance
 - Fixed deprecated `[project.license]` table format in `pyproject.toml`
 - Updated `Makefile` safety command to ignore disputed CVE-2022-42969 (`py 1.11.0`)
