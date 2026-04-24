@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.4] - 2026-04-24
+### Security
+- **Fix (High)**: Hardened `guard_file_extension` against null bytes (`\x00`) and trailing whitespace/dots bypasses (PR #619).
+- **Hardening**: Enforced `math.isfinite` validation in `RetryConfig` to prevent NaN/Inf induced infinite loops or crashes (PR #618).
+- **Audit**: Addressed critical `pip` vulnerability (CVE-2026-3219) via explicit `pip-audit` ignore-vuln strategy and detailed documentation.
+- **Audit**: Addressed transitive legacy dependency vulnerability (PYSEC-2022-42969) in `py` library.
+- **Dependencies**: Upgraded `pytest` to `9.0.3` to remediate CVE-2025-71176.
+
+### Performance
+- **CI/CD**: Streamlined GitHub Actions by removing redundant container distribution tests and cleaning up bypass scripts (PR #614).
+
+### Changed & Refactoring
+- **Typing**: Eliminated remaining `Any` usage in `taipanstack.security.models` enforcing strict Pydantic model dump signatures (PR #615).
+- **Clean Code**: Synchronized and standardized bootstrapper naming references across tests and documentation (PR #616).
+
+### QA & CI/CD
+- **Coverage**: Fixed bridge component test coverage for database and HTTP fallback states (PR #620).
+- **Tests**: Reached 1237 passing tests with 100% code coverage.
+- **Infrastructure**: Hardened CI/CD workflows with standardized naming conventions and zero-bypass security policies (PR #614).
+
 ## [0.4.3] - 2026-04-14
 
 ### Security
@@ -520,7 +540,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.0...v0.4.1
