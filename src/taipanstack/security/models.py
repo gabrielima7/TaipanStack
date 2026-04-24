@@ -2,10 +2,11 @@
 
 import json
 import re
-from collections.abc import Iterator
-from typing import Any, TypeAlias, cast
+from collections.abc import Callable, Iterator
+from typing import Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
+from pydantic.main import IncEx
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 
@@ -83,9 +84,23 @@ class SecureBaseModel(BaseModel):
             else:
                 yield k, v
 
-    def model_dump(
+    def model_dump(  # noqa: PLR0913
         self,
-        **kwargs: Any,
+        *,
+        mode: Literal["json", "python"] | str = "python",
+        include: IncEx | None = None,
+        exclude: IncEx | None = None,
+        context: dict[str, object] | None = None,
+        by_alias: bool | None = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_computed_fields: bool = False,
+        round_trip: bool = False,
+        warnings: bool | Literal["none", "warn", "error"] = True,
+        fallback: Callable[[object], object] | None = None,
+        serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -96,12 +111,42 @@ class SecureBaseModel(BaseModel):
             The redacting dictionary representation of the model.
 
         """
-        data = super().model_dump(**kwargs)
+        data = super().model_dump(
+            mode=mode,
+            include=include,
+            exclude=exclude,
+            context=context,
+            by_alias=by_alias,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+            exclude_computed_fields=exclude_computed_fields,
+            round_trip=round_trip,
+            warnings=warnings,
+            fallback=fallback,
+            serialize_as_any=serialize_as_any,
+            polymorphic_serialization=polymorphic_serialization,
+        )
         return cast(dict[str, object], _mask_data(data))
 
-    def model_dump_json(
+    def model_dump_json(  # noqa: PLR0913
         self,
-        **kwargs: Any,
+        *,
+        indent: int | None = None,
+        ensure_ascii: bool = False,  # noqa: ARG002
+        include: IncEx | None = None,
+        exclude: IncEx | None = None,
+        context: dict[str, object] | None = None,
+        by_alias: bool | None = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_computed_fields: bool = False,
+        round_trip: bool = False,
+        warnings: bool | Literal["none", "warn", "error"] = True,
+        fallback: Callable[[object], object] | None = None,
+        serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -113,12 +158,27 @@ class SecureBaseModel(BaseModel):
 
         """
         # Extract indent if any, as model_dump does not accept it
-        indent = kwargs.pop("indent", None)
+
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(mode="json", **kwargs)
+        dumped_dict = super().model_dump(
+            mode="json",
+            include=include,
+            exclude=exclude,
+            context=context,
+            by_alias=by_alias,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+            exclude_computed_fields=exclude_computed_fields,
+            round_trip=round_trip,
+            warnings=warnings,
+            fallback=fallback,
+            serialize_as_any=serialize_as_any,
+            polymorphic_serialization=polymorphic_serialization,
+        )
         masked_dict = _mask_data(dumped_dict)
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
         if indent is not None:
-            return json.dumps(masked_dict, indent=cast(int | str, indent))
+            return json.dumps(masked_dict, indent=indent)
         return json.dumps(masked_dict)
