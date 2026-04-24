@@ -145,7 +145,15 @@ jobs:
           # py is a transitive dependency of pytest with no upstream fix version available.
           # Attack vector is local (requires attacker-controlled SVN output). Low real-world risk.
           # Monitor: https://github.com/pytest-dev/py/issues
-          poetry run pip-audit --strict \
+          #
+          # --skip-editable: the local `taipanstack` package is installed in editable mode
+          # (poetry install) and is not published on PyPI, so pip-audit cannot look it up.
+          # In pip-audit>=2.10.0, --strict is incompatible with --skip-editable (both flags
+          # conflict: strict treats the skip as a collection failure). --strict is intentionally
+          # omitted here; third-party deps are still fully audited. The project source code is
+          # covered separately by Bandit (step above).
+          poetry run pip-audit \
+            --skip-editable \
             --ignore-vuln CVE-2026-3219 \
             --ignore-vuln PYSEC-2022-42969
 

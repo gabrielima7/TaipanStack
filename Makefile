@@ -48,7 +48,8 @@ security:
 	# PYSEC-2022-42969: affects py 1.11.0 (ReDoS via svn blame). Transitive dep of pytest.
 	# No fix version available upstream. Local attack vector only. Low real-world risk.
 	# Monitor: https://github.com/pytest-dev/py/issues
-	poetry run pip-audit --strict \
+	poetry run pip-audit \
+		--skip-editable \
 		--ignore-vuln CVE-2026-3219 \
 		--ignore-vuln PYSEC-2022-42969
 
