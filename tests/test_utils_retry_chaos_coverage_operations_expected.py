@@ -7,6 +7,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(
     monkeypatch,
 ) -> None:
     import pytest
+
     # Test line 133 -> 139 where math.isfinite(jitter_amount) is False
     with pytest.raises(ValueError, match="finite"):
         RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
@@ -34,6 +35,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_expected() -> Non
     config = RetryConfig(initial_delay=-10.0, jitter=False)
     delay = calculate_delay(1, config)
     assert delay == 0.0
+
 
 def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected_2(
     monkeypatch,
