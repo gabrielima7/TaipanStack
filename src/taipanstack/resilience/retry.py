@@ -28,12 +28,12 @@ class RetryDecorator(Protocol):
     """Protocol for the retry decorator."""
 
     @overload
-    def __call__(self, func: Callable[P, R]) -> Callable[P, R]: ...  # pragma: no cover
+    def __call__(self, func: Callable[P, R]) -> Callable[P, R]: ...
 
     @overload
     def __call__(
         self, func: Callable[P, Awaitable[R]]
-    ) -> Callable[P, Awaitable[R]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[R]]: ...
 
 
 logger = logging.getLogger("taipanstack.resilience.retry")
@@ -43,7 +43,7 @@ try:
 
     _structlog_logger = _structlog.get_logger("taipanstack.resilience.retry")
     _HAS_STRUCTLOG = True
-except ImportError:  # pragma: no cover — structlog is optional
+except ImportError:
     _structlog_logger = None
     _HAS_STRUCTLOG = False
 

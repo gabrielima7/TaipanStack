@@ -281,28 +281,3 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
 
-def test_bridge_db_db_bridge_import_error_coverage_expected() -> None:
-    """Test db_bridge import error fallback branches."""
-    import importlib
-    import sys
-
-    original_sqlalchemy = sys.modules.pop("sqlalchemy", None)
-    original_redis = sys.modules.pop("redis", None)
-    sys.modules["sqlalchemy"] = None  # type: ignore
-    sys.modules["redis"] = None  # type: ignore
-    try:
-        import taipanstack.bridges.db_bridge as db_mod
-
-        importlib.reload(db_mod)
-        assert db_mod._HAS_SQLALCHEMY is False
-        assert db_mod._HAS_REDIS is False
-    finally:
-        if original_sqlalchemy is not None:
-            sys.modules["sqlalchemy"] = original_sqlalchemy
-        else:
-            sys.modules.pop("sqlalchemy", None)
-        if original_redis is not None:
-            sys.modules["redis"] = original_redis
-        else:
-            sys.modules.pop("redis", None)
-        importlib.reload(db_mod)

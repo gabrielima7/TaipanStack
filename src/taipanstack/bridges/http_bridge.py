@@ -80,8 +80,8 @@ class HttpClientKwargs(TypedDict, total=False):
 try:
     import httpx
 
-    _HAS_HTTPX = True  # pragma: no cover
-except ImportError:  # pragma: no cover
+    _HAS_HTTPX = True
+except ImportError:
     _HAS_HTTPX = False
 
 if TYPE_CHECKING:
