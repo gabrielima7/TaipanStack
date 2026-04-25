@@ -104,9 +104,6 @@ class SecureBaseModel(BaseModel):
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
-        Args:
-            **kwargs: Arguments to pass to Pydantic's model_dump.
-
         Returns:
             The redacting dictionary representation of the model.
 
@@ -149,9 +146,6 @@ class SecureBaseModel(BaseModel):
         polymorphic_serialization: bool | None = None,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
-
-        Args:
-            **kwargs: Arguments to pass to Pydantic's model_dump.
 
         Returns:
             The redacted JSON string representation of the model.
