@@ -321,6 +321,62 @@ def guard_command_injection(
     return cmd_list
 
 
+def _check_filename_null_bytes(filename_str: str) -> None:
+    if "\x00" in filename_str:
+        raise SecurityError(
+            "Filename contains null bytes",
+            guard_name="file_extension",
+            value=filename_str,
+        )
+
+
+def _clean_filename_end(clean_name: str) -> str:
+    while clean_name:
+        char = clean_name[-1]
+        if (
+            char == "."
+            or unicodedata.category(char).startswith(("Z", "C"))
+            or char == "\xad"
+        ):
+            clean_name = clean_name[:-1]
+        else:
+            break
+    return clean_name
+
+
+def _normalize_ext(e: str) -> str:
+    return e.lower().lstrip(".")
+
+
+def _check_denied_extension(
+    ext: str, original_name: str, denied_extensions: Sequence[str] | None
+) -> None:
+    if denied_extensions is not None:
+        denied = frozenset(_normalize_ext(e) for e in denied_extensions)
+    else:
+        denied = _DEFAULT_DENIED_EXTENSIONS
+
+    if ext in denied:
+        raise SecurityError(
+            f"File extension '{ext}' is not allowed",
+            guard_name="file_extension",
+            value=original_name,
+        )
+
+
+def _check_allowed_extension(
+    ext: str, original_name: str, allowed_extensions: Sequence[str] | None
+) -> None:
+    if allowed_extensions is not None:  # pragma: no branch
+        allowed = {_normalize_ext(e) for e in allowed_extensions}
+        if ext not in allowed:
+            raise SecurityError(
+                f"File extension '{ext}' is not in allowed list",
+                guard_name="file_extension",
+                value=original_name,
+            )
+
+
 def guard_file_extension(
     filename: str | Path,
     *,
@@ -342,52 +398,15 @@ def guard_file_extension(
 
     """
     filename_str = str(filename)
-    if "\x00" in filename_str:
-        raise SecurityError(
-            "Filename contains null bytes",
-            guard_name="file_extension",
-            value=filename_str,
-        )
+    _check_filename_null_bytes(filename_str)
 
     path = Path(filename)
-    clean_name = path.name
-    while clean_name:
-        char = clean_name[-1]
-        if (
-            char == "."
-            or unicodedata.category(char).startswith(("Z", "C"))
-            or char == "\xad"
-        ):
-            clean_name = clean_name[:-1]
-        else:
-            break
+    clean_name = _clean_filename_end(path.name)
 
     ext = "" if not clean_name else Path(clean_name).suffix.lower().lstrip(".")
 
-    # Normalize extension lists
-    def normalize_ext(e: str) -> str:
-        return e.lower().lstrip(".")
-
-    if denied_extensions is not None:
-        denied = frozenset(normalize_ext(e) for e in denied_extensions)
-    else:
-        denied = _DEFAULT_DENIED_EXTENSIONS
-
-    if ext in denied:
-        raise SecurityError(
-            f"File extension '{ext}' is not allowed",
-            guard_name="file_extension",
-            value=str(path.name),
-        )
-
-    if allowed_extensions is not None:  # pragma: no branch
-        allowed = {normalize_ext(e) for e in allowed_extensions}
-        if ext not in allowed:
-            raise SecurityError(
-                f"File extension '{ext}' is not in allowed list",
-                guard_name="file_extension",
-                value=str(path.name),
-            )
+    _check_denied_extension(ext, str(path.name), denied_extensions)
+    _check_allowed_extension(ext, str(path.name), allowed_extensions)
 
     return path
 
@@ -491,11 +510,7 @@ def guard_env_variable(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def _validate_ssrf_url(  # noqa: PLR0911
-    url: str,
-    allowed_schemes: frozenset[str],
-) -> Result[str, SecurityError]:
-    """Validate the URL format, scheme, and presence of hostname."""
+def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
     if not isinstance(url, str):
         return Err(
             SecurityError(
@@ -515,7 +530,12 @@ def _validate_ssrf_url(  # noqa: PLR0911
                 value=url[:80],
             )
         )
+    return Ok(url)
 
+
+def _validate_ssrf_url_parse(
+    url: str, allowed_schemes: frozenset[str]
+) -> Result[str, SecurityError]:
     try:
         parsed = urlsplit(url)
     except ValueError as exc:
@@ -547,6 +567,18 @@ def _validate_ssrf_url(  # noqa: PLR0911
         )
 
     return Ok(hostname)
+
+
+def _validate_ssrf_url(
+    url: str,
+    allowed_schemes: frozenset[str],
+) -> Result[str, SecurityError]:
+    """Validate the URL format, scheme, and presence of hostname."""
+    type_len_res = _validate_ssrf_url_type_and_length(url)
+    if not isinstance(type_len_res, Ok):
+        return type_len_res
+
+    return _validate_ssrf_url_parse(url, allowed_schemes)
 
 
 @functools.lru_cache(maxsize=1024)
