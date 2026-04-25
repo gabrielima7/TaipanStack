@@ -10,8 +10,6 @@ import secrets
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, TypeAlias
 
-from typing_extensions import TypedDict
-
 if TYPE_CHECKING:
     import jwt
 
@@ -85,24 +83,15 @@ def decode_jwt(
     ):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
 
-    class JWTOptions(TypedDict, total=False):
-        require: list[str]
-        verify_signature: bool
-        verify_exp: bool
-        verify_aud: bool
-
-    # We enforce 'exp' and 'aud' through PyJWT's options parameter
-    options: JWTOptions = {
-        "require": ["exp", "aud"],
-        "verify_signature": True,
-        "verify_exp": True,
-        "verify_aud": True,
-    }
-
     return jwt.decode(
         token,
         secret_key,
         algorithms=algorithms,
         audience=audience,
-        options=options,  # type: ignore[arg-type]
+        options={
+            "require": ["exp", "aud"],
+            "verify_signature": True,
+            "verify_exp": True,
+            "verify_aud": True,
+        },
     )
