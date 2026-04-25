@@ -591,5 +591,3 @@ class TestSafeHttpClient:
         await client.__aexit__(None, None, None)
 
         assert client._client is None
-
-

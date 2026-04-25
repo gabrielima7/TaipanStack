@@ -279,5 +279,3 @@ class TestResilientRedis:
             result = await r.health_check()
 
         assert isinstance(result, Err)
-
-

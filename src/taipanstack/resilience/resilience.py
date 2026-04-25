@@ -26,14 +26,10 @@ class FallbackDecorator(Protocol):
     """Protocol for the fallback decorator."""
 
     @overload
-    def __call__(
-        self, func: ResultFunc[P, T, E]
-    ) -> ResultFunc[P, T, E]: ...
+    def __call__(self, func: ResultFunc[P, T, E]) -> ResultFunc[P, T, E]: ...
 
     @overload
-    def __call__(
-        self, func: AsyncResultFunc[P, T, E]
-    ) -> AsyncResultFunc[P, T, E]: ...
+    def __call__(self, func: AsyncResultFunc[P, T, E]) -> AsyncResultFunc[P, T, E]: ...
 
 
 def fallback(
