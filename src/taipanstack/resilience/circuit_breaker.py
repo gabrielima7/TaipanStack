@@ -355,6 +355,41 @@ class CircuitBreaker:
             self._state.half_open_attempts = 0
             logger.info("Circuit %s manually reset", self.name)
 
+    def _process_result(self, result: R) -> R:
+        """Process Result outcome and record success/failure.
+
+        Args:
+            result: The result to process.
+
+        Returns:
+            The original result.
+
+        """
+        if isinstance(result, Err):
+            err_val = result.unwrap_err()
+            if isinstance(err_val, self.config.failure_exceptions):
+                self._record_failure(err_val)
+                return result
+            # Ignored exception in Result monad
+            return result
+        self._record_success()
+        return result
+
+    def _decrement_half_open(self, is_half_open: bool) -> None:
+        """Decrement half-open attempt count if applicable.
+
+        Args:
+            is_half_open: Whether the circuit was half-open before attempt.
+
+        """
+        if is_half_open:
+            with self._state.lock:
+                if (
+                    self._state.state == CircuitState.HALF_OPEN
+                    and self._state.half_open_attempts > 0
+                ):
+                    self._state.half_open_attempts -= 1
+
     def __call__(
         self, func: Callable[P, R] | Callable[P, Awaitable[R]]
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
@@ -374,26 +409,12 @@ class CircuitBreaker:
 
                 try:
                     result = await func_coro(*args, **kwargs)
-                    if isinstance(result, Err):
-                        err_val = result.unwrap_err()
-                        if isinstance(err_val, self.config.failure_exceptions):
-                            self._record_failure(err_val)
-                            return result
-                        # Ignored exception in Result monad
-                        return result
-                    self._record_success()
-                    return result
+                    return self._process_result(result)
                 except self.config.failure_exceptions as e:
                     self._record_failure(e)
                     raise
                 finally:
-                    if is_half_open:
-                        with self._state.lock:
-                            if (
-                                self._state.state == CircuitState.HALF_OPEN
-                                and self._state.half_open_attempts > 0
-                            ):
-                                self._state.half_open_attempts -= 1
+                    self._decrement_half_open(is_half_open)
 
             return async_wrapper
 
@@ -411,26 +432,12 @@ class CircuitBreaker:
 
             try:
                 result = func_sync(*args, **kwargs)
-                if isinstance(result, Err):
-                    err_val = result.unwrap_err()
-                    if isinstance(err_val, self.config.failure_exceptions):
-                        self._record_failure(err_val)
-                        return result
-                    # Ignored exception in Result monad
-                    return result
-                self._record_success()
-                return result
+                return self._process_result(result)
             except self.config.failure_exceptions as e:
                 self._record_failure(e)
                 raise
             finally:
-                if is_half_open:
-                    with self._state.lock:
-                        if (
-                            self._state.state == CircuitState.HALF_OPEN
-                            and self._state.half_open_attempts > 0
-                        ):
-                            self._state.half_open_attempts -= 1
+                self._decrement_half_open(is_half_open)
 
         return wrapper
 
