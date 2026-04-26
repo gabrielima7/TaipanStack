@@ -89,6 +89,15 @@ class CircuitBreakerConfig:
     excluded_exceptions: tuple[type[Exception], ...] = ()
     failure_exceptions: tuple[type[Exception], ...] = (Exception,)
 
+    def __post_init__(self) -> None:
+        """Validate configuration values."""
+        if not math.isfinite(self.failure_threshold):
+            raise ValueError("failure_threshold must be finite")
+        if not math.isfinite(self.success_threshold):
+            raise ValueError("success_threshold must be finite")
+        if not math.isfinite(self.timeout):
+            raise ValueError("timeout must be finite")
+
 
 @dataclass
 class CircuitBreakerState:
