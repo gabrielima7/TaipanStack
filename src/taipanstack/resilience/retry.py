@@ -163,6 +163,50 @@ def calculate_delay(
     return delay
 
 
+def _invoke_retry_callback(
+    func_name: str,
+    attempt: int,
+    exc: Exception,
+    delay: float,
+    config: RetryConfig,
+) -> None:
+    """Invoke the retry callback if set, or emit structured log.
+
+    Args:
+        func_name: Name of the retried function.
+        attempt: Current attempt number.
+        exc: The exception that triggered the retry.
+        delay: Delay in seconds before the next attempt.
+        config: Retry configuration.
+
+    """
+    if config.on_retry is not None:
+        try:
+            config.on_retry(attempt, config.max_attempts, exc, delay)
+        except Exception as e:
+            if _HAS_STRUCTLOG and _structlog_logger is not None:
+                _structlog_logger.error(
+                    "retry_callback_failed",
+                    function=func_name,
+                    error=str(e),
+                )
+            else:
+                logger.error(
+                    "Retry callback failed for %s: %s",
+                    func_name,
+                    str(e),
+                )
+    elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
+        _structlog_logger.warning(
+            "retry_attempted",
+            function=func_name,
+            attempt=attempt,
+            max_attempts=config.max_attempts,
+            error=str(exc),
+            delay_seconds=round(delay, 3),
+        )
+
+
 def _log_retry_attempt(
     func_name: str,
     attempt: int,
@@ -190,32 +234,7 @@ def _log_retry_attempt(
             delay,
         )
 
-    # Invoke callback or emit structured log if no callback set
-    if config.on_retry is not None:
-        try:
-            config.on_retry(attempt, config.max_attempts, exc, delay)
-        except Exception as e:
-            if _HAS_STRUCTLOG and _structlog_logger is not None:
-                _structlog_logger.error(
-                    "retry_callback_failed",
-                    function=func_name,
-                    error=str(e),
-                )
-            else:
-                logger.error(
-                    "Retry callback failed for %s: %s",
-                    func_name,
-                    str(e),
-                )
-    elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
-        _structlog_logger.warning(
-            "retry_attempted",
-            function=func_name,
-            attempt=attempt,
-            max_attempts=config.max_attempts,
-            error=str(exc),
-            delay_seconds=round(delay, 3),
-        )
+    _invoke_retry_callback(func_name, attempt, exc, delay, config)
 
 
 def _log_all_failed(
