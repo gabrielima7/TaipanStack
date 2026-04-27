@@ -57,7 +57,36 @@ class RateLimiter:
         self.last_update: float = time.monotonic()
         self._lock = threading.Lock()
 
-    def consume(self, tokens: float = 1.0) -> bool:  # noqa: PLR0911
+    def _add_tokens(self, now: float) -> bool:
+        """Calculate and add new tokens to the bucket based on elapsed time.
+
+        Args:
+            now: Current monotonic time.
+
+        Returns:
+            True if token update succeeds, False if state corruption is detected.
+
+        """
+        elapsed = max(0.0, now - self.last_update)
+        self.last_update = now
+
+        # Prevent state corruption from raising exceptions or poisoning state
+        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+            return False
+
+        if not math.isfinite(self.capacity) or self.capacity <= 0.0:
+            return False
+
+        # Add tokens for elapsed time based on fill rate
+        self.tokens += elapsed * (self.capacity / self.time_window)
+
+        if not math.isfinite(self.tokens):
+            return False
+
+        self.tokens = min(self.tokens, self.capacity)
+        return True
+
+    def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
 
         Args:
@@ -82,23 +111,8 @@ class RateLimiter:
                     return True
                 return False
 
-            elapsed = max(0.0, now - self.last_update)
-            self.last_update = now
-
-            # Prevent state corruption from raising exceptions or poisoning state
-            if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+            if not self._add_tokens(now):
                 return False
-
-            if not math.isfinite(self.capacity) or self.capacity <= 0.0:
-                return False
-
-            # Add tokens for elapsed time based on fill rate
-            self.tokens += elapsed * (self.capacity / self.time_window)
-
-            if not math.isfinite(self.tokens):
-                return False
-
-            self.tokens = min(self.tokens, self.capacity)
 
             if self.tokens >= tokens:
                 self.tokens -= tokens
