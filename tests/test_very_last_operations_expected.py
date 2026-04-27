@@ -596,3 +596,26 @@ def test_very_last_guard_path_traversal_is_symlink_oserror_expected(monkeypatch)
         match="Invalid path encountered during symlink check: Mocked OSError in is_symlink",
     ):
         guard_path_traversal("some/path", Path("/safe_tmp"))
+
+
+class TestCompatPy313FallbackExpected:
+    def test_very_last_check_jit_available_not_py313_expected(self) -> None:
+        """Test _check_jit_available when PY313=False."""
+        from taipanstack.core import compat
+
+        with patch.object(compat, "PY313", False):
+            assert compat._check_jit_available() is False
+
+    def test_very_last_check_free_threading_not_py313_expected(self) -> None:
+        """Test _check_free_threading_available when PY313=False."""
+        from taipanstack.core import compat
+
+        with patch.object(compat, "PY313", False):
+            assert compat._check_free_threading_available() is False
+
+    def test_very_last_check_mimalloc_available_not_py313_expected(self) -> None:
+        """Test _check_mimalloc_available when PY313=False."""
+        from taipanstack.core import compat
+
+        with patch.object(compat, "PY313", False):
+            assert compat._check_mimalloc_available() is False

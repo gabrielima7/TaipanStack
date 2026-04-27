@@ -612,6 +612,7 @@ def test_bridge_http_http_bridge_import_error_coverage_expected() -> None:
             sys.modules.pop("httpx", None)
         importlib.reload(http_mod)
 
+
 def test_bridge_http_import_error_coverage_expected():
     import importlib
     import sys
@@ -623,6 +624,7 @@ def test_bridge_http_import_error_coverage_expected():
         sys.modules["httpx"] = None
 
         from taipanstack.bridges import http_bridge
+
         importlib.reload(http_bridge)
 
         assert http_bridge._HAS_HTTPX is False
@@ -633,6 +635,7 @@ def test_bridge_http_import_error_coverage_expected():
             sys.modules.pop("httpx", None)
 
         importlib.reload(http_bridge)
+
 
 def test_bridge_http_success_coverage_expected():
     import importlib
@@ -646,6 +649,7 @@ def test_bridge_http_success_coverage_expected():
         sys.modules["httpx"] = MagicMock()
 
         from taipanstack.bridges import http_bridge
+
         importlib.reload(http_bridge)
 
         assert http_bridge._HAS_HTTPX is True

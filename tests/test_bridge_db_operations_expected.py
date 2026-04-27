@@ -307,6 +307,7 @@ def test_bridge_db_db_bridge_import_error_coverage_expected() -> None:
             sys.modules.pop("redis", None)
         importlib.reload(db_mod)
 
+
 def test_bridge_db_success_coverage_expected():
     import importlib
     import sys
@@ -325,6 +326,7 @@ def test_bridge_db_success_coverage_expected():
 
     try:
         from taipanstack.bridges import db_bridge
+
         importlib.reload(db_bridge)
 
         assert db_bridge._HAS_SQLALCHEMY is True
