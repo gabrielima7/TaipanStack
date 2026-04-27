@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Constants to avoid magic values (PLR2004)
 MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
+MAX_PATH_LENGTH = 4096  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
@@ -348,10 +349,16 @@ def sanitize_path(
 
     """
     if isinstance(path, str):
+        if len(path) > MAX_PATH_LENGTH:
+            msg = "Path length exceeds maximum allowed"
+            raise ValueError(msg)
         if "\x00" in path:  # pragma: no branch
             path = path.replace("\x00", "")
         path = Path(path)
     else:  # pragma: no branch
+        if len(str(path)) > MAX_PATH_LENGTH:
+            msg = "Path length exceeds maximum allowed"
+            raise ValueError(msg)
         path = Path(path)
 
     # Clean components
