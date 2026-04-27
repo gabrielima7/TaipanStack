@@ -5,7 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.5] - 2026-04-27
+
+### Security
+- **Hardening**: Reinforced `RateLimiter` against state corruption and `NaN` poisoning (PR #622).
+- **Hardening**: Shielded `CircuitBreaker` against `NaN`/`Inf` poisoning and state counter corruption (PR #627, #630).
+- **Hardening**: Hardened `sanitize_path` against massive string DoS vectors (PR #635).
+
+### Performance
+- **Optimization**: Optimized `@safe` and `collect_results` decorators by hoisting internal type checks and reducing closure overhead (Commit 14d069b5).
+
+### Resilience
+- **Complexity**: Significantly reduced cyclomatic complexity in `CircuitBreaker`, `Retry`, and `RateLimiter` modules (PR #628, #632).
+
+### Refactoring & Typing
+- **Strict Typing**: Eliminated remaining `Any` usage and resolved all `type: ignore` directives across core modules (PR #624).
+- **Clean Code**: Reduced cyclomatic complexity in security guards and standardized internal utilities (PR #625).
+- **CI/CD**: Audited and standardized CI/CD pipelines to remove legacy bypasses and enforce strict naming (PR #631).
+
+### QA & Testing
+- **Coverage**: Achieved true **100% genuine code coverage** by eliminating all `pragma: no cover` bypasses (PR #636).
+- **Test Suite**: Reached **1,249 passing tests** with verified 100% coverage.
+- **CI Fixes**: Resolved `pip-audit` strictly treating editable installs as failures and stabilized benchmark concurrency (Commit 897bcb1e).
+
+### Documentation
+- **Alignment**: Synchronized project version and release notes across all auxiliary files (PR #633, Commit 2562439b).
+- **MkDocs**: Resolved strict build warnings in Pydantic model docstrings (PR #626).
+
 ## [0.4.4] - 2026-04-24
+
 
 ### Security
 - **Fix (High)**: Hardened `guard_file_extension` against null bytes (`\x00`) and trailing whitespace/dots bypasses (PR #619).
@@ -556,7 +584,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...HEAD
+[0.4.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.1...v0.4.2
