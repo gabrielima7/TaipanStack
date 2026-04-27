@@ -233,7 +233,7 @@ def timeout(
                 and threading.current_thread() is threading.main_thread()
             )
 
-            if can_use_signal:  # pragma: no cover
+            if can_use_signal:
                 return _timeout_with_signal(
                     func,
                     seconds,
@@ -252,7 +252,7 @@ def timeout(
     return decorator
 
 
-def _timeout_with_signal(  # pragma: no cover
+def _timeout_with_signal(
     func: Callable[..., R],
     seconds: float,
     args: tuple[object, ...],

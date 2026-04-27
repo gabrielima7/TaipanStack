@@ -27,12 +27,12 @@ class CircuitBreakerDecorator(Protocol):
     """Protocol for the circuit breaker decorator."""
 
     @overload
-    def __call__(self, func: Callable[P, R]) -> Callable[P, R]: ...  # pragma: no cover
+    def __call__(self, func: Callable[P, R]) -> Callable[P, R]: ...
 
     @overload
     def __call__(
         self, func: Callable[P, Awaitable[R]]
-    ) -> Callable[P, Awaitable[R]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[R]]: ...
 
 
 logger = logging.getLogger("taipanstack.resilience.circuit_breaker")
@@ -42,7 +42,7 @@ try:
 
     _structlog_logger = _structlog.get_logger("taipanstack.resilience.circuit_breaker")
     _HAS_STRUCTLOG = True
-except ImportError:  # pragma: no cover — structlog is optional
+except ImportError:
     _structlog_logger = None
     _HAS_STRUCTLOG = False
 
@@ -270,7 +270,7 @@ class CircuitBreaker:
                         return True
                     return False
 
-        return False  # pragma: no cover — unreachable, satisfies type checker
+        return False
 
     def _record_success(self) -> None:
         """Record a successful call."""
