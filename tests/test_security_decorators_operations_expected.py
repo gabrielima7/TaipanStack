@@ -300,3 +300,44 @@ class TestRequireType:
 
         with pytest.raises(TypeError):
             add("1", 2)
+
+
+class TestWindowsSignalCoverage:
+    def test_security_decorators_windows_signal_coverage_expected(self) -> None:
+        """Mock Unix signal behavior to get coverage on Windows for _timeout_with_signal."""
+        from unittest.mock import MagicMock, patch
+
+        import pytest
+
+        from taipanstack.security import decorators
+
+        mock_signal = MagicMock()
+        mock_signal.SIGALRM = 14
+        mock_signal.ITIMER_REAL = 0
+
+        def mock_setitimer(which, seconds):
+            pass
+
+        mock_signal.setitimer = mock_setitimer
+
+        with patch.object(decorators, "signal", mock_signal, create=True):
+            result = decorators._timeout_with_signal(lambda: "success", 1.0, (), {})
+            assert result == "success"
+
+        def failing_func():
+            handler = mock_signal.signal.call_args[0][1]
+            handler(14, None)
+
+        with patch.object(decorators, "signal", mock_signal, create=True):
+            with pytest.raises(decorators.OperationTimeoutError):
+                decorators._timeout_with_signal(failing_func, 1.0, (), {})
+
+        # To hit `if can_use_signal` we mock sys.platform to linux
+        with patch("sys.platform", "linux"):
+            with patch.object(decorators, "signal", mock_signal, create=True):
+
+                @decorators.timeout(1.0, use_signal=True)
+                def dummy():
+                    return "ok"
+
+                assert dummy() == "ok"

@@ -306,3 +306,39 @@ def test_bridge_db_db_bridge_import_error_coverage_expected() -> None:
         else:
             sys.modules.pop("redis", None)
         importlib.reload(db_mod)
+
+
+def test_bridge_db_success_coverage_expected():
+    import importlib
+    import sys
+    from unittest.mock import MagicMock
+
+    # Save original modules
+    original_db_bridge = sys.modules.get("taipanstack.bridges.db_bridge")
+
+    # Fake successful import
+    sys.modules["sqlalchemy"] = MagicMock()
+    sys.modules["sqlalchemy.ext"] = MagicMock()
+    sys.modules["sqlalchemy.ext.asyncio"] = MagicMock()
+
+    sys.modules["redis"] = MagicMock()
+    sys.modules["redis.asyncio"] = MagicMock()
+
+    try:
+        from taipanstack.bridges import db_bridge
+
+        importlib.reload(db_bridge)
+
+        assert db_bridge._HAS_SQLALCHEMY is True
+        assert db_bridge._HAS_REDIS is True
+    finally:
+        # Cleanup
+        sys.modules.pop("sqlalchemy", None)
+        sys.modules.pop("sqlalchemy.ext", None)
+        sys.modules.pop("sqlalchemy.ext.asyncio", None)
+        sys.modules.pop("redis", None)
+        sys.modules.pop("redis.asyncio", None)
+
+        if original_db_bridge:
+            sys.modules["taipanstack.bridges.db_bridge"] = original_db_bridge
+        importlib.reload(db_bridge)
