@@ -1,8 +1,12 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from taipanstack.security.sanitizers import sanitize_env_value, sanitize_sql_identifier
+from taipanstack.security.sanitizers import (
+    sanitize_env_value,
+    sanitize_path,
+    sanitize_sql_identifier,
+)
 
 
 @given(
@@ -35,3 +39,30 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_sql_identifier_invalid_types_expect
 ):
     with pytest.raises(TypeError, match="identifier must be str, got"):
         sanitize_sql_identifier(value)
+
+
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings_expected() -> None:
+    """Fuzz sanitize_path with massive strings to ensure DoS protection limits are active."""
+    massive_path = "a/" * 5000
+    with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
+        sanitize_path(massive_path)
+
+
+@settings(
+    suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large, HealthCheck.too_slow],
+    max_examples=5,
+    deadline=None,
+)
+@given(
+    st.text(
+        alphabet=st.characters(
+            blacklist_characters=["/"]
+        ),
+        min_size=4097,
+        max_size=5000,
+    )
+)
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis_expected(path: str) -> None:
+    # Use standard fuzzer to confirm property
+    with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
+        sanitize_path(path)
