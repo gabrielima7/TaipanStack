@@ -259,6 +259,11 @@ class CircuitBreaker:
                     return self._handle_open_state()
 
                 case CircuitState.HALF_OPEN:
+                    # Protect against NaN/Inf state corruption
+                    if not math.isfinite(self._state.half_open_attempts):
+                        # Block attempt to prevent thundering herd when corrupted
+                        return False
+
                     # Allow limited attempts to prevent thundering herd
                     if self._state.half_open_attempts < self.config.success_threshold:
                         self._state.half_open_attempts += 1
@@ -272,7 +277,10 @@ class CircuitBreaker:
         with self._state.lock:
             match self._state.state:
                 case CircuitState.HALF_OPEN:
+                    if not math.isfinite(self._state.success_count):
+                        self._state.success_count = 0
                     self._state.success_count += 1
+
                     if self._state.success_count >= self.config.success_threshold:
                         self._state.state = CircuitState.CLOSED
                         self._state.failure_count = 0
@@ -300,9 +308,8 @@ class CircuitBreaker:
         self._state.state = CircuitState.OPEN
         self._state.half_open_attempts = 0
         logger.warning(
-            "Circuit %s reopened after failure in half-open (total failures=%d)",
+            "Circuit %s reopened after failure in half-open",
             self.name,
-            self._state.failure_count,
         )
         self._notify_state_change(
             CircuitState.HALF_OPEN,
@@ -311,6 +318,19 @@ class CircuitBreaker:
 
     def _handle_failure_closed(self) -> None:
         """Handle failure when in CLOSED state."""
+        # Check against corrupted NaN/Inf failure_count
+        if not math.isfinite(self._state.failure_count):
+            self._state.state = CircuitState.OPEN
+            logger.warning(
+                "Circuit %s opened due to state corruption (NaN/Inf failures)",
+                self.name,
+            )
+            self._notify_state_change(
+                CircuitState.CLOSED,
+                CircuitState.OPEN,
+            )
+            return
+
         if self._state.failure_count >= self.config.failure_threshold:
             self._state.state = CircuitState.OPEN
             logger.warning(
@@ -331,7 +351,13 @@ class CircuitBreaker:
             return
 
         with self._state.lock:
-            self._state.failure_count += 1
+            # First handle corruption
+            if not math.isfinite(self._state.failure_count):
+                # `_handle_failure_closed` will open it
+                pass
+            else:
+                self._state.failure_count += 1
+
             now = time.monotonic()
             if math.isfinite(now):
                 self._state.last_failure_time = now
