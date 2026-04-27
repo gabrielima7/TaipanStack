@@ -41,17 +41,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	# CVE-2026-3219: affects pip 26.0.1 (confused install via concatenated tar+ZIP).
-	# No fix version available on PyPI yet (fix expected in pip>=26.1).
-	# Ignored explicitly pending upstream patch. Monitor: https://github.com/pypa/pip/issues
-	#
-	# PYSEC-2022-42969: affects py 1.11.0 (ReDoS via svn blame). Transitive dep of pytest.
-	# No fix version available upstream. Local attack vector only. Low real-world risk.
-	# Monitor: https://github.com/pytest-dev/py/issues
-	poetry run pip-audit \
-		--skip-editable \
-		--ignore-vuln CVE-2026-3219 \
-		--ignore-vuln PYSEC-2022-42969
+	poetry run pip-audit --skip-editable
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."

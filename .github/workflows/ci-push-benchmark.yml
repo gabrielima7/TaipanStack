@@ -30,7 +30,7 @@ jobs:
       - name: "[Setup] Checkout code"
         uses: actions/checkout@v6
 
-      - name: "[Misc] Set up Python"
+      - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
