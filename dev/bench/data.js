@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1777314804955,
+  "lastUpdate": 1777314979371,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -26427,6 +26427,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.00027463103403878547",
             "extra": "mean: 10.040977637082682 usec\nrounds: 16009"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c76e939479e24f1c9b50a1802bf2d9d339742c7f",
+          "message": "test: Genuine 100% test coverage without pragma bypasses (#636)\n\n* test: ensure 100% genuine test coverage\n\n- Removed all forbidden `# pragma: no cover` directives from the codebase (`src/taipanstack/**/*.py`) to expose hidden coverage gaps.\n- Identified genuine coverage gaps in the optional module fallback paths (e.g. `ImportError` blocks) in `db_bridge.py` and `http_bridge.py`.\n- Wrote robust tests utilizing `unittest.mock.patch` on `sys.modules` and `importlib.reload()` to simulate both the presence and absence of optional dependencies (`sqlalchemy`, `redis`, `httpx`).\n- Executed the full test suite (`poetry run pytest`) to ensure tests are stable and no regressions were introduced.\n- Verified absolute 100% line and branch test coverage across the entire project structure natively.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: resolve compat.py missing coverage for PY313 branching\n\n- Added mocked tests to specifically cover `PY313` flag execution paths on all python versions avoiding dropping coverage under `<3.13` or `>=3.13`.\n- Ran `ruff format` and `ruff check --fix` to address formatting errors identified during GitHub actions.\n- Achieved strict 100% genuine test coverage dynamically across matrix.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: resolve decorators.py missing coverage for Windows OS-specific signal branching\n\n- Added mocked tests to specifically cover `use_signal=True` branching in `taipanstack/security/decorators.py` on all operating systems (e.g. Windows where `can_use_signal` is `False`).\n- Restructured newly added functions into test classes and properly addressed indentation formatting using `ruff format` and python text modification.\n- Achieved strict 100% genuine line and branch coverage dynamically across OS matrix combinations (Windows, macOS, Ubuntu).\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-04-27T18:33:04Z",
+          "tree_id": "4991143c15009b5bff8220a97659a4fb582663bd",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/c76e939479e24f1c9b50a1802bf2d9d339742c7f"
+        },
+        "date": 1777314979044,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_simple_expected",
+            "value": 929896.6924953471,
+            "unit": "iter/sec",
+            "range": "stddev: 3.3714068098799733e-7",
+            "extra": "mean: 1.0753882749238877 usec\nrounds: 75104"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_xss_expected",
+            "value": 659333.940512593,
+            "unit": "iter/sec",
+            "range": "stddev: 4.347284903402197e-7",
+            "extra": "mean: 1.5166821219950537 usec\nrounds: 139607"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_string_unicode_expected",
+            "value": 432504.46917349315,
+            "unit": "iter/sec",
+            "range": "stddev: 5.159310291207253e-7",
+            "extra": "mean: 2.3121148364338957 usec\nrounds: 127146"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_filename_complex_expected",
+            "value": 262155.6494888285,
+            "unit": "iter/sec",
+            "range": "stddev: 8.022422085332983e-7",
+            "extra": "mean: 3.81452775078423 usec\nrounds: 45368"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_filename_long_expected",
+            "value": 213091.75536299663,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000001088883231717301",
+            "extra": "mean: 4.692814127400304 usec\nrounds: 70742"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_path_nested_expected",
+            "value": 64374.05753181727,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000002467487412198642",
+            "extra": "mean: 15.534208007717144 usec\nrounds: 17533"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_path_traversal_expected",
+            "value": 86702.70148359395,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000010056380738901542",
+            "extra": "mean: 11.533665997583961 usec\nrounds: 30395"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_env_value_standard_expected",
+            "value": 4115709.812696243,
+            "unit": "iter/sec",
+            "range": "stddev: 3.8062260337398916e-8",
+            "extra": "mean: 242.97145462372356 nsec\nrounds: 129972"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_env_value_large_expected",
+            "value": 2330493.137861836,
+            "unit": "iter/sec",
+            "range": "stddev: 5.7824122311521593e-8",
+            "extra": "mean: 429.09373289015815 nsec\nrounds: 103756"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_sql_identifier_expected",
+            "value": 5635283.459609977,
+            "unit": "iter/sec",
+            "range": "stddev: 3.345469070450028e-8",
+            "extra": "mean: 177.45336275758325 nsec\nrounds: 160746"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_sanitize_sql_identifier_dirty_expected",
+            "value": 716388.8202442295,
+            "unit": "iter/sec",
+            "range": "stddev: 3.9702005376290905e-7",
+            "extra": "mean: 1.3958900135530905 usec\nrounds: 33986"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_safe_decorator_ok_expected",
+            "value": 3030721.0880026035,
+            "unit": "iter/sec",
+            "range": "stddev: 4.393076655034006e-8",
+            "extra": "mean: 329.95447979643603 nsec\nrounds: 120251"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_safe_decorator_err_expected",
+            "value": 1128127.6541690766,
+            "unit": "iter/sec",
+            "range": "stddev: 3.2371940539171134e-7",
+            "extra": "mean: 886.4245072837531 nsec\nrounds: 164963"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_collect_results_100_expected",
+            "value": 135706.4382593673,
+            "unit": "iter/sec",
+            "range": "stddev: 9.30876574641623e-7",
+            "extra": "mean: 7.368847144074048 usec\nrounds: 80167"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_unwrap_or_expected",
+            "value": 12905772.608110953,
+            "unit": "iter/sec",
+            "range": "stddev: 1.0303340565717432e-8",
+            "extra": "mean: 77.484706291148 nsec\nrounds: 129635"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_guard_ssrf_public_expected",
+            "value": 75338.03105116134,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003847196949288672",
+            "extra": "mean: 13.27350855932125 usec\nrounds: 9171"
+          },
+          {
+            "name": "tests/test_benchmarks_operations_expected.py::test_benchmarks_bench_guard_ssrf_private_expected",
+            "value": 86013.20197257247,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003264376114939086",
+            "extra": "mean: 11.626122235501429 usec\nrounds: 14243"
           }
         ]
       }
