@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "[Misc] Set up Python"
+      - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -58,7 +58,7 @@ jobs:
       - name: "[Build] Build documentation"
         run: poetry run mkdocs build
 
-      - name: "[Misc] Download coverage HTML report from latest CI"
+      - name: "[Setup] Download coverage HTML report from latest CI"
         uses: dawidd6/action-download-artifact@v20
         with:
           name: "[Artifact] HTML Coverage"
