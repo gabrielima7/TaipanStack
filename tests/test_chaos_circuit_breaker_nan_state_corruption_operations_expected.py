@@ -47,7 +47,9 @@ def test_chaos_circuit_breaker_nan_state_corruption_expected():
 
     # _should_attempt should return False to prevent thundering herd when corrupted
     assert breaker._should_attempt() is False
-    assert math.isfinite(breaker._state.half_open_attempts) or breaker._state.half_open_attempts == float("inf")
+    assert math.isfinite(
+        breaker._state.half_open_attempts
+    ) or breaker._state.half_open_attempts == float("inf")
 
     # Chaos: Corrupt half_open_attempts to NaN
     breaker._state.state = CircuitState.HALF_OPEN
