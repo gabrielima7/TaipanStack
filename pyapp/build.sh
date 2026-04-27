@@ -7,7 +7,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Configuration
 export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
-export PYAPP_PROJECT_VERSION="0.4.3"
+export PYAPP_PROJECT_VERSION="0.4.4"
 export PYAPP_PROJECT_PATH="$PROJECT_ROOT"
 export PYAPP_PYTHON_VERSION="3.11"
 export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
