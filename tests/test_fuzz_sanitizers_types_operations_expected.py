@@ -49,20 +49,37 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings_expected() -> 
 
 
 @settings(
-    suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large, HealthCheck.too_slow],
+    suppress_health_check=[
+        HealthCheck.large_base_example,
+        HealthCheck.data_too_large,
+        HealthCheck.too_slow,
+    ],
     max_examples=5,
     deadline=None,
 )
 @given(
     st.text(
-        alphabet=st.characters(
-            blacklist_characters=["/"]
-        ),
+        alphabet=st.characters(blacklist_characters=["/"]),
         min_size=4097,
         max_size=5000,
     )
 )
-def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis_expected(path: str) -> None:
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis_expected(
+    path: str,
+) -> None:
     # Use standard fuzzer to confirm property
     with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
         sanitize_path(path)
+
+
+from pathlib import Path
+
+
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object_expected() -> (
+    None
+):
+    """Ensure DoS protection limits are active when passing massive Path objects."""
+    massive_path_str = "a" * 5000
+    massive_path_obj = Path(massive_path_str)
+    with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
+        sanitize_path(massive_path_obj)
