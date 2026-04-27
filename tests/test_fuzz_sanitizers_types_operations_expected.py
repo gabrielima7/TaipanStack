@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -70,9 +72,6 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis_expected(
     # Use standard fuzzer to confirm property
     with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
         sanitize_path(path)
-
-
-from pathlib import Path
 
 
 def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object_expected() -> (
