@@ -1,6 +1,9 @@
 import pytest
-from hypothesis import given, settings, HealthCheck, strategies as st
-from taipanstack.security.guards import guard_command_injection, SecurityError
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
+
+from taipanstack.security.guards import SecurityError, guard_command_injection
+
 
 @settings(
     max_examples=500,
@@ -9,8 +12,7 @@ from taipanstack.security.guards import guard_command_injection, SecurityError
 @given(st.lists(st.text()))
 def test_fuzz_guard_command_generator(cmd_list):
     def gen():
-        for c in cmd_list:
-            yield c
+        yield from cmd_list
 
     try:
         guard_command_injection(gen())
@@ -20,9 +22,9 @@ def test_fuzz_guard_command_generator(cmd_list):
         if not isinstance(e, (ValueError, TypeError)):
             pytest.fail(f"Unexpected exception: {e}")
 
-def test_guard_command_empty_generator():
+def test_guard_command_empty_generator_expected():
     def empty_gen():
-        if False: yield 1
+        yield from ()
 
     with pytest.raises(SecurityError, match="Empty command is not allowed"):
         guard_command_injection(empty_gen())
