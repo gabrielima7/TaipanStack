@@ -85,7 +85,6 @@ class AdaptiveRetry:
         """
         self._min_delay = min_delay
         self._max_delay = max_delay
-        self._window_size = window_size
         self._max_attempts = max_attempts
         self._lock = threading.Lock()
 
