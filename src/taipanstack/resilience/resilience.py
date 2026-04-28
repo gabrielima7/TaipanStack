@@ -183,6 +183,10 @@ def timeout(seconds: float) -> TimeoutDecorator:
                 thread.join(timeout=seconds)
             except RuntimeError as e:
                 return Err(cast(E, RuntimeError(f"Thread exhaustion: {e!s}")))
+            except OSError as e:
+                return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
+            except MemoryError as e:
+                return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
 
             if thread.is_alive():
                 return Err(
