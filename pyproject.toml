@@ -29,6 +29,7 @@ dependencies = [
     "result (>=0.17.0)",
     "pyjwt (>=2.11.0,<3.0.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
+    "pip (>=26.1,<27.0)",
 ]
 
 [project.urls]
@@ -104,16 +105,6 @@ dev = [
     # CVSS 1.9/10 Low - local attack vector only, no upstream patch available yet
     # Pinned to latest available; monitor for upstream fix in pygments >2.19.2
     "pygments (>=2.19.2)",
-    # Security note: CVE-2026-3219 affects pip 26.0.1 (confused install via concatenated tar+ZIP).
-    # CVSS Moderate - no pip fix published yet (expected in pip>=26.1).
-    # pip-audit ignores this CVE explicitly via --ignore-vuln in CI and Makefile.
-    # Monitor: https://github.com/pypa/pip/issues — Remove ignore once pip>=26.1 is available.
-    #
-    # Security note: PYSEC-2022-42969 affects py 1.11.0 (ReDoS via svn blame parsing).
-    # py is a transitive dependency of pytest with no upstream fix version published.
-    # Attack vector is local (requires attacker-controlled SVN output). Low real-world risk.
-    # pip-audit ignores this via --ignore-vuln in CI and Makefile.
-    # Monitor: https://github.com/pytest-dev/py/issues — Remove ignore if fix is published.
     "hypothesis (>=6.151.12,<7.0.0)",
     "authlib (>=1.6.11,<2.0.0)",
     "cryptography (>=46.0.7,<47.0.0)",
