@@ -3,10 +3,14 @@
 import json
 import re
 from collections.abc import Callable, Iterator
-from typing import Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
-from pydantic.main import IncEx
+
+if TYPE_CHECKING:
+    from pydantic.main import IncEx
+else:
+    IncEx: TypeAlias = set[int] | set[str] | dict[int, object] | dict[str, object]
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 
