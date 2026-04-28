@@ -9,10 +9,14 @@ def test_timeout_thread_oserror_chaos():
     def dummy_task():
         return Ok("success")
 
-    with patch("threading.Thread.start", side_effect=OSError("Resource temporarily unavailable")):
+    with patch(
+        "threading.Thread.start",
+        side_effect=OSError("Resource temporarily unavailable"),
+    ):
         result = dummy_task()
         assert isinstance(result, Err)
         assert "Resource exhaustion" in str(result.unwrap_err())
+
 
 def test_timeout_thread_memoryerror_chaos():
     @timeout(1.0)
