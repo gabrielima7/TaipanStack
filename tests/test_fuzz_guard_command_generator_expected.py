@@ -7,10 +7,10 @@ from taipanstack.security.guards import SecurityError, guard_command_injection
 
 @settings(
     max_examples=500,
-    suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large]
+    suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
 )
 @given(st.lists(st.text()))
-def test_fuzz_guard_command_generator(cmd_list):
+def test_fuzz_guard_command_generator_expected(cmd_list):
     def gen():
         yield from cmd_list
 
@@ -21,6 +21,7 @@ def test_fuzz_guard_command_generator(cmd_list):
     except Exception as e:
         if not isinstance(e, (ValueError, TypeError)):
             pytest.fail(f"Unexpected exception: {e}")
+
 
 def test_guard_command_empty_generator_expected():
     def empty_gen():
