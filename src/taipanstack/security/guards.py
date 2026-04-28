@@ -310,9 +310,9 @@ def guard_command_injection(
         SecurityError: [command_injection] Dangerous characters detected
 
     """
-    _check_command_not_empty(command)
-
     cmd_list = list(command)
+
+    _check_command_not_empty(cmd_list)
 
     _check_command_null_bytes(cmd_list)
     _check_command_patterns(cmd_list)
