@@ -76,7 +76,6 @@ class AdaptiveCircuitBreaker:
     ) -> None:
         """Initialize the adaptive circuit breaker."""
         self.name = name
-        self._window_size = window_size
         self._min_throughput = min_throughput
         self._target_error_rate = target_error_rate
         if not math.isfinite(recovery_timeout) or recovery_timeout < 0:
