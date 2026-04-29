@@ -728,17 +728,17 @@ def test_guard_file_extension_exception():
 
 def test_sanitize_path_part_empty_or_dot_dot():
     res = sanitize_path("a/./b")
-    assert str(res) == "a/b"
+    assert str(res).replace("\\", "/") == "a/b"
 
 
 def test_sanitize_path_part_empty_or_dot_dot_2():
     res = sanitize_path("a/..b/c")
-    assert str(res) == "a/..b/c"
+    assert str(res).replace("\\", "/") == "a/..b/c"
 
 
 def test_sanitize_path_part_empty_or_dot_dot_3():
     res = sanitize_path("a/../b")
-    assert str(res) == "b"
+    assert str(res).replace("\\", "/") == "b"
 
 
 def test_sanitize_path_null_byte():
