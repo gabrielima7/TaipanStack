@@ -6,7 +6,6 @@ from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
 
 
 class TestRateLimiter:
-
     def test_utils_rate_limit_chaos_inf_time_window_return(self) -> None:
         with pytest.raises(ValueError):
             RateLimiter(10, float("inf"))
@@ -47,6 +46,7 @@ class TestRateLimiter:
 
     def test_utils_rate_limit_chaos_consume_nan_now(self) -> None:
         import time
+
         limiter = RateLimiter(10, 1.0)
         old_mono = time.monotonic
         time.monotonic = lambda: float("nan")
@@ -57,13 +57,17 @@ class TestRateLimiter:
         finally:
             time.monotonic = old_mono
 
-    def test_utils_rate_limit_chaos_consume_adds_tokens_corrupted_new_tokens(self) -> None:
+    def test_utils_rate_limit_chaos_consume_adds_tokens_corrupted_new_tokens(
+        self,
+    ) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.tokens = 0
         limiter.last_update = -1e308
         assert not limiter.consume()
 
-    def test_utils_rate_limit_chaos_consume_adds_tokens_corrupted_tokens_sum(self) -> None:
+    def test_utils_rate_limit_chaos_consume_adds_tokens_corrupted_tokens_sum(
+        self,
+    ) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.tokens = float("nan")
         assert not limiter.consume()
