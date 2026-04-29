@@ -77,10 +77,21 @@ class RateLimiter:
         if not math.isfinite(self.capacity) or self.capacity <= 0.0:
             return False
 
+        # Prevent infinite or NaN tokens by checking elapsed time calculations
+        if not math.isfinite(elapsed):
+            return False
+
         # Add tokens for elapsed time based on fill rate
-        self.tokens += elapsed * (self.capacity / self.time_window)
+        new_tokens = elapsed * (self.capacity / self.time_window)
+
+        if not math.isfinite(new_tokens):
+            return False
+
+        self.tokens += new_tokens
 
         if not math.isfinite(self.tokens):
+            # Reset to previous state or capacity if corrupted
+            self.tokens = self.capacity
             return False
 
         self.tokens = min(self.tokens, self.capacity)
