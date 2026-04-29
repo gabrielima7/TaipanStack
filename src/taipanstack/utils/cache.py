@@ -37,18 +37,23 @@ class CacheDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
-def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
+def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
     """Cache the Ok() results of a function for a given TTL.
 
     Err() results are not cached. Supports both async and sync functions.
+    Implements LRU (Least Recently Used) eviction when max_size is reached.
 
     Args:
         ttl: Time to live in seconds.
+        max_size: Maximum number of elements to store in the cache.
 
     Returns:
         Decorator function.
 
     """
+    if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
+        raise ValueError("max_size must be a positive integer")
+
     _cache: CacheDict = {}
     _locks: dict[CacheKey, asyncio.Lock] = {}
     _lock_waiters: dict[CacheKey, int] = {}
@@ -74,7 +79,7 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
         )
         return (func_name, hashable_args, hashable_kwargs)
 
-    def decorator(
+    def decorator(  # noqa: PLR0915
         func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
@@ -92,6 +97,8 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
                 if cache_key in _cache:
                     expiry, value = _cache[cache_key]
                     if now < expiry:
+                        # Move to end to mark as recently used
+                        _cache[cache_key] = _cache.pop(cache_key)
                         return Ok(cast(T, value))
 
                 if cache_key not in _locks:
@@ -108,6 +115,8 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
                         if cache_key in _cache:
                             expiry, value = _cache[cache_key]
                             if now < expiry:
+                                # Move to end to mark as recently used
+                                _cache[cache_key] = _cache.pop(cache_key)
                                 return Ok(cast(T, value))
                             del _cache[cache_key]
 
@@ -116,6 +125,10 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
 
                         match result:
                             case Ok(value):
+                                if len(_cache) >= max_size:
+                                    # Evict least recently used (first item)
+                                    lru_key = next(iter(_cache))
+                                    del _cache[lru_key]
                                 _cache[cache_key] = (now + ttl, value)
                             case Err(_):
                                 pass
@@ -141,6 +154,8 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
             if cache_key in _cache:
                 expiry, value = _cache[cache_key]
                 if now < expiry:
+                    # Move to end to mark as recently used
+                    _cache[cache_key] = _cache.pop(cache_key)
                     return Ok(cast(T, value))
                 del _cache[cache_key]
 
@@ -149,6 +164,10 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
 
             match result:
                 case Ok(value):
+                    if len(_cache) >= max_size:
+                        # Evict least recently used (first item)
+                        lru_key = next(iter(_cache))
+                        del _cache[lru_key]
                     _cache[cache_key] = (now + ttl, value)
                 case Err(_):
                     pass
