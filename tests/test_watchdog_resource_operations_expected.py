@@ -333,7 +333,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> 
         # Test the start error branch where psutil is not available
         watcher = res_mod.ResourceWatcher()
 
-        async def test_run():
+        async def mock_run_test():
             result = await watcher.start()
             assert isinstance(result, Err)
             # To test the unhandled _run case, we manually toggle _is_running
@@ -344,7 +344,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> 
             res = res_mod.check_resources()
             assert isinstance(res, Err)
 
-        asyncio.run(test_run())
+        asyncio.run(mock_run_test())
     finally:
         if original_psutil is not None:
             sys.modules["psutil"] = original_psutil

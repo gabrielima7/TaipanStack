@@ -17,7 +17,7 @@ def test_fuzz_guard_command_generator_expected(cmd_list):
     try:
         guard_command_injection(gen())
     except SecurityError:
-        pass  # Expected for invalid commands or empty commands
+        return None  # Expected for invalid commands or empty commands
     except Exception as e:
         if not isinstance(e, (ValueError, TypeError)):
             pytest.fail(f"Unexpected exception: {e}")

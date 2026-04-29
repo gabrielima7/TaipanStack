@@ -121,7 +121,7 @@ omit = ["*/tests/*", "*/__pycache__/*"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
+
     "def __repr__",
     "raise NotImplementedError",
     "if TYPE_CHECKING:",

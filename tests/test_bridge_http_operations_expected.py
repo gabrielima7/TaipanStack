@@ -333,7 +333,7 @@ class TestSafeHttpClient:
                     assert True
 
     @pytest.mark.asyncio
-    async def test_lifecycle_expected(self) -> None:
+    async def test_bridge_http_lifecycle_events_expected(self) -> None:
         """Client opens and closes properly."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 

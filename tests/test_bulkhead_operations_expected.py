@@ -95,7 +95,7 @@ class TestBulkhead:
             await t2
 
     @pytest.mark.asyncio
-    async def test_timeout_expected(self) -> None:
+    async def test_bulkhead_timeout_raises_err_expected(self) -> None:
         """Returns Err on permit acquisition timeout."""
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.05)
 

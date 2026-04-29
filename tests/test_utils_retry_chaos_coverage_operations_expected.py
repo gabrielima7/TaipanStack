@@ -37,7 +37,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_expected() -> Non
     assert delay == 0.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected_2(
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_2_expected(
     monkeypatch,
 ) -> None:
     # Test line 134 -> 140 where math.isfinite(jitter_amount) is False
