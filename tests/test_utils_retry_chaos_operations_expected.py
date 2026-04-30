@@ -60,7 +60,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan_expected() -> Non
     assert delay == 0.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected_2() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2_expected() -> None:
     # Test line 134-140. Jitter exception.
     import pytest
 
