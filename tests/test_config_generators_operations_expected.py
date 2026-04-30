@@ -1,10 +1,11 @@
 """Tests for configuration generators."""
 
 from taipanstack.config.generators import (
+    generate_pre_commit_config,
     generate_pyproject_config,
     generate_security_policy,
 )
-from taipanstack.config.models import StackConfig
+from taipanstack.config.models import SecurityConfig, StackConfig
 
 
 class TestGeneratePyprojectConfig:
@@ -54,3 +55,41 @@ class TestGenerateSecurityPolicy:
         result = generate_security_policy()
 
         assert "version" in result.lower()
+
+
+class TestGeneratePreCommitConfig:
+    """Tests for generate_pre_commit_config."""
+
+    def test_config_generators_pre_commit_all_security_hooks_expected(self) -> None:
+        """Test with all security hooks enabled."""
+        config = StackConfig(
+            project_name="test-project",
+            security=SecurityConfig(
+                level="strict",
+                enable_bandit=True,
+                bandit_severity="high",
+                enable_safety=True,
+                enable_semgrep=True,
+                enable_detect_secrets=True,
+            ),
+        )
+        result = generate_pre_commit_config(config)
+        assert "repo: https://github.com/PyCQA/bandit" in result
+        assert "-lH" in result
+        assert "repo: https://github.com/pyupio/safety" in result
+        assert "repo: https://github.com/semgrep/pre-commit" in result
+        assert "repo: https://github.com/Yelp/detect-secrets" in result
+        assert "repo: https://github.com/trailofbits/pip-audit" not in result
+
+    def test_config_generators_pre_commit_paranoid_expected(self) -> None:
+        """Test paranoid mode adds extra hooks."""
+        config = StackConfig(
+            project_name="test-project",
+            security=SecurityConfig(
+                level="paranoid",
+            ),
+        )
+        result = generate_pre_commit_config(config)
+        assert "repo: https://github.com/trailofbits/pip-audit" in result
+        assert "repo: https://github.com/jendrikseipp/vulture" in result
+        assert "repo: https://github.com/guilatrova/tryceratops" in result

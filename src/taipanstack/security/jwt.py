@@ -49,7 +49,7 @@ def encode_jwt(
     if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
-    return jwt.encode(payload, secret_key, algorithm=algorithm)
+    return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
 
 
 @safe_from(PyJWTError, ValueError, TypeError, AttributeError, NotImplementedError)

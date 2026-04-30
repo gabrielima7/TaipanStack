@@ -420,3 +420,11 @@ class TestSafeFromAsyncDecorator:
 
         with pytest.raises(TypeError):
             await process(5)
+
+
+class TestUnwrapOrErrFallback:
+    """Tests for unwrap_or fallback coverage."""
+
+    def test_unwrap_or_err_branch_expected(self) -> None:
+        result: Result[int, ValueError] = Err(ValueError("err"))
+        assert result.unwrap_or(42) == 42
