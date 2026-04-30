@@ -14,6 +14,21 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
+from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+from taipanstack.security.decorators import (
+    ValidationError,
+    guard_exceptions,
+    require_type,
+    validate_inputs,
+)
+from taipanstack.security.guards import (
+    SecurityError,
+    _check_allowed_extension,
+    guard_file_extension,
+)
+from taipanstack.security.sanitizers import sanitize_path
+
 
 # =============================================================================
 # validators.py — L128-130: non-numeric parts in version string
@@ -95,14 +110,12 @@ class TestSanitizersResolveError:
 
     def test_very_last_sanitize_path_works_expected(self, tmp_path: Path) -> None:
         """Test sanitize_path with valid path."""
-        from taipanstack.security.sanitizers import sanitize_path
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
 
     def test_very_last_sanitize_path_resolve_oserror_expected(self) -> None:
         """Test sanitize_path with resolve=True raising OSError (L241-243)."""
-        from taipanstack.security.sanitizers import sanitize_path
 
         # Use selective mock: first resolve call (base_dir) succeeds,
         # second resolve call (sanitized path) raises OSError
@@ -128,7 +141,6 @@ class TestSanitizersResolveError:
 
     def test_very_last_sanitize_path_resolve_runtime_error_expected(self) -> None:
         """Test sanitize_path with resolve=True raising RuntimeError (L241-243)."""
-        from taipanstack.security.sanitizers import sanitize_path
 
         call_count = 0
         original_resolve = Path.resolve
@@ -619,3 +631,121 @@ class TestCompatPy313FallbackExpected:
 
         with patch.object(compat, "PY313", False):
             assert compat._check_mimalloc_available() is False
+
+
+# =============================================================================
+# Added missing coverage
+# =============================================================================
+
+
+def test_optimizations_coverage_skipped():
+    with (
+        patch("sys.version_info", (3, 11)),
+        patch("platform.python_implementation", return_value="CPython"),
+    ):
+        profile = OptimizationProfile()
+        res = apply_optimizations(profile=profile)
+        assert res.success
+
+
+def test_circuit_breaker_open_handling():
+    cb = CircuitBreaker()
+    cb._state.state = CircuitState.OPEN
+    cb._record_success()
+    assert cb._state.state == CircuitState.OPEN
+
+    cb._record_failure(Exception("test"))
+    assert cb._state.state == CircuitState.OPEN
+
+
+def test_validate_args_param_missing():
+    @validate_inputs(x=lambda x: x)
+    def my_func(y: int):
+        return y
+
+    assert my_func(y=1) == 1
+
+
+def test_validate_args_no_return():
+    @validate_inputs(x=lambda _x: None)
+    def my_func(x: int):
+        return x
+
+    assert my_func(x=1) == 1
+
+
+def test_validate_args_exception():
+    def failing_validator(x):
+        raise ValueError("fail")
+
+    @validate_inputs(x=failing_validator)
+    def my_func(x: int):
+        return x
+
+    with pytest.raises(ValidationError):
+        my_func(x=1)
+
+
+def test_safe_decorator_log_errors_false():
+    @guard_exceptions(log_errors=False, default=-1)
+    def my_func():
+        raise ValueError("error")
+
+    assert my_func() == -1
+
+
+def test_type_check_param_missing():
+    @require_type(x=int)
+    def my_func(y: int):
+        return y
+
+    assert my_func(y=1) == 1
+
+
+def test_type_check_exception():
+    @require_type(x=int)
+    def my_func(x):
+        return x
+
+    with pytest.raises(TypeError):
+        my_func(x="string")
+
+
+def test_check_allowed_extension_none():
+    _check_allowed_extension(".txt", "file.txt", None)
+    assert True
+
+
+def test_guard_file_extension_none():
+    guard_file_extension("file.txt", allowed_extensions=None)
+    assert True
+
+
+def test_guard_file_extension_exception():
+    with pytest.raises(SecurityError):
+        guard_file_extension("file.txt", allowed_extensions=["pdf"])
+
+
+def test_sanitize_path_part_empty_or_dot_dot():
+    res = sanitize_path("a/./b")
+    assert str(res).replace("\\", "/") == "a/b"
+
+
+def test_sanitize_path_part_empty_or_dot_dot_2():
+    res = sanitize_path("a/..b/c")
+    assert str(res).replace("\\", "/") == "a/..b/c"
+
+
+def test_sanitize_path_part_empty_or_dot_dot_3():
+    res = sanitize_path("a/../b")
+    assert str(res).replace("\\", "/") == "b"
+
+
+def test_sanitize_path_null_byte():
+    res = sanitize_path("a/\x00b")
+    assert "\x00" not in str(res)
+
+
+def test_sanitize_path_absolute():
+    res = sanitize_path("/a/b")
+    assert "a" in str(res) and "b" in str(res)
