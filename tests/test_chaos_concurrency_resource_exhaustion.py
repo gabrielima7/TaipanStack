@@ -1,7 +1,10 @@
-import pytest
 from unittest.mock import patch
-from taipanstack.utils.concurrency import limit_concurrency, OverloadError
-from taipanstack.core.result import Err, Ok
+
+import pytest
+
+from taipanstack.core.result import Err
+from taipanstack.utils.concurrency import OverloadError, limit_concurrency
+
 
 def test_sync_concurrency_memoryerror_chaos():
     @limit_concurrency(max_tasks=1)
