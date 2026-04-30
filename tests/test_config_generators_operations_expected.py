@@ -56,6 +56,7 @@ class TestGenerateSecurityPolicy:
 
         assert "version" in result.lower()
 
+
 class TestGeneratePreCommitConfig:
     """Tests for generate_pre_commit_config."""
 
@@ -70,7 +71,7 @@ class TestGeneratePreCommitConfig:
                 enable_safety=True,
                 enable_semgrep=True,
                 enable_detect_secrets=True,
-            )
+            ),
         )
         result = generate_pre_commit_config(config)
         assert "repo: https://github.com/PyCQA/bandit" in result
@@ -86,7 +87,7 @@ class TestGeneratePreCommitConfig:
             project_name="test-project",
             security=SecurityConfig(
                 level="paranoid",
-            )
+            ),
         )
         result = generate_pre_commit_config(config)
         assert "repo: https://github.com/trailofbits/pip-audit" in result
