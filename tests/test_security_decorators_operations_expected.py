@@ -316,7 +316,7 @@ class TestWindowsSignalCoverage:
         mock_signal.ITIMER_REAL = 0
 
         def mock_setitimer(which, seconds):
-            pass
+            return None
 
         mock_signal.setitimer = mock_setitimer
 
