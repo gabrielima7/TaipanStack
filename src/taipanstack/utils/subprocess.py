@@ -152,6 +152,7 @@ def _get_allowed_keys(allowed_env_vars: Sequence[str] | None) -> set[str]:
         return {"PATH"}
     return {k.upper() for k in allowed_env_vars}
 
+
 def _filter_environment(
     env: dict[str, str] | None,
     allowed_env_vars: Sequence[str] | None = None,
@@ -179,6 +180,7 @@ def _handle_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
     if isinstance(e.stdout, str):
         return e.stdout
     return e.stdout.decode("utf-8", errors="replace")
+
 
 def _execute_command(
     validated_cmd: list[str],
@@ -227,6 +229,7 @@ def _validate_timeout(timeout: float | None) -> None:
     if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
         raise ValueError("timeout must be a finite non-negative number")
 
+
 def _resolve_cwd(cwd: Path | str | None) -> Path | None:
     """Resolve working directory."""
     if cwd is None:
@@ -238,6 +241,7 @@ def _resolve_cwd(cwd: Path | str | None) -> Path | None:
             guard_name="safe_command",
         )
     return resolved_cwd
+
 
 def run_safe_command(
     command: Sequence[str],

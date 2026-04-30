@@ -90,6 +90,7 @@ def _get_project_name_pattern(allow_hyphen: bool, allow_underscore: bool) -> str
         allowed += r"_"
     return rf"^[a-zA-Z][{allowed}]*\Z"
 
+
 def _check_project_name_chars(
     name: str, allow_hyphen: bool, allow_underscore: bool
 ) -> None:
@@ -166,6 +167,7 @@ def _check_version_length(version: str) -> None:
         msg = "Version string exceeds maximum length"
         raise ValueError(msg)
 
+
 def _check_version_chars(version: str) -> None:
     """Check version characters for safety."""
     if "\x00" in version or not version.isprintable():
@@ -175,6 +177,7 @@ def _check_version_chars(version: str) -> None:
     if not version.isascii():
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
+
 
 def _check_version_format(version: str) -> None:
     """Check the basic formatting and safety of a version string."""
@@ -236,6 +239,7 @@ def _check_email_length(email: str) -> None:
         msg = "Email length exceeds maximum allowed"
         raise ValueError(msg)
 
+
 def _check_email_chars(email: str) -> None:
     """Check email character validity."""
     if "\x00" in email or not email.isprintable():
@@ -247,6 +251,7 @@ def _check_email_chars(email: str) -> None:
     if not re.match(pattern, email):
         msg = f"Invalid email format: {email}"
         raise ValueError(msg)
+
 
 def _check_email_format(email: str) -> None:
     """Check email format and basic constraints."""
@@ -319,6 +324,7 @@ def _check_url_scheme(
         msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
         raise ValueError(msg)
 
+
 def _check_url_tld(domain: str) -> None:
     """Validate URL TLD."""
     has_no_tld = "." not in domain or domain.endswith(".")
@@ -326,6 +332,7 @@ def _check_url_tld(domain: str) -> None:
     if has_no_tld and not is_localhost:
         msg = f"URL domain must have a TLD: {domain}"
         raise ValueError(msg)
+
 
 def _check_url_domain(
     parsed: urllib.parse.SplitResult,
