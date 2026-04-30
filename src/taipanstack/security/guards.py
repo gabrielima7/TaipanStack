@@ -331,17 +331,18 @@ def _check_filename_null_bytes(filename_str: str) -> None:
 
 
 def _clean_filename_end(clean_name: str) -> str:
-    while clean_name:
-        char = clean_name[-1]
+    end_idx = len(clean_name)
+    while end_idx > 0:
+        char = clean_name[end_idx - 1]
         if (
             char == "."
             or unicodedata.category(char).startswith(("Z", "C"))
             or char == "\xad"
         ):
-            clean_name = clean_name[:-1]
+            end_idx -= 1
         else:
             break
-    return clean_name
+    return clean_name[:end_idx]
 
 
 def _normalize_ext(e: str) -> str:
@@ -398,6 +399,12 @@ def guard_file_extension(
 
     """
     filename_str = str(filename)
+    if len(filename_str) > MAX_URL_LENGTH:  # Reuse constant to avoid PLR2004
+        raise SecurityError(
+            f"Filename length exceeds maximum allowed limit of {MAX_URL_LENGTH}",
+            guard_name="file_extension",
+            value=filename_str[:80],
+        )
     _check_filename_null_bytes(filename_str)
 
     path = Path(filename)
