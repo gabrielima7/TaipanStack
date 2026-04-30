@@ -4,7 +4,7 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.resilience import timeout
 
 
-def test_timeout_thread_oserror_chaos():
+def test_chaos_timeout_resource_exhaustion_thread_oserror_expected():
     @timeout(1.0)
     def dummy_task():
         return Ok("success")
@@ -18,7 +18,7 @@ def test_timeout_thread_oserror_chaos():
         assert "Resource exhaustion" in str(result.unwrap_err())
 
 
-def test_timeout_thread_memoryerror_chaos():
+def test_chaos_timeout_resource_exhaustion_thread_memoryerror_expected():
     @timeout(1.0)
     def dummy_task():
         return Ok("success")

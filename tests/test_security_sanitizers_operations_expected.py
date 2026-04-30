@@ -467,7 +467,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_expected() -> None:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage_expected_no_slash() -> None:
+def test_security_sanitizers_sanitizers_re_error_coverage_no_slash_expected() -> None:
     """Test sanitizers filename validation fallback on re.error with normal replacement."""
     import re
 
