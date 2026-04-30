@@ -7,6 +7,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 
 import re
 import urllib.parse
+from typing import Any
 from urllib.parse import urlsplit
 
 # Constants to avoid magic values (PLR2004)
@@ -38,7 +39,7 @@ PROJECT_NAME_RESERVED = frozenset(
 
 
 def _validate_type(
-    value: object, expected_type: type | tuple[type, ...], name: str
+    value: Any, expected_type: type | tuple[type, ...], name: str
 ) -> None:
     """Validate input type.
 

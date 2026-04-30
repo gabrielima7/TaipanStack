@@ -13,7 +13,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Final
+from typing import Any, Final
 
 __all__ = [
     "PY311",
@@ -231,7 +231,7 @@ class PythonFeatures:
     # Experimental features enabled
     experimental_enabled: bool = False
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "version": ".".join(map(str, self.version)),
@@ -331,7 +331,7 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
     return features
 
 
-def get_python_info() -> dict[str, object]:
+def get_python_info() -> dict[str, Any]:
     """Get comprehensive Python runtime information.
 
     Returns:

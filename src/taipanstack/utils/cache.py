@@ -10,7 +10,7 @@ import functools
 import inspect
 import time
 from collections.abc import Awaitable, Callable
-from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
+from typing import Any, ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Err, Ok, Result
 
@@ -18,7 +18,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
 
-CacheKey: TypeAlias = tuple[object, ...]
+CacheKey: TypeAlias = tuple[Any, ...]
 CacheValue: TypeAlias = tuple[float, object]
 CacheDict: TypeAlias = dict[CacheKey, CacheValue]
 
@@ -54,7 +54,7 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
     _lock_waiters: dict[CacheKey, int] = {}
 
     def get_cache_key(
-        func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
+        func_name: str, args: tuple[Any, ...], kwargs: dict[str, Any]
     ) -> CacheKey:
         def _make_hashable(val: object) -> object:
             match val:
@@ -83,8 +83,8 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
                     func.__name__,
-                    cast(tuple[object, ...], args),
-                    cast(dict[str, object], kwargs),
+                    cast(tuple[Any, ...], args),
+                    cast(dict[str, Any], kwargs),
                 )
 
                 # Check cache before acquiring lock
@@ -133,8 +133,8 @@ def cached(ttl: float) -> CacheDecorator:  # noqa: PLR0915
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             cache_key = get_cache_key(
                 func.__name__,
-                cast(tuple[object, ...], args),
-                cast(dict[str, object], kwargs),
+                cast(tuple[Any, ...], args),
+                cast(dict[str, Any], kwargs),
             )
             now = time.monotonic()
 

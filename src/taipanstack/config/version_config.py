@@ -10,7 +10,7 @@ Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibi
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.compat import (
     PY312,
@@ -71,7 +71,7 @@ class VersionRecommendations:
     # Notes for user
     notes: tuple[str, ...]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "version_tier": self.version_tier.value,

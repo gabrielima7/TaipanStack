@@ -11,6 +11,7 @@ import gc
 import logging
 import os
 from dataclasses import dataclass
+from typing import Any
 
 from taipanstack.core.compat import (
     PY312,
@@ -85,7 +86,7 @@ class OptimizationResult:
     skipped: tuple[str, ...]
     errors: tuple[str, ...]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "success": self.success,

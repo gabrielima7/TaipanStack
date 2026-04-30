@@ -8,7 +8,7 @@ All operations return ``Result`` types.
 
 import secrets
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 if TYPE_CHECKING:
     import jwt
@@ -20,7 +20,7 @@ from taipanstack.core.result import safe_from
 
 __all__ = ["decode_jwt", "encode_jwt"]
 
-JWTPayload: TypeAlias = dict[str, object]
+JWTPayload: TypeAlias = dict[str, Any]
 
 
 @safe_from(PyJWTError, ValueError, TypeError, NotImplementedError)

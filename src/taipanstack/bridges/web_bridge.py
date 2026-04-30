@@ -12,7 +12,7 @@ import json
 import logging
 from collections.abc import Awaitable, Callable, MutableMapping
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.utils.rate_limit import RateLimiter
@@ -22,9 +22,9 @@ logger = logging.getLogger("taipanstack.bridges.web")
 T = TypeVar("T")
 
 # ASGI type aliases
-Scope = MutableMapping[str, object]
-Receive = Callable[[], Awaitable[MutableMapping[str, object]]]
-Send = Callable[[MutableMapping[str, object]], Awaitable[None]]
+Scope = MutableMapping[str, Any]
+Receive = Callable[[], Awaitable[MutableMapping[str, Any]]]
+Send = Callable[[MutableMapping[str, Any]], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
 
@@ -74,7 +74,7 @@ def result_to_response(
     *,
     status_ok: int = 200,
     status_err: int = 500,
-) -> dict[str, object]:
+) -> dict[str, Any]:
     """Convert a ``Result`` to a JSON-friendly response dict.
 
     Args:
@@ -101,7 +101,7 @@ async def _send_json_response(
     send: Send,
     *,
     status: int,
-    body: dict[str, object],
+    body: dict[str, Any],
     extra_headers: list[tuple[bytes, bytes]] | None = None,
 ) -> None:
     """Send a JSON response via ASGI send.
@@ -215,7 +215,7 @@ class TaipanMiddleware:
             original_send = send
             extra_headers = self._headers_config.to_headers()
 
-            async def send_with_headers(message: MutableMapping[str, object]) -> None:
+            async def send_with_headers(message: MutableMapping[str, Any]) -> None:
                 if message.get("type") == "http.response.start":
                     headers = message.get("headers")
                     existing = list(headers) if isinstance(headers, list) else []

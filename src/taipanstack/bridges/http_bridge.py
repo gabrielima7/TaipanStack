@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypedDict, Unpack
 
@@ -38,7 +38,7 @@ class HttpRequestKwargs(TypedDict, total=False):
         | None
     )
     files: dict[str, bytes | tuple[str, bytes]]
-    json: dict[str, object] | list[object] | str | int | float | bool | None
+    json: dict[str, Any] | list[Any] | str | int | float | bool | None
     params: (
         dict[
             str,
@@ -53,7 +53,7 @@ class HttpRequestKwargs(TypedDict, total=False):
     cookies: dict[str, str]
     auth: tuple[str, str]
     follow_redirects: bool
-    extensions: dict[str, object]
+    extensions: dict[str, Any]
 
 
 class HttpClientKwargs(TypedDict, total=False):
@@ -70,7 +70,7 @@ class HttpClientKwargs(TypedDict, total=False):
     mounts: Mapping[str, httpx.AsyncBaseTransport | None]
     follow_redirects: bool
     max_redirects: int
-    event_hooks: dict[str, list[Callable[..., object]]]
+    event_hooks: dict[str, list[Callable[..., Any]]]
     trust_env: bool
     default_encoding: str | Callable[[bytes], str]
 
@@ -341,7 +341,7 @@ class SafeHttpClient:
         self,
         _exc_type: type[BaseException] | None,
         _exc_val: BaseException | None,
-        _exc_tb: object,
+        _exc_tb: Any,
     ) -> None:
         """Exit the async context manager."""
         if self._client is not None:

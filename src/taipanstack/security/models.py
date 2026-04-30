@@ -3,14 +3,14 @@
 import json
 import re
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
     from pydantic.main import IncEx
 else:
-    IncEx: TypeAlias = set[int] | set[str] | dict[int, object] | dict[str, object]
+    IncEx: TypeAlias = set[int] | set[str] | dict[int, Any] | dict[str, Any]
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 
@@ -76,7 +76,7 @@ class SecureBaseModel(BaseModel):
         """Return a string representation with sensitive fields redacted."""
         return self.__repr__()
 
-    def __repr_args__(self) -> Iterator[tuple[str | None, object]]:
+    def __repr_args__(self) -> Iterator[tuple[str | None, Any]]:
         """Provide arguments for string representation, redacting sensitive fields."""
         for k, v in super().__repr_args__():
             if (
@@ -94,7 +94,7 @@ class SecureBaseModel(BaseModel):
         mode: Literal["json", "python"] | str = "python",
         include: IncEx | None = None,
         exclude: IncEx | None = None,
-        context: dict[str, object] | None = None,
+        context: dict[str, Any] | None = None,
         by_alias: bool | None = None,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
@@ -102,10 +102,10 @@ class SecureBaseModel(BaseModel):
         exclude_computed_fields: bool = False,
         round_trip: bool = False,
         warnings: bool | Literal["none", "warn", "error"] = True,
-        fallback: Callable[[object], object] | None = None,
+        fallback: Callable[[Any], Any] | None = None,
         serialize_as_any: bool = False,
         polymorphic_serialization: bool | None = None,
-    ) -> dict[str, object]:
+    ) -> dict[str, Any]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
         Returns:
@@ -128,7 +128,7 @@ class SecureBaseModel(BaseModel):
             serialize_as_any=serialize_as_any,
             polymorphic_serialization=polymorphic_serialization,
         )
-        return cast(dict[str, object], _mask_data(data))
+        return cast(dict[str, Any], _mask_data(data))
 
     def model_dump_json(  # noqa: PLR0913
         self,
@@ -137,7 +137,7 @@ class SecureBaseModel(BaseModel):
         ensure_ascii: bool = False,  # noqa: ARG002
         include: IncEx | None = None,
         exclude: IncEx | None = None,
-        context: dict[str, object] | None = None,
+        context: dict[str, Any] | None = None,
         by_alias: bool | None = None,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
@@ -145,7 +145,7 @@ class SecureBaseModel(BaseModel):
         exclude_computed_fields: bool = False,
         round_trip: bool = False,
         warnings: bool | Literal["none", "warn", "error"] = True,
-        fallback: Callable[[object], object] | None = None,
+        fallback: Callable[[Any], Any] | None = None,
         serialize_as_any: bool = False,
         polymorphic_serialization: bool | None = None,
     ) -> str:
