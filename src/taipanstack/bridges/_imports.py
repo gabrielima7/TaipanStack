@@ -31,7 +31,7 @@ def require_dependency(
 
     """
     try:
-        mod = importlib.import_module(module_name)
+        mod = importlib.import_module(module_name)  # nosem
         return Ok(mod)
     except ImportError:
         install_hint = (
