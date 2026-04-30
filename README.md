@@ -30,12 +30,12 @@
 
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.4.5
-- **100% Genuine Coverage**: Achieved the milestone of **true 100% code coverage** without a single `pragma: no cover` bypass (PR #636).
-- **Security Hardening**: Reinforced `RateLimiter` and `CircuitBreaker` against state corruption and `NaN` poisoning (PR #622, #630).
-- **Strict Typing**: Eliminated remaining `Any` usage and resolved all `type: ignore` directives for a pure strictly-typed codebase (PR #624).
-- **Refactoring**: Significantly reduced cyclomatic complexity across core security and resilience modules.
-- **Total Stack Coverage**: Reached **1,249 passing tests** with true 100% coverage across all core and bridge components.
+### ✨ What's New in v0.4.6
+- **Security Hardening**: Patched TOCTOU, DoS in file extensions, and unbounded cache growth vulnerabilities (PR #651, #658, #646, #640).
+- **100% Real Coverage**: Eliminated all `pragma: no cover` bypasses for true 100% genuine code coverage (PR #644, #654).
+- **CI/CD Zero-Bypass**: Audited and hardened all pipelines to enforce strict zero-bypass execution (PR #643, #653, #639).
+- **Resilience Chaos**: Reinforced `RateLimiter` and `@timeout` against massive time jumps and thread exhaustion (PR #642, #638).
+- **Total Stack Coverage**: Reached **1,290 passing tests** with 100% verified genuine coverage across all modules.
 
 <table>
 <tr>
@@ -73,7 +73,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1253 tests)
+- **100% code coverage** (1290 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -115,7 +115,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1253 tests)
+# Run tests with 100% coverage (1290 tests)
 make test
 
 # Check architecture contracts
@@ -170,7 +170,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1253 tests, 100% coverage
+├── tests/                # ✅ 1290 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
