@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.6] - 2026-04-30
+
+### Security
+- **Fix (Critical)**: Resolved TOCTOU vulnerability in `tempfile.mkstemp` by ensuring atomic creation and strict permissions (PR #651).
+- **Fix (High)**: Patched Denial of Service (DoS) vulnerability in `guard_file_extension` by hardening extension stripping logic (PR #658).
+- **Fix (High)**: Remedied unbounded cache growth DoS in the `@cached` decorator by implementing a bounded cache with LRU (Least Recently Used) eviction policy (PR #646).
+- **Fix (Medium)**: Prevented empty generator bypass in `guard_command_injection` ensuring strict iterator validation (PR #640).
+- **Hardening**: Reinforced `RateLimiter` resilience against massive forward time jumps (NTP syncs/chaos) via monotonic state tracking (PR #642).
+- **Audit**: Resolved global Semgrep security findings and standardized `nosem` exclusions across the core (PR #659).
+
+### Resilience
+- **Hardening**: Hardened the `@timeout` decorator against thread exhaustion in high-concurrency environments (PR #638).
+- **Hardening**: Reinforced the `limit_concurrency` bulkhead pattern against resource exhaustion during extreme load spikes (PR #652).
+
+### Refactoring & Clean Code
+- **Complexity**: Significantly reduced cyclomatic complexity across sanitizers, subprocess utilities, and resilience modules (PR #649).
+- **Coverage**: Achieved the ultimate quality milestone: **true 100% genuine code coverage** by eliminating all remaining `pragma: no cover` bypasses (PR #644, #654).
+- **Typing**: Removed deprecated internal Pydantic `IncEx` imports and modernized type aliases (PR #641).
+- **Adaptive**: Streamlined adaptive resilience components by removing unused `_window_size` attributes (PR #637).
+- **Chore**: Removed unused `ensure_ascii` argument from `model_dump_json` calls to align with Pydantic v2 best practices (PR #660).
+
+### CI/CD & Dependencies
+- **Audit**: Standardized and audited all CI/CD pipelines to enforce zero-bypass execution and restored critical mutation-testing/docker-build jobs (PR #643, #653, #639).
+- **Dependencies**: Upgraded `cryptography` to `>=46.0.7` and bumped the GitHub Actions group to latest versions (PR #647, #648).
+
+### QA & Testing
+- **Test Suite**: Expanded the test suite to **1,290 passing tests** with 100% coverage verified.
+- **Synchronization**: Synchronized test counts and version metadata across all documentation portals (PR #655).
+
 ## [0.4.5] - 2026-04-27
 
 ### Security
@@ -584,7 +613,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...HEAD
+[0.4.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.2...v0.4.3
