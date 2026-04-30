@@ -241,6 +241,30 @@ def _execute_command(
     )
 
 
+def _validate_cwd(cwd: Path | str | None) -> Path | None:
+    """Resolve and validate the working directory."""
+    if cwd is None:
+        return None
+    resolved_cwd = Path(cwd).resolve()
+    if not resolved_cwd.exists():
+        raise SecurityError(
+            f"Working directory does not exist: {cwd}",
+            guard_name="safe_command",
+        )
+    return resolved_cwd
+
+
+def _handle_dry_run(validated_cmd: list[str]) -> SafeCommandResult:
+    """Return a SafeCommandResult for a dry run execution."""
+    return SafeCommandResult(
+        command=validated_cmd,
+        returncode=0,
+        stdout=f"[DRY-RUN] Would execute: {' '.join(validated_cmd)}",
+        stderr="",
+        duration_seconds=0.0,
+    )
+
+
 def run_safe_command(
     command: Sequence[str],
     *,
@@ -294,22 +318,9 @@ def run_safe_command(
     safe_env = _filter_environment(env, allowed_env_vars)
 
     if dry_run:
-        return SafeCommandResult(
-            command=validated_cmd,
-            returncode=0,
-            stdout=f"[DRY-RUN] Would execute: {' '.join(validated_cmd)}",
-            stderr="",
-            duration_seconds=0.0,
-        )
+        return _handle_dry_run(validated_cmd)
 
-    resolved_cwd: Path | None = None
-    if cwd is not None:
-        resolved_cwd = Path(cwd).resolve()
-        if not resolved_cwd.exists():
-            raise SecurityError(
-                f"Working directory does not exist: {cwd}",
-                guard_name="safe_command",
-            )
+    resolved_cwd = _validate_cwd(cwd)
 
     safe_result = _execute_command(
         validated_cmd,
