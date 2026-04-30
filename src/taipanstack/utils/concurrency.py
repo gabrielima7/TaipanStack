@@ -62,16 +62,19 @@ def _handle_async_concurrency(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, OverloadError]:
-        if timeout > 0.0:
-            try:
-                async with asyncio.timeout(timeout):
-                    await async_semaphore.acquire()
-            except TimeoutError:
-                return Err(OverloadError())
-        else:
-            if async_semaphore.locked():
-                return Err(OverloadError())
-            await async_semaphore.acquire()
+        try:
+            if timeout > 0.0:
+                try:
+                    async with asyncio.timeout(timeout):
+                        await async_semaphore.acquire()
+                except TimeoutError:
+                    return Err(OverloadError())
+            else:
+                if async_semaphore.locked():
+                    return Err(OverloadError())
+                await async_semaphore.acquire()
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
         try:
             return Ok(await func(*args, **kwargs))
@@ -91,14 +94,17 @@ def _handle_sync_concurrency(
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
-        if timeout > 0.0:
-            acquired = sync_semaphore.acquire(timeout=timeout)
-            if not acquired:
-                return Err(OverloadError())
-        else:
-            acquired = sync_semaphore.acquire(blocking=False)
-            if not acquired:
-                return Err(OverloadError())
+        try:
+            if timeout > 0.0:
+                acquired = sync_semaphore.acquire(timeout=timeout)
+                if not acquired:
+                    return Err(OverloadError())
+            else:
+                acquired = sync_semaphore.acquire(blocking=False)
+                if not acquired:
+                    return Err(OverloadError())
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
         try:
             return Ok(func(*args, **kwargs))
