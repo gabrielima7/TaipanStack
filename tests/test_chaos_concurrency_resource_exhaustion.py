@@ -17,6 +17,7 @@ def test_sync_concurrency_memoryerror_chaos():
         assert isinstance(result.unwrap_err(), OverloadError)
         assert "Resource exhaustion" in str(result.unwrap_err())
 
+
 @pytest.mark.asyncio
 async def test_async_concurrency_oserror_chaos():
     @limit_concurrency(max_tasks=1)
