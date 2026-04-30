@@ -146,30 +146,21 @@ def _validate_and_resolve_command(
     return validated_cmd
 
 
+def _get_allowed_keys(allowed_env_vars: Sequence[str] | None) -> set[str]:
+    """Get allowed environment variable keys."""
+    if allowed_env_vars is None:
+        return {"PATH"}
+    return {k.upper() for k in allowed_env_vars}
+
 def _filter_environment(
     env: dict[str, str] | None,
     allowed_env_vars: Sequence[str] | None = None,
 ) -> dict[str, str]:
-    """Filter environment variables for safe execution using a whitelist approach.
-
-    Args:
-        env: Environment variables to filter. If None, uses os.environ.
-        allowed_env_vars: Whitelist of allowed environment variable names.
-            If None, only minimal necessary variables (e.g. PATH) are inherited.
-            Pass an empty list for a completely empty environment.
-
-    Returns:
-        Filtered environment variables containing only allowed keys.
-
-    """
+    """Filter environment variables for safe execution using a whitelist approach."""
     safe_env: dict[str, str] = {}
     env_to_filter = env if env is not None else dict(os.environ)
 
-    if allowed_env_vars is None:
-        # Default minimal whitelist
-        allowed_keys = {"PATH"}
-    else:
-        allowed_keys = {k.upper() for k in allowed_env_vars}
+    allowed_keys = _get_allowed_keys(allowed_env_vars)
 
     if not allowed_keys:
         return safe_env
@@ -181,6 +172,14 @@ def _filter_environment(
     return safe_env
 
 
+def _handle_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
+    """Extract stdout from TimeoutExpired exception safely."""
+    if not hasattr(e, "stdout") or e.stdout is None:
+        return ""
+    if isinstance(e.stdout, str):
+        return e.stdout
+    return e.stdout.decode("utf-8", errors="replace")
+
 def _execute_command(
     validated_cmd: list[str],
     cwd: Path | None,
@@ -188,19 +187,7 @@ def _execute_command(
     capture_output: bool,
     safe_env: dict[str, str],
 ) -> SafeCommandResult:
-    """Execute the command and handle TimeoutExpired.
-
-    Args:
-        validated_cmd: Validated command list.
-        cwd: Resolved working directory.
-        timeout: Execution timeout.
-        capture_output: Capture stdout/stderr.
-        safe_env: Filtered environment variables.
-
-    Returns:
-        The execution result.
-
-    """
+    """Execute the command and handle TimeoutExpired."""
     start_time = time.time()
 
     try:
@@ -216,12 +203,7 @@ def _execute_command(
         )
     except subprocess.TimeoutExpired as e:
         duration = time.time() - start_time
-        stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:
-            if isinstance(e.stdout, str):
-                stdout_str = e.stdout
-            else:
-                stdout_str = e.stdout.decode("utf-8", errors="replace")
+        stdout_str = _handle_timeout_stdout(e)
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
@@ -231,7 +213,6 @@ def _execute_command(
         )
 
     duration = time.time() - start_time
-
     return SafeCommandResult(
         command=validated_cmd,
         returncode=result.returncode,
@@ -240,6 +221,23 @@ def _execute_command(
         duration_seconds=duration,
     )
 
+
+def _validate_timeout(timeout: float | None) -> None:
+    """Validate timeout value."""
+    if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
+        raise ValueError("timeout must be a finite non-negative number")
+
+def _resolve_cwd(cwd: Path | str | None) -> Path | None:
+    """Resolve working directory."""
+    if cwd is None:
+        return None
+    resolved_cwd = Path(cwd).resolve()
+    if not resolved_cwd.exists():
+        raise SecurityError(
+            f"Working directory does not exist: {cwd}",
+            guard_name="safe_command",
+        )
+    return resolved_cwd
 
 def run_safe_command(
     command: Sequence[str],
@@ -278,17 +276,8 @@ def run_safe_command(
         subprocess.TimeoutExpired: If command times out.
         subprocess.CalledProcessError: If check=True and command fails.
 
-    Example:
-        >>> result = run_safe_command(["poetry", "install"])
-        >>> if result.success:
-        ...     print("Installation complete!")
-
     """
-    # Security Enhancement: Prevent DoS via infinite blocking behaviors or
-    # unhandled exceptions from threading/asyncio primitives by explicitly
-    # validating that timeout is a finite, non-negative number.
-    if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
-        raise ValueError("timeout must be a finite non-negative number")
+    _validate_timeout(timeout)
 
     validated_cmd = _validate_and_resolve_command(command, allowed_commands)
     safe_env = _filter_environment(env, allowed_env_vars)
@@ -302,14 +291,7 @@ def run_safe_command(
             duration_seconds=0.0,
         )
 
-    resolved_cwd: Path | None = None
-    if cwd is not None:
-        resolved_cwd = Path(cwd).resolve()
-        if not resolved_cwd.exists():
-            raise SecurityError(
-                f"Working directory does not exist: {cwd}",
-                guard_name="safe_command",
-            )
+    resolved_cwd = _resolve_cwd(cwd)
 
     safe_result = _execute_command(
         validated_cmd,

@@ -81,28 +81,20 @@ def _check_project_name_length(name: str, max_length: int) -> None:
         raise ValueError(msg)
 
 
-def _check_project_name_chars(
-    name: str, allow_hyphen: bool, allow_underscore: bool
-) -> None:
-    """Check project name characters.
-
-    Args:
-        name: The project name.
-        allow_hyphen: Whether to allow hyphens.
-        allow_underscore: Whether to allow underscores.
-
-    Raises:
-        ValueError: If name contains invalid characters.
-
-    """
-    # Build allowed characters
+def _get_project_name_pattern(allow_hyphen: bool, allow_underscore: bool) -> str:
+    """Get the allowed pattern for project names."""
     allowed = r"a-zA-Z0-9"
     if allow_hyphen:
         allowed += r"-"
     if allow_underscore:
         allowed += r"_"
+    return rf"^[a-zA-Z][{allowed}]*\Z"
 
-    pattern = rf"^[a-zA-Z][{allowed}]*\Z"
+def _check_project_name_chars(
+    name: str, allow_hyphen: bool, allow_underscore: bool
+) -> None:
+    """Check project name characters."""
+    pattern = _get_project_name_pattern(allow_hyphen, allow_underscore)
 
     if not re.match(pattern, name):
         if not name[0].isalpha():
@@ -168,13 +160,14 @@ def validate_project_name(
     return name
 
 
-def _check_version_format(version: str) -> None:
-    """Check the basic formatting and safety of a version string."""
-    # Prevent DoS from massive integer string conversion limit in Python
+def _check_version_length(version: str) -> None:
+    """Check version string length."""
     if len(version) > MAX_PYTHON_VERSION_LENGTH:
         msg = "Version string exceeds maximum length"
         raise ValueError(msg)
 
+def _check_version_chars(version: str) -> None:
+    """Check version characters for safety."""
     if "\x00" in version or not version.isprintable():
         msg = "Version contains invalid characters"
         raise ValueError(msg)
@@ -183,8 +176,12 @@ def _check_version_format(version: str) -> None:
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
 
-    pattern = r"^\d+\.\d+\Z"
+def _check_version_format(version: str) -> None:
+    """Check the basic formatting and safety of a version string."""
+    _check_version_length(version)
+    _check_version_chars(version)
 
+    pattern = r"^\d+\.\d+\Z"
     if not re.match(pattern, version):
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
@@ -229,8 +226,8 @@ def validate_python_version(version: str) -> str:
     return version
 
 
-def _check_email_format(email: str) -> None:
-    """Check email format and basic constraints."""
+def _check_email_length(email: str) -> None:
+    """Check email length constraints."""
     if not email:
         msg = "Email cannot be empty"
         raise ValueError(msg)
@@ -239,16 +236,22 @@ def _check_email_format(email: str) -> None:
         msg = "Email length exceeds maximum allowed"
         raise ValueError(msg)
 
+def _check_email_chars(email: str) -> None:
+    """Check email character validity."""
     if "\x00" in email or not email.isprintable():
         msg = "Email contains invalid characters"
         raise ValueError(msg)
 
     # RFC 5322 compliant pattern (simplified)
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
-
     if not re.match(pattern, email):
         msg = f"Invalid email format: {email}"
         raise ValueError(msg)
+
+def _check_email_format(email: str) -> None:
+    """Check email format and basic constraints."""
+    _check_email_length(email)
+    _check_email_chars(email)
 
 
 def _check_email_parts(email: str) -> None:
@@ -303,12 +306,11 @@ def _check_url_basics(url: str) -> None:
         raise ValueError(msg)
 
 
-def _check_url_domain(
+def _check_url_scheme(
     parsed: urllib.parse.SplitResult,
     allowed_schemes: tuple[str, ...],
-    require_tld: bool,
 ) -> None:
-    """Validate URL scheme and domain."""
+    """Validate URL scheme."""
     if not parsed.scheme:
         msg = "URL must have a scheme (e.g., https://)"
         raise ValueError(msg)
@@ -317,18 +319,28 @@ def _check_url_domain(
         msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
         raise ValueError(msg)
 
+def _check_url_tld(domain: str) -> None:
+    """Validate URL TLD."""
+    has_no_tld = "." not in domain or domain.endswith(".")
+    is_localhost = domain.lower() in LOCALHOST_DOMAINS
+    if has_no_tld and not is_localhost:
+        msg = f"URL domain must have a TLD: {domain}"
+        raise ValueError(msg)
+
+def _check_url_domain(
+    parsed: urllib.parse.SplitResult,
+    allowed_schemes: tuple[str, ...],
+    require_tld: bool,
+) -> None:
+    """Validate URL scheme and domain."""
+    _check_url_scheme(parsed, allowed_schemes)
+
     if not parsed.hostname:
         msg = "URL must have a domain"
         raise ValueError(msg)
 
     if require_tld:
-        # Check for TLD (at least one dot)
-        domain = parsed.hostname
-        has_no_tld = "." not in domain or domain.endswith(".")
-        is_localhost = domain.lower() in LOCALHOST_DOMAINS
-        if has_no_tld and not is_localhost:
-            msg = f"URL domain must have a TLD: {domain}"
-            raise ValueError(msg)
+        _check_url_tld(parsed.hostname)
 
 
 def validate_url(

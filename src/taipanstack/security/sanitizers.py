@@ -326,6 +326,44 @@ def _apply_base_dir_constraint(
     return sanitized
 
 
+def _parse_path_str(path: str | Path) -> Path:
+    """Parse and validate path length and null bytes."""
+    if isinstance(path, str):
+        if len(path) > MAX_PATH_LENGTH:
+            msg = "Path length exceeds maximum allowed"
+            raise ValueError(msg)
+        if "\x00" in path:  # pragma: no branch
+            path = path.replace("\x00", "")
+        return Path(path)
+
+    # Path object
+    if len(str(path)) > MAX_PATH_LENGTH:
+        msg = "Path length exceeds maximum allowed"
+        raise ValueError(msg)
+    return Path(path)
+
+
+def _reconstruct_path(path: Path, parts: list[str]) -> Path:
+    """Reconstruct path from parts and anchor."""
+    if path.is_absolute():  # pragma: no branch
+        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
+        anchor = Path(path.anchor)
+        return anchor.joinpath(*parts) if parts else anchor
+    if parts:  # pragma: no branch
+        return Path().joinpath(*parts)
+    return Path()
+
+
+def _check_path_depth(sanitized: Path, max_depth: int | None) -> None:
+    """Check if path depth exceeds maximum."""
+    if max_depth is None:
+        return
+    depth = len(sanitized.parts)
+    if depth > max_depth:
+        msg = f"Path depth {depth} exceeds maximum of {max_depth}"
+        raise ValueError(msg)
+
+
 def sanitize_path(
     path: str | Path,
     *,
@@ -348,39 +386,11 @@ def sanitize_path(
         ValueError: If path is invalid or too deep.
 
     """
-    if isinstance(path, str):
-        if len(path) > MAX_PATH_LENGTH:
-            msg = "Path length exceeds maximum allowed"
-            raise ValueError(msg)
-        if "\x00" in path:  # pragma: no branch
-            path = path.replace("\x00", "")
-        path = Path(path)
-    else:  # pragma: no branch
-        if len(str(path)) > MAX_PATH_LENGTH:
-            msg = "Path length exceeds maximum allowed"
-            raise ValueError(msg)
-        path = Path(path)
+    parsed_path = _parse_path_str(path)
+    parts = _clean_path_parts(parsed_path)
+    sanitized = _reconstruct_path(parsed_path, parts)
 
-    # Clean components
-    parts = _clean_path_parts(path)
-
-    # Reconstruct path
-    if path.is_absolute():  # pragma: no branch
-        # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
-        anchor = Path(path.anchor)
-        sanitized = anchor.joinpath(*parts) if parts else anchor
-    elif parts:  # pragma: no branch
-        sanitized = Path().joinpath(*parts)
-    else:
-        sanitized = Path()
-
-    # Check depth
-    depth = len(sanitized.parts)
-    if max_depth is not None and depth > max_depth:
-        msg = f"Path depth {depth} exceeds maximum of {max_depth}"
-        raise ValueError(msg)
-
-    # Constrain to base_dir
+    _check_path_depth(sanitized, max_depth)
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
 
 
