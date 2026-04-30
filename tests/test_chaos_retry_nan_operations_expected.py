@@ -9,7 +9,7 @@ def test_chaos_retry_rejects_nan_max_attempts_expected():
 
         @retry(max_attempts=float("nan"))
         def my_func():
-            pass
+            return None
 
 
 def test_chaos_retry_rejects_nan_initial_delay_expected():
@@ -18,7 +18,7 @@ def test_chaos_retry_rejects_nan_initial_delay_expected():
 
         @retry(initial_delay=float("nan"))
         def my_func():
-            pass
+            return None
 
 
 def test_chaos_retrier_rejects_nan_max_attempts_expected():
@@ -39,7 +39,7 @@ def test_chaos_retry_on_exception_rejects_nan_max_attempts_expected():
 
         @retry_on_exception((ValueError,), max_attempts=float("nan"))
         def my_func():
-            pass
+            return None
 
 
 def test_chaos_retry_config_rejects_nan_max_delay_expected():
