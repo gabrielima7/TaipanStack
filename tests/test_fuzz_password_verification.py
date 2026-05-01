@@ -5,8 +5,7 @@ from taipanstack.security.password import verify_password
 
 
 @given(
-    pw=st.text(min_size=1, max_size=100),
-    hash_suffix=st.text(min_size=1, max_size=2000)
+    pw=st.text(min_size=1, max_size=100), hash_suffix=st.text(min_size=1, max_size=2000)
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_password_verification_argon2_malformed_expected(pw, hash_suffix):
