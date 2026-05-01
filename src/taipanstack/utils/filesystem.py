@@ -5,6 +5,7 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
+import contextlib
 import os
 import shutil
 import tempfile
@@ -202,10 +203,11 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
         suffix=".tmp",
     )
     try:
-        # Close the file descriptor immediately - required for Windows
-        os.close(_fd)
+        # Write directly to the returned file descriptor to prevent TOCTOU
+        with os.fdopen(_fd, "w", encoding=opts.encoding) as f:
+            f.write(content)
+
         temp_file = Path(temp_path)
-        temp_file.write_text(content, encoding=opts.encoding)
         # Preserve permissions if original exists
         if path.exists():
             shutil.copymode(path, temp_file)
@@ -214,7 +216,9 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
             path.unlink()
         temp_file.rename(path)
     except Exception:
-        # Clean up temp file on error
+        # Clean up descriptor and temp file on error
+        with contextlib.suppress(OSError):
+            os.close(_fd)
         Path(temp_path).unlink(missing_ok=True)
         raise
 
