@@ -61,8 +61,8 @@ class TestFilesystemEdgeCases:
 
         test_file = tmp_path / "test.txt"
 
-        # Mock write_text to raise an error
-        with patch.object(Path, "write_text", side_effect=OSError("Write error")):
+        # Mock os.fdopen to raise an error
+        with patch("os.fdopen", side_effect=OSError("Write error")):
             with pytest.raises(OSError):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
