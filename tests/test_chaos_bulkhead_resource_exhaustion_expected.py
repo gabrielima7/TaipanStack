@@ -1,10 +1,10 @@
-import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from taipanstack.resilience.adaptive.bulkhead import Bulkhead
 from taipanstack.core.result import Err
+from taipanstack.resilience.adaptive.bulkhead import Bulkhead
+
 
 @pytest.mark.asyncio
 async def test_bulkhead_semaphore_exhaustion_chaos_expected() -> None:
