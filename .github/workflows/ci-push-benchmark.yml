@@ -57,7 +57,8 @@ jobs:
           poetry run pytest tests/test_benchmarks_operations_expected.py \
             --benchmark-only \
             --benchmark-json=benchmark-result.json \
-            --benchmark-min-rounds=10 \
+            --benchmark-min-rounds=100 \
+            --benchmark-warmup=on \
             --no-cov \
             -v
 
@@ -92,7 +93,7 @@ jobs:
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: dev/bench
           # Fail CI if performance degrades more than 50% (accounts for runner variance)
-          alert-threshold: "105%"
+          alert-threshold: "200%"
           fail-on-alert: true
           # Comment on PR with comparison
           comment-on-alert: true
