@@ -95,6 +95,7 @@ def _verify_argon2(password_str: str, password_hash: str) -> bool:
         ValueError,
         TypeError,
         argon2.exceptions.InvalidHashError,
+        argon2.exceptions.VerificationError,
     ):
         return False
 
