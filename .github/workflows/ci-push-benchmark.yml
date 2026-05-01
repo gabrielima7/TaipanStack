@@ -57,7 +57,8 @@ jobs:
           poetry run pytest tests/test_benchmarks_operations_expected.py \
             --benchmark-only \
             --benchmark-json=benchmark-result.json \
-            --benchmark-min-rounds=10 \
+            --benchmark-min-rounds=100 \
+            --benchmark-warmup=on \
             --no-cov \
             -v
 

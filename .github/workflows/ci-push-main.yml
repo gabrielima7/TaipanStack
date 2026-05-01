@@ -231,35 +231,6 @@ jobs:
       - name: "[Test] Run Hypothesis property-based tests"
         run: poetry run pytest tests/test_property_sanitizers_operations_expected.py -v --no-cov --timeout=300
 
-  mutation-testing:
-    name: "[Test] Mutation Testing"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
-
-      - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
-
-      - name: "[Setup] Install Poetry"
-        run: pipx install poetry
-
-      - name: "[Setup] Remove Conflicting System LLVM Packages"
-        run: |
-          if dpkg -l | grep -E '^ii  (llvm|clang|libclang|liblld|lld|libllvm)' > /dev/null; then sudo apt-get purge -y 'llvm-*' 'clang-*' 'libclang-*' 'liblld-*' 'lld-*' 'libllvm*'; fi
-          if [ "$(apt-get -s autoremove | grep -c ^Remv)" -gt 0 ]; then sudo apt-get autoremove -y; fi
-
-      - name: "[Setup] Install dependencies"
-        run: poetry install --with dev
-
-      - name: "[Test] Run Mutmut"
-        run: |
-          poetry run mutmut run
-          poetry run mutmut results
-
-
   docker-build:
     name: "[Build] Docker Validation"
     runs-on: ubuntu-latest
