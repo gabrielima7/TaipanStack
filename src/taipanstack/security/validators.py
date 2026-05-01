@@ -303,12 +303,11 @@ def _check_url_basics(url: str) -> None:
         raise ValueError(msg)
 
 
-def _check_url_domain(
+def _check_scheme(
     parsed: urllib.parse.SplitResult,
     allowed_schemes: tuple[str, ...],
-    require_tld: bool,
 ) -> None:
-    """Validate URL scheme and domain."""
+    """Validate the URL scheme."""
     if not parsed.scheme:
         msg = "URL must have a scheme (e.g., https://)"
         raise ValueError(msg)
@@ -317,18 +316,30 @@ def _check_url_domain(
         msg = f"URL scheme '{parsed.scheme}' is not allowed. Allowed: {allowed_schemes}"
         raise ValueError(msg)
 
+
+def _check_tld(domain: str) -> None:
+    """Validate that the domain has a TLD."""
+    has_no_tld = "." not in domain or domain.endswith(".")
+    is_localhost = domain.lower() in LOCALHOST_DOMAINS
+    if has_no_tld and not is_localhost:
+        msg = f"URL domain must have a TLD: {domain}"
+        raise ValueError(msg)
+
+
+def _check_url_domain(
+    parsed: urllib.parse.SplitResult,
+    allowed_schemes: tuple[str, ...],
+    require_tld: bool,
+) -> None:
+    """Validate URL scheme and domain."""
+    _check_scheme(parsed, allowed_schemes)
+
     if not parsed.hostname:
         msg = "URL must have a domain"
         raise ValueError(msg)
 
     if require_tld:
-        # Check for TLD (at least one dot)
-        domain = parsed.hostname
-        has_no_tld = "." not in domain or domain.endswith(".")
-        is_localhost = domain.lower() in LOCALHOST_DOMAINS
-        if has_no_tld and not is_localhost:
-            msg = f"URL domain must have a TLD: {domain}"
-            raise ValueError(msg)
+        _check_tld(parsed.hostname)
 
 
 def validate_url(
