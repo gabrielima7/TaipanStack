@@ -13,7 +13,9 @@ async def test_bulkhead_semaphore_exhaustion_chaos_expected() -> None:
     async def dummy_task() -> int:
         return 42
 
-    with patch.object(bulkhead._semaphore, "acquire", new_callable=AsyncMock) as mock_acquire:
+    with patch.object(
+        bulkhead._semaphore, "acquire", new_callable=AsyncMock
+    ) as mock_acquire:
         mock_acquire.side_effect = OSError("Too many open files")
 
         result = await bulkhead.execute(dummy_task)
