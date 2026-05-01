@@ -57,6 +57,12 @@ class RateLimiter:
         self.last_update: float = time.monotonic()
         self._lock = threading.Lock()
 
+    def _is_valid_bucket_state(self) -> bool:
+        """Check if the bucket's time window and capacity are in a valid state."""
+        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+            return False
+        return math.isfinite(self.capacity) and self.capacity > 0.0
+
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
 
@@ -71,10 +77,7 @@ class RateLimiter:
         self.last_update = now
 
         # Prevent state corruption from raising exceptions or poisoning state
-        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
-            return False
-
-        if not math.isfinite(self.capacity) or self.capacity <= 0.0:
+        if not self._is_valid_bucket_state():
             return False
 
         # Prevent infinite or NaN tokens by checking elapsed time calculations
