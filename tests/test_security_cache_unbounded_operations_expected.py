@@ -86,22 +86,22 @@ def test_security_cache_validation_expected():
 
         @cached(ttl=60.0, max_size=0)
         def func1():
-            pass
+            return None
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 
         @cached(ttl=60.0, max_size=-1)
         def func2():
-            pass
+            return None
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 
         @cached(ttl=60.0, max_size="10")  # type: ignore
         def func3():
-            pass
+            return None
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 
         @cached(ttl=60.0, max_size=True)  # type: ignore
         def func4():
-            pass
+            return None

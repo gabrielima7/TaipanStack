@@ -638,7 +638,7 @@ class TestCompatPy313FallbackExpected:
 # =============================================================================
 
 
-def test_optimizations_coverage_skipped():
+def test_very_last_optimizations_coverage_skipped_asserts_success():
     with (
         patch("sys.version_info", (3, 11)),
         patch("platform.python_implementation", return_value="CPython"),
@@ -648,7 +648,7 @@ def test_optimizations_coverage_skipped():
         assert res.success
 
 
-def test_circuit_breaker_open_handling():
+def test_very_last_circuit_breaker_open_handling_remains_open():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._record_success()
@@ -658,7 +658,7 @@ def test_circuit_breaker_open_handling():
     assert cb._state.state == CircuitState.OPEN
 
 
-def test_validate_args_param_missing():
+def test_very_last_validate_args_param_missing_returns_value():
     @validate_inputs(x=lambda x: x)
     def my_func(y: int):
         return y
@@ -666,7 +666,7 @@ def test_validate_args_param_missing():
     assert my_func(y=1) == 1
 
 
-def test_validate_args_no_return():
+def test_very_last_validate_args_no_return_returns_value():
     @validate_inputs(x=lambda _x: None)
     def my_func(x: int):
         return x
@@ -674,7 +674,7 @@ def test_validate_args_no_return():
     assert my_func(x=1) == 1
 
 
-def test_validate_args_exception():
+def test_very_last_validate_args_exception_returns_err():
     def failing_validator(x):
         raise ValueError("fail")
 
@@ -686,7 +686,7 @@ def test_validate_args_exception():
         my_func(x=1)
 
 
-def test_safe_decorator_log_errors_false():
+def test_very_last_safe_decorator_log_errors_false_returns_err():
     @guard_exceptions(log_errors=False, default=-1)
     def my_func():
         raise ValueError("error")
@@ -694,7 +694,7 @@ def test_safe_decorator_log_errors_false():
     assert my_func() == -1
 
 
-def test_type_check_param_missing():
+def test_very_last_type_check_param_missing_returns_value():
     @require_type(x=int)
     def my_func(y: int):
         return y
@@ -702,7 +702,7 @@ def test_type_check_param_missing():
     assert my_func(y=1) == 1
 
 
-def test_type_check_exception():
+def test_very_last_type_check_exception_returns_err():
     @require_type(x=int)
     def my_func(x):
         return x
@@ -711,41 +711,41 @@ def test_type_check_exception():
         my_func(x="string")
 
 
-def test_check_allowed_extension_none():
+def test_very_last_check_allowed_extension_none_returns_true():
     _check_allowed_extension(".txt", "file.txt", None)
     assert True
 
 
-def test_guard_file_extension_none():
+def test_very_last_guard_file_extension_none_returns_ok():
     guard_file_extension("file.txt", allowed_extensions=None)
     assert True
 
 
-def test_guard_file_extension_exception():
+def test_very_last_guard_file_extension_exception_returns_err():
     with pytest.raises(SecurityError):
         guard_file_extension("file.txt", allowed_extensions=["pdf"])
 
 
-def test_sanitize_path_part_empty_or_dot_dot():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_returns_err():
     res = sanitize_path("a/./b")
     assert str(res).replace("\\", "/") == "a/b"
 
 
-def test_sanitize_path_part_empty_or_dot_dot_2():
+def test_sanitize_path_part_empty_or_dot_dot_2_expected():
     res = sanitize_path("a/..b/c")
     assert str(res).replace("\\", "/") == "a/..b/c"
 
 
-def test_sanitize_path_part_empty_or_dot_dot_3():
+def test_sanitize_path_part_empty_or_dot_dot_3_expected():
     res = sanitize_path("a/../b")
     assert str(res).replace("\\", "/") == "b"
 
 
-def test_sanitize_path_null_byte():
+def test_very_last_sanitize_path_null_byte_returns_err():
     res = sanitize_path("a/\x00b")
     assert "\x00" not in str(res)
 
 
-def test_sanitize_path_absolute():
+def test_very_last_sanitize_path_absolute_returns_err():
     res = sanitize_path("/a/b")
     assert "a" in str(res) and "b" in str(res)
