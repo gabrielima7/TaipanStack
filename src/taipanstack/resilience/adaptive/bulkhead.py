@@ -145,6 +145,8 @@ class Bulkhead:
                         f"after {self._timeout}s waiting for permit"
                     )
                 )
+            except (RuntimeError, OSError, MemoryError) as e:
+                return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         finally:
             self._queued -= 1
 
