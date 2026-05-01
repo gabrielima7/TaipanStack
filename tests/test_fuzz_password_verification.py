@@ -1,7 +1,8 @@
-import pytest
-from hypothesis import HealthCheck, given, settings
 import hypothesis.strategies as st
+from hypothesis import HealthCheck, given, settings
+
 from taipanstack.security.password import verify_password
+
 
 @given(
     pw=st.text(min_size=1, max_size=100),
