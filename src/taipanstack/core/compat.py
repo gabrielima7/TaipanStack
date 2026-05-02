@@ -254,7 +254,6 @@ class PythonFeatures:
         }
 
 
-
 def _get_version_tier() -> VersionTier:
     """Determine the version tier based on Python version."""
     if PY314:
@@ -289,6 +288,8 @@ def _get_language_features() -> dict[str, bool]:
         "has_deprecated_decorator": PY313,
         "has_deferred_annotations": PY314,
     }
+
+
 # =============================================================================
 # Main Detection Functions
 # =============================================================================
