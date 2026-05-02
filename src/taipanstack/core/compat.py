@@ -254,6 +254,42 @@ class PythonFeatures:
         }
 
 
+def _get_version_tier() -> VersionTier:
+    """Determine the version tier based on Python version."""
+    if PY314:
+        return VersionTier.CUTTING_EDGE
+    if PY313:
+        return VersionTier.MODERN
+    if PY312:
+        return VersionTier.ENHANCED
+    return VersionTier.STABLE
+
+
+def _get_build_features(experimental: bool) -> dict[str, bool]:
+    """Determine build features based on experimental flag."""
+    return {
+        "has_jit": _check_jit_available() if experimental else False,
+        "has_free_threading": _check_free_threading_available()
+        if experimental
+        else False,
+        "has_mimalloc": _check_mimalloc_available(),
+        "has_tail_call_interpreter": _check_tail_call_interpreter(),
+    }
+
+
+def _get_language_features() -> dict[str, bool]:
+    """Determine language features based on Python version."""
+    return {
+        "has_exception_groups": PY311,
+        "has_self_type": PY311,
+        "has_type_params": PY312,
+        "has_fstring_improvements": PY312,
+        "has_override_decorator": PY312,
+        "has_deprecated_decorator": PY313,
+        "has_deferred_annotations": PY314,
+    }
+
+
 # =============================================================================
 # Main Detection Functions
 # =============================================================================
@@ -279,41 +315,17 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
     if _cached_features is not None and not force_refresh:
         return _cached_features
 
-    # Determine version tier
-    if PY314:
-        tier = VersionTier.CUTTING_EDGE
-    elif PY313:
-        tier = VersionTier.MODERN
-    elif PY312:
-        tier = VersionTier.ENHANCED
-    else:
-        tier = VersionTier.STABLE
-
+    tier = _get_version_tier()
     experimental = is_experimental_enabled(force_refresh=force_refresh)
-
-    # Build features (only if experimental is enabled for safety)
-    has_jit = _check_jit_available() if experimental else False
-    has_free_threading = _check_free_threading_available() if experimental else False
-    has_mimalloc = _check_mimalloc_available()  # Safe to detect
+    build_feats = _get_build_features(experimental)
+    lang_feats = _get_language_features()
 
     features = PythonFeatures(
         version=(PY_VERSION.major, PY_VERSION.minor, PY_VERSION.micro),
         version_string=f"{PY_VERSION.major}.{PY_VERSION.minor}.{PY_VERSION.micro}",
         tier=tier,
-        # Build features
-        has_jit=has_jit,
-        has_free_threading=has_free_threading,
-        has_mimalloc=has_mimalloc,
-        has_tail_call_interpreter=_check_tail_call_interpreter(),
-        # Language features
-        has_exception_groups=PY311,
-        has_self_type=PY311,
-        has_type_params=PY312,
-        has_fstring_improvements=PY312,
-        has_override_decorator=PY312,
-        has_deprecated_decorator=PY313,
-        has_deferred_annotations=PY314,
-        # Experimental
+        **build_feats,
+        **lang_feats,
         experimental_enabled=experimental,
     )
 
