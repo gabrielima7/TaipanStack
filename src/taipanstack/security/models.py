@@ -134,7 +134,7 @@ class SecureBaseModel(BaseModel):
         self,
         *,
         indent: int | None = None,
-        ensure_ascii: bool = False,  # noqa: ARG002
+        ensure_ascii: bool = False,
         include: IncEx | None = None,
         exclude: IncEx | None = None,
         context: dict[str, object] | None = None,
@@ -178,5 +178,5 @@ class SecureBaseModel(BaseModel):
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
         if indent is not None:
-            return json.dumps(masked_dict, indent=indent)
-        return json.dumps(masked_dict)
+            return json.dumps(masked_dict, indent=indent, ensure_ascii=ensure_ascii)
+        return json.dumps(masked_dict, ensure_ascii=ensure_ascii)
