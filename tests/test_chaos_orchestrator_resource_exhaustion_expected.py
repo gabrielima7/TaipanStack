@@ -10,9 +10,9 @@ from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 async def test_orchestrator_bulkhead_oserror_chaos_expected() -> None:
     """Chaos test: Inject OSError when acquiring semaphore in Orchestrator."""
 
-    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator("test_orch").with_bulkhead(
-        max_concurrent=1, max_queue=1
-    )
+    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(
+        "test_orch"
+    ).with_bulkhead(max_concurrent=1, max_queue=1)
 
     async def dummy_task() -> str:
         return "success"
@@ -29,9 +29,9 @@ async def test_orchestrator_bulkhead_oserror_chaos_expected() -> None:
 async def test_orchestrator_bulkhead_memoryerror_chaos_expected() -> None:
     """Chaos test: Inject MemoryError when acquiring semaphore in Orchestrator."""
 
-    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator("test_orch").with_bulkhead(
-        max_concurrent=1, max_queue=1
-    )
+    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(
+        "test_orch"
+    ).with_bulkhead(max_concurrent=1, max_queue=1)
 
     async def dummy_task() -> str:
         return "success"
@@ -48,14 +48,16 @@ async def test_orchestrator_bulkhead_memoryerror_chaos_expected() -> None:
 async def test_orchestrator_bulkhead_runtimeerror_chaos_expected() -> None:
     """Chaos test: Inject RuntimeError when acquiring semaphore in Orchestrator."""
 
-    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator("test_orch").with_bulkhead(
-        max_concurrent=1, max_queue=1
-    )
+    orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(
+        "test_orch"
+    ).with_bulkhead(max_concurrent=1, max_queue=1)
 
     async def dummy_task() -> str:
         return "success"
 
-    with patch("asyncio.Semaphore.acquire", side_effect=RuntimeError("Event loop closed")):
+    with patch(
+        "asyncio.Semaphore.acquire", side_effect=RuntimeError("Event loop closed")
+    ):
         result = await orchestrator.execute(dummy_task)
         assert isinstance(result, Err)
         assert isinstance(result.unwrap_err(), RuntimeError)
