@@ -208,6 +208,10 @@ class ResilienceOrchestrator(Generic[T]):
                             )
                         )
                     )
+                except (RuntimeError, OSError, MemoryError) as e:
+                    return self._apply_fallback(
+                        Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+                    )
             finally:
                 bh._queued -= 1
 
