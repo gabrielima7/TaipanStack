@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_3f522a09208f6d6e_jwt_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-05-02 19:05 +0000
+            created at 2026-05-02 19:07 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -689,10 +689,10 @@
     <p class="pln"><span class="n"><a id="t605" href="#t605">605</a></span><span class="t">    <span class="str">"""Resolve hostname to IP addresses and check for SSRF risk."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t606" href="#t606">606</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t607" href="#t607">607</a></span><span class="t">        <span class="nam">addr_infos</span> <span class="op">=</span> <span class="nam">socket</span><span class="op">.</span><span class="nam">getaddrinfo</span><span class="op">(</span><span class="nam">hostname</span><span class="op">,</span> <span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t608" href="#t608">608</a></span><span class="t">    <span class="key">except</span> <span class="nam">socket</span><span class="op">.</span><span class="nam">gaierror</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t608" href="#t608">608</a></span><span class="t">    <span class="key">except</span> <span class="op">(</span><span class="nam">socket</span><span class="op">.</span><span class="nam">gaierror</span><span class="op">,</span> <span class="nam">UnicodeError</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t609" href="#t609">609</a></span><span class="t">        <span class="key">return</span> <span class="nam">Err</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t610" href="#t610">610</a></span><span class="t">            <span class="nam">SecurityError</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t611" href="#t611">611</a></span><span class="t">                <span class="str">"Hostname could not be resolved"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t611" href="#t611">611</a></span><span class="t">                <span class="str">"Hostname could not be resolved or contains invalid characters"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t612" href="#t612">612</a></span><span class="t">                <span class="nam">guard_name</span><span class="op">=</span><span class="str">"ssrf"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t613" href="#t613">613</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t614" href="#t614">614</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -760,7 +760,7 @@
             <a class="nav" href="z_3f522a09208f6d6e_jwt_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-05-02 19:05 +0000
+            created at 2026-05-02 19:07 +0000
         </p>
     </div>
 </footer>
