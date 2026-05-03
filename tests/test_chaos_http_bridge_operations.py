@@ -51,6 +51,7 @@ async def test_chaos_http_bridge_request_extreme_delay() -> None:
     assert isinstance(result, Err)
     assert isinstance(result.err_value, TimeoutError)
 
+
 @settings(
     suppress_health_check=[
         HealthCheck.large_base_example,
@@ -59,11 +60,23 @@ async def test_chaos_http_bridge_request_extreme_delay() -> None:
         HealthCheck.function_scoped_fixture,
     ],
     deadline=None,
-    max_examples=50
+    max_examples=50,
 )
 @given(
     url=st.text(min_size=1000, max_size=8000),
-    method=st.sampled_from(["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "\x00", "B" * 50000]),
+    method=st.sampled_from(
+        [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS",
+            "HEAD",
+            "\x00",
+            "B" * 50000,
+        ]
+    ),
 )
 def test_fuzz_http_bridge_malformed_inputs(url: str, method: str) -> None:
     """Fuzz HTTP bridge with massive strings for URL and methods to ensure no crashes."""
