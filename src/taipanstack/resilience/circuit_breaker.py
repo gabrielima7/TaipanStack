@@ -126,6 +126,17 @@ class CircuitBreaker:
 
     """
 
+    @staticmethod
+    def _validate_thresholds(
+        timeout: float, failure_threshold: int, success_threshold: int
+    ) -> None:
+        if not math.isfinite(timeout) or timeout < 0:
+            raise ValueError("timeout must be a finite non-negative number")
+        if not math.isfinite(failure_threshold) or failure_threshold < 1:
+            raise ValueError("failure_threshold must be a finite number >= 1")
+        if not math.isfinite(success_threshold) or success_threshold < 1:
+            raise ValueError("success_threshold must be a finite number >= 1")
+
     def __init__(
         self,
         *,
@@ -150,12 +161,9 @@ class CircuitBreaker:
                 with (old_state, new_state). Useful for custom monitoring.
 
         """
-        if not math.isfinite(timeout) or timeout < 0:
-            raise ValueError("timeout must be a finite non-negative number")
-        if not math.isfinite(failure_threshold) or failure_threshold < 1:
-            raise ValueError("failure_threshold must be a finite number >= 1")
-        if not math.isfinite(success_threshold) or success_threshold < 1:
-            raise ValueError("success_threshold must be a finite number >= 1")
+        CircuitBreaker._validate_thresholds(
+            timeout, failure_threshold, success_threshold
+        )
 
         self.config = CircuitBreakerConfig(
             failure_threshold=failure_threshold,
@@ -178,6 +186,27 @@ class CircuitBreaker:
         """Get current failure count."""
         return self._state.failure_count
 
+    def _log_callback_failure(
+        self,
+        old_state: CircuitState,
+        new_state: CircuitState,
+        e: Exception,
+    ) -> None:
+        if _HAS_STRUCTLOG and _structlog_logger is not None:
+            _structlog_logger.error(
+                "circuit_state_change_callback_failed",
+                circuit=self.name,
+                old_state=old_state.value,
+                new_state=new_state.value,
+                error=str(e),
+            )
+        else:
+            logger.error(
+                "Circuit %s state change callback failed: %s",
+                self.name,
+                str(e),
+            )
+
     def _notify_state_change(
         self,
         old_state: CircuitState,
@@ -192,20 +221,7 @@ class CircuitBreaker:
             try:
                 self._on_state_change(old_state, new_state)
             except Exception as e:
-                if _HAS_STRUCTLOG and _structlog_logger is not None:
-                    _structlog_logger.error(
-                        "circuit_state_change_callback_failed",
-                        circuit=self.name,
-                        old_state=old_state.value,
-                        new_state=new_state.value,
-                        error=str(e),
-                    )
-                else:
-                    logger.error(
-                        "Circuit %s state change callback failed: %s",
-                        self.name,
-                        str(e),
-                    )
+                self._log_callback_failure(old_state, new_state, e)
         elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
             _structlog_logger.warning(
                 "circuit_state_changed",
@@ -248,6 +264,14 @@ class CircuitBreaker:
             return True
         return False
 
+    def _handle_attempt_half_open(self) -> bool:
+        if not math.isfinite(self._state.half_open_attempts):
+            return False
+        if self._state.half_open_attempts < self.config.success_threshold:
+            self._state.half_open_attempts += 1
+            return True
+        return False
+
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
         with self._state.lock:
@@ -259,42 +283,35 @@ class CircuitBreaker:
                     return self._handle_open_state()
 
                 case CircuitState.HALF_OPEN:
-                    # Protect against NaN/Inf state corruption
-                    if not math.isfinite(self._state.half_open_attempts):
-                        # Block attempt to prevent thundering herd when corrupted
-                        return False
-
-                    # Allow limited attempts to prevent thundering herd
-                    if self._state.half_open_attempts < self.config.success_threshold:
-                        self._state.half_open_attempts += 1
-                        return True
-                    return False
+                    return self._handle_attempt_half_open()
 
         return False
+
+    def _handle_success_half_open(self) -> None:
+        if not math.isfinite(self._state.success_count):
+            self._state.success_count = 0
+        self._state.success_count += 1
+
+        if self._state.success_count >= self.config.success_threshold:
+            self._state.state = CircuitState.CLOSED
+            self._state.failure_count = 0
+            self._state.half_open_attempts = 0
+            logger.info(
+                "Circuit %s closed after recovery (%d consecutive successes)",
+                self.name,
+                self._state.success_count,
+            )
+            self._notify_state_change(
+                CircuitState.HALF_OPEN,
+                CircuitState.CLOSED,
+            )
 
     def _record_success(self) -> None:
         """Record a successful call."""
         with self._state.lock:
             match self._state.state:
                 case CircuitState.HALF_OPEN:
-                    if not math.isfinite(self._state.success_count):
-                        self._state.success_count = 0
-                    self._state.success_count += 1
-
-                    if self._state.success_count >= self.config.success_threshold:
-                        self._state.state = CircuitState.CLOSED
-                        self._state.failure_count = 0
-                        self._state.half_open_attempts = 0
-                        logger.info(
-                            "Circuit %s closed after recovery "
-                            "(%d consecutive successes)",
-                            self.name,
-                            self._state.success_count,
-                        )
-                        self._notify_state_change(
-                            CircuitState.HALF_OPEN,
-                            CircuitState.CLOSED,
-                        )
+                    self._handle_success_half_open()
 
                 case CircuitState.CLOSED:
                     # Reset failure count on success
@@ -344,6 +361,13 @@ class CircuitBreaker:
                 CircuitState.OPEN,
             )
 
+    def _update_failure_metrics(self) -> None:
+        if math.isfinite(self._state.failure_count):
+            self._state.failure_count += 1
+        now = time.monotonic()
+        if math.isfinite(now):
+            self._state.last_failure_time = now
+
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
         # Check if exception should be excluded
@@ -351,16 +375,7 @@ class CircuitBreaker:
             return
 
         with self._state.lock:
-            # First handle corruption
-            if not math.isfinite(self._state.failure_count):
-                # `_handle_failure_closed` will open it
-                pass
-            else:
-                self._state.failure_count += 1
-
-            now = time.monotonic()
-            if math.isfinite(now):
-                self._state.last_failure_time = now
+            self._update_failure_metrics()
 
             match self._state.state:
                 case CircuitState.HALF_OPEN:
