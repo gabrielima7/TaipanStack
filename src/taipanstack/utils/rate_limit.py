@@ -192,7 +192,12 @@ def rate_limit(
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> Result[T, RateLimitError]:
-                if not limiter.consume():
+                try:
+                    consumed = limiter.consume()
+                except (RuntimeError, OSError, MemoryError) as e:
+                    return Err(RateLimitError(f"Resource exhaustion: {e!s}"))
+
+                if not consumed:
                     return Err(RateLimitError())
                 return Ok(await func(*args, **kwargs))
 
@@ -200,7 +205,12 @@ def rate_limit(
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
-            if not limiter.consume():
+            try:
+                consumed = limiter.consume()
+            except (RuntimeError, OSError, MemoryError) as e:
+                return Err(RateLimitError(f"Resource exhaustion: {e!s}"))
+
+            if not consumed:
                 return Err(RateLimitError())
             func_sync = cast(Callable[P, T], func)
             return Ok(func_sync(*args, **kwargs))
