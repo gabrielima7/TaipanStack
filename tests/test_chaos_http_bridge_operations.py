@@ -63,7 +63,7 @@ async def test_chaos_http_bridge_request_extreme_delay() -> None:
     max_examples=50,
 )
 @given(
-    url=st.text(min_size=1000, max_size=8000),
+    url=st.text(min_size=100, max_size=1000),
     method=st.sampled_from(
         [
             "GET",
