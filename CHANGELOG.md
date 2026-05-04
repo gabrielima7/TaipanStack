@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.7] - 2026-05-04
+
+### Security
+- **Fix (High)**: Resolved TOCTOU vulnerability in filesystem operations by enforcing atomic checks (PR #663).
+- **Fix (High)**: Hardened `guard_ssrf` against `UnicodeError` via fuzzing and strict normalization (PR #667).
+- **Fix (High)**: Hardened `verify_password` against malformed Argon2 hashes (PR #661).
+
+### Resilience
+- **Feat**: Implemented system resource exhaustion handling in `Bulkhead` to prevent thundering herds (PR #662).
+- **Hardening**: Injected system resource exhaustion in adaptive orchestrator and hardened semaphore acquisition (PR #668).
+
+### Refactoring & Clean Code
+- **Complexity**: Significantly reduced cyclomatic complexity across core resilience, circuit breaker, and compat modules (PR #680, #676, #666, #670).
+- **Typing**: Enhanced ASGI static typing in `web_bridge` using `TypeAlias` (PR #682).
+- **Typing**: Standardized internal Pydantic model typing and fixed unused arguments (PR #669).
+
+### CI/CD & Dependencies
+- **Optimization**: Optimized and strictly validated CI/CD pipelines to enforce zero-bypass execution (PR #675, #664).
+- **Fix**: Restored benchmark alert-threshold to 200% to accommodate GitHub runner variance (PR #664).
+
+### QA & Testing
+- **Audit**: Comprehensive test suite audit, refactor, and standardization for environment isolation (PR #683, #671, #665).
+- **Coverage**: Achieved true 100% genuine code coverage by resolving remaining coverage bypasses (PR #674).
+- **Test Suite**: Reached **1,299 passing tests** with 100% verified coverage.
+- **Synchronization**: Synchronized test count metrics across all documentation portals (PR #681, #672).
+
 ## [0.4.6] - 2026-04-30
 
 ### Security
@@ -613,7 +639,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...HEAD
+[0.4.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.3...v0.4.4
