@@ -1,5 +1,5 @@
-import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
 
 def test_circuit_breaker_chaos_type_mutation():
     """Chaos test: simulate type mutation of internal failure count."""
