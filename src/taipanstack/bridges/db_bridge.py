@@ -95,6 +95,36 @@ class ResilientDatabase:
         self._circuit_breaker = circuit_breaker
         self._retry_config = retry_config
 
+    async def _handle_attempt_failure(
+        self,
+        exc: Exception,
+        attempt: int,
+        max_attempts: int,
+    ) -> bool:
+        """Handle a failed execution attempt.
+
+        Args:
+            exc: The exception that occurred.
+            attempt: The current attempt number.
+            max_attempts: Maximum number of attempts allowed.
+
+        Returns:
+            True if the operation should be retried, False otherwise.
+
+        """
+        logger.warning(
+            "DB execute attempt %d failed: %s",
+            attempt,
+            exc,
+        )
+        if self._circuit_breaker is not None:
+            self._circuit_breaker._record_failure(exc)
+        if self._retry_config is not None and attempt < max_attempts:
+            delay = calculate_delay(attempt, self._retry_config)
+            await asyncio.sleep(min(delay, 3600.0))
+            return True
+        return False
+
     async def _execute_loop(
         self,
         statement: object,
@@ -111,16 +141,7 @@ class ResilientDatabase:
                     return Ok(result)
             except Exception as exc:
                 last_error = exc
-                logger.warning(
-                    "DB execute attempt %d failed: %s",
-                    attempt,
-                    exc,
-                )
-                if self._circuit_breaker is not None:
-                    self._circuit_breaker._record_failure(exc)
-                if self._retry_config is not None and attempt < max_attempts:
-                    delay = calculate_delay(attempt, self._retry_config)
-                    await asyncio.sleep(min(delay, 3600.0))
+                if await self._handle_attempt_failure(exc, attempt, max_attempts):
                     continue
                 break
 
