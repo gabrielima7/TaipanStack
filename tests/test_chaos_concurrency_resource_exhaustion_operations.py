@@ -6,7 +6,7 @@ from taipanstack.core.result import Err
 from taipanstack.utils.concurrency import OverloadError, limit_concurrency
 
 
-def test_sync_concurrency_memoryerror_chaos():
+def test_sync_concurrency_memoryerror_chaos_returns_err():
     @limit_concurrency(max_tasks=1)
     def dummy_task():
         return "success"
@@ -19,7 +19,7 @@ def test_sync_concurrency_memoryerror_chaos():
 
 
 @pytest.mark.asyncio
-async def test_async_concurrency_oserror_chaos():
+async def test_async_concurrency_oserror_chaos_returns_err():
     @limit_concurrency(max_tasks=1)
     async def dummy_task():
         return "success"
