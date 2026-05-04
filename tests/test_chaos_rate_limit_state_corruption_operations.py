@@ -1,7 +1,7 @@
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_chaos_rate_limit_state_corruption():
+def test_chaos_rate_limit_state_corruption_returns_false():
     """Simulate extreme state corruption in RateLimiter.
 
     If memory or state gets corrupted such that `time_window` is 0.0,
