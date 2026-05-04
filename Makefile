@@ -41,7 +41,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2022-42969
+	poetry run pip-audit --skip-editable
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."
