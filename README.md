@@ -35,7 +35,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 - **100% Real Coverage**: Eliminated all `pragma: no cover` bypasses for true 100% genuine code coverage (PR #644, #654).
 - **CI/CD Zero-Bypass**: Audited and hardened all pipelines to enforce strict zero-bypass execution (PR #643, #653, #639).
 - **Resilience Chaos**: Reinforced `RateLimiter` and `@timeout` against massive time jumps and thread exhaustion (PR #642, #638).
-- **Total Stack Coverage**: Reached **1,292 passing tests** with 100% verified genuine coverage across all modules.
+- **Total Stack Coverage**: Reached **1,296 passing tests** with 100% verified genuine coverage across all modules.
 
 <table>
 <tr>
@@ -73,7 +73,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1292 tests)
+- **100% code coverage** (1296 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -115,7 +115,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1292 tests)
+# Run tests with 100% coverage (1296 tests)
 make test
 
 # Check architecture contracts
@@ -170,7 +170,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1292 tests, 100% coverage
+├── tests/                # ✅ 1296 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
