@@ -10,20 +10,19 @@ from taipanstack.security.guards import SecurityError, guard_command_injection
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
 )
 @given(st.lists(st.text()))
-def test_fuzz_guard_command_generator(cmd_list):
+def test_fuzz_guard_command_generator_returns_ok_or_raises_error(cmd_list):
     def gen():
         yield from cmd_list
 
     try:
-        guard_command_injection(gen())
-    except SecurityError:
-        pass  # Expected for invalid commands or empty commands
+        result = guard_command_injection(gen())
+        assert isinstance(result, list)
     except Exception as e:
-        if not isinstance(e, (ValueError, TypeError)):
-            pytest.fail(f"Unexpected exception: {e}")
+        assert isinstance(e, (SecurityError, ValueError, TypeError))
+        assert str(e) != ""
 
 
-def test_guard_command_empty_generator():
+def test_guard_command_empty_generator_raises_error():
     def empty_gen():
         yield from ()
 
