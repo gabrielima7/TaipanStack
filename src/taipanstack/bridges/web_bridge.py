@@ -12,7 +12,7 @@ import json
 import logging
 from collections.abc import Awaitable, Callable, MutableMapping
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.utils.rate_limit import RateLimiter
@@ -22,10 +22,10 @@ logger = logging.getLogger("taipanstack.bridges.web")
 T = TypeVar("T")
 
 # ASGI type aliases
-Scope = MutableMapping[str, object]
-Receive = Callable[[], Awaitable[MutableMapping[str, object]]]
-Send = Callable[[MutableMapping[str, object]], Awaitable[None]]
-ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
+Scope: TypeAlias = MutableMapping[str, object]
+Receive: TypeAlias = Callable[[], Awaitable[MutableMapping[str, object]]]
+Send: TypeAlias = Callable[[MutableMapping[str, object]], Awaitable[None]]
+ASGIApp: TypeAlias = Callable[[Scope, Receive, Send], Awaitable[None]]
 
 
 @dataclass(frozen=True)
