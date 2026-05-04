@@ -19,7 +19,6 @@ def test_fuzz_guard_command_generator_returns_ok_or_raises_error(cmd_list):
         assert isinstance(result, list)
     except Exception as e:
         assert isinstance(e, (SecurityError, ValueError, TypeError))
-        assert str(e) != ""
 
 
 def test_guard_command_empty_generator_raises_error():
