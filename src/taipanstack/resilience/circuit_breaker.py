@@ -318,11 +318,23 @@ class CircuitBreaker:
 
     def _handle_failure_closed(self) -> None:
         """Handle failure when in CLOSED state."""
-        # Check against corrupted NaN/Inf failure_count
-        if not math.isfinite(self._state.failure_count):
+        try:
+            if not math.isfinite(self._state.failure_count):
+                self._state.state = CircuitState.OPEN
+                logger.warning(
+                    "Circuit %s opened due to state corruption (NaN/Inf failures)",
+                    self.name,
+                )
+                self._notify_state_change(
+                    CircuitState.CLOSED,
+                    CircuitState.OPEN,
+                )
+                return
+        except TypeError:
+            # Handle type mutation corruption
             self._state.state = CircuitState.OPEN
             logger.warning(
-                "Circuit %s opened due to state corruption (NaN/Inf failures)",
+                "Circuit %s opened due to state type corruption",
                 self.name,
             )
             self._notify_state_change(
@@ -352,11 +364,14 @@ class CircuitBreaker:
 
         with self._state.lock:
             # First handle corruption
-            if not math.isfinite(self._state.failure_count):
-                # `_handle_failure_closed` will open it
+            try:
+                if not math.isfinite(self._state.failure_count):
+                    # `_handle_failure_closed` will open it
+                    pass
+                else:
+                    self._state.failure_count += 1
+            except TypeError:
                 pass
-            else:
-                self._state.failure_count += 1
 
             now = time.monotonic()
             if math.isfinite(now):
