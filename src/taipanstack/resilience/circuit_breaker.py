@@ -344,6 +344,15 @@ class CircuitBreaker:
                 CircuitState.OPEN,
             )
 
+    def _update_failure_state(self) -> None:
+        """Update failure count and timestamp, handling potential state corruption."""
+        if math.isfinite(self._state.failure_count):
+            self._state.failure_count += 1
+
+        now = time.monotonic()
+        if math.isfinite(now):
+            self._state.last_failure_time = now
+
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
         # Check if exception should be excluded
@@ -351,16 +360,7 @@ class CircuitBreaker:
             return
 
         with self._state.lock:
-            # First handle corruption
-            if not math.isfinite(self._state.failure_count):
-                # `_handle_failure_closed` will open it
-                pass
-            else:
-                self._state.failure_count += 1
-
-            now = time.monotonic()
-            if math.isfinite(now):
-                self._state.last_failure_time = now
+            self._update_failure_state()
 
             match self._state.state:
                 case CircuitState.HALF_OPEN:

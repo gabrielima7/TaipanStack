@@ -287,6 +287,19 @@ class ResilienceOrchestrator(Generic[T]):
         )
         return await self._execute_with_retries(max_attempts, fn, *args, **kwargs)
 
+    async def _handle_retry_failure(
+        self,
+        error: Exception,
+        attempt: int,
+        max_attempts: int,
+    ) -> bool:
+        self._record_failure_outcome(error, attempt)
+        if self._retry_config is not None and attempt < max_attempts:
+            delay = self._calculate_retry_delay(attempt)
+            await asyncio.sleep(min(delay, 3600.0))
+            return True
+        return False
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -303,10 +316,7 @@ class ResilienceOrchestrator(Generic[T]):
                     return result
                 case Err(error):
                     last_error = error
-                    self._record_failure_outcome(error, attempt)
-                    if self._retry_config is not None and attempt < max_attempts:
-                        delay = self._calculate_retry_delay(attempt)
-                        await asyncio.sleep(min(delay, 3600.0))
+                    if await self._handle_retry_failure(error, attempt, max_attempts):
                         continue
                     break
 
