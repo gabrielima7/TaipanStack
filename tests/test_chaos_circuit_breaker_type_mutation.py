@@ -1,4 +1,3 @@
-
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
@@ -7,7 +6,7 @@ def test_circuit_breaker_survives_type_mutation_failure_metrics():
     breaker = CircuitBreaker(failure_threshold=3, timeout=0.01)
 
     # Intentionally mutate the state type
-    breaker._state.failure_count = "2" # type: ignore
+    breaker._state.failure_count = "2"  # type: ignore
 
     # Trigger a failure
     breaker._record_failure(ValueError("Boom"))
@@ -22,7 +21,7 @@ def test_circuit_breaker_survives_type_mutation_half_open_attempt():
 
     # Force into half-open
     breaker._state.state = CircuitState.HALF_OPEN
-    breaker._state.half_open_attempts = "1" # type: ignore
+    breaker._state.half_open_attempts = "1"  # type: ignore
 
     # Attempt call
     result = breaker._should_attempt()
@@ -37,7 +36,7 @@ def test_circuit_breaker_survives_type_mutation_half_open_success():
 
     # Force into half-open
     breaker._state.state = CircuitState.HALF_OPEN
-    breaker._state.success_count = "1" # type: ignore
+    breaker._state.success_count = "1"  # type: ignore
 
     # Record success
     breaker._record_success()
