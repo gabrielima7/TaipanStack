@@ -90,6 +90,7 @@ def _build_project_name_pattern(allow_hyphen: bool, allow_underscore: bool) -> s
         allowed += r"_"
     return rf"^[a-zA-Z][{allowed}]*\Z"
 
+
 def _build_invalid_chars_msg(allow_hyphen: bool, allow_underscore: bool) -> str:
     """Build the error message for invalid characters."""
     hyphen_msg = ", hyphens" if allow_hyphen else ""
@@ -98,6 +99,7 @@ def _build_invalid_chars_msg(allow_hyphen: bool, allow_underscore: bool) -> str:
         f"Project name contains invalid characters. "
         f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
     )
+
 
 def _check_project_name_chars(
     name: str, allow_hyphen: bool, allow_underscore: bool
@@ -248,6 +250,7 @@ def _check_email_basics(email: str) -> None:
     if "\x00" in email or not email.isprintable():
         msg = "Email contains invalid characters"
         raise ValueError(msg)
+
 
 def _check_email_format(email: str) -> None:
     """Check email format and basic constraints."""

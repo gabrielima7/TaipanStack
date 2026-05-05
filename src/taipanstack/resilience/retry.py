@@ -178,6 +178,7 @@ def _log_retry_callback_failure(func_name: str, e: Exception) -> None:
             str(e),
         )
 
+
 def _log_retry_attempt_fallback(
     func_name: str,
     attempt: int,
@@ -195,6 +196,7 @@ def _log_retry_attempt_fallback(
             error=str(exc),
             delay_seconds=round(delay, 3),
         )
+
 
 def _invoke_retry_callback(
     func_name: str,
