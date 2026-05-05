@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1777992266292,
+  "lastUpdate": 1777992383343,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -29001,6 +29001,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0004577944156699346",
             "extra": "mean: 10.31366194216027 usec\nrounds: 138639"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "60339a2391dcf7c45664df21dbf578664d8ddaab",
+          "message": "Harden CircuitBreaker against state type mutations (#684)\n\n* feat(resilience): harden CircuitBreaker against type mutations\n\nRefactored `CircuitBreaker` methods (`_update_failure_metrics`,\n`_handle_failure_closed`, `_handle_attempt_half_open`, and\n`_handle_success_half_open`) in `src/taipanstack/resilience/circuit_breaker.py`\nto safely catch `TypeError` during state evaluations with `math.isfinite()`.\n\nAdded a daily chaos test suite in `tests/test_chaos_circuit_breaker_type_mutation.py`\nto simulate cache serialization/deserialization corruption where integer\ncounters mutate into strings. The circuit breaker now degrades gracefully\ninto an `OPEN` state instead of crashing with uncaught exceptions.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* feat(resilience): harden CircuitBreaker against type mutations\n\nRefactored `CircuitBreaker` methods (`_update_failure_metrics`,\n`_handle_failure_closed`, `_handle_attempt_half_open`, and\n`_handle_success_half_open`) in `src/taipanstack/resilience/circuit_breaker.py`\nto safely catch `TypeError` during state evaluations with `math.isfinite()`.\n\nAdded a daily chaos test suite in `tests/test_chaos_circuit_breaker_type_mutation.py`\nto simulate cache serialization/deserialization corruption where integer\ncounters mutate into strings. The circuit breaker now degrades gracefully\ninto an `OPEN` state instead of crashing with uncaught exceptions.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* feat(resilience): harden CircuitBreaker against type mutations\n\nRefactored `CircuitBreaker` methods (`_update_failure_metrics`,\n`_handle_failure_closed`, `_handle_attempt_half_open`, and\n`_handle_success_half_open`) in `src/taipanstack/resilience/circuit_breaker.py`\nto safely catch `TypeError` during state evaluations with `math.isfinite()`.\n\nAdded a daily chaos test suite in `tests/test_chaos_circuit_breaker_type_mutation.py`\nto simulate cache serialization/deserialization corruption where integer\ncounters mutate into strings. The circuit breaker now degrades gracefully\ninto an `OPEN` state instead of crashing with uncaught exceptions.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-05-05T14:43:22Z",
+          "tree_id": "eee3d80e96354dab842decd126219a9eb3877bbd",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/60339a2391dcf7c45664df21dbf578664d8ddaab"
+        },
+        "date": 1777992382731,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_simple",
+            "value": 1068101.4972258685,
+            "unit": "iter/sec",
+            "range": "stddev: 1.0206387359410703e-7",
+            "extra": "mean: 936.2406125236395 nsec\nrounds: 110461"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_xss",
+            "value": 748905.7181656482,
+            "unit": "iter/sec",
+            "range": "stddev: 1.2903578726218622e-7",
+            "extra": "mean: 1.3352815658153177 usec\nrounds: 78132"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_unicode",
+            "value": 440001.4911438611,
+            "unit": "iter/sec",
+            "range": "stddev: 1.7115610274958652e-7",
+            "extra": "mean: 2.2727195705637255 usec\nrounds: 51230"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_complex",
+            "value": 264911.244374678,
+            "unit": "iter/sec",
+            "range": "stddev: 5.110796126627788e-7",
+            "extra": "mean: 3.774849204157024 usec\nrounds: 141423"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_long",
+            "value": 206253.5711241141,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000001627931039182738",
+            "extra": "mean: 4.848400900647897 usec\nrounds: 109254"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_nested",
+            "value": 67024.45445987611,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00000750190903047861",
+            "extra": "mean: 14.919927481075515 usec\nrounds: 71995"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_traversal",
+            "value": 89776.32831158445,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0000072748049339162036",
+            "extra": "mean: 11.138793697703084 usec\nrounds: 95457"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_standard",
+            "value": 4364877.450533306,
+            "unit": "iter/sec",
+            "range": "stddev: 1.8656146600313907e-8",
+            "extra": "mean: 229.1015065904782 nsec\nrounds: 43396"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_large",
+            "value": 2452987.976168741,
+            "unit": "iter/sec",
+            "range": "stddev: 7.039424279867654e-8",
+            "extra": "mean: 407.6660830445147 nsec\nrounds: 198099"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier",
+            "value": 5681462.139144498,
+            "unit": "iter/sec",
+            "range": "stddev: 1.3852434708266453e-8",
+            "extra": "mean: 176.0110294690496 nsec\nrounds: 58807"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier_dirty",
+            "value": 851924.7157018251,
+            "unit": "iter/sec",
+            "range": "stddev: 1.1584571618146775e-7",
+            "extra": "mean: 1.1738126404468143 usec\nrounds: 88913"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_ok",
+            "value": 3028395.4650570527,
+            "unit": "iter/sec",
+            "range": "stddev: 4.5542614421256175e-8",
+            "extra": "mean: 330.20786470534404 nsec\nrounds: 190549"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_err",
+            "value": 1432552.48580686,
+            "unit": "iter/sec",
+            "range": "stddev: 9.342590545572909e-8",
+            "extra": "mean: 698.0547029918886 nsec\nrounds: 151999"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_collect_results_100",
+            "value": 151373.3018620076,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000001016412385916398",
+            "extra": "mean: 6.606184761111992 usec\nrounds: 158253"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_unwrap_or",
+            "value": 11556597.399118625,
+            "unit": "iter/sec",
+            "range": "stddev: 9.820794680448896e-9",
+            "extra": "mean: 86.53065997407984 nsec\nrounds: 119732"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_public",
+            "value": 101597.3103148028,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0004978889381225157",
+            "extra": "mean: 9.842780255712135 usec\nrounds: 153847"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_private",
+            "value": 103411.27979701065,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003938635375039566",
+            "extra": "mean: 9.670124980204601 usec\nrounds: 138870"
           }
         ]
       }
