@@ -81,6 +81,24 @@ def _check_project_name_length(name: str, max_length: int) -> None:
         raise ValueError(msg)
 
 
+def _build_project_name_pattern(allow_hyphen: bool, allow_underscore: bool) -> str:
+    """Build the regex pattern for allowed characters."""
+    allowed = r"a-zA-Z0-9"
+    if allow_hyphen:
+        allowed += r"-"
+    if allow_underscore:
+        allowed += r"_"
+    return rf"^[a-zA-Z][{allowed}]*\Z"
+
+def _build_invalid_chars_msg(allow_hyphen: bool, allow_underscore: bool) -> str:
+    """Build the error message for invalid characters."""
+    hyphen_msg = ", hyphens" if allow_hyphen else ""
+    underscore_msg = ", underscores" if allow_underscore else ""
+    return (
+        f"Project name contains invalid characters. "
+        f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
+    )
+
 def _check_project_name_chars(
     name: str, allow_hyphen: bool, allow_underscore: bool
 ) -> None:
@@ -95,25 +113,13 @@ def _check_project_name_chars(
         ValueError: If name contains invalid characters.
 
     """
-    # Build allowed characters
-    allowed = r"a-zA-Z0-9"
-    if allow_hyphen:
-        allowed += r"-"
-    if allow_underscore:
-        allowed += r"_"
-
-    pattern = rf"^[a-zA-Z][{allowed}]*\Z"
+    pattern = _build_project_name_pattern(allow_hyphen, allow_underscore)
 
     if not re.match(pattern, name):
         if not name[0].isalpha():
             msg = "Project name must start with a letter"
             raise ValueError(msg)
-        hyphen_msg = ", hyphens" if allow_hyphen else ""
-        underscore_msg = ", underscores" if allow_underscore else ""
-        msg = (
-            f"Project name contains invalid characters. "
-            f"Allowed: letters, numbers{hyphen_msg}{underscore_msg}"
-        )
+        msg = _build_invalid_chars_msg(allow_hyphen, allow_underscore)
         raise ValueError(msg)
 
 
@@ -229,8 +235,8 @@ def validate_python_version(version: str) -> str:
     return version
 
 
-def _check_email_format(email: str) -> None:
-    """Check email format and basic constraints."""
+def _check_email_basics(email: str) -> None:
+    """Check basic email constraints like empty, length and invalid characters."""
     if not email:
         msg = "Email cannot be empty"
         raise ValueError(msg)
@@ -242,6 +248,10 @@ def _check_email_format(email: str) -> None:
     if "\x00" in email or not email.isprintable():
         msg = "Email contains invalid characters"
         raise ValueError(msg)
+
+def _check_email_format(email: str) -> None:
+    """Check email format and basic constraints."""
+    _check_email_basics(email)
 
     # RFC 5322 compliant pattern (simplified)
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
