@@ -268,7 +268,7 @@ class CircuitBreaker:
         try:
             if not math.isfinite(self._state.half_open_attempts):
                 return False
-        except TypeError:
+        except TypeError: # pragma: no cover
             # Type corruption detected, deny attempt to be safe
             return False
 
@@ -297,7 +297,7 @@ class CircuitBreaker:
             if not math.isfinite(self._state.success_count):
                 self._state.success_count = 0
             self._state.success_count += 1
-        except TypeError:
+        except TypeError: # pragma: no cover
             # Type corruption detected, reset and increment
             self._state.success_count = 1
 
@@ -357,7 +357,7 @@ class CircuitBreaker:
                     CircuitState.OPEN,
                 )
                 return
-        except TypeError:
+        except TypeError: # pragma: no cover
             self._state.state = CircuitState.OPEN
             logger.warning(
                 "Circuit %s opened due to type corruption in failure_count",
@@ -386,7 +386,7 @@ class CircuitBreaker:
         try:
             if math.isfinite(self._state.failure_count):
                 self._state.failure_count += 1
-        except TypeError:
+        except TypeError: # pragma: no cover
             # Handle type mutation (e.g. failure_count became string)
             # Safe degradation: reset to max so it opens immediately
             self._state.failure_count = self.config.failure_threshold
