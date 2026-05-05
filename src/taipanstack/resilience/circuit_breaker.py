@@ -265,8 +265,13 @@ class CircuitBreaker:
         return False
 
     def _handle_attempt_half_open(self) -> bool:
-        if not math.isfinite(self._state.half_open_attempts):
+        try:
+            if not math.isfinite(self._state.half_open_attempts):
+                return False
+        except TypeError:  # pragma: no cover
+            # Type corruption detected, deny attempt to be safe
             return False
+
         if self._state.half_open_attempts < self.config.success_threshold:
             self._state.half_open_attempts += 1
             return True
@@ -288,9 +293,13 @@ class CircuitBreaker:
         return False
 
     def _handle_success_half_open(self) -> None:
-        if not math.isfinite(self._state.success_count):
-            self._state.success_count = 0
-        self._state.success_count += 1
+        try:
+            if not math.isfinite(self._state.success_count):
+                self._state.success_count = 0
+            self._state.success_count += 1
+        except TypeError:  # pragma: no cover
+            # Type corruption detected, reset and increment
+            self._state.success_count = 1
 
         if self._state.success_count >= self.config.success_threshold:
             self._state.state = CircuitState.CLOSED
@@ -336,10 +345,22 @@ class CircuitBreaker:
     def _handle_failure_closed(self) -> None:
         """Handle failure when in CLOSED state."""
         # Check against corrupted NaN/Inf failure_count
-        if not math.isfinite(self._state.failure_count):
+        try:
+            if not math.isfinite(self._state.failure_count):
+                self._state.state = CircuitState.OPEN
+                logger.warning(
+                    "Circuit %s opened due to state corruption (NaN/Inf failures)",
+                    self.name,
+                )
+                self._notify_state_change(
+                    CircuitState.CLOSED,
+                    CircuitState.OPEN,
+                )
+                return
+        except TypeError:  # pragma: no cover
             self._state.state = CircuitState.OPEN
             logger.warning(
-                "Circuit %s opened due to state corruption (NaN/Inf failures)",
+                "Circuit %s opened due to type corruption in failure_count",
                 self.name,
             )
             self._notify_state_change(
@@ -362,8 +383,14 @@ class CircuitBreaker:
             )
 
     def _update_failure_metrics(self) -> None:
-        if math.isfinite(self._state.failure_count):
-            self._state.failure_count += 1
+        try:
+            if math.isfinite(self._state.failure_count):
+                self._state.failure_count += 1
+        except TypeError:  # pragma: no cover
+            # Handle type mutation (e.g. failure_count became string)
+            # Safe degradation: reset to max so it opens immediately
+            self._state.failure_count = self.config.failure_threshold
+
         now = time.monotonic()
         if math.isfinite(now):
             self._state.last_failure_time = now
