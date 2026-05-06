@@ -235,9 +235,6 @@ async def _execute_with_retries(
             return outcome
         if isinstance(outcome, Exception):
             last_error = outcome
-            continue
-        if outcome is True:
-            continue
 
     return Err(last_error or RuntimeError("Request failed"))
 
