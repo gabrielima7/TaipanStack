@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1777992383343,
+  "lastUpdate": 1778100339279,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -29144,6 +29144,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003938635375039566",
             "extra": "mean: 9.670124980204601 usec\nrounds: 138870"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3b8adbc87ee270e0792336bcefef627df9d39a99",
+          "message": "Refactor Core Modules to Reduce Cyclomatic Complexity (#692)\n\n* refactor: reduce cyclomatic complexity in core resilience and bridge modules\n\n- Extracted logic from `http_bridge.py`, `circuit_breaker.py`, `resource_watcher.py`, `health_pinger.py`, and `result.py`.\n- Substituted inline checking algorithms with dedicated helper functions.\n- Introduced guard clauses and early returns to flatten execution hierarchies.\n- Resolved type-checking bug associated with `Result` generics inside `isinstance`.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* refactor: fix generic instance check type error in http bridge\n\n- Resolved `TypeError: Subscripted generics cannot be used with class and instance checks` by explicitly checking against `(Ok, Err)` instead of `Result`.\n- Extracted logic from `http_bridge.py`, `circuit_breaker.py`, `resource_watcher.py`, `health_pinger.py`, and `result.py`.\n- Substituted inline checking algorithms with dedicated helper functions.\n- Introduced guard clauses and early returns to flatten execution hierarchies.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* refactor: explicitly define type bounds to solve union-attr errors\n\n- Fixed `union-attr` static type-checking issues inside `_collect_list` inside `src/taipanstack/core/result.py`.\n- Formatted file using the `ruff format` to meet strict formatting bounds.\n- Checked explicitly with `pytest` locally to confirm test integrity across test suites.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* refactor: fix typing & cyclic logic\n\n- Address cyclomatic complexity inside internal methods in `http_bridge.py`.\n- Apply missing mock branch validations.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-05-06T20:44:24Z",
+          "tree_id": "a17fe367b1a73ecfddc79addeb30a09cd27a3329",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/3b8adbc87ee270e0792336bcefef627df9d39a99"
+        },
+        "date": 1778100338979,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_simple",
+            "value": 1112495.1514280133,
+            "unit": "iter/sec",
+            "range": "stddev: 1.259974987922383e-7",
+            "extra": "mean: 898.8803220551324 nsec\nrounds: 125755"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_xss",
+            "value": 760394.7532836206,
+            "unit": "iter/sec",
+            "range": "stddev: 3.6136405320081985e-7",
+            "extra": "mean: 1.3151063913601833 usec\nrounds: 87055"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_unicode",
+            "value": 440012.1940206227,
+            "unit": "iter/sec",
+            "range": "stddev: 2.7249510953569374e-7",
+            "extra": "mean: 2.272664288829353 usec\nrounds: 45868"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_complex",
+            "value": 267454.7390353648,
+            "unit": "iter/sec",
+            "range": "stddev: 9.442265848825329e-7",
+            "extra": "mean: 3.738950386920505 usec\nrounds: 141243"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_long",
+            "value": 198482.20246980587,
+            "unit": "iter/sec",
+            "range": "stddev: 7.815847874549204e-7",
+            "extra": "mean: 5.0382351039868425 usec\nrounds: 110449"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_nested",
+            "value": 66056.72251046041,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000008170218980909362",
+            "extra": "mean: 15.13850463655149 usec\nrounds: 68909"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_traversal",
+            "value": 87623.7260849715,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000003736443054405049",
+            "extra": "mean: 11.41243410523616 usec\nrounds: 93581"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_standard",
+            "value": 4371741.585789505,
+            "unit": "iter/sec",
+            "range": "stddev: 1.637401946038087e-8",
+            "extra": "mean: 228.74179097188883 nsec\nrounds: 44836"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_large",
+            "value": 2396774.6847777,
+            "unit": "iter/sec",
+            "range": "stddev: 7.757899491455065e-8",
+            "extra": "mean: 417.227370745854 nsec\nrounds: 193163"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier",
+            "value": 5349349.919343794,
+            "unit": "iter/sec",
+            "range": "stddev: 1.5730579093520337e-8",
+            "extra": "mean: 186.93860283539172 nsec\nrounds: 56221"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier_dirty",
+            "value": 895824.5755631271,
+            "unit": "iter/sec",
+            "range": "stddev: 1.2531624448585142e-7",
+            "extra": "mean: 1.1162899827472235 usec\nrounds: 93319"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_ok",
+            "value": 3069156.0705531924,
+            "unit": "iter/sec",
+            "range": "stddev: 4.665951278796122e-8",
+            "extra": "mean: 325.8224661802143 nsec\nrounds: 192753"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_err",
+            "value": 1426927.6091391307,
+            "unit": "iter/sec",
+            "range": "stddev: 8.608771936424218e-8",
+            "extra": "mean: 700.8063994244378 nsec\nrounds: 149701"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_collect_results_100",
+            "value": 145785.21677464904,
+            "unit": "iter/sec",
+            "range": "stddev: 8.741727389383469e-7",
+            "extra": "mean: 6.859406064098898 usec\nrounds: 153163"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_unwrap_or",
+            "value": 12121214.390965786,
+            "unit": "iter/sec",
+            "range": "stddev: 9.363493793909536e-9",
+            "extra": "mean: 82.4999845513891 nsec\nrounds: 126872"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_public",
+            "value": 105044.36018681909,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0003760430768012729",
+            "extra": "mean: 9.519787623262419 usec\nrounds: 144093"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_private",
+            "value": 93155.5856405369,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0004965873186656336",
+            "extra": "mean: 10.734729357601156 usec\nrounds: 140233"
           }
         ]
       }
