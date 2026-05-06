@@ -144,24 +144,26 @@ class HealthPinger(BaseWatcher):
         """Update target status and handle side-effects."""
         previous = self._last_status.get(target.name)
 
-        if previous != is_healthy:
-            self._last_status[target.name] = is_healthy
-
-            if self._on_health_change is not None:
-                self._on_health_change(target.name, is_healthy)
-
-            if is_healthy:
-                logger.info("Target '%s' is now healthy", target.name)
-            else:
-                logger.warning("Target '%s' is now unhealthy", target.name)
-
-        # Open circuit breaker preventively on failure
+        # Open circuit breaker preventively on failure (always checked)
         if (
             not is_healthy
             and target.circuit_breaker is not None
             and target.circuit_breaker.state != CircuitState.OPEN
         ):
             _force_open_breaker(target.circuit_breaker, target.name)
+
+        if previous == is_healthy:
+            return
+
+        self._last_status[target.name] = is_healthy
+
+        if self._on_health_change is not None:
+            self._on_health_change(target.name, is_healthy)
+
+        if is_healthy:
+            logger.info("Target '%s' is now healthy", target.name)
+        else:
+            logger.warning("Target '%s' is now unhealthy", target.name)
 
     async def _run(self) -> None:
         """Execute a single health-check cycle."""

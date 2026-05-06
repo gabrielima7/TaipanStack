@@ -165,6 +165,42 @@ async def _handle_http_exception(
     return False
 
 
+async def _execute_single_attempt(
+    request_func: Callable[[], Awaitable[httpx.Response]],
+    retry_config: RetryConfig | None,
+    circuit_breaker: CircuitBreaker | None,
+    retryable_status_codes: frozenset[int],
+    attempt: int,
+    max_attempts: int,
+) -> Result[httpx.Response, Exception] | Exception | bool:
+    """Execute a single HTTP attempt.
+
+    Returns Result on success/final failure, Exception if it failed and we
+    should record it, or True if we should just retry because of status code.
+    """
+    try:
+        response = await request_func()
+        if _should_retry_status(
+            response,
+            retry_config,
+            retryable_status_codes,
+            attempt,
+            max_attempts,
+        ):
+            # Config is not None if we reach here
+            delay = calculate_delay(attempt, cast(RetryConfig, retry_config))
+            await asyncio.sleep(min(delay, 3600.0))
+            return True
+        return Ok(response)
+    except Exception as exc:
+        should_retry = await _handle_http_exception(
+            exc, attempt, max_attempts, retry_config, circuit_breaker
+        )
+        if should_retry:
+            return exc
+        return Err(exc)
+
+
 async def _execute_with_retries(
     request_func: Callable[[], Awaitable[httpx.Response]],
     retry_config: RetryConfig | None,
@@ -187,28 +223,18 @@ async def _execute_with_retries(
     last_error: Exception | None = None
 
     for attempt in range(1, max_attempts + 1):
-        try:
-            response = await request_func()
-            if _should_retry_status(
-                response,
-                retry_config,
-                retryable_status_codes,
-                attempt,
-                max_attempts,
-            ):
-                # Config is not None if we reach here
-                delay = calculate_delay(attempt, cast(RetryConfig, retry_config))
-                await asyncio.sleep(min(delay, 3600.0))
-                continue
-            return Ok(response)
-        except Exception as exc:
-            last_error = exc
-            should_retry = await _handle_http_exception(
-                exc, attempt, max_attempts, retry_config, circuit_breaker
-            )
-            if should_retry:
-                continue
-            break
+        outcome = await _execute_single_attempt(
+            request_func,
+            retry_config,
+            circuit_breaker,
+            retryable_status_codes,
+            attempt,
+            max_attempts,
+        )
+        if isinstance(outcome, (Ok, Err)):
+            return outcome
+        if isinstance(outcome, Exception):
+            last_error = outcome
 
     return Err(last_error or RuntimeError("Request failed"))
 

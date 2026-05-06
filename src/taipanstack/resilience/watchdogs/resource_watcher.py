@@ -128,28 +128,26 @@ class ResourceWatcher(BaseWatcher):
             )
         return await super().start()
 
+    def _check_threshold(self, name: str, value: float, threshold: float) -> None:
+        if value >= threshold:
+            logger.warning(
+                "%s threshold breached: %.1f%% >= %.1f%%",
+                name.capitalize(),
+                value,
+                threshold,
+            )
+            if self._on_threshold_breach is not None:
+                self._on_threshold_breach(name, value)
+
+    def _handle_snapshot(self, snapshot: ResourceSnapshot) -> None:
+        self._check_threshold("cpu", snapshot.cpu_percent, self._cpu_threshold)
+        self._check_threshold("memory", snapshot.memory_percent, self._memory_threshold)
+
     async def _run(self) -> None:
         """Execute a single resource check cycle."""
         result = check_resources()
         match result:
             case Ok(snapshot):
-                if snapshot.cpu_percent >= self._cpu_threshold:
-                    logger.warning(
-                        "CPU threshold breached: %.1f%% >= %.1f%%",
-                        snapshot.cpu_percent,
-                        self._cpu_threshold,
-                    )
-                    if self._on_threshold_breach is not None:
-                        self._on_threshold_breach("cpu", snapshot.cpu_percent)
-
-                if snapshot.memory_percent >= self._memory_threshold:
-                    logger.warning(
-                        "Memory threshold breached: %.1f%% >= %.1f%%",
-                        snapshot.memory_percent,
-                        self._memory_threshold,
-                    )
-                    if self._on_threshold_breach is not None:
-                        self._on_threshold_breach("memory", snapshot.memory_percent)
-
+                self._handle_snapshot(snapshot)
             case Err(error):
                 logger.error("Resource check failed: %s", error)
