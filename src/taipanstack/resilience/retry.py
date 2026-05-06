@@ -187,7 +187,7 @@ def _log_retry_attempt_fallback(
     config: RetryConfig,
 ) -> None:
     """Log the retry attempt if no callback is provided."""
-    if _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
+    if _HAS_STRUCTLOG and _structlog_logger is not None:
         _structlog_logger.warning(
             "retry_attempted",
             function=func_name,
@@ -373,7 +373,7 @@ def retry(
                 last_exception: Exception | None = None
                 last_result: R | None = None
 
-                for attempt in range(1, max_attempts + 1):  # pragma: no branch
+                for attempt in range(1, max_attempts + 1):
                     last_result = None
                     try:
                         last_result = await func_coro(*args, **kwargs)
@@ -421,7 +421,7 @@ def retry(
             last_exception: Exception | None = None
             last_result: R | None = None
 
-            for attempt in range(1, max_attempts + 1):  # pragma: no branch
+            for attempt in range(1, max_attempts + 1):
                 last_result = None
                 try:
                     last_result = func_sync(*args, **kwargs)

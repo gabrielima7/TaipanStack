@@ -222,7 +222,7 @@ class CircuitBreaker:
                 self._on_state_change(old_state, new_state)
             except Exception as e:
                 self._log_callback_failure(old_state, new_state, e)
-        elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
+        elif _HAS_STRUCTLOG and _structlog_logger is not None:
             _structlog_logger.warning(
                 "circuit_state_changed",
                 circuit=self.name,
@@ -268,7 +268,7 @@ class CircuitBreaker:
         try:
             if not math.isfinite(self._state.half_open_attempts):
                 return False
-        except TypeError:  # pragma: no cover
+        except TypeError:
             # Type corruption detected, deny attempt to be safe
             return False
 
@@ -297,7 +297,7 @@ class CircuitBreaker:
             if not math.isfinite(self._state.success_count):
                 self._state.success_count = 0
             self._state.success_count += 1
-        except TypeError:  # pragma: no cover
+        except TypeError:
             # Type corruption detected, reset and increment
             self._state.success_count = 1
 
@@ -326,7 +326,7 @@ class CircuitBreaker:
                     # Reset failure count on success
                     self._state.failure_count = 0
 
-                case CircuitState.OPEN:  # pragma: no branch
+                case CircuitState.OPEN:
                     pass  # Should not happen, but handle gracefully
 
     def _handle_failure_half_open(self) -> None:
@@ -357,7 +357,7 @@ class CircuitBreaker:
                     CircuitState.OPEN,
                 )
                 return
-        except TypeError:  # pragma: no cover
+        except TypeError:
             self._state.state = CircuitState.OPEN
             logger.warning(
                 "Circuit %s opened due to type corruption in failure_count",
@@ -386,7 +386,7 @@ class CircuitBreaker:
         try:
             if math.isfinite(self._state.failure_count):
                 self._state.failure_count += 1
-        except TypeError:  # pragma: no cover
+        except TypeError:
             # Handle type mutation (e.g. failure_count became string)
             # Safe degradation: reset to max so it opens immediately
             self._state.failure_count = self.config.failure_threshold
@@ -411,7 +411,7 @@ class CircuitBreaker:
                 case CircuitState.CLOSED:
                     self._handle_failure_closed()
 
-                case CircuitState.OPEN:  # pragma: no branch
+                case CircuitState.OPEN:
                     pass  # Already open, nothing to do
 
     def reset(self) -> None:

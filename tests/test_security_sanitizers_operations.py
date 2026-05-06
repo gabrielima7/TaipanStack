@@ -492,3 +492,26 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
         assert result == "test__txt"
     finally:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
+
+def test_security_sanitizers_process_path_part_dot_returns_none() -> None:
+    """Test that a dot '.' part is ignored in _process_path_part."""
+    from taipanstack.security.sanitizers import _process_path_part
+
+    parts: list[str] = []
+    _process_path_part(".", parts, "/")
+    assert len(parts) == 0
+
+
+def test_security_sanitizers_handle_normal_part_empty_safe_part_returns_none() -> None:
+    """Test that an empty safe_part is ignored in _handle_normal_part."""
+    from unittest.mock import patch
+
+    from taipanstack.security.sanitizers import _handle_normal_part
+
+    parts: list[str] = []
+    with (
+        patch("taipanstack.security.sanitizers._is_safe_path_part", return_value=False),
+        patch("taipanstack.security.sanitizers.sanitize_filename", return_value=""),
+    ):
+        _handle_normal_part("unsafe", parts)
+    assert len(parts) == 0

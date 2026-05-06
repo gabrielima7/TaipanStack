@@ -129,7 +129,7 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
     match ssrf_result:
         case Err(security_err):
             return Err(security_err)
-        case Ok():  # pragma: no branch
+        case Ok():
             return Ok(None)
 
 
@@ -156,7 +156,7 @@ async def _handle_http_exception(
     circuit_breaker: CircuitBreaker | None,
 ) -> bool:
     """Handle exception and return True if we should retry, False otherwise."""
-    if circuit_breaker is not None:  # pragma: no branch
+    if circuit_breaker is not None:
         circuit_breaker._record_failure(exc)
     if retry_config is not None and attempt < max_attempts:
         delay = calculate_delay(attempt, retry_config)

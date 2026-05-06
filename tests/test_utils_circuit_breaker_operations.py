@@ -371,3 +371,77 @@ class TestCircuitBreakerError:
         """Test error message."""
         error = CircuitBreakerError("Circuit is open", CircuitState.OPEN)
         assert "Circuit is open" in str(error)
+
+def test_utils_circuit_breaker_record_success_open_state_fallback() -> None:
+    """Test _record_success falls back gracefully on OPEN state."""
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = CircuitState.OPEN
+    breaker._record_success()
+    assert breaker._state.state == CircuitState.OPEN
+
+
+def test_utils_circuit_breaker_handle_failure_closed_typeerror_opens_circuit() -> None:
+    """Test that a TypeError when checking failure_count opens the circuit."""
+    from unittest.mock import patch
+
+    from taipanstack.resilience.circuit_breaker import (
+        CircuitBreaker,
+        CircuitState,
+    )
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = CircuitState.CLOSED
+    breaker._state.failure_count = "corrupted"  # type: ignore
+
+    with patch(
+        "taipanstack.resilience.circuit_breaker.math.isfinite",
+        side_effect=TypeError("mock type error"),
+    ):
+        breaker._handle_failure_closed()
+
+    assert breaker._state.state == CircuitState.OPEN
+
+
+def test_utils_circuit_breaker_record_failure_open_state_returns_none() -> None:
+    """Test that recording failure in OPEN state does nothing."""
+    from taipanstack.resilience.circuit_breaker import (
+        CircuitBreaker,
+        CircuitState,
+    )
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = CircuitState.OPEN
+    breaker._record_failure(ValueError("test error"))
+    assert breaker._state.state == CircuitState.OPEN
+
+
+def test_utils_circuit_breaker_handle_success_half_open_unreachable_state() -> None:
+    """Test that _handle_success_half_open handles fallback OPEN state if called manually."""
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = CircuitState.OPEN
+    breaker._handle_success_half_open()
+    assert breaker._state.state == CircuitState.OPEN
+
+
+def test_utils_circuit_breaker_record_success_invalid_state_returns_none() -> None:
+    """Test _record_success handles unreachable state gracefully."""
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = "INVALID_STATE"  # type: ignore
+    breaker._record_success()
+    assert breaker._state.state == "INVALID_STATE"
+
+
+def test_utils_circuit_breaker_record_failure_invalid_state_returns_none() -> None:
+    """Test _record_failure handles unreachable state gracefully."""
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
+    breaker = CircuitBreaker(name="test", failure_threshold=3)
+    breaker._state.state = "INVALID_STATE"  # type: ignore
+    breaker._record_failure(Exception("test"))
+    assert breaker._state.state == "INVALID_STATE"

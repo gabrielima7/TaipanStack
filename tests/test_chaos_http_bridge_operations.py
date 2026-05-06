@@ -20,8 +20,8 @@ async def test_chaos_http_bridge_safe_client_exception_extreme() -> None:
         mock_httpx.AsyncClient.side_effect = MemoryError("OOM")
 
         with pytest.raises(MemoryError):
-            async with SafeHttpClient():
-                pass
+            async with SafeHttpClient() as client:
+                await client.get("http://example.com")
 
 
 @pytest.mark.asyncio
