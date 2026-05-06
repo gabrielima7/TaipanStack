@@ -186,7 +186,9 @@ def _collect_list(
     results: list[Result[T, E]] | tuple[Result[T, E], ...]
 ) -> Result[list[T], E] | None:
     try:
-        return Ok([r.ok_value for r in results])
+        # Note: mypy warns about `ok_value` not existing on Err, which is
+        # handled by the AttributeError catch at runtime.
+        return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
     except AttributeError:
         return None
 
