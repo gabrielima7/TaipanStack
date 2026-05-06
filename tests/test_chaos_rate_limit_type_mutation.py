@@ -10,6 +10,7 @@ def test_rate_limit_survives_type_mutation_last_update():
     # Should safely fail closed
     assert limiter.consume() is False
 
+
 def test_rate_limit_survives_type_mutation_capacity():
     limiter = RateLimiter(10, 10.0)
 
@@ -18,6 +19,7 @@ def test_rate_limit_survives_type_mutation_capacity():
 
     # Should safely fail closed
     assert limiter.consume() is False
+
 
 def test_rate_limit_survives_type_mutation_tokens():
     limiter = RateLimiter(10, 10.0)
@@ -28,6 +30,7 @@ def test_rate_limit_survives_type_mutation_tokens():
     # Should safely fail closed
     assert limiter.consume() is False
 
+
 def test_rate_limit_survives_type_mutation_time_window():
     limiter = RateLimiter(10, 10.0)
 
@@ -36,6 +39,7 @@ def test_rate_limit_survives_type_mutation_time_window():
 
     # Should safely fail closed
     assert limiter.consume() is False
+
 
 def test_rate_limit_survives_type_mutation_now_consume():
     limiter = RateLimiter(10, 10.0)
@@ -51,11 +55,13 @@ def test_rate_limit_survives_type_mutation_now_consume():
     object.__setattr__(limiter, "capacity", "string")
     assert limiter._is_valid_bucket_state() is False
 
+
 def test_rate_limit_survives_type_mutation_add_tokens():
     limiter = RateLimiter(10, 10.0)
     # Mutate tokens to hit math.isfinite(self.tokens) TypeError in _add_tokens
     object.__setattr__(limiter, "tokens", "string")
     assert limiter._add_tokens(10.0) is False
+
 
 def test_rate_limit_survives_type_mutation_consume_now():
     limiter = RateLimiter(10, 10.0)
@@ -63,12 +69,15 @@ def test_rate_limit_survives_type_mutation_consume_now():
     # consume tries tokens >= tokens
     assert limiter.consume() is False
 
+
 def test_rate_limit_survives_type_mutation_consume_now_not_finite():
     import math
+
     limiter = RateLimiter(10, 10.0)
     object.__setattr__(limiter, "tokens", "string")
 
     import unittest.mock
+
     with unittest.mock.patch("time.monotonic", return_value=math.nan):
         # Hits math.isfinite(now) == False, then tries tokens >= tokens -> TypeError
         assert limiter.consume() is False
