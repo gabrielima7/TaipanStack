@@ -372,6 +372,7 @@ class TestCircuitBreakerError:
         error = CircuitBreakerError("Circuit is open", CircuitState.OPEN)
         assert "Circuit is open" in str(error)
 
+
 def test_utils_circuit_breaker_record_success_open_state_fallback() -> None:
     """Test _record_success falls back gracefully on OPEN state."""
     from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState

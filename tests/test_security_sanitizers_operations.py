@@ -493,6 +493,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
     finally:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
+
 def test_security_sanitizers_process_path_part_dot_returns_none() -> None:
     """Test that a dot '.' part is ignored in _process_path_part."""
     from taipanstack.security.sanitizers import _process_path_part
