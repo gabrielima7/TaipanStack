@@ -183,7 +183,7 @@ def safe_from(
 
 
 def _collect_list(
-    results: list[Result[T, E]] | tuple[Result[T, E], ...]
+    results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
     try:
         # Note: mypy warns about `ok_value` not existing on Err, which is
@@ -191,6 +191,7 @@ def _collect_list(
         return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
     except AttributeError:
         return None
+
 
 def collect_results(
     results: Iterable[Result[T, E]],
