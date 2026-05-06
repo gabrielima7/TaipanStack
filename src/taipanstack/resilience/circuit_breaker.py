@@ -127,15 +127,23 @@ class CircuitBreaker:
     """
 
     @staticmethod
+    def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
+        if not math.isfinite(value) or value < min_val:
+            raise ValueError(err_msg)
+
+    @staticmethod
     def _validate_thresholds(
         timeout: float, failure_threshold: int, success_threshold: int
     ) -> None:
-        if not math.isfinite(timeout) or timeout < 0:
-            raise ValueError("timeout must be a finite non-negative number")
-        if not math.isfinite(failure_threshold) or failure_threshold < 1:
-            raise ValueError("failure_threshold must be a finite number >= 1")
-        if not math.isfinite(success_threshold) or success_threshold < 1:
-            raise ValueError("success_threshold must be a finite number >= 1")
+        CircuitBreaker._check_finite_val(
+            timeout, 0, "timeout must be a finite non-negative number"
+        )
+        CircuitBreaker._check_finite_val(
+            failure_threshold, 1, "failure_threshold must be a finite number >= 1"
+        )
+        CircuitBreaker._check_finite_val(
+            success_threshold, 1, "success_threshold must be a finite number >= 1"
+        )
 
     def __init__(
         self,

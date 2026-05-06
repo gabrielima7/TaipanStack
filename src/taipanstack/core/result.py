@@ -182,6 +182,14 @@ def safe_from(
     return cast(SafeFromDecorator[E], decorator)
 
 
+def _collect_list(
+    results: list[Result[T, E]] | tuple[Result[T, E], ...]
+) -> Result[list[T], E] | None:
+    try:
+        return Ok([r.ok_value for r in results])
+    except AttributeError:
+        return None
+
 def collect_results(
     results: Iterable[Result[T, E]],
 ) -> Result[list[T], E]:
@@ -204,10 +212,9 @@ def collect_results(
 
     """
     if isinstance(results, (list, tuple)):
-        try:
-            return Ok([r.ok_value for r in results])
-        except AttributeError:
-            pass
+        optimized_res = _collect_list(results)
+        if optimized_res is not None:
+            return optimized_res
 
     ok_cls = Ok
     err_cls = Err
