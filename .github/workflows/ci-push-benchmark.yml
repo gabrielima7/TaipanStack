@@ -92,8 +92,8 @@ jobs:
           auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: dev/bench
-          # Fail CI if performance degrades more than 50% (accounts for runner variance)
-          alert-threshold: "200%"
+          # Fail CI if performance degrades more than 5%
+          alert-threshold: "105%"
           fail-on-alert: true
           # Comment on PR with comparison
           comment-on-alert: true
