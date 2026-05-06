@@ -6,6 +6,7 @@ becomes unhealthy the associated ``CircuitBreaker`` is opened
 preventively.
 """
 
+import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
@@ -55,7 +56,7 @@ async def check_target(target: HealthTarget) -> Result[bool, Exception]:
 async def check_all(
     targets: Sequence[HealthTarget],
 ) -> Result[dict[str, bool], Exception]:
-    """Run health checks for all targets.
+    """Run health checks for all targets concurrently.
 
     Args:
         targets: Targets to check.
@@ -64,9 +65,11 @@ async def check_all(
         ``Ok(dict)`` mapping target names to health status.
 
     """
+    # Run all checks concurrently
+    check_results = await asyncio.gather(*(check_target(t) for t in targets))
+
     results: dict[str, bool] = {}
-    for target in targets:
-        result = await check_target(target)
+    for target, result in zip(targets, check_results, strict=True):
         match result:
             case Ok(healthy):
                 results[target.name] = healthy
@@ -164,9 +167,8 @@ class HealthPinger(BaseWatcher):
             _force_open_breaker(target.circuit_breaker, target.name)
 
     async def _run(self) -> None:
-        """Execute a single health-check cycle."""
-        for target in self._targets:
-            await self._process_target(target)
+        """Execute a single health-check cycle concurrently."""
+        await asyncio.gather(*(self._process_target(t) for t in self._targets))
 
 
 def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
