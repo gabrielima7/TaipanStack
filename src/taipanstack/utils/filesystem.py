@@ -204,8 +204,12 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
     )
     try:
         # Write directly to the returned file descriptor to prevent TOCTOU
+        # We MUST close the file descriptor before renaming/modifying it,
+        # otherwise Windows will throw a PermissionError (WinError 32).
         with os.fdopen(_fd, "w", encoding=opts.encoding) as f:
             f.write(content)
+            f.flush()
+            os.fsync(_fd)
 
         temp_file = Path(temp_path)
         # Preserve permissions if original exists
