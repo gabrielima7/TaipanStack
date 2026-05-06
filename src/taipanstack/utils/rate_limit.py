@@ -59,9 +59,12 @@ class RateLimiter:
 
     def _is_valid_bucket_state(self) -> bool:
         """Check if the bucket's time window and capacity are in a valid state."""
-        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+        try:
+            if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+                return False
+            return math.isfinite(self.capacity) and self.capacity > 0.0
+        except TypeError:
             return False
-        return math.isfinite(self.capacity) and self.capacity > 0.0
 
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
@@ -73,32 +76,35 @@ class RateLimiter:
             True if token update succeeds, False if state corruption is detected.
 
         """
-        elapsed = max(0.0, now - self.last_update)
-        self.last_update = now
+        try:
+            elapsed = max(0.0, now - self.last_update)
+            self.last_update = now
 
-        # Prevent state corruption from raising exceptions or poisoning state
-        if not self._is_valid_bucket_state():
+            # Prevent state corruption from raising exceptions or poisoning state
+            if not self._is_valid_bucket_state():
+                return False
+
+            # Prevent infinite or NaN tokens by checking elapsed time calculations
+            if not math.isfinite(elapsed):
+                return False
+
+            # Add tokens for elapsed time based on fill rate
+            new_tokens = elapsed * (self.capacity / self.time_window)
+
+            if not math.isfinite(new_tokens):
+                return False
+
+            self.tokens += new_tokens
+
+            if not math.isfinite(self.tokens):
+                # Reset to previous state or capacity if corrupted
+                self.tokens = self.capacity
+                return False
+
+            self.tokens = min(self.tokens, self.capacity)
+            return True
+        except TypeError:
             return False
-
-        # Prevent infinite or NaN tokens by checking elapsed time calculations
-        if not math.isfinite(elapsed):
-            return False
-
-        # Add tokens for elapsed time based on fill rate
-        new_tokens = elapsed * (self.capacity / self.time_window)
-
-        if not math.isfinite(new_tokens):
-            return False
-
-        self.tokens += new_tokens
-
-        if not math.isfinite(self.tokens):
-            # Reset to previous state or capacity if corrupted
-            self.tokens = self.capacity
-            return False
-
-        self.tokens = min(self.tokens, self.capacity)
-        return True
 
     def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
@@ -114,24 +120,29 @@ class RateLimiter:
             return True
 
         with self._lock:
-            now = time.monotonic()
+            try:
+                now = time.monotonic()
 
-            # Prevent time corruption from poisoning the bucket state.
-            if not math.isfinite(now):
-                # We do not update last_update or add tokens.
-                # We just check if there are currently enough tokens to consume.
+                # Prevent time corruption from poisoning the bucket state.
+                if not math.isfinite(now):
+                    # We do not update last_update or add tokens.
+                    # We just check if there are currently enough tokens to consume.
+                    success = False
+                    if self.tokens >= tokens:
+                        self.tokens -= tokens
+                        success = True
+                    return success
+
+                if not self._add_tokens(now):
+                    return False
+
+                success = False
                 if self.tokens >= tokens:
                     self.tokens -= tokens
-                    return True
+                    success = True
+                return success
+            except TypeError:
                 return False
-
-            if not self._add_tokens(now):
-                return False
-
-            if self.tokens >= tokens:
-                self.tokens -= tokens
-                return True
-            return False
 
 
 class RateLimitDecorator(Protocol):
