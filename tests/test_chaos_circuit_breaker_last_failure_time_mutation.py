@@ -1,5 +1,6 @@
+
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
-import time
+
 
 def test_circuit_breaker_survives_last_failure_time_mutation():
     """Simulate type corruption where last_failure_time becomes a string."""
