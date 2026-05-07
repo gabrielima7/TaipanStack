@@ -1,4 +1,3 @@
-
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
