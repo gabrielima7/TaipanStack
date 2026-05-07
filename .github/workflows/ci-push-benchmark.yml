@@ -28,10 +28,10 @@ jobs:
 
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -42,7 +42,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: "[Setup] Cache dependencies"
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: .venv
           key: bench-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
@@ -93,7 +93,7 @@ jobs:
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: dev/bench
           # Fail CI if performance degrades more than 50% (accounts for runner variance)
-          alert-threshold: "150%"
+          alert-threshold: "105%"
           fail-on-alert: true
           # Comment on PR with comparison
           comment-on-alert: true

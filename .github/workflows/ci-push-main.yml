@@ -14,7 +14,7 @@ env:
   PYTHON_VERSION_DEFAULT: "3.11"
 
 jobs:
-  ci-test:
+  ci-push-test:
     name: "[Test] Python Matrix"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -25,11 +25,11 @@ jobs:
 
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python ${{ matrix.python-version }}"
         id: setup-python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -41,7 +41,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: "[Setup] Cache dependencies"
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: .venv
           key: taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -56,7 +56,7 @@ jobs:
 
       - name: "[Lint] Upload HTML coverage report as artifact"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: "[Artifact] HTML Coverage"
           path: htmlcov/
@@ -64,7 +64,7 @@ jobs:
 
       - name: "[Lint] Upload coverage to Codecov"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
@@ -72,15 +72,15 @@ jobs:
           name: "[Lint] TaipanStack-Codecov-Umbrella"
           fail_ci_if_error: true
 
-  ci-lint:
+  ci-push-lint:
     name: "[Lint] Quality Checks"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -93,15 +93,15 @@ jobs:
       - name: "[Lint] Run ruff format check"
         run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
 
-  ci-typecheck:
+  ci-push-typecheck:
     name: "[Lint] Type Checking"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -114,15 +114,15 @@ jobs:
       - name: "[Lint] Run mypy"
         run: poetry run mypy src/ --strict
 
-  ci-security:
+  ci-push-security:
     name: "[Audit] Security Scanning"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -145,15 +145,15 @@ jobs:
             auto
             .semgrep/taipanstack-rules.yml
 
-  ci-import-lint:
+  ci-push-import-lint:
     name: "[Lint] Architecture Check"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -166,16 +166,16 @@ jobs:
       - name: "[Lint] Run Import Linter"
         run: poetry run lint-imports
 
-  ci-integration:
+  ci-push-integration:
     name: "[Test] Integration"
     runs-on: ubuntu-latest
-    needs: [ci-test, ci-lint, ci-typecheck]
+    needs: [ci-push-test, ci-push-lint, ci-push-typecheck]
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -210,15 +210,15 @@ jobs:
 
 
 
-  ci-property-testing:
+  ci-push-property-testing:
     name: "[Test] Property Testing"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Setup] Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
@@ -231,12 +231,12 @@ jobs:
       - name: "[Test] Run Hypothesis property-based tests"
         run: poetry run pytest tests/test_property_sanitizers_operations.py -v --no-cov --timeout=300
 
-  ci-docker-build:
+  ci-push-docker-build:
     name: "[Build] Docker Validation"
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: "[Build] Build Hardened Docker Image"
         run: docker build -t taipanstack:ci-test .
