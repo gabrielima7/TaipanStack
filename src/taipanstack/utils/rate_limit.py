@@ -80,12 +80,8 @@ class RateLimiter:
             elapsed = max(0.0, now - self.last_update)
             self.last_update = now
 
-            # Prevent state corruption from raising exceptions or poisoning state
-            if not self._is_valid_bucket_state():
-                return False
-
-            # Prevent infinite or NaN tokens by checking elapsed time calculations
-            if not math.isfinite(elapsed):
+            # Prevent state corruption or infinite elapsed time
+            if not (self._is_valid_bucket_state() and math.isfinite(elapsed)):
                 return False
 
             # Add tokens for elapsed time based on fill rate
@@ -124,23 +120,14 @@ class RateLimiter:
                 now = time.monotonic()
 
                 # Prevent time corruption from poisoning the bucket state.
-                if not math.isfinite(now):
-                    # We do not update last_update or add tokens.
-                    # We just check if there are currently enough tokens to consume.
-                    success = False
-                    if self.tokens >= tokens:
-                        self.tokens -= tokens
-                        success = True
-                    return success
-
-                if not self._add_tokens(now):
+                # Only try to add tokens if time is finite.
+                if math.isfinite(now) and not self._add_tokens(now):
                     return False
 
-                success = False
                 if self.tokens >= tokens:
                     self.tokens -= tokens
-                    success = True
-                return success
+                    return True
+                return False
             except TypeError:
                 return False
 
