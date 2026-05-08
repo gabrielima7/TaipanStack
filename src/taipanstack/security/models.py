@@ -58,13 +58,11 @@ def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
     if _depth > _MAX_RECURSION_DEPTH:
         return "<MAX_DEPTH_REACHED>"
 
-    match data:
-        case dict():
-            return _mask_dict(data, _depth + 1)
-        case list():
-            return _mask_list(data, _depth + 1)
-        case _:
-            return data
+    if isinstance(data, dict):
+        return _mask_dict(data, _depth + 1)
+    if isinstance(data, list):
+        return _mask_list(data, _depth + 1)
+    return data
 
 
 class SecureBaseModel(BaseModel):
