@@ -120,6 +120,10 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
     """
     password_str = _get_password_str(password)
 
+    if not isinstance(password_hash, str):
+        msg = "password_hash must be a string"
+        raise TypeError(msg)
+
     if not password_str:
         return False
 
