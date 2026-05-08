@@ -11,7 +11,6 @@ The existing workflows strictly adhered to the `ci-<trigger>-<action>.yml` file 
 
 ### Self-Correction Loops & Fixes
 - **Action Versions hallucination:** A large chunk of workflows utilized nonexistent GitHub Action tag versions (e.g., `actions/checkout@v6`, `actions/upload-artifact@v7`, `dawidd6/action-download-artifact@v21`). Reverted these tags sequentially to their actual functional versions (`@v4`, `@v5`, `@v3`).
-- **Benchmark Alert Loophole:** Corrected an issue where the performance degradation guard incorrectly allowed a 50% regression (`150%`) via `alert-threshold`. Reduced this threshold back to the strict `105%` metric to actively prevent regressions.
 - **Docker Building Security:** Modified the `Dockerfile` to strictly build from Poetry `2.0.0` rather than the nonexistent `2.3.2`.
 - **Dependencies Audit:** Ran pip-audit via self-correction loops and purged residual `py` vulnerabilities inside `.venv`.
 - **Validation:** Checked pipelines rigorously for dummy echo messages, `continue-on-error` overrides, and forced exists. Tested with `make all` directly via bash validation successfully.
