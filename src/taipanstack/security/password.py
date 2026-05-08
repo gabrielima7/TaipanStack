@@ -25,6 +25,16 @@ MAX_LEGACY_ITERATIONS = 1_000_000
 MAX_PASSWORD_LENGTH = 1024
 
 
+def _get_password_str(password: str | SecretStr) -> str:
+    if not isinstance(password, (str, SecretStr)):
+        msg = "password must be a string or SecretStr"
+        raise TypeError(msg)
+
+    if isinstance(password, SecretStr):
+        return password.get_secret_value()
+    return password
+
+
 def hash_password(password: str | SecretStr) -> str:
     """
     Hash a password using Argon2id.
@@ -40,14 +50,7 @@ def hash_password(password: str | SecretStr) -> str:
         ValueError: If `password` length exceeds the maximum allowed or is empty.
 
     """
-    if not isinstance(password, (str, SecretStr)):
-        msg = "password must be a string or SecretStr"
-        raise TypeError(msg)
-
-    if isinstance(password, SecretStr):
-        password_str = password.get_secret_value()
-    else:
-        password_str = password
+    password_str = _get_password_str(password)
 
     if not password_str:
         msg = "password cannot be empty"
@@ -115,18 +118,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
         TypeError: If `password` or `password_hash` are not the correct types.
 
     """
-    if not isinstance(password, (str, SecretStr)):
-        msg = "password must be a string or SecretStr"
-        raise TypeError(msg)
-
-    if not isinstance(password_hash, str):
-        msg = "password_hash must be a string"
-        raise TypeError(msg)
-
-    if isinstance(password, SecretStr):
-        password_str = password.get_secret_value()
-    else:
-        password_str = password
+    password_str = _get_password_str(password)
 
     if not password_str:
         return False

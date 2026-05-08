@@ -298,6 +298,38 @@ class StackLogger:
             self._logger.exception(self._format_message(message, **kwargs))
 
 
+def _configure_structlog() -> None:
+    """Configure structlog with default processors and settings."""
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            correlation_id_processor,
+            mask_sensitive_data_processor,
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.processors.JSONRenderer(),
+        ],
+        wrapper_class=structlog.stdlib.BoundLogger,
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+    )
+
+
+def _get_log_format(format_type: str) -> str:
+    """Get the appropriate log format string."""
+    match format_type:
+        case "simple":
+            return "%(levelname)s: %(message)s"
+        case "json":
+            return JSON_FORMAT
+        case _:
+            return DEFAULT_FORMAT
+
+
 def setup_logging(
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     *,
@@ -316,33 +348,10 @@ def setup_logging(
     """
     # Configure structlog if available and requested
     if use_structured and HAS_STRUCTLOG:
-        structlog.configure(
-            processors=[
-                structlog.stdlib.filter_by_level,
-                structlog.stdlib.add_logger_name,
-                structlog.stdlib.add_log_level,
-                structlog.processors.TimeStamper(fmt="iso"),
-                correlation_id_processor,
-                mask_sensitive_data_processor,
-                structlog.processors.StackInfoRenderer(),
-                structlog.processors.format_exc_info,
-                structlog.processors.UnicodeDecoder(),
-                structlog.processors.JSONRenderer(),
-            ],
-            wrapper_class=structlog.stdlib.BoundLogger,
-            context_class=dict,
-            logger_factory=structlog.stdlib.LoggerFactory(),
-        )
+        _configure_structlog()
         return
 
-    # Standard logging configuration
-    match format_type:
-        case "simple":
-            log_format = "%(levelname)s: %(message)s"
-        case "json":
-            log_format = JSON_FORMAT
-        case _:
-            log_format = DEFAULT_FORMAT
+    log_format = _get_log_format(format_type)
 
     handlers: list[logging.Handler] = [logging.StreamHandler(sys.stdout)]
 
