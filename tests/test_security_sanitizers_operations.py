@@ -493,6 +493,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
     finally:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
+
 class TestSanitizerFallthrough:
     """Test fallthrough cases for sanitizers."""
 

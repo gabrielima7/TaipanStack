@@ -14,6 +14,7 @@ def test_circuit_breaker_type_mutation_success() -> None:
     # It should fall through gracefully without crashing
     cb._record_success()
 
+
 def test_circuit_breaker_type_mutation_failure() -> None:
     """Test what happens if the state is an invalid value when _record_failure is called."""
     cb = CircuitBreaker()
