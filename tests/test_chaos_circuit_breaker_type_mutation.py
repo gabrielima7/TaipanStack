@@ -1,7 +1,7 @@
 """Chaos tests for circuit breaker type mutation and unexpected enum values."""
 
-import pytest
-from src.taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+from src.taipanstack.resilience.circuit_breaker import CircuitBreaker
+
 
 def test_circuit_breaker_type_mutation_success() -> None:
     """Test what happens if the state is an invalid value when _record_success is called."""
