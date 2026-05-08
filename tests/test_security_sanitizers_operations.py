@@ -492,3 +492,25 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
         assert result == "test__txt"
     finally:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
+
+
+class TestSanitizerFallthrough:
+    """Test fallthrough cases for sanitizers."""
+
+    def test_sanitize_path_fallthroughs(self) -> None:
+        """Test the implicit fallthrough cases in path sanitization."""
+        from pathlib import Path
+
+        from src.taipanstack.security.sanitizers import sanitize_path
+
+        # Test fallthrough for `if safe_part and safe_part != "..":`
+        # By passing a part that becomes empty after sanitization, or is ".."
+        # A path like "/some/path/../file" has ".."
+        # `_process_path_part` falls through `elif part != ".":` when part is "."
+        path = sanitize_path(Path("/some/path/./file"))
+        assert str(path).endswith("file")
+
+        # Fallthrough when safe_part is empty
+        # sanitize_filename returns "" if the filename is invalid or stripped entirely
+        path2 = sanitize_path(Path("/some/path/  /file"))
+        assert str(path2).endswith("file")
