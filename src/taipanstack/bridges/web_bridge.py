@@ -177,6 +177,56 @@ class TaipanMiddleware:
         self._security_headers = security_headers
         self._headers_config = headers_config or SecurityHeadersConfig()
 
+    def _wrap_send_with_security_headers(self, send: Send) -> Send:
+        """Wrap the send callable to inject security headers if enabled.
+
+        Args:
+            send: The original ASGI send callable.
+
+        Returns:
+            The wrapped ASGI send callable.
+
+        """
+        if not self._security_headers:
+            return send
+
+        extra_headers = self._headers_config.to_headers()
+
+        async def send_with_headers(message: MutableMapping[str, object]) -> None:
+            if message.get("type") == "http.response.start":
+                headers = message.get("headers")
+                existing = list(headers) if isinstance(headers, list) else []
+                existing.extend(extra_headers)
+                message["headers"] = existing
+            await send(message)
+
+        return send_with_headers
+
+    async def _handle_rate_limit(self, send: Send) -> bool:
+        """Apply rate limiting and send response if exceeded.
+
+        Args:
+            send: ASGI send callable.
+
+        Returns:
+            True if rate limit was exceeded, False otherwise.
+
+        """
+        if self._rate_limiter is None or self._rate_limiter.consume():
+            return False
+
+        logger.warning("Rate limit exceeded for request")
+        security_hdrs = (
+            self._headers_config.to_headers() if self._security_headers else None
+        )
+        await _send_json_response(
+            send,
+            status=429,
+            body={"error": "Rate limit exceeded", "retry_after": 1},
+            extra_headers=security_hdrs,
+        )
+        return True
+
     async def __call__(
         self,
         scope: Scope,
@@ -197,33 +247,11 @@ class TaipanMiddleware:
             return
 
         # Rate limiting
-        if self._rate_limiter is not None and not self._rate_limiter.consume():
-            logger.warning("Rate limit exceeded for request")
-            security_hdrs = (
-                self._headers_config.to_headers() if self._security_headers else None
-            )
-            await _send_json_response(
-                send,
-                status=429,
-                body={"error": "Rate limit exceeded", "retry_after": 1},
-                extra_headers=security_hdrs,
-            )
+        if await self._handle_rate_limit(send):
             return
 
         # Wrap send to inject security headers
-        if self._security_headers:
-            original_send = send
-            extra_headers = self._headers_config.to_headers()
-
-            async def send_with_headers(message: MutableMapping[str, object]) -> None:
-                if message.get("type") == "http.response.start":
-                    headers = message.get("headers")
-                    existing = list(headers) if isinstance(headers, list) else []
-                    existing.extend(extra_headers)
-                    message["headers"] = existing
-                await original_send(message)
-
-            send = send_with_headers
+        send = self._wrap_send_with_security_headers(send)
 
         # Call the actual application
         try:
