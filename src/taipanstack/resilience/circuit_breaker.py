@@ -242,7 +242,12 @@ class CircuitBreaker:
     def _handle_open_state(self) -> bool:
         """Handle logic for OPEN state in _should_attempt."""
         now = time.monotonic()
-        elapsed = now - self._state.last_failure_time
+        try:
+            elapsed = now - self._state.last_failure_time
+        except TypeError:
+            # Type corruption detected (e.g. last_failure_time is string)
+            return False
+
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
         # allow a transition to prevent permanent lockout.
