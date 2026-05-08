@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.8] - 2026-05-08
+
+### Security
+- **Fix (High)**: Restored missing type guard for `password_hash` in `verify_password` to prevent potential type confusion (Commit f83b6745).
+- **Fix (Medium)**: Enhanced durability of atomic writes by hardening file handle synchronization (PR #688).
+
+### Resilience
+- **Hardening**: Hardened `RateLimiter` and `CircuitBreaker` against state corruption and type mutations via chaos testing (PR #689, #684, #703).
+- **Fix**: Handled `TypeError` edge cases in `CircuitBreaker` state transitions (PR #691).
+- **Performance**: Implemented concurrent execution for async health checks in `HealthPinger` (PR #694).
+
+### Refactoring & Clean Code
+- **Complexity**: Major reduction of cyclomatic complexity across core modules, subprocess utilities, and web bridges (PR #706, #692, #686).
+- **Typing**: Enforced explicit static type-guards and removed structural matching for better maintainability (PR #705).
+- **Chore**: Standardized and refactored CI/CD pipelines for authenticity and zero-bypass execution (PR #690).
+
+### QA & Testing
+- **Coverage**: Improved branch coverage for implicit Python match and if/elif statements (PR #708).
+- **Test Suite**: Expanded to **1,315 passing tests** with 100% verified coverage.
+- **Chaos**: Introduced dedicated chaos tests for circuit breaker and rate limiter state corruption.
+
+### Documentation
+- **Synchronization**: Synchronized test counts and version metadata across all documentation portals (PR #707, #693, #687).
+- **New**: Integrated `agents.md` guidelines into the official documentation.
+
 ## [0.4.7] - 2026-05-04
 
 ### Security
@@ -639,7 +664,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...HEAD
+[0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
 [0.4.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.4...v0.4.5

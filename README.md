@@ -30,12 +30,12 @@
 
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.4.7
-- **Security Hardening**: Fixed TOCTOU, SSRF Unicode bypasses, and hardened Argon2 password verification (PR #663, #667, #661).
-- **Resource Resilience**: Handled system resource exhaustion in Bulkhead and hardened adaptive orchestrator (PR #662, #668).
-- **Complexity Reduction**: Significantly reduced cyclomatic complexity across core resilience and circuit breaker modules (PR #680, #676, #666).
-- **Test Suite Audit**: Comprehensive audit and refactor of the entire suite for strict compliance and isolation (PR #683, #671, #665).
-- **Total Stack Coverage**: Reached **1,314 passing tests** with 100% verified genuine coverage across all modules.
+### ✨ What's New in v0.4.8
+- **Hardening Resilience**: Hardened `RateLimiter` and `CircuitBreaker` against state corruption and type mutations via chaos testing (PR #689, #684).
+- **Complexity Reduction**: Major reduction of cyclomatic complexity across core modules, subprocess utilities, and web bridges (PR #706, #692).
+- **Security Hardening**: Restored missing type guard for password verification and enhanced durability of atomic writes (Commit f83b6745, PR #688).
+- **Performance**: Implemented concurrent execution for async health checks in `HealthPinger` (PR #694).
+- **Total Stack Coverage**: Reached **1,315 passing tests** with 100% verified genuine coverage across all modules.
 
 <table>
 <tr>
@@ -73,7 +73,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1314 tests)
+- **100% code coverage** (1315 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -115,7 +115,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1314 tests)
+# Run tests with 100% coverage (1315 tests)
 make test
 
 # Check architecture contracts
@@ -170,7 +170,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1314 tests, 100% coverage
+├── tests/                # ✅ 1315 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
