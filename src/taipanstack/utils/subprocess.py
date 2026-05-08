@@ -146,6 +146,21 @@ def _validate_and_resolve_command(
     return validated_cmd
 
 
+def _get_allowed_keys(allowed_env_vars: Sequence[str] | None) -> set[str]:
+    """Get the allowed environment variable keys.
+
+    Args:
+        allowed_env_vars: Whitelist of allowed environment variable names.
+
+    Returns:
+        Set of allowed keys in uppercase.
+
+    """
+    if allowed_env_vars is None:
+        return {"PATH"}
+    return {k.upper() for k in allowed_env_vars}
+
+
 def _filter_environment(
     env: dict[str, str] | None,
     allowed_env_vars: Sequence[str] | None = None,
@@ -162,23 +177,30 @@ def _filter_environment(
         Filtered environment variables containing only allowed keys.
 
     """
-    safe_env: dict[str, str] = {}
     env_to_filter = env if env is not None else dict(os.environ)
-
-    if allowed_env_vars is None:
-        # Default minimal whitelist
-        allowed_keys = {"PATH"}
-    else:
-        allowed_keys = {k.upper() for k in allowed_env_vars}
+    allowed_keys = _get_allowed_keys(allowed_env_vars)
 
     if not allowed_keys:
-        return safe_env
+        return {}
 
-    for env_key, env_val in env_to_filter.items():
-        if env_key.upper() in allowed_keys:
-            safe_env[env_key] = str(env_val)
+    return {k: str(v) for k, v in env_to_filter.items() if k.upper() in allowed_keys}
 
-    return safe_env
+
+def _extract_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
+    """Extract stdout from a TimeoutExpired exception safely.
+
+    Args:
+        e: The TimeoutExpired exception.
+
+    Returns:
+        The extracted stdout string.
+
+    """
+    if not hasattr(e, "stdout") or e.stdout is None:
+        return ""
+    if isinstance(e.stdout, str):
+        return e.stdout
+    return e.stdout.decode("utf-8", errors="replace")
 
 
 def _execute_command(
@@ -216,16 +238,10 @@ def _execute_command(
         )
     except subprocess.TimeoutExpired as e:
         duration = time.time() - start_time
-        stdout_str = ""
-        if hasattr(e, "stdout") and e.stdout is not None:
-            if isinstance(e.stdout, str):
-                stdout_str = e.stdout
-            else:
-                stdout_str = e.stdout.decode("utf-8", errors="replace")
         return SafeCommandResult(
             command=validated_cmd,
             returncode=-1,
-            stdout=stdout_str,
+            stdout=_extract_timeout_stdout(e),
             stderr=f"Command timed out after {timeout}s",
             duration_seconds=duration,
         )
@@ -263,6 +279,20 @@ def _handle_dry_run(validated_cmd: list[str]) -> SafeCommandResult:
         stderr="",
         duration_seconds=0.0,
     )
+
+
+def _validate_timeout(timeout: float) -> None:
+    """Validate that the timeout is a finite, non-negative number.
+
+    Args:
+        timeout: The timeout value to validate.
+
+    Raises:
+        ValueError: If timeout is invalid.
+
+    """
+    if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
+        raise ValueError("timeout must be a finite non-negative number")
 
 
 def run_safe_command(
@@ -311,8 +341,7 @@ def run_safe_command(
     # Security Enhancement: Prevent DoS via infinite blocking behaviors or
     # unhandled exceptions from threading/asyncio primitives by explicitly
     # validating that timeout is a finite, non-negative number.
-    if timeout is not None and not (math.isfinite(timeout) and timeout >= 0):
-        raise ValueError("timeout must be a finite non-negative number")
+    _validate_timeout(timeout)
 
     validated_cmd = _validate_and_resolve_command(command, allowed_commands)
     safe_env = _filter_environment(env, allowed_env_vars)
