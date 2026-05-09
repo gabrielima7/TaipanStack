@@ -465,11 +465,16 @@ class CircuitBreaker:
         """
         if is_half_open:
             with self._state.lock:
-                if (
-                    self._state.state == CircuitState.HALF_OPEN
-                    and self._state.half_open_attempts > 0
-                ):
-                    self._state.half_open_attempts -= 1
+                try:
+                    if (
+                        self._state.state == CircuitState.HALF_OPEN
+                        and math.isfinite(self._state.half_open_attempts)
+                        and self._state.half_open_attempts > 0
+                    ):
+                        self._state.half_open_attempts -= 1
+                except TypeError:
+                    # Reset if state is corrupted to prevent crash
+                    self._state.half_open_attempts = 0
 
     def __call__(
         self, func: Callable[P, R] | Callable[P, Awaitable[R]]
