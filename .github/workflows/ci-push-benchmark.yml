@@ -93,7 +93,7 @@ jobs:
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: dev/bench
           # Fail CI if performance degrades more than 5% (accounts for runner variance)
-          alert-threshold: "150%"
+          alert-threshold: "105%"
           fail-on-alert: true
           # Comment on PR with comparison
           comment-on-alert: true
