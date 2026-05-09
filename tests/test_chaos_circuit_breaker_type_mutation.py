@@ -1,6 +1,6 @@
 """Chaos tests for circuit breaker type mutation and unexpected enum values."""
 
-from src.taipanstack.resilience.circuit_breaker import CircuitBreaker
+from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
 def test_circuit_breaker_type_mutation_success() -> None:
@@ -29,7 +29,7 @@ def test_circuit_breaker_type_mutation_failure() -> None:
 
 def test_circuit_breaker_type_mutation_success_open() -> None:
     """Test what happens if the state is OPEN when _record_success is called."""
-    from src.taipanstack.resilience.circuit_breaker import CircuitState
+    from taipanstack.resilience.circuit_breaker import CircuitState
 
     cb = CircuitBreaker()
 
@@ -43,7 +43,7 @@ def test_circuit_breaker_type_mutation_success_open() -> None:
 
 def test_circuit_breaker_type_mutation_failure_open() -> None:
     """Test what happens if the state is OPEN when _record_failure is called."""
-    from src.taipanstack.resilience.circuit_breaker import CircuitState
+    from taipanstack.resilience.circuit_breaker import CircuitState
 
     cb = CircuitBreaker()
 
