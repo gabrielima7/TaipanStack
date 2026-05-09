@@ -25,3 +25,28 @@ def test_circuit_breaker_type_mutation_failure() -> None:
     # Call _record_failure to trigger the match block
     # It should fall through gracefully without crashing
     cb._record_failure(Exception("Test failure"))
+
+def test_circuit_breaker_type_mutation_success_open() -> None:
+    """Test what happens if the state is OPEN when _record_success is called."""
+    from src.taipanstack.resilience.circuit_breaker import CircuitState
+    cb = CircuitBreaker()
+
+    # Set the state to OPEN to hit the OPEN case in _record_success
+    cb._state.state = CircuitState.OPEN
+
+    # Call _record_success to trigger the match block
+    # It should hit the OPEN case and fall through gracefully without crashing
+    cb._record_success()
+
+
+def test_circuit_breaker_type_mutation_failure_open() -> None:
+    """Test what happens if the state is OPEN when _record_failure is called."""
+    from src.taipanstack.resilience.circuit_breaker import CircuitState
+    cb = CircuitBreaker()
+
+    # Set the state to OPEN to hit the OPEN case in _record_failure
+    cb._state.state = CircuitState.OPEN
+
+    # Call _record_failure to trigger the match block
+    # It should hit the OPEN case and fall through gracefully without crashing
+    cb._record_failure(Exception("Test failure"))
