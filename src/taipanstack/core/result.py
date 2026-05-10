@@ -189,7 +189,7 @@ def _collect_list(
     append = ok_results.append
     try:
         for r in results:
-            append(r.ok_value) # type: ignore[union-attr]
+            append(r.ok_value)  # type: ignore[union-attr]
         return Ok(ok_results)
     except AttributeError:
         return None
