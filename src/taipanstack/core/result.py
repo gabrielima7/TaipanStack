@@ -185,17 +185,14 @@ def safe_from(
 def _collect_list(
     results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
-    # Explicit loop with type narrowing replaces AttributeError strategy
-    # for strict mypy compliance
-    # while maintaining safety properties of functional Result processing
-    ok_values: list[T] = []
-    append = ok_values.append
-    for result in results:
-        if isinstance(result, Ok):
-            append(result.ok_value)
-        else:
-            return None
-    return Ok(ok_values)
+    ok_results: list[T] = []
+    append = ok_results.append
+    try:
+        for r in results:
+            append(r.ok_value) # type: ignore[union-attr]
+        return Ok(ok_results)
+    except AttributeError:
+        return None
 
 
 def collect_results(
