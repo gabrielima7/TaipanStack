@@ -59,6 +59,7 @@ jobs:
             --benchmark-json=benchmark-result.json \
             --benchmark-min-rounds=100 \
             --benchmark-warmup=on \
+            --no-cov \
             -v
 
       # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
