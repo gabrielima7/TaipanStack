@@ -5,7 +5,7 @@ This PR proactively enhances the static typing strictly in `src/taipanstack/core
 ### Changes Made:
 - **`src/taipanstack/core/result.py`**:
   - Replaced the `match/case` statement structural pattern matching with `isinstance()` checks inside `map_async` and `and_then_async`. `mypy` natively struggles to correctly narrow types using structural pattern matching for generic unions like the `Result` monad (`Ok` | `Err`). Transitioning to explicit `isinstance()` guarantees that `mypy` properly identifies the narrowed types, improving the safety of static analysis and making the intent extremely explicit to type-checkers.
-  - Replaced a `try...except AttributeError` approach within `_collect_list` with a concrete loop employing explicit `isinstance()` type narrowing. This successfully eliminated a `# type: ignore` directive while retaining correct filtering of valid outcomes.
+  - Retained the explicitly documented EAFP optimization (`try...except AttributeError`) within `_collect_list`, keeping the `# type: ignore` directive to prevent the performance regressions encountered during CI testing while strictly satisfying lint requirements.
   - Addressed a long-line linting warning to ensure total compatibility with the strict `ruff` 88 character enforcement configuration.
 
 ### Validation:
