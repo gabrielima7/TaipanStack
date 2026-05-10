@@ -185,12 +185,17 @@ def safe_from(
 def _collect_list(
     results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
-    try:
-        # We use a runtime # type: ignore to bypass mypy's strict check
-        # on the AttributeError strategy for extreme performance on the hot path
-        return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
-    except AttributeError:
-        return None
+    # Explicit loop with type narrowing replaces AttributeError strategy
+    # for strict mypy compliance
+    # while maintaining safety properties of functional Result processing
+    ok_values: list[T] = []
+    append = ok_values.append
+    for result in results:
+        if isinstance(result, Ok):
+            append(result.ok_value)
+        else:
+            return None
+    return Ok(ok_values)
 
 
 def collect_results(
@@ -281,14 +286,11 @@ async def map_async(
         Err('fail')
 
     """
-    match result:
-        case Ok(val):
-            return Ok(await func(val))
-        case Err(e):
-            _ = e
-            return result
-        case _:
-            return result
+    if isinstance(result, Ok):
+        return Ok(await func(result.ok_value))
+    elif isinstance(result, Err):
+        return result
+    return result
 
 
 @overload
@@ -341,11 +343,8 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    match result:
-        case Ok(val):
-            return await func(val)
-        case Err(e):
-            _ = e
-            return result
-        case _:
-            return result
+    if isinstance(result, Ok):
+        return await func(result.ok_value)
+    elif isinstance(result, Err):
+        return result
+    return result
