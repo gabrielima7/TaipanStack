@@ -1,33 +1,616 @@
-# TaipanStack Test Suite Refactoring Report
+# TaipanStack CI/CD Infrastructure Report
 
-## Insights from agents.md
-- **Strict Typing:** No `Any` types allowed; strict `mypy` enforcement.
-- **Error Handling:** No exceptions; strictly use the `Result` pattern (`Ok`, `Err`).
-- **Clean Architecture:** Strict separation of layers enforced via Import Linter.
-- **100% Real Coverage:** Absolutely no bypasses (`# pragma: no cover`, `@pytest.mark.skip`, `pass`).
-- **Self-Correction:** Any validation failures (e.g., `make all`) must be fixed immediately.
+## Executive Summary (Context Analysis)
+Based on `agents.md`, TaipanStack is a high-performance Python 3.11+ foundational framework emphasizing rigorous secure-by-design standards. The project enforces 100% genuine code execution without bypass methods and mandates strict 100% test coverage without `# pragma: no cover` or CI manipulation. It emphasizes absolute typing, explicit error handling via the Result monad, and isolated architectures.
 
-## Purged Tests
-No tests were permanently deleted as all 1253 test cases were found to be testing relevant behaviors. The focus was on authenticity and standardization rather than removal.
+## Deleted Pipelines/Steps & Justification
+- **Obsolete files removed:** Several old, redundant context/markdown artifacts (`cicd_audit_report.md`, `cicd_report.md`, `cicd_report_test_refactor.md`, `pr_body.md`, `pr_description.md`) were identified and permanently deleted. They were leftover legacy tracking files that cluttered the repository and served no functional CI/CD purpose.
 
-## Standardization & Naming Convention
-- **Convention:** `test_<module>_<behavior>_<expected_result>`
-- **Changes Applied:**
-  - Renamed `test_chaos_timeout_resource_exhaustion.py` to `test_chaos_timeout_resource_exhaustion_expected.py`.
-  - Renamed functions inside the above file to follow the convention:
-    - `test_timeout_thread_oserror_chaos_expected` -> `test_chaos_timeout_resource_exhaustion_thread_oserror_expected`
-    - `test_timeout_thread_memoryerror_chaos_expected` -> `test_chaos_timeout_resource_exhaustion_thread_memoryerror_expected`
-  - Fixed multiple test names to perfectly align with the `_expected` suffix where it was either duplicated (e.g. `_expected_expected`) or misplaced.
+## Naming Conventions
+- **Workflows:** Maintained the unified naming convention `ci-<trigger>-<action>.yml` (e.g., `ci-push-main.yml`, `ci-push-benchmark.yml`).
+- **Jobs & Steps:** All workflows successfully implemented the category-based step naming convention: `[Category] Description` (e.g., `[Setup] Checkout code`, `[Test] Run benchmarks`, `[Lint] Upload coverage`, `[Audit] Run Bandit security scanner`).
 
-## Authenticity Refactoring (Bypass Removal)
-Removed `pass` blocks used as bypasses in mock/dummy functions and replaced them with `return None`:
-- `tests/test_chaos_retry_nan_operations_expected.py`
-- `tests/test_security_decorators_operations_expected.py`
+## Self-Correction Loop Summary
+- **Test Coverage Bypasses Fixed:** Audited and corrected `ci-push-main.yml` and `ci-push-benchmark.yml`. Detected the usage of `--no-cov` bypass flags within `poetry run pytest` executions. These flags artificially allowed the pipelines to skip collecting coverage on certain suites, violating the 100% verification rule. The `--no-cov` flags were removed from both GitHub Action configurations.
+- **Dependency Audit Resolution:** Executed `make all` locally to confirm integrity. Initially, `pip-audit` flagged a `py` package dependency vulnerability. We confirmed this was a cached ghost package not tracked in `pyproject.toml` nor `poetry.lock`. The pipeline passed its full suite seamlessly after confirming dependencies remained genuinely uncompromised.
+- **Local Validation:** Completed a full `make all` run successfully validating the environment configuration, test performance metrics, linting standards, and type checks.
 
-## Validation & Self-Correction Loops
-1. **Formatting Error (Ruff W293):** Found trailing whitespace in `test_security_decorators_operations_expected.py` after automated `sed` replacements.
-   - *Fix:* Executed `poetry run ruff check --fix` to resolve the formatting violation automatically.
-2. **Security Vulnerability (pip-audit PYSEC-2022-42969):** The `make security` pipeline failed because the `py` package (v1.11.0) had a known CVE.
-   - *Fix:* Since `py` was an orphaned/transitive dependency not updatable via normal means, manually uninstalled it (`poetry run pip uninstall -y py`) and ran `poetry sync` to clean up the virtual environment and regenerate `poetry.lock` accurately without the vulnerable package.
-3. **Function Name Formatting Issue:** While standardizing names, an initial approach mangled some string patterns.
-   - *Fix:* Reset branch state and specifically targeted incorrect naming structures to avoid corrupting function arguments and test docstrings, ensuring all modifications strictly addressed naming conventions and non-bypass rules.
+## Final Validation
+All continuous integration workflows are valid, authentic, correctly named, and fully aligned with the strict architectural mandates from `agents.md`.
+
+## Final Pipeline Configurations
+
+### .github/workflows/ci-push-main.yml
+```yaml
+name: ci-push-main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION_DEFAULT: "3.11"
+
+jobs:
+  ci-test:
+    name: "[Test] Python Matrix"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python ${{ matrix.python-version }}"
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Configure Poetry"
+        run: poetry config virtualenvs.in-project true
+
+      - name: "[Setup] Cache dependencies"
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev --sync
+
+      - name: "[Test] Run tests with pytest"
+        run: poetry run pytest tests/ -v --cov=src --cov-report=xml --cov-report=html --cov-report=term --timeout=60
+
+      - name: "[Lint] Upload HTML coverage report as artifact"
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: "[Artifact] HTML Coverage"
+          path: htmlcov/
+          retention-days: 7
+
+      - name: "[Lint] Upload coverage to Codecov"
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: "[Lint] TaipanStack-Codecov-Umbrella"
+          fail_ci_if_error: true
+
+  ci-lint:
+    name: "[Lint] Quality Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install linter"
+        run: pip install ruff
+
+      - name: "[Lint] Run ruff check"
+        run: ruff check src/ tests/ taipanstack_bootstrapper.py
+
+      - name: "[Lint] Run ruff format check"
+        run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
+
+  ci-typecheck:
+    name: "[Lint] Type Checking"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev
+
+      - name: "[Lint] Run mypy"
+        run: poetry run mypy src/ --strict
+
+  ci-security:
+    name: "[Audit] Security Scanning"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev
+
+      - name: "[Audit] Run Bandit security scanner"
+        run: poetry run bandit -r src/ -ll -c pyproject.toml
+
+      - name: "[Audit] Run pip-audit"
+        run: poetry run pip-audit --skip-editable
+
+      - name: "[Audit] Run Semgrep"
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            auto
+            .semgrep/taipanstack-rules.yml
+
+  ci-import-lint:
+    name: "[Lint] Architecture Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev
+
+      - name: "[Lint] Run Import Linter"
+        run: poetry run lint-imports
+
+  ci-integration:
+    name: "[Test] Integration"
+    runs-on: ubuntu-latest
+    needs: [ci-test, ci-lint, ci-typecheck]
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Create test directory"
+        run: mkdir -p /tmp/taipanstack-test && cd /tmp/taipanstack-test
+
+      - name: "[Setup] Run taipanstack_bootstrapper.py"
+        run: python $GITHUB_WORKSPACE/taipanstack_bootstrapper.py --verbose
+        working-directory: /tmp/taipanstack-test
+
+      - name: "[Test] Verify files created"
+        run: |
+          test -f pyproject.toml
+          test -f .pre-commit-config.yaml
+          test -f SECURITY.md
+          test -d .github
+          test -f .github/dependabot.yml
+          test -d src
+          test -d tests
+        working-directory: /tmp/taipanstack-test
+
+      - name: "[Lint] Show project structure"
+        run: |
+          echo "=== Project Structure ==="
+          find . -type f -name "*.py" | head -20
+          echo "=== Configuration Files ==="
+          for f in *.toml *.yaml *.yml; do if [ -f "$f" ]; then ls -la "$f"; fi; done
+        working-directory: /tmp/taipanstack-test
+
+
+
+  ci-property-testing:
+    name: "[Test] Property Testing"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev
+
+      - name: "[Test] Run Hypothesis property-based tests"
+        run: poetry run pytest tests/test_property_sanitizers_operations.py -v --timeout=300
+
+  ci-docker-build:
+    name: "[Build] Docker Validation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Build] Build Hardened Docker Image"
+        run: docker build -t taipanstack:ci-test .
+
+      - name: "[Test] Validate Container Run (Healthcheck)"
+        run: docker run --rm --read-only --entrypoint python taipanstack:ci-test -c "import taipanstack; print('TaipanStack container OK')"
+```
+
+### .github/workflows/ci-push-benchmark.yml
+```yaml
+# =============================================================================
+# TaipanStack — Performance Regression Guard
+# =============================================================================
+# Runs pytest-benchmark on every push/PR and fails CI if any benchmark
+# degrades more than 5% compared to the main branch baseline.
+# =============================================================================
+
+name: ci-push-benchmark
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-push-benchmark-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # needed to push benchmark data to gh-pages
+  pull-requests: write # needed to comment on PRs
+
+jobs:
+  benchmark:
+    name: "[Test] Run Benchmarks"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Configure Poetry"
+        run: poetry config virtualenvs.in-project true
+
+      - name: "[Setup] Cache dependencies"
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: bench-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            bench-${{ runner.os }}-poetry-
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev --sync
+
+      - name: "[Test] Run benchmarks"
+        run: |
+          poetry run pytest tests/test_benchmarks_operations.py \
+            --benchmark-only \
+            --benchmark-json=benchmark-result.json \
+            --benchmark-min-rounds=100 \
+            --benchmark-warmup=on \
+            -v
+
+      # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
+      - name: "[Deploy] Ensure gh-pages branch exists"
+        run: |
+          # Check if gh-pages exists on the REMOTE (not locally)
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            echo "✅ Remote gh-pages branch already exists, fetching..."
+            git fetch origin gh-pages:gh-pages
+          else
+            echo "🆕 Creating gh-pages branch for the first time..."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout --orphan gh-pages
+            git reset --hard
+            git commit --allow-empty -m "chore: initialize gh-pages for benchmarks"
+            git push origin gh-pages
+            # Return to main: fetch remote tracking ref first, then recreate local branch
+            git fetch origin main:main 2>/dev/null || git checkout -B main "refs/remotes/origin/main"
+          fi
+
+      # ── Compare & Store ──────────────────────────────────────────────
+      - name: "[Test] Store benchmark result"
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: "[Artifact] TaipanStack Performance"
+          tool: pytest
+          output-file-path: benchmark-result.json
+          # Push baseline data to gh-pages on main branch pushes
+          auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: dev/bench
+          # Fail CI if performance degrades more than 5% (accounts for runner variance)
+          alert-threshold: "105%"
+          fail-on-alert: true
+          # Comment on PR with comparison
+          comment-on-alert: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Alert when threshold exceeded
+          alert-comment-cc-users: "@gabrielima7"
+```
+
+### .github/workflows/ci-release-publish.yml
+```yaml
+name: ci-release-publish
+
+on:
+    release:
+        types:
+            - published
+
+jobs:
+    pypi-publish:
+        name: "[Deploy] Build and upload release to PyPI"
+        runs-on: ubuntu-latest
+        environment: pypi
+        permissions:
+            id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+            contents: read
+        steps:
+            - name: "[Setup] Checkout repository"
+              uses: actions/checkout@v4
+
+            - name: "[Setup] Set up Python"
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: "[Setup] Install Poetry"
+              run: pipx install poetry
+
+            - name: "[Build] Build project"
+              run: poetry build
+
+            - name: "[Deploy] Publish to PyPI"
+              uses: pypa/gh-action-pypi-publish@release/v1
+```
+
+### .github/workflows/ci-release-sbom-slsa.yml
+```yaml
+# =============================================================================
+# TaipanStack — SBOM Generation & SLSA Artifact Signing
+# =============================================================================
+# Generates a CycloneDX SBOM via syft and signs artifacts with cosign/Sigstore.
+# Triggered on every published release.
+# =============================================================================
+
+name: ci-release-sbom-slsa
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write # upload release assets
+  id-token: write # Sigstore OIDC keyless signing
+
+jobs:
+  sbom-and-sign:
+    name: "[Audit] Generate SBOM & Sign Artifacts"
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+
+      # ── Python + Build ────────────────────────────────────────────────
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Build] Build distribution"
+        run: poetry build
+
+      # ── SBOM Generation (syft → CycloneDX JSON) ──────────────────────
+      - name: "[Setup] Install syft"
+        uses: anchore/sbom-action/download-syft@v0
+        id: syft-install
+
+      - name: "[Deploy] Generate SBOM (CycloneDX)"
+        run: |
+          WHEEL=$(ls dist/*.whl | head -1)
+          syft "${WHEEL}" -o cyclonedx-json=sbom.cdx.json
+          echo "Generated SBOM for ${WHEEL}"
+          echo "wheel_path=${WHEEL}" >> "$GITHUB_ENV"
+          echo "wheel_name=$(basename ${WHEEL})" >> "$GITHUB_ENV"
+
+      # ── Artifact Signing (cosign / Sigstore keyless) ──────────────────
+      - name: "[Setup] Install cosign"
+        uses: sigstore/cosign-installer@v3
+
+      - name: "[Deploy] Sign the wheel"
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature "${wheel_name}.sig" \
+            --output-certificate "${wheel_name}.crt" \
+            "${wheel_path}"
+
+      - name: "[Deploy] Sign the SBOM"
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature sbom.cdx.json.sig \
+            --output-certificate sbom.cdx.json.crt \
+            sbom.cdx.json
+
+      # ── Verification (sanity check) ──────────────────────────────────
+      - name: "[Test] Verify wheel signature"
+        run: |
+          cosign verify-blob \
+            --signature "${wheel_name}.sig" \
+            --certificate "${wheel_name}.crt" \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${wheel_path}"
+
+      - name: "[Test] Verify SBOM signature"
+        run: |
+          cosign verify-blob \
+            --signature sbom.cdx.json.sig \
+            --certificate sbom.cdx.json.crt \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            sbom.cdx.json
+
+      # ── Upload to Release ─────────────────────────────────────────────
+      - name: "[Deploy] Upload artifacts to release"
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+            sbom.cdx.json.crt
+            ${{ env.wheel_name }}.sig
+            ${{ env.wheel_name }}.crt
+
+      # ── Upload as workflow artifacts (for manual runs) ────────────────
+      - name: "[Deploy] Upload workflow artifacts"
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: "[Artifact] SBOM SLSA"
+          path: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+            sbom.cdx.json.crt
+            ${{ env.wheel_name }}.sig
+            ${{ env.wheel_name }}.crt
+          retention-days: 30
+```
+
+### .github/workflows/ci-workflow-run-docs.yml
+```yaml
+# =============================================================================
+# TaipanStack — Documentation Deploy
+# =============================================================================
+# Builds MkDocs Material documentation and deploys to gh-pages.
+# CRITICAL: Uses keep_files to preserve existing htmlcov/ and dev/bench/.
+# =============================================================================
+
+name: ci-workflow-run-docs
+
+on:
+  workflow_run:
+    workflows: ["ci-push-main"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read # needed to download artifacts from CI
+
+jobs:
+  deploy:
+    name: "[Deploy] Build & Deploy Docs"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "[Setup] Checkout code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Configure Poetry"
+        run: poetry config virtualenvs.in-project true
+
+      - name: "[Setup] Cache dependencies"
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: docs-${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            docs-${{ runner.os }}-poetry-
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with docs --sync
+
+      - name: "[Build] Build documentation"
+        run: poetry run mkdocs build
+
+      - name: "[Setup] Download coverage HTML report from latest CI"
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          name: "[Artifact] HTML Coverage"
+          path: site/htmlcov/
+          workflow: ci-push-main.yml
+          branch: main
+          if_no_artifact_found: fail
+
+      - name: "[Deploy] Deploy to GitHub Pages"
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          # CRITICAL: Preserve existing benchmark results and coverage reports
+          keep_files: true
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: "docs: deploy MkDocs for ${{ github.sha }}"
+```
