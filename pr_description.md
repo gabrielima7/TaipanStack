@@ -1,33 +1,15 @@
-## Complexity Reduction and Technical Debt Refactoring
+## Daily Micro-Chaos Resilience Hardening: `taipanstack.resilience.retry`
 
-**Modules Refactored:**
-- `src/taipanstack/resilience/watchdogs/health_pinger.py`
+### Target Component
+The `RetryConfig` validation and `_calculate_base_delay` method within `src/taipanstack/resilience/retry.py`.
 
-**Functions Refactored:**
-- `HealthPinger._update_target_status`
+### Simulated Failure
+Simulated a state/type corruption where an internal configuration property (e.g. `initial_delay`, `max_attempts`) is mutated into a non-numeric type (e.g., a `string`) at runtime. This causes type exceptions like `TypeError` during mathematical delay calculations, which previously crashed the retry mechanism entirely instead of safely degrading or logging the error.
 
-**Architectural Strategies Used:**
-- Extracted logic for checking and force-opening the circuit breaker into a dedicated helper method `_check_and_open_breaker`.
-- Extracted logic for notifying health changes and logging into a dedicated helper method `_notify_health_change`.
-- Maintained guard clauses and early returns within the main `_update_target_status` method to keep nesting low.
-- Maintained exact logic, side-effects, type annotations, and the exact same public API.
+### Code Adjustments Made
+- **Test Addition:** Added `test_chaos_retry_type_mutation.py` to assert that `calculate_delay` handles state mutation types securely without crashing and correctly calculates a fallback delay.
+- **Config Validation Fallback:** Updated `RetryConfig.__post_init__` to gracefully handle incorrect configuration types by catching `TypeError`s individually and overriding them with default finite values instead of completely resetting the whole configuration or throwing errors.
+- **Graceful Calculation Degradation:** Refactored `_calculate_base_delay` using `contextlib.suppress(TypeError)` to gracefully fall back to `0.0` or `config.max_delay` when calculating exponential delays on potentially mutated types, preventing fatal `TypeError`s like "can't multiply sequence by non-int of type 'float'".
 
-**Complexity Reduction Metrics:**
-- **Before:** `HealthPinger._update_target_status` had a cyclomatic complexity of **B (7)**.
-- **After:** The logic is now split across `_update_target_status`, `_check_and_open_breaker`, and `_notify_health_change`, bringing the maximum cyclomatic complexity in `HealthPinger` down to **A (4)**. The average complexity for the file dropped to **A (2.54)**.
-
----
-
-### Micro-Chaos Experiment: CircuitBreaker state type corruption
-
-**Component Targeted:**
-- `src/taipanstack/resilience/circuit_breaker.py` (`_decrement_half_open` method)
-
-**Simulated Failure:**
-- Executed a micro-chaos experiment targeting internal state variables, specifically `half_open_attempts`. The test deliberately assigns an incorrect type (a string `"1"` instead of an integer) to `self._state.half_open_attempts` while the circuit is in the `HALF_OPEN` state to verify behavior during concurrent operations or memory corruption.
-
-**Code Adjustments:**
-- The original code checked `self._state.half_open_attempts > 0`, which raised a `TypeError` and crashed the program when mutated to a string.
-- Refactored `_decrement_half_open` to place the logical check within a `try...except TypeError` block.
-- Implemented `math.isfinite(self._state.half_open_attempts)` as a protective type and bound-checking guard before executing the decrement.
-- The circuit breaker now gracefully intercepts the `TypeError` and defaults the internal `half_open_attempts` value to 0, ensuring safe degradation and recovery rather than catastrophic system failure.
+### Verification
+All tests run with 100% coverage, maintaining architectural rules, strict typing, and benchmark thresholds.
