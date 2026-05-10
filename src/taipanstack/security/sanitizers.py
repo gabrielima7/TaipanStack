@@ -111,29 +111,30 @@ def sanitize_string(
     return result
 
 
+def _get_filename_from_path(filename: str) -> str:
+    """Extract the base filename from a full path."""
+    slash_idx = max(filename.rfind("/"), filename.rfind("\\"))
+    if slash_idx >= 0:
+        return filename[slash_idx + 1 :]
+    return filename
+
+def _has_valid_extension(name: str, idx: int) -> bool:
+    """Determine if a dot represents a valid extension."""
+    return idx > 0 and not all(c == "." for c in name) and name != ".."
+
 def _extract_stem_and_suffix(
     filename: str, preserve_extension: bool
 ) -> tuple[str, str]:
     """Extract stem and suffix from a filename."""
-    # Get parts using native string manipulation instead of Path for performance
-    # Emulate Path(filename).name
-    name = filename
-    slash_idx = max(name.rfind("/"), name.rfind("\\"))
-    if slash_idx >= 0:
-        name = name[slash_idx + 1 :]
-
-    stem = name
-    suffix = ""
-
+    name = _get_filename_from_path(filename)
     idx = name.rfind(".")
-    # Pathlib considers pure dotfiles (like ".hidden") or "..." as stem no suffix
-    if idx > 0 and not all(c == "." for c in name) and name != "..":
+
+    if _has_valid_extension(name, idx):
         stem = name[:idx]
         suffix = name[idx:] if preserve_extension else ""
-    else:
-        stem = name
+        return stem, suffix
 
-    return stem, suffix
+    return name, ""
 
 
 def _remove_invalid_chars(stem: str, replacement: str) -> str:
@@ -483,18 +484,18 @@ def sanitize_sql_identifier(identifier: str) -> str:
         ValueError: If identifier is empty or too long.
 
     """
-    if type(identifier) is str:
-        if (
-            len(identifier) <= 128  # noqa: PLR2004
-            and identifier.isascii()
-            and identifier.isidentifier()
-        ):
-            return identifier
+    if type(identifier) is not str:
+        raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
 
-        if not identifier:
-            msg = "SQL identifier cannot be empty"
-            raise ValueError(msg)
+    if not identifier:
+        msg = "SQL identifier cannot be empty"
+        raise ValueError(msg)
 
-        return _sanitize_sql_identifier_slow_path(identifier)
+    if (
+        len(identifier) <= 128  # noqa: PLR2004
+        and identifier.isascii()
+        and identifier.isidentifier()
+    ):
+        return identifier
 
-    raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
+    return _sanitize_sql_identifier_slow_path(identifier)
