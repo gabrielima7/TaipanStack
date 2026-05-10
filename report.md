@@ -333,6 +333,7 @@ jobs:
             --benchmark-min-rounds=100 \
             --benchmark-warmup=on \
             -v
+            -v
 
       # ── Bootstrap gh-pages if it doesn't exist on remote ───────────
       - name: "[Deploy] Ensure gh-pages branch exists"
