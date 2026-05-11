@@ -463,18 +463,21 @@ class CircuitBreaker:
             is_half_open: Whether the circuit was half-open before attempt.
 
         """
-        if is_half_open:
-            with self._state.lock:
-                try:
-                    if (
-                        self._state.state == CircuitState.HALF_OPEN
-                        and math.isfinite(self._state.half_open_attempts)
-                        and self._state.half_open_attempts > 0
-                    ):
-                        self._state.half_open_attempts -= 1
-                except TypeError:
-                    # Reset if state is corrupted to prevent crash
-                    self._state.half_open_attempts = 0
+        if not is_half_open:
+            return
+
+        with self._state.lock:
+            try:
+                if self._state.state != CircuitState.HALF_OPEN:
+                    return
+                if (
+                    math.isfinite(self._state.half_open_attempts)
+                    and self._state.half_open_attempts > 0
+                ):
+                    self._state.half_open_attempts -= 1
+            except TypeError:
+                # Reset if state is corrupted to prevent crash
+                self._state.half_open_attempts = 0
 
     def __call__(
         self, func: Callable[P, R] | Callable[P, Awaitable[R]]
