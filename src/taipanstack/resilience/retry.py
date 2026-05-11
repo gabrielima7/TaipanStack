@@ -7,10 +7,10 @@ Python framework (sync and async).
 """
 
 import asyncio
+import contextlib
 import functools
 import inspect
 import logging
-import contextlib
 import math
 import secrets
 import time
@@ -135,24 +135,14 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     safe_attempt = max(1, attempt)
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
+        if not math.isfinite(delay):
+            delay = config.max_delay
     except (OverflowError, TypeError):
         delay = config.max_delay
 
-    with contextlib.suppress(TypeError):
-        if not math.isfinite(delay):
-            delay = config.max_delay
-
-    with contextlib.suppress(TypeError):
-        if not math.isfinite(delay):
-            delay = 0.0
-
     try:
         if not math.isfinite(delay):
             delay = 0.0
-    except TypeError:
-        delay = 0.0
-
-    try:
         return min(delay, config.max_delay)
     except TypeError:
         return 0.0
@@ -163,12 +153,15 @@ def _apply_jitter(delay: float, config: RetryConfig) -> float:
     if not config.jitter or not math.isfinite(delay):
         return delay
 
-    jitter_amount = delay * config.jitter_factor
-    if math.isfinite(jitter_amount):
-        try:
-            delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-        except Exception as e:
-            logger.warning("Failed to add jitter to delay: %s", str(e))
+    try:
+        jitter_amount = delay * config.jitter_factor
+        if math.isfinite(jitter_amount):
+            try:
+                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+            except Exception as e:
+                logger.warning("Failed to add jitter to delay: %s", str(e))
+    except (TypeError, OverflowError, ValueError, Exception):
+        pass  # safe fallback if jitter calculation fails on mutated types
 
     return delay
 
