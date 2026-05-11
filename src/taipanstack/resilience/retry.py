@@ -75,16 +75,35 @@ class RetryConfig:
 
     def __post_init__(self) -> None:
         """Validate configuration parameters."""
-        if not math.isfinite(self.max_attempts):
-            raise ValueError("max_attempts must be a finite number")
-        if not math.isfinite(self.initial_delay):
-            raise ValueError("initial_delay must be a finite number")
-        if not math.isfinite(self.max_delay):
-            raise ValueError("max_delay must be a finite number")
-        if not math.isfinite(self.exponential_base):
-            raise ValueError("exponential_base must be a finite number")
-        if not math.isfinite(self.jitter_factor):
-            raise ValueError("jitter_factor must be a finite number")
+        try:
+            if not math.isfinite(self.max_attempts):
+                raise ValueError("max_attempts must be a finite number")
+        except TypeError:
+            object.__setattr__(self, "max_attempts", 3)
+
+        try:
+            if not math.isfinite(self.initial_delay):
+                raise ValueError("initial_delay must be a finite number")
+        except TypeError:
+            object.__setattr__(self, "initial_delay", 1.0)
+
+        try:
+            if not math.isfinite(self.max_delay):
+                raise ValueError("max_delay must be a finite number")
+        except TypeError:
+            object.__setattr__(self, "max_delay", 60.0)
+
+        try:
+            if not math.isfinite(self.exponential_base):
+                raise ValueError("exponential_base must be a finite number")
+        except TypeError:
+            object.__setattr__(self, "exponential_base", 2.0)
+
+        try:
+            if not math.isfinite(self.jitter_factor):
+                raise ValueError("jitter_factor must be a finite number")
+        except TypeError:
+            object.__setattr__(self, "jitter_factor", 0.1)
 
 
 class RetryError(Exception):
@@ -114,15 +133,17 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     safe_attempt = max(1, attempt)
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
-    except OverflowError:
+        if not math.isfinite(delay):
+            delay = config.max_delay
+    except (OverflowError, TypeError):
         delay = config.max_delay
 
-    if not math.isfinite(delay):
-        delay = config.max_delay
+    try:
         if not math.isfinite(delay):
             delay = 0.0
-
-    return min(delay, config.max_delay)
+        return min(delay, config.max_delay)
+    except TypeError:
+        return 0.0
 
 
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
@@ -130,12 +151,15 @@ def _apply_jitter(delay: float, config: RetryConfig) -> float:
     if not config.jitter or not math.isfinite(delay):
         return delay
 
-    jitter_amount = delay * config.jitter_factor
-    if math.isfinite(jitter_amount):
-        try:
-            delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-        except Exception as e:
-            logger.warning("Failed to add jitter to delay: %s", str(e))
+    try:
+        jitter_amount = delay * config.jitter_factor
+        if math.isfinite(jitter_amount):
+            try:
+                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+            except Exception as e:
+                logger.warning("Failed to add jitter to delay: %s", str(e))
+    except (TypeError, OverflowError, ValueError, Exception) as e:
+        logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
 
     return delay
 
