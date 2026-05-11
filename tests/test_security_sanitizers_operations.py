@@ -187,14 +187,14 @@ class TestSanitizePath:
 
         with patch("taipanstack.security.sanitizers.sanitize_filename", side_effect=mock_sanitize_filename):
             path = sanitize_path("a/b/<!>/c")
-            assert path == Path("a/b/c")
+            assert path.as_posix() == "a/b/c"
 
     def test_security_sanitizers_path_part_dot(self) -> None:
         from pathlib import Path
 
         from taipanstack.security.sanitizers import sanitize_path
         # A part that is exactly '.' should not be added to parts
-        assert sanitize_path("foo/./bar") == Path("foo/bar")
+        assert sanitize_path("foo/./bar").as_posix() == "foo/bar"
 
     def test_security_sanitizers_sanitize_path_absolute_with_base_dir(
         self, tmp_path: Path
