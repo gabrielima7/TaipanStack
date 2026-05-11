@@ -172,24 +172,29 @@ class TestSanitizeFilename:
 
 
 class TestSanitizePath:
+    """Tests for sanitize_path function."""
 
     def test_security_sanitizers_path_safe_part_empty(self) -> None:
+        from pathlib import Path
         from unittest.mock import patch
 
         from taipanstack.security.sanitizers import sanitize_path
 
-        # We need a case where sanitize_filename(part) returns "" for an unsafe part.
-        # "a/b/<!>/c" is unsafe.
-        with patch("taipanstack.security.sanitizers.sanitize_filename", return_value=""):
+        def mock_sanitize_filename(val, **kwargs):
+            if val == "<!>":
+                return ""
+            return val
+
+        with patch("taipanstack.security.sanitizers.sanitize_filename", side_effect=mock_sanitize_filename):
             path = sanitize_path("a/b/<!>/c")
-            assert str(path) == "a/b/c"
+            assert path == Path("a/b/c")
 
     def test_security_sanitizers_path_part_dot(self) -> None:
+        from pathlib import Path
+
         from taipanstack.security.sanitizers import sanitize_path
         # A part that is exactly '.' should not be added to parts
-        assert str(sanitize_path("foo/./bar")) == "foo/bar"
-
-    """Tests for sanitize_path function."""
+        assert sanitize_path("foo/./bar") == Path("foo/bar")
 
     def test_security_sanitizers_sanitize_path_absolute_with_base_dir(
         self, tmp_path: Path

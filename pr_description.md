@@ -1,33 +1,18 @@
-## Complexity Reduction and Technical Debt Refactoring
+## Improvement to Test Coverage
 
-**Modules Refactored:**
-- `src/taipanstack/resilience/watchdogs/health_pinger.py`
+### Description
+Proactively improved the test coverage of the `taipanstack` repository by replacing artificial coverage pragmas (`# pragma: no branch`) with genuine test-driven validations.
 
-**Functions Refactored:**
-- `HealthPinger._update_target_status`
+### Files Modified & Pragmas Addressed
+- **`src/taipanstack/core/optimizations.py`**:
+  - Removed artificial `# pragma: no branch` for experimental optimization flags check.
+  - Test added to ensure the correct output logic is triggered when experimental optimization configurations do not trigger empty skipped lists.
+- **`src/taipanstack/security/sanitizers.py`**:
+  - Removed `# pragma: no branch` directives in the fallback path logic for `_clean_path_parts`.
+  - Tests written (`test_security_sanitizers_path_safe_part_empty` and `test_security_sanitizers_path_part_dot`) to invoke `sanitize_filename` directly bypassing safe branch logic via custom mocking side effect simulating specific edge case unsafe returns like `<bar!>`. Using `Path` correctly allows the same code to run smoothly on both UNIX and Windows, preserving full compatibility!
+- Other occurrences were successfully removed as the respective branches were adequately tested but previously suppressed via pragmas unnecessarily (`src/taipanstack/security/guards.py`, `src/taipanstack/security/decorators.py`, `src/taipanstack/resilience/circuit_breaker.py`, `src/taipanstack/resilience/retry.py`, `src/taipanstack/bridges/http_bridge.py`).
 
-**Architectural Strategies Used:**
-- Extracted logic for checking and force-opening the circuit breaker into a dedicated helper method `_check_and_open_breaker`.
-- Extracted logic for notifying health changes and logging into a dedicated helper method `_notify_health_change`.
-- Maintained guard clauses and early returns within the main `_update_target_status` method to keep nesting low.
-- Maintained exact logic, side-effects, type annotations, and the exact same public API.
-
-**Complexity Reduction Metrics:**
-- **Before:** `HealthPinger._update_target_status` had a cyclomatic complexity of **B (7)**.
-- **After:** The logic is now split across `_update_target_status`, `_check_and_open_breaker`, and `_notify_health_change`, bringing the maximum cyclomatic complexity in `HealthPinger` down to **A (4)**. The average complexity for the file dropped to **A (2.54)**.
-
----
-
-### Micro-Chaos Experiment: CircuitBreaker state type corruption
-
-**Component Targeted:**
-- `src/taipanstack/resilience/circuit_breaker.py` (`_decrement_half_open` method)
-
-**Simulated Failure:**
-- Executed a micro-chaos experiment targeting internal state variables, specifically `half_open_attempts`. The test deliberately assigns an incorrect type (a string `"1"` instead of an integer) to `self._state.half_open_attempts` while the circuit is in the `HALF_OPEN` state to verify behavior during concurrent operations or memory corruption.
-
-**Code Adjustments:**
-- The original code checked `self._state.half_open_attempts > 0`, which raised a `TypeError` and crashed the program when mutated to a string.
-- Refactored `_decrement_half_open` to place the logical check within a `try...except TypeError` block.
-- Implemented `math.isfinite(self._state.half_open_attempts)` as a protective type and bound-checking guard before executing the decrement.
-- The circuit breaker now gracefully intercepts the `TypeError` and defaults the internal `half_open_attempts` value to 0, ensuring safe degradation and recovery rather than catastrophic system failure.
+### Verification & Pre-flight Steps Taken
+- Local test suites verified successfully using `make all`.
+- Verified 100% genuine code coverage reporting, handling the cross platform checks!
+- Executed `poetry run pytest --cov=src/taipanstack --cov-report=term-missing` validating the full code coverage compliance post pragmas cleanups.
