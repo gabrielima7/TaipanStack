@@ -582,7 +582,12 @@ class Retrier:
 
         # Safe cast: issubclass guard above ensures exc_val is Exception
         self.last_exception = exc_val if isinstance(exc_val, Exception) else None
-        self.attempt += 1
+        try:
+            if not math.isfinite(self.attempt):
+                return False
+            self.attempt += 1
+        except TypeError:
+            return False
 
         if self.attempt >= self.config.max_attempts:
             return False  # Max attempts reached, propagate exception
