@@ -106,7 +106,6 @@ class RetryConfig:
             object.__setattr__(self, "jitter_factor", 0.1)
 
 
-
 class RetryError(Exception):
     """Raised when all retry attempts have failed."""
 
