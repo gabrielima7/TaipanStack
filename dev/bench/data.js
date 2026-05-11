@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1778351404688,
+  "lastUpdate": 1778533503695,
   "repoUrl": "https://github.com/gabrielima7/TaipanStack",
   "entries": {
     "TaipanStack Performance": [
@@ -30431,6 +30431,149 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0003527018113547806",
             "extra": "mean: 9.890967964074521 usec\nrounds: 130822"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "gabrielima.alu.lmb@gmail.com",
+            "name": "gabrielima7",
+            "username": "gabrielima7"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "87c2eca63169410d55c52f7ee9df53cca1209857",
+          "message": "test: achieve true 100% branch test coverage without artificial gaps (#724)\n\n* test: achieve true 100% branch test coverage without artificial gaps\n\nThis addresses the branch coverage gaps in `taipanstack` by writing robust unit tests targeting explicit edge cases without removing the valid `# pragma: no branch` statements.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: achieve true 100% branch test coverage without artificial gaps\n\nThis addresses the branch coverage gaps in `taipanstack` by writing robust unit tests targeting explicit edge cases without removing the valid `# pragma: no branch` statements.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: achieve true 100% branch test coverage without artificial gaps\n\nThis addresses the branch coverage gaps in `taipanstack` by writing robust unit tests targeting explicit edge cases without removing the valid `# pragma: no branch` statements.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n* test: achieve true 100% branch test coverage without artificial gaps\n\nThis addresses the branch coverage gaps in `taipanstack` by writing robust unit tests targeting explicit edge cases without removing the valid `# pragma: no branch` statements.\n\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>\n\n---------\n\nCo-authored-by: google-labs-jules[bot] <161369871+google-labs-jules[bot]@users.noreply.github.com>\nCo-authored-by: gabrielima7 <230595838+gabrielima7@users.noreply.github.com>",
+          "timestamp": "2026-05-11T21:03:40Z",
+          "tree_id": "8b4385f2e47f3f036ca9e5cd93ced65187c79f2b",
+          "url": "https://github.com/gabrielima7/TaipanStack/commit/87c2eca63169410d55c52f7ee9df53cca1209857"
+        },
+        "date": 1778533502971,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_simple",
+            "value": 1093986.5553786904,
+            "unit": "iter/sec",
+            "range": "stddev: 7.558819647039378e-8",
+            "extra": "mean: 914.0880160577514 nsec\nrounds: 114837"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_xss",
+            "value": 793916.0994466799,
+            "unit": "iter/sec",
+            "range": "stddev: 1.6553851825951804e-7",
+            "extra": "mean: 1.2595789412722267 usec\nrounds: 82042"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_string_unicode",
+            "value": 532616.2997635503,
+            "unit": "iter/sec",
+            "range": "stddev: 3.1085439028736365e-7",
+            "extra": "mean: 1.8775242147939117 usec\nrounds: 56259"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_complex",
+            "value": 269048.3849296111,
+            "unit": "iter/sec",
+            "range": "stddev: 3.590611709178979e-7",
+            "extra": "mean: 3.7168035788864584 usec\nrounds: 138870"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_filename_long",
+            "value": 253350.6215441703,
+            "unit": "iter/sec",
+            "range": "stddev: 3.7457299287972413e-7",
+            "extra": "mean: 3.9470990594181563 usec\nrounds: 132153"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_nested",
+            "value": 70331.04238767887,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000008315566225682678",
+            "extra": "mean: 14.218472612531441 usec\nrounds: 73519"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_path_traversal",
+            "value": 96247.77150771658,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000009060733164165076",
+            "extra": "mean: 10.38985094756013 usec\nrounds: 100837"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_standard",
+            "value": 4370809.470316961,
+            "unit": "iter/sec",
+            "range": "stddev: 1.2380277233091921e-8",
+            "extra": "mean: 228.7905722707085 nsec\nrounds: 44769"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_env_value_large",
+            "value": 2384560.7759823715,
+            "unit": "iter/sec",
+            "range": "stddev: 6.420987351087239e-8",
+            "extra": "mean: 419.3644423208464 nsec\nrounds: 190513"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier",
+            "value": 5891214.462630149,
+            "unit": "iter/sec",
+            "range": "stddev: 1.6888729292920702e-8",
+            "extra": "mean: 169.74428725062288 nsec\nrounds: 60442"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_sanitize_sql_identifier_dirty",
+            "value": 849767.0495289515,
+            "unit": "iter/sec",
+            "range": "stddev: 9.096314065659888e-8",
+            "extra": "mean: 1.1767930994198033 usec\nrounds: 82109"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_ok",
+            "value": 2980842.6043179156,
+            "unit": "iter/sec",
+            "range": "stddev: 3.313334140878136e-8",
+            "extra": "mean: 335.47561302010536 nsec\nrounds: 191939"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_safe_decorator_err",
+            "value": 1414376.5216278315,
+            "unit": "iter/sec",
+            "range": "stddev: 6.130719079717147e-8",
+            "extra": "mean: 707.0253109469605 nsec\nrounds: 145202"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_collect_results_100",
+            "value": 156092.6562370376,
+            "unit": "iter/sec",
+            "range": "stddev: 5.753477139519061e-7",
+            "extra": "mean: 6.406451296987541 usec\nrounds: 164610"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_unwrap_or",
+            "value": 13172007.154432323,
+            "unit": "iter/sec",
+            "range": "stddev: 6.572592129320454e-9",
+            "extra": "mean: 75.91857400893169 nsec\nrounds: 133977"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_public",
+            "value": 102390.08259850608,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0005323573062666251",
+            "extra": "mean: 9.76657088871799 usec\nrounds: 154799"
+          },
+          {
+            "name": "tests/test_benchmarks_operations.py::test_benchmarks_bench_guard_ssrf_private",
+            "value": 103711.82835074629,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00047425783219590925",
+            "extra": "mean: 9.642101734221372 usec\nrounds: 142715"
           }
         ]
       }
