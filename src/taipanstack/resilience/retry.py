@@ -7,7 +7,6 @@ Python framework (sync and async).
 """
 
 import asyncio
-import contextlib
 import functools
 import inspect
 import logging
@@ -160,8 +159,8 @@ def _apply_jitter(delay: float, config: RetryConfig) -> float:
                 delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
             except Exception as e:
                 logger.warning("Failed to add jitter to delay: %s", str(e))
-    except (TypeError, OverflowError, ValueError, Exception):
-        pass  # safe fallback if jitter calculation fails on mutated types
+    except (TypeError, OverflowError, ValueError, Exception) as e:
+        logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
 
     return delay
 
