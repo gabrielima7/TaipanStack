@@ -748,6 +748,7 @@ def test_very_last_sanitize_path_absolute_returns_err():
     res = sanitize_path("/a/b")
     assert "a" in str(res) and "b" in str(res)
 
+
 def test_missing_optimizations_skipped():
     from unittest.mock import MagicMock, patch
 
@@ -767,6 +768,7 @@ def test_missing_optimizations_skipped():
         # Verify that skipped is completely empty
         assert len(res.skipped) == 0
 
+
 def test_missing_sanitizers_part_dot():
     from taipanstack.security.sanitizers import _process_path_part
 
@@ -774,6 +776,7 @@ def test_missing_sanitizers_part_dot():
     # Trigger `part == "."` (implicit `else` in `_process_path_part`)
     _process_path_part(".", parts, "/")
     assert parts == []
+
 
 def test_missing_sanitizers_handle_normal_part():
     from unittest.mock import patch
