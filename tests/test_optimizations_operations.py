@@ -243,3 +243,27 @@ class TestUtilityFunctions:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
             prof3 = get_optimization_profile()
             assert prof3.enable_experimental is True
+
+
+    def test_optimizations_apply_no_skipped(self) -> None:
+
+        from taipanstack.core.optimizations import (
+            OptimizationProfile,
+            apply_optimizations,
+        )
+
+        class MockFeatures:
+            has_jit = True
+            has_free_threading = True
+            has_gc_freeze = True
+
+        from unittest.mock import patch
+        with patch("taipanstack.core.optimizations.get_features", return_value=MockFeatures()):
+            from dataclasses import replace
+
+            from taipanstack.core.optimizations import OptimizationProfile
+            profile = OptimizationProfile()
+            profile = replace(profile, enable_perf_hints=True, enable_experimental=True)
+
+            result = apply_optimizations(profile=profile, apply_gc=True, freeze_after=False)
+            assert len(result.skipped) == 0

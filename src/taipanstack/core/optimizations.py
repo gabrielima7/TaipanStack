@@ -292,9 +292,9 @@ def _apply_experimental(
     """Check and log experimental features."""
     if profile.enable_experimental:
         features = get_features()
-        if features.has_jit:  # pragma: no branch
+        if features.has_jit:
             applied.append("jit: available")
-        if features.has_free_threading:  # pragma: no branch
+        if features.has_free_threading:
             applied.append("free_threading: available")
         logger.warning(
             "EXPERIMENTAL FEATURES ENABLED: Stability and security may be affected."
