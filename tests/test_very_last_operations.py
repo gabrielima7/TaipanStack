@@ -749,8 +749,9 @@ def test_very_last_sanitize_path_absolute_returns_err():
     assert "a" in str(res) and "b" in str(res)
 
 def test_missing_optimizations_skipped():
+    from unittest.mock import MagicMock, patch
+
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
-    from unittest.mock import patch, MagicMock
 
     profile = OptimizationProfile(enable_perf_hints=True, enable_experimental=True)
 
@@ -775,8 +776,9 @@ def test_missing_sanitizers_part_dot():
     assert parts == []
 
 def test_missing_sanitizers_handle_normal_part():
-    from taipanstack.security.sanitizers import _handle_normal_part
     from unittest.mock import patch
+
+    from taipanstack.security.sanitizers import _handle_normal_part
 
     parts = []
     with patch("taipanstack.security.sanitizers.sanitize_filename", return_value=""):
