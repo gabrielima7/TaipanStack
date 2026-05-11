@@ -66,6 +66,21 @@ class RateLimiter:
         except TypeError:
             return False
 
+    def _calculate_new_tokens(self, elapsed: float) -> float | None:
+        """Calculate new tokens based on elapsed time."""
+        new_tokens = elapsed * (self.capacity / self.time_window)
+        return new_tokens if math.isfinite(new_tokens) else None
+
+    def _apply_new_tokens(self, new_tokens: float) -> bool:
+        """Apply new tokens to the bucket."""
+        self.tokens += new_tokens
+        if not math.isfinite(self.tokens):
+            # Reset to previous state or capacity if corrupted
+            self.tokens = self.capacity
+            return False
+        self.tokens = min(self.tokens, self.capacity)
+        return True
+
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
 
@@ -84,23 +99,20 @@ class RateLimiter:
             if not (self._is_valid_bucket_state() and math.isfinite(elapsed)):
                 return False
 
-            # Add tokens for elapsed time based on fill rate
-            new_tokens = elapsed * (self.capacity / self.time_window)
-
-            if not math.isfinite(new_tokens):
+            new_tokens = self._calculate_new_tokens(elapsed)
+            if new_tokens is None:
                 return False
 
-            self.tokens += new_tokens
-
-            if not math.isfinite(self.tokens):
-                # Reset to previous state or capacity if corrupted
-                self.tokens = self.capacity
-                return False
-
-            self.tokens = min(self.tokens, self.capacity)
-            return True
+            return self._apply_new_tokens(new_tokens)
         except TypeError:
             return False
+
+    def _try_consume(self, tokens: float) -> bool:
+        """Attempt to consume the tokens from the bucket if available."""
+        if self.tokens >= tokens:
+            self.tokens -= tokens
+            return True
+        return False
 
     def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
@@ -124,10 +136,7 @@ class RateLimiter:
                 if math.isfinite(now) and not self._add_tokens(now):
                     return False
 
-                if self.tokens >= tokens:
-                    self.tokens -= tokens
-                    return True
-                return False
+                return self._try_consume(tokens)
             except TypeError:
                 return False
 
