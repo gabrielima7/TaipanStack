@@ -55,7 +55,6 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 - `uvloop` async event loop
 - `orjson` fast JSON serialization
 - `Pydantic v2` validation
-- Performance benchmarks with regression detection
 
 </td>
 </tr>
@@ -127,8 +126,6 @@ make security
 # Run property-based fuzzing
 make property-test
 
-# Run performance benchmarks
-make benchmark
 ```
 
 ---
@@ -193,7 +190,6 @@ Taipan Stack integrates security and quality at every level:
 | **Lint** | Ruff | Lightning-fast linting & formatting |
 | **Arch** | Import Linter | Dependency rule enforcement |
 | **Test** | Pytest, Hypothesis, mutmut | Property-based & mutation testing |
-| **Perf** | pytest-benchmark | Performance regression detection |
 | **Containers** | Docker (Alpine, rootless) | Hardened-by-default images |
 
 ### CI Pipeline
@@ -394,7 +390,6 @@ Security features: multi-stage build, Alpine base (<50MB), non-root `appuser` (U
 - Bandit
 - Pytest + Hypothesis
 - mutmut
-- pytest-benchmark
 
 </td>
 <td>

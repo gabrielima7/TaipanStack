@@ -34,7 +34,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
     ---
 
-    `uvloop` async event loop, `orjson` fast JSON, `Pydantic v2` validation, pytest-benchmark regression detection.
+    `uvloop` async event loop, `orjson` fast JSON, `Pydantic v2` validation.
 
 -   :dart: **Rust-Style Error Handling**
 
@@ -239,7 +239,6 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 | **Lint** | Ruff | Lightning-fast linting & formatting |
 | **Arch** | Import Linter | Dependency rule enforcement |
 | **Test** | Pytest, Hypothesis, mutmut | Property-based & mutation testing |
-| **Perf** | pytest-benchmark | Performance regression detection |
 
 ---
 
@@ -248,7 +247,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 | Report | Description |
 |--------|-------------|
 | [🧪 Coverage Report](https://gabrielima7.github.io/TaipanStack/htmlcov/) | Full HTML coverage report — 100% (1347 tests) |
-| [⚡ Benchmark Dashboard](https://gabrielima7.github.io/TaipanStack/dev/bench/) | Performance history & regression graphs |
+| [🧪 Coverage Report](https://gabrielima7.github.io/TaipanStack/htmlcov/) | Full HTML coverage report — 100% (1315 tests) |
 
 ---
 
