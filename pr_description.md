@@ -1,23 +1,15 @@
-## Complexity Reduction & Technical Debt Refactoring
+## Daily Micro-Chaos Resilience Hardening: `taipanstack.resilience.retry`
 
-This PR proactively reduces the cyclomatic complexity within the `taipanstack` core utilities and security sanitizers, adhering strictly to Clean Code and SOLID principles without altering any public API behavior.
+### Target Component
+The `RetryConfig` validation and `_calculate_base_delay` method within `src/taipanstack/resilience/retry.py`.
 
-### Refactored Modules
-- **`src/taipanstack/utils/rate_limit.py`**
-- **`src/taipanstack/security/sanitizers.py`**
+### Simulated Failure
+Simulated a state/type corruption where an internal configuration property (e.g. `initial_delay`, `max_attempts`) is mutated into a non-numeric type (e.g., a `string`) at runtime. This causes type exceptions like `TypeError` during mathematical delay calculations, which previously crashed the retry mechanism entirely instead of safely degrading or logging the error.
 
-### Architectural Strategies Applied
-1. **Extraction of Logic into Dedicated Helpers:**
-   - In `rate_limit.py`, the complex `_add_tokens` method was broken down into smaller, highly testable helpers: `_calculate_new_tokens` and `_apply_new_tokens`.
-   - The token consumption validation logic within `consume` was extracted into `_try_consume`.
-   - In `sanitizers.py`, the `_extract_stem_and_suffix` method was simplified by extracting path parsing logic into `_get_filename_from_path` and `_has_valid_extension`.
+### Code Adjustments Made
+- **Test Addition:** Added `test_chaos_retry_type_mutation.py` to assert that `calculate_delay` handles state mutation types securely without crashing and correctly calculates a fallback delay. Tests explicitly run `calculate_delay(1, config)` and check the output value, verifying that it degrades gracefully.
+- **Config Validation Fallback:** Updated `RetryConfig.__post_init__` to gracefully handle incorrect configuration types by catching `TypeError`s individually and overriding them with default finite values instead of completely resetting the whole configuration or throwing errors.
+- **Graceful Calculation Degradation:** Refactored `_calculate_base_delay` and `_apply_jitter` using `try..except (TypeError, OverflowError)` to gracefully fall back to `0.0` or `config.max_delay` when calculating exponential delays on potentially mutated types, preventing fatal `TypeError`s like "can't multiply sequence by non-int of type 'float'".
 
-2. **Application of Guard Clauses:**
-   - The `sanitize_sql_identifier` method was refactored using early returns. By catching the `TypeError` and empty `ValueError` immediately at the top of the function, deep nesting was eliminated, drastically simplifying the type checking flow.
-
-### Complexity Reduction Metrics
-- The average complexity of the `src/taipanstack/utils/` directory was reduced to **2.50** (down from 2.57).
-- The average complexity of the `src/taipanstack/security/` directory was reduced to **3.05** (down from 3.09).
-- The complexity of the `RateLimiter` class operations was distributed, ensuring no single method exceeds a complexity score of **A (5)**, dropping from previous **B (6)** spikes.
-
-The test suite (`poetry run pytest`) passes 100% cleanly, validating that no logical regressions were introduced during this structural refactoring.
+### Verification
+All tests run with 100% coverage, maintaining architectural rules, strict typing, and benchmark thresholds. Leftover python script files used for editing code have been removed.
