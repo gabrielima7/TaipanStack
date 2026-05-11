@@ -2,7 +2,7 @@
 # TaipanStack — Documentation Deploy
 # =============================================================================
 # Builds MkDocs Material documentation and deploys to gh-pages.
-# CRITICAL: Uses keep_files to preserve existing htmlcov/ and dev/bench/.
+# CRITICAL: Uses keep_files to preserve existing htmlcov/
 # =============================================================================
 
 name: ci-workflow-run-docs
@@ -73,7 +73,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           publish_branch: gh-pages
-          # CRITICAL: Preserve existing benchmark results and coverage reports
+          # CRITICAL: Preserve existing coverage reports
           keep_files: true
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
