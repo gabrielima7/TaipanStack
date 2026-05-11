@@ -1,33 +1,15 @@
-## Complexity Reduction and Technical Debt Refactoring
+**Daily Micro-Chaos Experiment: Resilience Retrier Type Mutation Resilience**
 
-**Modules Refactored:**
-- `src/taipanstack/resilience/watchdogs/health_pinger.py`
+### Target
+`src/taipanstack/resilience/retry.py` (`Retrier` context manager)
 
-**Functions Refactored:**
-- `HealthPinger._update_target_status`
+### Chaos Experiment (Simulated Failure)
+This experiment simulates a rare production failure where the underlying state tracking mechanism (`retrier.attempt`) is unexpectedly corrupted to a non-numeric type, such as a string (`"corrupted"`) or `math.nan`. Before this fix, this mutation would cause a catastrophic `TypeError` when evaluating the attempt conditions and logging limits, leading to an application crash.
 
-**Architectural Strategies Used:**
-- Extracted logic for checking and force-opening the circuit breaker into a dedicated helper method `_check_and_open_breaker`.
-- Extracted logic for notifying health changes and logging into a dedicated helper method `_notify_health_change`.
-- Maintained guard clauses and early returns within the main `_update_target_status` method to keep nesting low.
-- Maintained exact logic, side-effects, type annotations, and the exact same public API.
+### Hardening Adjustments
+The resilience module was modified to detect and safely degrade upon type mutation or structural degradation:
+- Wrapped the evaluation in a `try/except TypeError` guard block.
+- Implemented `math.isfinite(self.attempt)` evaluation.
+- When corruption is detected, the process correctly aborts the retries, allowing the core exception to gracefully propagate downstream instead of raising a raw `TypeError` inside the resilience flow.
 
-**Complexity Reduction Metrics:**
-- **Before:** `HealthPinger._update_target_status` had a cyclomatic complexity of **B (7)**.
-- **After:** The logic is now split across `_update_target_status`, `_check_and_open_breaker`, and `_notify_health_change`, bringing the maximum cyclomatic complexity in `HealthPinger` down to **A (4)**. The average complexity for the file dropped to **A (2.54)**.
-
----
-
-### Micro-Chaos Experiment: CircuitBreaker state type corruption
-
-**Component Targeted:**
-- `src/taipanstack/resilience/circuit_breaker.py` (`_decrement_half_open` method)
-
-**Simulated Failure:**
-- Executed a micro-chaos experiment targeting internal state variables, specifically `half_open_attempts`. The test deliberately assigns an incorrect type (a string `"1"` instead of an integer) to `self._state.half_open_attempts` while the circuit is in the `HALF_OPEN` state to verify behavior during concurrent operations or memory corruption.
-
-**Code Adjustments:**
-- The original code checked `self._state.half_open_attempts > 0`, which raised a `TypeError` and crashed the program when mutated to a string.
-- Refactored `_decrement_half_open` to place the logical check within a `try...except TypeError` block.
-- Implemented `math.isfinite(self._state.half_open_attempts)` as a protective type and bound-checking guard before executing the decrement.
-- The circuit breaker now gracefully intercepts the `TypeError` and defaults the internal `half_open_attempts` value to 0, ensuring safe degradation and recovery rather than catastrophic system failure.
+The implementation strictly follows TaipanStack's Look-Before-You-Leap guidelines and has been validated against a custom Micro-Chaos test suite ensuring stable degradation. All system tests, MyPy static types, and `make all` workflows are completely green.
