@@ -68,8 +68,55 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
     return bool(regex.search(key))
 
 
+def _redact(obj: object, seen: set[int] | None = None) -> object:
+    """Redact sensitive data recursively with circular reference protection.
+
+    Args:
+        obj: The object to redact.
+        seen: Set of IDs of already processed containers.
+
+    Returns:
+        A new object with sensitive data redacted.
+
+    """
+    if _SENSITIVE_KEY_REGEX is None:
+        return obj
+
+    if seen is None:
+        seen = set()
+
+    # Detect circular references
+    if id(obj) in seen:
+        return REDACTED_VALUE
+
+    if isinstance(obj, MutableMapping):
+        seen.add(id(obj))
+        # Create a new dict to avoid in-place mutation of shared state
+        return {
+            k: (
+                REDACTED_VALUE
+                if _is_sensitive(k, _SENSITIVE_KEY_REGEX)
+                else _redact(v, seen)
+            )
+            for k, v in obj.items()
+        }
+
+    if isinstance(obj, list):
+        seen.add(id(obj))
+        return [_redact(item, seen) for item in obj]
+
+    if isinstance(obj, tuple):
+        seen.add(id(obj))
+        return tuple(_redact(item, seen) for item in obj)
+
+    return obj
+
+
 def _redact_dict(d: MutableMapping[str, object]) -> None:
-    """Redact sensitive keys in a dictionary in-place, recursively.
+    """Redact sensitive keys in a dictionary in-place (top-level only).
+
+    Note: Nested structures are replaced with redacted copies to prevent
+    shared state mutation.
 
     Args:
         d: The dictionary to redact.
@@ -78,11 +125,11 @@ def _redact_dict(d: MutableMapping[str, object]) -> None:
     if _SENSITIVE_KEY_REGEX is None:
         return
 
-    for key, value in d.items():
+    for key, value in list(d.items()):
         if _is_sensitive(key, _SENSITIVE_KEY_REGEX):
             d[key] = REDACTED_VALUE
-        elif isinstance(value, MutableMapping):
-            _redact_dict(value)
+        else:
+            d[key] = _redact(value)
 
 
 def mask_sensitive_data_processor(
