@@ -1,5 +1,6 @@
 from taipanstack.utils.logging import REDACTED_VALUE, _redact
 
+
 def test_redact_circular_reference():
     d = {"name": "test"}
     d["self"] = d
