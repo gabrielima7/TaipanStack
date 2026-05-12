@@ -14,7 +14,10 @@ def test_timeout_chaos_type_mutation():
 
     result = flaky_func()
     assert isinstance(result, Err), "NaN timeout should fail safely"
-    assert isinstance(result.unwrap_err(), ValueError), "Should return ValueError for invalid timeout"
+    assert isinstance(result.unwrap_err(), ValueError), (
+        "Should return ValueError for invalid timeout"
+    )
+
 
 def test_timeout_chaos_thread_exhaustion():
     """Simulate thread exhaustion for sync timeout."""
@@ -29,15 +32,18 @@ def test_timeout_chaos_thread_exhaustion():
         def start(self):
             raise RuntimeError("can't start new thread")
 
-    threading.Thread = MockThread # type: ignore
+    threading.Thread = MockThread  # type: ignore
 
     try:
+
         @timeout(1.0)
         def flaky_func() -> Result[str, Exception]:
             return Ok("Success")
 
         result = flaky_func()
         assert isinstance(result, Err), "Thread exhaustion should be caught"
-        assert isinstance(result.unwrap_err(), RuntimeError), "Should return RuntimeError on thread failure"
+        assert isinstance(result.unwrap_err(), RuntimeError), (
+            "Should return RuntimeError on thread failure"
+        )
     finally:
         threading.Thread = original_thread
