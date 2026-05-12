@@ -209,6 +209,10 @@ class TestMaskSensitiveDataProcessor:
             "user_token": "tokenStringABC",
             "safe_field": "safe_value",
             "Authorization": "Bearer 1234",
+            "nested_data": {
+                "password": "hidden_password",
+                "normal": "value",
+            },
         }
 
         result = mask_sensitive_data_processor(None, "info", event_dict)
@@ -219,6 +223,9 @@ class TestMaskSensitiveDataProcessor:
         assert result["user_token"] == REDACTED_VALUE
         assert result["Authorization"] == REDACTED_VALUE
         assert result["safe_field"] == "safe_value"
+        assert isinstance(result["nested_data"], dict)
+        assert result["nested_data"]["password"] == REDACTED_VALUE
+        assert result["nested_data"]["normal"] == "value"
 
 
 class TestGetLogger:
