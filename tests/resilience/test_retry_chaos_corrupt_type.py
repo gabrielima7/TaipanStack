@@ -12,7 +12,7 @@ def test_calculate_delay_state_corruption():
         initial_delay=1.0,
         max_delay=60.0,
         exponential_base=2.0,
-        jitter=True
+        jitter=True,
     )
 
     # Mutate post-init (simulating memory corruption / bad type manipulation)

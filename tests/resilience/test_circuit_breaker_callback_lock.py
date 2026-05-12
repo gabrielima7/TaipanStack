@@ -30,6 +30,8 @@ def test_callback_holds_lock():
     t1.join()
 
     if not locked:
-        pytest.fail("VULNERABILITY: Circuit breaker holds internal lock during state change callbacks, allowing slow callbacks to deadlock the system.")
+        pytest.fail(
+            "VULNERABILITY: Circuit breaker holds internal lock during state change callbacks, allowing slow callbacks to deadlock the system."
+        )
     else:
         cb._state.lock.release()
