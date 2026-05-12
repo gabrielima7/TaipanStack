@@ -69,7 +69,7 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
 
 
 def _redact_dict(d: MutableMapping[str, object]) -> None:
-    """Redact sensitive keys in a dictionary in-place.
+    """Redact sensitive keys in a dictionary in-place, recursively.
 
     Args:
         d: The dictionary to redact.
@@ -78,9 +78,11 @@ def _redact_dict(d: MutableMapping[str, object]) -> None:
     if _SENSITIVE_KEY_REGEX is None:
         return
 
-    for key in d:
+    for key, value in d.items():
         if _is_sensitive(key, _SENSITIVE_KEY_REGEX):
             d[key] = REDACTED_VALUE
+        elif isinstance(value, MutableMapping):
+            _redact_dict(value)
 
 
 def mask_sensitive_data_processor(
