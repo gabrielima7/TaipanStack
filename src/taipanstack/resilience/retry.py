@@ -48,6 +48,18 @@ except ImportError:
     _HAS_STRUCTLOG = False
 
 
+def _validate_finite_or_default(
+    obj: object, attr_name: str, default_val: float | int
+) -> None:
+    """Validate that an attribute is finite, falling back to a default."""
+    try:
+        val = cast(float | int, getattr(obj, attr_name))
+        if not math.isfinite(val):
+            raise ValueError(f"{attr_name} must be a finite number")
+    except TypeError:
+        object.__setattr__(obj, attr_name, default_val)
+
+
 @dataclass(frozen=True)
 class RetryConfig:
     """Configuration for retry behavior.
@@ -75,35 +87,11 @@ class RetryConfig:
 
     def __post_init__(self) -> None:
         """Validate configuration parameters."""
-        try:
-            if not math.isfinite(self.max_attempts):
-                raise ValueError("max_attempts must be a finite number")
-        except TypeError:
-            object.__setattr__(self, "max_attempts", 3)
-
-        try:
-            if not math.isfinite(self.initial_delay):
-                raise ValueError("initial_delay must be a finite number")
-        except TypeError:
-            object.__setattr__(self, "initial_delay", 1.0)
-
-        try:
-            if not math.isfinite(self.max_delay):
-                raise ValueError("max_delay must be a finite number")
-        except TypeError:
-            object.__setattr__(self, "max_delay", 60.0)
-
-        try:
-            if not math.isfinite(self.exponential_base):
-                raise ValueError("exponential_base must be a finite number")
-        except TypeError:
-            object.__setattr__(self, "exponential_base", 2.0)
-
-        try:
-            if not math.isfinite(self.jitter_factor):
-                raise ValueError("jitter_factor must be a finite number")
-        except TypeError:
-            object.__setattr__(self, "jitter_factor", 0.1)
+        _validate_finite_or_default(self, "max_attempts", 3)
+        _validate_finite_or_default(self, "initial_delay", 1.0)
+        _validate_finite_or_default(self, "max_delay", 60.0)
+        _validate_finite_or_default(self, "exponential_base", 2.0)
+        _validate_finite_or_default(self, "jitter_factor", 0.1)
 
 
 class RetryError(Exception):
