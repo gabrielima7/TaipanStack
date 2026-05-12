@@ -1835,56 +1835,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-performance-benchmarks-pytest-benchmark" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Performance Benchmarks (pytest-benchmark)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="6. Performance Benchmarks (pytest-benchmark)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmarked-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmarked Functions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ci-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CI Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#coverage-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2474,56 +2424,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-performance-benchmarks-pytest-benchmark" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Performance Benchmarks (pytest-benchmark)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="6. Performance Benchmarks (pytest-benchmark)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmarked-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmarked Functions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ci-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CI Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#coverage-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2775,50 +2675,6 @@
 <li><strong>Mutation Score</strong>: <code>killed / (killed + survived)</code> — target ≥ 80%</li>
 </ul>
 <hr />
-<h2 id="6-performance-benchmarks-pytest-benchmark">6. Performance Benchmarks (pytest-benchmark)<a class="headerlink" href="#6-performance-benchmarks-pytest-benchmark" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <a href="https://github.com/gabrielima7/TaipanStack/blob/main/tests/test_benchmarks.py"><code>tests/test_benchmarks.py</code></a>
-- <a href="https://github.com/gabrielima7/TaipanStack/blob/main/.github/workflows/benchmark.yml"><code>.github/workflows/benchmark.yml</code></a></p>
-<p>15 micro-benchmarks measuring sanitizer and guard function performance with automatic regression detection in CI.</p>
-<h3 id="benchmarked-functions">Benchmarked Functions<a class="headerlink" href="#benchmarked-functions" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Category</th>
-<th>Functions</th>
-<th>Iterations</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Sanitizers</td>
-<td><code>sanitize_filename</code>, <code>sanitize_html</code>, <code>sanitize_env_value</code>, <code>sanitize_path</code></td>
-<td>1000+</td>
-</tr>
-<tr>
-<td>Guards</td>
-<td><code>guard_path_traversal</code>, <code>guard_command_injection</code>, <code>guard_file_extension</code></td>
-<td>1000+</td>
-</tr>
-<tr>
-<td>Result types</td>
-<td><code>Ok()</code>, <code>Err()</code>, <code>safe()</code> decorator, pattern matching</td>
-<td>1000+</td>
-</tr>
-</tbody>
-</table>
-<h3 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><span class="c1"># Run benchmarks locally</span>
-</span><span id="__span-4-2">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-only<span class="w"> </span>-v
-</span><span id="__span-4-3">
-</span><span id="__span-4-4"><span class="c1"># Compare against saved baseline</span>
-</span><span id="__span-4-5">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-compare
-</span><span id="__span-4-6">
-</span><span id="__span-4-7"><span class="c1"># Save as baseline</span>
-</span><span id="__span-4-8">poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_benchmarks.py<span class="w"> </span>--benchmark-save<span class="o">=</span>baseline
-</span></code></pre></div>
-<h3 id="ci-integration">CI Integration<a class="headerlink" href="#ci-integration" title="Permanent link">&para;</a></h3>
-<p>The benchmark workflow runs on every push to <code>main</code> and stores results in the <code>gh-pages</code> branch for historical tracking.</p>
 <hr />
 <h2 id="coverage-summary">Coverage Summary<a class="headerlink" href="#coverage-summary" title="Permanent link">&para;</a></h2>
 <table>

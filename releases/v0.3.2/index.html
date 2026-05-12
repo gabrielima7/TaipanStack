@@ -1646,34 +1646,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-ci-benchmark-threshold-stabilization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CI Benchmark Threshold Stabilization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. CI Benchmark Threshold Stabilization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#5-type-annotation-alignments" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1686,7 +1658,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what-changed_4" class="md-nav__link">
+  <a href="#what-changed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         What Changed
@@ -2214,34 +2186,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-ci-benchmark-threshold-stabilization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CI Benchmark Threshold Stabilization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. CI Benchmark Threshold Stabilization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#5-type-annotation-alignments" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2254,7 +2198,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#what-changed_4" class="md-nav__link">
+  <a href="#what-changed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         What Changed
@@ -2302,7 +2246,7 @@
 
 <h1 id="taipanstack-v032-documentation-quality-release">TaipanStack v0.3.2 — Documentation &amp; Quality Release<a class="headerlink" href="#taipanstack-v032-documentation-quality-release" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>v0.3.2 is a <strong>patch release</strong> focused heavily on advancing the project's documentation accessibility and presentation, along with performance pipeline stability. It introduces a brand new <strong>MkDocs Material</strong> documentation portal, fixes crucial accessibility issues, and stabilizes the benchmark CI threshold.</p>
+<p>v0.3.2 is a <strong>patch release</strong> focused heavily on advancing the project's documentation accessibility and presentation. It introduces a brand new <strong>MkDocs Material</strong> documentation portal, fixes crucial accessibility issues.</p>
 <hr />
 <h2 id="1-mkdocs-material-documentation-portal">1. MkDocs Material Documentation Portal<a class="headerlink" href="#1-mkdocs-material-documentation-portal" title="Permanent link">&para;</a></h2>
 <p><strong>Files</strong>:
@@ -2337,19 +2281,11 @@
 <li><strong>XSS Prevention</strong>: Fixed potential Cross-Site Scripting (XSS) vectors that could theoretically occur if raw security docstrings were unsafely rendered into the MkDocs HTML output.</li>
 </ul>
 <hr />
-<h2 id="4-ci-benchmark-threshold-stabilization">4. CI Benchmark Threshold Stabilization<a class="headerlink" href="#4-ci-benchmark-threshold-stabilization" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>.github/workflows/benchmarks.yml</code></p>
-<p>Our property-based testing and benchmark actions have been fine-tuned to reduce false positives in Continuous Integration environments.</p>
-<h3 id="what-changed_3">What Changed<a class="headerlink" href="#what-changed_3" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Threshold Increased:</strong> Raised the performance regression threshold up to <strong>150%</strong> (up from earlier overly strict boundaries) in the <code>benchmark-action</code> workflow to account for natural CI runner variance. This prevents transient test failures on GitHub-hosted runners.</li>
-</ul>
 <hr />
 <h2 id="5-type-annotation-alignments">5. Type Annotation Alignments<a class="headerlink" href="#5-type-annotation-alignments" title="Permanent link">&para;</a></h2>
 <p><strong>Files</strong>:
 - <code>src/taipanstack/security/guards.py</code> (and related pattern definitions)</p>
-<h3 id="what-changed_4">What Changed<a class="headerlink" href="#what-changed_4" title="Permanent link">&para;</a></h3>
+<h3 id="what-changed_3">What Changed<a class="headerlink" href="#what-changed_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed type annotation structures for <code>_TRAVERSAL_PATTERNS</code> to explicitly align with <code>pyright --strict</code> mode definitions, ensuring that the type checker correctly understands the compiled regex sequence tuple.</li>
 </ul>
