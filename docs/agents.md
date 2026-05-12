@@ -35,7 +35,6 @@ The layered structure is heavily enforced via **Import Linter**. Respect the fol
 - **Coverage Goal:** The project mandates an absolute 100% test coverage (`fail_under = 100`).
 - **NO CHEATING/BYPASSING (CRITICAL):** You are strictly forbidden from manipulating CI/CD pipelines or coverage reports. **Do not use** `# pragma: no cover`, `@pytest.mark.skip`, `pass`, or any other methods to bypass real testing.
 - **Accuracy:** All tests must be 100% real, functional, and precise. Use `pytest` for standard tests and `hypothesis` for property-based mathematical/logical validations.
-- **Performance:** Changes in critical paths must be benchmarked with `pytest-benchmark`. A performance regression greater than 5% will fail the CI.
 
 ## 7. Continuous Validation Workflow (CRITICAL)
 - **Always Validate Changes:** Before considering any implementation, refactor, or code change complete, you must validate the entire project suite.

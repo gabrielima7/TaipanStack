@@ -94,7 +94,6 @@ dev = [
     "structlog (>=25.5.0,<26.0.0)",
     "import-linter (>=2.1)",
     "gitingest (>=0.1.0)",
-    "pytest-benchmark (>=5.0.0)",
     "pytest-asyncio (>=0.23.0)",
     "radon (>=6.0.1,<7.0.0)",
     "pip-audit (>=2.10.0,<3.0.0)",
@@ -223,7 +222,6 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "security: marks tests as security-related",
     "integration: marks tests as integration tests",
-    "benchmark: marks tests as performance benchmarks",
 ]
 filterwarnings = [
 
