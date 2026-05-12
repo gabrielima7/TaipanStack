@@ -239,14 +239,16 @@ class CircuitBreaker:
                 failure_count=self._state.failure_count,
             )
 
-    def _handle_open_state(self) -> bool:
+    def _handle_open_state(
+        self,
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         """Handle logic for OPEN state in _should_attempt."""
         now = time.monotonic()
         try:
             elapsed = now - self._state.last_failure_time
         except TypeError:
             # Type corruption detected (e.g. last_failure_time is string)
-            return False
+            return False, None
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
@@ -270,12 +272,8 @@ class CircuitBreaker:
                 elapsed,
                 self._state.failure_count,
             )
-            self._notify_state_change(
-                CircuitState.OPEN,
-                CircuitState.HALF_OPEN,
-            )
-            return True
-        return False
+            return True, (CircuitState.OPEN, CircuitState.HALF_OPEN)
+        return False, None
 
     def _handle_attempt_half_open(self) -> bool:
         try:
@@ -292,20 +290,24 @@ class CircuitBreaker:
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
+        state_change: tuple[CircuitState, CircuitState] | None = None
+        should_attempt = False
+
         with self._state.lock:
             match self._state.state:
                 case CircuitState.CLOSED:
-                    return True
-
+                    should_attempt = True
                 case CircuitState.OPEN:
-                    return self._handle_open_state()
-
+                    should_attempt, state_change = self._handle_open_state()
                 case CircuitState.HALF_OPEN:
-                    return self._handle_attempt_half_open()
+                    should_attempt = self._handle_attempt_half_open()
 
-        return False
+        if state_change:
+            self._notify_state_change(*state_change)
 
-    def _handle_success_half_open(self) -> None:
+        return should_attempt
+
+    def _handle_success_half_open(self) -> tuple[CircuitState, CircuitState] | None:
         try:
             if not math.isfinite(self._state.success_count):
                 self._state.success_count = 0
@@ -323,26 +325,27 @@ class CircuitBreaker:
                 self.name,
                 self._state.success_count,
             )
-            self._notify_state_change(
-                CircuitState.HALF_OPEN,
-                CircuitState.CLOSED,
-            )
+            return (CircuitState.HALF_OPEN, CircuitState.CLOSED)
+        return None
 
     def _record_success(self) -> None:
         """Record a successful call."""
+        state_change: tuple[CircuitState, CircuitState] | None = None
+
         with self._state.lock:
             match self._state.state:
                 case CircuitState.HALF_OPEN:
-                    self._handle_success_half_open()
-
+                    state_change = self._handle_success_half_open()
                 case CircuitState.CLOSED:
                     # Reset failure count on success
                     self._state.failure_count = 0
-
                 case CircuitState.OPEN:  # pragma: no branch
                     pass  # Should not happen, but handle gracefully
 
-    def _handle_failure_half_open(self) -> None:
+        if state_change:
+            self._notify_state_change(*state_change)
+
+    def _handle_failure_half_open(self) -> tuple[CircuitState, CircuitState] | None:
         """Handle failure when in HALF_OPEN state."""
         self._state.state = CircuitState.OPEN
         self._state.half_open_attempts = 0
@@ -350,12 +353,9 @@ class CircuitBreaker:
             "Circuit %s reopened after failure in half-open",
             self.name,
         )
-        self._notify_state_change(
-            CircuitState.HALF_OPEN,
-            CircuitState.OPEN,
-        )
+        return (CircuitState.HALF_OPEN, CircuitState.OPEN)
 
-    def _handle_failure_closed(self) -> None:
+    def _handle_failure_closed(self) -> tuple[CircuitState, CircuitState] | None:
         """Handle failure when in CLOSED state."""
         # Check against corrupted NaN/Inf failure_count
         try:
@@ -365,22 +365,14 @@ class CircuitBreaker:
                     "Circuit %s opened due to state corruption (NaN/Inf failures)",
                     self.name,
                 )
-                self._notify_state_change(
-                    CircuitState.CLOSED,
-                    CircuitState.OPEN,
-                )
-                return
+                return (CircuitState.CLOSED, CircuitState.OPEN)
         except TypeError:
             self._state.state = CircuitState.OPEN
             logger.warning(
                 "Circuit %s opened due to type corruption in failure_count",
                 self.name,
             )
-            self._notify_state_change(
-                CircuitState.CLOSED,
-                CircuitState.OPEN,
-            )
-            return
+            return (CircuitState.CLOSED, CircuitState.OPEN)
 
         if self._state.failure_count >= self.config.failure_threshold:
             self._state.state = CircuitState.OPEN
@@ -390,10 +382,9 @@ class CircuitBreaker:
                 self._state.failure_count,
                 self.config.failure_threshold,
             )
-            self._notify_state_change(
-                CircuitState.CLOSED,
-                CircuitState.OPEN,
-            )
+            return (CircuitState.CLOSED, CircuitState.OPEN)
+
+        return None
 
     def _update_failure_metrics(self) -> None:
         try:
@@ -414,18 +405,21 @@ class CircuitBreaker:
         if isinstance(exc, self.config.excluded_exceptions):
             return
 
+        state_change: tuple[CircuitState, CircuitState] | None = None
+
         with self._state.lock:
             self._update_failure_metrics()
 
             match self._state.state:
                 case CircuitState.HALF_OPEN:
-                    self._handle_failure_half_open()
-
+                    state_change = self._handle_failure_half_open()
                 case CircuitState.CLOSED:
-                    self._handle_failure_closed()
-
+                    state_change = self._handle_failure_closed()
                 case CircuitState.OPEN:  # pragma: no branch
                     pass  # Already open, nothing to do
+
+        if state_change:
+            self._notify_state_change(*state_change)
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
