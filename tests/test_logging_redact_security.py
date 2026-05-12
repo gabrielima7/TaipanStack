@@ -1,5 +1,4 @@
-import pytest
-from taipanstack.utils.logging import _redact, REDACTED_VALUE, _SENSITIVE_KEY_REGEX
+from taipanstack.utils.logging import REDACTED_VALUE, _redact
 
 def test_redact_circular_reference():
     d = {"name": "test"}
@@ -9,14 +8,14 @@ def test_redact_circular_reference():
     assert redacted["self"] == REDACTED_VALUE
 
 def test_redact_list():
-    l = [{"password": "123"}, "safe"]
-    redacted = _redact(l)
+    test_list = [{"password": "123"}, "safe"]
+    redacted = _redact(test_list)
     assert redacted[0]["password"] == REDACTED_VALUE
     assert redacted[1] == "safe"
 
 def test_redact_tuple():
-    t = ({"secret": "abc"}, 42)
-    redacted = _redact(t)
+    test_tuple = ({"secret": "abc"}, 42)
+    redacted = _redact(test_tuple)
     assert redacted[0]["secret"] == REDACTED_VALUE
     assert redacted[1] == 42
 
