@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### QA & Testing
 - **Coverage**: Improved branch coverage for implicit Python match and if/elif statements (PR #708).
-- **Test Suite**: Expanded to **1,318 passing tests** with 100% verified coverage.
+- **Test Suite**: Expanded to **1,334 passing tests** with 100% verified coverage.
 - **Chaos**: Introduced dedicated chaos tests for circuit breaker and rate limiter state corruption.
 
 ### Documentation

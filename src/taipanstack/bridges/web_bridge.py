@@ -256,8 +256,8 @@ class TaipanMiddleware:
         # Call the actual application
         try:
             await self._app(scope, receive, send)
-        except Exception:
-            logger.exception("Unhandled exception in ASGI app")
+        except Exception as exc:
+            logger.exception("Unhandled exception in ASGI app", exc_info=exc)
             await _send_json_response(
                 send,
                 status=500,
