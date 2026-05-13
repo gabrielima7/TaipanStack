@@ -7,12 +7,23 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Configuration
 export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
-export PYAPP_PROJECT_VERSION="0.4.8"
-export PYAPP_PROJECT_PATH="$PROJECT_ROOT"
+export PYAPP_PROJECT_VERSION="0.4.9"
 export PYAPP_PYTHON_VERSION="3.11"
-export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
+export PYAPP_EXEC_SCRIPT="$PROJECT_ROOT/taipanstack_bootstrapper.py"
 export PYAPP_DISTRIBUTION_EMBED="true"
 export PYAPP_FULL_ISOLATION="true"
+
+# Build wheel first to ensure we have the latest code
+echo "Building wheel..."
+(cd "$PROJECT_ROOT" && poetry build)
+
+# Find the built wheel
+export PYAPP_PROJECT_PATH="$PROJECT_ROOT/dist/taipanstack-$PYAPP_PROJECT_VERSION-py3-none-any.whl"
+
+if [[ ! -f "$PYAPP_PROJECT_PATH" ]]; then
+    echo "Error: Wheel file not found at $PYAPP_PROJECT_PATH"
+    exit 1
+fi
 
 # Check for Rust
 if ! command -v cargo &> /dev/null; then

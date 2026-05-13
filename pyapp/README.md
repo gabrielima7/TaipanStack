@@ -24,16 +24,20 @@ This directory contains configuration for building standalone executables using 
 ## Manual Build
 
 ```bash
+# Build the wheel first
+poetry build
+
 # Set PyApp configuration
 export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
-export PYAPP_PROJECT_VERSION="0.4.8"
+export PYAPP_PROJECT_VERSION="0.4.9"
 export PYAPP_PYTHON_VERSION="3.11"
+export PYAPP_PROJECT_PATH="dist/taipanstack-0.4.9-py3-none-any.whl"
 export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
 
 # Build with cargo
 cargo build --release
 
-# Output: target/release/taipanstack-bootstrapper
+# Output: target/release/pyapp
 ```
 
 ## Configuration Options

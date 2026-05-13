@@ -4,7 +4,7 @@ Automate the initial setup of a Python environment focused on
 performance, security, and integrity.
 """
 
-__version__ = "1.0.0"
+__version__ = "0.4.9"
 
 import argparse
 import platform

@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.9] - 2026-05-13
+
+### Security
+- **Fix (Medium)**: Remedied error handling information leakage to prevent sensitive data exposure (PR #739).
+- **Fix (Medium)**: Hardened `rate_limit.py` against type mutation and NaN propagation via chaos testing (PR #731).
+- **Fix (Medium)**: Resolved nested dictionary sensitive data redaction in logging utilities (PR #730).
+- **Hardening**: Implemented safe recursive redaction for complex data structures.
+
+### Resilience
+- **Fix**: Eliminated circuit breaker lock deadlock vector to improve concurrency stability (PR #726).
+- **Fix**: Handled retry type mutation in `Retrier` context manager (PR #719).
+- **Hardening**: Added chaos tests and safe degradation for circuit breaker half-open attempts type mutation (PR #710).
+
+### Refactoring & Clean Code
+- **Cleanup**: Removed unused sanitizers and types to reduce codebase bloat (PR #736).
+- **Cleanup**: Removed benchmark suite, workflows, and dependencies to streamline the repository (PR #725).
+- **Complexity**: Reduced cyclomatic complexity in `RetryConfig`, `HealthPinger`, and various core utilities (PR #728, #717, #713).
+- **Chore**: Standardized internal imports and removed unused `urllib.parse` from validators (PR #735).
+
+### CI/CD & Dependencies
+- **Audit**: Comprehensive DevSecOps audit and refactor of CI/CD pipelines (PR #727, #720).
+- **Performance**: Enforced strict performance degradation limits and audited pipeline infrastructure (PR #712).
+- **Dependencies**: Upgraded GitHub Actions and `dawidd6/action-download-artifact` to latest versions (PR #737, #709).
+
+### QA & Testing
+- **Coverage**: Achieved true **100% genuine branch coverage** across the entire TaipanStack core without artificial gaps (PR #738, #724).
+- **Chaos**: Introduced daily micro-chaos tests for retry type mutation and circuit breaker state transitions (PR #714, #711).
+- **Test Suite**: Expanded to **1,331 passing tests** with 100% verified coverage.
+
+### Documentation
+- **Synchronization**: Synchronized test counts and version metadata across all documentation portals (PR #729, #721).
+
 ## [0.4.8] - 2026-05-08
 
 ### Security
@@ -664,7 +696,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...HEAD
+[0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
 [0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
 [0.4.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.5...v0.4.6

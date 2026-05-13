@@ -112,6 +112,7 @@ nav:
       - Adaptive Resilience: features/adaptive-resilience.md
       - Watchdogs & Monitoring: features/watchdogs.md
   - Release Notes:
+      - v0.4.9: releases/v0.4.9.md
       - v0.4.8: releases/v0.4.8.md
       - v0.4.7: releases/v0.4.7.md
       - v0.4.6: releases/v0.4.6.md
