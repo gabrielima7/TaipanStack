@@ -134,18 +134,24 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
         return 0.0
 
 
+def _calculate_jitter_offset(delay: float, factor: float) -> float:
+    """Calculate the random jitter offset."""
+    try:
+        jitter_amount = delay * factor
+        if math.isfinite(jitter_amount):
+            return secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+    except Exception as e:
+        logger.warning("Failed to add jitter to delay: %s", str(e))
+    return 0.0
+
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
     if not config.jitter or not math.isfinite(delay):
         return delay
 
     try:
-        jitter_amount = delay * config.jitter_factor
-        if math.isfinite(jitter_amount):
-            try:
-                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-            except Exception as e:
-                logger.warning("Failed to add jitter to delay: %s", str(e))
+        offset = _calculate_jitter_offset(delay, config.jitter_factor)
+        delay += offset
     except (TypeError, OverflowError, ValueError, Exception) as e:
         logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
 
@@ -551,37 +557,39 @@ class Retrier:
         """Enter the retry context."""
         return self
 
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        _exc_tb: TracebackType | None,
-    ) -> bool:
-        """Exit the retry context.
-
-        Returns True to suppress the exception if we should retry,
-        False to let it propagate.
-        """
+    def _handle_exception_type(self, exc_type: type[BaseException] | None, exc_val: BaseException | None) -> bool:
+        """Handle the exception type checking logic."""
         if exc_type is None:
-            return False  # No exception, exit normally
-
+            return False
         if not issubclass(exc_type, self.exception_types):
-            return False  # Exception type not in retry list
-
-        # Safe cast: issubclass guard above ensures exc_val is Exception
+            return False
         self.last_exception = exc_val if isinstance(exc_val, Exception) else None
+        return True
+
+    def _increment_and_check_attempts(self) -> bool:
+        """Increment attempt count and verify bounds."""
         try:
             if not math.isfinite(self.attempt):
                 return False
             self.attempt += 1
         except TypeError:
             return False
-
         if self.attempt >= self.config.max_attempts:
-            return False  # Max attempts reached, propagate exception
+            return False
+        return True
 
-        # Calculate delay and wait
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        _exc_tb: TracebackType | None,
+    ) -> bool:
+        """Exit the retry context."""
+        if not self._handle_exception_type(exc_type, exc_val):
+            return False
+        if not self._increment_and_check_attempts():
+            return False
+
         delay = calculate_delay(self.attempt, self.config)
         time.sleep(min(delay, 3600.0))
-
-        return True  # Suppress exception and retry
+        return True

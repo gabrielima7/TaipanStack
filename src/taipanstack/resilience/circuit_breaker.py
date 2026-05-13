@@ -294,13 +294,12 @@ class CircuitBreaker:
         should_attempt = False
 
         with self._state.lock:
-            match self._state.state:
-                case CircuitState.CLOSED:
-                    should_attempt = True
-                case CircuitState.OPEN:
-                    should_attempt, state_change = self._handle_open_state()
-                case CircuitState.HALF_OPEN:
-                    should_attempt = self._handle_attempt_half_open()
+            if self._state.state == CircuitState.CLOSED:
+                should_attempt = True
+            elif self._state.state == CircuitState.OPEN:
+                should_attempt, state_change = self._handle_open_state()
+            elif self._state.state == CircuitState.HALF_OPEN:
+                should_attempt = self._handle_attempt_half_open()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -333,14 +332,10 @@ class CircuitBreaker:
         state_change: tuple[CircuitState, CircuitState] | None = None
 
         with self._state.lock:
-            match self._state.state:
-                case CircuitState.HALF_OPEN:
-                    state_change = self._handle_success_half_open()
-                case CircuitState.CLOSED:
-                    # Reset failure count on success
-                    self._state.failure_count = 0
-                case CircuitState.OPEN:  # pragma: no branch
-                    pass  # Should not happen, but handle gracefully
+            if self._state.state == CircuitState.HALF_OPEN:
+                state_change = self._handle_success_half_open()
+            elif self._state.state == CircuitState.CLOSED:
+                self._state.failure_count = 0
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -399,9 +394,16 @@ class CircuitBreaker:
         if math.isfinite(now):
             self._state.last_failure_time = now
 
+    def _get_failure_state_change(self) -> tuple[CircuitState, CircuitState] | None:
+        """Get the state change on failure."""
+        if self._state.state == CircuitState.HALF_OPEN:
+            return self._handle_failure_half_open()
+        elif self._state.state == CircuitState.CLOSED:
+            return self._handle_failure_closed()
+        return None
+
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
-        # Check if exception should be excluded
         if isinstance(exc, self.config.excluded_exceptions):
             return
 
@@ -409,14 +411,7 @@ class CircuitBreaker:
 
         with self._state.lock:
             self._update_failure_metrics()
-
-            match self._state.state:
-                case CircuitState.HALF_OPEN:
-                    state_change = self._handle_failure_half_open()
-                case CircuitState.CLOSED:
-                    state_change = self._handle_failure_closed()
-                case CircuitState.OPEN:  # pragma: no branch
-                    pass  # Already open, nothing to do
+            state_change = self._get_failure_state_change()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -450,24 +445,22 @@ class CircuitBreaker:
         self._record_success()
         return result
 
+    def _should_decrement_half_open(self) -> bool:
+        """Determine if half open attempts should be decremented."""
+        return (
+            self._state.state == CircuitState.HALF_OPEN
+            and math.isfinite(self._state.half_open_attempts)
+            and self._state.half_open_attempts > 0
+        )
+
     def _decrement_half_open(self, is_half_open: bool) -> None:
-        """Decrement half-open attempt count if applicable.
-
-        Args:
-            is_half_open: Whether the circuit was half-open before attempt.
-
-        """
+        """Decrement half-open attempt count if applicable."""
         if is_half_open:
             with self._state.lock:
                 try:
-                    if (
-                        self._state.state == CircuitState.HALF_OPEN
-                        and math.isfinite(self._state.half_open_attempts)
-                        and self._state.half_open_attempts > 0
-                    ):
+                    if self._should_decrement_half_open():
                         self._state.half_open_attempts -= 1
                 except TypeError:
-                    # Reset if state is corrupted to prevent crash
                     self._state.half_open_attempts = 0
 
     def __call__(

@@ -310,15 +310,15 @@ class ResilienceOrchestrator(Generic[T]):
         last_error: Exception | None = None
         for attempt in range(1, max_attempts + 1):
             result = await self._execute_with_timeout(fn, *args, **kwargs)
-            match result:
-                case Ok():
-                    self._record_success_outcome(attempt)
-                    return result
-                case Err(error):
-                    last_error = error
-                    if await self._handle_retry_failure(error, attempt, max_attempts):
-                        continue
-                    break
+            if isinstance(result, Ok):
+                self._record_success_outcome(attempt)
+                return result
+
+            error = result.unwrap_err()
+            last_error = error
+            if await self._handle_retry_failure(error, attempt, max_attempts):
+                continue
+            break
 
         final_result: Result[T, Exception] = Err(
             last_error or RuntimeError("Execution failed")
