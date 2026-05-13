@@ -105,14 +105,14 @@ def validate_inputs(
             bound.apply_defaults()
 
             # Validate each parameter that has a validator
-            for param_name, validator in validators.items():  # pragma: no branch
-                if param_name in bound.arguments:  # pragma: no branch
+            for param_name, validator in validators.items():
+                if param_name in bound.arguments:
                     value = bound.arguments[param_name]
                     try:
                         # Call validator - it should raise on invalid input
                         validated = validator(value)
                         # Update to validated value if returned
-                        if validated is not None:  # pragma: no branch
+                        if validated is not None:
                             bound.arguments[param_name] = validated
                     except (ValueError, TypeError) as e:
                         raise ValidationError(
@@ -165,7 +165,7 @@ def guard_exceptions(
             try:
                 return func(*args, **kwargs)
             except catch as e:
-                if log_errors:  # pragma: no branch
+                if log_errors:
                     import logging
 
                     logging.getLogger("taipanstack.security").warning(
@@ -378,8 +378,8 @@ def require_type(
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
-            for param_name, expected_type in type_hints.items():  # pragma: no branch
-                if param_name in bound.arguments:  # pragma: no branch
+            for param_name, expected_type in type_hints.items():
+                if param_name in bound.arguments:
                     value = bound.arguments[param_name]
                     if not isinstance(value, expected_type):
                         raise TypeError(
