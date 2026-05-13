@@ -7,7 +7,6 @@ declarative, type-safe input validation inside ``BaseModel``
 definitions.
 """
 
-import html
 import re
 from typing import Annotated
 
@@ -138,42 +137,7 @@ SafeProjectName = Annotated[str, AfterValidator(_validate_safe_project_name)]
 _SQL_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*\Z")
 
 
-def _sanitize_safe_html(text: str) -> str:
-    """Sanitize a string to prevent XSS attacks.
-
-    Args:
-        text: The string to sanitize.
-
-    Returns:
-        The HTML-escaped string.
-
-    """
-    return html.escape(text)
 
 
-def _validate_safe_sql_identifier(identifier: str) -> str:
-    """Validate a string is a safe SQL identifier.
-
-    Args:
-        identifier: The SQL identifier to validate.
-
-    Returns:
-        The validated SQL identifier.
-
-    Raises:
-        ValueError: If the identifier implies SQL injection risk.
-
-    """
-    if not _SQL_IDENTIFIER_REGEX.match(identifier):
-        raise ValueError(
-            f"Invalid SQL identifier: '{identifier}'. "
-            "Must match ^[a-zA-Z_][a-zA-Z0-9_]*$"
-        )
-    return identifier
 
 
-SafeHtml = Annotated[str, AfterValidator(_sanitize_safe_html)]
-"""A string sanitized for safe inclusion in HTML templates."""
-
-SafeSqlIdentifier = Annotated[str, AfterValidator(_validate_safe_sql_identifier)]
-"""A string validated as a safe dynamic SQL identifier (e.g., table or column name)."""
