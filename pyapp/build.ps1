@@ -6,12 +6,25 @@ $ProjectRoot = Split-Path -Parent $ScriptDir
 
 # Configuration
 $env:PYAPP_PROJECT_NAME = "taipanstack-bootstrapper"
-$env:PYAPP_PROJECT_VERSION = "0.4.8"
-$env:PYAPP_PROJECT_PATH = $ProjectRoot
+$env:PYAPP_PROJECT_VERSION = "0.4.9"
 $env:PYAPP_PYTHON_VERSION = "3.11"
-$env:PYAPP_EXEC_SCRIPT = "taipanstack_bootstrapper.py"
+$env:PYAPP_EXEC_SCRIPT = Join-Path $ProjectRoot "taipanstack_bootstrapper.py"
 $env:PYAPP_DISTRIBUTION_EMBED = "true"
 $env:PYAPP_FULL_ISOLATION = "true"
+
+# Build wheel first to ensure we have the latest code
+Write-Host "Building wheel..."
+Set-Location $ProjectRoot
+poetry build
+Set-Location $ScriptDir
+
+# Find the built wheel
+$env:PYAPP_PROJECT_PATH = Join-Path $ProjectRoot "dist\taipanstack-$($env:PYAPP_PROJECT_VERSION)-py3-none-any.whl"
+
+if (-not (Test-Path $env:PYAPP_PROJECT_PATH)) {
+    Write-Error "Error: Wheel file not found at $($env:PYAPP_PROJECT_PATH)"
+    exit 1
+}
 
 # Check for Rust
 if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
