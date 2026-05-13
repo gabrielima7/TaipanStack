@@ -793,42 +793,54 @@ def test_missing_sanitizers_handle_normal_part():
         _handle_normal_part("..", parts)
     assert parts == []
 
+
 def test_missing_optimizations_has_jit_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
+
     profile = OptimizationProfile(enable_experimental=True)
     mock_features = MagicMock()
     mock_features.has_jit = False
     mock_features.has_free_threading = False
-    with patch("taipanstack.core.optimizations.get_features", return_value=mock_features):
+    with patch(
+        "taipanstack.core.optimizations.get_features", return_value=mock_features
+    ):
         applied, skipped = [], []
         _apply_experimental(profile, applied, skipped)
         assert len(applied) == 0
+
 
 def test_missing_optimizations_has_free_threading_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
+
     profile = OptimizationProfile(enable_experimental=True)
     mock_features = MagicMock()
     mock_features.has_jit = True
     mock_features.has_free_threading = False
-    with patch("taipanstack.core.optimizations.get_features", return_value=mock_features):
+    with patch(
+        "taipanstack.core.optimizations.get_features", return_value=mock_features
+    ):
         applied, skipped = [], []
         _apply_experimental(profile, applied, skipped)
         assert len(applied) == 1
         assert "jit: available" in applied
 
+
 def test_missing_optimizations_apply_optimizations_skipped_false():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
+
     profile = OptimizationProfile(enable_experimental=True)
     with patch("taipanstack.core.optimizations._apply_experimental") as mock_exp:
+
         def side_effect(p, a, s):
             # Do not append to skipped
             a.append("fake")
+
         mock_exp.side_effect = side_effect
         res = apply_optimizations(profile=profile, apply_gc=False)
         assert res.success is True
