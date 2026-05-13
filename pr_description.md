@@ -1,19 +1,15 @@
-🛡️ Sentinel: [Medium] Fix [Error Handling Information Leakage]
+## Description
 
-🚨 Severity
-Medium
+This PR fixes multiple inconsistencies in documentation regarding test counts. The test count was mistakenly referenced as `1347`, `1318` and `1315` across the site and documentation instead of `1334`. The correct test amount was unified across:
+- `CHANGELOG.md`
+- `README.md`
+- `docs/architecture.md`
+- `docs/index.md`
+- `docs/releases/v0.4.8.md`
 
-💡 Vulnerability
-The `TaipanMiddleware` in `src/taipanstack/bridges/web_bridge.py` and the `BaseWatcher` in `src/taipanstack/resilience/watchdogs/_base.py` use a broad `except Exception:` block without explicitly preserving the original exception object. Instead, `logger.exception()` was being called with implicit state or in some cases completely missing `exc_info`. This is a security flaw because it drops the specific context of unexpected failures which could result in a denial of service (DoS) or masking an attack. Furthermore, logging `exc_info` explicitly without raising the raw tracebacks to the client prevents information leakage while enabling monitoring. The exception handlers were broad and could mask other types of critical `BaseException` classes (like `KeyboardInterrupt`, `SystemExit` or task cancellation issues).
+I additionally removed a duplicated line in `docs/architecture.md` and `docs/index.md` regarding test counts and the coverage report, respectively.
 
-🎯 Impact
-If an unexpected exception occurs inside the ASGI application logic, the lack of robust exception capturing masks the actual error trace, hindering incident response and monitoring mechanisms from alerting engineers on a targeted attack. By capturing explicitly, we make sure that errors and edge-cases are logged, tracked, and remediated in production.
+## Checks
 
-🔧 Fix
-- Modified the catch blocks to explicitly bind the exception object as `except Exception as exc:`.
-- Updated `logger.exception()` to use `exc_info=exc` instead of implicitly determining exception context. This prevents dropping context and improves resilience patterns.
-
-✅ Verification
-- Run `make test` to execute all tests ensuring `100%` test coverage is maintained.
-- Run `make lint` to verify typing correctness and syntax (`ruff`, `mypy`).
-- Verified that `logger.exception()` is correctly logging `exc_info=exc` for explicit `Exception` captures.
+- Ran `mkdocs build --strict` which resulted in an error-free successful build.
+- Ran `make all` and verified all 1334 tests passed and coverage reached 100%. No architectural checks failed.
