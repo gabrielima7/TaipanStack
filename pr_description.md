@@ -13,6 +13,7 @@ Deleting `ci-push-benchmark.yml` violates the 'ZERO Bypass' rule. It bypasses pe
 - Restored `ci-push-benchmark.yml` from the main branch.
 - Ensured `alert-threshold` in `ci-push-benchmark.yml` is set to `105%` to enforce the 5% degradation limit.
 - Maintained the strict naming conventions for steps across workflows.
+- Bumped poetry version to 2.1.1 in `Dockerfile` to match dependencies and pyproject.toml changes.
 
 ## ✅ Verification
 - All GitHub Action files (.yml) strictly follow `[Setup]`, `[Test]`, `[Lint]`, `[Audit]`, `[Build]`, `[Deploy]` step prefixes.
