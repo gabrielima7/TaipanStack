@@ -368,7 +368,7 @@ def _check_denied_extension(
 def _check_allowed_extension(
     ext: str, original_name: str, allowed_extensions: Sequence[str] | None
 ) -> None:
-    if allowed_extensions is not None:  # pragma: no branch
+    if allowed_extensions is not None:
         allowed = {_normalize_ext(e) for e in allowed_extensions}
         if ext not in allowed:
             raise SecurityError(
