@@ -284,7 +284,7 @@ def _handle_normal_part(part: str, parts: list[str]) -> None:
         parts.append(part)
     else:
         safe_part = sanitize_filename(part, preserve_extension=True)
-        if safe_part and safe_part != "..":  # pragma: no branch
+        if safe_part and safe_part != "..":
             parts.append(safe_part)
 
 
@@ -292,7 +292,7 @@ def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""
     if part == "..":
         _handle_dot_dot(parts, anchor)
-    elif part != ".":  # pragma: no branch
+    elif part != ".":
         _handle_normal_part(part, parts)
 
 
@@ -323,7 +323,7 @@ def _apply_base_dir_constraint(
             raise ValueError(msg) from e
 
     # Make absolute relative to base
-    if not sanitized.is_absolute():  # pragma: no branch
+    if not sanitized.is_absolute():
         return base / sanitized
 
     return sanitized
@@ -335,7 +335,7 @@ def _normalize_path_input(path: str | Path) -> Path:
         if len(path) > MAX_PATH_LENGTH:
             msg = "Path length exceeds maximum allowed"
             raise ValueError(msg)
-        if "\x00" in path:  # pragma: no branch
+        if "\x00" in path:
             path = path.replace("\x00", "")
         return Path(path)
 
@@ -347,12 +347,12 @@ def _normalize_path_input(path: str | Path) -> Path:
 
 def _reconstruct_path(original_path: Path, parts: list[str]) -> Path:
     """Reconstruct a path from its sanitized parts."""
-    if original_path.is_absolute():  # pragma: no branch
+    if original_path.is_absolute():
         # Use path.anchor to correctly preserve absolute roots on Windows (e.g. C:\)
         anchor = Path(original_path.anchor)
         return anchor.joinpath(*parts) if parts else anchor
 
-    if parts:  # pragma: no branch
+    if parts:
         return Path().joinpath(*parts)
 
     return Path()
