@@ -135,9 +135,3 @@ SafeProjectName = Annotated[str, AfterValidator(_validate_safe_project_name)]
 
 
 _SQL_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*\Z")
-
-
-
-
-
-
