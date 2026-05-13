@@ -230,7 +230,7 @@ class CircuitBreaker:
                 self._on_state_change(old_state, new_state)
             except Exception as e:
                 self._log_callback_failure(old_state, new_state, e)
-        elif _HAS_STRUCTLOG and _structlog_logger is not None:  # pragma: no branch
+        elif _HAS_STRUCTLOG and _structlog_logger is not None:
             _structlog_logger.warning(
                 "circuit_state_changed",
                 circuit=self.name,
@@ -339,7 +339,7 @@ class CircuitBreaker:
                 case CircuitState.CLOSED:
                     # Reset failure count on success
                     self._state.failure_count = 0
-                case CircuitState.OPEN:  # pragma: no branch
+                case CircuitState.OPEN:
                     pass  # Should not happen, but handle gracefully
 
         if state_change:
@@ -415,7 +415,7 @@ class CircuitBreaker:
                     state_change = self._handle_failure_half_open()
                 case CircuitState.CLOSED:
                     state_change = self._handle_failure_closed()
-                case CircuitState.OPEN:  # pragma: no branch
+                case CircuitState.OPEN:
                     pass  # Already open, nothing to do
 
         if state_change:
