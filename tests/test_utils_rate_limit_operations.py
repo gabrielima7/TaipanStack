@@ -40,7 +40,7 @@ class TestRateLimiter:
     def test_utils_rate_limit_chaos_nan_inf_time(self) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.tokens = 0
-        assert limiter._add_tokens(float("nan"))
+        assert not limiter._add_tokens(float("nan"))
         limiter2 = RateLimiter(10, 1.0)
         assert not limiter2._add_tokens(limiter2.last_update + float("inf"))
 

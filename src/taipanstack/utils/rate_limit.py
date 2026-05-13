@@ -92,11 +92,14 @@ class RateLimiter:
 
         """
         try:
-            elapsed = max(0.0, now - self.last_update)
+            raw_elapsed = now - self.last_update
+            if not math.isfinite(raw_elapsed):
+                return False
+            elapsed = max(0.0, raw_elapsed)
             self.last_update = now
 
             # Prevent state corruption or infinite elapsed time
-            if not (self._is_valid_bucket_state() and math.isfinite(elapsed)):
+            if not self._is_valid_bucket_state():
                 return False
 
             new_tokens = self._calculate_new_tokens(elapsed)
