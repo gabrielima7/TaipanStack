@@ -6,8 +6,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
-import urllib.parse
-from urllib.parse import urlsplit
+from urllib.parse import SplitResult, urlsplit
 
 # Constants to avoid magic values (PLR2004)
 PYTHON_MAJOR_VERSION = 3
@@ -317,7 +316,7 @@ def _check_url_basics(url: str) -> None:
 
 
 def _check_scheme(
-    parsed: urllib.parse.SplitResult,
+    parsed: SplitResult,
     allowed_schemes: tuple[str, ...],
 ) -> None:
     """Validate the URL scheme."""
@@ -340,7 +339,7 @@ def _check_tld(domain: str) -> None:
 
 
 def _check_url_domain(
-    parsed: urllib.parse.SplitResult,
+    parsed: SplitResult,
     allowed_schemes: tuple[str, ...],
     require_tld: bool,
 ) -> None:
