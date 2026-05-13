@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_e60eea11b1e0475c_web_bridge_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-05-12 21:18 +0000
+            created at 2026-05-13 20:56 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -213,7 +213,7 @@
     <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">    <span class="key">match</span> <span class="nam">ssrf_result</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">        <span class="key">case</span> <span class="nam">Err</span><span class="op">(</span><span class="nam">security_err</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">            <span class="key">return</span> <span class="nam">Err</span><span class="op">(</span><span class="nam">security_err</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">        <span class="key">case</span> <span class="nam">Ok</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>  <span class="com"># pragma: no branch</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">        <span class="key">case</span> <span class="nam">Ok</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">            <span class="key">return</span> <span class="nam">Ok</span><span class="op">(</span><span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -240,7 +240,7 @@
     <p class="run run2"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">    <span class="nam">circuit_breaker</span><span class="op">:</span> <span class="nam">CircuitBreaker</span> <span class="op">|</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="op">)</span> <span class="op">-></span> <span class="nam">bool</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">    <span class="str">"""Handle exception and return True if we should retry, False otherwise."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">    <span class="key">if</span> <span class="nam">circuit_breaker</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>  <span class="com"># pragma: no branch</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">    <span class="key">if</span> <span class="nam">circuit_breaker</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">        <span class="nam">circuit_breaker</span><span class="op">.</span><span class="nam">_record_failure</span><span class="op">(</span><span class="nam">exc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">    <span class="key">if</span> <span class="nam">retry_config</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span> <span class="key">and</span> <span class="nam">attempt</span> <span class="op">&lt;</span> <span class="nam">max_attempts</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t">        <span class="nam">delay</span> <span class="op">=</span> <span class="nam">calculate_delay</span><span class="op">(</span><span class="nam">attempt</span><span class="op">,</span> <span class="nam">retry_config</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -543,7 +543,7 @@
             <a class="nav" href="z_e60eea11b1e0475c_web_bridge_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.5">coverage.py v7.13.5</a>,
-            created at 2026-05-12 21:18 +0000
+            created at 2026-05-13 20:56 +0000
         </p>
     </div>
 </footer>
