@@ -200,7 +200,6 @@ def _setup_pre_commit(args: argparse.Namespace) -> None:
     rev: 'v1.13.0'
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
   - repo: https://github.com/PyCQA/bandit
     rev: '1.8.0'
     hooks:
@@ -349,7 +348,6 @@ def _create_project_structure(args: argparse.Namespace) -> None:
     # Creates __init__.py files
     init_files = [
         Path("src") / project_name / "__init__.py",
-        Path("tests") / "__init__.py",
     ]
 
     for init_file in init_files:

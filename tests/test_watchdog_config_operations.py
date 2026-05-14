@@ -324,7 +324,6 @@ class TestConfigWatcher:
 
 
 def test_watchdog_config_config_watcher_hash_err_branch() -> None:
-
     from pydantic import BaseModel
 
     from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher

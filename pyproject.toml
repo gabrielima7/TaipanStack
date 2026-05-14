@@ -29,7 +29,6 @@ dependencies = [
     "result (>=0.17.0)",
     "pyjwt (>=2.11.0,<3.0.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
-    "pip (>=26.1,<27.0)",
 ]
 
 [project.urls]
@@ -268,4 +267,3 @@ tests_dir = ["tests/test_property_sanitizers_operations_expected.py", "tests/tes
 also_copy = ["src/"]
 runner = "python -m pytest -x -q --tb=no --timeout=10 --no-cov"
 dict_synonyms = "Struct, NamedStruct"
-

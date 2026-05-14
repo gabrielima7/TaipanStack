@@ -143,7 +143,6 @@ def test_taipanstack_script_project_structure_creation(tmp_path):
 
     # Verifies if __init__.py files were created
     assert (tmp_path / "src" / "my_test_project" / "__init__.py").exists()
-    assert (tmp_path / "tests" / "__init__.py").exists()
 
     # Verifies if sample files were created
     assert (tmp_path / "src" / "my_test_project" / "main.py").exists()
@@ -194,9 +193,9 @@ def test_taipanstack_script_install_runtime_deps_flag(tmp_path, monkeypatch):
                 and "add" in str(call[0][0])
                 and any("pydantic" in str(arg) for arg in call[0][0])
             ]
-            assert len(poetry_add_calls) > 0, (
-                "Poetry add with pydantic should have been called"
-            )
+            assert (
+                len(poetry_add_calls) > 0
+            ), "Poetry add with pydantic should have been called"
 
 
 def test_taipanstack_script_python_version_detection(tmp_path):
