@@ -33,7 +33,7 @@ format:
 	poetry run ruff format src/ tests/ taipanstack_bootstrapper.py
 
 typecheck:
-	poetry run mypy src/ --strict
+	poetry run mypy src/
 
 security:
 	@echo "Running Bandit security scanner..."

@@ -220,7 +220,6 @@ def _setup_pre_commit(args: argparse.Namespace) -> None:
     rev: 'v1.5.0'
     hooks:
       - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
 """
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
@@ -401,7 +400,7 @@ if __name__ == "__main__":
     if not test_file.exists() and not args.dry_run:
         test_content = f'''"""Example test module for {project_name}."""
 
-from src.{project_name}.main import greet
+from {project_name}.main import greet
 
 
 def test_greet() -> None:
