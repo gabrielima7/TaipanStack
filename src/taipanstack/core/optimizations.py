@@ -274,14 +274,19 @@ def _apply_gc_freeze(
     errors: list[str],
 ) -> None:
     """Apply GC freeze if supported."""
-    if profile.gc_freeze_enabled and freeze_after and PY312:
-        try:
-            gc.freeze()
-            applied.append("gc_freeze: enabled")
-        except Exception as e:
-            errors.append(f"gc_freeze: {e}")
-    elif profile.gc_freeze_enabled and not PY312:
+    if not profile.gc_freeze_enabled:
+        return
+    if not PY312:
         skipped.append("gc_freeze: requires Python 3.12+")
+        return
+    if not freeze_after:
+        return
+
+    try:
+        gc.freeze()
+        applied.append("gc_freeze: enabled")
+    except Exception as e:
+        errors.append(f"gc_freeze: {e}")
 
 
 def _apply_experimental(
@@ -301,6 +306,20 @@ def _apply_experimental(
         )
     else:
         skipped.append("experimental: requires STACK_ENABLE_EXPERIMENTAL=1")
+
+
+def _log_optimization_summary(
+    applied: list[str],
+    skipped: list[str],
+    errors: list[str],
+) -> None:
+    """Log the summary of applied optimizations."""
+    if applied:
+        logger.debug("Applied optimizations: %s", ", ".join(applied))
+    if skipped:
+        logger.debug("Skipped optimizations: %s", ", ".join(skipped))
+    if errors:
+        logger.warning("Optimization errors: %s", ", ".join(errors))
 
 
 def apply_optimizations(
@@ -352,12 +371,7 @@ def apply_optimizations(
 
     # Log summary
     success = len(errors) == 0
-    if applied:
-        logger.debug("Applied optimizations: %s", ", ".join(applied))
-    if skipped:
-        logger.debug("Skipped optimizations: %s", ", ".join(skipped))
-    if errors:
-        logger.warning("Optimization errors: %s", ", ".join(errors))
+    _log_optimization_summary(applied, skipped, errors)
 
     return OptimizationResult(
         success=success,
