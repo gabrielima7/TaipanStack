@@ -59,21 +59,7 @@ bridges-db = [
 resilience = [
     "psutil (>=5.9.0)",
 ]
-all = [
-    # runtime
-    "uvloop (>=0.19.0); sys_platform != 'win32'",
-    "structlog (>=23.0.0)",
-    # bridges-web
-    "fastapi (>=0.100.0)",
-    "litestar (>=2.0.0)",
-    # bridges-http
-    "httpx (>=0.24.0)",
-    # bridges-db
-    "sqlalchemy (>=2.0.0)",
-    "redis (>=5.0.0)",
-    # resilience
-    "psutil (>=5.9.0)",
-]
+all = ["taipanstack[runtime,bridges-web,bridges-http,bridges-db,resilience]"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -222,10 +208,6 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "security: marks tests as security-related",
     "integration: marks tests as integration tests",
-]
-filterwarnings = [
-
-    "ignore::pytest.PytestUnraisableExceptionWarning",
 ]
 
 [tool.coverage.run]

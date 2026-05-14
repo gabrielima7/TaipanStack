@@ -21,6 +21,7 @@ PRE_COMMIT_CONFIG_PATH = Path(".pre-commit-config.yaml")
 GITHUB_DIR = Path(".github")
 DEPENDABOT_CONFIG_PATH = GITHUB_DIR / "dependabot.yml"
 SECURITY_MD_PATH = Path("SECURITY.md")
+GITIGNORE_PATH = Path(".gitignore")
 
 
 # --- Utility Functions ---
@@ -225,6 +226,23 @@ def _setup_pre_commit(args: argparse.Namespace) -> None:
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
 
+def _generate_gitignore(args: argparse.Namespace) -> None:
+    """Generate the .gitignore file."""
+    _log("📝 Generating .gitignore file...", args)
+    content = """\
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+*.bak
+dist/
+build/
+"""
+    _safe_write(GITIGNORE_PATH, content, args)
+
+
 def _generate_dependabot_config(args: argparse.Namespace) -> None:
     """Generate the Dependabot configuration file."""
     _log("📝 Generating .github/dependabot.yml file...", args)
@@ -272,7 +290,7 @@ We prioritize security patches in the latest version (Rolling Release).
 | Older   | :x:                |
 
 ## Reporting a Vulnerability
-If you discover a vulnerability, please report it via the [Security](../../security) tab or by email.
+If you discover a vulnerability, please report it via the Security tab of this repository or by email.
 """
     _safe_write(SECURITY_MD_PATH, content, args)
 
@@ -573,6 +591,7 @@ def main() -> None:
     _generate_pyproject_config(args)
     _setup_pre_commit(args)
     _generate_dependabot_config(args)
+    _generate_gitignore(args)
     _generate_security_policy(args)
 
     # Setup hooks
