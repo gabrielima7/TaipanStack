@@ -202,7 +202,7 @@ module = [
 ignore_missing_imports = true
 ignore_errors = true
 
-[tool.pydantic-mypy]
+[tool.pydantic.mypy]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
@@ -263,3 +263,5 @@ also_copy = ["src/"]
 runner = "python -m pytest -x -q --tb=no --timeout=10 --no-cov"
 dict_synonyms = "Struct, NamedStruct"
 
+[tool.poetry.group.dev.dependencies]
+pygments = "^2.20.0"
