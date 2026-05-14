@@ -217,6 +217,14 @@ def guard_path_traversal(
     """
     if not isinstance(path, (str, Path)):
         raise TypeError(f"path must be str or Path, got {type(path).__name__}")
+    if base_dir is not None and not isinstance(base_dir, (str, Path)):
+        raise TypeError(f"base_dir must be str or Path, got {type(base_dir).__name__}")
+
+    if "\x00" in str(path) or (base_dir is not None and "\x00" in str(base_dir)):
+        raise SecurityError(
+            "Path contains null bytes",
+            guard_name="path_traversal",
+        )
 
     path_obj = Path(path) if isinstance(path, str) else path
     base = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
