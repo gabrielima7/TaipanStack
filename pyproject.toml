@@ -95,7 +95,6 @@ dev = [
     "import-linter (>=2.1)",
     "gitingest (>=0.1.0)",
     "pytest-asyncio (>=0.23.0)",
-    "radon (>=6.0.1,<7.0.0)",
     "pip-audit (>=2.10.0,<3.0.0)",
     # Security: CVE fix - requests <2.33.0 has insecure temp file reuse (CWE-377)
     # Dependabot alert #17 - CVSS 4.4/10 Moderate
@@ -115,7 +114,6 @@ dev = [
 
 
 
-# --- TaipanStack v2.0 Quality Configuration ---
 docs = [
     "mkdocs-material (>=9.7.3,<10.0.0)",
     "mkdocstrings[python] (>=1.0.3,<2.0.0)"

@@ -13,6 +13,7 @@ help:
 	@echo "  typecheck    Run mypy type checker"
 	@echo "  security     Run security checks (bandit, pip-audit)"
 	@echo "  lint-imports Check architecture with import-linter"
+	@echo "  dead-code    Run Vulture to find dead code"
 	@echo "  mutate       Run mutation testing with mutmut"
 	@echo "  build-exe    Build standalone executable with PyApp"
 	@echo "  context      Generate project context for AI with gitingest"
@@ -24,7 +25,7 @@ install:
 	poetry install --with dev
 
 test:
-	poetry run pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
+	poetry run pytest tests/ -n auto -v --cov=src --cov-report=html --cov-report=term-missing
 
 lint:
 	poetry run ruff check src/ tests/ taipanstack_bootstrapper.py
@@ -41,6 +42,10 @@ security:
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
 	poetry run pip-audit --skip-editable
+
+dead-code:
+	@echo "Running Vulture to find dead code..."
+	poetry run vulture
 
 lint-imports:
 	@echo "Checking architecture with Import Linter..."
@@ -78,6 +83,6 @@ property-test:
 	@echo "Running property-based fuzz tests..."
 	poetry run pytest tests/test_property_sanitizers_operations_expected.py -v
 
-all: lint typecheck security lint-imports test
+all: lint typecheck dead-code security lint-imports test
 	@echo ""
 	@echo "✅ All checks passed!"

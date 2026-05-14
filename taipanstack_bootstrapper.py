@@ -206,11 +206,10 @@ def _setup_pre_commit(args: argparse.Namespace) -> None:
     hooks:
       - id: bandit
         args: ["-r", ".", "-ll"]
-  - repo: https://github.com/pycqa/safety
-    rev: '3.2.11'
+  - repo: https://github.com/pypa/pip-audit
+    rev: 'v2.8.0'
     hooks:
-      - id: safety
-        args: ["scan", "--json"]
+      - id: pip-audit
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'
     hooks:
@@ -245,11 +244,10 @@ updates:
           - "ruff"
           - "mypy"
           - "bandit"
-          - "safety"
+          - "pip-audit"
           - "pytest*"
           - "pre-commit"
           - "semgrep"
-          - "py-spy"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -506,11 +504,10 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "ruff",
         "mypy",
         "bandit",
-        "safety",
+        "pip-audit",
         "pre-commit",
         "pytest",
         "pytest-cov",
-        "py-spy",
         "semgrep",
     ]
     _run_command(["poetry", "add", "--group", "dev", *dev_deps], args)
