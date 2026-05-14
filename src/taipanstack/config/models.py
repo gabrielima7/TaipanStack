@@ -29,7 +29,7 @@ class SecurityConfig(BaseModel):
     Attributes:
         level: Security strictness level.
         enable_bandit: Enable Bandit SAST scanner.
-        enable_safety: Enable Safety dependency checker.
+        enable_pip_audit: Enable pip-audit dependency checker.
         enable_semgrep: Enable Semgrep analysis.
         enable_detect_secrets: Enable secret detection.
         bandit_severity: Minimum severity level for Bandit.
@@ -41,7 +41,7 @@ class SecurityConfig(BaseModel):
         description="Security strictness level",
     )
     enable_bandit: bool = Field(default=True, description="Enable Bandit SAST")
-    enable_safety: bool = Field(default=True, description="Enable Safety SCA")
+    enable_pip_audit: bool = Field(default=True, description="Enable pip-audit SCA")
     enable_semgrep: bool = Field(default=True, description="Enable Semgrep")
     enable_detect_secrets: bool = Field(
         default=True, description="Enable secret detection"
@@ -78,7 +78,7 @@ class DependencyConfig(BaseModel):
             "ruff",
             "mypy",
             "bandit",
-            "safety",
+            "pip-audit",
             "pre-commit",
             "pytest",
             "pytest-cov",
@@ -296,7 +296,7 @@ class StackConfig(BaseModel):
         all_tools_enabled = all(
             [
                 self.security.enable_bandit,
-                self.security.enable_safety,
+                self.security.enable_pip_audit,
                 self.security.enable_semgrep,
                 self.security.enable_detect_secrets,
             ]

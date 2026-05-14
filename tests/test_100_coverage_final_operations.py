@@ -46,7 +46,7 @@ class TestConfigGeneratorsBranches:
             project_name="testproj",
             security=SecurityConfig(
                 enable_bandit=False,
-                enable_safety=False,
+                enable_pip_audit=False,
                 enable_semgrep=False,
                 enable_detect_secrets=False,
             ),
@@ -65,13 +65,13 @@ class TestConfigGeneratorsBranches:
             project_name="testproj",
             security=SecurityConfig(
                 enable_bandit=False,
-                enable_safety=True,
+                enable_pip_audit=True,
                 enable_semgrep=False,
                 enable_detect_secrets=False,
             ),
         )
         result = generate_pre_commit_config(config)
-        assert "safety" in result
+        assert "pip-audit" in result
         assert "bandit" not in result
 
     def test_100_coverage_final_generate_pre_commit_with_semgrep_only(
@@ -85,7 +85,7 @@ class TestConfigGeneratorsBranches:
             project_name="testproj",
             security=SecurityConfig(
                 enable_bandit=False,
-                enable_safety=False,
+                enable_pip_audit=False,
                 enable_semgrep=True,
                 enable_detect_secrets=False,
             ),
@@ -104,7 +104,7 @@ class TestConfigGeneratorsBranches:
             project_name="testproj",
             security=SecurityConfig(
                 enable_bandit=False,
-                enable_safety=False,
+                enable_pip_audit=False,
                 enable_semgrep=False,
                 enable_detect_secrets=True,
             ),

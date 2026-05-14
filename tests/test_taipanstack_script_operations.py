@@ -236,7 +236,7 @@ def test_taipanstack_script_setup_pre_commit():
         assert "ruff" in content
         assert "mypy" in content
         assert "bandit" in content
-        assert "safety" in content
+        assert "pip-audit" in content
         assert "semgrep" in content
         assert "detect-secrets" in content
 

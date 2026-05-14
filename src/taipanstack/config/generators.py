@@ -170,19 +170,18 @@ def _generate_bandit_hook(severity: str) -> str:
 """
 
 
-def _generate_safety_hook() -> str:
-    """Generate Safety pre-commit hook.
+def _generate_pip_audit_hook() -> str:
+    """Generate pip-audit pre-commit hook.
 
     Returns:
-        Safety hook YAML string.
+        pip-audit hook YAML string.
 
     """
     return """
-  - repo: https://github.com/pyupio/safety
-    rev: '3.2.11'
+  - repo: https://github.com/pypa/pip-audit
+    rev: 'v2.8.0'
     hooks:
-      - id: safety
-        args: ["check", "--json"]
+      - id: pip-audit
 """
 
 
@@ -258,8 +257,8 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     if config.security.enable_bandit:
         security_hooks.append(_generate_bandit_hook(config.security.bandit_severity))
 
-    if config.security.enable_safety:
-        security_hooks.append(_generate_safety_hook())
+    if config.security.enable_pip_audit:
+        security_hooks.append(_generate_pip_audit_hook())
 
     if config.security.enable_semgrep:
         security_hooks.append(_generate_semgrep_hook())
@@ -323,7 +322,7 @@ We prioritize security fixes for the latest version (Rolling Release).
 This project includes multiple layers of security:
 
 - **SAST**: Bandit for static security analysis
-- **SCA**: Safety/pip-audit for dependency vulnerabilities
+- **SCA**: pip-audit for dependency vulnerabilities
 - **Secrets**: detect-secrets for preventing credential leaks
 - **Type Safety**: Mypy + Pydantic for runtime validation
 - **Runtime Guards**: Protection against path traversal and injection
