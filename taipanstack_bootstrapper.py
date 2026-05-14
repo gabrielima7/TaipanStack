@@ -384,7 +384,7 @@ def greet(name: str) -> str:
 def main() -> None:
     """Main entry point for the application."""
     message = greet("World")
-    print(message)
+    print(message)  # ruff: noqa: T201
 
 
 if __name__ == "__main__":

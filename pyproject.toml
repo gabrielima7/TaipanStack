@@ -202,7 +202,6 @@ plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = [
-    "pydantic.*",
     "mutmut.*",
 ]
 ignore_missing_imports = true
@@ -251,10 +250,6 @@ partial_branches = [
 ]
 fail_under = 100
 show_missing = true
-
-[tool.bandit]
-exclude_dirs = ["tests", ".venv", "venv"]
-skips = ["B101"]
 
 [tool.vulture]
 min_confidence = 80
