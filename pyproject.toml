@@ -263,5 +263,3 @@ also_copy = ["src/"]
 runner = "python -m pytest -x -q --tb=no --timeout=10 --no-cov"
 dict_synonyms = "Struct, NamedStruct"
 
-[tool.poetry.group.dev.dependencies]
-pygments = "^2.20.0"

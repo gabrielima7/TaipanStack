@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -127,9 +127,9 @@ class ResilientDatabase:
 
     async def _execute_loop(
         self,
-        statement: object,
+        statement: Any,
         max_attempts: int,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> Result[object, Exception]:
         """Execute the retry loop for database operations."""
         last_error: Exception | None = None
@@ -149,8 +149,8 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: object,
-        **kwargs: object,
+        statement: Any,
+        **kwargs: Any,
     ) -> Result[object, Exception]:
         """Execute a SQL statement with resilience.
 
@@ -217,7 +217,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: aioredis.Redis[bytes | str],
+        client: aioredis.Redis,
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:
@@ -281,7 +281,9 @@ class ResilientRedis:
             return Err(ImportError("redis is required for health check"))
 
         try:
-            pong = await self._client.ping()
+            pong: Any = self._client.ping()
+            if asyncio.iscoroutine(pong):
+                pong = await pong
             return Ok(bool(pong))
         except Exception as exc:
             return Err(exc)
