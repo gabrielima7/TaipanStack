@@ -481,7 +481,7 @@ def _initialize_poetry_project(args: argparse.Namespace) -> None:
         _log("✅ Poetry project already initialized.", args)
         return
     _log("🛠️  Initializing Poetry project...", args)
-    _run_command(["poetry", "init", "-n"], args)
+    _run_command(["poetry", "init", "-n", "--python=^3.11"], args)
 
 
 def _add_dependencies(args: argparse.Namespace) -> None:
@@ -504,7 +504,7 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "ruff",
         "mypy",
         "bandit",
-        "pip-audit",
+        'pip-audit; python_version >= "3.11"',
         "pre-commit",
         "pytest",
         "pytest-cov",
