@@ -1,14 +1,20 @@
-# 🛡️ Architect: Reduce Cyclomatic Complexity in Core & Resilience
+# 🛡️ Sentinel: [High] Fix path traversal guard crashes and null byte injection
 
-## 🎯 Objective
-Proactively reduced the cyclomatic complexity of the codebase's most complex methods to adhere to Clean Code and SOLID principles without altering the public API.
+## 🚨 Severity
+High
 
-## 🔧 Refactoring Implementation
-- **`src/taipanstack/core/optimizations.py` (`_apply_gc_freeze`)**: Replaced combined conditionals (`and`) with sequential guard clauses, reducing nesting.
-- **`src/taipanstack/core/optimizations.py` (`apply_optimizations`)**: Extracted summary logging logic into a dedicated private helper function `_log_optimization_summary`.
-- **`src/taipanstack/resilience/retry.py` (`Retrier.__exit__`)**: Extracted attempt incrementing and safety bounds checking logic into a dedicated private helper method `_increment_attempt`.
+## 💡 Vulnerability
+The `guard_path_traversal` function in `src/taipanstack/security/guards.py` was vulnerable to unhandled exceptions when processing malicious or invalid input types. Specifically:
+1. When passed paths or base directories containing embedded null bytes (`\x00`), `pathlib.Path.resolve()` crashed with a deep internal `ValueError: lstat: embedded null character in path`, bypassing the graceful `SecurityError` rejection.
+2. The function did not correctly type-check `base_dir`, causing `TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'bytes'` when non-string types were provided.
+
+## 🎯 Impact
+By exploiting these edge cases, an attacker could bypass intended security guardrails by crashing the application on an unhandled exception instead of being gracefully blocked via the standard `SecurityError` flow.
+
+## 🔧 Fix
+- Patched `guard_path_traversal` to explicitly validate the type of `base_dir` and proactively detect embedded null bytes in both the `path` and `base_dir` parameters.
+- If null bytes are detected, it now safely raises a `SecurityError` explicitly citing "Path contains null bytes" before any `pathlib` operations occur.
+- Added a new property-based fuzz test using `hypothesis` to continuously bombard the target with diverse types and string mutations to guarantee no unhandled exceptions persist.
 
 ## ✅ Verification
-- Full test suite execution and validation completed cleanly without regressions.
-- Absolute 100% test coverage maintained.
-- `make all` pipeline passes successfully.
+The complete test suite successfully passes with the new fuzzing payload and the code survives massive, malformed input values.
