@@ -551,6 +551,16 @@ class Retrier:
         """Enter the retry context."""
         return self
 
+    def _increment_attempt(self) -> bool:
+        """Increment attempt counter safely."""
+        try:
+            if not math.isfinite(self.attempt):
+                return False
+            self.attempt += 1
+            return True
+        except TypeError:
+            return False
+
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
@@ -570,11 +580,8 @@ class Retrier:
 
         # Safe cast: issubclass guard above ensures exc_val is Exception
         self.last_exception = exc_val if isinstance(exc_val, Exception) else None
-        try:
-            if not math.isfinite(self.attempt):
-                return False
-            self.attempt += 1
-        except TypeError:
+
+        if not self._increment_attempt():
             return False
 
         if self.attempt >= self.config.max_attempts:
