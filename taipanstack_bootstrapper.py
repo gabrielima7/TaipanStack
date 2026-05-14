@@ -301,7 +301,11 @@ def _check_connectivity(args: argparse.Namespace) -> None:
     """Check for internet connectivity before installing dependencies."""
     _log("🔎 Checking internet connectivity...", args, is_verbose=True)
 
-    _log("✅ Connectivity will be verified by the package manager during installation.", args, is_verbose=True)
+    _log(
+        "✅ Connectivity will be verified by the package manager during installation.",
+        args,
+        is_verbose=True,
+    )
 
 
 def _create_project_structure(args: argparse.Namespace) -> None:
