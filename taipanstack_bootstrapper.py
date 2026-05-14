@@ -9,7 +9,6 @@ __version__ = "0.4.9"
 import argparse
 import platform
 import shutil
-import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +29,7 @@ def _log(message: str, args: argparse.Namespace, is_verbose: bool = False) -> No
     """Centralized logging function that respects dry-run and verbose modes."""
     if is_verbose and not args.verbose:
         return
-    print(message)  # ruff: noqa: T201
+    print(message)
 
 
 def _handle_error(message: str) -> NoReturn:
@@ -399,7 +398,7 @@ def greet(name: str) -> str:
 def main() -> None:
     """Main entry point for the application."""
     message = greet("World")
-    print(message)  # ruff: noqa: T201
+    print(message)
 
 
 if __name__ == "__main__":

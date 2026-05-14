@@ -313,7 +313,7 @@ class TestGeneratorsParanoidLevel:
             security=SecurityConfig(
                 level="paranoid",
                 enable_bandit=True,
-                enable_safety=True,
+                enable_pip_audit=True,
                 enable_semgrep=True,
                 enable_detect_secrets=True,
             ),
@@ -326,7 +326,7 @@ class TestGeneratorsParanoidLevel:
         assert "vulture" in result
         assert "tryceratops" in result
         assert "bandit" in result
-        assert "safety" in result
+        assert "pip-audit" in result
         assert "semgrep" in result
         assert "detect-secrets" in result
 

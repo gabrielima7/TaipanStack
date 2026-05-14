@@ -68,7 +68,7 @@ class TestGeneratePreCommitConfig:
                 level="strict",
                 enable_bandit=True,
                 bandit_severity="high",
-                enable_safety=True,
+                enable_pip_audit=True,
                 enable_semgrep=True,
                 enable_detect_secrets=True,
             ),
@@ -76,7 +76,7 @@ class TestGeneratePreCommitConfig:
         result = generate_pre_commit_config(config)
         assert "repo: https://github.com/PyCQA/bandit" in result
         assert "-lH" in result
-        assert "repo: https://github.com/pyupio/safety" in result
+        assert "repo: https://github.com/pypa/pip-audit" in result
         assert "repo: https://github.com/semgrep/pre-commit" in result
         assert "repo: https://github.com/Yelp/detect-secrets" in result
         assert "repo: https://github.com/trailofbits/pip-audit" not in result

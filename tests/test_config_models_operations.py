@@ -22,7 +22,7 @@ class TestSecurityConfig:
 
         assert config.level == "strict"
         assert config.enable_bandit is True
-        assert config.enable_safety is True
+        assert config.enable_pip_audit is True
         assert config.enable_semgrep is True
         assert config.enable_detect_secrets is True
         assert config.bandit_severity == "low"
