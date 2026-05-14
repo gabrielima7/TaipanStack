@@ -355,9 +355,12 @@ def _create_project_structure(args: argparse.Namespace) -> None:
     for init_file in init_files:
         if not init_file.exists() and not args.dry_run:
             try:
-                content = f'"""Package initialization for {init_file.parent.name}."""\n'
                 if init_file.parent.name == project_name:
-                    content += '\n__version__ = "0.1.0"\n'
+                    content = f'"""Package initialization for {init_file.parent.name}."""\n'
+                    content += "from importlib.metadata import version\n\n"
+                    content += f'__version__ = version("{project_name}")\n'
+                else:
+                    content = f'"""Package initialization for {init_file.parent.name}."""\n'
                 init_file.write_text(content, encoding="utf-8")
                 _log(f"✅ Created: {init_file}", args, is_verbose=True)
             except (OSError, PermissionError) as e:
@@ -511,7 +514,6 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "pytest",
         "pytest-cov",
         "py-spy",
-        "semgrep",
     ]
     _run_command(["poetry", "add", "--group", "dev", *dev_deps], args)
 
