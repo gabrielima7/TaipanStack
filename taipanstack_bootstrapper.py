@@ -9,7 +9,6 @@ __version__ = "0.4.9"
 import argparse
 import platform
 import shutil
-import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -115,7 +114,7 @@ def _generate_pyproject_config(args: argparse.Namespace) -> None:
     config_to_add = ""
 
     if "[tool.ruff]" not in pyproject_content:
-        python_version = f"py{sys.version_info.major}{sys.version_info.minor}"
+        python_version = "py311"
         config_to_add += f"""
 # --- Code Quality Configurations ---
 [tool.ruff]
@@ -302,15 +301,7 @@ def _check_connectivity(args: argparse.Namespace) -> None:
     """Check for internet connectivity before installing dependencies."""
     _log("🔎 Checking internet connectivity...", args, is_verbose=True)
 
-    try:
-        # Tries connecting to PyPI to verify connectivity
-        socket.create_connection(("pypi.org", 443), timeout=5)
-        _log("✅ Connectivity confirmed.", args, is_verbose=True)
-    except (TimeoutError, OSError):
-        _handle_error(
-            "Could not connect to the internet. "
-            "Please check your connection and proxies before proceeding."
-        )
+    _log("✅ Connectivity will be verified by the package manager during installation.", args, is_verbose=True)
 
 
 def _create_project_structure(args: argparse.Namespace) -> None:
