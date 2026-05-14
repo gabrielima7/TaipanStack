@@ -259,12 +259,11 @@ skips = ["B101"]
 [tool.vulture]
 min_confidence = 80
 paths = ["src"]
-exclude = ["tests"]
 
 
 [tool.mutmut]
 paths_to_mutate = ["src/taipanstack/security/sanitizers.py", "src/taipanstack/security/validators.py", "src/taipanstack/security/guards.py", "src/taipanstack/resilience/retry.py", "src/taipanstack/resilience/circuit_breaker.py"]
-tests_dir = ["tests/test_property_sanitizers_operations_expected.py", "tests/test_security_validators_operations_expected.py", "tests/test_security_guards_operations_expected.py", "tests/test_security_ssrf_operations_expected.py", "tests/test_utils_retry_operations_expected.py", "tests/test_utils_circuit_breaker_operations_expected.py"]
+tests_dir = ["tests/test_property_sanitizers_operations.py", "tests/test_security_validators_operations.py", "tests/test_security_guards_operations.py", "tests/test_security_ssrf_operations.py", "tests/test_utils_retry_operations.py", "tests/test_utils_circuit_breaker_operations.py"]
 also_copy = ["src/"]
 runner = "python -m pytest -x -q --tb=no --timeout=10 --no-cov"
 dict_synonyms = "Struct, NamedStruct"

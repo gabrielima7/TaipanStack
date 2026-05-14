@@ -492,8 +492,7 @@ def _add_dependencies(args: argparse.Namespace) -> None:
     if args.install_runtime_deps:
         _log("📦 Adding optional production dependencies...", args)
         prod_deps = ["pydantic>=2.0", "orjson"]
-        if not _is_windows():
-            prod_deps.append("uvloop")
+        prod_deps.append("uvloop; sys_platform != 'win32'")
         _run_command(["poetry", "add", *prod_deps], args)
     else:
         _log(

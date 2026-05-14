@@ -76,7 +76,7 @@ clean:
 
 property-test:
 	@echo "Running property-based fuzz tests..."
-	poetry run pytest tests/test_property_sanitizers_operations_expected.py -v
+	poetry run pytest tests/test_property_sanitizers_operations.py -v
 
 all: lint typecheck security lint-imports test
 	@echo ""
