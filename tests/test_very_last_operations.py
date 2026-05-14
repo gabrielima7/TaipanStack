@@ -491,6 +491,32 @@ class TestOptimizationsEdgeCases:
 
         assert any("requires Python 3.12" in s for s in skipped)
 
+    def test_very_last_apply_gc_freeze_not_freeze_after(self) -> None:
+        """Test _apply_gc_freeze skipped when freeze_after is False (L282-283)."""
+        from taipanstack.core import optimizations
+        from taipanstack.core.optimizations import (
+            OptimizationProfile,
+            _apply_gc_freeze,
+        )
+
+        profile = OptimizationProfile(gc_freeze_enabled=True)
+        applied: list[str] = []
+        skipped: list[str] = []
+        errors: list[str] = []
+
+        with patch.object(optimizations, "PY312", True):
+            _apply_gc_freeze(
+                profile,
+                freeze_after=False,
+                applied=applied,
+                skipped=skipped,
+                errors=errors,
+            )
+
+        assert not applied
+        assert not skipped
+        assert not errors
+
     def test_very_last_apply_gc_freeze_success(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
