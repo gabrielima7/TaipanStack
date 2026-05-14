@@ -29,9 +29,9 @@ poetry build
 
 # Set PyApp configuration
 export PYAPP_PROJECT_NAME="taipanstack-bootstrapper"
-export PYAPP_PROJECT_VERSION="0.4.9"
+export PYAPP_PROJECT_VERSION="<YOUR_VERSION>"
 export PYAPP_PYTHON_VERSION="3.11"
-export PYAPP_PROJECT_PATH="dist/taipanstack-0.4.9-py3-none-any.whl"
+export PYAPP_PROJECT_PATH="dist/taipanstack-*.whl"
 export PYAPP_EXEC_SCRIPT="taipanstack_bootstrapper.py"
 
 # Build with cargo
