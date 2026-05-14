@@ -281,14 +281,9 @@ async def map_async(
         Err('fail')
 
     """
-    match result:
-        case Ok(val):
-            return Ok(await func(val))
-        case Err(e):
-            _ = e
-            return result
-        case _:
-            return result
+    if isinstance(result, Ok):
+        return Ok(await func(result.ok_value))
+    return result
 
 
 @overload
@@ -341,11 +336,6 @@ async def and_then_async(
         Err(ValueError('No DB'))
 
     """
-    match result:
-        case Ok(val):
-            return await func(val)
-        case Err(e):
-            _ = e
-            return result
-        case _:
-            return result
+    if isinstance(result, Ok):
+        return await func(result.ok_value)
+    return result
