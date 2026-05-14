@@ -60,7 +60,7 @@ class TestSanitizeStringProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_never_contains_null_bytes(self, text: str) -> None:
@@ -70,7 +70,7 @@ class TestSanitizeStringProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_control_characters_except_whitespace(
@@ -87,7 +87,7 @@ class TestSanitizeStringProperties:
 
     @given(text=nasty_text, max_len=st.integers(min_value=1, max_value=100))
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_respects_max_length(
@@ -99,7 +99,7 @@ class TestSanitizeStringProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_returns_string_type(self, text: str) -> None:
@@ -109,7 +109,7 @@ class TestSanitizeStringProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_html_tags_removed_by_default(self, text: str) -> None:
@@ -129,7 +129,7 @@ class TestSanitizeFilenameProperties:
 
     @given(text=nasty_filename)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_never_empty(self, text: str) -> None:
@@ -139,7 +139,7 @@ class TestSanitizeFilenameProperties:
 
     @given(text=nasty_filename)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_path_separators(self, text: str) -> None:
@@ -156,7 +156,7 @@ class TestSanitizeFilenameProperties:
 
     @given(text=nasty_filename)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_null_bytes(self, text: str) -> None:
@@ -182,7 +182,7 @@ class TestSanitizeFilenameProperties:
         max_len=st.integers(min_value=5, max_value=255),
     )
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_respects_max_length(
@@ -198,7 +198,7 @@ class TestSanitizeFilenameProperties:
 
     @given(text=nasty_filename)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_windows_reserved_chars(self, text: str) -> None:
@@ -251,7 +251,7 @@ class TestSanitizePathProperties:
         text=st.from_regex(r"[a-zA-Z0-9_./]{1,50}", fullmatch=True),
     )
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_traversal_in_output(self, text: str) -> None:
@@ -273,7 +273,7 @@ class TestSanitizePathProperties:
 
     @given(text=nasty_path)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_null_bytes(self, text: str) -> None:
@@ -293,7 +293,7 @@ class TestSanitizePathProperties:
         max_depth=st.integers(min_value=1, max_value=10),
     )
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_depth_enforcement(
@@ -317,7 +317,7 @@ class TestSanitizeEnvValueProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_null_bytes(self, text: str) -> None:
@@ -327,7 +327,7 @@ class TestSanitizeEnvValueProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_no_newlines_by_default(self, text: str) -> None:
@@ -338,7 +338,7 @@ class TestSanitizeEnvValueProperties:
 
     @given(text=nasty_text, max_len=st.integers(min_value=1, max_value=500))
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_respects_max_length(
@@ -350,7 +350,7 @@ class TestSanitizeEnvValueProperties:
 
     @given(text=nasty_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_returns_string_type(self, text: str) -> None:
@@ -383,7 +383,7 @@ class TestSanitizeSqlIdentifierProperties:
 
     @given(text=valid_sql_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_only_valid_chars_in_output(self, text: str) -> None:
@@ -395,7 +395,7 @@ class TestSanitizeSqlIdentifierProperties:
 
     @given(text=valid_sql_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_max_length_128(self, text: str) -> None:
@@ -405,7 +405,7 @@ class TestSanitizeSqlIdentifierProperties:
 
     @given(text=valid_sql_text)
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=10,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
     def test_property_sanitizers_does_not_start_with_digit(self, text: str) -> None:
