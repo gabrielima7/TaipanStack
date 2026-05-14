@@ -157,7 +157,10 @@ ignore_missing_imports = true
         config_to_add += """
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80"
+addopts = "-v --cov=src --cov-report=html --cov-report=term-missing"
+
+[tool.coverage.report]
+fail_under = 80
 """
 
     if not args.dry_run and config_to_add:
@@ -254,6 +257,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
 """
     _safe_write(DEPENDABOT_CONFIG_PATH, config_content, args)
 
