@@ -24,7 +24,7 @@ install:
 	poetry install --with dev
 
 test:
-	poetry run pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
+	poetry run pytest
 
 lint:
 	poetry run ruff check src/ tests/ taipanstack_bootstrapper.py
@@ -66,7 +66,7 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name .mutmut-cache -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name ".mutmut-cache" -delete 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type f -name "*.pyo" -delete 2>/dev/null || true
 	find . -type f -name "*.bak" -delete 2>/dev/null || true

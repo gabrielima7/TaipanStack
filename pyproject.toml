@@ -97,13 +97,6 @@ dev = [
     "pytest-asyncio (>=0.23.0)",
     "radon (>=6.0.1,<7.0.0)",
     "pip-audit (>=2.10.0,<3.0.0)",
-    # Security: CVE fix - requests <2.33.0 has insecure temp file reuse (CWE-377)
-    # Dependabot alert #17 - CVSS 4.4/10 Moderate
-    "requests (>=2.33.0)",
-    # Security note: Pygments <=2.19.2 has ReDoS via AdILexer (Dependabot alert #16)
-    # CVSS 1.9/10 Low - local attack vector only, no upstream patch available yet
-    # Pinned to latest available; monitor for upstream fix in pygments >2.19.2
-    "pygments (>=2.19.2)",
     "hypothesis (>=6.151.12,<7.0.0)",
     "authlib (>=1.6.11,<2.0.0)",
     "cryptography (>=46.0.7,<49.0.0)",
@@ -215,7 +208,7 @@ warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v  --strict-markers --timeout=30"
+addopts = "-v --strict-markers --timeout=30 --cov=src --cov-report=html --cov-report=term-missing"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = [
