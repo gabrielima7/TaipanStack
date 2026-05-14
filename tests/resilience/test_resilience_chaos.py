@@ -14,9 +14,9 @@ def test_timeout_chaos_type_mutation():
 
     result = flaky_func()
     assert isinstance(result, Err), "NaN timeout should fail safely"
-    assert isinstance(
-        result.unwrap_err(), ValueError
-    ), "Should return ValueError for invalid timeout"
+    assert isinstance(result.unwrap_err(), ValueError), (
+        "Should return ValueError for invalid timeout"
+    )
 
 
 def test_timeout_chaos_thread_exhaustion():
@@ -42,8 +42,8 @@ def test_timeout_chaos_thread_exhaustion():
 
         result = flaky_func()
         assert isinstance(result, Err), "Thread exhaustion should be caught"
-        assert isinstance(
-            result.unwrap_err(), RuntimeError
-        ), "Should return RuntimeError on thread failure"
+        assert isinstance(result.unwrap_err(), RuntimeError), (
+            "Should return RuntimeError on thread failure"
+        )
     finally:
         threading.Thread = original_thread

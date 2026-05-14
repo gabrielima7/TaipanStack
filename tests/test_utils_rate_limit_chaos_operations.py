@@ -62,9 +62,9 @@ def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition() -> None:
         t.join()
 
     # The rate limiter MUST only allow 1 success, regardless of thread interleaving
-    assert (
-        successes == 1
-    ), f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    assert successes == 1, (
+        f"Expected 1 success, got {successes}. Limiter tokens: {limiter.tokens}"
+    )
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
 
 
