@@ -260,6 +260,7 @@ updates:
           - "mypy"
           - "bandit"
           - "pip-audit"
+          - "cyclonedx-python-lib>=11.7.0,<12.0.0"
           - "pytest*"
           - "pre-commit"
           - "semgrep"
@@ -524,6 +525,7 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "mypy",
         "bandit",
         "pip-audit",
+        "cyclonedx-python-lib>=11.7.0,<12.0.0",
         "pre-commit",
         "pytest",
         "pytest-cov",
