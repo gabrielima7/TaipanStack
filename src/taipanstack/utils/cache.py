@@ -12,7 +12,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
-from taipanstack.core.result import Err, Ok, Result
+from taipanstack.core.result import Ok, Result
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -79,7 +79,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
         )
         return (func_name, hashable_args, hashable_kwargs)
 
-    def decorator(  # noqa: PLR0915
+    def decorator(
         func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
@@ -123,15 +123,12 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
                         func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
                         result = await func_coro(*args, **kwargs)
 
-                        match result:
-                            case Ok(value):
-                                if len(_cache) >= max_size:
-                                    # Evict least recently used (first item)
-                                    lru_key = next(iter(_cache))
-                                    del _cache[lru_key]
-                                _cache[cache_key] = (now + ttl, value)
-                            case Err(_):
-                                pass
+                        if isinstance(result, Ok):
+                            if len(_cache) >= max_size:
+                                # Evict least recently used (first item)
+                                lru_key = next(iter(_cache))
+                                del _cache[lru_key]
+                            _cache[cache_key] = (now + ttl, result.ok_value)
 
                         return result
                 finally:
@@ -162,15 +159,12 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
             func_sync = cast(Callable[P, Result[T, E]], func)
             result = func_sync(*args, **kwargs)
 
-            match result:
-                case Ok(value):
-                    if len(_cache) >= max_size:
-                        # Evict least recently used (first item)
-                        lru_key = next(iter(_cache))
-                        del _cache[lru_key]
-                    _cache[cache_key] = (now + ttl, value)
-                case Err(_):
-                    pass
+            if isinstance(result, Ok):
+                if len(_cache) >= max_size:
+                    # Evict least recently used (first item)
+                    lru_key = next(iter(_cache))
+                    del _cache[lru_key]
+                _cache[cache_key] = (now + ttl, result.ok_value)
 
             return result
 

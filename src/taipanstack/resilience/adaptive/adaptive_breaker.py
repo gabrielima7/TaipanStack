@@ -17,7 +17,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import TypeVar
 
-from taipanstack.core.result import Err, Ok, Result
+from taipanstack.core.result import Ok, Result
 from taipanstack.resilience.circuit_breaker import CircuitState
 
 logger = logging.getLogger("taipanstack.resilience.adaptive.breaker")
@@ -171,11 +171,10 @@ class AdaptiveCircuitBreaker:
             The original Result.
 
         """
-        match result:
-            case Ok(_):
-                self.record_success()
-            case Err(error):
-                self.record_failure(error)
+        if isinstance(result, Ok):
+            self.record_success()
+        else:
+            self.record_failure(result.err_value)
         return result
 
     def should_allow(self) -> bool:
