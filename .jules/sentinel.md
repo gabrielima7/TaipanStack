@@ -41,3 +41,8 @@
 **Vulnerability:** Unexpected exceptions within the Web Bridge (`TaipanMiddleware`) and Resilience Watchdogs (`BaseWatcher`) were caught via bare `except Exception:` blocks, calling `logger.exception()` without explicitly passing `exc_info=exc`.
 **Learning:** Due to TaipanStack's strict requirement for zero unhandled exceptions and 100% test coverage, generic `except Exception` blocks are sometimes necessary to enforce the `Result` pattern or prevent thread termination. However, implicitly relying on the global exception state in `logger.exception()` drops important context during concurrent async operations (e.g. `uvloop`), leading to information loss during a DoS or other application failures.
 **Prevention:** Always bind exceptions via `except Exception as exc:` and explicitly pass `exc_info=exc` to logging calls (`logger.exception("...", exc_info=exc)`). This ensures strict and robust error capturing for DevSecOps observability.
+
+## 2026-06-01 - Missing isfinite Check for Timeout/Threshold Parameters in limit_concurrency
+**Vulnerability:** The `limit_concurrency` decorator in `src/taipanstack/utils/concurrency.py` checked if `max_tasks <= 0` and `timeout < 0.0` but failed to verify if the inputs were finite using `math.isfinite()`. Passing `float('nan')` to these parameters bypassed the negative check, potentially causing infinite blocking or unexpected logic errors.
+**Learning:** Checking for `< 0` or `<= 0` is insufficient for parameters originating as floats or untyped data, since `NaN < 0` evaluates to `False`. This allows `NaN` to silently propagate into core concurrency primitives.
+**Prevention:** Always use `math.isfinite()` explicitly before performing numerical comparisons on timeout or capacity boundaries.

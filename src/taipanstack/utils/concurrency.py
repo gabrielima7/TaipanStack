@@ -9,6 +9,7 @@ returns a `Result` type.
 import asyncio
 import functools
 import inspect
+import math
 import threading
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, Protocol, TypeVar, cast, overload
@@ -139,10 +140,10 @@ def limit_concurrency(
         Ok('data')
 
     """
-    if max_tasks <= 0:
-        raise ValueError("max_tasks must be > 0")
-    if timeout < 0.0:
-        raise ValueError("timeout must be >= 0.0")
+    if not math.isfinite(max_tasks) or max_tasks <= 0:
+        raise ValueError("max_tasks must be a finite number > 0")
+    if not math.isfinite(timeout) or timeout < 0.0:
+        raise ValueError("timeout must be a finite non-negative number")
 
     def decorator(
         func: Callable[P, T] | Callable[P, Awaitable[T]],

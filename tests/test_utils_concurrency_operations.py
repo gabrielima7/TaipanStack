@@ -13,9 +13,13 @@ class TestConcurrencyLimiter:
 
     def test_utils_concurrency_invalid_initialization(self) -> None:
         """Test invalid args to limit_concurrency."""
-        with pytest.raises(ValueError, match="must be > 0"):
+        with pytest.raises(ValueError, match="finite"):
+            limit_concurrency(max_tasks=float("nan"))
+        with pytest.raises(ValueError, match="must be a finite number > 0"):
             limit_concurrency(max_tasks=0)
-        with pytest.raises(ValueError, match="must be >= 0"):
+        with pytest.raises(ValueError, match="finite"):
+            limit_concurrency(max_tasks=1, timeout=float("nan"))
+        with pytest.raises(ValueError, match="must be a finite non-negative number"):
             limit_concurrency(max_tasks=1, timeout=-1.0)
 
     def test_utils_concurrency_sync_limit_concurrency_no_timeout_success(
