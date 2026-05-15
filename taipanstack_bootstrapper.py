@@ -53,7 +53,7 @@ def _run_command(
             text=True,
             encoding="utf-8",
             capture_output=capture_output,
-            timeout=60,
+            timeout=300,
         )
         return result
     except FileNotFoundError:
@@ -501,7 +501,9 @@ def _initialize_poetry_project(args: argparse.Namespace) -> None:
         _log("✅ Poetry project already initialized.", args)
         return
     _log("🛠️  Initializing Poetry project...", args)
-    _run_command(["poetry", "init", "-n"], args)
+    # Explicitly set python requirement to avoid resolution issues with heavy dependencies like pip-audit
+    python_req = ">=3.11,<4.0"
+    _run_command(["poetry", "init", "--python", python_req, "-n"], args)
 
 
 def _add_dependencies(args: argparse.Namespace) -> None:
