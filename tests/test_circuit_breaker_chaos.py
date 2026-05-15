@@ -15,9 +15,11 @@ def test_chaos_circuit_breaker_config_mutation_resilience():
 
     # Force open state
     try:
+
         @breaker
         def fail_always():
             raise RuntimeError("Chaos Error")
+
         fail_always()
     except RuntimeError:
         pass
@@ -37,13 +39,16 @@ def test_chaos_circuit_breaker_config_mutation_resilience():
     # Attempt to call. If the system is vulnerable, this will raise a TypeError inside the circuit breaker
     # when comparing `elapsed >= self.config.timeout`
     try:
+
         @breaker
         def succeed():
             return True
 
         succeed()
     except TypeError as e:
-        pytest.fail(f"VULNERABILITY: Circuit breaker crashed due to config corruption: {e}")
+        pytest.fail(
+            f"VULNERABILITY: Circuit breaker crashed due to config corruption: {e}"
+        )
     except CircuitBreakerError:
         # If it's still open, that's fine. It shouldn't crash.
         pass
