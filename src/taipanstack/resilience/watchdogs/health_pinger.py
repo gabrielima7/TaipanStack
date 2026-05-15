@@ -70,16 +70,15 @@ async def check_all(
 
     results: dict[str, bool] = {}
     for target, result in zip(targets, check_results, strict=True):
-        match result:
-            case Ok(healthy):
-                results[target.name] = healthy
-            case Err(error):
-                logger.warning(
-                    "Health check for '%s' failed during aggregation: %s",
-                    target.name,
-                    error,
-                )
-                results[target.name] = False
+        if isinstance(result, Ok):
+            results[target.name] = result.ok_value
+        else:
+            logger.warning(
+                "Health check for '%s' failed during aggregation: %s",
+                target.name,
+                result.err_value,
+            )
+            results[target.name] = False
     return Ok(results)
 
 
@@ -130,16 +129,15 @@ class HealthPinger(BaseWatcher):
         """Process a single health target."""
         result = await check_target(target)
 
-        match result:
-            case Ok(healthy):
-                is_healthy = healthy
-            case Err(error):
-                logger.warning(
-                    "Health check for '%s' raised: %s",
-                    target.name,
-                    error,
-                )
-                is_healthy = False
+        if isinstance(result, Ok):
+            is_healthy = result.ok_value
+        else:
+            logger.warning(
+                "Health check for '%s' raised: %s",
+                target.name,
+                result.err_value,
+            )
+            is_healthy = False
 
         self._update_target_status(target, is_healthy)
 

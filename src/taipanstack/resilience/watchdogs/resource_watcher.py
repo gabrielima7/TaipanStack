@@ -146,8 +146,7 @@ class ResourceWatcher(BaseWatcher):
     async def _run(self) -> None:
         """Execute a single resource check cycle."""
         result = check_resources()
-        match result:
-            case Ok(snapshot):
-                self._handle_snapshot(snapshot)
-            case Err(error):
-                logger.error("Resource check failed: %s", error)
+        if isinstance(result, Ok):
+            self._handle_snapshot(result.ok_value)
+        else:
+            logger.error("Resource check failed: %s", result.err_value)

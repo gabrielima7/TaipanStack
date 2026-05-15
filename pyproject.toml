@@ -97,6 +97,7 @@ dev = [
     "pytest-asyncio (>=0.23.0)",
     "radon (>=6.0.1,<7.0.0)",
     "pip-audit (>=2.10.0,<3.0.0)",
+    "cyclonedx-python-lib (>=11.7.0,<12.0.0)",
     # Security: CVE fix - requests <2.33.0 has insecure temp file reuse (CWE-377)
     # Dependabot alert #17 - CVSS 4.4/10 Moderate
     "requests (>=2.33.0)",
@@ -242,11 +243,6 @@ exclude_lines = [
     "@abstractmethod",
     "@overload",
     "def __call__\\(.*\\) -> .*:\\s*(?:\"\"\".*?\"\"\"\\s*)?\\.\\.\\.",
-]
-partial_branches = [
-
-    "case Err\\(",
-    "case Ok\\(",
 ]
 fail_under = 100
 show_missing = true

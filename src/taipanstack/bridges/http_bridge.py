@@ -126,11 +126,9 @@ def _check_ssrf(url: str, ssrf_protection: bool) -> Result[None, Exception]:
         return Ok(None)
 
     ssrf_result = guard_ssrf(url)
-    match ssrf_result:
-        case Err(security_err):
-            return Err(security_err)
-        case Ok():
-            return Ok(None)
+    if isinstance(ssrf_result, Err):
+        return Err(ssrf_result.err_value)
+    return Ok(None)
 
 
 def _should_retry_status(

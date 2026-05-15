@@ -201,11 +201,10 @@ class ConfigWatcher(BaseWatcher):
         changed: list[Path] = []
         for path in self._config_paths:
             hash_result = _hash_file(path)
-            match hash_result:
-                case Ok(current_hash):
-                    self._process_hash_result(path, current_hash, changed)
-                case Err(error):
-                    logger.warning("Cannot hash %s: %s", path, error)
+            if isinstance(hash_result, Ok):
+                self._process_hash_result(path, hash_result.ok_value, changed)
+            else:
+                logger.warning("Cannot hash %s: %s", path, hash_result.err_value)
         return Ok(changed)
 
     def _handle_validation_success(
@@ -244,23 +243,18 @@ class ConfigWatcher(BaseWatcher):
 
         """
         load_result = _load_file_data(path)
-        match load_result:
-            case Err(error):
-                return Err(error)
-            case Ok(data):
-                validation = validate_config(data, self._config_model)
-                match validation:
-                    case Ok(model):
-                        return self._handle_validation_success(path, model)
-                    case Err(val_error):
-                        return self._handle_validation_failure(path, val_error)
+        if isinstance(load_result, Err):
+            return Err(load_result.err_value)
+        validation = validate_config(load_result.ok_value, self._config_model)
+        if isinstance(validation, Ok):
+            return self._handle_validation_success(path, validation.ok_value)
+        return self._handle_validation_failure(path, validation.err_value)
 
     async def _run(self) -> None:
         """Execute a single config-check cycle."""
         changes = self._detect_changes()
-        match changes:
-            case Ok(paths):
-                for path in paths:
-                    self._validate_and_apply(path)
-            case Err(error):
-                logger.error("Change detection failed: %s", error)
+        if isinstance(changes, Ok):
+            for path in changes.ok_value:
+                self._validate_and_apply(path)
+        else:
+            logger.error("Change detection failed: %s", changes.err_value)
