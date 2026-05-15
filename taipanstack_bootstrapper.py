@@ -156,7 +156,7 @@ ignore_missing_imports = true
         config_to_add += """
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=80"
+addopts = "-v --cov=src --cov-report=html --cov-report=term-missing --cov-fail-under=100"
 """
 
     if not args.dry_run and config_to_add:
