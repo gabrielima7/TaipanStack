@@ -143,6 +143,7 @@ def _do_apply_jitter(delay: float, jitter_amount: float) -> float:
         logger.warning("Failed to add jitter to delay: %s", str(e))
         return delay
 
+
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
     if not config.jitter or not math.isfinite(delay):
