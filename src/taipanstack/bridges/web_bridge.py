@@ -14,7 +14,7 @@ from collections.abc import Awaitable, Callable, MutableMapping
 from dataclasses import dataclass
 from typing import TypeAlias, TypeVar
 
-from taipanstack.core.result import Err, Ok, Result
+from taipanstack.core.result import Ok, Result
 from taipanstack.utils.rate_limit import RateLimiter
 
 logger = logging.getLogger("taipanstack.bridges.web")
@@ -90,11 +90,9 @@ def result_to_response(
         {"status": 200, "data": {"id": 1}}
 
     """
-    match result:
-        case Ok(value):
-            return {"status": status_ok, "data": value}
-        case Err(error):
-            return {"status": status_err, "error": str(error)}
+    if isinstance(result, Ok):
+        return {"status": status_ok, "data": result.ok_value}
+    return {"status": status_err, "error": str(result.err_value)}
 
 
 async def _send_json_response(

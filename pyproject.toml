@@ -243,11 +243,6 @@ exclude_lines = [
     "@overload",
     "def __call__\\(.*\\) -> .*:\\s*(?:\"\"\".*?\"\"\"\\s*)?\\.\\.\\.",
 ]
-partial_branches = [
-
-    "case Err\\(",
-    "case Ok\\(",
-]
 fail_under = 100
 show_missing = true
 
