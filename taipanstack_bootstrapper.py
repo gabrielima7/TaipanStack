@@ -263,7 +263,7 @@ updates:
           - "pytest*"
           - "pre-commit"
           - "semgrep"
-          - "py-spy"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -527,8 +527,8 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "pre-commit",
         "pytest",
         "pytest-cov",
-        "py-spy",
         "semgrep",
+        "cyclonedx-python-lib>=11.7.0,<12.0.0",
     ]
     _run_command(["poetry", "add", "--group", "dev", *dev_deps], args)
 
