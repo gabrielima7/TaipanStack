@@ -4340,4 +4340,4 @@ runtime = ["structlog", "uvloop"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "b55f99bc4eefb0ebb27a5856ad2ceac4bb4b425930cbf6e599603ee801f9d441"
+content-hash = "e91e0647f0059d18caaca68a8a52d4f53c2dcd793a377dc1d98ff78590f32b27"
