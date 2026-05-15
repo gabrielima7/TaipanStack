@@ -222,7 +222,6 @@ def _setup_pre_commit(args: argparse.Namespace) -> None:
     _safe_write(PRE_COMMIT_CONFIG_PATH, config_content, args)
 
 
-
 def _generate_gitignore(args: argparse.Namespace) -> None:
     """Generate the .gitignore file."""
     _log("📝 Generating .gitignore file...", args)
@@ -238,6 +237,7 @@ dist/
 build/
 """
     _safe_write(Path(".gitignore"), content, args)
+
 
 def _generate_dependabot_config(args: argparse.Namespace) -> None:
     """Generate the Dependabot configuration file."""
@@ -318,7 +318,11 @@ def _check_connectivity(args: argparse.Namespace) -> None:
 
     try:
         # Tries connecting to PyPI to verify connectivity
-        _log("✅ Connectivity will be verified by the package manager during installation.", args, is_verbose=True)
+        _log(
+            "✅ Connectivity will be verified by the package manager during installation.",
+            args,
+            is_verbose=True,
+        )
         _log("✅ Connectivity confirmed.", args, is_verbose=True)
     except Exception:
         _handle_error(
