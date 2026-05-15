@@ -5,7 +5,7 @@
 # CRITICAL: Uses keep_files to preserve existing htmlcov/
 # =============================================================================
 
-name: ci-workflow-run-docs
+name: ci-workflow_run-deploy
 
 on:
   workflow_run:
