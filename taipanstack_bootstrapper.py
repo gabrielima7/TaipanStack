@@ -262,12 +262,14 @@ updates:
           - "pip-audit"
           - "pytest*"
           - "pre-commit"
-          - "semgrep"
-          - "py-spy"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
 """
     _safe_write(DEPENDABOT_CONFIG_PATH, config_content, args)
 
@@ -286,7 +288,7 @@ We prioritize security patches in the latest version (Rolling Release).
 | Older   | :x:                |
 
 ## Reporting a Vulnerability
-If you discover a vulnerability, please report it via the [Security](../../security) tab or by email.
+If you discover a vulnerability, please report it via the Security tab of this repository or by email.
 """
     _safe_write(SECURITY_MD_PATH, content, args)
 
@@ -375,7 +377,7 @@ def _create_project_structure(args: argparse.Namespace) -> None:
             try:
                 content = f'"""Package initialization for {init_file.parent.name}."""\n'
                 if init_file.parent.name == project_name:
-                    content += '\n__version__ = "0.1.0"\n'
+                    content += f'\nfrom importlib.metadata import version\n\n__version__ = version("{project_name}")\n'
                 init_file.write_text(content, encoding="utf-8")
                 _log(f"✅ Created: {init_file}", args, is_verbose=True)
             except (OSError, PermissionError) as e:
@@ -402,7 +404,7 @@ def greet(name: str) -> str:
 def main() -> None:
     """Main entry point for the application."""
     message = greet("World")
-    print(message)
+    print(message)  # ruff: noqa: T201
 
 
 if __name__ == "__main__":
