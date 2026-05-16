@@ -1,7 +1,8 @@
 """Chaos tests for circuit breaker type mutation half open attempt count."""
 
 import pytest
-from src.taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
+from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
 def test_circuit_breaker_half_open_attempts_mutation_decrement() -> None:

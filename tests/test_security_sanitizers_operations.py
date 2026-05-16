@@ -501,7 +501,7 @@ class TestSanitizerFallthrough:
         """Test the implicit fallthrough cases in path sanitization."""
         from pathlib import Path
 
-        from src.taipanstack.security.sanitizers import sanitize_path
+        from taipanstack.security.sanitizers import sanitize_path
 
         # Test fallthrough for `if safe_part and safe_part != "..":`
         # By passing a part that becomes empty after sanitization, or is ".."
