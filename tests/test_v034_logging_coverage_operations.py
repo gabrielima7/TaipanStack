@@ -1,8 +1,8 @@
-from src.taipanstack.utils.logging import mask_sensitive_data_processor
+from taipanstack.utils.logging import mask_sensitive_data_processor
 
 
 def test_v034_logging_coverage_coverage():
-    from src.taipanstack.utils import logging as my_logging
+    from taipanstack.utils import logging as my_logging
 
     # Temporarily set regex to None to hit the branch
     old_regex = my_logging._SENSITIVE_KEY_REGEX
