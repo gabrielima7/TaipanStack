@@ -308,6 +308,7 @@ async def test_orchestrator_execute_timeout_err_branch() -> None:
     res = await orchestrator.execute(fail_func)
     assert isinstance(res, Err)
 
+
 @pytest.mark.asyncio
 async def test_orchestrator_execute_timeout_result_return() -> None:
     """Test _execute_with_timeout returns Ok unwrapped if it's already a Result."""
