@@ -349,6 +349,9 @@ class ResilienceOrchestrator(Generic[T]):
                 )
             else:
                 result = await fn(*args, **kwargs)
+
+            if isinstance(result, (Ok, Err)):
+                return cast(Result[T, Exception], result)
             return Ok(result)
         except TimeoutError:
             return Err(
