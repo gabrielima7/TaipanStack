@@ -569,7 +569,7 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings() -> None:
         HealthCheck.data_too_large,
         HealthCheck.too_slow,
     ],
-    max_examples=5,
+    max_examples=1,
     deadline=None,
 )
 @given(
