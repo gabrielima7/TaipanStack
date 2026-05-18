@@ -307,3 +307,30 @@ async def test_orchestrator_execute_timeout_err_branch() -> None:
 
     res = await orchestrator.execute(fail_func)
     assert isinstance(res, Err)
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_execute_timeout_result_return() -> None:
+    """Test _execute_with_timeout returns Ok unwrapped if it's already a Result."""
+    orch = ResilienceOrchestrator("test_timeout")
+
+    async def _return_result_fn() -> Ok[str]:
+        return Ok("inner_ok")
+
+    res = await orch._execute_with_timeout(_return_result_fn)
+    assert res.is_ok()
+    assert res.ok_value == "inner_ok"
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_execute_timeout_result_err_return() -> None:
+    """Test _execute_with_timeout returns Err unwrapped if it's already a Result."""
+    orch = ResilienceOrchestrator("test_timeout")
+
+    async def _return_result_fn() -> Err[ValueError]:
+        return Err(ValueError("inner_err"))
+
+    res = await orch._execute_with_timeout(_return_result_fn)
+    assert res.is_err()
+    assert isinstance(res.err_value, ValueError)
+    assert str(res.err_value) == "inner_err"
