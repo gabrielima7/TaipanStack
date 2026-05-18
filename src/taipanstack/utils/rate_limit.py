@@ -127,8 +127,13 @@ class RateLimiter:
             True if tokens were consumed (allow), False otherwise (limit exceeded).
 
         """
-        if tokens <= 0:
-            return True
+        try:
+            if not math.isfinite(tokens):
+                return False
+            if tokens <= 0:
+                return True
+        except TypeError:
+            return False
 
         with self._lock:
             try:
