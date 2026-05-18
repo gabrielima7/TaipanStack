@@ -13,10 +13,10 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
     allow_symlinks=st.booleans(),
 )
 def test_fuzz_guard_path_traversal(path, base_dir, allow_symlinks):
-    try:
+    import contextlib
+
+    with contextlib.suppress(SecurityError, TypeError):
         result = guard_path_traversal(
             path, base_dir=base_dir, allow_symlinks=allow_symlinks
         )
         assert isinstance(result, Path)
-    except (SecurityError, TypeError):
-        pass  # These are expected and handled errors
