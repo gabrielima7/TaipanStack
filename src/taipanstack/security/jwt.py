@@ -23,7 +23,15 @@ __all__ = ["decode_jwt", "encode_jwt"]
 JWTPayload: TypeAlias = dict[str, object]
 
 
-@safe_from(PyJWTError, ValueError, TypeError, NotImplementedError)
+@safe_from(
+    PyJWTError,
+    ValueError,
+    TypeError,
+    NotImplementedError,
+    KeyError,
+    AttributeError,
+    Exception,
+)
 def encode_jwt(
     payload: JWTPayload,
     secret_key: str,
@@ -46,13 +54,24 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
-    if secrets.compare_digest(str(algorithm).strip().lower(), "none"):
+    if not isinstance(algorithm, str):
+        raise TypeError("Algorithm must be a string")
+
+    if secrets.compare_digest(algorithm.strip().lower(), "none"):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
     return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
 
 
-@safe_from(PyJWTError, ValueError, TypeError, AttributeError, NotImplementedError)
+@safe_from(
+    PyJWTError,
+    ValueError,
+    TypeError,
+    AttributeError,
+    NotImplementedError,
+    KeyError,
+    Exception,
+)
 def decode_jwt(
     token: str,
     secret_key: str,
@@ -79,7 +98,8 @@ def decode_jwt(
 
     """
     if any(
-        secrets.compare_digest(str(alg).strip().lower(), "none") for alg in algorithms
+        isinstance(alg, str) and secrets.compare_digest(alg.strip().lower(), "none")
+        for alg in algorithms
     ):
         raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
 
