@@ -6,10 +6,7 @@ import contextlib
 import pytest
 
 from taipanstack.core.result import Err, Ok
-from taipanstack.resilience.adaptive.bulkhead import (
-    Bulkhead,
-    BulkheadFullError,
-)
+from taipanstack.resilience.adaptive.bulkhead import Bulkhead, BulkheadFullError
 
 
 class TestBulkhead:

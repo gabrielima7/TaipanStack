@@ -6,12 +6,7 @@ import pytest
 from pydantic import BaseModel, ValidationError
 
 from taipanstack.core.result import Ok
-from taipanstack.security.types import (
-    SafeCommand,
-    SafePath,
-    SafeProjectName,
-    SafeUrl,
-)
+from taipanstack.security.types import SafeCommand, SafePath, SafeProjectName, SafeUrl
 
 # ---------------------------------------------------------------------------
 # SafeUrl

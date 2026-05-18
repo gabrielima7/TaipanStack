@@ -6,11 +6,7 @@ import pytest
 
 from taipanstack.core.result import Err
 from taipanstack.security.guards import SecurityError
-from taipanstack.utils.filesystem import (
-    ensure_dir,
-    safe_read,
-    safe_write,
-)
+from taipanstack.utils.filesystem import ensure_dir, safe_read, safe_write
 
 
 class TestFilesystemTraversalExtended:

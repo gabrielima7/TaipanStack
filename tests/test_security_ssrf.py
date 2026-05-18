@@ -735,9 +735,7 @@ def test_fuzz_guard_file_extension_massive_strings_dos() -> None:
 from hypothesis import given
 from hypothesis import strategies as st
 
-from taipanstack.security.guards import (
-    guard_env_variable,
-)
+from taipanstack.security.guards import guard_env_variable
 
 
 @given(st.lists(st.text(), min_size=1))

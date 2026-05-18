@@ -49,12 +49,8 @@ class TestBackwardCompatShims:
         self,
     ) -> None:
         """Shim symbols are identical to the canonical resilience module."""
-        from taipanstack.resilience.circuit_breaker import (
-            CircuitBreaker as CanonicalCB,
-        )
-        from taipanstack.resilience.circuit_breaker import (
-            CircuitState as CanonicalCS,
-        )
+        from taipanstack.resilience.circuit_breaker import CircuitBreaker as CanonicalCB
+        from taipanstack.resilience.circuit_breaker import CircuitState as CanonicalCS
 
         assert CircuitBreaker is CanonicalCB
         assert CircuitState is CanonicalCS
@@ -71,24 +67,16 @@ class TestBackwardCompatShims:
 
     def test_backward_compat_shims_retry_shim_matches_canonical(self) -> None:
         """Retry shim symbols are identical to the canonical module."""
-        from taipanstack.resilience.retry import (
-            Retrier as CanonicalRetrier,
-        )
-        from taipanstack.resilience.retry import (
-            RetryConfig as CanonicalRetryConfig,
-        )
+        from taipanstack.resilience.retry import Retrier as CanonicalRetrier
+        from taipanstack.resilience.retry import RetryConfig as CanonicalRetryConfig
         from taipanstack.resilience.retry import (
             RetryDecorator as CanonicalRetryDecorator,
         )
-        from taipanstack.resilience.retry import (
-            RetryError as CanonicalRetryError,
-        )
+        from taipanstack.resilience.retry import RetryError as CanonicalRetryError
         from taipanstack.resilience.retry import (
             calculate_delay as canonical_calculate_delay,
         )
-        from taipanstack.resilience.retry import (
-            retry as canonical_retry,
-        )
+        from taipanstack.resilience.retry import retry as canonical_retry
         from taipanstack.resilience.retry import (
             retry_on_exception as canonical_retry_on_exception,
         )
@@ -120,18 +108,12 @@ class TestBackwardCompatShims:
         from taipanstack.resilience.resilience import (
             FallbackDecorator as CanonicalFallbackDecorator,
         )
-        from taipanstack.resilience.resilience import (
-            ResultFunc as CanonicalResultFunc,
-        )
+        from taipanstack.resilience.resilience import ResultFunc as CanonicalResultFunc
         from taipanstack.resilience.resilience import (
             TimeoutDecorator as CanonicalTimeoutDecorator,
         )
-        from taipanstack.resilience.resilience import (
-            fallback as canonical_fallback,
-        )
-        from taipanstack.resilience.resilience import (
-            timeout as canonical_timeout,
-        )
+        from taipanstack.resilience.resilience import fallback as canonical_fallback
+        from taipanstack.resilience.resilience import timeout as canonical_timeout
 
         assert AsyncResultFunc is CanonicalAsyncResultFunc
         assert FallbackDecorator is CanonicalFallbackDecorator

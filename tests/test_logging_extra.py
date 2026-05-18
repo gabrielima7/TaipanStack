@@ -102,9 +102,7 @@ if __name__ == "__main__":
 # Migrated from tests/test_v034_logging_mask_operations.py
 """Tests for the mask_sensitive_data_processor structlog processor."""
 
-from taipanstack.utils.logging import (
-    SENSITIVE_KEY_PATTERNS,
-)
+from taipanstack.utils.logging import SENSITIVE_KEY_PATTERNS
 
 # ---------------------------------------------------------------------------
 # Unit tests: processor function directly

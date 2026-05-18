@@ -1,9 +1,6 @@
 """Tests for AdaptiveRetry."""
 
-from taipanstack.resilience.adaptive.adaptive_retry import (
-    AdaptiveRetry,
-    RetryMetrics,
-)
+from taipanstack.resilience.adaptive.adaptive_retry import AdaptiveRetry, RetryMetrics
 from taipanstack.resilience.retry import RetryConfig
 
 

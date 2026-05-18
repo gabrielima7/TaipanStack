@@ -714,10 +714,7 @@ class TestOptimizationsEdgeCases:
     def test_very_last_apply_gc_freeze_not_py312(self) -> None:
         """Test _apply_gc_freeze skipped when not PY312 (L271-272)."""
         from taipanstack.core import optimizations
-        from taipanstack.core.optimizations import (
-            OptimizationProfile,
-            _apply_gc_freeze,
-        )
+        from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
 
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
@@ -738,10 +735,7 @@ class TestOptimizationsEdgeCases:
     def test_very_last_apply_gc_freeze_not_freeze_after(self) -> None:
         """Test _apply_gc_freeze skipped when freeze_after is False (L282-283)."""
         from taipanstack.core import optimizations
-        from taipanstack.core.optimizations import (
-            OptimizationProfile,
-            _apply_gc_freeze,
-        )
+        from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
 
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
@@ -764,10 +758,7 @@ class TestOptimizationsEdgeCases:
     def test_very_last_apply_gc_freeze_success(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
-        from taipanstack.core.optimizations import (
-            OptimizationProfile,
-            _apply_gc_freeze,
-        )
+        from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
 
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []
@@ -788,10 +779,7 @@ class TestOptimizationsEdgeCases:
     def test_very_last_apply_gc_freeze_exception(self) -> None:
         """Test _apply_gc_freeze error handling (L269-270)."""
         from taipanstack.core import optimizations
-        from taipanstack.core.optimizations import (
-            OptimizationProfile,
-            _apply_gc_freeze,
-        )
+        from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
 
         profile = OptimizationProfile(gc_freeze_enabled=True)
         applied: list[str] = []

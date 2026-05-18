@@ -197,9 +197,7 @@ def test_fuzz_project_name_chars(text):
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from taipanstack.security.validators import (
-    MAX_PYTHON_VERSION_LENGTH,
-)
+from taipanstack.security.validators import MAX_PYTHON_VERSION_LENGTH
 
 
 @settings(
