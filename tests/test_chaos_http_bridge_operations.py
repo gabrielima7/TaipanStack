@@ -21,7 +21,7 @@ async def test_chaos_http_bridge_safe_client_exception_extreme() -> None:
 
         with pytest.raises(MemoryError):
             async with SafeHttpClient():
-                pass
+                raise AssertionError("Should not be reached")
 
 
 @pytest.mark.asyncio
