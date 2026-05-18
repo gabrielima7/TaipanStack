@@ -231,6 +231,23 @@ class ResilientRedis:
         self._client = client
         self._circuit_breaker = circuit_breaker
 
+    def _check_redis_dependencies(self) -> Result[None, Exception]:
+        if not _HAS_REDIS:
+            return Err(
+                ImportError(
+                    "redis is required for ResilientRedis. "
+                    "Install with: pip install taipanstack[bridges-db]"
+                )
+            )
+        return Ok(None)
+
+    def _check_breaker_gate(self) -> Result[None, Exception]:
+        if self._circuit_breaker is not None:
+            cb_err = _breaker_is_open(self._circuit_breaker)
+            if cb_err is not None:
+                return Err(cb_err)
+        return Ok(None)
+
     async def execute(
         self,
         command: str,
@@ -246,19 +263,13 @@ class ResilientRedis:
             ``Ok(result)`` on success, ``Err`` on failure.
 
         """
-        if not _HAS_REDIS:
-            return Err(
-                ImportError(
-                    "redis is required for ResilientRedis. "
-                    "Install with: pip install taipanstack[bridges-db]"
-                )
-            )
+        dep_result = self._check_redis_dependencies()
+        if isinstance(dep_result, Err):
+            return dep_result
 
-        # Circuit breaker gate
-        if self._circuit_breaker is not None:
-            cb_err = _breaker_is_open(self._circuit_breaker)
-            if cb_err is not None:
-                return Err(cb_err)
+        cb_result = self._check_breaker_gate()
+        if isinstance(cb_result, Err):
+            return cb_result
 
         try:
             fn = getattr(self._client, command.lower())

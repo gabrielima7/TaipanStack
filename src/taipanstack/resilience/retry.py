@@ -134,20 +134,28 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
         return 0.0
 
 
+def _compute_jitter_amount(delay: float, factor: float) -> float | None:
+    """Compute jitter amount safely."""
+    try:
+        amount = delay * factor
+        if math.isfinite(amount):
+            return amount
+    except (TypeError, OverflowError, ValueError, Exception) as e:
+        logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
+    return None
+
+
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
     if not config.jitter or not math.isfinite(delay):
         return delay
 
-    try:
-        jitter_amount = delay * config.jitter_factor
-        if math.isfinite(jitter_amount):
-            try:
-                delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-            except Exception as e:
-                logger.warning("Failed to add jitter to delay: %s", str(e))
-    except (TypeError, OverflowError, ValueError, Exception) as e:
-        logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
+    jitter_amount = _compute_jitter_amount(delay, config.jitter_factor)
+    if jitter_amount is not None:
+        try:
+            delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+        except Exception as e:
+            logger.warning("Failed to add jitter to delay: %s", str(e))
 
     return delay
 
@@ -561,6 +569,16 @@ class Retrier:
         except TypeError:
             return False
 
+    def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
+        """Determine if an exception should trigger a retry."""
+        if exc_type is None or not issubclass(exc_type, self.exception_types):
+            return False
+
+        if not self._increment_attempt():
+            return False
+
+        return self.attempt < self.config.max_attempts
+
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
@@ -572,20 +590,12 @@ class Retrier:
         Returns True to suppress the exception if we should retry,
         False to let it propagate.
         """
-        if exc_type is None:
-            return False  # No exception, exit normally
+        # Safe cast: check inside _should_retry ensures we handle it right
+        if exc_val is not None:
+            self.last_exception = exc_val if isinstance(exc_val, Exception) else None
 
-        if not issubclass(exc_type, self.exception_types):
-            return False  # Exception type not in retry list
-
-        # Safe cast: issubclass guard above ensures exc_val is Exception
-        self.last_exception = exc_val if isinstance(exc_val, Exception) else None
-
-        if not self._increment_attempt():
+        if not self._should_retry(exc_type):
             return False
-
-        if self.attempt >= self.config.max_attempts:
-            return False  # Max attempts reached, propagate exception
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
