@@ -117,7 +117,7 @@ def _check_project_name_chars(
     pattern = _build_project_name_pattern(allow_hyphen, allow_underscore)
 
     if not re.match(pattern, name):
-        if not name[0].isalpha():
+        if not name or not name[0].isalpha():
             msg = "Project name must start with a letter"
             raise ValueError(msg)
         msg = _build_invalid_chars_msg(allow_hyphen, allow_underscore)
