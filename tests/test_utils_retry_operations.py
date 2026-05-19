@@ -316,7 +316,7 @@ class TestAsyncRetryDecorator:
         assert retries[1][0] == 2
 
     @pytest.mark.asyncio
-    async def test_reraise_false(self) -> None:
+    async def test_utils_retry_reraise_false(self) -> None:
         """Test reraise=False option for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, reraise=False)

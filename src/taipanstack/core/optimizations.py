@@ -228,13 +228,12 @@ def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProf
     profile = _get_base_profile()
 
     # Adjust for optimization level
-    match opt_level:
-        case opt if opt == OPT_LEVEL_NONE:
-            _cached_optimization_profile = _PROFILE_311
-        case opt if opt == OPT_LEVEL_AGGRESSIVE and experimental:
-            _cached_optimization_profile = _build_aggressive_profile(profile)
-        case _:
-            _cached_optimization_profile = profile
+    if opt_level == OPT_LEVEL_NONE:
+        _cached_optimization_profile = _PROFILE_311
+    elif opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
+        _cached_optimization_profile = _build_aggressive_profile(profile)
+    else:
+        _cached_optimization_profile = profile
 
     return _cached_optimization_profile
 

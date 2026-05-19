@@ -46,7 +46,7 @@ def test_utils_cache_cached_sync() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cached_async() -> None:
+async def test_utils_cache_cached_async() -> None:
     """Test async cache."""
     call_count = 0
 

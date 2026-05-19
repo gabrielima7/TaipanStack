@@ -70,7 +70,7 @@ class CircuitBreakerError(Exception):
         super().__init__(message)
 
 
-@dataclass
+@dataclass(frozen=True)
 class CircuitBreakerConfig:
     """Configuration for circuit breaker behavior.
 
@@ -294,13 +294,12 @@ class CircuitBreaker:
         should_attempt = False
 
         with self._state.lock:
-            match self._state.state:
-                case CircuitState.CLOSED:
-                    should_attempt = True
-                case CircuitState.OPEN:
-                    should_attempt, state_change = self._handle_open_state()
-                case CircuitState.HALF_OPEN:
-                    should_attempt = self._handle_attempt_half_open()
+            if self._state.state == CircuitState.CLOSED:
+                should_attempt = True
+            elif self._state.state == CircuitState.OPEN:
+                should_attempt, state_change = self._handle_open_state()
+            elif self._state.state == CircuitState.HALF_OPEN:
+                should_attempt = self._handle_attempt_half_open()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -333,14 +332,13 @@ class CircuitBreaker:
         state_change: tuple[CircuitState, CircuitState] | None = None
 
         with self._state.lock:
-            match self._state.state:
-                case CircuitState.HALF_OPEN:
-                    state_change = self._handle_success_half_open()
-                case CircuitState.CLOSED:
-                    # Reset failure count on success
-                    self._state.failure_count = 0
-                case CircuitState.OPEN:
-                    pass  # Should not happen, but handle gracefully
+            if self._state.state == CircuitState.HALF_OPEN:
+                state_change = self._handle_success_half_open()
+            elif self._state.state == CircuitState.CLOSED:
+                # Reset failure count on success
+                self._state.failure_count = 0
+            elif self._state.state == CircuitState.OPEN:
+                pass  # Should not happen, but handle gracefully
 
         if state_change:
             self._notify_state_change(*state_change)

@@ -1,4 +1,4 @@
-name: ci-push-main
+name: ci-push-validate
 
 on:
   push:
@@ -18,7 +18,6 @@ jobs:
     name: "[Test] Python Matrix"
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
@@ -84,14 +83,17 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
-      - name: "[Setup] Install linter"
-        run: pip install ruff
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
+
+      - name: "[Setup] Install dependencies"
+        run: poetry install --with dev
 
       - name: "[Lint] Run ruff check"
-        run: ruff check src/ tests/ taipanstack_bootstrapper.py
+        run: poetry run ruff check src/ tests/ taipanstack_bootstrapper.py
 
       - name: "[Lint] Run ruff format check"
-        run: ruff format --check src/ tests/ taipanstack_bootstrapper.py
+        run: poetry run ruff format --check src/ tests/ taipanstack_bootstrapper.py
 
   ci-typecheck:
     name: "[Lint] Type Checking"

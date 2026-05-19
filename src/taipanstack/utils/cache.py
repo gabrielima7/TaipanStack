@@ -62,16 +62,15 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
         func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
     ) -> CacheKey:
         def _make_hashable(val: object) -> object:
-            match val:
-                case tuple() | list():
-                    return tuple(_make_hashable(item) for item in val)
-                case dict():
-                    return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
-                case set():
-                    return frozenset(_make_hashable(item) for item in val)
-                case _:
-                    hash(val)
-                    return val
+            if isinstance(val, (tuple, list)):
+                return tuple(_make_hashable(item) for item in val)
+            elif isinstance(val, dict):
+                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+            elif isinstance(val, set):
+                return frozenset(_make_hashable(item) for item in val)
+            else:
+                hash(val)
+                return val
 
         hashable_args = tuple(_make_hashable(arg) for arg in args)
         hashable_kwargs = tuple(
