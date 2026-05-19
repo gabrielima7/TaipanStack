@@ -35,7 +35,7 @@ class TestResilienceOrchestrator:
     """Tests for the orchestrator pipeline."""
 
     @pytest.mark.asyncio
-    async def test_simple_execute(self) -> None:
+    async def test_orchestrator_simple_execute(self) -> None:
         """Executes a function without any patterns."""
         orch = ResilienceOrchestrator("test")
         result = await orch.execute(_ok_fn)
@@ -43,14 +43,14 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "success"
 
     @pytest.mark.asyncio
-    async def test_execute_failure(self) -> None:
+    async def test_orchestrator_execute_failure(self) -> None:
         """Returns Err on function failure."""
         orch = ResilienceOrchestrator("test")
         result = await orch.execute(_fail_fn)
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_with_timeout(self) -> None:
+    async def test_orchestrator_with_timeout(self) -> None:
         """Timeout triggers Err."""
         orch = ResilienceOrchestrator("test").with_timeout(0.05)
         result = await orch.execute(_slow_fn)
@@ -58,7 +58,7 @@ class TestResilienceOrchestrator:
         assert "timed out" in str(result.err_value)
 
     @pytest.mark.asyncio
-    async def test_with_fallback(self) -> None:
+    async def test_orchestrator_with_fallback(self) -> None:
         """Fallback replaces Err with Ok."""
         orch = ResilienceOrchestrator("test").with_fallback("cached")
         result = await orch.execute(_fail_fn)
@@ -66,7 +66,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "cached"
 
     @pytest.mark.asyncio
-    async def test_with_retry(self) -> None:
+    async def test_orchestrator_with_retry(self) -> None:
         """Retries on failure then succeeds."""
         call_count = 0
 
@@ -152,7 +152,7 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Ok)
 
     @pytest.mark.asyncio
-    async def test_with_bulkhead(self) -> None:
+    async def test_orchestrator_with_bulkhead(self) -> None:
         """Bulkhead limits concurrency in pipeline."""
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=2, max_queue=5
@@ -190,7 +190,7 @@ class TestResilienceOrchestrator:
         assert "timed out" in str(result.err_value)
 
     @pytest.mark.asyncio
-    async def test_full_pipeline(self) -> None:
+    async def test_orchestrator_full_pipeline(self) -> None:
         """Full pipeline: bulkhead + breaker + retry + timeout + fallback."""
         call_count = 0
 
@@ -230,7 +230,7 @@ class TestResilienceOrchestrator:
         assert result.ok_value == "safe"
 
     @pytest.mark.asyncio
-    async def test_retry_exhaustion(self) -> None:
+    async def test_orchestrator_retry_exhaustion(self) -> None:
         """Returns Err when all retries fail."""
         orch = ResilienceOrchestrator("test").with_retry(
             RetryConfig(max_attempts=2, initial_delay=0.01, jitter=False)

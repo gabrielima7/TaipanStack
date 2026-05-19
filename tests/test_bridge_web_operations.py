@@ -141,7 +141,7 @@ class TestTaipanMiddleware:
     """Tests for the ASGI middleware."""
 
     @pytest.mark.asyncio
-    async def test_passthrough_http(self) -> None:
+    async def test_bridge_web_passthrough_http(self) -> None:
         """HTTP requests pass through to the app."""
         mw = TaipanMiddleware(_make_dummy_app, security_headers=False)
         capture = _ResponseCapture()
@@ -233,7 +233,7 @@ class TestSendJsonResponse:
     """Tests for _send_json_response helper."""
 
     @pytest.mark.asyncio
-    async def test_sends_json(self) -> None:
+    async def test_bridge_web_sends_json(self) -> None:
         """Sends a valid JSON response."""
         capture = _ResponseCapture()
         await _send_json_response(
@@ -246,7 +246,7 @@ class TestSendJsonResponse:
         assert parsed["created"] is True
 
     @pytest.mark.asyncio
-    async def test_extra_headers(self) -> None:
+    async def test_bridge_web_extra_headers(self) -> None:
         """Extra headers are included."""
         capture = _ResponseCapture()
         await _send_json_response(
