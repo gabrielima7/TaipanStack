@@ -63,7 +63,7 @@ async def test_fallback_async_unreachable() -> None:
 
 
 @pytest.mark.asyncio
-async def test_fallback_async() -> None:
+async def test_utils_resilience_fallback_async() -> None:
     """Test async fallback."""
 
     @fallback(fallback_value="safe_async")
@@ -115,7 +115,7 @@ def test_utils_resilience_timeout_sync() -> None:
 
 
 @pytest.mark.asyncio
-async def test_timeout_async() -> None:
+async def test_utils_resilience_timeout_async() -> None:
     """Test async timeout."""
 
     @timeout(0.2)

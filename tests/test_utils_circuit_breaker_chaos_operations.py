@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import threading
 import time
 
@@ -78,7 +77,7 @@ def test_utils_circuit_breaker_chaos_half_open_exhaustion_with_system_exit():
 
     # Start the request that will die. It transitions to HALF_OPEN and takes a slot.
     def worker():
-        with contextlib.suppress(SystemExit):
+        with pytest.raises(SystemExit):
             suicidal_service()
 
     t = threading.Thread(target=worker)
@@ -113,7 +112,7 @@ async def test_async_half_open_exhaustion_with_cancelled_error():
     async def successful_service():
         return "success"
 
-    with contextlib.suppress(asyncio.CancelledError):
+    with pytest.raises(asyncio.CancelledError):
         await suicidal_service()
 
     for _ in range(3):
