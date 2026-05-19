@@ -88,7 +88,7 @@ class TestSafeRequest:
         assert isinstance(result.err_value, SecurityError)
 
     @pytest.mark.asyncio
-    async def test_ssrf_disabled(self) -> None:
+    async def test_bridge_http_ssrf_disabled(self) -> None:
         """Requests pass when SSRF protection is disabled."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -333,7 +333,7 @@ class TestSafeHttpClient:
                     assert True
 
     @pytest.mark.asyncio
-    async def test_lifecycle(self) -> None:
+    async def test_bridge_http_lifecycle_ok(self) -> None:
         """Client opens and closes properly."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
