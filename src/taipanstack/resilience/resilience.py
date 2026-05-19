@@ -61,11 +61,10 @@ def fallback(
                     # func is a coroutine function here
                     func_coro = cast(AsyncResultFunc[P, T, E], func)
                     result = await func_coro(*args, **kwargs)
-                    match result:
-                        case Err():
-                            return Ok(fallback_value)
-                        case Ok():
-                            return result
+                    if isinstance(result, Err):
+                        return Ok(fallback_value)
+                    elif isinstance(result, Ok):
+                        return result
                 except exceptions:
                     return Ok(fallback_value)
                 return Err(cast(E, RuntimeError("Unreachable")))
@@ -78,11 +77,10 @@ def fallback(
                 # func is a normal function here
                 func_sync = cast(ResultFunc[P, T, E], func)
                 result = func_sync(*args, **kwargs)
-                match result:
-                    case Err():
-                        return Ok(fallback_value)
-                    case Ok():
-                        return result
+                if isinstance(result, Err):
+                    return Ok(fallback_value)
+                elif isinstance(result, Ok):
+                    return result
             except exceptions:
                 return Ok(fallback_value)
             return Err(cast(E, RuntimeError("Unreachable")))

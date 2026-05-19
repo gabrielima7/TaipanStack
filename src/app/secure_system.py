@@ -212,11 +212,11 @@ class UserService:
             Ok(User) if found, Err(UserNotFoundError) if not found.
 
         Example:
-            >>> match service.get_user(some_id):
-            ...     case Ok(user):
-            ...         print(f"Found: {user.username}")
-            ...     case Err(error):
-            ...         print(f"Not found: {error.user_id}")
+            >>> result = service.get_user(some_id)
+            >>> if isinstance(result, Ok):
+            ...     print(f"Found: {result.unwrap().username}")
+            ... else:
+            ...     print(f"Not found: {result.unwrap_err().user_id}")
 
         """
         user_in_db = self._user_repository.get_by_id(user_id)

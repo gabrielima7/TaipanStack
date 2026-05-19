@@ -370,13 +370,12 @@ def _configure_structlog() -> None:
 
 def _get_log_format(format_type: str) -> str:
     """Get the appropriate log format string."""
-    match format_type:
-        case "simple":
-            return "%(levelname)s: %(message)s"
-        case "json":
-            return JSON_FORMAT
-        case _:
-            return DEFAULT_FORMAT
+    if format_type == "simple":
+        return "%(levelname)s: %(message)s"
+    elif format_type == "json":
+        return JSON_FORMAT
+    else:
+        return DEFAULT_FORMAT
 
 
 def setup_logging(
