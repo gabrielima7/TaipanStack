@@ -13,11 +13,10 @@ Example:
     ...         raise ValueError("division by zero")
     ...     return a / b
     >>> result = divide(10, 0)
-    >>> match result:
-    ...     case Err(e):
-    ...         print(f"Error: {e}")
-    ...     case Ok(value):
-    ...         print(f"Result: {value}")
+    >>> if isinstance(result, Err):
+    ...     print(f"Error: {result.err_value}")
+    ... else:
+    ...     print(f"Result: {result.unwrap()}")
     Error: division by zero
 
 """

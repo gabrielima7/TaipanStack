@@ -452,7 +452,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage() -> None:
         def __init__(self):
             self.calls = 0
 
-        def sub(self, repl, string, count: int = 0) -> str:
+        def sub(self, _repl, string, count: int = 0) -> str:
             if self.calls == 0:
                 self.calls += 1
                 raise re.error("mock error")
@@ -479,7 +479,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
         def __init__(self):
             self.calls = 0
 
-        def sub(self, repl, string, count: int = 0) -> str:
+        def sub(self, _repl, string, count: int = 0) -> str:
             if self.calls == 0:
                 self.calls += 1
                 raise re.error("mock error")

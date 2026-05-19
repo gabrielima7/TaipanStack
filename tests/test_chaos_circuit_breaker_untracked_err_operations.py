@@ -1,3 +1,5 @@
+import pytest
+
 from taipanstack.core.result import Err
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
@@ -22,9 +24,7 @@ def test_chaos_circuit_breaker_untracked_err_consistency():
     breaker._state.half_open_attempts = 0
     breaker._state.success_count = 0
 
-    import contextlib
-
-    with contextlib.suppress(KeyError):
+    with pytest.raises(KeyError):
         faulty_service_exc()
     assert breaker._state.success_count == 0
 

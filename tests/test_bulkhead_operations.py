@@ -1,7 +1,6 @@
 """Tests for the Bulkhead concurrency limiter."""
 
 import asyncio
-import contextlib
 
 import pytest
 
@@ -16,7 +15,7 @@ class TestBulkhead:
     """Tests for the Bulkhead pattern."""
 
     @pytest.mark.asyncio
-    async def test_execute_success(self) -> None:
+    async def test_bulkhead_execute_success(self) -> None:
         """Successful execution returns Ok."""
         bulk = Bulkhead("test", max_concurrent=5)
 
@@ -28,7 +27,7 @@ class TestBulkhead:
         assert result.ok_value == "done"
 
     @pytest.mark.asyncio
-    async def test_execute_failure(self) -> None:
+    async def test_bulkhead_execute_failure(self) -> None:
         """Failed execution returns Err."""
         bulk = Bulkhead("test")
 
@@ -40,7 +39,7 @@ class TestBulkhead:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_concurrency_limit(self) -> None:
+    async def test_bulkhead_concurrency_limit(self) -> None:
         """Only max_concurrent tasks run simultaneously."""
         max_seen = 0
         current = 0
@@ -65,7 +64,7 @@ class TestBulkhead:
         assert max_seen <= 2
 
     @pytest.mark.asyncio
-    async def test_queue_overflow(self) -> None:
+    async def test_bulkhead_queue_overflow(self) -> None:
         """Returns Err when queue is full."""
         # max_concurrent=1 + max_queue=1 means: 1 running + 1 waiting = full
         bulk = Bulkhead("test", max_concurrent=1, max_queue=1, timeout=1.0)
@@ -89,13 +88,24 @@ class TestBulkhead:
 
         # Cleanup
         gate.set()
-        with contextlib.suppress(asyncio.CancelledError):
+        t1.cancel()
+        t2.cancel()
+        raised_t1 = False
+        try:
             await t1
-        with contextlib.suppress(asyncio.CancelledError, TimeoutError):
+        except asyncio.CancelledError:
+            raised_t1 = True
+        assert raised_t1
+
+        raised_t2 = False
+        try:
             await t2
+        except (asyncio.CancelledError, TimeoutError):
+            raised_t2 = True
+        assert raised_t2
 
     @pytest.mark.asyncio
-    async def test_timeout(self) -> None:
+    async def test_bulkhead_timeout_ok(self) -> None:
         """Returns Err on permit acquisition timeout."""
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.05)
 
@@ -112,11 +122,11 @@ class TestBulkhead:
         assert "timed out" in str(result.err_value)
 
         task.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
+        with pytest.raises(asyncio.CancelledError):
             await task
 
     @pytest.mark.asyncio
-    async def test_permits_tracking(self) -> None:
+    async def test_bulkhead_permits_tracking(self) -> None:
         """Permits are correctly tracked."""
         bulk = Bulkhead("test", max_concurrent=5)
         assert bulk.available_permits == 5
@@ -124,7 +134,7 @@ class TestBulkhead:
         assert bulk.active == 0
 
     @pytest.mark.asyncio
-    async def test_with_arguments(self) -> None:
+    async def test_bulkhead_with_arguments(self) -> None:
         """Execute passes args/kwargs correctly."""
         bulk = Bulkhead("test")
 

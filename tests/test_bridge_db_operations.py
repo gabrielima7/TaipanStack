@@ -50,7 +50,7 @@ class TestResilientDatabase:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_execute_ok(self) -> None:
+    async def test_bridge_db_execute_ok(self) -> None:
         """Successful execution returns Ok."""
         _setup_sqlalchemy_mock()
         try:
@@ -197,7 +197,7 @@ class TestResilientRedis:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_execute_ok(self) -> None:
+    async def test_bridge_db_execute_ok(self) -> None:
         """Successful Redis command returns Ok."""
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(return_value=b"value")

@@ -133,13 +133,15 @@ def safe_read(
         Err(ReadFileError): Error details on failure.
 
     Example:
-        >>> match safe_read("config.json"):
-        ...     case Ok(content):
-        ...         data = json.loads(content)
-        ...     case Err(FileNotFoundErr(path=p)):
-        ...         print(f"Missing: {p}")
-        ...     case Err(FileTooLargeErr(size=s)):
-        ...         print(f"Too big: {s} bytes")
+        >>> result = safe_read("config.json")
+        >>> if isinstance(result, Ok):
+        ...     data = json.loads(result.unwrap())
+        ... else:
+        ...     err = result.unwrap_err()
+        ...     if isinstance(err, FileNotFoundErr):
+        ...         print(f"Missing: {err.path}")
+        ...     elif isinstance(err, FileTooLargeErr):
+        ...         print(f"Too big: {err.size} bytes")
 
     """
     path = Path(path)

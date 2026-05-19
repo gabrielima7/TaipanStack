@@ -418,11 +418,11 @@ async def test_config_watcher_change_detection_error_coverage() -> None:
     with patch(
         "taipanstack.resilience.watchdogs.config_watcher.logger.error"
     ) as mock_logger:
-        with patch("asyncio.sleep", side_effect=asyncio.CancelledError):
-            import contextlib
-
-            with contextlib.suppress(asyncio.CancelledError):
+        with patch("asyncio.sleep", side_effect=asyncio.CancelledError) as mock_sleep:
+            try:
                 await watcher._run()
+            except asyncio.CancelledError:
+                assert mock_sleep.called
         mock_logger.assert_called_with(
             "Change detection failed: %s",
             watcher._detect_changes.return_value.err_value,
