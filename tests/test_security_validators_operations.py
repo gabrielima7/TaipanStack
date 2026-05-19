@@ -155,3 +155,11 @@ class TestValidateUrl:
         """Test URL with an out of range port raises ValueError."""
         with pytest.raises(ValueError, match="Invalid URL format: Port out of range"):
             validate_url("http://example.com:99999999999")
+
+
+def test_security_validators_type_error_message_for_tuple_expected_types() -> None:
+    """Test tuple-type message path in _validate_type helper."""
+    from taipanstack.security.validators import validate_python_version
+
+    with pytest.raises(TypeError, match="Version must be str, got tuple"):
+        validate_python_version((3, 11))

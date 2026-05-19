@@ -6,7 +6,7 @@ from taipanstack.security.validators import _check_project_name_chars
 
 
 @given(st.text())
-def test_fuzz_project_name_chars(text):
+def test_validators_project_name_chars_fuzz_rejects_empty_without_index_error(text):
     if text == "":
         with pytest.raises(ValueError):
             _check_project_name_chars(text, True, True)
