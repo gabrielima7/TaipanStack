@@ -538,7 +538,9 @@ class TestRetryError:
         assert call_count == 0
 
 
-def test_utils_retry_structlog_warning_without_on_retry_callback(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_utils_retry_structlog_warning_without_on_retry_callback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Retry fallback logs via structlog when configured."""
     import importlib
 
@@ -562,8 +564,9 @@ def test_utils_retry_structlog_warning_without_on_retry_callback(monkeypatch: py
     assert logger.calls == 1
 
 
-
-def test_utils_retry_structlog_fallback_noop_when_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_utils_retry_structlog_fallback_noop_when_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Fallback logger no-ops when structlog is unavailable."""
     import importlib
 
