@@ -25,7 +25,7 @@ install:
 	poetry install --with dev
 
 test:
-	poetry run pytest tests/ -n auto -v --cov=src --cov-report=html --cov-report=term-missing
+	poetry run pytest tests/ -n auto
 
 lint:
 	poetry run ruff check src/ tests/ taipanstack_bootstrapper.py
