@@ -312,9 +312,8 @@ class SafeHttpClient:
     Example:
         >>> async with SafeHttpClient() as client:
         ...     result = await client.get("https://api.example.com/data")
-        ...     match result:
-        ...         case Ok(response): print(response.json())
-        ...         case Err(e): print(f"Error: {e}")
+        ...     if isinstance(result, Ok): print(result.unwrap().json())
+        ...     else: print(f"Error: {result.unwrap_err()}")
 
     """
 
