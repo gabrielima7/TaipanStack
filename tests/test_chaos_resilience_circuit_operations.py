@@ -122,7 +122,9 @@ def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations():
         CircuitBreaker(success_threshold=0)
 
 
-def test_chaos_resilience_circuit_structlog_warning_without_callback(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chaos_resilience_circuit_structlog_warning_without_callback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """State transition logs through structlog when no callback is set."""
     import importlib
 
@@ -143,7 +145,6 @@ def test_chaos_resilience_circuit_structlog_warning_without_callback(monkeypatch
     cb = CircuitBreaker(failure_threshold=1, timeout=0.1)
     cb._notify_state_change(CircuitState.CLOSED, CircuitState.OPEN)
     assert logger.calls == 1
-
 
 
 def test_chaos_resilience_circuit_structlog_fallback_noop_when_unavailable(
