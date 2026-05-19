@@ -9,7 +9,7 @@ name: ci-workflow-run-docs
 
 on:
   workflow_run:
-    workflows: ["ci-push-main"]
+    workflows: ["ci-push-validate"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -63,7 +63,7 @@ jobs:
         with:
           name: "[Artifact] HTML Coverage"
           path: site/htmlcov/
-          workflow: ci-push-main.yml
+          workflow: ci-push-validate.yml
           branch: main
           if_no_artifact_found: fail
 
