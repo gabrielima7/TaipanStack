@@ -70,7 +70,7 @@ class CircuitBreakerError(Exception):
         super().__init__(message)
 
 
-@dataclass
+@dataclass(frozen=True)
 class CircuitBreakerConfig:
     """Configuration for circuit breaker behavior.
 
