@@ -12,7 +12,7 @@ jobs:
         environment: pypi
         permissions:
             id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-            contents: read
+            contents: write
         steps:
             - name: "[Setup] Checkout repository"
               uses: actions/checkout@v6
