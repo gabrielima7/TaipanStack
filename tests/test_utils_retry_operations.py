@@ -536,3 +536,43 @@ class TestRetryError:
 
         assert "All 0 attempts failed" in str(exc_info.value)
         assert call_count == 0
+
+
+def test_utils_retry_structlog_warning_without_on_retry_callback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Retry fallback logs via structlog when configured."""
+    import importlib
+
+    retry_mod = importlib.import_module("taipanstack.resilience.retry")
+    from taipanstack.resilience.retry import RetryConfig
+
+    class LoggerStub:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def warning(self, *args: object, **kwargs: object) -> None:
+            self.calls += 1
+
+    logger = LoggerStub()
+    monkeypatch.setattr(retry_mod, "_HAS_STRUCTLOG", True)
+    monkeypatch.setattr(retry_mod, "_structlog_logger", logger)
+
+    retry_mod._log_retry_attempt_fallback(
+        "flaky", 1, ValueError("boom"), 0.0, RetryConfig(max_attempts=2)
+    )
+    assert logger.calls == 1
+
+
+
+def test_utils_retry_structlog_fallback_noop_when_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fallback logger no-ops when structlog is unavailable."""
+    import importlib
+
+    retry_mod = importlib.import_module("taipanstack.resilience.retry")
+    from taipanstack.resilience.retry import RetryConfig
+
+    monkeypatch.setattr(retry_mod, "_HAS_STRUCTLOG", False)
+    monkeypatch.setattr(retry_mod, "_structlog_logger", None)
+
+    retry_mod._log_retry_attempt_fallback(
+        "flaky", 1, ValueError("boom"), 0.0, RetryConfig(max_attempts=2)
+    )

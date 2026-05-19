@@ -450,7 +450,7 @@ class TestResultStructuralCompatibility:
         """Test the AttributeError handling in the optimized _collect_list path."""
 
         class MissingOkValue:
-            pass
+            marker = "missing"
 
         from taipanstack.core.result import collect_results
 
@@ -461,7 +461,7 @@ class TestResultStructuralCompatibility:
         """Test the AttributeError handling with tuple in _collect_list."""
 
         class MissingOkValue:
-            pass
+            marker = "missing"
 
         from taipanstack.core.result import collect_results
 

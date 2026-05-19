@@ -214,3 +214,16 @@ def test_utils_subprocess_execute_command_timeout_without_stdout() -> None:
 
         assert result.returncode == -1
         assert result.stdout == ""
+
+
+def test_utils_subprocess_execute_command_timeout_with_str_stdout() -> None:
+    """Test _execute_command timeout handling when stdout is str."""
+    with patch("subprocess.run") as mock_run:
+        err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
+        err.stdout = "some text output"
+        mock_run.side_effect = err
+
+        result = _execute_command(["sleep", "10"], None, 1.0, True, {})
+
+        assert result.returncode == -1
+        assert result.stdout == "some text output"
