@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-05-19
+
+### Security
+- **Fix (High)**: Hardened path traversal guard against crashes and null byte injection in security guards (PR #741).
+- **Fix (High)**: Hardened JWT encoding and decoding logic against malformed data types via property-based fuzz testing (PR #775).
+- **Fix (Medium)**: Fixed `IndexError` on empty project name validation (PR #768).
+
+### Resilience
+- **Fix**: Prevented double-wrapping of `Result` objects in `ResilienceOrchestrator` execution (PR #767).
+- **Hardening**: Froze `CircuitBreakerConfig` to prevent runtime mutations under chaos (PR #778).
+- **Hardening**: Hardened `RateLimiter` against token type mutations under daily micro-chaos tests (PR #771).
+
+### Refactoring & Typing
+- **Type Guards**: Enforced strict `isinstance` checks instead of structural pattern matching for `Result` monads to fix Mypy type-narrowing issues (PR #746, #763, #777).
+- **Complexity**: Reduced cyclomatic complexity across both resilience and bridge modules (PR #770).
+- **Cleanup**: Cleaned up CI/CD, dependency configuration, and temporary files; standardized absolute imports (PR #764, #765).
+
+### QA & Testing
+- **Test Suite**: Consolidated and refactored the test suite to **1,225 passing tests** while maintaining absolute 100% genuine code and branch coverage (PR #773, #781, #782).
+- **Coverage**: Elevated code coverage gate requirements to a strict 100% genuine branch coverage across the entire project (PR #764, #769).
+- **Result Module**: Improved test coverage of core result module fallback branches (PR #772).
+
+### CI/CD
+- **Pipeline**: Optimized and standardized CI/CD pipelines (PR #779).
+
+### Documentation
+- **Templates**: Updated GitHub issue templates to reference version 0.4.9/0.5.0 (PR #774).
+- **Synchronization**: Synchronized test count and version metadata across all documentation portals (PR #766, #780).
+
 ## [0.4.9] - 2026-05-13
 
 ### Security
@@ -696,7 +725,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...v0.5.0
 [0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
 [0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
 [0.4.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.6...v0.4.7
