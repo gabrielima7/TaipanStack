@@ -36,7 +36,7 @@ class TestCheckTarget:
     """Tests for the one-shot check_target function."""
 
     @pytest.mark.asyncio
-    async def test_healthy_target(self) -> None:
+    async def test_watchdog_health_healthy_target(self) -> None:
         """Returns Ok(True) for a healthy target."""
         target = HealthTarget(name="db", check=_healthy)
         result = await check_target(target)
@@ -44,7 +44,7 @@ class TestCheckTarget:
         assert result.ok_value is True
 
     @pytest.mark.asyncio
-    async def test_unhealthy_target(self) -> None:
+    async def test_watchdog_health_unhealthy_target(self) -> None:
         """Returns Ok(False) for an unhealthy target."""
         target = HealthTarget(name="db", check=_unhealthy)
         result = await check_target(target)
@@ -52,7 +52,7 @@ class TestCheckTarget:
         assert result.ok_value is False
 
     @pytest.mark.asyncio
-    async def test_exploding_target(self) -> None:
+    async def test_watchdog_health_exploding_target(self) -> None:
         """Returns Err when the check raises."""
         target = HealthTarget(name="db", check=_exploding)
         result = await check_target(target)
@@ -67,7 +67,7 @@ class TestCheckAll:
     """Tests for check_all function."""
 
     @pytest.mark.asyncio
-    async def test_all_healthy(self) -> None:
+    async def test_watchdog_health_all_healthy(self) -> None:
         """All targets healthy."""
         targets = [
             HealthTarget(name="db", check=_healthy),
@@ -78,7 +78,7 @@ class TestCheckAll:
         assert result.ok_value == {"db": True, "cache": True}
 
     @pytest.mark.asyncio
-    async def test_mixed_health(self) -> None:
+    async def test_watchdog_health_mixed_health(self) -> None:
         """Mix of healthy and unhealthy."""
         targets = [
             HealthTarget(name="db", check=_healthy),
