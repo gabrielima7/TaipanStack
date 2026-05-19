@@ -30,12 +30,11 @@
 
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.4.9
-- **100% REAL Coverage**: Achieved true **100% genuine branch coverage** across the entire core without artificial gaps (PR #738, #724).
-- **Security Hardening**: Remedied error handling information leakage and fixed nested dictionary redaction in logging (PR #739, #730).
-- **Resilience**: Eliminated circuit breaker lock deadlock vector and hardened retry type mutation handling (PR #726, #719).
-- **Chaos Testing**: Introduced daily micro-chaos tests for resilience components to ensure state integrity (PR #714, #711, #710).
-- **Total Stack Quality**: Expanded to **1,337 passing tests** with 100% verified genuine coverage across all modules.
+### ✨ What's New in v0.5.0
+- **Security Hardening**: Hardened path traversal protection (PR #741) and JWT encoding/decoding logic (PR #775) against malformed inputs; fixed IndexError on project validator (PR #768).
+- **Resilience Enhancements**: Frozen circuit breaker configuration to prevent runtime mutations under chaos (PR #778) and resolved double-wrapping of Result objects in ResilienceOrchestrator (PR #767).
+- **Clean Code & Type Guards**: Enforced strict isinstance type checks to replace match/case result matching (PR #746, #763, #777) and optimized modules to reduce complexity (PR #770).
+- **QA Suite Optimization**: Consolidated and refactored the entire test suite down to **1,225 passing tests** while maintaining absolute 100% genuine code and branch coverage (PR #773, #781, #782).
 
 <table>
 <tr>
@@ -72,7 +71,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1,337 tests)
+- **100% code coverage** (1,225 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -114,7 +113,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1,337 tests)
+# Run tests with 100% coverage (1,225 tests)
 make test
 
 # Check architecture contracts
@@ -167,7 +166,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1,337 tests, 100% coverage
+├── tests/                # ✅ 1,225 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container

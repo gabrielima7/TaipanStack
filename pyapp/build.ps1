@@ -6,7 +6,7 @@ $ProjectRoot = Split-Path -Parent $ScriptDir
 
 # Configuration
 $env:PYAPP_PROJECT_NAME = "taipanstack-bootstrapper"
-$env:PYAPP_PROJECT_VERSION = "0.4.9"
+$env:PYAPP_PROJECT_VERSION = "0.5.0"
 $env:PYAPP_PYTHON_VERSION = "3.11"
 $env:PYAPP_EXEC_SCRIPT = Join-Path $ProjectRoot "taipanstack_bootstrapper.py"
 $env:PYAPP_DISTRIBUTION_EMBED = "true"
