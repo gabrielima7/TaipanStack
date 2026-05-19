@@ -417,3 +417,10 @@ class TestCorrelationId:
 
         assert "correlation_id" not in new_dict
         assert new_dict["message"] == "test msg"
+
+
+def test_utils_logging_is_sensitive_regex_none_returns_false() -> None:
+    """_is_sensitive returns False when regex is None."""
+    from taipanstack.utils.logging import _is_sensitive
+
+    assert _is_sensitive("password", None) is False

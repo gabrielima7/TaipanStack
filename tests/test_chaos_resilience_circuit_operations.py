@@ -120,3 +120,43 @@ def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations():
         ValueError, match="success_threshold must be a finite number >= 1"
     ):
         CircuitBreaker(success_threshold=0)
+
+
+def test_chaos_resilience_circuit_structlog_warning_without_callback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """State transition logs through structlog when no callback is set."""
+    import importlib
+
+    cb_mod = importlib.import_module("taipanstack.resilience.circuit_breaker")
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
+    class LoggerStub:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def warning(self, *args: object, **kwargs: object) -> None:
+            self.calls += 1
+
+    logger = LoggerStub()
+    monkeypatch.setattr(cb_mod, "_HAS_STRUCTLOG", True)
+    monkeypatch.setattr(cb_mod, "_structlog_logger", logger)
+
+    cb = CircuitBreaker(failure_threshold=1, timeout=0.1)
+    cb._notify_state_change(CircuitState.CLOSED, CircuitState.OPEN)
+    assert logger.calls == 1
+
+
+
+def test_chaos_resilience_circuit_structlog_fallback_noop_when_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No structlog call occurs when fallback logger is unavailable."""
+    import importlib
+
+    cb_mod = importlib.import_module("taipanstack.resilience.circuit_breaker")
+    from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
+    monkeypatch.setattr(cb_mod, "_HAS_STRUCTLOG", False)
+    monkeypatch.setattr(cb_mod, "_structlog_logger", None)
+
+    cb = CircuitBreaker(failure_threshold=1, timeout=0.1)
+    cb._notify_state_change(CircuitState.CLOSED, CircuitState.OPEN)

@@ -242,6 +242,16 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("DB_PASSWORD")
 
+    def test_security_guards_sensitive_env_set_denied_without_allowed_names(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test set sensitive env var is denied when allowed_names is omitted."""
+        from taipanstack.security.guards import guard_env_variable
+
+        monkeypatch.setenv("CUSTOM_TOKEN", "secret")
+        with pytest.raises(SecurityError, match="potentially sensitive"):
+            guard_env_variable("CUSTOM_TOKEN")
+
     def test_security_guards_blocked_token_pattern(self) -> None:
         """Test that TOKEN pattern is blocked."""
         from taipanstack.security.guards import guard_env_variable
@@ -267,6 +277,16 @@ class TestGuardEnvVariable:
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("CUSTOM_SECRET", denied_names=["CUSTOM_SECRET"])
+
+    def test_security_guards_allowed_names_not_matching_sensitive_name(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test sensitive env var is denied when allowed_names does not include it."""
+        from taipanstack.security.guards import guard_env_variable
+
+        monkeypatch.setenv("API_TOKEN", "secret_token")
+        with pytest.raises(SecurityError, match="potentially sensitive"):
+            guard_env_variable("API_TOKEN", allowed_names=["SAFE_VAR"])
 
     def test_security_guards_allowed_names_override(
         self, monkeypatch: pytest.MonkeyPatch
@@ -299,3 +319,17 @@ def test_security_guards_guard_ssrf_internal_err_branches() -> None:
     # IP safety error branch:
     res2 = guard_ssrf("http://127.0.0.1")
     assert isinstance(res2, Err)
+
+
+def test_security_guards_command_injection_rejects_non_string_argument_type() -> None:
+    """Test command args must all be strings."""
+    with pytest.raises(TypeError, match="All command arguments must be strings"):
+        guard_command_injection(["echo", 123])
+
+
+def test_security_guards_env_variable_name_must_be_string() -> None:
+    """Test env variable name type validation."""
+    from taipanstack.security.guards import guard_env_variable
+
+    with pytest.raises(TypeError, match="Variable name must be str"):
+        guard_env_variable(123)
