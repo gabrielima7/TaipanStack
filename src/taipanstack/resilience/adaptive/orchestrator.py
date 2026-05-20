@@ -224,7 +224,7 @@ class ResilienceOrchestrator(Generic[T]):
 
         return await self._execute_inner(fn, *args, **kwargs)
 
-    def _evaluate_circuit_breaker(self) -> Result[T, Exception] | None:
+    def _evaluate_circuit_breaker(self) -> Err[Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
         if self._adaptive_breaker is not None:
             if not self._adaptive_breaker.should_allow():
@@ -278,10 +278,6 @@ class ResilienceOrchestrator(Generic[T]):
         **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
         """Execute through breaker → retry → timeout → fn layers."""
-        cb_err = self._evaluate_circuit_breaker()
-        if cb_err is not None:
-            return self._apply_fallback(cb_err)
-
         max_attempts = (
             self._retry_config.max_attempts if self._retry_config is not None else 1
         )
@@ -309,6 +305,13 @@ class ResilienceOrchestrator(Generic[T]):
     ) -> Result[T, Exception]:
         last_error: Exception | None = None
         for attempt in range(1, max_attempts + 1):
+            cb_err = self._evaluate_circuit_breaker()
+            if cb_err is not None:
+                if attempt == 1:
+                    return self._apply_fallback(cb_err)
+                last_error = cb_err.err_value
+                break
+
             result = await self._execute_with_timeout(fn, *args, **kwargs)
             if isinstance(result, Ok):
                 self._record_success_outcome(attempt)
