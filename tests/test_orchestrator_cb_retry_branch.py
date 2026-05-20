@@ -1,4 +1,3 @@
-
 import pytest
 
 from taipanstack.core.result import Err, safe
