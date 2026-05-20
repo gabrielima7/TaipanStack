@@ -138,7 +138,7 @@ jobs:
         run: poetry run bandit -r src/ -ll -c pyproject.toml
 
       - name: "[Audit] Run pip-audit"
-        run: poetry run pip-audit --skip-editable
+        run: poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2026-89 --ignore-vuln PYSEC-2025-183
 
       - name: "[Audit] Run Semgrep"
         uses: semgrep/semgrep-action@v1

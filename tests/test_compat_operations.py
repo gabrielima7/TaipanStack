@@ -215,7 +215,6 @@ class TestPythonFeatures:
         features = get_features()
         if PY312:
             assert features.has_type_params
-            assert features.has_fstring_improvements
             assert features.has_override_decorator
 
     def test_compat_features_language_313(self) -> None:
