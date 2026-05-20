@@ -225,7 +225,7 @@ class TestAsyncRetryDecorator:
     """Tests for @retry decorator on async functions."""
 
     @pytest.mark.asyncio
-    async def test_success_no_retry(self) -> None:
+    async def test_utils_retry_success_no_retry(self) -> None:
         """Test successful async function doesn't retry."""
         call_count = 0
 
@@ -240,7 +240,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 1
 
     @pytest.mark.asyncio
-    async def test_retry_on_failure(self) -> None:
+    async def test_utils_retry_retry_on_failure(self) -> None:
         """Test async function retries on failure."""
         call_count = 0
 
@@ -257,7 +257,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 3
 
     @pytest.mark.asyncio
-    async def test_max_attempts_exceeded(self) -> None:
+    async def test_utils_retry_max_attempts_exceeded(self) -> None:
         """Test RetryError when max attempts exceeded for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -269,7 +269,7 @@ class TestAsyncRetryDecorator:
         assert exc_info.value.attempts == 2
 
     @pytest.mark.asyncio
-    async def test_only_catches_specified_exceptions(self) -> None:
+    async def test_utils_retry_only_catches_specified_exceptions(self) -> None:
         """Test that only specified exceptions trigger retry for async function."""
 
         @retry(max_attempts=3, on=(ValueError,))
@@ -281,7 +281,7 @@ class TestAsyncRetryDecorator:
             await raise_type_error()
 
     @pytest.mark.asyncio
-    async def test_last_exception_preserved(self) -> None:
+    async def test_utils_retry_last_exception_preserved(self) -> None:
         """Test that last exception is preserved in RetryError for async function."""
 
         @retry(max_attempts=2, initial_delay=0.01, on=(ValueError,))
@@ -294,7 +294,7 @@ class TestAsyncRetryDecorator:
         assert "Original error" in str(exc_info.value.last_exception)
 
     @pytest.mark.asyncio
-    async def test_on_retry_callback(self) -> None:
+    async def test_utils_retry_on_retry_callback(self) -> None:
         """Test that on_retry callback is called for async function."""
         retries = []
 
@@ -520,7 +520,7 @@ class TestRetryError:
         assert call_count == 0
 
     @pytest.mark.asyncio
-    async def test_retry_async_for_loop_exhaustion(self) -> None:
+    async def test_utils_retry_retry_async_for_loop_exhaustion(self) -> None:
         """Test the retry async loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
 

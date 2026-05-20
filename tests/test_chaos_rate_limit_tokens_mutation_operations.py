@@ -3,7 +3,7 @@ import math
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_rate_limit_survives_type_mutation_tokens_arg() -> None:
+def test_chaos_rate_limit_tokens_mutation_rate_limit_survives_type_mutation_tokens_arg() -> None:
     limiter = RateLimiter(10, 10.0)
 
     # Should safely fail closed when given invalid token types

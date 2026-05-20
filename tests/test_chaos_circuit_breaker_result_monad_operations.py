@@ -4,7 +4,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import CircuitBreakerError, circuit_breaker
 
 
-def test_circuit_breaker_with_err_monad():
+def test_chaos_circuit_breaker_result_monad_circuit_breaker_with_err_monad():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     def flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:
@@ -21,7 +21,7 @@ def test_circuit_breaker_with_err_monad():
 
 
 @pytest.mark.asyncio
-async def test_async_circuit_breaker_with_err_monad():
+async def test_chaos_circuit_breaker_result_monad_async_circuit_breaker_with_err_monad():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     async def async_flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:
@@ -37,7 +37,7 @@ async def test_async_circuit_breaker_with_err_monad():
         await async_flaky_function(True)
 
 
-def test_circuit_breaker_with_err_monad_not_in_exceptions():
+def test_chaos_circuit_breaker_result_monad_circuit_breaker_with_err_monad_not_in_exceptions():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     def flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:
@@ -55,7 +55,7 @@ def test_circuit_breaker_with_err_monad_not_in_exceptions():
 
 
 @pytest.mark.asyncio
-async def test_async_circuit_breaker_with_err_monad_not_in_exceptions():
+async def test_chaos_circuit_breaker_result_monad_async_circuit_breaker_with_err_monad_not_in_exceptions():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     async def async_flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:

@@ -182,7 +182,7 @@ class TestResultModuleBranches:
         assert res is dummy  # The fallback branch returns the object itself
 
     @pytest.mark.asyncio
-    async def test_map_async_fallback(self) -> None:
+    async def test_100_coverage_final_map_async_fallback(self) -> None:
         """Test map_async fallback branch for unexpected types."""
         from taipanstack.core.result import map_async
 
@@ -199,7 +199,7 @@ class TestResultModuleBranches:
         assert res is dummy
 
     @pytest.mark.asyncio
-    async def test_and_then_async_fallback(self) -> None:
+    async def test_100_coverage_final_and_then_async_fallback(self) -> None:
         """Test and_then_async fallback branch for unexpected types."""
         from taipanstack.core.result import and_then_async
 

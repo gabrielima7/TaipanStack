@@ -149,7 +149,7 @@ class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_start_stop_lifecycle(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_start_stop_lifecycle(self, tmp_path: Path) -> None:
         """Watcher can be started and stopped."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -168,7 +168,7 @@ class TestConfigWatcher:
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_detects_file_change(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_detects_file_change(self, tmp_path: Path) -> None:
         """Callback fires when a config file changes."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "old", "port": 1}))
@@ -196,7 +196,7 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_invalid_config_calls_error_callback(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_invalid_config_calls_error_callback(self, tmp_path: Path) -> None:
         """Validation error callback fires on bad config."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "ok", "port": 1}))
@@ -220,7 +220,7 @@ class TestConfigWatcher:
         assert len(errors) >= 1
 
     @pytest.mark.asyncio
-    async def test_missing_file_does_not_crash(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_missing_file_does_not_crash(self, tmp_path: Path) -> None:
         """A watched file that disappears is handled gracefully."""
         f = tmp_path / "will_vanish.json"
         f.write_text(json.dumps({"host": "x", "port": 1}))
@@ -404,7 +404,7 @@ def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_cal
 
 
 @pytest.mark.asyncio
-async def test_config_watcher_change_detection_error_coverage() -> None:
+async def test_watchdog_config_config_watcher_change_detection_error_coverage() -> None:
     """Test config_watcher change detection error logging."""
     from unittest.mock import MagicMock, patch
 

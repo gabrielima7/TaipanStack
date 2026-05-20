@@ -1,7 +1,7 @@
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_rate_limit_survives_type_mutation_last_update():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_last_update():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate last_update to string
@@ -11,7 +11,7 @@ def test_rate_limit_survives_type_mutation_last_update():
     assert limiter.consume() is False
 
 
-def test_rate_limit_survives_type_mutation_capacity():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_capacity():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate capacity to string
@@ -21,7 +21,7 @@ def test_rate_limit_survives_type_mutation_capacity():
     assert limiter.consume() is False
 
 
-def test_rate_limit_survives_type_mutation_tokens():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_tokens():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate tokens to string
@@ -31,7 +31,7 @@ def test_rate_limit_survives_type_mutation_tokens():
     assert limiter.consume() is False
 
 
-def test_rate_limit_survives_type_mutation_time_window():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_time_window():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate time_window to string
@@ -41,7 +41,7 @@ def test_rate_limit_survives_type_mutation_time_window():
     assert limiter.consume() is False
 
 
-def test_rate_limit_survives_type_mutation_now_consume():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_consume():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate last_update to dict to hit TypeError in math.isfinite(now)
@@ -56,21 +56,21 @@ def test_rate_limit_survives_type_mutation_now_consume():
     assert limiter._is_valid_bucket_state() is False
 
 
-def test_rate_limit_survives_type_mutation_add_tokens():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_add_tokens():
     limiter = RateLimiter(10, 10.0)
     # Mutate tokens to hit math.isfinite(self.tokens) TypeError in _add_tokens
     object.__setattr__(limiter, "tokens", "string")
     assert limiter._add_tokens(10.0) is False
 
 
-def test_rate_limit_survives_type_mutation_consume_now():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now():
     limiter = RateLimiter(10, 10.0)
     object.__setattr__(limiter, "tokens", "string")
     # consume tries tokens >= tokens
     assert limiter.consume() is False
 
 
-def test_rate_limit_survives_type_mutation_consume_now_not_finite():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now_not_finite():
     import math
 
     limiter = RateLimiter(10, 10.0)

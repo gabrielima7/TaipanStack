@@ -9,7 +9,7 @@ from taipanstack.security.guards import (
 
 
 @given(st.lists(st.text(), min_size=1))
-def test_guard_command_injection_fuzz_returns_ok_or_raises_error(cmd):
+def test_fuzz_guard_null_bytes_guard_command_injection_fuzz_returns_ok_or_raises_error(cmd):
     try:
         result = guard_command_injection(cmd)
         assert isinstance(result, list)
@@ -18,7 +18,7 @@ def test_guard_command_injection_fuzz_returns_ok_or_raises_error(cmd):
 
 
 @given(st.text())
-def test_guard_env_variable_fuzz_returns_ok_or_raises_error(env):
+def test_fuzz_guard_null_bytes_guard_env_variable_fuzz_returns_ok_or_raises_error(env):
     try:
         result = guard_env_variable(env)
         assert isinstance(result, str)
@@ -26,14 +26,14 @@ def test_guard_env_variable_fuzz_returns_ok_or_raises_error(env):
         assert isinstance(e, (SecurityError, ValueError, TypeError))
 
 
-def test_guard_command_injection_null_byte_raises_error():
+def test_fuzz_guard_null_bytes_guard_command_injection_null_byte_raises_error():
     import pytest
 
     with pytest.raises(SecurityError, match="null byte"):
         guard_command_injection(["\x00"])
 
 
-def test_guard_env_variable_null_byte_raises_error():
+def test_fuzz_guard_null_bytes_guard_env_variable_null_byte_raises_error():
     import pytest
 
     with pytest.raises(SecurityError, match="null byte"):

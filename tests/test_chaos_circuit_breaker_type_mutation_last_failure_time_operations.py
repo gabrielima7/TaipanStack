@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_circuit_breaker_last_failure_time_mutation():
+def test_chaos_circuit_breaker_type_mutation_last_failure_time_circuit_breaker_last_failure_time_mutation():
     breaker = CircuitBreaker()
     breaker._state.state = CircuitState.OPEN
     breaker._state.last_failure_time = "corrupted_time"  # type: ignore[assignment]
