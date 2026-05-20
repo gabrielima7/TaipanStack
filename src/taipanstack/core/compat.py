@@ -223,7 +223,6 @@ class PythonFeatures:
     has_exception_groups: bool = False  # 3.11+
     has_self_type: bool = False  # 3.11+
     has_type_params: bool = False  # 3.12+
-    has_fstring_improvements: bool = False  # 3.12+
     has_override_decorator: bool = False  # 3.12+
     has_deprecated_decorator: bool = False  # 3.13+
     has_deferred_annotations: bool = False  # 3.14+
@@ -283,7 +282,6 @@ def _get_language_features() -> dict[str, bool]:
         "has_exception_groups": PY311,
         "has_self_type": PY311,
         "has_type_params": PY312,
-        "has_fstring_improvements": PY312,
         "has_override_decorator": PY312,
         "has_deprecated_decorator": PY313,
         "has_deferred_annotations": PY314,
