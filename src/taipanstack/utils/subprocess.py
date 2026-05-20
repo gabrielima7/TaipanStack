@@ -196,11 +196,12 @@ def _extract_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
         The extracted stdout string.
 
     """
-    if not hasattr(e, "stdout") or e.stdout is None:
+    stdout = getattr(e, "stdout", None)
+    if stdout is None:
         return ""
-    if isinstance(e.stdout, str):
-        return e.stdout
-    return e.stdout.decode("utf-8", errors="replace")
+    if type(stdout) is bytes:
+        return stdout.decode("utf-8", errors="replace")
+    return str(stdout)
 
 
 def _execute_command(

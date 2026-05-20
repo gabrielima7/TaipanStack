@@ -63,11 +63,9 @@ def fallback(
                     result = await func_coro(*args, **kwargs)
                     if isinstance(result, Err):
                         return Ok(fallback_value)
-                    elif isinstance(result, Ok):
-                        return result
+                    return result
                 except exceptions:
                     return Ok(fallback_value)
-                return Err(cast(E, RuntimeError("Unreachable")))
 
             return async_wrapper
 
@@ -79,11 +77,9 @@ def fallback(
                 result = func_sync(*args, **kwargs)
                 if isinstance(result, Err):
                     return Ok(fallback_value)
-                elif isinstance(result, Ok):
-                    return result
+                return result
             except exceptions:
                 return Ok(fallback_value)
-            return Err(cast(E, RuntimeError("Unreachable")))
 
         return sync_wrapper
 

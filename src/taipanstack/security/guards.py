@@ -525,7 +525,7 @@ def guard_env_variable(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
+def _validate_ssrf_url_type_and_length(url: object) -> Result[str, SecurityError]:
     if not isinstance(url, str):
         return Err(
             SecurityError(

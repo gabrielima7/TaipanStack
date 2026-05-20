@@ -219,7 +219,6 @@ def collect_results(
             return optimized_res
 
     ok_cls = Ok
-    err_cls = Err
     values: list[T] = []
     append = values.append
     for result in results:
@@ -227,11 +226,8 @@ def collect_results(
         # type(result) is ok_cls would be even faster but breaks subclassing.
         if isinstance(result, ok_cls):
             append(result.ok_value)
-        elif isinstance(result, err_cls):
-            return result
         else:
-            # Fallback for structural compatibility
-            return result
+            return cast(Result[list[T], E], result)
     return ok_cls(values)
 
 
