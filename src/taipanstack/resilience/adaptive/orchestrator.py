@@ -224,7 +224,7 @@ class ResilienceOrchestrator(Generic[T]):
 
         return await self._execute_inner(fn, *args, **kwargs)
 
-    def _evaluate_circuit_breaker(self) -> Result[T, Exception] | None:
+    def _evaluate_circuit_breaker(self) -> Err[Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
         if self._adaptive_breaker is not None:
             if not self._adaptive_breaker.should_allow():

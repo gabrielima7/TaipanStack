@@ -1,19 +1,29 @@
-from taipanstack.resilience.adaptive import ResilienceOrchestrator, AdaptiveCircuitBreaker
-from taipanstack.resilience.circuit_breaker import CircuitBreakerError
-from taipanstack.core.result import Result, Ok, Err, safe
-import asyncio
+
 import pytest
+
+from taipanstack.core.result import Err, safe
+from taipanstack.resilience.adaptive import (
+    AdaptiveCircuitBreaker,
+    ResilienceOrchestrator,
+)
+from taipanstack.resilience.circuit_breaker import CircuitBreakerError
 from taipanstack.resilience.retry import RetryConfig
+
 
 @pytest.mark.asyncio
 async def test_orchestrator_circuit_breaker_trips_during_retry():
     orch = (
         ResilienceOrchestrator("test_orch")
-        .with_circuit_breaker(AdaptiveCircuitBreaker("test_cb", target_error_rate=0.0, min_throughput=1, window_size=5))
+        .with_circuit_breaker(
+            AdaptiveCircuitBreaker(
+                "test_cb", target_error_rate=0.0, min_throughput=1, window_size=5
+            )
+        )
         .with_retry(RetryConfig(max_attempts=3, initial_delay=0.0))
     )
 
     attempts = 0
+
     @safe
     async def failing_func():
         nonlocal attempts
