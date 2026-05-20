@@ -188,6 +188,28 @@ def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
         current = current.parent
 
 
+def _validate_path_types(path: object, base_dir: object) -> None:
+    """Validate types of path and base_dir."""
+    if not isinstance(path, (str, Path)):
+        raise TypeError(f"path must be str or Path, got {type(path).__name__}")
+    if base_dir is not None and not isinstance(base_dir, (str, Path)):
+        raise TypeError(f"base_dir must be str or Path, got {type(base_dir).__name__}")
+
+
+def _check_path_null_bytes(path: Path | str, base_dir: Path | str | None) -> None:
+    """Check for null bytes in path and base_dir."""
+    if "\x00" in str(path) or (base_dir is not None and "\x00" in str(base_dir)):
+        raise SecurityError(
+            "Path contains null bytes",
+            guard_name="path_traversal",
+        )
+
+
+def _resolve_base_dir(base_dir: Path | str | None) -> Path:
+    """Resolve the base directory."""
+    return Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
+
+
 def guard_path_traversal(
     path: Path | str,
     base_dir: Path | str | None = None,
@@ -215,19 +237,11 @@ def guard_path_traversal(
         SecurityError: [path_traversal] Path escapes base directory
 
     """
-    if not isinstance(path, (str, Path)):
-        raise TypeError(f"path must be str or Path, got {type(path).__name__}")
-    if base_dir is not None and not isinstance(base_dir, (str, Path)):
-        raise TypeError(f"base_dir must be str or Path, got {type(base_dir).__name__}")
-
-    if "\x00" in str(path) or (base_dir is not None and "\x00" in str(base_dir)):
-        raise SecurityError(
-            "Path contains null bytes",
-            guard_name="path_traversal",
-        )
+    _validate_path_types(path, base_dir)
+    _check_path_null_bytes(path, base_dir)
 
     path_obj = Path(path) if isinstance(path, str) else path
-    base = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
+    base = _resolve_base_dir(base_dir)
 
     _check_traversal_patterns(str(path_obj))
     full_path, resolved = _resolve_and_check_bounds(path_obj, base)
@@ -467,6 +481,26 @@ def _check_env_sensitive(
     )
 
 
+def _validate_env_var_name(name: object) -> str:
+    """Validate environment variable name."""
+    if not isinstance(name, str):
+        raise TypeError(f"Variable name must be str, got {type(name).__name__}")
+
+    if not name or not name.strip():
+        raise SecurityError(
+            "Environment variable name cannot be empty or whitespace",
+            guard_name="env_variable",
+        )
+
+    if "\x00" in name:
+        raise SecurityError(
+            "Environment variable name cannot contain null bytes",
+            guard_name="env_variable",
+        )
+
+    return name
+
+
 def guard_env_variable(
     name: str,
     *,
@@ -487,22 +521,8 @@ def guard_env_variable(
         SecurityError: If variable access is not allowed.
 
     """
-    # Validate input type
-    if not isinstance(name, str):
-        raise TypeError(f"Variable name must be str, got {type(name).__name__}")
-
-    # Reject empty/whitespace-only variable names
-    if not name or not name.strip():
-        raise SecurityError(
-            "Environment variable name cannot be empty or whitespace",
-            guard_name="env_variable",
-        )
-
-    if "\x00" in name:
-        raise SecurityError(
-            "Environment variable name cannot contain null bytes",
-            guard_name="env_variable",
-        )
+    # Validate input type and format
+    name = _validate_env_var_name(name)
 
     name_upper = name.upper()
 
