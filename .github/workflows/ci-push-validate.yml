@@ -147,6 +147,9 @@ jobs:
             auto
             .semgrep/taipanstack-rules.yml
 
+      - name: "[Audit] Run Vulture"
+        run: poetry run vulture
+
   ci-import-lint:
     name: "[Lint] Architecture Check"
     runs-on: ubuntu-latest
