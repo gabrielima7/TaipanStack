@@ -199,8 +199,8 @@ TaipanStack/
 
 1. Update version in `pyproject.toml` and `src/taipanstack/__init__.py`
 2. Update `CHANGELOG.md` with release notes
-3. Create a git tag: `git tag -a v0.5.0 -m "Release v0.5.0"`
-4. Push tag: `git push origin v0.5.0`
+3. Create a git tag: `git tag -a <YOUR_VERSION> -m "Release <YOUR_VERSION>"`
+4. Push tag: `git push origin <YOUR_VERSION>`
 5. GitHub Actions will automatically create a release
 6. Publish to PyPI: `poetry publish --build`
 
