@@ -528,6 +528,8 @@ def _add_dependencies(args: argparse.Namespace) -> None:
         "mypy",
         "bandit",
         "pip-audit",
+
+
         "pre-commit",
         "pytest",
         "pytest-cov",
