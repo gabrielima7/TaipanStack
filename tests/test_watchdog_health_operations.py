@@ -255,7 +255,6 @@ async def test_health_pinger_check_all_err_branch() -> None:
 
 @pytest.mark.asyncio
 async def test_health_pinger_run_err_branch() -> None:
-
     from taipanstack.resilience.watchdogs.health_pinger import (
         HealthPinger,
         HealthTarget,

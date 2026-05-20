@@ -324,7 +324,6 @@ class TestConfigWatcher:
 
 
 def test_watchdog_config_config_watcher_hash_err_branch() -> None:
-
     from pydantic import BaseModel
 
     from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
@@ -427,3 +426,33 @@ async def test_config_watcher_change_detection_error_coverage() -> None:
             "Change detection failed: %s",
             watcher._detect_changes.return_value.err_value,
         )
+
+
+def test_watchdog_config_hash_file_too_large_returns_err(tmp_path: Path) -> None:
+    from taipanstack.resilience.watchdogs.config_watcher import (
+        MAX_CONFIG_SIZE,
+        _hash_file,
+    )
+
+    large_file = tmp_path / "large.env"
+    large_file.write_bytes(b"A" * (MAX_CONFIG_SIZE + 1))
+
+    result = _hash_file(large_file)
+    assert result.is_err()
+    assert isinstance(result.err_value, ValueError)
+    assert "exceeds maximum size" in str(result.err_value)
+
+
+def test_watchdog_config_load_file_data_too_large_returns_err(tmp_path: Path) -> None:
+    from taipanstack.resilience.watchdogs.config_watcher import (
+        MAX_CONFIG_SIZE,
+        _load_file_data,
+    )
+
+    large_file = tmp_path / "large.env"
+    large_file.write_bytes(b"A" * (MAX_CONFIG_SIZE + 1))
+
+    result = _load_file_data(large_file)
+    assert result.is_err()
+    assert isinstance(result.err_value, ValueError)
+    assert "exceeds maximum size" in str(result.err_value)
