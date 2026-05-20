@@ -314,7 +314,10 @@ def _apply_base_dir_constraint(
     if base_dir is None:
         return sanitized
 
-    base = Path(base_dir).resolve()
+    try:
+        base = Path(base_dir).resolve()
+    except (OSError, RuntimeError) as e:
+        raise ValueError(f"Cannot resolve base_dir: {e}") from e
     if resolve:
         try:
             return sanitized.resolve()

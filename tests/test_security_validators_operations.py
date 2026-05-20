@@ -163,3 +163,10 @@ def test_security_validators_type_error_message_for_tuple_expected_types() -> No
 
     with pytest.raises(TypeError, match="Version must be str, got tuple"):
         validate_python_version((3, 11))
+
+def test_security_validators_email_no_at():
+    import pytest
+
+    from taipanstack.security.validators import _check_email_parts
+    with pytest.raises(ValueError, match="not enough values to unpack"):
+        _check_email_parts("foo")

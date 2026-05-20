@@ -120,3 +120,38 @@ class TestSecureBaseModel:
         obj = SimpleModel(password="will_not_be_masked")
         dumped = obj.model_dump()
         assert dumped["password"] == "will_not_be_masked"
+
+def test_security_models_mask_data_max_depth():
+    from taipanstack.security.models import _mask_data
+
+    # We create a dictionary nested deeper than 100 levels
+    deep_dict = {}
+    curr = deep_dict
+    for _ in range(150):
+        curr["a"] = {}
+        curr = curr["a"]
+
+    res = _mask_data(deep_dict)
+
+    # Check that we eventually got '<MAX_DEPTH_REACHED>' at the bottom instead of crashing
+    curr_res = res
+    while isinstance(curr_res, dict):
+        curr_res = curr_res.get("a")
+    assert curr_res == "<MAX_DEPTH_REACHED>"
+
+
+def test_security_models_mask_data_max_depth_list():
+    from taipanstack.security.models import _mask_data
+
+    deep_list = []
+    curr = deep_list
+    for _ in range(150):
+        new_list = []
+        curr.append(new_list)
+        curr = new_list
+
+    res = _mask_data(deep_list)
+    curr_res = res
+    while isinstance(curr_res, list):
+        curr_res = curr_res[0]
+    assert curr_res == "<MAX_DEPTH_REACHED>"

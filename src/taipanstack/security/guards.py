@@ -227,7 +227,13 @@ def guard_path_traversal(
         )
 
     path_obj = Path(path) if isinstance(path, str) else path
-    base = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
+    try:
+        base = Path(base_dir).resolve() if base_dir else Path.cwd().resolve()
+    except (OSError, ValueError, RuntimeError) as e:
+        raise SecurityError(
+            f"Invalid base directory path: {e}",
+            guard_name="path_traversal",
+        ) from e
 
     _check_traversal_patterns(str(path_obj))
     full_path, resolved = _resolve_and_check_bounds(path_obj, base)

@@ -255,6 +255,10 @@ def _check_email_format(email: str) -> None:
     """Check email format and basic constraints."""
     _check_email_basics(email)
 
+    if "@" not in email:
+        msg = f"Invalid email format: {email}"
+        raise ValueError(msg)
+
     # RFC 5322 compliant pattern (simplified)
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\Z"
 

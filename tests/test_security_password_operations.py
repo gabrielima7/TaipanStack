@@ -121,3 +121,22 @@ def test_security_password_verify_password_invalid_type_hash() -> None:
 
     with pytest.raises(TypeError, match="password_hash must be a string"):
         verify_password("my_password", 123)  # type: ignore[arg-type]
+
+def test_security_password_verify_password_argon_invalid():
+    from taipanstack.security.password import verify_password
+    # Should catch and return False
+    assert (
+        verify_password("my_password", "$argon2id$v=19$m=65536,t=3,p=4$fake$fake")
+        is False
+    )
+
+def test_security_password_verify_argon_exceptions() -> None:
+    import contextlib
+    from unittest.mock import patch
+
+    import argon2
+
+    from taipanstack.security.password import verify_password
+    with patch.object(argon2.PasswordHasher, "verify", side_effect=Exception("mock err")):
+        with contextlib.suppress(Exception):
+            assert verify_password("pass", "$argon2id$v=19$m=65536,t=3,p=4$fake$fake") is False

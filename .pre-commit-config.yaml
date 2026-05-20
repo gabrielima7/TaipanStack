@@ -40,7 +40,7 @@ repos:
     rev: 'v2.7.3'
     hooks:
       - id: pip-audit
-        args: ["--strict", "--ignore-vuln", "PYSEC-2026-89", "--ignore-vuln", "PYSEC-2025-183"]
+        args: ["--strict"]
 
   - repo: https://github.com/semgrep/pre-commit
     rev: 'v1.99.0'

@@ -333,3 +333,62 @@ def test_security_guards_env_variable_name_must_be_string() -> None:
 
     with pytest.raises(TypeError, match="Variable name must be str"):
         guard_env_variable(123)
+
+def test_security_guards_guard_path_traversal_resolve_err():
+    from unittest.mock import patch
+
+    import pytest
+
+    from taipanstack.security.guards import SecurityError, guard_path_traversal
+
+    with patch(
+        "taipanstack.security.guards.Path.resolve",
+        side_effect=RuntimeError("mock err"),
+    ):
+        with pytest.raises(SecurityError, match="Invalid base directory path: mock err"):
+            guard_path_traversal("foo/bar", base_dir="/root")
+
+def test_guard_path_traversal_resolve_value_error():
+    from unittest.mock import patch
+
+    import pytest
+
+    from taipanstack.security.guards import SecurityError, guard_path_traversal
+
+    with patch("taipanstack.security.guards.Path.resolve", side_effect=ValueError("mock err")):
+        with pytest.raises(SecurityError, match="Invalid base directory path: mock err"):
+            guard_path_traversal("foo/bar", base_dir="/root")
+
+def test_security_guards_guard_path_traversal_symlink_err(tmp_path):
+    from pathlib import Path
+
+    import pytest
+
+    from taipanstack.security.guards import SecurityError, guard_path_traversal
+    target = tmp_path / "target.txt"
+    target.touch()
+    link = tmp_path / "link.txt"
+    link.symlink_to(target)
+
+    class FaultyPath(type(Path())):
+        def is_symlink(self):
+            raise OSError("mock err")
+
+    with pytest.raises(SecurityError, match="Invalid path encountered"):
+        guard_path_traversal(FaultyPath(link), base_dir=tmp_path)
+
+def test_security_guards_guard_path_null_bytes():
+    import pytest
+
+    from taipanstack.security.guards import SecurityError, guard_path_traversal
+    with pytest.raises(SecurityError, match="null bytes"):
+        guard_path_traversal("foo\x00bar")
+    with pytest.raises(SecurityError, match="null bytes"):
+        guard_path_traversal("foo", base_dir="/root\x00")
+
+def test_security_guards_guard_command_injection_null_bytes():
+    import pytest
+
+    from taipanstack.security.guards import SecurityError, guard_command_injection
+    with pytest.raises(SecurityError, match="null byte"):
+        guard_command_injection(["foo\x00"])
