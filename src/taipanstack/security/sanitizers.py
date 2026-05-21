@@ -11,6 +11,7 @@ from pathlib import Path
 # Constants to avoid magic values (PLR2004)
 MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 MAX_PATH_LENGTH = 4096  # pragma: no mutate
+MAX_ENV_VALUE_LENGTH = 65535  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
@@ -241,6 +242,9 @@ def sanitize_filename(
     if not isinstance(filename, str):
         raise TypeError(f"filename must be str, got {type(filename).__name__}")
 
+    if len(filename) > MAX_PATH_LENGTH:
+        raise ValueError("Filename length exceeds maximum allowed limit")
+
     if not filename:
         filename = "unnamed"
 
@@ -438,6 +442,9 @@ def sanitize_env_value(
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
+    if len(value) > MAX_ENV_VALUE_LENGTH:
+        raise ValueError("Environment value length exceeds maximum allowed limit")
+
     if not value:
         return ""
 
@@ -497,6 +504,9 @@ def sanitize_sql_identifier(identifier: str) -> str:
         if not identifier:
             msg = "SQL identifier cannot be empty"
             raise ValueError(msg)
+
+        if len(identifier) > MAX_PATH_LENGTH:
+            raise ValueError("SQL identifier length exceeds maximum allowed limit")
 
         return _sanitize_sql_identifier_slow_path(identifier)
 
