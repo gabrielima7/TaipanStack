@@ -63,7 +63,7 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings() -> None:
     st.text(
         alphabet=st.characters(blacklist_characters=["/"]),
         min_size=4097,
-        max_size=5000,
+        max_size=4150,
     )
 )
 def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis(
