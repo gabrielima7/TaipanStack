@@ -1,3 +1,4 @@
+import unittest.mock
 """Tests for the ConfigWatcher and related utilities."""
 
 import asyncio
@@ -427,3 +428,22 @@ async def test_config_watcher_change_detection_error_coverage() -> None:
             "Change detection failed: %s",
             watcher._detect_changes.return_value.err_value,
         )
+def test_watchdog_config_hash_file_too_large(tmp_path: Path) -> None:
+    f = tmp_path / "large.txt"
+    f.write_text("a" * 10)
+    from taipanstack.resilience.watchdogs.config_watcher import _hash_file
+    with unittest.mock.patch("pathlib.Path.stat") as mock_stat:
+        mock_stat.return_value.st_size = 11 * 1024 * 1024
+        result = _hash_file(f)
+    assert isinstance(result, Err)
+    assert "too large to hash" in str(result.err_value)
+
+def test_watchdog_config_load_file_too_large(tmp_path: Path) -> None:
+    f = tmp_path / "large.json"
+    f.write_text("{}")
+    from taipanstack.resilience.watchdogs.config_watcher import _load_file_data
+    with unittest.mock.patch("pathlib.Path.stat") as mock_stat:
+        mock_stat.return_value.st_size = 11 * 1024 * 1024
+        result = _load_file_data(f)
+    assert isinstance(result, Err)
+    assert "too large to load" in str(result.err_value)

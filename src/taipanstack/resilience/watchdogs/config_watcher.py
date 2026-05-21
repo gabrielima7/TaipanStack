@@ -30,6 +30,8 @@ def _hash_file(path: Path) -> Result[str, Exception]:
 
     """
     try:
+        if path.stat().st_size > 10 * 1024 * 1024:
+            return Err(ValueError(f"File too large to hash: {path}"))
         data = path.read_bytes()
         return Ok(hashlib.sha256(data).hexdigest())
     except OSError as exc:
@@ -94,6 +96,8 @@ def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
 
     """
     try:
+        if path.stat().st_size > 10 * 1024 * 1024:
+            return Err(ValueError(f"File too large to load: {path}"))
         text = path.read_text(encoding="utf-8")
     except OSError as exc:
         return Err(exc)
