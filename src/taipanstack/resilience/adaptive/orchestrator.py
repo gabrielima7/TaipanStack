@@ -296,6 +296,14 @@ class ResilienceOrchestrator(Generic[T]):
             return True
         return False
 
+    def _handle_circuit_breaker_open(
+        self, cb_err: Err[Exception], attempt: int
+    ) -> Result[T, Exception] | Exception:
+        """Handle circuit breaker evaluation logic."""
+        if attempt == 1:
+            return self._apply_fallback(cb_err)
+        return cb_err.err_value
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -303,14 +311,15 @@ class ResilienceOrchestrator(Generic[T]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
-        last_error: Exception | None = None
+        last_error: Exception = RuntimeError("Execution failed")
         for attempt in range(1, max_attempts + 1):
             cb_err = self._evaluate_circuit_breaker()
             if cb_err is not None:
-                if attempt == 1:
-                    return self._apply_fallback(cb_err)
-                last_error = cb_err.err_value
-                break
+                cb_res = self._handle_circuit_breaker_open(cb_err, attempt)
+                if isinstance(cb_res, Exception):
+                    last_error = cb_res
+                    break
+                return cb_res
 
             result = await self._execute_with_timeout(fn, *args, **kwargs)
             if isinstance(result, Ok):
@@ -322,10 +331,7 @@ class ResilienceOrchestrator(Generic[T]):
                 continue
             break
 
-        final_result: Result[T, Exception] = Err(
-            last_error or RuntimeError("Execution failed")
-        )
-        return self._apply_fallback(final_result)
+        return self._apply_fallback(Err(last_error))
 
     async def _execute_with_timeout(
         self,

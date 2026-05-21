@@ -101,6 +101,11 @@ class AdaptiveCircuitBreaker:
                     )
             return self._state
 
+    def _calculate_error_rate(self, total: int) -> float:
+        """Calculate the current error rate in the window."""
+        errors = sum(1 for ok in self._window if not ok)
+        return errors / total
+
     def _evaluate_trip(self) -> None:
         """Evaluate if the circuit should trip open.
 
@@ -113,18 +118,19 @@ class AdaptiveCircuitBreaker:
         if total < self._min_throughput:
             return
 
-        errors = sum(1 for ok in self._window if not ok)
-        error_rate = errors / total
+        error_rate = self._calculate_error_rate(total)
 
-        if error_rate > self._target_error_rate:
-            self._state = CircuitState.OPEN
-            self._last_opened_at = time.monotonic()
-            logger.warning(
-                "Adaptive breaker '%s' OPENED. Error rate %.2f > %.2f",
-                self.name,
-                error_rate,
-                self._target_error_rate,
-            )
+        if error_rate <= self._target_error_rate:
+            return
+
+        self._state = CircuitState.OPEN
+        self._last_opened_at = time.monotonic()
+        logger.warning(
+            "Adaptive breaker '%s' OPENED. Error rate %.2f > %.2f",
+            self.name,
+            error_rate,
+            self._target_error_rate,
+        )
 
     def record_success(self) -> None:
         """Record a successful call."""
