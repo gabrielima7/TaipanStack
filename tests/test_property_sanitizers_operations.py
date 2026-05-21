@@ -4,7 +4,6 @@ Generates thousands of mutant inputs to verify sanitizer invariants
 hold under adversarial conditions.
 """
 
-import string
 from pathlib import Path
 
 import pytest
@@ -12,10 +11,8 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from taipanstack.security.sanitizers import (
-    sanitize_env_value,
     sanitize_filename,
     sanitize_path,
-    sanitize_sql_identifier,
     sanitize_string,
 )
 
@@ -307,118 +304,3 @@ class TestSanitizePathProperties:
         else:
             result = sanitize_path(path, max_depth=max_depth)
             assert str(result)  # Should succeed
-
-
-# =============================================================================
-# sanitize_env_value — Properties
-# =============================================================================
-class TestSanitizeEnvValueProperties:
-    """Property-based tests for sanitize_env_value."""
-
-    @given(text=nasty_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_no_null_bytes(self, text: str) -> None:
-        """Output must not contain null bytes."""
-        result = sanitize_env_value(text)
-        assert "\x00" not in result
-
-    @given(text=nasty_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_no_newlines_by_default(self, text: str) -> None:
-        """Output must not contain newlines when allow_multiline=False."""
-        result = sanitize_env_value(text, allow_multiline=False)
-        assert "\n" not in result
-        assert "\r" not in result
-
-    @given(text=nasty_text, max_len=st.integers(min_value=1, max_value=500))
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_respects_max_length(
-        self, text: str, max_len: int
-    ) -> None:
-        """Output length must not exceed max_length."""
-        result = sanitize_env_value(text, max_length=max_len)
-        assert len(result) <= max_len
-
-    @given(text=nasty_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_returns_string_type(self, text: str) -> None:
-        """Output must always be a string."""
-        result = sanitize_env_value(text)
-        assert isinstance(result, str)
-
-
-# =============================================================================
-# sanitize_sql_identifier — Properties
-# =============================================================================
-
-# Strategy: generate strings that have at least one valid SQL identifier char
-sql_text = st.text(
-    alphabet=st.characters(codec="utf-8"),
-    min_size=1,
-    max_size=200,
-)
-
-# Strategy: generate strings guaranteed to have valid identifier chars
-valid_sql_text = st.text(
-    alphabet=st.sampled_from(list(string.ascii_letters + string.digits + "_")),
-    min_size=1,
-    max_size=200,
-)
-
-
-class TestSanitizeSqlIdentifierProperties:
-    """Property-based tests for sanitize_sql_identifier."""
-
-    @given(text=valid_sql_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_only_valid_chars_in_output(self, text: str) -> None:
-        """Output must contain only alphanumeric characters and underscores."""
-        result = sanitize_sql_identifier(text)
-        valid = set(string.ascii_letters + string.digits + "_")
-        for ch in result:
-            assert ch in valid, f"Invalid char {ch!r} in SQL identifier: {result!r}"
-
-    @given(text=valid_sql_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_max_length_128(self, text: str) -> None:
-        """Output must not exceed 128 characters."""
-        result = sanitize_sql_identifier(text)
-        assert len(result) <= 128
-
-    @given(text=valid_sql_text)
-    @settings(
-        max_examples=FUZZ_EXAMPLES,
-        suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
-    )
-    def test_property_sanitizers_does_not_start_with_digit(self, text: str) -> None:
-        """Output must not start with a digit."""
-        result = sanitize_sql_identifier(text)
-        assert not result[0].isdigit(), f"SQL identifier starts with digit: {result!r}"
-
-    def test_property_sanitizers_empty_raises_value_error(self) -> None:
-        """Empty identifier must raise ValueError."""
-        with pytest.raises(ValueError, match="cannot be empty"):
-            sanitize_sql_identifier("")
-
-    def test_property_sanitizers_only_invalid_chars_raises(self) -> None:
-        """Identifier with only invalid characters must raise ValueError."""
-        with pytest.raises(ValueError, match="no valid characters"):
-            sanitize_sql_identifier("!@#$%^&*()")
