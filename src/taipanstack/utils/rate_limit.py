@@ -59,12 +59,13 @@ class RateLimiter:
 
     def _is_valid_bucket_state(self) -> bool:
         """Check if the bucket's time window and capacity are in a valid state."""
-        try:
-            if not math.isfinite(self.time_window) or self.time_window <= 0.0:
-                return False
-            return math.isfinite(self.capacity) and self.capacity > 0.0
-        except TypeError:
+        if not isinstance(self.time_window, (int, float)):
             return False
+        if not isinstance(self.capacity, (int, float)):
+            return False
+        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
+            return False
+        return math.isfinite(self.capacity) and self.capacity > 0.0
 
     def _calculate_new_tokens(self, elapsed: float) -> float | None:
         """Calculate new tokens based on elapsed time."""
@@ -73,6 +74,11 @@ class RateLimiter:
 
     def _apply_new_tokens(self, new_tokens: float) -> bool:
         """Apply new tokens to the bucket."""
+        if not isinstance(self.tokens, (int, float)):
+            self.tokens = self.capacity
+            return False
+        if not isinstance(new_tokens, (int, float)):
+            return False
         self.tokens += new_tokens
         if not math.isfinite(self.tokens):
             # Reset to previous state or capacity if corrupted
@@ -91,27 +97,28 @@ class RateLimiter:
             True if token update succeeds, False if state corruption is detected.
 
         """
-        try:
-            raw_elapsed = now - self.last_update
-            if not math.isfinite(raw_elapsed):
-                return False
-            elapsed = max(0.0, raw_elapsed)
-            self.last_update = now
-
-            # Prevent state corruption or infinite elapsed time
-            if not self._is_valid_bucket_state():
-                return False
-
-            new_tokens = self._calculate_new_tokens(elapsed)
-            if new_tokens is None:
-                return False
-
-            return self._apply_new_tokens(new_tokens)
-        except TypeError:
+        if not isinstance(self.last_update, (int, float)):
             return False
+        raw_elapsed = now - self.last_update
+        if not math.isfinite(raw_elapsed):
+            return False
+        elapsed = max(0.0, raw_elapsed)
+        self.last_update = now
+
+        # Prevent state corruption or infinite elapsed time
+        if not self._is_valid_bucket_state():
+            return False
+
+        new_tokens = self._calculate_new_tokens(elapsed)
+        if new_tokens is None:
+            return False
+
+        return self._apply_new_tokens(new_tokens)
 
     def _try_consume(self, tokens: float) -> bool:
         """Attempt to consume the tokens from the bucket if available."""
+        if not isinstance(self.tokens, (int, float)):
+            return False
         if self.tokens >= tokens:
             self.tokens -= tokens
             return True
@@ -127,26 +134,25 @@ class RateLimiter:
             True if tokens were consumed (allow), False otherwise (limit exceeded).
 
         """
-        try:
-            if not math.isfinite(tokens):
-                return False
-            if tokens <= 0:
-                return True
-        except TypeError:
+        if not isinstance(tokens, (int, float)) or not math.isfinite(tokens):
             return False
+        if tokens <= 0:
+            return True
 
         with self._lock:
             try:
                 now = time.monotonic()
-
-                # Prevent time corruption from poisoning the bucket state.
-                # Only try to add tokens if time is finite.
-                if math.isfinite(now) and not self._add_tokens(now):
-                    return False
-
-                return self._try_consume(tokens)
-            except TypeError:
+            except Exception:
                 return False
+
+            # Prevent time corruption from poisoning the bucket state.
+            # Only try to add tokens if time is finite.
+            if not isinstance(now, (int, float)) or (
+                math.isfinite(now) and not self._add_tokens(now)
+            ):
+                return False
+
+            return self._try_consume(tokens)
 
 
 class RateLimitDecorator(Protocol):
