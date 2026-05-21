@@ -81,3 +81,24 @@ def test_rate_limit_survives_type_mutation_consume_now_not_finite():
     with unittest.mock.patch("time.monotonic", return_value=math.nan):
         # Hits math.isfinite(now) == False, then tries tokens >= tokens -> TypeError
         assert limiter.consume() is False
+
+
+def test_rate_limit_survives_type_mutation_new_tokens():
+    limiter = RateLimiter(10, 10.0)
+    assert limiter._apply_new_tokens("string") is False
+
+
+def test_rate_limit_survives_type_mutation_now_exception():
+    import unittest.mock
+
+    limiter = RateLimiter(10, 10.0)
+    with unittest.mock.patch("time.monotonic", side_effect=RuntimeError("Time failed")):
+        assert limiter.consume() is False
+
+
+def test_rate_limit_survives_type_mutation_now_not_float():
+    import unittest.mock
+
+    limiter = RateLimiter(10, 10.0)
+    with unittest.mock.patch("time.monotonic", return_value="string"):
+        assert limiter.consume() is False
