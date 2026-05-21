@@ -10,7 +10,6 @@ Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibi
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from taipanstack.core.compat import (
     PY312,
@@ -20,9 +19,6 @@ from taipanstack.core.compat import (
     get_features,
 )
 from taipanstack.core.optimizations import get_recommended_thread_pool_size
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = [
     "VersionRecommendations",
