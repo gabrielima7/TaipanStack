@@ -69,6 +69,7 @@ def test_adaptive_breaker_time_corruption_nan(monkeypatch):
 def test_adaptive_breaker_min_throughput_invalid():
     """Test that min_throughput < 1 raises ValueError."""
     import pytest
+
     with pytest.raises(ValueError, match="min_throughput must be at least 1"):
         AdaptiveCircuitBreaker(min_throughput=0)
 
@@ -78,4 +79,3 @@ def test_adaptive_breaker_calculate_error_rate_zero():
     breaker = AdaptiveCircuitBreaker()
     assert breaker._calculate_error_rate(0) == 0.0
     assert breaker._calculate_error_rate(-1) == 0.0
-
