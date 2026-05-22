@@ -35,6 +35,17 @@ class TestEncodeJWT:
         assert result2.is_err()
         assert isinstance(result2.err_value, ValueError)
 
+    def test_security_jwt_encode_invalid_key_type(self) -> None:
+        """Test that encoding fails gracefully when given an invalid key format."""
+        import unittest.mock
+        payload = {"sub": "user_123"}
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        with unittest.mock.patch("jwt.encode", side_effect=jwt.exceptions.PyJWTError("Mocked encode error")):
+            result = encode_jwt(payload, secret, algorithm="HS256")
+            assert result.is_err()
+            assert isinstance(result.err_value, jwt.exceptions.PyJWTError)
+
 
 class TestDecodeJWT:
     """Tests for decode_jwt."""

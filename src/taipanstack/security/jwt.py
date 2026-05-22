@@ -14,29 +14,19 @@ if TYPE_CHECKING:
     import jwt
 
 import jwt
-from jwt.exceptions import PyJWTError
 
-from taipanstack.core.result import safe_from
+from taipanstack.core.result import Err, Ok, Result
 
 __all__ = ["decode_jwt", "encode_jwt"]
 
 JWTPayload: TypeAlias = dict[str, object]
 
 
-@safe_from(
-    PyJWTError,
-    ValueError,
-    TypeError,
-    NotImplementedError,
-    KeyError,
-    AttributeError,
-    Exception,
-)
 def encode_jwt(
     payload: JWTPayload,
     secret_key: str,
     algorithm: str = "HS256",
-) -> str:
+) -> Result[str, Exception]:
     """Encode a payload into a JWT securely.
 
     Explicitly rejects the "none" algorithm to prevent bypass vulnerabilities.
@@ -54,30 +44,28 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
+    if not isinstance(payload, dict):
+        return Err(TypeError("Payload must be a dictionary"))
+    if not isinstance(secret_key, str):
+        return Err(TypeError("Secret key must be a string"))
     if not isinstance(algorithm, str):
-        raise TypeError("Algorithm must be a string")
+        return Err(TypeError("Algorithm must be a string"))
 
     if secrets.compare_digest(algorithm.strip().lower(), "none"):
-        raise ValueError('Algorithm "none" is explicitly disallowed.')
+        return Err(ValueError('Algorithm "none" is explicitly disallowed.'))
 
-    return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
+    try:
+        return Ok(jwt.encode(payload, secret_key, algorithm=algorithm))  # nosem
+    except Exception as e:
+        return Err(e)
 
 
-@safe_from(
-    PyJWTError,
-    ValueError,
-    TypeError,
-    AttributeError,
-    NotImplementedError,
-    KeyError,
-    Exception,
-)
 def decode_jwt(
     token: str,
     secret_key: str,
     algorithms: list[str],
     audience: str | Iterable[str],
-) -> JWTPayload:
+) -> Result[JWTPayload, Exception]:
     """Decode a JWT securely with strict claim validation.
 
     Enforces that 'exp' (expiration) and 'aud' (audience) claims are present
@@ -97,21 +85,35 @@ def decode_jwt(
         PyJWTError: If the token is invalid, expired, or has incorrect claims.
 
     """
-    if any(
-        isinstance(alg, str) and secrets.compare_digest(alg.strip().lower(), "none")
-        for alg in algorithms
+    if (
+        not isinstance(token, str)
+        or not isinstance(secret_key, str)
+        or not isinstance(algorithms, list)
+        or not all(isinstance(alg, str) for alg in algorithms)
+        or not isinstance(audience, (str, Iterable))
     ):
-        raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
+        return Err(TypeError("Invalid parameter types for decoding"))
 
-    return jwt.decode(
-        token,
-        secret_key,
-        algorithms=algorithms,
-        audience=audience,
-        options={
-            "require": ["exp", "aud"],
-            "verify_signature": True,
-            "verify_exp": True,
-            "verify_aud": True,
-        },
-    )
+    try:
+        if any(
+            secrets.compare_digest(alg.strip().lower(), "none") for alg in algorithms
+        ):
+            return Err(ValueError('Algorithm "none" is explicitly disallowed.'))
+    except TypeError:
+        return Err(TypeError("Algorithms must be a list of strings"))
+
+    try:
+        return Ok(jwt.decode(
+            token,
+            secret_key,
+            algorithms=algorithms,
+            audience=audience,
+            options={
+                "require": ["exp", "aud"],
+                "verify_signature": True,
+                "verify_exp": True,
+                "verify_aud": True,
+            },
+        ))
+    except Exception as e:
+        return Err(e)

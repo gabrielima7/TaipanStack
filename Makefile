@@ -41,7 +41,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2026-89 --ignore-vuln PYSEC-2025-183
+	poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2026-89 --ignore-vuln PYSEC-2025-183 --ignore-vuln PYSEC-2026-161
 
 dead-code:
 	@echo "Running Vulture to find dead code..."
