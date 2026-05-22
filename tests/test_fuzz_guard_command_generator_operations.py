@@ -21,7 +21,7 @@ def test_fuzz_guard_command_generator_returns_ok_or_raises_error(cmd_list):
         assert isinstance(e, (SecurityError, ValueError, TypeError))
 
 
-def test_guard_command_empty_generator_raises_error():
+def test_fuzz_guard_command_generator_guard_command_empty_generator_raises_error():
     def empty_gen():
         yield from ()
 

@@ -5,11 +5,13 @@ from taipanstack.security.guards import (
     SecurityError,
     guard_command_injection,
     guard_env_variable,
+    _validate_env_var_name
 )
+import pytest
 
 
 @given(st.lists(st.text(), min_size=1))
-def test_guard_command_injection_fuzz_returns_ok_or_raises_error(cmd):
+def test_fuzz_guard_null_bytes_command_injection_ok_or_raises(cmd):
     try:
         result = guard_command_injection(cmd)
         assert isinstance(result, list)
@@ -18,7 +20,7 @@ def test_guard_command_injection_fuzz_returns_ok_or_raises_error(cmd):
 
 
 @given(st.text())
-def test_guard_env_variable_fuzz_returns_ok_or_raises_error(env):
+def test_fuzz_guard_null_bytes_env_variable_ok_or_raises(env):
     try:
         result = guard_env_variable(env)
         assert isinstance(result, str)
@@ -26,15 +28,23 @@ def test_guard_env_variable_fuzz_returns_ok_or_raises_error(env):
         assert isinstance(e, (SecurityError, ValueError, TypeError))
 
 
-def test_guard_command_injection_null_byte_raises_error():
-    import pytest
-
+def test_fuzz_guard_null_bytes_command_injection_raises_error():
     with pytest.raises(SecurityError, match="null byte"):
         guard_command_injection(["\x00"])
 
 
-def test_guard_env_variable_null_byte_raises_error():
-    import pytest
-
+def test_fuzz_guard_null_bytes_env_variable_raises_error():
     with pytest.raises(SecurityError, match="null byte"):
         guard_env_variable("\x00")
+
+def test_fuzz_guard_null_bytes_env_variable_empty_string_raises_error():
+    with pytest.raises(SecurityError, match="empty or whitespace"):
+        _validate_env_var_name("   ")
+
+def test_fuzz_guard_null_bytes_env_variable_empty_string2_raises_error():
+    with pytest.raises(SecurityError, match="empty or whitespace"):
+        _validate_env_var_name("")
+
+def test_fuzz_guard_null_bytes_env_variable_name_raises_error():
+    with pytest.raises(SecurityError, match="null byte"):
+        _validate_env_var_name("\x00name")

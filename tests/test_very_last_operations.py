@@ -755,12 +755,12 @@ def test_very_last_sanitize_path_part_empty_or_dot_dot_returns_err():
     assert str(res).replace("\\", "/") == "a/b"
 
 
-def test_sanitize_path_part_empty_or_dot_dot_2():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_2():
     res = sanitize_path("a/..b/c")
     assert str(res).replace("\\", "/") == "a/..b/c"
 
 
-def test_sanitize_path_part_empty_or_dot_dot_3():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_3():
     res = sanitize_path("a/../b")
     assert str(res).replace("\\", "/") == "b"
 
@@ -775,7 +775,7 @@ def test_very_last_sanitize_path_absolute_returns_err():
     assert "a" in str(res) and "b" in str(res)
 
 
-def test_missing_optimizations_skipped():
+def test_very_last_missing_optimizations_skipped():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
@@ -795,7 +795,7 @@ def test_missing_optimizations_skipped():
         assert len(res.skipped) == 0
 
 
-def test_missing_sanitizers_part_dot():
+def test_very_last_missing_sanitizers_part_dot():
     from taipanstack.security.sanitizers import _process_path_part
 
     parts = []
@@ -804,7 +804,7 @@ def test_missing_sanitizers_part_dot():
     assert parts == []
 
 
-def test_missing_sanitizers_handle_normal_part():
+def test_very_last_missing_sanitizers_handle_normal_part():
     from unittest.mock import patch
 
     from taipanstack.security.sanitizers import _handle_normal_part
@@ -820,7 +820,7 @@ def test_missing_sanitizers_handle_normal_part():
     assert parts == []
 
 
-def test_missing_optimizations_has_jit_false():
+def test_very_last_missing_optimizations_has_jit_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -837,7 +837,7 @@ def test_missing_optimizations_has_jit_false():
         assert len(applied) == 0
 
 
-def test_missing_optimizations_has_free_threading_false():
+def test_very_last_missing_optimizations_has_free_threading_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -855,7 +855,7 @@ def test_missing_optimizations_has_free_threading_false():
         assert "jit: available" in applied
 
 
-def test_missing_optimizations_apply_optimizations_skipped_false():
+def test_very_last_missing_optimizations_apply_optimizations_skipped_false():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations

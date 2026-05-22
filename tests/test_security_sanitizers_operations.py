@@ -497,7 +497,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
 class TestSanitizerFallthrough:
     """Test fallthrough cases for sanitizers."""
 
-    def test_sanitize_path_fallthroughs(self) -> None:
+    def test_security_sanitizers_sanitize_path_fallthroughs(self) -> None:
         """Test the implicit fallthrough cases in path sanitization."""
         from pathlib import Path
 

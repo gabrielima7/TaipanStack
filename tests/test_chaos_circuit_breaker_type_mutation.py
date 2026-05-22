@@ -3,7 +3,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
-def test_circuit_breaker_type_mutation_success() -> None:
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_success() -> None:
     """Test what happens if the state is an invalid value when _record_success is called."""
     cb = CircuitBreaker()
 
@@ -15,7 +15,7 @@ def test_circuit_breaker_type_mutation_success() -> None:
     cb._record_success()
 
 
-def test_circuit_breaker_type_mutation_failure() -> None:
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure() -> None:
     """Test what happens if the state is an invalid value when _record_failure is called."""
     cb = CircuitBreaker()
 
@@ -27,7 +27,7 @@ def test_circuit_breaker_type_mutation_failure() -> None:
     cb._record_failure(Exception("Test failure"))
 
 
-def test_circuit_breaker_type_mutation_success_open() -> None:
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_success_open() -> None:
     """Test what happens if the state is OPEN when _record_success is called."""
     from taipanstack.resilience.circuit_breaker import CircuitState
 
@@ -41,7 +41,7 @@ def test_circuit_breaker_type_mutation_success_open() -> None:
     cb._record_success()
 
 
-def test_circuit_breaker_type_mutation_failure_open() -> None:
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure_open() -> None:
     """Test what happens if the state is OPEN when _record_failure is called."""
     from taipanstack.resilience.circuit_breaker import CircuitState
 
