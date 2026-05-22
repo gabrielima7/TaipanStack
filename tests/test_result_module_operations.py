@@ -425,7 +425,7 @@ class TestSafeFromAsyncDecorator:
 class TestUnwrapOrErrFallback:
     """Tests for unwrap_or fallback coverage."""
 
-    def test_unwrap_or_err_branch(self) -> None:
+    def test_result_module_unwrap_or_err_branch(self) -> None:
         result: Result[int, ValueError] = Err(ValueError("err"))
         assert result.unwrap_or(42) == 42
 
@@ -433,7 +433,7 @@ class TestUnwrapOrErrFallback:
 class TestResultStructuralCompatibility:
     """Tests for structural compatibility fallback branches in collect_results, map_async and and_then_async."""
 
-    def test_collect_results_structural_compatibility(self) -> None:
+    def test_result_module_collect_results_structural_compatibility(self) -> None:
         """Test fallback structural compatibility branch in collect_results."""
 
         class CustomResult:
@@ -446,7 +446,7 @@ class TestResultStructuralCompatibility:
         res = collect_results([custom_res])  # type: ignore
         assert res is custom_res
 
-    def test_collect_list_attribute_error(self) -> None:
+    def test_result_module_collect_list_attribute_error(self) -> None:
         """Test the AttributeError handling in the optimized _collect_list path."""
 
         class MissingOkValue:
@@ -457,7 +457,7 @@ class TestResultStructuralCompatibility:
         res = collect_results([MissingOkValue()])  # type: ignore
         assert isinstance(res, MissingOkValue)
 
-    def test_collect_tuple_attribute_error(self) -> None:
+    def test_result_module_collect_tuple_attribute_error(self) -> None:
         """Test the AttributeError handling with tuple in _collect_list."""
 
         class MissingOkValue:
@@ -506,7 +506,7 @@ class TestResultStructuralCompatibility:
         res = await and_then_async(custom_res, process)  # type: ignore
         assert res is custom_res
 
-    def test_collect_results_empty_iterable(self) -> None:
+    def test_result_module_collect_results_empty_iterable(self) -> None:
         """Test fallback empty iterable branch in collect_results."""
         from taipanstack.core.result import collect_results
 
@@ -516,7 +516,7 @@ class TestResultStructuralCompatibility:
         res = collect_results(empty_gen())
         assert res.unwrap() == []
 
-    def test_collect_results_iterable_all_ok(self) -> None:
+    def test_result_module_collect_results_iterable_all_ok(self) -> None:
         """Test fallback branch where an iterable of only Ok results returns Ok[list] in collect_results."""
         from result import Ok
 

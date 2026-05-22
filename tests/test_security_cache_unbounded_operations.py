@@ -4,7 +4,7 @@ from taipanstack.core.result import Ok
 from taipanstack.utils.cache import cached
 
 
-def test_security_cache_bounded():
+def test_security_cache_unbounded_security_cache_bounded():
     """Verify that the cache size is strictly bounded by max_size."""
     max_size = 10
 
@@ -80,7 +80,7 @@ async def test_security_cache_bounded_async():
     assert len(cache_dict) == max_size
 
 
-def test_security_cache_validation():
+def test_security_cache_unbounded_security_cache_validation():
     """Verify max_size validation."""
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 

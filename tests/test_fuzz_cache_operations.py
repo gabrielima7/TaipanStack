@@ -20,7 +20,7 @@ def my_func(*args, **kwargs):
         max_size=10,
     ),
 )
-def test_fuzz_cached_unhashable(args, kwargs):
+def test_fuzz_cache_fuzz_cached_unhashable(args, kwargs):
     # First call puts result in cache
     result1 = my_func(*args, **kwargs)
     # Second call should return exactly the same Result instance from the cache

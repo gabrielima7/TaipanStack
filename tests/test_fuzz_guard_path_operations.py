@@ -16,11 +16,8 @@ def test_fuzz_guard_path_traversal_massive(name: str) -> None:
     """Fuzz guard_path_traversal with massive strings."""
     try:
         guard_path_traversal(name, base_dir=Path("/safe_tmp"))
-    except (ValueError, TypeError, SecurityError):
-        assert True
     except Exception as e:
-        pytest.fail(f"Unexpected exception: {e}")
-
+        assert isinstance(e, (ValueError, TypeError, SecurityError))
 
 @settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
@@ -34,9 +31,5 @@ def test_fuzz_guard_path_traversal_massive(name: str) -> None:
 )
 def test_fuzz_guard_path_traversal_null_bytes(name: str) -> None:
     """Fuzz guard_path_traversal with null bytes."""
-    try:
+    with pytest.raises((ValueError, TypeError, SecurityError)):
         guard_path_traversal(name, base_dir=Path("/safe_tmp"))
-    except (ValueError, TypeError, SecurityError):
-        assert True
-    except Exception as e:
-        pytest.fail(f"Unexpected exception: {e}")
