@@ -10,7 +10,7 @@ from taipanstack.resilience.retry import RetryConfig
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_circuit_breaker_trips_during_retry():
+async def test_orchestrator_cb_retry_branch_orchestrator_circuit_breaker_trips_during_retry():
     orch = (
         ResilienceOrchestrator("test_orch")
         .with_circuit_breaker(
