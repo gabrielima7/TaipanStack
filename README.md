@@ -34,7 +34,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 - **Security Hardening**: Hardened path traversal protection (PR #741) and JWT encoding/decoding logic (PR #775) against malformed inputs; fixed IndexError on project validator (PR #768).
 - **Resilience Enhancements**: Frozen circuit breaker configuration to prevent runtime mutations under chaos (PR #778) and resolved double-wrapping of Result objects in ResilienceOrchestrator (PR #767).
 - **Clean Code & Type Guards**: Enforced strict isinstance type checks to replace match/case result matching (PR #746, #763, #777) and optimized modules to reduce complexity (PR #770).
-- **QA Suite Optimization**: Consolidated and refactored the entire test suite down to **1,226 passing tests** while maintaining absolute 100% genuine code and branch coverage (PR #773, #781, #782).
+- **QA Suite Optimization**: Consolidated and refactored the entire test suite down to **1,241 passing tests** while maintaining absolute 100% genuine code and branch coverage (PR #773, #781, #782).
 
 <table>
 <tr>
@@ -71,7 +71,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1,226 tests)
+- **100% code coverage** (1,241 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -113,7 +113,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1,226 tests)
+# Run tests with 100% coverage (1,241 tests)
 make test
 
 # Check architecture contracts
@@ -166,7 +166,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1,226 tests, 100% coverage
+├── tests/                # ✅ 1,241 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
@@ -182,7 +182,7 @@ Taipan Stack integrates security and quality at every level:
 | Category | Tools | Purpose |
 |----------|-------|---------|
 | **SAST** | Bandit, Semgrep + custom rules | Static Application Security Testing |
-| **SCA** | Safety, pip-audit | Dependency vulnerability scanning |
+| **SCA** | pip-audit | Dependency vulnerability scanning |
 | **SBOM** | Syft (CycloneDX) | Software Bill of Materials |
 | **SLSA** | Cosign (Sigstore) | Artifact signing & attestation |
 | **Types** | Mypy (strict) | Compile-time type checking |

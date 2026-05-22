@@ -92,7 +92,7 @@ mypy src/ --strict
 bandit -r src/
 
 # Check dependencies for vulnerabilities
-safety check
+pip-audit
 ```
 
 ### Using Makefile
