@@ -129,7 +129,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
             async def async_wrapper(
                 *args: P.args, **kwargs: P.kwargs
             ) -> Result[T, TimeoutError | E]:
-                if not math.isfinite(seconds) or seconds < 0:
+                if not isinstance(seconds, (int, float)) or not math.isfinite(seconds) or seconds < 0:
                     return Err(
                         cast(
                             E,
@@ -157,7 +157,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
         def sync_wrapper(
             *args: P.args, **kwargs: P.kwargs
         ) -> Result[T, TimeoutError | E]:
-            if not math.isfinite(seconds) or seconds < 0:
+            if not isinstance(seconds, (int, float)) or not math.isfinite(seconds) or seconds < 0:
                 return Err(
                     cast(
                         E,
