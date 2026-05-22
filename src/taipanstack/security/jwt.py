@@ -103,17 +103,19 @@ def decode_jwt(
         return Err(TypeError("Algorithms must be a list of strings"))
 
     try:
-        return Ok(jwt.decode(
-            token,
-            secret_key,
-            algorithms=algorithms,
-            audience=audience,
-            options={
-                "require": ["exp", "aud"],
-                "verify_signature": True,
-                "verify_exp": True,
-                "verify_aud": True,
-            },
-        ))
+        return Ok(
+            jwt.decode(
+                token,
+                secret_key,
+                algorithms=algorithms,
+                audience=audience,
+                options={
+                    "require": ["exp", "aud"],
+                    "verify_signature": True,
+                    "verify_exp": True,
+                    "verify_aud": True,
+                },
+            )
+        )
     except Exception as e:
         return Err(e)

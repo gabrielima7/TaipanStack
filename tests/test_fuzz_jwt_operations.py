@@ -103,10 +103,14 @@ class TestFuzzJWT:
 
     def test_fuzz_jwt_fuzz_decode_jwt_algorithms_compare_typeerror(self) -> None:
         """Test decode_jwt handles compare_digest type error securely."""
+
         # A list that passes the initial typecheck but causes TypeError in compare_digest if it isn't properly strings
         class BadStr(str):
-            def strip(self): return self
-            def lower(self): raise TypeError("Mocked type error")
+            def strip(self):
+                return self
+
+            def lower(self):
+                raise TypeError("Mocked type error")
 
         result = decode_jwt("some.token", "secret", [BadStr("HS256")], "audience")
         assert result.is_err()
@@ -155,6 +159,7 @@ class TestFuzzJWT:
 
     def test_fuzz_jwt_fuzz_encode_jwt_unserializable_payload(self) -> None:
         """Test encode_jwt handles entirely un-serializable objects cleanly."""
+
         class Unserializable:
             pass
 
