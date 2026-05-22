@@ -6,19 +6,19 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="TaipanStack v0.3.3 release: SSRF protection, async @safe support, automatic structlog, and security patterns.">
+        <meta name="description" content="Modular, secure, and scalable Python stack for robust development">
       
       
         <meta name="author" content="gabrielima7">
       
       
-        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.3.3/">
+        <link rel="canonical" href="https://gabrielima7.github.io/TaipanStack/releases/v0.5.1/">
       
       
-        <link rel="prev" href="../v0.3.4/">
+        <link rel="prev" href="../../features/watchdogs/">
       
       
-        <link rel="next" href="../v0.3.2/">
+        <link rel="next" href="../v0.5.0/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>v0.3.3 - TaipanStack</title>
+        <title>v0.5.1 - TaipanStack</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#taipanstack-v033-security-resilience-patch" class="md-skip">
+        <a href="#release-notes-v051" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              v0.3.3
+              v0.5.1
             
           </span>
         </div>
@@ -350,7 +350,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../v0.5.1/" class="md-tabs__link">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -984,10 +984,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../v0.5.1/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.5.1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1003,6 +1030,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Security
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resilience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌊 Resilience
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactoring-typing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Refactoring &amp; Typing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qa-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ QA &amp; Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exclusions-removals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗑️ Exclusions &amp; Removals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Documentation &amp; CI/CD
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1544,37 +1657,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    v0.3.3
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../v0.3.3/" class="md-nav__link">
         
   
   
@@ -1590,198 +1676,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-async-support-in-safe" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Async Support in @safe
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="1. Async Support in @safe">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-ssrf-protection-guard_ssrf" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. SSRF Protection (guard_ssrf)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. SSRF Protection (guard_ssrf)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#blocked-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Blocked Ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contract" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contract
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-automatic-structlog-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Automatic Structlog Integration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Automatic Structlog Integration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#retry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Retry
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#circuit-breaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Circuit Breaker
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-expanded-mutation-testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Expanded Mutation Testing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-security-patterns-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Security Patterns Documentation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-performance-refactoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Performance &amp; Refactoring
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-ci-cross-platform-fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. CI / Cross-Platform Fixes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quality-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quality Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2213,10 +2107,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        🛡️ Security
       
     </span>
   </a>
@@ -2224,116 +2118,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-async-support-in-safe" class="md-nav__link">
+  <a href="#resilience" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Async Support in @safe
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="1. Async Support in @safe">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-ssrf-protection-guard_ssrf" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. SSRF Protection (guard_ssrf)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. SSRF Protection (guard_ssrf)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#blocked-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Blocked Ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contract" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contract
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-automatic-structlog-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Automatic Structlog Integration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Automatic Structlog Integration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#retry" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Retry
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#circuit-breaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Circuit Breaker
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-expanded-mutation-testing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Expanded Mutation Testing
+        🌊 Resilience
       
     </span>
   </a>
@@ -2341,10 +2129,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-security-patterns-documentation" class="md-nav__link">
+  <a href="#refactoring-typing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Security Patterns Documentation
+        ⚡ Refactoring &amp; Typing
       
     </span>
   </a>
@@ -2352,10 +2140,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-performance-refactoring" class="md-nav__link">
+  <a href="#qa-testing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Performance &amp; Refactoring
+        ✅ QA &amp; Testing
       
     </span>
   </a>
@@ -2363,10 +2151,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-ci-cross-platform-fixes" class="md-nav__link">
+  <a href="#exclusions-removals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. CI / Cross-Platform Fixes
+        🗑️ Exclusions &amp; Removals
       
     </span>
   </a>
@@ -2374,10 +2162,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quality-summary" class="md-nav__link">
+  <a href="#documentation-cicd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quality Summary
+        📚 Documentation &amp; CI/CD
       
     </span>
   </a>
@@ -2404,223 +2192,52 @@
   
 
 
-<h1 id="taipanstack-v033-security-resilience-patch">TaipanStack v0.3.3 — Security &amp; Resilience Patch<a class="headerlink" href="#taipanstack-v033-security-resilience-patch" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>v0.3.3 is a <strong>patch release</strong> that deepens TaipanStack's security posture and resilience primitives while remaining 100% backwards compatible. It delivers SSRF protection, native <code>async</code> support in <code>@safe</code>, automatic structured logging for retries and circuit breaker state changes, expanded mutation coverage, and a new security patterns guide in the docs.</p>
+<h1 id="release-notes-v051">Release Notes — v0.5.1<a class="headerlink" href="#release-notes-v051" title="Permanent link">&para;</a></h1>
+<p><strong>Release Date:</strong> 2026-05-22</p>
+<p>TaipanStack v0.5.1 focuses on robustness, Denial of Service (DoS) vulnerability prevention via strict parameter and input limits, and standardizing the quality assurance test suite. The release removes PyApp support in favor of pure package distributions and fixes several runtime/chaos test mutations. The consolidated test suite now verified <strong>1,250 passing tests</strong> with 100% genuine code and branch coverage.</p>
 <hr />
-<h2 id="1-async-support-in-safe">1. Async Support in <code>@safe</code><a class="headerlink" href="#1-async-support-in-safe" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/taipanstack/core/result.py</code></p>
-<p>The <code>@safe</code> decorator now transparently handles <code>async def</code> functions.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span>
-</span><span id="__span-0-2">
-</span><span id="__span-0-3"><span class="nd">@safe</span>
-</span><span id="__span-0-4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span id="__span-0-5">    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-</span><span id="__span-0-6">        <span class="n">r</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</span><span id="__span-0-7">        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-</span><span id="__span-0-8">        <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span>
-</span><span id="__span-0-9">
-</span><span id="__span-0-10"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_data</span><span class="p">(</span><span class="s2">&quot;https://example.com&quot;</span><span class="p">)</span>
-</span><span id="__span-0-11"><span class="k">match</span> <span class="n">result</span><span class="p">:</span>
-</span><span id="__span-0-12">    <span class="k">case</span> <span class="n">Ok</span><span class="p">(</span><span class="n">data</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
-</span><span id="__span-0-13">    <span class="k">case</span> <span class="n">Err</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span></code></pre></div>
-<h3 id="what-changed">What Changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
+<h2 id="security">🛡️ Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>inspect.iscoroutinefunction</code> detects coroutine functions at decoration time.</li>
-<li>An internal <code>async_wrapper</code> is created for coroutines; the existing sync <code>wrapper</code> is used otherwise.</li>
-<li>Two <code>@overload</code> signatures ensure mypy/pyright return the correct coroutine type.</li>
-<li>Fully backwards-compatible — all existing sync usages are unaffected.</li>
+<li><strong>Fix (High) — Sanitizer DoS Prevention</strong>: Added strict bounds checking on sanitizers to prevent potential Denial of Service (DoS) memory/CPU exhaustion. Limit rules applied: filename length to <code>MAX_PATH_LENGTH</code> (4096), environment values to <code>MAX_ENV_VALUE_LENGTH</code> (65535), and SQL identifiers to <code>MAX_PATH_LENGTH</code> (PR #801).</li>
+<li><strong>Fix (Medium) — Starlette Security Update</strong>: Upgraded transitive dependency <code>starlette</code> to <code>1.0.1</code> to remediate known vulnerability (PYSEC-2026-161) (PR #804).</li>
+<li><strong>Fix (Medium) — Config Watcher DoS Prevention</strong>: Enforced strict configuration file size limits (<code>MAX_CONFIG_FILE_SIZE = 1MB</code>) inside <code>config_watcher.py</code> to prevent reading excessively large files into memory during active monitoring (PR #807).</li>
 </ul>
-<hr />
-<h2 id="2-ssrf-protection-guard_ssrf">2. SSRF Protection (<code>guard_ssrf</code>)<a class="headerlink" href="#2-ssrf-protection-guard_ssrf" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>src/taipanstack/security/guards.py</code></p>
-<p>New <code>guard_ssrf(url)</code> enforces network-level SSRF protection at the perimeter.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.security.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">guard_ssrf</span>
-</span><span id="__span-1-2">
-</span><span id="__span-1-3"><span class="n">result</span> <span class="o">=</span> <span class="n">guard_ssrf</span><span class="p">(</span><span class="s2">&quot;http://169.254.169.254/latest/meta-data/&quot;</span><span class="p">)</span>
-</span><span id="__span-1-4"><span class="c1"># → Err(SecurityError(&quot;[ssrf] SSRF detected: hostname &#39;169.254.169.254&#39; resolves to private/reserved address 169.254.169.254&quot;))</span>
-</span><span id="__span-1-5">
-</span><span id="__span-1-6"><span class="n">result</span> <span class="o">=</span> <span class="n">guard_ssrf</span><span class="p">(</span><span class="s2">&quot;https://api.example.com/v1/data&quot;</span><span class="p">)</span>
-</span><span id="__span-1-7"><span class="c1"># → Ok(&quot;https://api.example.com/v1/data&quot;)</span>
-</span></code></pre></div>
-<h3 id="blocked-ranges">Blocked Ranges<a class="headerlink" href="#blocked-ranges" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Network</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>10.0.0.0/8</code></td>
-<td>RFC-1918 Class A</td>
-</tr>
-<tr>
-<td><code>172.16.0.0/12</code></td>
-<td>RFC-1918 Class B</td>
-</tr>
-<tr>
-<td><code>192.168.0.0/16</code></td>
-<td>RFC-1918 Class C</td>
-</tr>
-<tr>
-<td><code>169.254.0.0/16</code></td>
-<td>Link-local / AWS EC2 metadata</td>
-</tr>
-<tr>
-<td><code>127.0.0.0/8</code></td>
-<td>Loopback</td>
-</tr>
-<tr>
-<td><code>::1/128</code></td>
-<td>IPv6 loopback</td>
-</tr>
-<tr>
-<td><code>fc00::/7</code></td>
-<td>IPv6 unique local (ULA)</td>
-</tr>
-<tr>
-<td><code>fe80::/10</code></td>
-<td>IPv6 link-local</td>
-</tr>
-</tbody>
-</table>
-<h3 id="contract">Contract<a class="headerlink" href="#contract" title="Permanent link">&para;</a></h3>
+<h2 id="resilience">🌊 Resilience<a class="headerlink" href="#resilience" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong><code>TypeError</code></strong> if input is not a <code>str</code> (developer contract violation).</li>
-<li><strong><code>Err(SecurityError)</code></strong> for all detected SSRF attempts (domain error — no exceptions raised).</li>
-<li><strong><code>Ok(url)</code></strong> if the URL is safe to fetch.</li>
+<li><strong>Fix — Circuit Breaker Evaluation in Orchestrator</strong>: Hardened the resilience flow inside <code>ResilienceOrchestrator</code> by checking the Circuit Breaker status within the retry loop instead of only before execution, ensuring callback attempts are blocked if the breaker trips during execution retries (PR #783).</li>
+<li><strong>Hardening — Timeout Decorator Chaos Protection</strong>: Hardened the <code>@timeout</code> decorator to reject non-finite parameters (like <code>NaN</code> or <code>inf</code>) and type mutations by introducing Look-Before-You-Leap (LBYL) type guards (<code>isinstance(seconds, (int, float))</code>), preventing downstream thread and async handler corruption under micro-chaos testing (PR #800, PR #802, PR #803).</li>
+<li><strong>Hardening — Concurrency Limit Param Validation</strong>: Validated concurrency limit timeouts to ensure they are finite non-negative numbers, preventing state corruption under extreme chaos injections (PR #802).</li>
+<li><strong>Hardening — Rate Limiter state checks</strong>: Refactored the <code>RateLimiter</code> internal state checks (such as time window and capacity validation) using clean LBYL type checks instead of <code>try/except TypeError</code> blocks, avoiding side-effects of type mutations under chaos (PR #798, PR #805).</li>
 </ul>
-<hr />
-<h2 id="3-automatic-structlog-integration">3. Automatic Structlog Integration<a class="headerlink" href="#3-automatic-structlog-integration" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>: <code>src/taipanstack/utils/retry.py</code>, <code>src/taipanstack/utils/circuit_breaker.py</code></p>
-<p>When <code>structlog</code> is installed and <strong>no manual callback is provided</strong>, structured events are now emitted automatically:</p>
-<h3 id="retry">Retry<a class="headerlink" href="#retry" title="Permanent link">&para;</a></h3>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><span class="p">{</span>
-</span><span id="__span-2-2"><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;retry_attempted&quot;</span><span class="p">,</span>
-</span><span id="__span-2-3"><span class="w">  </span><span class="nt">&quot;function&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;call_payment_api&quot;</span><span class="p">,</span>
-</span><span id="__span-2-4"><span class="w">  </span><span class="nt">&quot;attempt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-</span><span id="__span-2-5"><span class="w">  </span><span class="nt">&quot;max_attempts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
-</span><span id="__span-2-6"><span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Connection refused&quot;</span><span class="p">,</span>
-</span><span id="__span-2-7"><span class="w">  </span><span class="nt">&quot;delay_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
-</span><span id="__span-2-8"><span class="p">}</span>
-</span></code></pre></div>
-<h3 id="circuit-breaker">Circuit Breaker<a class="headerlink" href="#circuit-breaker" title="Permanent link">&para;</a></h3>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><span class="p">{</span>
-</span><span id="__span-3-2"><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;circuit_state_changed&quot;</span><span class="p">,</span>
-</span><span id="__span-3-3"><span class="w">  </span><span class="nt">&quot;circuit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;payment_gateway&quot;</span><span class="p">,</span>
-</span><span id="__span-3-4"><span class="w">  </span><span class="nt">&quot;old_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;closed&quot;</span><span class="p">,</span>
-</span><span id="__span-3-5"><span class="w">  </span><span class="nt">&quot;new_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;open&quot;</span><span class="p">,</span>
-</span><span id="__span-3-6"><span class="w">  </span><span class="nt">&quot;failure_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
-</span><span id="__span-3-7"><span class="p">}</span>
-</span></code></pre></div>
-<p>When <code>on_retry</code> or <code>on_state_change</code> callbacks are explicitly set, <strong>the auto-log is suppressed</strong> — full backwards compatibility maintained.</p>
-<hr />
-<h2 id="4-expanded-mutation-testing">4. Expanded Mutation Testing<a class="headerlink" href="#4-expanded-mutation-testing" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>pyproject.toml</code></p>
-<div class="language-toml highlight"><pre><span></span><code><span id="__span-4-1"><span class="k">[tool.mutmut]</span>
-</span><span id="__span-4-2"><span class="n">paths_to_mutate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;src/taipanstack/security/sanitizers.py,src/taipanstack/security/validators.py,src/taipanstack/security/guards.py&quot;</span>
-</span><span id="__span-4-3"><span class="n">tests_dir</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tests/test_property_sanitizers.py,tests/test_security_validators.py,tests/test_security_guards.py,tests/test_security_ssrf.py&quot;</span>
-</span></code></pre></div>
-<p>The mutation testing surface grows from 1 file to 3, covering the entire security module.</p>
-<hr />
-<h2 id="5-security-patterns-documentation">5. Security Patterns Documentation<a class="headerlink" href="#5-security-patterns-documentation" title="Permanent link">&para;</a></h2>
-<p><strong>File</strong>: <code>docs/patterns/security.md</code></p>
-<p>New practical guide with three FastAPI-based examples showing how to combine <code>@safe</code>, <code>guard_ssrf</code>, <code>guard_path_traversal</code>, and <code>@retry</code> for end-to-end defence-in-depth.</p>
-<h2 id="6-performance-refactoring">6. Performance &amp; Refactoring<a class="headerlink" href="#6-performance-refactoring" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>: <code>src/taipanstack/security/validators.py</code>, <code>src/taipanstack/security/guards.py</code></p>
+<h2 id="refactoring-typing">⚡ Refactoring &amp; Typing<a class="headerlink" href="#refactoring-typing" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Performance (#80)</strong>: Optimized <code>guard_command_injection</code> by combining string type validation and dangerous pattern check into a single loop, reducing CPU overhead by ~5%.</li>
-<li><strong>Maintainability (#79)</strong>: Refactored <code>validate_project_name</code> to dramatically reduce complexity. The single large method was decomposed into smaller, independent validation helpers, significantly improving code health and readability.</li>
+<li><strong>Complexity Refactor — Adaptive Components &amp; Guards</strong>: Reduced cyclomatic and cognitive complexity in <code>RateLimiter</code> and <code>AdaptiveCircuitBreaker</code> (PR #798, PR #805), and decomposed long validation logic in security guards (<code>guard_path_traversal</code>, <code>guard_env_variable</code>) into smaller, modular private validation helpers (PR #786).</li>
+<li><strong>Circuit Breaker LBYL Protection</strong>: Integrated LBYL state protection to shield the circuit breaker against mutations during state transitions (PR #795).</li>
+<li><strong>Dependency Cleanups</strong>: Cleaned up the CI/CD scripts and standardized the pipelines (PR #784, PR #804).</li>
 </ul>
-<hr />
-<h2 id="7-ci-cross-platform-fixes">7. CI / Cross-Platform Fixes<a class="headerlink" href="#7-ci-cross-platform-fixes" title="Permanent link">&para;</a></h2>
-<p>Several fixes were applied to ensure the CI pipeline passes on <strong>all platforms</strong> (Ubuntu, macOS, Windows, Alpine, Arch, Fedora, openSUSE) and <strong>all Python versions</strong> (3.11–3.14):</p>
-<table>
-<thead>
-<tr>
-<th>Fix</th>
-<th>Detail</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Windows <code>sys.executable</code></strong></td>
-<td>Tests that called <code>get_command_version(sys.executable)</code> failed on Windows because the absolute path is not in the security whitelist. Changed to use command name <code>"python"</code>.</td>
-</tr>
-<tr>
-<td><strong>Mypy strict</strong></td>
-<td>Reordered <code>@overload</code> signatures in <code>result.py</code>, removed stale <code># type: ignore</code> comments in <code>circuit_breaker.py</code> and <code>retry.py</code>.</td>
-</tr>
-<tr>
-<td><strong>Ruff lint</strong></td>
-<td>Fixed <code>ARG001</code>, <code>D401</code>, <code>PLC0415</code> in <code>docs/overrides/hooks.py</code>.</td>
-</tr>
-<tr>
-<td><strong>Ruff format</strong></td>
-<td>Applied auto-format to 4 test files with inconsistent line wrapping.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="quality-summary">Quality Summary<a class="headerlink" href="#quality-summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>v0.3.2</th>
-<th>v0.3.3</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Test Coverage</strong></td>
-<td>100%</td>
-<td>100%</td>
-</tr>
-<tr>
-<td><strong>Async <code>@safe</code></strong></td>
-<td>❌</td>
-<td>✅</td>
-</tr>
-<tr>
-<td><strong>SSRF Guard</strong></td>
-<td>❌</td>
-<td>✅</td>
-</tr>
-<tr>
-<td><strong>Auto Structlog</strong></td>
-<td>❌</td>
-<td>✅</td>
-</tr>
-<tr>
-<td><strong>Mutation Files</strong></td>
-<td>1</td>
-<td>3</td>
-</tr>
-<tr>
-<td><strong>Perf Optimizations</strong></td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr>
-<td><strong>Breaking Changes</strong></td>
-<td>0</td>
-<td><strong>0</strong></td>
-</tr>
-</tbody>
-</table>
+<h2 id="qa-testing">✅ QA &amp; Testing<a class="headerlink" href="#qa-testing" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Test Suite Standardization</strong>: Renamed all test files from <code>test_*_operations.py</code> to <code>test_*.py</code> and audited the test suite to enforce strict naming conventions, remove bypasses, and improve isolation (PR #797, PR #808).</li>
+<li><strong>Flaky Tests Remediation</strong>: Fixed flaky circuit breaker chaos tests on Windows runners by adding robust synchronization and validation (PR #805).</li>
+<li><strong>Test Count Expansion</strong>: The verified test suite has expanded to <strong>1,250 passing tests</strong> while maintaining absolute 100% genuine code and branch coverage.</li>
+</ul>
+<h2 id="exclusions-removals">🗑️ Exclusions &amp; Removals<a class="headerlink" href="#exclusions-removals" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Removed — PyApp Executable Build Support</strong>: Completely removed the standalone executable packaging configuration (<code>pyapp/</code> directory and related scripts) and deleted the <code>build-exe</code> target from the <code>Makefile</code> (PR #764 / PR #784).</li>
+<li><strong>Removed — Dead Code</strong>: Removed unused <code>has_fstring_improvements</code> compatibility variable from <code>taipanstack/core/compat.py</code> (PR #788).</li>
+</ul>
+<h2 id="documentation-cicd">📚 Documentation &amp; CI/CD<a class="headerlink" href="#documentation-cicd" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Release Automation</strong>: Granted write contents permission to the release-publish workflow in GitHub Actions (PR #784).</li>
+<li><strong>Tooling Migration</strong>: Replaced obsolete <code>safety</code> dependency scan command with <code>pip-audit</code> across the codebase and contributing guides (PR #806).</li>
+<li><strong>Version-Agnostic Release Guide</strong>: Standardized the contributing release guidelines to be version-agnostic (PR #787).</li>
+</ul>
 
 
 
 
 
 
-
-  
-  
 
 
 
