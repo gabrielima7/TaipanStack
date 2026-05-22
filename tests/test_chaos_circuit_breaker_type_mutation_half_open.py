@@ -5,7 +5,9 @@ import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_circuit_breaker_half_open_attempts_mutation_decrement() -> None:
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_half_open_attempts_mutation_decrement() -> (
+    None
+):
     """Test safe degradation when half_open_attempts is corrupted."""
     cb = CircuitBreaker()
     cb._state.state = CircuitState.HALF_OPEN

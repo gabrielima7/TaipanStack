@@ -18,6 +18,8 @@ from taipanstack.resilience.watchdogs._base import BaseWatcher
 
 logger = logging.getLogger("taipanstack.resilience.watchdogs.config")
 
+MAX_CONFIG_FILE_SIZE = 1048576
+
 
 def _hash_file(path: Path) -> Result[str, Exception]:
     """Compute the SHA-256 hex digest of a file.
@@ -30,8 +32,12 @@ def _hash_file(path: Path) -> Result[str, Exception]:
 
     """
     try:
-        if path.stat().st_size > 10 * 1024 * 1024:
-            return Err(ValueError(f"File too large to hash: {path}"))
+        if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
+            return Err(
+                ValueError(
+                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
+                )
+            )
         data = path.read_bytes()
         return Ok(hashlib.sha256(data).hexdigest())
     except OSError as exc:
@@ -96,8 +102,12 @@ def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
 
     """
     try:
-        if path.stat().st_size > 10 * 1024 * 1024:
-            return Err(ValueError(f"File too large to load: {path}"))
+        if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
+            return Err(
+                ValueError(
+                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
+                )
+            )
         text = path.read_text(encoding="utf-8")
     except OSError as exc:
         return Err(exc)
