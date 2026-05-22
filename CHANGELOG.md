@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-05-22
+
+### Security
+- **Fix (High)**: Hardened sanitizers against memory/CPU exhaustion Denial of Service (DoS) by enforcing strict length bounds (filename, env values, and SQL identifiers) (PR #801).
+- **Fix (Medium)**: Prevented memory exhaustion DoS in the configuration file watchdog by enforcing a strict size limit (`MAX_CONFIG_FILE_SIZE = 1MB`) prior to loading files (PR #807).
+- **Audit**: Upgraded transitive dependency `starlette` to `1.0.1` to address security advisory PYSEC-2026-161 (PR #804).
+
+### Resilience
+- **Fix**: Evaluated circuit breaker status directly within the orchestrator's retry execution loop, preventing callback executions when the breaker trips mid-retry (PR #783).
+- **Hardening**: Reinforced the `@timeout` decorator against type mutations under chaos injection by adding explicit Look-Before-You-Leap (LBYL) type guards (PR #800, #802, #803).
+- **Hardening**: Restructured `RateLimiter` internal state checks and concurrency limits with strict LBYL type guards to prevent clock/capacity state corruption (PR #798, #802, #805).
+
+### Refactoring & Typing
+- **Complexity**: Reduced cyclomatic and cognitive complexity in `RateLimiter` and `AdaptiveCircuitBreaker` (PR #798, #805) and modularized security guards into private type-checking functions (PR #786).
+- **Hardening**: Applied Look-Before-You-Leap type guards across the resilience module to secure transitions (PR #795).
+- **Cleanups**: Standardized CI/CD workflow definitions and pipeline configurations (PR #784, #804).
+
+### QA & Testing
+- **Test Suite**: Renamed all operations test files (`test_*_operations.py`) to the standard `test_*.py` format, standardizing naming conventions and eliminating execution bypasses across the test suite (PR #797, #808).
+- **Reliability**: Resolved flaky Windows runner behavior in the circuit breaker chaos test suites (PR #805).
+- **Expansion**: Stabilized and verified the test suite at **1,250 passing tests** with 100% genuine code and branch coverage.
+
+### Exclusions & Removals
+- **PyApp**: Dropped standalone executable PyApp configuration (`pyapp/` directory and related shell/PowerShell scripts) and the `build-exe` target from the `Makefile` (PR #764 / PR #784).
+- **Dead Code**: Removed unused `has_fstring_improvements` compatibility variable from `compat.py` (PR #788).
+
 ## [0.5.0] - 2026-05-19
 
 ### Security
@@ -725,7 +751,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...v0.5.0
 [0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
 [0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
