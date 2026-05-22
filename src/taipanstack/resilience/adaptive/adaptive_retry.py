@@ -157,4 +157,3 @@ class AdaptiveRetry:
             max_delay=self._max_delay,
             jitter=False,
         )
-

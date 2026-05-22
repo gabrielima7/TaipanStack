@@ -141,6 +141,7 @@ class TestSanitizersBranches:
         with pytest.raises(ValueError, match="depth"):
             sanitize_path("a/b/c/d/e/f/g/h/i/j/k/l", max_depth=5)
 
+
 class TestSubprocessBranches:
     """Tests for subprocess module branches."""
 

@@ -306,8 +306,6 @@ class TestSanitizePath:
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
 
 
-
-
 def test_security_sanitizers_sanitize_string_value_error():
     import pytest
 

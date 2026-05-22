@@ -30,7 +30,6 @@ class TestAdaptiveCircuitBreaker:
         for _ in range(4):
             ab.record_failure(RuntimeError("fail"))
 
-
     def test_adaptive_breaker_trips_open_on_enough_failures(self) -> None:
         """Breaker opens after enough cumulative failures (burst)."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.5)

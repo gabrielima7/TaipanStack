@@ -225,4 +225,3 @@ class AdaptiveCircuitBreaker:
             self._window.clear()
             self._state = CircuitState.CLOSED
             self._last_opened_at = 0.0
-

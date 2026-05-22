@@ -303,6 +303,7 @@ class TestSanitizersUncovered:
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path)
         assert tmp_path in result.parents or result.parent == tmp_path
 
+
 class TestRetryUncovered:
     """Tests for retry.py uncovered lines."""
 

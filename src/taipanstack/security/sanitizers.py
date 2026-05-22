@@ -398,5 +398,3 @@ def sanitize_path(
 
     _validate_path_depth(sanitized, max_depth)
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
-
-
