@@ -138,7 +138,7 @@ jobs:
         run: poetry run bandit -r src/ -ll -c pyproject.toml
 
       - name: "[Audit] Run pip-audit"
-        run: poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2026-89 --ignore-vuln PYSEC-2025-183
+        run: poetry run pip-audit --skip-editable
 
       - name: "[Audit] Run Semgrep"
         uses: semgrep/semgrep-action@v1
@@ -234,7 +234,7 @@ jobs:
         run: poetry install --with dev
 
       - name: "[Test] Run Hypothesis property-based tests"
-        run: poetry run pytest tests/test_property_sanitizers_operations.py -v --no-cov --timeout=300
+        run: poetry run pytest tests/test_property_sanitizers.py -v --no-cov --timeout=300
 
   ci-docker-build:
     name: "[Build] Docker Validation"

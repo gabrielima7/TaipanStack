@@ -12,10 +12,9 @@ help:
 	@echo "  format       Format code with ruff"
 	@echo "  typecheck    Run mypy type checker"
 	@echo "  security     Run security checks (bandit, pip-audit)"
-	@echo "  dead-code    Run Vulture to find dead code (bandit, pip-audit)"
+	@echo "  dead-code    Run Vulture to find dead code"
 	@echo "  lint-imports Check architecture with import-linter"
 	@echo "  mutate       Run mutation testing with mutmut"
-	@echo "  build-exe    Build standalone executable with PyApp"
 	@echo "  context      Generate project context for AI with gitingest"
 	@echo "  property-test Run property-based fuzz tests with Hypothesis"
 	@echo "  clean        Clean cache and temporary files"
@@ -41,7 +40,7 @@ security:
 	poetry run bandit -r src/ -ll -c pyproject.toml
 	@echo ""
 	@echo "Running Pip-Audit dependency checker..."
-	poetry run pip-audit --skip-editable --ignore-vuln PYSEC-2026-89 --ignore-vuln PYSEC-2025-183
+	poetry run pip-audit --skip-editable
 
 dead-code:
 	@echo "Running Vulture to find dead code..."
@@ -57,17 +56,13 @@ mutate:
 	poetry run mutmut run
 	poetry run mutmut results
 
-build-exe:
-	@echo "Building standalone executable..."
-	@cd pyapp && ./build.sh
-
 context:
 	@echo "Generating project context for AI..."
 	poetry run gitingest .
 
 clean:
 	@echo "Cleaning cache and temporary files..."
-	rm -rf dist/ build/ pyapp/target/ htmlcov/ .coverage 2>/dev/null || true
+	rm -rf dist/ build/ htmlcov/ .coverage 2>/dev/null || true
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name .mypy_cache -exec rm -rf {} + 2>/dev/null || true

@@ -41,3 +41,8 @@
 **Vulnerability:** Unexpected exceptions within the Web Bridge (`TaipanMiddleware`) and Resilience Watchdogs (`BaseWatcher`) were caught via bare `except Exception:` blocks, calling `logger.exception()` without explicitly passing `exc_info=exc`.
 **Learning:** Due to TaipanStack's strict requirement for zero unhandled exceptions and 100% test coverage, generic `except Exception` blocks are sometimes necessary to enforce the `Result` pattern or prevent thread termination. However, implicitly relying on the global exception state in `logger.exception()` drops important context during concurrent async operations (e.g. `uvloop`), leading to information loss during a DoS or other application failures.
 **Prevention:** Always bind exceptions via `except Exception as exc:` and explicitly pass `exc_info=exc` to logging calls (`logger.exception("...", exc_info=exc)`). This ensures strict and robust error capturing for DevSecOps observability.
+
+## 2026-05-22 - [Fix] Add file size limits to config_watcher.py
+**Vulnerability:** Denial of Service (DoS) vulnerability due to reading entire files into memory without size limits.
+**Learning:** `src/taipanstack/resilience/watchdogs/config_watcher.py` uses `path.read_bytes()` and `path.read_text()` without enforcing a maximum file size using `path.stat().st_size` beforehand, which can lead to memory exhaustion.
+**Prevention:** Enforce a maximum file size limit using `path.stat().st_size` before reading files entirely into memory.

@@ -57,15 +57,21 @@ class RateLimiter:
         self.last_update: float = time.monotonic()
         self._lock = threading.Lock()
 
-    def _is_valid_bucket_state(self) -> bool:
-        """Check if the bucket's time window and capacity are in a valid state."""
+    def _is_valid_time_window(self) -> bool:
+        """Check if time window is valid."""
         if not isinstance(self.time_window, (int, float)):
             return False
+        return math.isfinite(self.time_window) and self.time_window > 0.0
+
+    def _is_valid_capacity(self) -> bool:
+        """Check if capacity is valid."""
         if not isinstance(self.capacity, (int, float)):
             return False
-        if not math.isfinite(self.time_window) or self.time_window <= 0.0:
-            return False
         return math.isfinite(self.capacity) and self.capacity > 0.0
+
+    def _is_valid_bucket_state(self) -> bool:
+        """Check if the bucket's time window and capacity are in a valid state."""
+        return self._is_valid_time_window() and self._is_valid_capacity()
 
     def _calculate_new_tokens(self, elapsed: float) -> float | None:
         """Calculate new tokens based on elapsed time."""
@@ -124,6 +130,22 @@ class RateLimiter:
             return True
         return False
 
+    def _process_consumption(self, tokens: float) -> bool:
+        """Process token consumption inside the lock."""
+        try:
+            now = time.monotonic()
+        except Exception:
+            return False
+
+        # Prevent time corruption from poisoning the bucket state.
+        # Only try to add tokens if time is finite.
+        if not isinstance(now, (int, float)) or (
+            math.isfinite(now) and not self._add_tokens(now)
+        ):
+            return False
+
+        return self._try_consume(tokens)
+
     def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
 
@@ -140,19 +162,7 @@ class RateLimiter:
             return True
 
         with self._lock:
-            try:
-                now = time.monotonic()
-            except Exception:
-                return False
-
-            # Prevent time corruption from poisoning the bucket state.
-            # Only try to add tokens if time is finite.
-            if not isinstance(now, (int, float)) or (
-                math.isfinite(now) and not self._add_tokens(now)
-            ):
-                return False
-
-            return self._try_consume(tokens)
+            return self._process_consumption(tokens)
 
 
 class RateLimitDecorator(Protocol):
