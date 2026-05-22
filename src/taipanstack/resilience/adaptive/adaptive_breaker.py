@@ -90,30 +90,30 @@ class AdaptiveCircuitBreaker:
         self._last_opened_at: float = 0.0
         self._lock = threading.Lock()
 
+    def _calculate_elapsed_time(self, now: float) -> float:
+        """Calculate elapsed time since the circuit opened."""
+        last_opened = self._last_opened_at
+        if not isinstance(last_opened, (int, float)) or not math.isfinite(last_opened):
+            return self._recovery_timeout
+
+        elapsed = now - last_opened
+        return self._recovery_timeout if elapsed < 0 else elapsed
+
+    def _check_half_open_transition(self) -> None:
+        """Evaluate if an OPEN circuit should transition to HALF_OPEN."""
+        now = time.monotonic()
+        elapsed = self._calculate_elapsed_time(now)
+
+        if math.isfinite(now) and elapsed >= self._recovery_timeout:
+            self._state = CircuitState.HALF_OPEN
+            logger.info("Adaptive breaker '%s' entering HALF_OPEN state", self.name)
+
     @property
     def state(self) -> CircuitState:
         """Current circuit state. May evaluate timeouts and switch to HALF_OPEN."""
         with self._lock:
             if self._state == CircuitState.OPEN:
-                now = time.monotonic()
-
-                # Look Before You Leap (LBYL) type guard for state corruption
-                last_opened = self._last_opened_at
-                if not isinstance(last_opened, (int, float)) or not math.isfinite(
-                    last_opened
-                ):
-                    elapsed = self._recovery_timeout
-                else:
-                    elapsed = now - last_opened
-
-                if elapsed < 0:
-                    elapsed = self._recovery_timeout
-
-                if math.isfinite(now) and elapsed >= self._recovery_timeout:
-                    self._state = CircuitState.HALF_OPEN
-                    logger.info(
-                        "Adaptive breaker '%s' entering HALF_OPEN state", self.name
-                    )
+                self._check_half_open_transition()
             return self._state
 
     def _calculate_error_rate(self, total: int) -> float:
@@ -122,6 +122,26 @@ class AdaptiveCircuitBreaker:
             return 0.0
         errors = sum(1 for ok in self._window if not ok)
         return errors / total
+
+    def _get_safe_target_rate(self) -> float:
+        """Safely retrieve the target error rate."""
+        target_rate = self._target_error_rate
+        if not isinstance(target_rate, (int, float)) or not math.isfinite(target_rate):
+            return -1.0  # Fail closed
+        return float(target_rate)
+
+    def _transition_to_open(self, error_rate: float, target_rate: float) -> None:
+        """Transition the circuit to the OPEN state."""
+        self._state = CircuitState.OPEN
+        self._last_opened_at = time.monotonic()
+
+        log_target = target_rate if target_rate >= 0 else 0.0
+        logger.warning(
+            "Adaptive breaker '%s' OPENED. Error rate %.2f > %.2f",
+            self.name,
+            error_rate,
+            log_target,
+        )
 
     def _evaluate_trip(self) -> None:
         """Evaluate if the circuit should trip open.
@@ -136,28 +156,10 @@ class AdaptiveCircuitBreaker:
             return
 
         error_rate = self._calculate_error_rate(total)
+        target_rate = self._get_safe_target_rate()
 
-        # Look Before You Leap (LBYL) type guard for state corruption
-        target_rate = self._target_error_rate
-        if not isinstance(target_rate, (int, float)):
-            target_rate = -1.0  # Fail closed if string/other
-        elif not math.isfinite(target_rate):
-            target_rate = -1.0  # Fail closed if NaN/Inf
-
-        if error_rate <= target_rate:
-            return
-
-        self._state = CircuitState.OPEN
-        self._last_opened_at = time.monotonic()
-
-        # Use safe formatting in case target_rate is negative fallback
-        log_target = target_rate if target_rate >= 0 else 0.0
-        logger.warning(
-            "Adaptive breaker '%s' OPENED. Error rate %.2f > %.2f",
-            self.name,
-            error_rate,
-            log_target,
-        )
+        if error_rate > target_rate:
+            self._transition_to_open(error_rate, target_rate)
 
     def record_success(self) -> None:
         """Record a successful call."""
