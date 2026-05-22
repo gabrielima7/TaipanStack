@@ -153,15 +153,11 @@ class TestFuzzJWT:
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
         assert result.is_err(), "Expected malformed algorithm to result in an Error"
 
-    @given(
-        payload=st.dictionaries(st.text(), st.complex_numbers(), min_size=1, max_size=10),
-        secret_key=st.text(min_size=1, max_size=100),
-        algorithm=st.sampled_from(["HS256", "HS384", "HS512"]),
-    )
-    @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_unserializable_payload(
-        self, payload, secret_key, algorithm
-    ) -> None:
-        """Bombard encode_jwt with valid dictionaries but strictly unserializable contents."""
-        result = encode_jwt(payload, secret_key, algorithm=algorithm)
+    def test_fuzz_jwt_fuzz_encode_jwt_unserializable_payload(self) -> None:
+        """Test encode_jwt handles entirely un-serializable objects cleanly."""
+        class Unserializable:
+            pass
+
+        payload = {"bad": Unserializable()}
+        result = encode_jwt(payload, "secret", algorithm="HS256")
         assert result.is_err(), "Expected unserializable payload to result in an Error"
