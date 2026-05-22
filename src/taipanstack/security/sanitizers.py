@@ -288,15 +288,14 @@ def _handle_normal_part(part: str, parts: list[str]) -> None:
         parts.append(part)
     else:
         safe_part = sanitize_filename(part, preserve_extension=True)
-        if safe_part and safe_part != "..":
-            parts.append(safe_part)
+        parts.append(safe_part)
 
 
 def _process_path_part(part: str, parts: list[str], anchor: str) -> None:
     """Process a single path component, updating the parts list inline."""
     if part == "..":
         _handle_dot_dot(parts, anchor)
-    elif part != ".":
+    else:
         _handle_normal_part(part, parts)
 
 

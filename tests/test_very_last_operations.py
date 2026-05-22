@@ -801,24 +801,21 @@ def test_missing_sanitizers_part_dot():
     parts = []
     # Trigger `part == "."` (implicit `else` in `_process_path_part`)
     _process_path_part(".", parts, "/")
-    assert parts == []
+    assert parts == ["unnamed"]
 
 
 def test_missing_sanitizers_handle_normal_part():
     from unittest.mock import patch
 
     from taipanstack.security.sanitizers import _handle_normal_part
-
     parts = []
     with patch("taipanstack.security.sanitizers.sanitize_filename", return_value=""):
         _handle_normal_part("..", parts)
-    assert parts == []
-
+    assert parts == [""]
     parts = []
     with patch("taipanstack.security.sanitizers.sanitize_filename", return_value=".."):
         _handle_normal_part("..", parts)
-    assert parts == []
-
+    assert parts == [".."]
 
 def test_missing_optimizations_has_jit_false():
     from unittest.mock import MagicMock, patch

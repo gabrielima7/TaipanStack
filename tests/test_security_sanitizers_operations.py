@@ -399,3 +399,26 @@ class TestSanitizerFallthrough:
         # sanitize_filename returns "" if the filename is invalid or stripped entirely
         path2 = sanitize_path(Path("/some/path/  /file"))
         assert str(path2).endswith("file")
+
+def test_missing_coverage_sanitize_filename_max_length_value_error_2():
+    import pytest
+
+    from taipanstack.security.sanitizers import sanitize_filename
+    with pytest.raises(ValueError, match="Filename length exceeds maximum allowed limit"):
+        sanitize_filename("a" * 5000)
+
+def test_missing_coverage_normalize_path_input_str_length_2():
+    import pytest
+
+    from taipanstack.security.sanitizers import sanitize_path
+    with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
+        sanitize_path("a" * 5000)
+
+def test_missing_coverage_normalize_path_input_path_length_2():
+    from pathlib import Path
+
+    import pytest
+
+    from taipanstack.security.sanitizers import sanitize_path
+    with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
+        sanitize_path(Path("a" * 5000))
