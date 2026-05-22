@@ -93,9 +93,7 @@ class AdaptiveCircuitBreaker:
     def _calculate_elapsed_time(self, now: float) -> float:
         """Calculate elapsed time since the circuit opened."""
         last_opened = self._last_opened_at
-        if not isinstance(last_opened, (int, float)) or not math.isfinite(
-            last_opened
-        ):
+        if not isinstance(last_opened, (int, float)) or not math.isfinite(last_opened):
             return self._recovery_timeout
 
         elapsed = now - last_opened
@@ -108,9 +106,7 @@ class AdaptiveCircuitBreaker:
 
         if math.isfinite(now) and elapsed >= self._recovery_timeout:
             self._state = CircuitState.HALF_OPEN
-            logger.info(
-                "Adaptive breaker '%s' entering HALF_OPEN state", self.name
-            )
+            logger.info("Adaptive breaker '%s' entering HALF_OPEN state", self.name)
 
     @property
     def state(self) -> CircuitState:
