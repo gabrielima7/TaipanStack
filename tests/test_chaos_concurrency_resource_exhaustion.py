@@ -19,7 +19,7 @@ def test_chaos_concurrency_resource_exhaustion_sync_concurrency_memoryerror_chao
 
 
 @pytest.mark.asyncio
-async def test_async_concurrency_oserror_chaos_returns_err():
+async def test_chaos_concurrency_resource_exhaustion_async_concurrency_oserror_chaos_returns_err():
     @limit_concurrency(max_tasks=1)
     async def dummy_task():
         return "success"

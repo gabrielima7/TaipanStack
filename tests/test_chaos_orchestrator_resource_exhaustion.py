@@ -7,7 +7,9 @@ from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_oserror_chaos_returns_err() -> None:
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_returns_err() -> (
+    None
+):
     """Chaos test: Inject OSError when acquiring semaphore in Orchestrator."""
 
     orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(
@@ -26,7 +28,9 @@ async def test_orchestrator_bulkhead_oserror_chaos_returns_err() -> None:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_memoryerror_chaos_returns_err() -> None:
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_returns_err() -> (
+    None
+):
     """Chaos test: Inject MemoryError when acquiring semaphore in Orchestrator."""
 
     orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(
@@ -45,7 +49,9 @@ async def test_orchestrator_bulkhead_memoryerror_chaos_returns_err() -> None:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_runtimeerror_chaos_returns_err() -> None:
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_returns_err() -> (
+    None
+):
     """Chaos test: Inject RuntimeError when acquiring semaphore in Orchestrator."""
 
     orchestrator: ResilienceOrchestrator[str] = ResilienceOrchestrator(

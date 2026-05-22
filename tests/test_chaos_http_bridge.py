@@ -78,7 +78,9 @@ async def test_chaos_http_bridge_request_extreme_delay() -> None:
         ]
     ),
 )
-def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs(url: str, method: str) -> None:
+def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs(
+    url: str, method: str
+) -> None:
     """Fuzz HTTP bridge with massive strings for URL and methods to ensure no crashes."""
     from taipanstack.bridges.http_bridge import safe_request
 

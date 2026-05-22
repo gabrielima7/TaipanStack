@@ -6,7 +6,9 @@ import pytest
 from taipanstack.security.guards import SecurityError, guard_path_traversal
 
 
-def test_fuzz_guard_symlink_loop_guard_path_traversal_symlink_loop_runtime_error() -> None:
+def test_fuzz_guard_symlink_loop_guard_path_traversal_symlink_loop_runtime_error() -> (
+    None
+):
     with tempfile.TemporaryDirectory() as td:
         base = Path(td)
         link1 = base / "link1"

@@ -150,7 +150,7 @@ class TestTaipanMiddleware:
         assert capture.status == 200
 
     @pytest.mark.asyncio
-    async def test_passthrough_non_http(self) -> None:
+    async def test_bridge_web_passthrough_non_http(self) -> None:
         """Non-HTTP requests (e.g. websocket) pass through unchanged."""
         called = False
 
@@ -163,7 +163,7 @@ class TestTaipanMiddleware:
         assert called
 
     @pytest.mark.asyncio
-    async def test_rate_limit_returns_429(self) -> None:
+    async def test_bridge_web_rate_limit_returns_429(self) -> None:
         """429 when rate limit is exceeded."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
         mw = TaipanMiddleware(
@@ -185,7 +185,7 @@ class TestTaipanMiddleware:
         assert "Rate limit" in body["error"]
 
     @pytest.mark.asyncio
-    async def test_security_headers_injected(self) -> None:
+    async def test_bridge_web_security_headers_injected(self) -> None:
         """Security headers are added to responses."""
         mw = TaipanMiddleware(_make_dummy_app, security_headers=True)
         capture = _ResponseCapture()
@@ -196,7 +196,7 @@ class TestTaipanMiddleware:
         assert headers.get("x-frame-options") == "DENY"
 
     @pytest.mark.asyncio
-    async def test_security_headers_on_429(self) -> None:
+    async def test_bridge_web_security_headers_on_429(self) -> None:
         """Security headers are also on 429 responses."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
         mw = TaipanMiddleware(
@@ -212,7 +212,7 @@ class TestTaipanMiddleware:
         assert "x-content-type-options" in capture.headers
 
     @pytest.mark.asyncio
-    async def test_unhandled_exception_returns_500(self) -> None:
+    async def test_bridge_web_unhandled_exception_returns_500(self) -> None:
         """Unhandled exceptions produce a 500 JSON response."""
         mw = TaipanMiddleware(
             _make_crashing_app,

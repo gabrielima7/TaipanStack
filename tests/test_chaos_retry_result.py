@@ -40,7 +40,7 @@ def test_chaos_retry_result_retry_result_monad_chaos_coverage():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_coverage_async():
+async def test_chaos_retry_result_retry_result_monad_chaos_coverage_async():
     attempts = 0
 
     @retry(max_attempts=1, on=(ValueError,))
@@ -70,7 +70,7 @@ def test_chaos_retry_result_retry_result_monad_chaos_sync_not_on():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_async_not_on():
+async def test_chaos_retry_result_retry_result_monad_chaos_async_not_on():
     @retry(max_attempts=3, on=(ValueError,))
     async def failing_func():
         return Err(TypeError("Not on"))
@@ -80,7 +80,7 @@ async def test_retry_result_monad_chaos_async_not_on():
 
 
 @pytest.mark.asyncio
-async def test_retry_result_monad_chaos_exhaust_async():
+async def test_chaos_retry_result_retry_result_monad_chaos_exhaust_async():
     @retry(max_attempts=2, on=(ValueError,))
     async def failing_func():
         return Err(ValueError("Chaos failure wrapped in Result"))

@@ -21,7 +21,7 @@ def test_chaos_circuit_breaker_result_monad_circuit_breaker_with_err_monad():
 
 
 @pytest.mark.asyncio
-async def test_async_circuit_breaker_with_err_monad():
+async def test_chaos_circuit_breaker_result_monad_async_circuit_breaker_with_err_monad():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     async def async_flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:
@@ -55,7 +55,7 @@ def test_chaos_circuit_breaker_result_monad_circuit_breaker_with_err_monad_not_i
 
 
 @pytest.mark.asyncio
-async def test_async_circuit_breaker_with_err_monad_not_in_exceptions():
+async def test_chaos_circuit_breaker_result_monad_async_circuit_breaker_with_err_monad_not_in_exceptions():
     @circuit_breaker(failure_threshold=2, failure_exceptions=(ValueError,))
     async def async_flaky_function(fail: bool) -> Result[str, Exception]:
         if fail:
