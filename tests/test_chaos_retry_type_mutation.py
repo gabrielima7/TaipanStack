@@ -52,21 +52,27 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_max_delay() -> 
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_exponential_base() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_exponential_base() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "exponential_base", "string_mutation")
     delay = calculate_delay(1, config)
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_jitter_factor() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_jitter_factor() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "jitter_factor", "string_mutation")
     delay = calculate_delay(1, config)
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_initial_delay() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_initial_delay() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "initial_delay", "string_mutation")
     object.__setattr__(config, "max_delay", "string_mutation")
@@ -74,7 +80,9 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_initial_d
     assert delay == 0.0
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "initial_delay", "string_mutation")
     object.__setattr__(config, "max_delay", "string_mutation")
@@ -83,7 +91,9 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert delay == 0.0
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails2() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails2() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "initial_delay", "string_mutation")
     object.__setattr__(config, "exponential_base", 1)
@@ -92,7 +102,9 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert delay == 0.0
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails3() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails3() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "max_delay", 1.0)
     object.__setattr__(config, "exponential_base", "string_mutation")
@@ -100,7 +112,9 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails4() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails4() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "max_delay", "string_mutation")
     object.__setattr__(config, "exponential_base", 2.0)
@@ -108,14 +122,18 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert delay == 0.0
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails5() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails5() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "max_delay", 1.0)
     delay = calculate_delay(1, config)
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails6() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails6() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "initial_delay", "string_mutation")
     delay = calculate_delay(1, config)
@@ -137,14 +155,18 @@ def test_chaos_retry_type_mutation_apply_jitter_mutation_delay2() -> None:
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails7() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails7() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "exponential_base", 1)
     delay = calculate_delay(1, config)
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails8() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails8() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "exponential_base", 2.0)
     delay = calculate_delay(1, config)

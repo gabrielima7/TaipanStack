@@ -54,7 +54,9 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward()
     assert breaker.state == CircuitState.HALF_OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(monkeypatch):
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(
+    monkeypatch,
+):
     """Chaos test: time.monotonic() returns NaN."""
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.OPEN

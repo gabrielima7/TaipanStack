@@ -7,7 +7,9 @@ from taipanstack.resilience.adaptive.bulkhead import Bulkhead
 
 
 @pytest.mark.asyncio
-async def test_bulkhead_semaphore_exhaustion_chaos_returns_err() -> None:
+async def test_chaos_bulkhead_resource_exhaustion_bulkhead_semaphore_exhaustion_chaos_returns_err() -> (
+    None
+):
     bulkhead = Bulkhead("test_chaos", max_concurrent=2, max_queue=2)
 
     async def dummy_task() -> int:

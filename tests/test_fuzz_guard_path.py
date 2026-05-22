@@ -19,6 +19,7 @@ def test_fuzz_guard_path_traversal_massive(name: str) -> None:
     except Exception as e:
         assert isinstance(e, (ValueError, TypeError, SecurityError))
 
+
 @settings(suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
