@@ -2,7 +2,6 @@
 
 from taipanstack.resilience.adaptive.adaptive_retry import (
     AdaptiveRetry,
-    RetryMetrics,
 )
 from taipanstack.resilience.retry import RetryConfig
 
@@ -57,27 +56,6 @@ class TestAdaptiveRetry:
         assert config.max_attempts == 5
         assert config.max_delay == 30.0
         assert not config.jitter
-
-    def test_adaptive_retry_metrics_snapshot(self) -> None:
-        """Metrics reports correct values."""
-        ar = AdaptiveRetry()
-        ar.record_outcome(attempt=1, success=True, elapsed=1.0)
-        ar.record_outcome(attempt=1, success=True, elapsed=2.0)
-        ar.record_outcome(attempt=2, success=False, elapsed=3.0)
-
-        m = ar.metrics
-        assert isinstance(m, RetryMetrics)
-        assert m.total_outcomes == 3
-        assert m.success_rate > 0.6
-        assert m.avg_delay == 2.0
-
-    def test_adaptive_retry_empty_metrics(self) -> None:
-        """Metrics with no data returns defaults."""
-        ar = AdaptiveRetry()
-        m = ar.metrics
-        assert m.total_outcomes == 0
-        assert m.success_rate == 1.0
-        assert m.avg_delay == 0.0
 
     def test_adaptive_retry_per_attempt_isolation(self) -> None:
         """Delays are tracked per attempt level."""

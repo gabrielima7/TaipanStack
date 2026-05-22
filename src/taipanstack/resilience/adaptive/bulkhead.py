@@ -33,7 +33,6 @@ class BulkheadFullError(Exception):
             max_queue: Queue limit.
 
         """
-        self.bulkhead_name = name
         self.max_concurrent = max_concurrent
         self.max_queue = max_queue
         super().__init__(
@@ -89,19 +88,9 @@ class Bulkhead:
         self._active = 0
 
     @property
-    def available_permits(self) -> int:
-        """Number of available concurrency permits."""
-        return self._max_concurrent - self._active
-
-    @property
     def queued(self) -> int:
         """Number of callers currently waiting in the queue."""
         return self._queued
-
-    @property
-    def active(self) -> int:
-        """Number of currently executing tasks."""
-        return self._active
 
     async def execute(
         self,

@@ -226,20 +226,3 @@ class AdaptiveCircuitBreaker:
             self._state = CircuitState.CLOSED
             self._last_opened_at = 0.0
 
-    @property
-    def metrics(self) -> AdaptiveMetrics:
-        """Snapshot of current adaptive metrics."""
-        with self._lock:
-            total = len(self._window)
-            errors = sum(1 for ok in self._window if not ok)
-            error_rate = errors / total if total > 0 else 0.0
-            success_rate = 1.0 - error_rate
-            state_val = self._state
-
-        return AdaptiveMetrics(
-            success_rate=success_rate,
-            error_rate=error_rate,
-            total_calls=total,
-            error_count=errors,
-            state=state_val,
-        )

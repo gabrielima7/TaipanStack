@@ -129,9 +129,7 @@ class TestBulkhead:
     async def test_bulkhead_permits_tracking(self) -> None:
         """Permits are correctly tracked."""
         bulk = Bulkhead("test", max_concurrent=5)
-        assert bulk.available_permits == 5
         assert bulk.queued == 0
-        assert bulk.active == 0
 
     @pytest.mark.asyncio
     async def test_bulkhead_with_arguments(self) -> None:
@@ -148,6 +146,5 @@ class TestBulkhead:
     def test_bulkhead_full_error(self) -> None:
         """BulkheadFullError contains metadata."""
         err = BulkheadFullError("api", 10, 50)
-        assert err.bulkhead_name == "api"
         assert err.max_concurrent == 10
         assert "full" in str(err).lower()

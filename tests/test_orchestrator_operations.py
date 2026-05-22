@@ -116,8 +116,6 @@ class TestResilienceOrchestrator:
         result = await orch.execute(_ok_fn)
 
         assert isinstance(result, Ok)
-        assert ab.metrics.total_calls == 1
-        assert ab.metrics.error_count == 0
 
     @pytest.mark.asyncio
     async def test_adaptive_breaker_records_failure(self) -> None:
@@ -128,8 +126,6 @@ class TestResilienceOrchestrator:
         result = await orch.execute(_fail_fn)
 
         assert isinstance(result, Err)
-        assert ab.metrics.total_calls == 1
-        assert ab.metrics.error_count == 1
 
     @pytest.mark.asyncio
     async def test_with_adaptive_retry(self) -> None:

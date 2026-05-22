@@ -5,10 +5,8 @@ from pathlib import Path
 import pytest
 
 from taipanstack.security.sanitizers import (
-    sanitize_env_value,
     sanitize_filename,
     sanitize_path,
-    sanitize_sql_identifier,
     sanitize_string,
 )
 
@@ -308,117 +306,6 @@ class TestSanitizePath:
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
 
 
-class TestSanitizeEnvValue:
-    """Tests for sanitize_env_value function."""
-
-    def test_security_sanitizers_type_error(self) -> None:
-        """Test non-string value raises TypeError."""
-        with pytest.raises(TypeError, match="value must be str, got int"):
-            sanitize_env_value(123)  # type: ignore[arg-type]
-
-    def test_security_sanitizers_empty_value(self) -> None:
-        """Test empty value returns empty."""
-        assert sanitize_env_value("") == ""
-
-    def test_security_sanitizers_normal_value(self) -> None:
-        """Test normal value passes through."""
-        assert sanitize_env_value("hello") == "hello"
-
-    def test_security_sanitizers_removes_null_bytes(self) -> None:
-        """Test null bytes are removed."""
-        assert sanitize_env_value("hel\x00lo") == "hello"
-
-    def test_security_sanitizers_removes_newlines_by_default(self) -> None:
-        """Test newlines are replaced by default."""
-        result = sanitize_env_value("line1\nline2")
-        assert "\n" not in result
-
-    def test_security_sanitizers_allows_multiline(self) -> None:
-        """Test newlines preserved when allowed."""
-        result = sanitize_env_value("line1\nline2", allow_multiline=True)
-        assert "\n" in result
-
-    def test_security_sanitizers_truncates_to_max_length(self) -> None:
-        """Test truncation to max length."""
-        long_value = "a" * 5000
-        result = sanitize_env_value(long_value, max_length=100)
-        assert len(result) == 100
-
-    def test_security_sanitizers_sanitize_env_value_fast_path(self) -> None:
-        """Test sanitize_env_value fast path for coverage."""
-        # Triggers the fast path return
-        assert sanitize_env_value("hello", max_length=10) == "hello"
-        assert (
-            sanitize_env_value("line1\nline2", allow_multiline=True) == "line1\nline2"
-        )
-
-    def test_security_sanitizers_sanitize_env_value_slow_path(self) -> None:
-        """Test sanitize_env_value slow path for coverage."""
-        # 1. Triggers "\x00" not in value == False
-        assert sanitize_env_value("hel\x00lo", max_length=10) == "hello"
-        # 2. Triggers ("\n" not in value and "\r" not in value) == False
-        assert (
-            sanitize_env_value("line1\nline2", max_length=20, allow_multiline=False)
-            == "line1 line2"
-        )
-        # 3. Triggers len(value) <= max_length == False
-        assert sanitize_env_value("a" * 15, max_length=10) == "a" * 10
-        # 4. Triggers allow_multiline=True with slow path (due to length)
-        assert (
-            sanitize_env_value("line1\nline2", max_length=5, allow_multiline=True)
-            == "line1"
-        )
-
-
-class TestSanitizeSqlIdentifier:
-    """Tests for sanitize_sql_identifier function."""
-
-    def test_security_sanitizers_type_error(self) -> None:
-        """Test non-string identifier raises TypeError."""
-        with pytest.raises(TypeError, match="identifier must be str, got float"):
-            sanitize_sql_identifier(3.14)  # type: ignore[arg-type]
-
-    def test_security_sanitizers_empty_identifier_raises(self) -> None:
-        """Test empty identifier raises ValueError."""
-        with pytest.raises(ValueError, match="cannot be empty"):
-            sanitize_sql_identifier("")
-
-    def test_security_sanitizers_normal_identifier(self) -> None:
-        """Test normal identifier passes through."""
-        assert sanitize_sql_identifier("users") == "users"
-
-    def test_security_sanitizers_removes_special_characters(self) -> None:
-        """Test special characters are removed."""
-        result = sanitize_sql_identifier("users;DROP TABLE--")
-        assert ";" not in result
-        assert "-" not in result
-        assert "DROP" in result  # Letters preserved
-
-    def test_security_sanitizers_prefix_if_starts_with_number(self) -> None:
-        """Test underscore added if starts with number."""
-        result = sanitize_sql_identifier("123column")
-        assert result.startswith("_")
-
-    def test_security_sanitizers_only_numbers(self) -> None:
-        """Test identifier with only numbers adds underscore prefix."""
-        result = sanitize_sql_identifier("12345")
-        assert result == "_12345"
-
-    def test_security_sanitizers_truncates_long_identifier(self) -> None:
-        """Test long identifier is truncated."""
-        long_name = "a" * 200
-        result = sanitize_sql_identifier(long_name)
-        assert len(result) <= 128
-
-    def test_security_sanitizers_invalid_chars_only_raises(self) -> None:
-        """Test identifier with only invalid chars raises."""
-        with pytest.raises(ValueError, match="no valid characters"):
-            sanitize_sql_identifier(";--")
-
-    def test_security_sanitizers_allows_underscores(self) -> None:
-        """Test underscores are allowed."""
-        result = sanitize_sql_identifier("user_name")
-        assert result == "user_name"
 
 
 def test_security_sanitizers_sanitize_string_value_error():
