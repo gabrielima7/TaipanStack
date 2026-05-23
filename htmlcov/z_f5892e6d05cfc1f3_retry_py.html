@@ -55,8 +55,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">203 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">203<span class="text"> run</span></button>
+            <span class="text">200 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">200<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">6<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">0<span class="text"> partial</span></button>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.0">coverage.py v7.14.0</a>,
-            created at 2026-05-23 22:31 +0000
+            created at 2026-05-23 22:34 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -645,13 +645,13 @@
     <p class="pln"><span class="n"><a id="t561" href="#t561">561</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t562" href="#t562">562</a></span><span class="t">    <span class="key">def</span> <span class="nam">_increment_attempt</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">bool</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t563" href="#t563">563</a></span><span class="t">        <span class="str">"""Increment attempt counter safely."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t564" href="#t564">564</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t565" href="#t565">565</a></span><span class="t">            <span class="key">if</span> <span class="key">not</span> <span class="nam">math</span><span class="op">.</span><span class="nam">isfinite</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">attempt</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t566" href="#t566">566</a></span><span class="t">                <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t567" href="#t567">567</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">attempt</span> <span class="op">+=</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t568" href="#t568">568</a></span><span class="t">            <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t569" href="#t569">569</a></span><span class="t">        <span class="key">except</span> <span class="nam">TypeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t570" href="#t570">570</a></span><span class="t">            <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t564" href="#t564">564</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">attempt</span><span class="op">,</span> <span class="op">(</span><span class="nam">int</span><span class="op">,</span> <span class="nam">float</span><span class="op">)</span><span class="op">)</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">math</span><span class="op">.</span><span class="nam">isfinite</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t565" href="#t565">565</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">attempt</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t566" href="#t566">566</a></span><span class="t">        <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t567" href="#t567">567</a></span><span class="t">            <span class="key">return</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t568" href="#t568">568</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t569" href="#t569">569</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">attempt</span> <span class="op">+=</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t570" href="#t570">570</a></span><span class="t">        <span class="key">return</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t571" href="#t571">571</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t572" href="#t572">572</a></span><span class="t">    <span class="key">def</span> <span class="nam">_should_retry</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">exc_type</span><span class="op">:</span> <span class="nam">type</span><span class="op">[</span><span class="nam">BaseException</span><span class="op">]</span> <span class="op">|</span> <span class="key">None</span><span class="op">)</span> <span class="op">-></span> <span class="nam">bool</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t573" href="#t573">573</a></span><span class="t">        <span class="str">"""Determine if an exception should trigger a retry."""</span>&nbsp;</span><span class="r"></span></p>
@@ -695,7 +695,7 @@
             <a class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.0">coverage.py v7.14.0</a>,
-            created at 2026-05-23 22:31 +0000
+            created at 2026-05-23 22:34 +0000
         </p>
     </div>
 </footer>
