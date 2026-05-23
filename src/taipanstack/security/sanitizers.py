@@ -477,6 +477,15 @@ def _sanitize_sql_identifier_slow_path(identifier: str) -> str:
     return result
 
 
+def _is_sql_identifier_fast_safe(identifier: str) -> bool:
+    """Check if the SQL identifier is safe using fast path rules."""
+    return (
+        len(identifier) <= 128  # noqa: PLR2004
+        and identifier.isascii()
+        and identifier.isidentifier()
+    )
+
+
 def sanitize_sql_identifier(identifier: str) -> str:
     """Sanitize a SQL identifier (table/column name).
 
@@ -493,21 +502,17 @@ def sanitize_sql_identifier(identifier: str) -> str:
         ValueError: If identifier is empty or too long.
 
     """
-    if type(identifier) is str:
-        if (
-            len(identifier) <= 128  # noqa: PLR2004
-            and identifier.isascii()
-            and identifier.isidentifier()
-        ):
-            return identifier
+    if type(identifier) is not str:
+        raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
 
-        if not identifier:
-            msg = "SQL identifier cannot be empty"
-            raise ValueError(msg)
+    if _is_sql_identifier_fast_safe(identifier):
+        return identifier
 
-        if len(identifier) > MAX_PATH_LENGTH:
-            raise ValueError("SQL identifier length exceeds maximum allowed limit")
+    if not identifier:
+        msg = "SQL identifier cannot be empty"
+        raise ValueError(msg)
 
-        return _sanitize_sql_identifier_slow_path(identifier)
+    if len(identifier) > MAX_PATH_LENGTH:
+        raise ValueError("SQL identifier length exceeds maximum allowed limit")
 
-    raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
+    return _sanitize_sql_identifier_slow_path(identifier)
