@@ -410,6 +410,13 @@ class TestSanitizeSqlIdentifier:
         with pytest.raises(ValueError, match="exceeds maximum allowed limit"):
             sanitize_sql_identifier(long_name)
 
+    def test_security_sanitizers_sql_identifier_prepend_and_truncate(self) -> None:
+        """Test SQL identifier that needs prepending and truncation stays within 128."""
+        long_name = "1" * 128
+        result = sanitize_sql_identifier(long_name)
+        assert len(result) == 128
+        assert result.startswith("_")
+
     def test_security_sanitizers_invalid_chars_only_raises(self) -> None:
         """Test identifier with only invalid chars raises."""
         with pytest.raises(ValueError, match="no valid characters"):
