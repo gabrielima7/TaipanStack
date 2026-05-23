@@ -244,11 +244,13 @@ class CircuitBreaker:
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         """Handle logic for OPEN state in _should_attempt."""
         now = time.monotonic()
-        try:
-            elapsed = now - self._state.last_failure_time
-        except TypeError:
-            # Type corruption detected (e.g. last_failure_time is string)
+        if not isinstance(self._state.last_failure_time, (int, float)):
             return False, None
+
+        if not math.isfinite(self._state.last_failure_time):
+            elapsed = self.config.timeout
+        else:
+            elapsed = now - self._state.last_failure_time
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
@@ -276,11 +278,9 @@ class CircuitBreaker:
         return False, None
 
     def _handle_attempt_half_open(self) -> bool:
-        try:
-            if not math.isfinite(self._state.half_open_attempts):
-                return False
-        except TypeError:
-            # Type corruption detected, deny attempt to be safe
+        if not isinstance(
+            self._state.half_open_attempts, (int, float)
+        ) or not math.isfinite(self._state.half_open_attempts):
             return False
 
         if self._state.half_open_attempts < self.config.success_threshold:
@@ -307,13 +307,13 @@ class CircuitBreaker:
         return should_attempt
 
     def _handle_success_half_open(self) -> tuple[CircuitState, CircuitState] | None:
-        try:
-            if not math.isfinite(self._state.success_count):
-                self._state.success_count = 0
-            self._state.success_count += 1
-        except TypeError:
+        if not isinstance(self._state.success_count, (int, float)) or not math.isfinite(
+            self._state.success_count
+        ):
             # Type corruption detected, reset and increment
             self._state.success_count = 1
+        else:
+            self._state.success_count += 1
 
         if self._state.success_count >= self.config.success_threshold:
             self._state.state = CircuitState.CLOSED
@@ -356,18 +356,12 @@ class CircuitBreaker:
     def _handle_failure_closed(self) -> tuple[CircuitState, CircuitState] | None:
         """Handle failure when in CLOSED state."""
         # Check against corrupted NaN/Inf failure_count
-        try:
-            if not math.isfinite(self._state.failure_count):
-                self._state.state = CircuitState.OPEN
-                logger.warning(
-                    "Circuit %s opened due to state corruption (NaN/Inf failures)",
-                    self.name,
-                )
-                return (CircuitState.CLOSED, CircuitState.OPEN)
-        except TypeError:
+        if not isinstance(self._state.failure_count, (int, float)) or not math.isfinite(
+            self._state.failure_count
+        ):
             self._state.state = CircuitState.OPEN
             logger.warning(
-                "Circuit %s opened due to type corruption in failure_count",
+                "Circuit %s opened due to state/type corruption in failure_count",
                 self.name,
             )
             return (CircuitState.CLOSED, CircuitState.OPEN)
@@ -385,13 +379,14 @@ class CircuitBreaker:
         return None
 
     def _update_failure_metrics(self) -> None:
-        try:
-            if math.isfinite(self._state.failure_count):
-                self._state.failure_count += 1
-        except TypeError:
-            # Handle type mutation (e.g. failure_count became string)
+        if not isinstance(self._state.failure_count, (int, float)) or not math.isfinite(
+            self._state.failure_count
+        ):
+            # Handle type mutation (e.g. failure_count became string) or Inf/NaN
             # Safe degradation: reset to max so it opens immediately
             self._state.failure_count = self.config.failure_threshold
+        else:
+            self._state.failure_count += 1
 
         now = time.monotonic()
         if math.isfinite(now):
@@ -451,16 +446,20 @@ class CircuitBreaker:
 
     def _safe_decrement_half_open_attempts(self) -> None:
         """Safely decrement half-open attempts."""
-        try:
-            if (
-                self._state.state == CircuitState.HALF_OPEN
-                and math.isfinite(self._state.half_open_attempts)
-                and self._state.half_open_attempts > 0
-            ):
-                self._state.half_open_attempts -= 1
-        except TypeError:
+        if self._state.state != CircuitState.HALF_OPEN:
+            return
+
+        if (
+            not isinstance(self._state.half_open_attempts, (int, float))
+            or not math.isfinite(self._state.half_open_attempts)
+            or self._state.half_open_attempts < 0
+        ):
             # Reset if state is corrupted to prevent crash
             self._state.half_open_attempts = 0
+            return
+
+        if self._state.half_open_attempts > 0:
+            self._state.half_open_attempts -= 1
 
     def _decrement_half_open(self, is_half_open: bool) -> None:
         """Decrement half-open attempt count if applicable.
