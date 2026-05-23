@@ -304,6 +304,19 @@ class ResilienceOrchestrator(Generic[T]):
             return self._apply_fallback(cb_err)
         return cb_err.err_value
 
+    async def _execute_single_attempt(
+        self,
+        attempt: int,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        """Execute a single attempt including timeout."""
+        result = await self._execute_with_timeout(fn, *args, **kwargs)
+        if isinstance(result, Ok):
+            self._record_success_outcome(attempt)
+        return result
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -321,15 +334,13 @@ class ResilienceOrchestrator(Generic[T]):
                     break
                 return cb_res
 
-            result = await self._execute_with_timeout(fn, *args, **kwargs)
+            result = await self._execute_single_attempt(attempt, fn, *args, **kwargs)
             if isinstance(result, Ok):
-                self._record_success_outcome(attempt)
                 return result
 
             last_error = result.err_value
-            if await self._handle_retry_failure(last_error, attempt, max_attempts):
-                continue
-            break
+            if not await self._handle_retry_failure(last_error, attempt, max_attempts):
+                break
 
         return self._apply_fallback(Err(last_error))
 
