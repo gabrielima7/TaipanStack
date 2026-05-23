@@ -405,10 +405,10 @@ class TestSanitizeSqlIdentifier:
         assert result == "_12345"
 
     def test_security_sanitizers_truncates_long_identifier(self) -> None:
-        """Test long identifier is truncated."""
+        """Test long identifier raises ValueError."""
         long_name = "a" * 200
-        result = sanitize_sql_identifier(long_name)
-        assert len(result) <= 128
+        with pytest.raises(ValueError, match="exceeds maximum allowed limit"):
+            sanitize_sql_identifier(long_name)
 
     def test_security_sanitizers_invalid_chars_only_raises(self) -> None:
         """Test identifier with only invalid chars raises."""
