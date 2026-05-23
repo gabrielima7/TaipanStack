@@ -9,11 +9,11 @@ This document provides the context, architectural rules, and strict coding stand
 
 ## 2. Coding Standards & Strict Typing
 - **Formatter & Linter:** Use `ruff`. The code must respect the 88-character line limit and use double quotes (`quote-style = "double"`).
-- **Typing (CRITICAL):** The project uses strict type checking with `mypy` (`strict_optional = true`, `disallow_untyped_defs = true`). 
+- **Typing (CRITICAL):** The project uses strict type checking with `mypy` (`strict_optional = true`, `disallow_untyped_defs = true`).
 - **NO `Any` TYPE:** The use of `typing.Any` or any of its methods is **strictly forbidden**. Every function, method, and variable must have a precise and concrete type annotation.
 
 ## 3. Error Handling (LBYL & Result Pattern)
-- **NO EXCEPTIONS ALLOWED (CRITICAL):** The use of `try/except` blocks, `raise` statements, or any form of exception throwing is completely forbidden. 
+- **NO EXCEPTIONS ALLOWED (CRITICAL):** The use of `try/except` blocks, `raise` statements, or any form of exception throwing is completely forbidden.
 - **Look Before You Leap (LBYL):** You must always check for preconditions, validate inputs, and verify states *before* executing an operation to prevent runtime failures.
 - **Rust-Style Results:** All error handling must be explicit. Always use the `Result`, `Ok`, and `Err` classes from `taipanstack.core.result`. Use Pattern Matching (`match/case`) to process outcomes. Silent failures are not allowed.
 

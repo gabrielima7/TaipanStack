@@ -1,4 +1,4 @@
-.PHONY: help install test lint format typecheck security clean lint-imports mutate build-exe context property-test all
+.PHONY: help install test lint format typecheck security clean lint-imports mutate context property-test all
 
 help:
 	@echo "TaipanStack - Development Commands"
