@@ -247,7 +247,10 @@ class CircuitBreaker:
         if not isinstance(self._state.last_failure_time, (int, float)):
             return False, None
 
-        elapsed = now - self._state.last_failure_time
+        if not math.isfinite(self._state.last_failure_time):
+            elapsed = self.config.timeout
+        else:
+            elapsed = now - self._state.last_failure_time
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
