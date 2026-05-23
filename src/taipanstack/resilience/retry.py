@@ -561,13 +561,13 @@ class Retrier:
 
     def _increment_attempt(self) -> bool:
         """Increment attempt counter safely."""
-        try:
-            if not math.isfinite(self.attempt):
-                return False
-            self.attempt += 1
-            return True
-        except TypeError:
+        if not isinstance(self.attempt, (int, float)) or not math.isfinite(
+            self.attempt
+        ):
             return False
+
+        self.attempt += 1
+        return True
 
     def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
         """Determine if an exception should trigger a retry."""
