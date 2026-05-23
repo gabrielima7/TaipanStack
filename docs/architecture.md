@@ -74,7 +74,7 @@ TaipanStack/
 │           └── subprocess.py      # Sandboxed subprocess execution
 ├── tests/                    # ✅ 1,331 tests, 100% coverage
 │   ├── test_property_sanitizers.py # Hypothesis fuzzing
-│   └── test_v031_features.py # v0.3.1 specific new behaviors
+│   └── test_v034_async_retry_circuit.py # Async tests for retry and circuit breaker
 ├── docs/                     # 📖 MkDocs Material documentation
 ├── .semgrep/                 # 🔍 Custom SAST rules
 ├── .github/                  # 🔄 CI/CD + SBOM/SLSA + Docs workflows
