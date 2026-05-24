@@ -122,24 +122,30 @@ def test_security_password_verify_password_invalid_type_hash() -> None:
     with pytest.raises(TypeError, match="password_hash must be a string"):
         verify_password("my_password", 123)  # type: ignore[arg-type]
 
+
 def test_security_password_verify_password_empty() -> None:
     """Test that verifying an empty password returns False."""
     assert verify_password("", "hash") is False
     assert verify_password(SecretStr(""), "hash") is False
+
 
 def test_security_password_verify_password_too_long() -> None:
     """Test that verifying a too long password returns False."""
     assert verify_password("a" * 1025, "hash") is False
     assert verify_password(SecretStr("a" * 1025), "hash") is False
 
+
 def test_security_password_hash_password_empty() -> None:
     """Test that hashing an empty password raises ValueError."""
     import pytest
+
     with pytest.raises(ValueError, match="password cannot be empty"):
         hash_password("")
+
 
 def test_security_password_hash_password_too_long() -> None:
     """Test that hashing a too long password raises ValueError."""
     import pytest
+
     with pytest.raises(ValueError, match="password length exceeds"):
         hash_password("a" * 1025)

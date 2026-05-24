@@ -93,6 +93,7 @@ class TestGeneratePreCommitConfig:
         assert "repo: https://github.com/trailofbits/pip-audit" in result
         assert "repo: https://github.com/jendrikseipp/vulture" in result
         assert "repo: https://github.com/guilatrova/tryceratops" in result
+
     def test_config_generators_pre_commit_no_security_hooks(self) -> None:
         """Test with no security hooks enabled."""
         config = StackConfig(
