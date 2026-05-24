@@ -13,7 +13,7 @@ from taipanstack.security.jwt import decode_jwt
         st.booleans(),
         st.none(),
         st.dictionaries(st.text(), st.text()),
-        st.text(), # string is also invalid according to pyjwt, it expects a list
+        st.text(),  # string is also invalid according to pyjwt, it expects a list
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
