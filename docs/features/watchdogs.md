@@ -46,15 +46,15 @@ The `ResourceWatcher` taps into `psutil` keeping track of the hardware limits of
 ```python
 from taipanstack.resilience.watchdogs import ResourceWatcher
 
-def on_overload(snapshot):
-    print(f"CRITICAL ALARM: CPU is at {snapshot.cpu_percent}%")
+def on_threshold_breach(resource: str, value: float):
+    print(f"CRITICAL ALARM: {resource} is at {value}%")
 
 # Create a watcher configured to alarm at 90% CPU usage or 95% RAM
 watcher = ResourceWatcher(
     interval=2.0,
     cpu_threshold=90.0,
     memory_threshold=95.0,
-    on_overload=on_overload
+    on_threshold_breach=on_threshold_breach
 )
 
 background_task = asyncio.create_task(watcher.start())
