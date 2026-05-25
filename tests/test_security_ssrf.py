@@ -1,8 +1,10 @@
 """Tests for guard_ssrf — SSRF protection guard."""
 
 import socket
+from typing import Any, cast
 from unittest.mock import patch
 
+from taipanstack.core.result import Err
 from taipanstack.security.guards import SecurityError, guard_ssrf
 
 
@@ -11,28 +13,28 @@ class TestGuardSsrfTypeContract:
 
     def test_security_ssrf_raises_err_for_int(self) -> None:
         """Return Err when URL is an integer."""
-        result = guard_ssrf(123)
+        result = guard_ssrf(cast(Any, 123))
         assert result.is_err()
 
     def test_security_ssrf_raises_err_for_none(self) -> None:
         """Return Err when URL is None."""
-        result = guard_ssrf(None)
+        result = guard_ssrf(cast(Any, None))
         assert result.is_err()
 
     def test_security_ssrf_raises_err_for_bytes(self) -> None:
         """Return Err when URL is bytes."""
-        result = guard_ssrf(b"http://example.com")
+        result = guard_ssrf(cast(Any, b"http://example.com"))
         assert result.is_err()
 
     @patch("taipanstack.security.guards.urlsplit")
     def test_security_ssrf_raises_value_error_from_urlparse(
-        self, mock_urlparse
+        self, mock_urlparse: Any
     ) -> None:
         """Return Err when urlparse raises ValueError."""
         mock_urlparse.side_effect = ValueError("Mocked error")
         result = guard_ssrf("http://example.com")
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
         msg = str(err)
@@ -47,7 +49,7 @@ class TestGuardSsrfEmptyAndMalformed:
         """Empty string returns Err with appropriate message."""
         result = guard_ssrf("")
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -55,7 +57,7 @@ class TestGuardSsrfEmptyAndMalformed:
         """FTP scheme is rejected as not allowed."""
         result = guard_ssrf("ftp://example.com/file")
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert "not allowed" in str(err)
 
@@ -79,7 +81,7 @@ class TestGuardSsrfEmptyAndMalformed:
             result = guard_ssrf(f"https://{long_hostname}/path")
 
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
         # Verify the exception message prefix without asserting on platform-specific gaierror strings
@@ -105,7 +107,7 @@ class TestGuardSsrfPrivateIpv4:
         ):
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
-        assert "SSRF" in str(result.err_value)
+        assert "SSRF" in str(cast(Err, result).err_value)
 
     def test_security_ssrf_private_10_network_blocked(self) -> None:
         """10.0.0.1 (RFC-1918 class A) must be blocked."""
@@ -142,7 +144,7 @@ class TestGuardSsrfPrivateIpv4:
         ):
             result = guard_ssrf("http://169.254.169.254/latest/meta-data/")
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -217,7 +219,7 @@ class TestGuardSsrfSafeUrls:
         ):
             result = guard_ssrf("http://example.com/api")
         assert result.is_ok()
-        assert result.ok_value == "http://example.com/api"
+        assert result.unwrap() == "http://example.com/api"
 
     def test_security_ssrf_public_https_url_accepted(self) -> None:
         """A HTTPS URL resolving to a public IP returns Ok."""
@@ -266,7 +268,7 @@ class TestGuardSsrfErrorAttrs:
             return_value=self._mock_loopback(),
         ):
             result = guard_ssrf("http://internal/")
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
@@ -277,7 +279,7 @@ class TestGuardSsrfErrorAttrs:
             return_value=self._mock_loopback(),
         ):
             result = guard_ssrf("http://internal/")
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert err.value is None
 
@@ -299,7 +301,29 @@ class TestGuardSsrfCatchAllReserved:
         ):
             result = guard_ssrf("http://some-host.example.com/")
         assert result.is_err()
-        err = result.err_value
+        err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
         assert "reserved" in str(err).lower() or "SSRF" in str(err)
         assert err.guard_name == "ssrf"
+
+    def test_security_ssrf_multicast_address_blocked(self) -> None:
+        """Multicast address like 224.0.0.1 must be blocked."""
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("224.0.0.1"),
+        ):
+            result = guard_ssrf("http://multicast-host.example.com/")
+        assert result.is_err()
+        err = cast(Err, result).err_value
+        assert isinstance(err, SecurityError)
+
+    def test_security_ssrf_unspecified_address_blocked(self) -> None:
+        """Unspecified address like :: must be blocked."""
+        with patch(
+            "taipanstack.security.guards.socket.getaddrinfo",
+            return_value=self._mock_getaddrinfo("::"),
+        ):
+            result = guard_ssrf("http://unspecified-host.example.com/")
+        assert result.is_err()
+        err = cast(Err, result).err_value
+        assert isinstance(err, SecurityError)

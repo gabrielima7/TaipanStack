@@ -625,7 +625,12 @@ def _is_ip_safe(raw_ip: str) -> bool:
         return True
 
     return not (
-        addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
+        addr.is_private
+        or addr.is_loopback
+        or addr.is_link_local
+        or addr.is_reserved
+        or getattr(addr, "is_multicast", False)
+        or getattr(addr, "is_unspecified", False)
     )
 
 
