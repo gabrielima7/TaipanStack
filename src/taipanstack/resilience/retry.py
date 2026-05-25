@@ -561,8 +561,10 @@ class Retrier:
 
     def _increment_attempt(self) -> bool:
         """Increment attempt counter safely."""
-        if not isinstance(self.attempt, (int, float)) or not math.isfinite(
-            self.attempt
+        if (
+            not isinstance(self.attempt, (int, float))
+            or not math.isfinite(self.attempt)
+            or self.attempt < 0
         ):
             return False
 
