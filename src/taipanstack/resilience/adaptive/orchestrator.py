@@ -317,6 +317,15 @@ class ResilienceOrchestrator(Generic[T]):
             self._record_success_outcome(attempt)
         return result
 
+    def _check_circuit_breaker_for_attempt(
+        self, attempt: int
+    ) -> Result[T, Exception] | Exception | None:
+        """Evaluate circuit breaker for the current attempt."""
+        cb_err = self._evaluate_circuit_breaker()
+        if cb_err is not None:
+            return self._handle_circuit_breaker_open(cb_err, attempt)
+        return None
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -326,9 +335,8 @@ class ResilienceOrchestrator(Generic[T]):
     ) -> Result[T, Exception]:
         last_error: Exception = RuntimeError("Execution failed")
         for attempt in range(1, max_attempts + 1):
-            cb_err = self._evaluate_circuit_breaker()
-            if cb_err is not None:
-                cb_res = self._handle_circuit_breaker_open(cb_err, attempt)
+            cb_res = self._check_circuit_breaker_for_attempt(attempt)
+            if cb_res is not None:
                 if isinstance(cb_res, Exception):
                     last_error = cb_res
                     break
