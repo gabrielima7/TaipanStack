@@ -186,3 +186,45 @@ def test_chaos_retry_type_mutation_retry_config_init_type_mutation() -> None:
     assert config.max_delay == 60.0
     assert config.exponential_base == 2.0
     assert config.jitter_factor == 0.1
+
+
+def test_chaos_retry_on_exception() -> None:
+    from taipanstack.resilience.retry import RetryError, retry_on_exception
+
+    @retry_on_exception((ValueError,), max_attempts=2)
+    def test_func():
+        raise ValueError("test")
+
+    with pytest.raises(RetryError):
+        test_func()
+
+
+def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> None:
+    # Coverage for `self.last_exception = exc_val if isinstance(exc_val, Exception) else None`
+    # When exc_val is None (or not Exception, like BaseException).
+    r = Retrier()
+
+    class CustomExc(BaseException):
+        pass
+
+    with pytest.raises(CustomExc):
+        with r:
+            raise CustomExc()
+
+
+def test_chaos_retry_exit_success() -> None:
+    r = Retrier()
+    r.__exit__(None, None, None)
+
+
+def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
+    """
+    Test the try...except TypeError block for issubclass inside _should_retry.
+    """
+    r = Retrier()
+
+    # Pass an object instead of a type to trigger TypeError in issubclass
+    class InvalidExc:
+        pass
+
+    assert r._should_retry(InvalidExc()) is False
