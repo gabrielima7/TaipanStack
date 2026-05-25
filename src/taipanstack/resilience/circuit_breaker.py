@@ -239,42 +239,57 @@ class CircuitBreaker:
                 failure_count=self._state.failure_count,
             )
 
-    def _handle_open_state(
-        self,
-    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
-        """Handle logic for OPEN state in _should_attempt."""
-        now = time.monotonic()
+    def _calculate_elapsed_time(self, now: float) -> float | None:
+        """Calculate time elapsed since last failure."""
         if not isinstance(self._state.last_failure_time, (int, float)):
-            return False, None
+            return None
 
         if not math.isfinite(self._state.last_failure_time):
-            elapsed = self.config.timeout
-        else:
-            elapsed = now - self._state.last_failure_time
+            return float(self.config.timeout)
+
+        elapsed = now - float(self._state.last_failure_time)
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
         # allow a transition to prevent permanent lockout.
         if elapsed < 0:
-            elapsed = self.config.timeout
+            return float(self.config.timeout)
+        return elapsed
+
+    def _transition_to_half_open(
+        self, elapsed: float
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+        """Transition the circuit to half-open state."""
+        # Before transitioning, verify if we can make an attempt
+        # This happens in a lock, so it's thread-safe. However, once
+        # the state changes to HALF_OPEN, subsequent threads in the
+        # same lock block will hit the HALF_OPEN case.
+        self._state.state = CircuitState.HALF_OPEN
+        self._state.success_count = 0
+        # Initialize half_open_attempts to 1 because this first call
+        # that transitions the state is also an attempt.
+        self._state.half_open_attempts = 1
+        logger.info(
+            "Circuit %s entering half-open state (was open for %.1fs, failures=%d)",
+            self.name,
+            elapsed,
+            self._state.failure_count,
+        )
+        return True, (CircuitState.OPEN, CircuitState.HALF_OPEN)
+
+    def _handle_open_state(
+        self,
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+        """Handle logic for OPEN state in _should_attempt."""
+        now = time.monotonic()
+        elapsed = self._calculate_elapsed_time(now)
+
+        if elapsed is None:
+            return False, None
 
         if math.isfinite(now) and elapsed >= self.config.timeout:
-            # Before transitioning, verify if we can make an attempt
-            # This happens in a lock, so it's thread-safe. However, once
-            # the state changes to HALF_OPEN, subsequent threads in the
-            # same lock block will hit the HALF_OPEN case.
-            self._state.state = CircuitState.HALF_OPEN
-            self._state.success_count = 0
-            # Initialize half_open_attempts to 1 because this first call
-            # that transitions the state is also an attempt.
-            self._state.half_open_attempts = 1
-            logger.info(
-                "Circuit %s entering half-open state (was open for %.1fs, failures=%d)",
-                self.name,
-                elapsed,
-                self._state.failure_count,
-            )
-            return True, (CircuitState.OPEN, CircuitState.HALF_OPEN)
+            return self._transition_to_half_open(elapsed)
+
         return False, None
 
     def _handle_attempt_half_open(self) -> bool:
@@ -409,8 +424,11 @@ class CircuitBreaker:
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
         # Check if exception should be excluded
-        if isinstance(exc, self.config.excluded_exceptions):
-            return
+        try:
+            if isinstance(exc, self.config.excluded_exceptions):
+                return
+        except TypeError:
+            pass  # Corrupted type, do not exclude
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
@@ -442,7 +460,11 @@ class CircuitBreaker:
         """
         if isinstance(result, Err):
             err_val = result.unwrap_err()
-            if isinstance(err_val, self.config.failure_exceptions):
+            try:
+                is_failure = isinstance(err_val, self.config.failure_exceptions)
+            except TypeError:
+                is_failure = True
+            if is_failure:
                 self._record_failure(err_val)
                 return result
             # Ignored exception in Result monad
@@ -450,16 +472,20 @@ class CircuitBreaker:
         self._record_success()
         return result
 
+    def _is_valid_half_open_attempts(self) -> bool:
+        """Validate half-open attempts value against corruption."""
+        return (
+            isinstance(self._state.half_open_attempts, (int, float))
+            and math.isfinite(self._state.half_open_attempts)
+            and self._state.half_open_attempts >= 0
+        )
+
     def _safe_decrement_half_open_attempts(self) -> None:
         """Safely decrement half-open attempts."""
         if self._state.state != CircuitState.HALF_OPEN:
             return
 
-        if (
-            not isinstance(self._state.half_open_attempts, (int, float))
-            or not math.isfinite(self._state.half_open_attempts)
-            or self._state.half_open_attempts < 0
-        ):
+        if not self._is_valid_half_open_attempts():
             # Reset if state is corrupted to prevent crash
             self._state.half_open_attempts = 0
             return
@@ -498,8 +524,14 @@ class CircuitBreaker:
                 try:
                     result = await func_coro(*args, **kwargs)
                     return self._process_result(result)
-                except self.config.failure_exceptions as e:
-                    self._record_failure(e)
+                except Exception as e:
+                    try:
+                        is_failure = isinstance(e, self.config.failure_exceptions)
+                    except TypeError:
+                        is_failure = True
+                    if is_failure:
+                        self._record_failure(e)
+                        raise
                     raise
                 finally:
                     self._decrement_half_open(is_half_open)
@@ -521,8 +553,14 @@ class CircuitBreaker:
             try:
                 result = func_sync(*args, **kwargs)
                 return self._process_result(result)
-            except self.config.failure_exceptions as e:
-                self._record_failure(e)
+            except Exception as e:
+                try:
+                    is_failure = isinstance(e, self.config.failure_exceptions)
+                except TypeError:
+                    is_failure = True
+                if is_failure:
+                    self._record_failure(e)
+                    raise
                 raise
             finally:
                 self._decrement_half_open(is_half_open)

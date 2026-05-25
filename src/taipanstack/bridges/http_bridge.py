@@ -218,7 +218,7 @@ async def _execute_with_retries(
 
     """
     max_attempts = retry_config.max_attempts if retry_config is not None else 1
-    last_error: Exception | None = None
+    last_error: Exception = RuntimeError("Request failed")
 
     for attempt in range(1, max_attempts + 1):
         outcome = await _execute_single_attempt(
@@ -234,7 +234,7 @@ async def _execute_with_retries(
         if isinstance(outcome, Exception):
             last_error = outcome
 
-    return Err(last_error or RuntimeError("Request failed"))
+    return Err(last_error)
 
 
 async def safe_request(

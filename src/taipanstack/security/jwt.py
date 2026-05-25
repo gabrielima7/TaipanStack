@@ -97,6 +97,12 @@ def decode_jwt(
         PyJWTError: If the token is invalid, expired, or has incorrect claims.
 
     """
+    if not isinstance(algorithms, list):
+        raise TypeError("Algorithms must be a list of strings")
+
+    if not isinstance(audience, (str, list, tuple, set)):
+        raise TypeError("Audience must be a string or iterable of strings")
+
     if any(
         isinstance(alg, str) and secrets.compare_digest(alg.strip().lower(), "none")
         for alg in algorithms
