@@ -132,7 +132,7 @@ def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
     if isinstance(content_result, Err):
         return content_result
 
-    return _parse_content_by_extension(path, content_result.unwrap())
+    return _parse_content_by_extension(path, content_result.ok_value)
 
 
 def validate_config(
