@@ -322,8 +322,10 @@ class CircuitBreaker:
         return should_attempt
 
     def _handle_success_half_open(self) -> tuple[CircuitState, CircuitState] | None:
-        if not isinstance(self._state.success_count, (int, float)) or not math.isfinite(
-            self._state.success_count
+        if (
+            not isinstance(self._state.success_count, (int, float))
+            or not math.isfinite(self._state.success_count)
+            or self._state.success_count < 0
         ):
             # Type corruption detected, reset and increment
             self._state.success_count = 1
@@ -371,8 +373,10 @@ class CircuitBreaker:
     def _handle_failure_closed(self) -> tuple[CircuitState, CircuitState] | None:
         """Handle failure when in CLOSED state."""
         # Check against corrupted NaN/Inf failure_count
-        if not isinstance(self._state.failure_count, (int, float)) or not math.isfinite(
-            self._state.failure_count
+        if (
+            not isinstance(self._state.failure_count, (int, float))
+            or not math.isfinite(self._state.failure_count)
+            or self._state.failure_count < 0
         ):
             self._state.state = CircuitState.OPEN
             logger.warning(
@@ -394,8 +398,10 @@ class CircuitBreaker:
         return None
 
     def _update_failure_metrics(self) -> None:
-        if not isinstance(self._state.failure_count, (int, float)) or not math.isfinite(
-            self._state.failure_count
+        if (
+            not isinstance(self._state.failure_count, (int, float))
+            or not math.isfinite(self._state.failure_count)
+            or self._state.failure_count < 0
         ):
             # Handle type mutation (e.g. failure_count became string) or Inf/NaN
             # Safe degradation: reset to max so it opens immediately
