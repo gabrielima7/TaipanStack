@@ -10,7 +10,7 @@ def test_chaos_circuit_breaker_type_mutation_last_failure_time_circuit_breaker_l
     assert not breaker._should_attempt()
 
 
-def test_chaos_circuit_breaker_nan_last_failure_time_allows_recovery():
+def test_chaos_circuit_breaker_type_mutation_last_failure_time_chaos_circuit_breaker_nan_last_failure_time_allows_recovery():
     breaker = CircuitBreaker(timeout=0.01)
     breaker._state.state = CircuitState.OPEN
     breaker._state.last_failure_time = float("nan")
