@@ -50,3 +50,8 @@
 **Vulnerability:** Missing `< 0` domain bounds validation in LBYL type guards within numerical resilience state metrics (`circuit_breaker.py` and `retry.py`). While `isinstance` and `math.isfinite` were checked, negative values could corrupt logic (e.g., negative attempts logic bypassing intended constraints).
 **Learning:** In addition to type checking and checking for infinite/NaN values, resilience logic state variables must be strictly bound-checked to prevent logical bypasses when negative numbers are processed.
 **Prevention:** Ensure explicit `< 0` checks are consistently implemented in numerical Look-Before-You-Leap (LBYL) type guards across all resilience classes.
+
+## 2026-05-25 - [Fix] SSRF guard bypassed by multicast and unspecified IP addresses
+**Vulnerability:** The internal function `_is_ip_safe` within `src/taipanstack/security/guards.py` checked if an IP address was private, loopback, link_local, or reserved using the `ipaddress` library, but missed multicast addresses (like `224.0.0.1`) and unspecified addresses (like `0.0.0.0` or `::`).
+**Learning:** Python's `ipaddress` module's `.is_private` property strictly follows RFC allocations and does *not* consider `0.0.0.0` (unspecified) or `224.0.0.1` (multicast) as private. `0.0.0.0` is particularly dangerous as it is often treated by operating systems and HTTP clients as an alias for `localhost`, creating a direct SSRF bypass to the host machine.
+**Prevention:** When validating IP addresses for SSRF, always explicitly deny `is_multicast` and `is_unspecified` properties alongside `is_private`, `is_loopback`, `is_link_local`, and `is_reserved`.
