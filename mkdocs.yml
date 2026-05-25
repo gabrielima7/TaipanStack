@@ -105,6 +105,7 @@ nav:
       - Security: api/security.md
       - Utilities: api/utils.md
       - Resilience: api/resilience.md
+      - Bridges: api/bridges.md
   - Patterns:
       - Security Patterns: patterns/security.md
   - Features:
