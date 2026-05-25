@@ -9,13 +9,10 @@ import re
 from pathlib import Path
 
 # Constants to avoid magic values (PLR2004)
-MAX_SQL_IDENTIFIER_LENGTH = 128  # pragma: no mutate
 MAX_PATH_LENGTH = 4096  # pragma: no mutate
-MAX_ENV_VALUE_LENGTH = 65535  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
-_SQL_IDENTIFIER_DENY_RE = re.compile(r"[^a-zA-Z0-9_]")  # pragma: no mutate
 _HTML_TAGS_RE = re.compile(r"<[^>]+>")  # pragma: no mutate
 # Remove control characters (C0 and C1 sets)
 _CONTROL_CHARS_RE = re.compile(
@@ -398,121 +395,3 @@ def sanitize_path(
 
     _validate_path_depth(sanitized, max_depth)
     return _apply_base_dir_constraint(sanitized, base_dir, resolve)
-
-
-def _sanitize_env_multiline(value: str, max_length: int) -> str:
-    """Sanitize an environment value allowing multiline characters."""
-    if "\x00" not in value and len(value) <= max_length:
-        return value
-    return value.replace("\x00", "")
-
-
-def _sanitize_env_singleline(value: str, max_length: int) -> str:
-    """Sanitize an environment value, converting multiline to spaces."""
-    if (
-        "\x00" not in value
-        and "\n" not in value
-        and "\r" not in value
-        and len(value) <= max_length
-    ):
-        return value
-    return value.replace("\x00", "").replace("\n", " ").replace("\r", " ")
-
-
-def sanitize_env_value(
-    value: str,
-    *,
-    max_length: int = 4096,
-    allow_multiline: bool = False,
-) -> str:
-    """Sanitize a value for use as an environment variable.
-
-    Args:
-        value: The value to sanitize.
-        max_length: Maximum length allowed.
-        allow_multiline: Whether to allow newlines.
-
-    Returns:
-        The sanitized value.
-
-    Raises:
-        TypeError: If value is not a string.
-
-    """
-    if not isinstance(value, str):
-        raise TypeError(f"value must be str, got {type(value).__name__}")
-
-    if len(value) > MAX_ENV_VALUE_LENGTH:
-        raise ValueError("Environment value length exceeds maximum allowed limit")
-
-    if not value:
-        return ""
-
-    if allow_multiline:
-        result = _sanitize_env_multiline(value, max_length)
-    else:
-        result = _sanitize_env_singleline(value, max_length)
-
-    if len(result) > max_length:
-        return result[:max_length]
-    return result
-
-
-def _sanitize_sql_identifier_slow_path(identifier: str) -> str:
-    """Apply slow path sanitization for SQL identifiers."""
-    result = _SQL_IDENTIFIER_DENY_RE.sub("", identifier)
-
-    # Must start with letter or underscore
-    if result and not result[0].isalpha() and result[0] != "_":
-        result = f"_{result}"
-
-    # Check length (most DBs limit to 128 chars)
-    if len(result) > MAX_SQL_IDENTIFIER_LENGTH:
-        result = result[:MAX_SQL_IDENTIFIER_LENGTH]
-
-    if not result:
-        msg = "SQL identifier contains no valid characters"
-        raise ValueError(msg)
-
-    return result
-
-
-def _is_sql_identifier_fast_safe(identifier: str) -> bool:
-    """Check if the SQL identifier is safe using fast path rules."""
-    return (
-        len(identifier) <= MAX_SQL_IDENTIFIER_LENGTH
-        and identifier.isascii()
-        and identifier.isidentifier()
-    )
-
-
-def sanitize_sql_identifier(identifier: str) -> str:
-    """Sanitize a SQL identifier (table/column name).
-
-    Note: This is NOT for SQL values - use parameterized queries for those!
-
-    Args:
-        identifier: The identifier to sanitize.
-
-    Returns:
-        The sanitized identifier.
-
-    Raises:
-        TypeError: If identifier is not a string.
-        ValueError: If identifier is empty or too long.
-
-    """
-    if type(identifier) is not str:
-        raise TypeError(f"identifier must be str, got {type(identifier).__name__}")
-
-    if _is_sql_identifier_fast_safe(identifier):
-        return identifier
-
-    if not identifier:
-        msg = "SQL identifier cannot be empty"
-        raise ValueError(msg)
-
-    if len(identifier) > MAX_SQL_IDENTIFIER_LENGTH:
-        raise ValueError("SQL identifier length exceeds maximum allowed limit")
-
-    return _sanitize_sql_identifier_slow_path(identifier)
