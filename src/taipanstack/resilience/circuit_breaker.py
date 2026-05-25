@@ -418,8 +418,11 @@ class CircuitBreaker:
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
         # Check if exception should be excluded
-        if isinstance(exc, self.config.excluded_exceptions):
-            return
+        try:
+            if isinstance(exc, self.config.excluded_exceptions):
+                return
+        except TypeError:
+            pass  # Corrupted type, do not exclude
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
@@ -451,7 +454,11 @@ class CircuitBreaker:
         """
         if isinstance(result, Err):
             err_val = result.unwrap_err()
-            if isinstance(err_val, self.config.failure_exceptions):
+            try:
+                is_failure = isinstance(err_val, self.config.failure_exceptions)
+            except TypeError:
+                is_failure = True
+            if is_failure:
                 self._record_failure(err_val)
                 return result
             # Ignored exception in Result monad
@@ -511,8 +518,14 @@ class CircuitBreaker:
                 try:
                     result = await func_coro(*args, **kwargs)
                     return self._process_result(result)
-                except self.config.failure_exceptions as e:
-                    self._record_failure(e)
+                except Exception as e:
+                    try:
+                        is_failure = isinstance(e, self.config.failure_exceptions)
+                    except TypeError:
+                        is_failure = True
+                    if is_failure:
+                        self._record_failure(e)
+                        raise
                     raise
                 finally:
                     self._decrement_half_open(is_half_open)
@@ -534,8 +547,14 @@ class CircuitBreaker:
             try:
                 result = func_sync(*args, **kwargs)
                 return self._process_result(result)
-            except self.config.failure_exceptions as e:
-                self._record_failure(e)
+            except Exception as e:
+                try:
+                    is_failure = isinstance(e, self.config.failure_exceptions)
+                except TypeError:
+                    is_failure = True
+                if is_failure:
+                    self._record_failure(e)
+                    raise
                 raise
             finally:
                 self._decrement_half_open(is_half_open)
