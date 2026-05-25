@@ -197,6 +197,7 @@ plugins = ["pydantic.mypy"]
 [[tool.mypy.overrides]]
 module = [
         "mutmut.*",
+        "tests.*",
 ]
 ignore_missing_imports = true
 ignore_errors = true
