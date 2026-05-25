@@ -46,6 +46,10 @@
 **Vulnerability:** Denial of Service (DoS) vulnerability due to reading entire files into memory without size limits.
 **Learning:** `src/taipanstack/resilience/watchdogs/config_watcher.py` uses `path.read_bytes()` and `path.read_text()` without enforcing a maximum file size using `path.stat().st_size` beforehand, which can lead to memory exhaustion.
 **Prevention:** Enforce a maximum file size limit using `path.stat().st_size` before reading files entirely into memory.
+## 2026-05-24 - [Fix] Bounds Validation for Resilience LBYL Type Guards
+**Vulnerability:** Missing `< 0` domain bounds validation in LBYL type guards within numerical resilience state metrics (`circuit_breaker.py` and `retry.py`). While `isinstance` and `math.isfinite` were checked, negative values could corrupt logic (e.g., negative attempts logic bypassing intended constraints).
+**Learning:** In addition to type checking and checking for infinite/NaN values, resilience logic state variables must be strictly bound-checked to prevent logical bypasses when negative numbers are processed.
+**Prevention:** Ensure explicit `< 0` checks are consistently implemented in numerical Look-Before-You-Leap (LBYL) type guards across all resilience classes.
 
 ## 2026-05-25 - [Fix] SSRF guard bypassed by multicast and unspecified IP addresses
 **Vulnerability:** The internal function `_is_ip_safe` within `src/taipanstack/security/guards.py` checked if an IP address was private, loopback, link_local, or reserved using the `ipaddress` library, but missed multicast addresses (like `224.0.0.1`) and unspecified addresses (like `0.0.0.0` or `::`).
