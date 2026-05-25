@@ -27,7 +27,7 @@ async def test_complex_microservice_simulation_chaos() -> None:
         # Validate Security
         sec_res = guard_ssrf(url)
         if isinstance(sec_res, Err):
-            return sec_res # Return SecurityError as Err
+            return sec_res  # Return SecurityError as Err
 
         # Simulated workload (Flaky and slow)
         await asyncio.sleep(0.01)
@@ -39,8 +39,18 @@ async def test_complex_microservice_simulation_chaos() -> None:
 
     # 2. Audit and Chaos (Fuzzing / Thundering Herd)
     async def attacker_task(i: int) -> Result[str, Exception]:
-        url = "http://169.254.169.254/latest/meta-data/" if i % 2 == 0 else "https://api.example.com/data"
-        payload = {"fail": True} if i % 3 == 0 else {"timeout": True} if i % 5 == 0 else {"ok": True}
+        url = (
+            "http://169.254.169.254/latest/meta-data/"
+            if i % 2 == 0
+            else "https://api.example.com/data"
+        )
+        payload = (
+            {"fail": True}
+            if i % 3 == 0
+            else {"timeout": True}
+            if i % 5 == 0
+            else {"ok": True}
+        )
 
         # Execute through orchestrator
         res = await orchestrator.execute(simulated_endpoint, url, payload)
