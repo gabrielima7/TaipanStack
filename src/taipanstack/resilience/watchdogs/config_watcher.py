@@ -89,6 +89,33 @@ def _parse_json(text: str) -> Result[dict[str, object], Exception]:
         return Err(exc)
 
 
+def _read_file_content(path: Path) -> Result[str, Exception]:
+    """Read file content with size validation."""
+    try:
+        if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
+            return Err(
+                ValueError(
+                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
+                )
+            )
+        return Ok(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        return Err(exc)
+
+
+def _parse_content_by_extension(
+    path: Path, text: str
+) -> Result[dict[str, object], Exception]:
+    """Parse file content based on extension."""
+    suffix = path.suffix.lower()
+    if suffix == ".json":
+        return _parse_json(text)
+    if suffix == ".env" or path.name == ".env":
+        return Ok(_parse_env(text))
+
+    return Err(ValueError(f"Unsupported config file extension: {suffix}"))
+
+
 def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
     """Read and parse a configuration file based on its extension.
 
@@ -101,24 +128,11 @@ def _load_file_data(path: Path) -> Result[dict[str, object], Exception]:
         ``Ok(dict)`` with parsed data, or ``Err`` on failure.
 
     """
-    try:
-        if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
-            return Err(
-                ValueError(
-                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
-                )
-            )
-        text = path.read_text(encoding="utf-8")
-    except OSError as exc:
-        return Err(exc)
+    content_result = _read_file_content(path)
+    if isinstance(content_result, Err):
+        return content_result
 
-    suffix = path.suffix.lower()
-    if suffix == ".json":
-        return _parse_json(text)
-    if suffix == ".env" or path.name == ".env":
-        return Ok(_parse_env(text))
-
-    return Err(ValueError(f"Unsupported config file extension: {suffix}"))
+    return _parse_content_by_extension(path, content_result.unwrap())
 
 
 def validate_config(
