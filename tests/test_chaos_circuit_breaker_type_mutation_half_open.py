@@ -1,7 +1,9 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_negative() -> None:
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_negative() -> (
+    None
+):
     breaker = CircuitBreaker(
         name="test_half_open", failure_threshold=3, success_threshold=2
     )
@@ -12,7 +14,9 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_zero() -> None:
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_zero() -> (
+    None
+):
     breaker = CircuitBreaker(
         name="test_half_open", failure_threshold=3, success_threshold=2
     )
@@ -22,7 +26,9 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_corrupted() -> None:
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_corrupted() -> (
+    None
+):
     breaker = CircuitBreaker(
         name="test_half_open", failure_threshold=3, success_threshold=2
     )
