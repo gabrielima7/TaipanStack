@@ -199,7 +199,7 @@ def test_security_decorators_additional_security_decorators_timeout_invalid_time
 
         @timeout(-1.0)
         def my_func():
-            pass
+            return 0
 
 
 def test_security_decorators_additional_security_decorators_deprecated_no_version_no_message():

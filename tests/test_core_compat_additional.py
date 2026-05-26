@@ -31,7 +31,8 @@ def test_core_compat_additional_core_compat_check_free_threading_available_confi
     from taipanstack.core.compat import _check_free_threading_available
 
     class MockSysNoFlags:
-        pass
+        def __init__(self):
+            self.name = "MockSysNoFlags"
 
     with patch("taipanstack.core.compat.sys", MockSysNoFlags()):
         with patch("sysconfig.get_config_var", side_effect=TypeError("mocked")):
