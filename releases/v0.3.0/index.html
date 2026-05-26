@@ -2571,7 +2571,7 @@
 <p>v0.3.0 introduces <strong>6 security, quality, and DevOps features</strong> that elevate TaipanStack to production-grade standards: software supply-chain attestation, custom SAST rules, hardened Docker, property-based testing, mutation testing, and performance benchmarks.</p>
 <hr />
 <h2 id="1-sbom-slsa-attestation">1. SBOM &amp; SLSA Attestation<a class="headerlink" href="#1-sbom-slsa-attestation" title="Permanent link">&para;</a></h2>
-<p><strong>Workflow</strong>: <a href="https://github.com/gabrielima7/TaipanStack/blob/main/.github/workflows/sbom-slsa.yml"><code>.github/workflows/sbom-slsa.yml</code></a></p>
+<p><strong>Workflow</strong>: <a href="https://github.com/gabrielima7/TaipanStack/blob/main/.github/workflows/ci-release-publish.yml"><code>.github/workflows/ci-release-publish.yml</code></a></p>
 <p>Generates a CycloneDX Software Bill of Materials (SBOM) with <a href="https://github.com/anchore/syft">Syft</a> and signs all build artifacts using <a href="https://github.com/sigstore/cosign">Cosign</a> with keyless Sigstore signing.</p>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart LR
