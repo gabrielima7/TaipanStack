@@ -63,3 +63,54 @@ async def test_complex_microservice_simulation_chaos() -> None:
     # The key is that the system doesn't deadlock, memory leak, or return unhandled exceptions out of the Result monad.
     for r in results:
         assert isinstance(r, (Ok, Err)), f"Outcome {r} must be wrapped in Result monad"
+
+
+@pytest.mark.asyncio
+async def test_complex_microservice_simulation_orchestrator_exception() -> None:
+    """Tests the new except Exception branch wrapping _execute_inner."""
+    orchestrator_with_bh = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
+    orchestrator_without_bh = ResilienceOrchestrator()
+
+    async def exploding_endpoint() -> Result[str, Exception]:
+        raise ValueError("Critical simulated explosion")
+
+    # With bulkhead
+    res_bh = await orchestrator_with_bh.execute(exploding_endpoint)
+    assert isinstance(res_bh, Err)
+    assert isinstance(res_bh.err_value, ValueError)
+    assert str(res_bh.err_value) == "Critical simulated explosion"
+
+    # Without bulkhead
+    res_no_bh = await orchestrator_without_bh.execute(exploding_endpoint)
+    assert isinstance(res_no_bh, Err)
+    assert isinstance(res_no_bh.err_value, ValueError)
+    assert str(res_no_bh.err_value) == "Critical simulated explosion"
+
+
+@pytest.mark.asyncio
+async def test_complex_microservice_simulation_orchestrator_exception_coverage() -> (
+    None
+):
+    """Coverage to hit the except Exception logic inside orchestrator execute().
+    We mock _execute_inner to guarantee it raises synchronously.
+    """
+    import unittest.mock
+
+    orchestrator_with_bh = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
+    orchestrator_without_bh = ResilienceOrchestrator()
+
+    async def dummy_endpoint() -> Result[str, Exception]:
+        return Ok("dummy")
+
+    with unittest.mock.patch.object(
+        ResilienceOrchestrator,
+        "_execute_inner",
+        side_effect=RuntimeError("Mock Sync Failure"),
+    ):
+        res_bh = await orchestrator_with_bh.execute(dummy_endpoint)
+        assert isinstance(res_bh, Err)
+        assert isinstance(res_bh.err_value, RuntimeError)
+
+        res_no_bh = await orchestrator_without_bh.execute(dummy_endpoint)
+        assert isinstance(res_no_bh, Err)
+        assert isinstance(res_no_bh.err_value, RuntimeError)

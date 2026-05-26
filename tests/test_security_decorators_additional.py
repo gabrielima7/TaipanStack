@@ -170,7 +170,9 @@ def test_security_decorators_additional_security_decorators_timeout_signal_timeo
 
     @timeout(0.01, use_signal=True)
     def my_func():
-        time.sleep(0.05)
+        start = time.time()
+        while time.time() - start < 0.1:
+            pass
         return 42
 
     with pytest.raises(OperationTimeoutError):
