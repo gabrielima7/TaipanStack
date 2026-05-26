@@ -40,8 +40,6 @@ except ImportError:
     _HAS_REDIS = False
 
 
-
-
 def _breaker_is_open(cb: CircuitBreaker) -> CircuitBreakerError | None:
     """Return a ``CircuitBreakerError`` if the breaker is OPEN.
 
