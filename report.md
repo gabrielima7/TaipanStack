@@ -23,6 +23,8 @@ To conform precisely to `test_<module>_<behavior>_<expected_result>`:
 - **Fix:** Investigating the trace revealed an incorrect regex execution mutating the inner function call incorrectly. The Python script was adjusted to only target specific function assignments safely mapped to `test_func_standard_standard()`.
 - **Failure 2 (File Renaming Restrictions):** Shell-based `git mv` iterations caused recursion faults when moving paths incorrectly named locally without accounting for their relative destination (`fatal: can not move directory into itself`).
 - **Fix:** Switched to a unified Python execution executing system `subprocess.run` exclusively generating proper four-part test strings (e.g., appending `_standard`) and committing atomic `.py` target files accurately.
+- **Failure 3 (GitHub Actions CI Timeouts):** The property tests workflows failed due to race conditions during thread timeout validations where `time.sleep` intervals resolved too quickly for background execution blocks on remote agents.
+- **Fix:** Restored testing precision by replacing unreliable short sleeps with blocking loops `while True: time.sleep(0.01)` that correctly forced thread interruptions explicitly triggering the `OperationTimeoutError`.
 
 ## Final Validation
 The code pipeline, driven by the `make all` command, passed completely with zero issues:
