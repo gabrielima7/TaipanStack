@@ -30,6 +30,7 @@ def test_logging_extra_format_message_masking():
     assert f"password={REDACTED_VALUE}" in msg
     assert "password=secret" not in msg
 
+
 def test_logging_extra_format_message_no_kwargs_with_context():
     """Test _format_message when kwargs are empty but _context is populated."""
     logger = StackLogger()
