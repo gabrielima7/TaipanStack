@@ -9,11 +9,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import redis.asyncio as aioredis  # type: ignore[import-untyped, import-not-found]
-    from sqlalchemy.ext.asyncio import AsyncEngine  # type: ignore[import-untyped, import-not-found]
+    import redis.asyncio as aioredis
+    from sqlalchemy.ext.asyncio import AsyncEngine
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -37,7 +37,7 @@ except ImportError:
     _HAS_SQLALCHEMY = False
 
 try:
-    import redis.asyncio as aioredis  # noqa: F401
+    import redis.asyncio as aioredis
 
     _HAS_REDIS = True
 except ImportError:
