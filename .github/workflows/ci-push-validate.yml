@@ -63,7 +63,7 @@ jobs:
 
       - name: "[Lint] Upload coverage to Codecov"
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
@@ -141,7 +141,7 @@ jobs:
         run: poetry run pip-audit --skip-editable
 
       - name: "[Audit] Run Semgrep"
-        uses: semgrep/semgrep-action@v1
+        uses: returntocorp/semgrep-action@v1
         with:
           config: >-
             auto
