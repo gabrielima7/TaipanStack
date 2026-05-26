@@ -9,4 +9,4 @@ We prioritize security fixes on the latest version (Rolling Release).
 | Older   | :x:                |
 
 ## Reporting a Vulnerability
-If you find a vulnerability, please report it via the [Security](../../security) tab or by email.
+If you find a vulnerability, please report it via the [Security](https://github.com/gabrielima7/TaipanStack/security) tab or by email.

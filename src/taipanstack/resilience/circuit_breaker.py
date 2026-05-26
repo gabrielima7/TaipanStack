@@ -287,7 +287,15 @@ class CircuitBreaker:
         if elapsed is None:
             return False, None
 
-        if math.isfinite(now) and elapsed >= self.config.timeout:
+        timeout = self.config.timeout
+        if (
+            not isinstance(timeout, (int, float))
+            or not math.isfinite(timeout)
+            or timeout < 0
+        ):
+            timeout = 30.0
+
+        if math.isfinite(now) and elapsed >= timeout:
             return self._transition_to_half_open(elapsed)
 
         return False, None
@@ -298,7 +306,15 @@ class CircuitBreaker:
         ) or not math.isfinite(self._state.half_open_attempts):
             return False
 
-        if self._state.half_open_attempts < self.config.success_threshold:
+        success_threshold = self.config.success_threshold
+        if (
+            not isinstance(success_threshold, (int, float))
+            or not math.isfinite(success_threshold)
+            or success_threshold < 1
+        ):
+            success_threshold = 2
+
+        if self._state.half_open_attempts < success_threshold:
             self._state.half_open_attempts += 1
             return True
         return False
@@ -332,7 +348,15 @@ class CircuitBreaker:
         else:
             self._state.success_count += 1
 
-        if self._state.success_count >= self.config.success_threshold:
+        success_threshold = self.config.success_threshold
+        if (
+            not isinstance(success_threshold, (int, float))
+            or not math.isfinite(success_threshold)
+            or success_threshold < 1
+        ):
+            success_threshold = 2
+
+        if self._state.success_count >= success_threshold:
             self._state.state = CircuitState.CLOSED
             self._state.failure_count = 0
             self._state.half_open_attempts = 0
@@ -385,13 +409,21 @@ class CircuitBreaker:
             )
             return (CircuitState.CLOSED, CircuitState.OPEN)
 
-        if self._state.failure_count >= self.config.failure_threshold:
+        failure_threshold = self.config.failure_threshold
+        if (
+            not isinstance(failure_threshold, (int, float))
+            or not math.isfinite(failure_threshold)
+            or failure_threshold < 1
+        ):
+            failure_threshold = 5
+
+        if self._state.failure_count >= failure_threshold:
             self._state.state = CircuitState.OPEN
             logger.warning(
                 "Circuit %s opened after %d failures (threshold=%d)",
                 self.name,
                 self._state.failure_count,
-                self.config.failure_threshold,
+                failure_threshold,
             )
             return (CircuitState.CLOSED, CircuitState.OPEN)
 

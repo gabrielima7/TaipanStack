@@ -8,7 +8,7 @@ hide:
 
 **The Modern Python Foundation** — Launch secure, high-performance Python applications in seconds.
 
-[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci.yml)
+[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml/badge.svg?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 [![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
