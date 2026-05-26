@@ -18,7 +18,7 @@
 
 ---
 
-[**Features**](#-features) • [**Quick Start**](#-quick-start) • [**Architecture**](#-architecture) • [**DevSecOps**](#-devsecops) • [**API**](#-api-highlights) • [**Contributing**](#-contributing)
+[**Features**](#-why-taipan-stack) • [**Quick Start**](#-quick-start) • [**Architecture**](#-architecture) • [**DevSecOps**](#-devsecops) • [**API**](#-api-highlights) • [**Contributing**](#-contributing)
 
 </div>
 
@@ -427,6 +427,6 @@ This project is open-sourced under the [MIT License](LICENSE).
 
 **Made with ❤️ for the Python community**
 
-[⬆ Back to Top](#-taipanstack)
+[⬆ Back to Top](#-taipan-stack)
 
 </div>
