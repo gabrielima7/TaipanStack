@@ -30,11 +30,12 @@
 
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.5.1
-- **Security & DoS Hardening**: Enforced configuration file size limits in config watcher (PR #807) and input length bounds on sanitizers (PR #801) to prevent Denial of Service; updated Starlette to `1.0.1` to resolve PYSEC-2026-161 (PR #804).
-- **Resilience Enhancements**: Checked circuit breaker status inside the orchestrator's retry execution loop (PR #783) and hardened resilience decorators against type mutations under chaos (PR #795, #800, #802, #803).
-- **Complexity & Refactoring**: Reduced complexity in rate limiter, circuit breakers, and security guards (PR #786, #798, #805); removed PyApp configuration (PR #784) and dead compatibility logic (PR #788).
-- **QA Suite Standardization**: Standardized test naming convention (`test_*.py`) and removed code/test suite bypasses, expanding to **1,250 passing tests** with 100% genuine code and branch coverage (PR #797, #808).
+### ✨ What's New in v0.5.2
+- **Sentinel Hardening**: Enforced multicast and unspecified IP address bounds checking inside `guard_ssrf` (PR #826) and added negative domain bounds checks to resilience LBYL type guards (PR #823).
+- **Resilience under Chaos**: Protected `CircuitBreaker` and `Retry` against runtime property type mutations and configuration exception changes under chaos, and fixed `NaN` `last_failure_time` lockout vulnerability (PR #811, #819, #830).
+- **Complexity Refactor**: Reduced cyclomatic and cognitive complexity in watchdogs, orchestrators, bridges, and circuit breakers (PR #813, #817, #821, #835).
+- **QA & Typing**: Standardized test naming convention (`test_*.py`) and refactored test suite to achieve 100% genuine coverage over **1,226 passing tests** (PR #816, #825, #831, #837).
+- **Bridges API Reference**: Added new API documentation reference for the Bridges module (PR #822).
 
 <table>
 <tr>
@@ -71,7 +72,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1,250 tests)
+- **100% code coverage** (1,226 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -113,7 +114,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1,250 tests)
+# Run tests with 100% coverage (1,226 tests)
 make test
 
 # Check architecture contracts
@@ -166,7 +167,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1,250 tests, 100% coverage
+├── tests/                # ✅ 1,226 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container

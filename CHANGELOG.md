@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-05-26
+
+### Security
+- **Fix (High)**: Hardened `guard_ssrf` by validating multicast (`224.0.0.0/4`) and unspecified (`0.0.0.0/8`, `::`) IP addresses to resolve SSRF bypass vectors (PR #826).
+- **Fix (Medium)**: Added domain bounds validation (checking for `< 0` impossible states) to numerical LBYL type guards in `circuit_breaker.py` and `retry.py` (PR #823).
+- **Hardening**: Hardened `SecureBaseModel` to prevent log masking bypasses when payloads contain sets or tuples (PR #829).
+- **Fuzzing**: Hardened JWT validation inside `decode_jwt` by enforcing strict type checking on `algorithms` and `audience` parameters based on property-based fuzz tests (PR #815).
+- **Refactoring**: Purged dead code and unused logic from the security sanitizers module (PR #824).
+
+### Resilience
+- **Fix**: Resolved `NaN` `last_failure_time` lockout vulnerability in circuit breaker (PR #811).
+- **Hardening**: Hardened circuit breaker against runtime property type mutations and configuration exception mutations under chaos injections (PR #811, #819, #830).
+- **Fix**: Safely wrapped arbitrary execution exceptions inside the adaptive orchestrator execution routine (PR #836).
+- **Typing**: Added strict static typing to DB Bridge for improved safety (PR #832).
+
+### Refactoring & Typing
+- **Complexity**: Reduced cyclomatic and cognitive complexity in the core config watcher, resilience orchestrator, http bridge, and circuit breakers (PR #813, #817, #821).
+- **Complexity**: Extracted private helper functions in logging redaction to improve structured logging readability and reduce complexity (PR #835).
+- **Chore**: Fixed unused type ignores causing strict mypy errors on GitHub Actions.
+
+### QA & Testing
+- **Test Suite**: Renamed and standardized all test files to follow the standard `test_*.py` convention and improve structural organization (PR #837).
+- **Coverage**: Refactored the test suite to achieve 100% genuine code and branch coverage, adding edge case coverage for `StackLogger._format_message` (PR #816, #825, #831).
+- **Simulations**: Integrated highly concurrent micro-chaos architecture simulations (`test_simulation_chaos_healing.py`) (PR #827, #828).
+- **Stability**: Standardized verified test suite at **1,226 passing tests** with 100% genuine coverage.
+
+### Documentation
+- **API Reference**: Added API reference pages for the Bridges module in MkDocs (PR #822).
+- **Corrections**: Fixed dead markdown links across README, SECURITY, and mkdocs configuration (PR #833) and synchronized the `ResourceWatcher` API constructor signature (PR #818).
+- **Maintenance**: Updated architecture tree documentation and cleaned up obsolete build-exe targets (PR #814).
+
 ## [0.5.1] - 2026-05-22
 
 ### Security
@@ -751,7 +782,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...v0.5.0
 [0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
