@@ -14,10 +14,6 @@ else:
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 
-JSONValue: TypeAlias = (
-    dict[str, "JSONValue"] | list["JSONValue"] | str | int | float | bool | None
-)
-
 __all__ = ["SecureBaseModel"]
 
 _SENSITIVE_KEY_REGEX = (
@@ -29,9 +25,9 @@ _SENSITIVE_KEY_REGEX = (
 _MAX_RECURSION_DEPTH = 100
 
 
-def _mask_dict(data: dict[str, JSONValue], depth: int) -> dict[str, JSONValue]:
+def _mask_dict(data: dict[str, object], depth: int) -> dict[str, object]:
     """Mask sensitive keys in a dictionary."""
-    masked: dict[str, JSONValue] = {}
+    masked: dict[str, object] = {}
     for k, v in data.items():
         if (
             isinstance(k, str)
@@ -44,12 +40,22 @@ def _mask_dict(data: dict[str, JSONValue], depth: int) -> dict[str, JSONValue]:
     return masked
 
 
-def _mask_list(data: list[JSONValue], depth: int) -> list[JSONValue]:
+def _mask_list(data: list[object], depth: int) -> list[object]:
     """Mask sensitive keys in a list."""
     return [_mask_data(item, depth) for item in data]
 
 
-def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
+def _mask_tuple(data: tuple[object, ...], depth: int) -> tuple[object, ...]:
+    """Mask sensitive keys in a tuple."""
+    return tuple(_mask_data(item, depth) for item in data)
+
+
+def _mask_set(data: set[object], depth: int) -> set[object]:
+    """Mask sensitive keys in a set."""
+    return {_mask_data(item, depth) for item in data}
+
+
+def _mask_data(data: object, _depth: int = 0) -> object:  # noqa: PLR0911
     """Recursively mask sensitive keys in data."""
     if _SENSITIVE_KEY_REGEX is None:
         return data
@@ -59,9 +65,16 @@ def _mask_data(data: JSONValue, _depth: int = 0) -> JSONValue:
         return "<MAX_DEPTH_REACHED>"
 
     if isinstance(data, dict):
-        return _mask_dict(data, _depth + 1)
+        # The cast ensures that we type check against the dictionary types,
+        # but technically we only mask string keys in dicts in Pydantic.
+        # We can safely cast it because Pydantic mostly yields dict[str, object].
+        return _mask_dict(cast(dict[str, object], data), _depth + 1)
     if isinstance(data, list):
-        return _mask_list(data, _depth + 1)
+        return _mask_list(cast(list[object], data), _depth + 1)
+    if isinstance(data, tuple):
+        return _mask_tuple(cast(tuple[object, ...], data), _depth + 1)
+    if isinstance(data, set):
+        return _mask_set(cast(set[object], data), _depth + 1)
     return data
 
 
