@@ -165,7 +165,7 @@ class ResilienceOrchestrator(Generic[T]):
         self._fallback_value = value
         return self
 
-    async def execute(
+    async def execute(  # noqa: PLR0911
         self,
         fn: Callable[P, Awaitable[T]],
         *args: P.args,
@@ -217,12 +217,18 @@ class ResilienceOrchestrator(Generic[T]):
 
             bh._active += 1
             try:
-                return await self._execute_inner(fn, *args, **kwargs)
+                try:
+                    return await self._execute_inner(fn, *args, **kwargs)
+                except Exception as exc:
+                    return self._apply_fallback(Err(exc))
             finally:
                 bh._active -= 1
                 bh._semaphore.release()
 
-        return await self._execute_inner(fn, *args, **kwargs)
+        try:
+            return await self._execute_inner(fn, *args, **kwargs)
+        except Exception as exc:
+            return self._apply_fallback(Err(exc))
 
     def _evaluate_circuit_breaker(self) -> Err[Exception] | None:
         """Check if execution is allowed by the circuit breaker."""
