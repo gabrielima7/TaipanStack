@@ -15,6 +15,7 @@ def test_circuit_breaker_callback_exception_logging():
 
     assert cb.state == CircuitState.OPEN
 
+
 @mock.patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", False)
 def test_circuit_breaker_callback_exception_logging_no_structlog():
     def exploding_callback(old, new):
@@ -28,10 +29,12 @@ def test_circuit_breaker_callback_exception_logging_no_structlog():
 
     assert cb.state == CircuitState.OPEN
 
+
 def test_circuit_breaker_failure_count_property():
     cb = CircuitBreaker()
     cb._state.failure_count = 42
     assert cb.failure_count == 42
+
 
 @mock.patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", False)
 def test_circuit_breaker_notify_state_change_no_callback_no_structlog():
