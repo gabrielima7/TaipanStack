@@ -15,15 +15,18 @@ from taipanstack.security.models import SecureBaseModel
         | st.floats()
         | st.integers()
         | st.none(),
-        lambda children: st.dictionaries(st.text(), children)
-        | st.lists(children)
-        | st.tuples(children)
-        | st.sets(st.text()),
+        lambda children: (
+            st.dictionaries(st.text(), children)
+            | st.lists(children)
+            | st.tuples(children)
+            | st.sets(st.text())
+        ),
         max_leaves=50,
     )
 )
 def test_security_models_fuzz_masking(payload: object) -> None:
     """Fuzz deeply nested payload masking including tuples and sets."""
+
     # Construct a payload containing a known sensitive key nested somewhere inside
     class Container(SecureBaseModel):
         payload: object
@@ -35,6 +38,7 @@ def test_security_models_fuzz_masking(payload: object) -> None:
     # Check that "secret_password" is not in the dumped output as a string representation
     dump_str = str(dumped)
     assert "secret_password" not in dump_str, f"Leak detected: {dump_str}"
+
 
 def test_security_models_max_depth() -> None:
     class Container(SecureBaseModel):
@@ -48,6 +52,7 @@ def test_security_models_max_depth() -> None:
     dumped = model.model_dump()
     dump_str = str(dumped)
     assert "MAX_DEPTH_REACHED" in dump_str
+
 
 def test_security_models_max_depth_collections() -> None:
     class Container(SecureBaseModel):
