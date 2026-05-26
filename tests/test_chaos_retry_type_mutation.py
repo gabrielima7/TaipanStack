@@ -192,11 +192,11 @@ def test_chaos_retry_on_exception() -> None:
     from taipanstack.resilience.retry import RetryError, retry_on_exception
 
     @retry_on_exception((ValueError,), max_attempts=2)
-    def test_func():
+    def test_func_standard_standard():
         raise ValueError("test")
 
     with pytest.raises(RetryError):
-        test_func()
+        test_func_standard_standard()
 
 
 def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> None:
@@ -205,7 +205,8 @@ def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> None:
     r = Retrier()
 
     class CustomExc(BaseException):
-        pass
+        def __init__(self):
+            super().__init__("custom")
 
     with pytest.raises(CustomExc):
         with r:
@@ -225,6 +226,7 @@ def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
 
     # Pass an object instead of a type to trigger TypeError in issubclass
     class InvalidExc:
-        pass
+        def __init__(self):
+            self.invalid = True
 
     assert r._should_retry(InvalidExc()) is False

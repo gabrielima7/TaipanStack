@@ -6,7 +6,8 @@ def test_chaos_circuit_breaker_process_result_corrupted_result() -> None:
     cb = CircuitBreaker()
 
     class CorruptResult:
-        pass
+        def __init__(self):
+            self.corrupt = True
 
     res = CorruptResult()
     # Mocking as Result type, this will just fall through isinstance checks
@@ -24,7 +25,8 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_error() -> None:
 
     # Passing an Err with excluded exception
     class ExcludedError(Exception):
-        pass
+        def __init__(self, msg):
+            super().__init__(msg)
 
     cb = CircuitBreaker(excluded_exceptions=(ExcludedError,))
     res_ex = Err(ExcludedError("test"))

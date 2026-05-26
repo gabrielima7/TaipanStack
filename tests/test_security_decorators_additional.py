@@ -170,9 +170,7 @@ def test_security_decorators_additional_security_decorators_timeout_signal_timeo
 
     @timeout(0.01, use_signal=True)
     def my_func():
-        start = time.time()
-        while time.time() - start < 0.1:
-            pass
+        time.sleep(1.0)
         return 42
 
     with pytest.raises(OperationTimeoutError):
@@ -201,7 +199,7 @@ def test_security_decorators_additional_security_decorators_timeout_invalid_time
 
         @timeout(-1.0)
         def my_func():
-            pass
+            return 0
 
 
 def test_security_decorators_additional_security_decorators_deprecated_no_version_no_message():
@@ -233,7 +231,7 @@ def test_security_decorators_additional_security_decorators_timeout_thread_timeo
 
     @timeout(0.01, use_signal=False)
     def my_func():
-        time.sleep(0.05)
+        time.sleep(1.0)
         return 42
 
     with pytest.raises(OperationTimeoutError):
