@@ -68,7 +68,49 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
     return bool(regex.search(key))
 
 
-def _redact(obj: object, seen: set[int] | None = None) -> object:
+def _redact_mapping(
+    obj: MutableMapping[object, object], seen: set[int]
+) -> dict[object, object]:
+    """Redact a mapping object."""
+    seen.add(id(obj))
+    return {
+        k: (
+            REDACTED_VALUE
+            if _is_sensitive(k, _SENSITIVE_KEY_REGEX)
+            else _redact(v, seen)
+        )
+        for k, v in obj.items()
+    }
+
+
+def _redact_list(obj: list[object], seen: set[int]) -> list[object]:
+    """Redact a list object."""
+    seen.add(id(obj))
+    return [_redact(item, seen) for item in obj]
+
+
+def _redact_tuple(obj: tuple[object, ...], seen: set[int]) -> tuple[object, ...]:
+    """Redact a tuple object."""
+    seen.add(id(obj))
+    return tuple(_redact(item, seen) for item in obj)
+
+
+def _redact_set(obj: set[object], seen: set[int]) -> set[object]:
+    """Redact a set object."""
+    seen.add(id(obj))
+    redacted = set()
+    for item in obj:
+        redacted_item = _redact(item, seen)
+        try:
+            redacted.add(redacted_item)
+        except TypeError:
+            # If the redacted item is unhashable (e.g. a nested mutable object
+            # that was partially redacted or changed type), fallback to string
+            redacted.add(str(redacted_item))
+    return redacted
+
+
+def _redact(obj: object, seen: set[int] | None = None) -> object:  # noqa: PLR0911
     """Redact sensitive data recursively with circular reference protection.
 
     Args:
@@ -90,24 +132,16 @@ def _redact(obj: object, seen: set[int] | None = None) -> object:
         return REDACTED_VALUE
 
     if isinstance(obj, MutableMapping):
-        seen.add(id(obj))
-        # Create a new dict to avoid in-place mutation of shared state
-        return {
-            k: (
-                REDACTED_VALUE
-                if _is_sensitive(k, _SENSITIVE_KEY_REGEX)
-                else _redact(v, seen)
-            )
-            for k, v in obj.items()
-        }
+        return _redact_mapping(obj, seen)
 
     if isinstance(obj, list):
-        seen.add(id(obj))
-        return [_redact(item, seen) for item in obj]
+        return _redact_list(obj, seen)
 
     if isinstance(obj, tuple):
-        seen.add(id(obj))
-        return tuple(_redact(item, seen) for item in obj)
+        return _redact_tuple(obj, seen)
+
+    if isinstance(obj, set):
+        return _redact_set(obj, seen)
 
     return obj
 
