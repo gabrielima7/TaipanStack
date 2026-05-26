@@ -9,7 +9,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import redis.asyncio as aioredis  # type: ignore[import-untyped, import-not-found]
+    from sqlalchemy.ext.asyncio import AsyncEngine  # type: ignore[import-untyped, import-not-found]
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -74,7 +78,7 @@ class ResilientDatabase:
 
     def __init__(
         self,
-        engine: Any,
+        engine: AsyncEngine,
         *,
         circuit_breaker: CircuitBreaker | None = None,
         retry_config: RetryConfig | None = None,
@@ -213,7 +217,7 @@ class ResilientRedis:
 
     def __init__(
         self,
-        client: Any,
+        client: aioredis.Redis[bytes | str],
         *,
         circuit_breaker: CircuitBreaker | None = None,
     ) -> None:
