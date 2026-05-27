@@ -116,7 +116,9 @@ async def test_complex_microservice_simulation_orchestrator_exception_coverage()
         assert isinstance(res_no_bh.err_value, RuntimeError)
 
 
-def test_complex_microservice_simulation_filesystem_base_exception_leak(tmp_path) -> None:
+def test_complex_microservice_simulation_filesystem_base_exception_leak(
+    tmp_path,
+) -> None:
     import unittest.mock
     from pathlib import Path
 
@@ -126,7 +128,9 @@ def test_complex_microservice_simulation_filesystem_base_exception_leak(tmp_path
     test_content = "test content"
 
     # Mock Path.rename to raise a BaseException
-    with unittest.mock.patch.object(Path, "rename", side_effect=KeyboardInterrupt("Mock KBI")):
+    with unittest.mock.patch.object(
+        Path, "rename", side_effect=KeyboardInterrupt("Mock KBI")
+    ):
         with pytest.raises(KeyboardInterrupt):
             safe_write(test_file, test_content)
 
