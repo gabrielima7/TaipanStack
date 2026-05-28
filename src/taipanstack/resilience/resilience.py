@@ -65,8 +65,13 @@ def fallback(
                         return Ok(fallback_value)
                     elif isinstance(result, Ok):
                         return result
-                except exceptions:
-                    return Ok(fallback_value)
+                except Exception as e:
+                    try:
+                        if isinstance(e, exceptions):
+                            return Ok(fallback_value)
+                    except TypeError:
+                        pass
+                    raise
                 return Err(cast(E, RuntimeError("Unreachable")))
 
             return async_wrapper
@@ -81,8 +86,13 @@ def fallback(
                     return Ok(fallback_value)
                 elif isinstance(result, Ok):
                     return result
-            except exceptions:
-                return Ok(fallback_value)
+            except Exception as e:
+                try:
+                    if isinstance(e, exceptions):
+                        return Ok(fallback_value)
+                except TypeError:
+                    pass
+                raise
             return Err(cast(E, RuntimeError("Unreachable")))
 
         return sync_wrapper
