@@ -73,7 +73,7 @@ TaipanStack/
 │           ├── filesystem.py      # Safe file operations
 │           └── subprocess.py      # Sandboxed subprocess execution
 ├── tests/                    # ✅ 1,226 tests, 100% coverage
-│   ├── test_property_sanitizers.py # Hypothesis fuzzing
+│   ├── test_property_sanitizers_standard.py # Hypothesis fuzzing
 │   └── test_v034_async_retry_circuit.py # Async tests for retry and circuit breaker
 ├── docs/                     # 📖 MkDocs Material documentation
 ├── .semgrep/                 # 🔍 Custom SAST rules
