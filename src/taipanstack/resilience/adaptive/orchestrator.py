@@ -165,7 +165,53 @@ class ResilienceOrchestrator(Generic[T]):
         self._fallback_value = value
         return self
 
-    async def execute(  # noqa: PLR0911
+    async def _execute_with_bulkhead(
+        self,
+        bh: Bulkhead,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        """Execute through the bulkhead layer."""
+        if bh.queued >= bh._max_queue:
+            result: Result[T, Exception] = Err(
+                BulkheadFullError(bh.name, bh._max_concurrent, bh._max_queue)
+            )
+            return self._apply_fallback(result)
+
+        bh._queued += 1
+        try:
+            try:
+                await asyncio.wait_for(
+                    bh._semaphore.acquire(),
+                    timeout=bh._timeout,
+                )
+            except TimeoutError:
+                return self._apply_fallback(
+                    Err(
+                        TimeoutError(
+                            f"Bulkhead '{bh.name}' timed out after {bh._timeout}s"
+                        )
+                    )
+                )
+            except (RuntimeError, OSError, MemoryError) as e:
+                return self._apply_fallback(
+                    Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+                )
+        finally:
+            bh._queued -= 1
+
+        bh._active += 1
+        try:
+            try:
+                return await self._execute_inner(fn, *args, **kwargs)
+            except Exception as exc:
+                return self._apply_fallback(Err(exc))
+        finally:
+            bh._active -= 1
+            bh._semaphore.release()
+
+    async def execute(
         self,
         fn: Callable[P, Awaitable[T]],
         *args: P.args,
@@ -186,44 +232,9 @@ class ResilienceOrchestrator(Generic[T]):
         """
         # Layer 1: Bulkhead — use semaphore directly to avoid double-wrapping
         if self._bulkhead is not None:
-            bh = self._bulkhead
-            if bh.queued >= bh._max_queue:
-                result: Result[T, Exception] = Err(
-                    BulkheadFullError(bh.name, bh._max_concurrent, bh._max_queue)
-                )
-                return self._apply_fallback(result)
-
-            bh._queued += 1
-            try:
-                try:
-                    await asyncio.wait_for(
-                        bh._semaphore.acquire(),
-                        timeout=bh._timeout,
-                    )
-                except TimeoutError:
-                    return self._apply_fallback(
-                        Err(
-                            TimeoutError(
-                                f"Bulkhead '{bh.name}' timed out after {bh._timeout}s"
-                            )
-                        )
-                    )
-                except (RuntimeError, OSError, MemoryError) as e:
-                    return self._apply_fallback(
-                        Err(RuntimeError(f"Resource exhaustion: {e!s}"))
-                    )
-            finally:
-                bh._queued -= 1
-
-            bh._active += 1
-            try:
-                try:
-                    return await self._execute_inner(fn, *args, **kwargs)
-                except Exception as exc:
-                    return self._apply_fallback(Err(exc))
-            finally:
-                bh._active -= 1
-                bh._semaphore.release()
+            return await self._execute_with_bulkhead(
+                self._bulkhead, fn, *args, **kwargs
+            )
 
         try:
             return await self._execute_inner(fn, *args, **kwargs)
