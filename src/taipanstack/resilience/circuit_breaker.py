@@ -260,8 +260,13 @@ class CircuitBreaker:
         if not isinstance(self._state.last_failure_time, (int, float)):
             return None
 
+        try:
+            safe_timeout = float(self.config.timeout)
+        except (TypeError, ValueError):
+            safe_timeout = 30.0
+
         if not math.isfinite(self._state.last_failure_time):
-            return float(self.config.timeout)
+            return safe_timeout
 
         elapsed = now - float(self._state.last_failure_time)
 
@@ -269,7 +274,7 @@ class CircuitBreaker:
         # If elapsed < 0, a backward clock jump occurred. We should
         # allow a transition to prevent permanent lockout.
         if elapsed < 0:
-            return float(self.config.timeout)
+            return safe_timeout
         return elapsed
 
     def _transition_to_half_open(
