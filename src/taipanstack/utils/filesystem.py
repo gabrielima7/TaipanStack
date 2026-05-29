@@ -221,7 +221,7 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
         if path.exists():
             path.unlink()
         temp_file.rename(path)
-    except Exception:
+    except BaseException:
         # Clean up descriptor and temp file on error
         with contextlib.suppress(OSError):
             os.close(_fd)

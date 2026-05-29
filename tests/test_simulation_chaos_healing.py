@@ -114,3 +114,25 @@ async def test_complex_microservice_simulation_orchestrator_exception_coverage()
         res_no_bh = await orchestrator_without_bh.execute(dummy_endpoint)
         assert isinstance(res_no_bh, Err)
         assert isinstance(res_no_bh.err_value, RuntimeError)
+
+
+def test_complex_microservice_simulation_filesystem_base_exception_leak(
+    tmp_path,
+) -> None:
+    import unittest.mock
+    from pathlib import Path
+
+    from taipanstack.utils.filesystem import safe_write
+
+    test_file = tmp_path / "test_base_exc.txt"
+    test_content = "test content"
+
+    # Mock Path.rename to raise a BaseException
+    with unittest.mock.patch.object(
+        Path, "rename", side_effect=KeyboardInterrupt("Mock KBI")
+    ):
+        with pytest.raises(KeyboardInterrupt):
+            safe_write(test_file, test_content)
+
+    # Verify the temp file was cleaned up
+    assert not list(tmp_path.glob("test_base_exc.txt.tmp*"))
