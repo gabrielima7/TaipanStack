@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.2] - 2026-05-26
+## 0.5.2 - 2026-05-26
 
 ### Security
 - **Fix (High)**: Hardened `guard_ssrf` by validating multicast (`224.0.0.0/4`) and unspecified (`0.0.0.0/8`, `::`) IP addresses to resolve SSRF bypass vectors (PR #826).
@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Corrections**: Fixed dead markdown links across README, SECURITY, and mkdocs configuration (PR #833) and synchronized the `ResourceWatcher` API constructor signature (PR #818).
 - **Maintenance**: Updated architecture tree documentation and cleaned up obsolete build-exe targets (PR #814).
 
-## [0.5.1] - 2026-05-22
+## 0.5.1 - 2026-05-22
 
 ### Security
 - **Fix (High)**: Hardened sanitizers against memory/CPU exhaustion Denial of Service (DoS) by enforcing strict length bounds (filename, env values, and SQL identifiers) (PR #801).
@@ -532,7 +532,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Release**: Re-release of `v0.3.4` contents as `v0.3.5` — the original `v0.3.4` tag was accidentally published to PyPI in an incomplete state. Since PyPI does not allow overwriting existing versions, this patch release contains the exact same intended changes as `v0.3.4`.
 
-## [0.3.4] - 2026-03-04
+## 0.3.4 - 2026-03-04
 
 ### Security
 - **Critical**: Fixed plaintext password storage in `UserService.create_user` — passwords are now hashed before being stored (PR #93)
@@ -566,7 +566,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI**: Added `zypper removerepo repo-openh264 || true` before package install on openSUSE Leap runners (PR #116 related)
 - **Dependencies**: Bumped GitHub Actions group (`actions/checkout`, `actions/setup-python`, etc.) to latest versions (PR #95)
 
-## [0.3.3] - 2026-03-03
+## 0.3.3 - 2026-03-03
 
 ### Added
 - **Core/Result**: `@safe` decorator now supports `async def` functions — wraps coroutines so that `await safe_fn()` returns `Result[T, Exception]` instead of raising. Uses `inspect.iscoroutinefunction` internally and two `@overload` signatures to preserve precise type narrowing in mypy/pyright strict mode.
@@ -581,7 +581,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Refactoring**: Simplified `validate_project_name` by decomposing complex logic into smaller, independent private helpers (`_validate_type`, `_check_project_name_chars`, etc.) (PR #79).
 - **QA/Mutation**: `[tool.mutmut]` `paths_to_mutate` expanded to include `security/validators.py` and `security/guards.py`; `tests_dir` updated correspondingly.
 
-## [0.3.2] - 2026-03-02
+## 0.3.2 - 2026-03-02
 
 ### Added
 - **Docs**: MkDocs Material documentation portal
@@ -595,7 +595,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Security**: Fixed potential XSS vulnerabilities in security module docstrings
 - **Types**: Fixed type annotation for `_TRAVERSAL_PATTERNS` to respect pyright strict mode
 
-## [0.3.1] - 2026-02-27
+## 0.3.1 - 2026-02-27
 
 ### Added
 - **Type Hinting**: `@overload` signatures for `unwrap_or` and `unwrap_or_else` in `result.py` — enables precise type narrowing in mypy/pyright strict mode
@@ -614,7 +614,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Version mismatch**: `__init__.py` had `__version__ = "2.0.0"` (legacy from project rename) — now aligned to `"0.3.1"` matching `pyproject.toml`
 
-## [0.3.0] - 2026-02-26
+## 0.3.0 - 2026-02-26
 
 ### Added
 - **Sec — SBOM & SLSA**: GitHub Actions workflow generating CycloneDX SBOM via `syft` and signing artifacts with `cosign` (Sigstore keyless OIDC)
@@ -697,14 +697,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Regenerated `poetry.lock` to fix CI `pytest not found` error
 - Poetry lock was out of sync causing CI to install only 8 packages instead of full dev dependencies
 
-## [0.2.2] - 2026-02-13
+## 0.2.2 - 2026-02-13
 
 ### Changed
 - Improved test coverage from 89% to 96.62% with polyfactory integration
 - Enhanced test coverage using polyfactory for test data generation
 - Achieved 642 passing tests
 
-## [0.2.1] - 2026-02-12
+## 0.2.1 - 2026-02-12
 
 ### Fixed
 - Fixed UP042: Changed `VersionTier` to inherit from `StrEnum`
@@ -716,7 +716,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added comprehensive tests for `config.version_config` (100% coverage)
 - Test coverage improved from 89.01% to 96.62% (642 tests)
 
-## [0.2.0] - 2026-02-03
+## 0.2.0 - 2026-02-03
 
 ### Changed
 - **BREAKING**: Renamed project from "Stack" to "TaipanStack"
@@ -783,8 +783,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation in README
 
 [Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...HEAD
-[0.5.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.1...v0.5.2
-[0.5.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...v0.5.0
 [0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
 [0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
@@ -803,11 +801,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.4...v0.3.5
-[0.3.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.3...v0.3.4
-[0.3.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.2...v0.3.3
-[0.3.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.1...v0.3.2
-[0.3.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.9...v0.3.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.6...v0.2.7
@@ -815,7 +808,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.1.0
