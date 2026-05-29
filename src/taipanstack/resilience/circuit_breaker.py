@@ -241,6 +241,9 @@ class CircuitBreaker:
 
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
+        if not isinstance(now, (int, float)):
+            return float(self.config.timeout)
+
         if not isinstance(self._state.last_failure_time, (int, float)):
             return None
 
@@ -295,7 +298,10 @@ class CircuitBreaker:
         ):
             timeout = 30.0
 
-        if math.isfinite(now) and elapsed >= timeout:
+        if isinstance(now, (int, float)) and math.isfinite(now) and elapsed >= timeout:
+            return self._transition_to_half_open(elapsed)
+        elif not isinstance(now, (int, float)) and elapsed >= timeout:
+            # Allow half-open transition even if now is corrupted, using elapsed logic
             return self._transition_to_half_open(elapsed)
 
         return False, None
