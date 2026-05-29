@@ -129,11 +129,7 @@ class CircuitBreaker:
     @staticmethod
     def _is_valid_metric(val: object, min_val: float = 0) -> bool:
         """Validate that a metric is a finite number >= min_val."""
-        return (
-            isinstance(val, (int, float))
-            and math.isfinite(val)
-            and val >= min_val
-        )
+        return isinstance(val, (int, float)) and math.isfinite(val) and val >= min_val
 
     @staticmethod
     def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
