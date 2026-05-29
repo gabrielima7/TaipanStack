@@ -127,6 +127,15 @@ class CircuitBreaker:
     """
 
     @staticmethod
+    def _is_valid_metric(val: object, min_val: float = 0) -> bool:
+        """Validate that a metric is a finite number >= min_val."""
+        return (
+            isinstance(val, (int, float))
+            and math.isfinite(val)
+            and val >= min_val
+        )
+
+    @staticmethod
     def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
         if not math.isfinite(value) or value < min_val:
             raise ValueError(err_msg)
@@ -241,6 +250,8 @@ class CircuitBreaker:
 
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
+        # Note: specifically validates last_failure_time without _is_valid_metric
+        # because it handles None uniquely and elapsed >= 0 is checked later.
         if not isinstance(self._state.last_failure_time, (int, float)):
             return None
 
@@ -288,11 +299,7 @@ class CircuitBreaker:
             return False, None
 
         timeout = self.config.timeout
-        if (
-            not isinstance(timeout, (int, float))
-            or not math.isfinite(timeout)
-            or timeout < 0
-        ):
+        if not self._is_valid_metric(timeout):
             timeout = 30.0
 
         if math.isfinite(now) and elapsed >= timeout:
@@ -301,17 +308,11 @@ class CircuitBreaker:
         return False, None
 
     def _handle_attempt_half_open(self) -> bool:
-        if not isinstance(
-            self._state.half_open_attempts, (int, float)
-        ) or not math.isfinite(self._state.half_open_attempts):
+        if not self._is_valid_metric(self._state.half_open_attempts):
             return False
 
         success_threshold = self.config.success_threshold
-        if (
-            not isinstance(success_threshold, (int, float))
-            or not math.isfinite(success_threshold)
-            or success_threshold < 1
-        ):
+        if not self._is_valid_metric(success_threshold, min_val=1):
             success_threshold = 2
 
         if self._state.half_open_attempts < success_threshold:
@@ -338,22 +339,14 @@ class CircuitBreaker:
         return should_attempt
 
     def _handle_success_half_open(self) -> tuple[CircuitState, CircuitState] | None:
-        if (
-            not isinstance(self._state.success_count, (int, float))
-            or not math.isfinite(self._state.success_count)
-            or self._state.success_count < 0
-        ):
+        if not self._is_valid_metric(self._state.success_count):
             # Type corruption detected, reset and increment
             self._state.success_count = 1
         else:
             self._state.success_count += 1
 
         success_threshold = self.config.success_threshold
-        if (
-            not isinstance(success_threshold, (int, float))
-            or not math.isfinite(success_threshold)
-            or success_threshold < 1
-        ):
+        if not self._is_valid_metric(success_threshold, min_val=1):
             success_threshold = 2
 
         if self._state.success_count >= success_threshold:
@@ -397,11 +390,7 @@ class CircuitBreaker:
     def _handle_failure_closed(self) -> tuple[CircuitState, CircuitState] | None:
         """Handle failure when in CLOSED state."""
         # Check against corrupted NaN/Inf failure_count
-        if (
-            not isinstance(self._state.failure_count, (int, float))
-            or not math.isfinite(self._state.failure_count)
-            or self._state.failure_count < 0
-        ):
+        if not self._is_valid_metric(self._state.failure_count):
             self._state.state = CircuitState.OPEN
             logger.warning(
                 "Circuit %s opened due to state/type corruption in failure_count",
@@ -410,11 +399,7 @@ class CircuitBreaker:
             return (CircuitState.CLOSED, CircuitState.OPEN)
 
         failure_threshold = self.config.failure_threshold
-        if (
-            not isinstance(failure_threshold, (int, float))
-            or not math.isfinite(failure_threshold)
-            or failure_threshold < 1
-        ):
+        if not self._is_valid_metric(failure_threshold, min_val=1):
             failure_threshold = 5
 
         if self._state.failure_count >= failure_threshold:
@@ -430,11 +415,7 @@ class CircuitBreaker:
         return None
 
     def _update_failure_metrics(self) -> None:
-        if (
-            not isinstance(self._state.failure_count, (int, float))
-            or not math.isfinite(self._state.failure_count)
-            or self._state.failure_count < 0
-        ):
+        if not self._is_valid_metric(self._state.failure_count):
             # Handle type mutation (e.g. failure_count became string) or Inf/NaN
             # Safe degradation: reset to max so it opens immediately
             self._state.failure_count = self.config.failure_threshold
@@ -506,11 +487,7 @@ class CircuitBreaker:
 
     def _is_valid_half_open_attempts(self) -> bool:
         """Validate half-open attempts value against corruption."""
-        return (
-            isinstance(self._state.half_open_attempts, (int, float))
-            and math.isfinite(self._state.half_open_attempts)
-            and self._state.half_open_attempts >= 0
-        )
+        return self._is_valid_metric(self._state.half_open_attempts)
 
     def _safe_decrement_half_open_attempts(self) -> None:
         """Safely decrement half-open attempts."""
