@@ -156,7 +156,7 @@ async def test_orchestrator_bulkhead_full():
 async def test_orchestrator_bulkhead_timeout():
     # Set a very low timeout for semaphore acquisition
     orch = ResilienceOrchestrator().with_bulkhead(
-        max_concurrent=1, max_queue=1, timeout=0.01
+        max_concurrent=1, max_queue=5, timeout=0.01
     )
 
     async def slow_fn():
