@@ -328,7 +328,7 @@ def _raise_retry_error(
     )
 
 
-def retry(
+def retry(  # noqa: PLR0915
     *,
     max_attempts: int = 3,
     initial_delay: float = 1.0,
@@ -382,7 +382,7 @@ def retry(
         on_retry=on_retry,
     )
 
-    def decorator(
+    def decorator(  # noqa: PLR0915
         func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
@@ -399,11 +399,19 @@ def retry(
                         last_result = await func_coro(*args, **kwargs)
                         if isinstance(last_result, Err):
                             err_val = last_result.unwrap_err()
-                            if isinstance(err_val, on):
-                                raise err_val
+                            try:
+                                if isinstance(err_val, on):
+                                    raise err_val
+                            except TypeError:
+                                pass
                         return last_result
-                    except on as e:
-                        last_exception = e
+                    except BaseException as e:
+                        try:
+                            if not isinstance(e, on):
+                                raise
+                        except TypeError:
+                            raise e from None
+                        last_exception = e if isinstance(e, Exception) else None
 
                         if attempt == max_attempts:
                             _log_all_failed(
@@ -447,11 +455,19 @@ def retry(
                     last_result = func_sync(*args, **kwargs)
                     if isinstance(last_result, Err):
                         err_val = last_result.unwrap_err()
-                        if isinstance(err_val, on):
-                            raise err_val
+                        try:
+                            if isinstance(err_val, on):
+                                raise err_val
+                        except TypeError:
+                            pass
                     return last_result
-                except on as e:
-                    last_exception = e
+                except BaseException as e:
+                    try:
+                        if not isinstance(e, on):
+                            raise
+                    except TypeError:
+                        raise e from None
+                    last_exception = e if isinstance(e, Exception) else None
 
                     if attempt == max_attempts:
                         _log_all_failed(
