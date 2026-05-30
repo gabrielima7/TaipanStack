@@ -137,7 +137,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,
+            **kwargs,  # type: ignore[arg-type]
         )
         return cast(dict[str, object], _mask_data(data))
 
@@ -183,7 +183,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,
+            **kwargs,  # type: ignore[arg-type]
         )
         masked_dict = _mask_data(dumped_dict)
         # We need to respect Pydantic's indent/separators if possible,
