@@ -377,8 +377,7 @@ def retry(  # noqa: PLR0915
         on = (on,)
     elif not isinstance(on, tuple):
         msg = (
-            "'on' parameter must be an exception class or a tuple of "
-            "exception classes"
+            "'on' parameter must be an exception class or a tuple of exception classes"
         )
         raise TypeError(msg)
 
