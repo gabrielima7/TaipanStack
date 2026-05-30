@@ -69,3 +69,68 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runt
         assert isinstance(result.unwrap_err(), RuntimeError)
         assert "Resource exhaustion" in str(result.unwrap_err())
         assert "Event loop closed" in str(result.unwrap_err())
+
+
+@pytest.mark.asyncio
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_with_fallback() -> (
+    None
+):
+    """Chaos test: Inject OSError when acquiring semaphore in Orchestrator and test fallback."""
+
+    orchestrator: ResilienceOrchestrator[str] = (
+        ResilienceOrchestrator("test_orch")
+        .with_bulkhead(max_concurrent=1, max_queue=1)
+        .with_fallback("my_fallback")
+    )
+
+    async def dummy_task() -> str:
+        return "success"
+
+    with patch("asyncio.Semaphore.acquire", side_effect=OSError("Too many open files")):
+        result = await orchestrator.execute(dummy_task)
+        assert result.is_ok()
+        assert result.unwrap() == "my_fallback"
+
+
+@pytest.mark.asyncio
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_with_fallback() -> (
+    None
+):
+    """Chaos test: Inject MemoryError when acquiring semaphore in Orchestrator and test fallback."""
+
+    orchestrator: ResilienceOrchestrator[str] = (
+        ResilienceOrchestrator("test_orch")
+        .with_bulkhead(max_concurrent=1, max_queue=1)
+        .with_fallback("my_fallback")
+    )
+
+    async def dummy_task() -> str:
+        return "success"
+
+    with patch("asyncio.Semaphore.acquire", side_effect=MemoryError("Out of memory")):
+        result = await orchestrator.execute(dummy_task)
+        assert result.is_ok()
+        assert result.unwrap() == "my_fallback"
+
+
+@pytest.mark.asyncio
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_with_fallback() -> (
+    None
+):
+    """Chaos test: Inject RuntimeError when acquiring semaphore in Orchestrator and test fallback."""
+
+    orchestrator: ResilienceOrchestrator[str] = (
+        ResilienceOrchestrator("test_orch")
+        .with_bulkhead(max_concurrent=1, max_queue=1)
+        .with_fallback("my_fallback")
+    )
+
+    async def dummy_task() -> str:
+        return "success"
+
+    with patch(
+        "asyncio.Semaphore.acquire", side_effect=RuntimeError("Event loop closed")
+    ):
+        result = await orchestrator.execute(dummy_task)
+        assert result.is_ok()
+        assert result.unwrap() == "my_fallback"
