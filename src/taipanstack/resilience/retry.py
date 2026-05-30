@@ -372,6 +372,24 @@ def retry(  # noqa: PLR0915
         ...     return do_something()
 
     """
+    # Validate 'on' parameter at definition time (Fail-Fast)
+    if isinstance(on, type) and issubclass(on, BaseException):
+        on = (on,)
+    elif not isinstance(on, tuple):
+        msg = (
+            "'on' parameter must be an exception class or a tuple of "
+            "exception classes"
+        )
+        raise TypeError(msg)
+
+    for exc_type in on:
+        if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
+            msg = (
+                f"All elements in 'on' must be subclasses of BaseException, "
+                f"got {type(exc_type).__name__}"
+            )
+            raise TypeError(msg)
+
     config = RetryConfig(
         max_attempts=max_attempts,
         initial_delay=initial_delay,
@@ -382,7 +400,7 @@ def retry(  # noqa: PLR0915
         on_retry=on_retry,
     )
 
-    def decorator(  # noqa: PLR0915
+    def decorator(
         func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
@@ -399,19 +417,11 @@ def retry(  # noqa: PLR0915
                         last_result = await func_coro(*args, **kwargs)
                         if isinstance(last_result, Err):
                             err_val = last_result.unwrap_err()
-                            try:
-                                if isinstance(err_val, on):
-                                    raise err_val
-                            except TypeError:
-                                pass
+                            if isinstance(err_val, on):
+                                raise err_val
                         return last_result
-                    except BaseException as e:
-                        try:
-                            if not isinstance(e, on):
-                                raise
-                        except TypeError:
-                            raise e from None
-                        last_exception = e if isinstance(e, Exception) else None
+                    except on as e:
+                        last_exception = e
 
                         if attempt == max_attempts:
                             _log_all_failed(
@@ -455,19 +465,11 @@ def retry(  # noqa: PLR0915
                     last_result = func_sync(*args, **kwargs)
                     if isinstance(last_result, Err):
                         err_val = last_result.unwrap_err()
-                        try:
-                            if isinstance(err_val, on):
-                                raise err_val
-                        except TypeError:
-                            pass
+                        if isinstance(err_val, on):
+                            raise err_val
                     return last_result
-                except BaseException as e:
-                    try:
-                        if not isinstance(e, on):
-                            raise
-                    except TypeError:
-                        raise e from None
-                    last_exception = e if isinstance(e, Exception) else None
+                except on as e:
+                    last_exception = e
 
                     if attempt == max_attempts:
                         _log_all_failed(
