@@ -804,7 +804,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.2.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.6...v0.2.7
-[0.2.6]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.5...v0.2.6
+[0.2.6]: https://github.com/gabrielima7/TaipanStack/releases/tag/v0.2.6
 [0.2.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.2.2...v0.2.3
