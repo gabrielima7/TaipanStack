@@ -115,7 +115,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        polymorphic_serialization: bool | None = None,
+        **kwargs: object,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -137,7 +137,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
+            **kwargs,
         )
         return cast(dict[str, object], _mask_data(data))
 
@@ -158,7 +158,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        polymorphic_serialization: bool | None = None,
+        **kwargs: object,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -183,7 +183,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
+            **kwargs,
         )
         masked_dict = _mask_data(dumped_dict)
         # We need to respect Pydantic's indent/separators if possible,

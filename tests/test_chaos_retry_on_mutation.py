@@ -66,3 +66,18 @@ def test_chaos_retry_non_exception_class_in_tuple() -> None:
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func_tuple():
             pass
+
+
+def test_chaos_retry_single_exception_type_not_tuple():
+    call_count = 0
+
+    @retry(max_attempts=2, on=ValueError)
+    def test_func():
+        nonlocal call_count
+        call_count += 1
+        if call_count < 2:
+            raise ValueError("fail first")
+        return "success"
+
+    assert test_func() == "success"
+    assert call_count == 2
