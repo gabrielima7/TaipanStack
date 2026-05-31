@@ -4932,12 +4932,14 @@ False to let it propagate.</p>
 </span><span id="__span-0-5">    <span class="n">max_delay</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">60.0</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">exponential_base</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
 </span><span id="__span-0-7">    <span class="n">jitter</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-8">    <span class="n">on</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n"><span title="Exception">Exception</span></span><span class="p">,),</span>
-</span><span id="__span-0-9">    <span class="n">reraise</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-10">    <span class="n">log_retries</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-11">    <span class="n">on_retry</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
-</span><span id="__span-0-12">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.resilience.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></span>
+</span><span id="__span-0-8">    <span class="n">on</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-0-9">        <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span>
+</span><span id="__span-0-10">    <span class="p">),</span>
+</span><span id="__span-0-11">    <span class="n">reraise</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-12">    <span class="n">log_retries</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-13">    <span class="n">on_retry</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+</span><span id="__span-0-14">    <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-15"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            RetryDecorator (taipanstack.resilience.retry.RetryDecorator)" href="#taipanstack.utils.retry.RetryDecorator">RetryDecorator</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5067,7 +5069,7 @@ Detects coroutine functions and preserves their async nature.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="tuple">tuple</span>[<span title="type">type</span>[<span title="Exception">Exception</span>], ...]</code>
+                      <code><span title="tuple">tuple</span>[<span title="type">type</span>[<span title="Exception">Exception</span>], ...] | <span title="type">type</span>[<span title="Exception">Exception</span>]</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
