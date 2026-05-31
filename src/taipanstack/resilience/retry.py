@@ -399,7 +399,7 @@ def retry(  # noqa: PLR0915
         on_retry=on_retry,
     )
 
-    def decorator(
+    def decorator(  # noqa: PLR0915
         func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
@@ -417,9 +417,15 @@ def retry(  # noqa: PLR0915
                         if isinstance(last_result, Err):
                             err_val = last_result.unwrap_err()
                             if isinstance(err_val, on):
-                                raise err_val
+                                raise err_val  # noqa: TRY301
                         return last_result
-                    except on as e:
+                    except Exception as e:
+                        try:
+                            is_match = isinstance(e, on)
+                        except TypeError:
+                            is_match = False
+                        if not is_match:
+                            raise
                         last_exception = e
 
                         if attempt == max_attempts:
@@ -465,9 +471,15 @@ def retry(  # noqa: PLR0915
                     if isinstance(last_result, Err):
                         err_val = last_result.unwrap_err()
                         if isinstance(err_val, on):
-                            raise err_val
+                            raise err_val  # noqa: TRY301
                     return last_result
-                except on as e:
+                except Exception as e:
+                    try:
+                        is_match = isinstance(e, on)
+                    except TypeError:
+                        is_match = False
+                    if not is_match:
+                        raise
                     last_exception = e
 
                     if attempt == max_attempts:

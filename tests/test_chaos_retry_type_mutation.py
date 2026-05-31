@@ -218,6 +218,46 @@ def test_chaos_retry_exit_success() -> None:
     r.__exit__(None, None, None)
 
 
+@pytest.mark.asyncio
+async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
+    """
+    Test the try...except TypeError block for isinstance inside the retry decorator.
+    """
+    from taipanstack.resilience.retry import retry
+
+    @retry(max_attempts=2, on=ValueError)
+    async def async_fail():
+        raise ValueError("async fail")
+
+    @retry(max_attempts=2, on=ValueError)
+    def sync_fail():
+        raise ValueError("sync fail")
+
+    # We can't directly mock the closure variable, but we can patch isinstance
+    # or simulate the type error by using a class that raises TypeError in isinstance.
+
+    class TypeErrorRaiserMeta(type):
+        def __instancecheck__(cls, instance):
+            raise TypeError("Chaos injected TypeError")
+
+    class TypeErrorRaiserError(Exception, metaclass=TypeErrorRaiserMeta):
+        pass
+
+    @retry(max_attempts=2, on=TypeErrorRaiserError)
+    async def async_fail2():
+        raise ValueError("async fail")
+
+    @retry(max_attempts=2, on=TypeErrorRaiserError)
+    def sync_fail2():
+        raise ValueError("sync fail")
+
+    with pytest.raises(ValueError, match="async fail"):
+        await async_fail2()
+
+    with pytest.raises(ValueError, match="sync fail"):
+        sync_fail2()
+
+
 def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
     """
     Test the try...except TypeError block for issubclass inside _should_retry.
