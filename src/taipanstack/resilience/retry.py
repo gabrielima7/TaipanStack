@@ -328,6 +328,31 @@ def _raise_retry_error(
     )
 
 
+def _validate_retry_exceptions(
+    on: tuple[type[Exception], ...] | type[Exception],
+) -> tuple[type[Exception], ...]:
+    """Validate that the 'on' parameter contains valid exception types."""
+    if isinstance(on, type) and issubclass(on, BaseException):
+        on_tuple: tuple[type[Exception], ...] = (on,)
+    elif not isinstance(on, tuple):
+        msg = (
+            "'on' parameter must be an exception class or a tuple of exception classes"
+        )
+        raise TypeError(msg)
+    else:
+        on_tuple = on
+
+    for exc_type in on_tuple:
+        if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
+            msg = (
+                f"All elements in 'on' must be subclasses of BaseException, "
+                f"got {type(exc_type).__name__}"
+            )
+            raise TypeError(msg)
+
+    return on_tuple
+
+
 def retry(  # noqa: PLR0915
     *,
     max_attempts: int = 3,
@@ -335,7 +360,7 @@ def retry(  # noqa: PLR0915
     max_delay: float = 60.0,
     exponential_base: float = 2.0,
     jitter: bool = True,
-    on: tuple[type[Exception], ...] = (Exception,),
+    on: tuple[type[Exception], ...] | type[Exception] = (Exception,),
     reraise: bool = True,
     log_retries: bool = True,
     on_retry: Callable[[int, int, Exception, float], None] | None = None,
@@ -373,21 +398,7 @@ def retry(  # noqa: PLR0915
 
     """
     # Validate 'on' parameter at definition time (Fail-Fast)
-    if isinstance(on, type) and issubclass(on, BaseException):
-        on = (on,)
-    elif not isinstance(on, tuple):
-        msg = (
-            "'on' parameter must be an exception class or a tuple of exception classes"
-        )
-        raise TypeError(msg)
-
-    for exc_type in on:
-        if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
-            msg = (
-                f"All elements in 'on' must be subclasses of BaseException, "
-                f"got {type(exc_type).__name__}"
-            )
-            raise TypeError(msg)
+    valid_on = _validate_retry_exceptions(on)
 
     config = RetryConfig(
         max_attempts=max_attempts,
@@ -399,7 +410,7 @@ def retry(  # noqa: PLR0915
         on_retry=on_retry,
     )
 
-    def decorator(
+    def decorator(  # noqa: PLR0915
         func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
@@ -416,10 +427,16 @@ def retry(  # noqa: PLR0915
                         last_result = await func_coro(*args, **kwargs)
                         if isinstance(last_result, Err):
                             err_val = last_result.unwrap_err()
-                            if isinstance(err_val, on):
-                                raise err_val
+                            if isinstance(err_val, valid_on):
+                                raise err_val  # noqa: TRY301
                         return last_result
-                    except on as e:
+                    except Exception as e:
+                        try:
+                            is_match = isinstance(e, valid_on)
+                        except TypeError:
+                            is_match = False
+                        if not is_match:
+                            raise
                         last_exception = e
 
                         if attempt == max_attempts:
@@ -464,10 +481,16 @@ def retry(  # noqa: PLR0915
                     last_result = func_sync(*args, **kwargs)
                     if isinstance(last_result, Err):
                         err_val = last_result.unwrap_err()
-                        if isinstance(err_val, on):
-                            raise err_val
+                        if isinstance(err_val, valid_on):
+                            raise err_val  # noqa: TRY301
                     return last_result
-                except on as e:
+                except Exception as e:
+                    try:
+                        is_match = isinstance(e, valid_on)
+                    except TypeError:
+                        is_match = False
+                    if not is_match:
+                        raise
                     last_exception = e
 
                     if attempt == max_attempts:

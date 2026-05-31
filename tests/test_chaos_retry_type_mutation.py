@@ -230,3 +230,40 @@ def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
             self.invalid = True
 
     assert r._should_retry(InvalidExc()) is False
+
+
+@pytest.mark.asyncio
+async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
+    """
+    Test the try...except TypeError block for isinstance inside the retry decorator.
+    """
+    from taipanstack.resilience.retry import retry
+
+    @retry(max_attempts=2, on=ValueError)
+    async def async_fail():
+        raise ValueError("async fail")
+
+    @retry(max_attempts=2, on=ValueError)
+    def sync_fail():
+        raise ValueError("sync fail")
+
+    class TypeErrorRaiserMeta(type):
+        def __instancecheck__(cls, instance):
+            raise TypeError("Chaos injected TypeError")
+
+    class TypeErrorRaiserError(Exception, metaclass=TypeErrorRaiserMeta):
+        pass
+
+    @retry(max_attempts=2, on=TypeErrorRaiserError)
+    async def async_fail2():
+        raise ValueError("async fail")
+
+    @retry(max_attempts=2, on=TypeErrorRaiserError)
+    def sync_fail2():
+        raise ValueError("sync fail")
+
+    with pytest.raises(ValueError, match="async fail"):
+        await async_fail2()
+
+    with pytest.raises(ValueError, match="sync fail"):
+        sync_fail2()
