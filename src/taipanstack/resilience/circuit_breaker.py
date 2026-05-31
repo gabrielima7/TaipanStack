@@ -302,7 +302,11 @@ class CircuitBreaker:
         self,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         """Handle logic for OPEN state in _should_attempt."""
-        now = time.monotonic()
+        try:
+            now = time.monotonic()
+        except Exception:
+            return False, None
+
         elapsed = self._calculate_elapsed_time(now)
 
         if elapsed is None:
@@ -430,7 +434,11 @@ class CircuitBreaker:
         else:
             self._state.failure_count += 1
 
-        now = time.monotonic()
+        try:
+            now = time.monotonic()
+        except Exception:
+            now = float("nan")
+
         if math.isfinite(now):
             self._state.last_failure_time = now
 
