@@ -11,7 +11,7 @@ from taipanstack.utils.rate_limit import rate_limit
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_chaos() -> None:
+async def test_simulation_chaos_healing_complex_microservice_simulation_chaos_standard() -> None:
     """Simulates a highly concurrent microservice handling malicious payloads."""
     # 1. Setup Architecture
     orchestrator = (
@@ -66,7 +66,7 @@ async def test_complex_microservice_simulation_chaos() -> None:
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_orchestrator_exception() -> None:
+async def test_simulation_chaos_healing_complex_microservice_simulation_orchestrator_exception() -> None:
     """Tests the new except Exception branch wrapping _execute_inner."""
     orchestrator_with_bh = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
     orchestrator_without_bh = ResilienceOrchestrator()
@@ -88,7 +88,7 @@ async def test_complex_microservice_simulation_orchestrator_exception() -> None:
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_orchestrator_exception_coverage() -> (
+async def test_simulation_chaos_healing_complex_microservice_simulation_orchestrator_exception_coverage() -> (
     None
 ):
     """Coverage to hit the except Exception logic inside orchestrator execute().
@@ -116,7 +116,7 @@ async def test_complex_microservice_simulation_orchestrator_exception_coverage()
         assert isinstance(res_no_bh.err_value, RuntimeError)
 
 
-def test_complex_microservice_simulation_filesystem_base_exception_leak(
+def test_simulation_chaos_healing_complex_microservice_simulation_filesystem_base_exception_leak(
     tmp_path,
 ) -> None:
     import unittest.mock

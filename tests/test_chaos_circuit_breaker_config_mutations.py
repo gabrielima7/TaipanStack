@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_config_timeout_mutation():
+def test_chaos_circuit_breaker_config_mutations_chaos_circuit_breaker_config_timeout_mutation_standard():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._state.last_failure_time = 0.0  # Set it so time has elapsed
@@ -13,7 +13,7 @@ def test_chaos_circuit_breaker_config_timeout_mutation():
     cb._should_attempt()
 
 
-def test_chaos_circuit_breaker_config_success_threshold_mutation():
+def test_chaos_circuit_breaker_config_mutations_chaos_circuit_breaker_config_success_threshold_mutation():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.HALF_OPEN
 
@@ -25,7 +25,7 @@ def test_chaos_circuit_breaker_config_success_threshold_mutation():
     cb._handle_success_half_open()
 
 
-def test_chaos_circuit_breaker_config_failure_threshold_mutation():
+def test_chaos_circuit_breaker_config_mutations_chaos_circuit_breaker_config_failure_threshold_mutation_standard():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.CLOSED
     cb._state.failure_count = 1
@@ -37,7 +37,7 @@ def test_chaos_circuit_breaker_config_failure_threshold_mutation():
     cb._handle_failure_closed()
 
 
-def test_chaos_circuit_breaker_config_timeout_nan_mutation():
+def test_chaos_circuit_breaker_config_mutations_chaos_circuit_breaker_config_timeout_nan_mutation_standard():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._state.last_failure_time = 0.0

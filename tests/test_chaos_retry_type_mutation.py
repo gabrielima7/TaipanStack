@@ -188,7 +188,7 @@ def test_chaos_retry_type_mutation_retry_config_init_type_mutation() -> None:
     assert config.jitter_factor == 0.1
 
 
-def test_chaos_retry_on_exception() -> None:
+def test_chaos_retry_type_mutation_chaos_retry_on_exception() -> None:
     from taipanstack.resilience.retry import RetryError, retry_on_exception
 
     @retry_on_exception((ValueError,), max_attempts=2)
@@ -199,7 +199,7 @@ def test_chaos_retry_on_exception() -> None:
         test_func_standard_standard()
 
 
-def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> None:
+def test_chaos_retry_type_mutation_chaos_retry_exit_should_retry_false_due_to_none_exc_val_standard() -> None:
     # Coverage for `self.last_exception = exc_val if isinstance(exc_val, Exception) else None`
     # When exc_val is None (or not Exception, like BaseException).
     r = Retrier()
@@ -213,12 +213,12 @@ def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> None:
             raise CustomExc()
 
 
-def test_chaos_retry_exit_success() -> None:
+def test_chaos_retry_type_mutation_chaos_retry_exit_success() -> None:
     r = Retrier()
     r.__exit__(None, None, None)
 
 
-def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
+def test_chaos_retry_type_mutation_chaos_retry_should_retry_type_error_for_issubclass() -> None:
     """
     Test the try...except TypeError block for issubclass inside _should_retry.
     """
@@ -233,7 +233,7 @@ def test_chaos_retry_should_retry_type_error_for_issubclass() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
+async def test_chaos_retry_type_mutation_chaos_retry_decorator_type_error_for_isinstance() -> None:
     """
     Test the try...except TypeError block for isinstance inside the retry decorator.
     """
@@ -252,7 +252,7 @@ async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
             raise TypeError("Chaos injected TypeError")
 
     class TypeErrorRaiserError(Exception, metaclass=TypeErrorRaiserMeta):
-        pass
+        __match_args__ = ()
 
     @retry(max_attempts=2, on=TypeErrorRaiserError)
     async def async_fail2():

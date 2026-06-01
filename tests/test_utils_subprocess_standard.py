@@ -190,7 +190,7 @@ class TestRunSafeCommand:
             run_safe_command(["echo", "hello"], timeout=float("inf"))
 
 
-def test_utils_subprocess_execute_command_timeout_with_bytes_stdout() -> None:
+def test_utils_subprocess_standard_utils_subprocess_execute_command_timeout_with_bytes_stdout() -> None:
     """Test _execute_command timeout handling when stdout is bytes."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
@@ -203,7 +203,7 @@ def test_utils_subprocess_execute_command_timeout_with_bytes_stdout() -> None:
         assert result.stdout == "some bytes output"
 
 
-def test_utils_subprocess_execute_command_timeout_without_stdout() -> None:
+def test_utils_subprocess_standard_utils_subprocess_execute_command_timeout_without_stdout() -> None:
     """Test _execute_command timeout handling when stdout is None."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
@@ -216,7 +216,7 @@ def test_utils_subprocess_execute_command_timeout_without_stdout() -> None:
         assert result.stdout == ""
 
 
-def test_utils_subprocess_execute_command_timeout_with_str_stdout() -> None:
+def test_utils_subprocess_standard_utils_subprocess_execute_command_timeout_with_str_stdout() -> None:
     """Test _execute_command timeout handling when stdout is str."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)

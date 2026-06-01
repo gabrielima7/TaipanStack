@@ -9,7 +9,7 @@ class CustomBaseException(BaseException): ...
 @pytest.mark.parametrize(
     "exc_class", [SystemExit, KeyboardInterrupt, GeneratorExit, CustomBaseException]
 )
-def test_fuzz_timeout_timeout_fuzz_base_exceptions(
+def test_fuzz_timeout_standard_fuzz_timeout_timeout_fuzz_base_exceptions(
     exc_class: type[BaseException],
 ):
     """

@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_process_result_corrupted_result_standard() -> None:
     """Test _process_result when result is an invalid state."""
     cb = CircuitBreaker()
 
@@ -14,7 +14,7 @@ def test_chaos_circuit_breaker_process_result_corrupted_result() -> None:
     assert cb._process_result(res) == res
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_error() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_process_result_corrupted_result_error() -> None:
     from taipanstack.core.result import Err
 
     cb = CircuitBreaker()
@@ -33,7 +33,7 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_error() -> None:
     assert cb._process_result(res_ex) == res_ex
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_ok() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_process_result_corrupted_result_ok() -> None:
     from taipanstack.core.result import Ok
 
     cb = CircuitBreaker()
@@ -43,7 +43,7 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_ok() -> None:
     assert cb._process_result(res) == res
 
 
-def test_chaos_circuit_breaker_corrupted_state_fallthrough() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_state_fallthrough_standard() -> None:
     """Test corrupted state handling across multiple methods."""
     cb = CircuitBreaker()
     cb._state.state = "INVALID_STATE"  # type: ignore[assignment]
@@ -53,7 +53,7 @@ def test_chaos_circuit_breaker_corrupted_state_fallthrough() -> None:
     cb._safe_decrement_half_open_attempts()
 
 
-def test_chaos_circuit_breaker_half_open_attempts_negative() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_half_open_attempts_negative_standard() -> None:
     """Test half open attempts becoming negative."""
     cb = CircuitBreaker()
     cb._state.state = CircuitState.HALF_OPEN
@@ -62,7 +62,7 @@ def test_chaos_circuit_breaker_half_open_attempts_negative() -> None:
     assert cb._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_corrupted_half_open_attempts() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_half_open_attempts_standard() -> None:
     """Test half open attempts corrupted to a string."""
     cb = CircuitBreaker()
     cb._state.state = CircuitState.HALF_OPEN
@@ -75,7 +75,7 @@ def test_chaos_circuit_breaker_corrupted_half_open_attempts() -> None:
     assert cb._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count() -> None:
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count_standard() -> None:
     """Test handle_failure_closed when failure count is corrupted."""
     cb = CircuitBreaker()
     cb._state.state = CircuitState.CLOSED

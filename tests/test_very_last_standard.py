@@ -617,7 +617,7 @@ class TestOptimizationsEdgeCases:
         assert any("boom" in e for e in result.errors)
 
 
-def test_very_last_guard_path_traversal_is_symlink_oserror(monkeypatch):
+def test_very_last_standard_very_last_guard_path_traversal_is_symlink_oserror(monkeypatch):
     from pathlib import Path
 
     from taipanstack.security.guards import SecurityError, guard_path_traversal
@@ -662,7 +662,7 @@ class TestCompatPy313FallbackExpected:
 # =============================================================================
 
 
-def test_very_last_optimizations_coverage_skipped_asserts_success():
+def test_very_last_standard_very_last_optimizations_coverage_skipped_asserts_success():
     with (
         patch("sys.version_info", (3, 11)),
         patch("platform.python_implementation", return_value="CPython"),
@@ -672,7 +672,7 @@ def test_very_last_optimizations_coverage_skipped_asserts_success():
         assert res.success
 
 
-def test_very_last_circuit_breaker_open_handling_remains_open():
+def test_very_last_standard_very_last_circuit_breaker_open_handling_remains_open():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._record_success()
@@ -682,7 +682,7 @@ def test_very_last_circuit_breaker_open_handling_remains_open():
     assert cb._state.state == CircuitState.OPEN
 
 
-def test_very_last_validate_args_param_missing_returns_value():
+def test_very_last_standard_very_last_validate_args_param_missing_returns_value():
     @validate_inputs(x=lambda x: x)
     def my_func(y: int):
         return y
@@ -690,7 +690,7 @@ def test_very_last_validate_args_param_missing_returns_value():
     assert my_func(y=1) == 1
 
 
-def test_very_last_validate_args_no_return_returns_value():
+def test_very_last_standard_very_last_validate_args_no_return_returns_value():
     @validate_inputs(x=lambda _x: None)
     def my_func(x: int):
         return x
@@ -698,7 +698,7 @@ def test_very_last_validate_args_no_return_returns_value():
     assert my_func(x=1) == 1
 
 
-def test_very_last_validate_args_exception_returns_err():
+def test_very_last_standard_very_last_validate_args_exception_returns_err():
     def failing_validator(x):
         raise ValueError("fail")
 
@@ -710,7 +710,7 @@ def test_very_last_validate_args_exception_returns_err():
         my_func(x=1)
 
 
-def test_very_last_safe_decorator_log_errors_false_returns_err():
+def test_very_last_standard_very_last_safe_decorator_log_errors_false_returns_err():
     @guard_exceptions(log_errors=False, default=-1)
     def my_func():
         raise ValueError("error")
@@ -718,7 +718,7 @@ def test_very_last_safe_decorator_log_errors_false_returns_err():
     assert my_func() == -1
 
 
-def test_very_last_type_check_param_missing_returns_value():
+def test_very_last_standard_very_last_type_check_param_missing_returns_value():
     @require_type(x=int)
     def my_func(y: int):
         return y
@@ -726,7 +726,7 @@ def test_very_last_type_check_param_missing_returns_value():
     assert my_func(y=1) == 1
 
 
-def test_very_last_type_check_exception_returns_err():
+def test_very_last_standard_very_last_type_check_exception_returns_err():
     @require_type(x=int)
     def my_func(x):
         return x
@@ -735,47 +735,47 @@ def test_very_last_type_check_exception_returns_err():
         my_func(x="string")
 
 
-def test_very_last_check_allowed_extension_none_returns_true():
+def test_very_last_standard_very_last_check_allowed_extension_none_returns_true():
     _check_allowed_extension(".txt", "file.txt", None)
     assert True
 
 
-def test_very_last_guard_file_extension_none_returns_ok():
+def test_very_last_standard_very_last_guard_file_extension_none_returns_ok():
     guard_file_extension("file.txt", allowed_extensions=None)
     assert True
 
 
-def test_very_last_guard_file_extension_exception_returns_err():
+def test_very_last_standard_very_last_guard_file_extension_exception_returns_err():
     with pytest.raises(SecurityError):
         guard_file_extension("file.txt", allowed_extensions=["pdf"])
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_returns_err():
+def test_very_last_standard_very_last_sanitize_path_part_empty_or_dot_dot_returns_err():
     res = sanitize_path("a/./b")
     assert str(res).replace("\\", "/") == "a/b"
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_2():
+def test_very_last_standard_very_last_sanitize_path_part_empty_or_dot_dot_2():
     res = sanitize_path("a/..b/c")
     assert str(res).replace("\\", "/") == "a/..b/c"
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_3():
+def test_very_last_standard_very_last_sanitize_path_part_empty_or_dot_dot_3():
     res = sanitize_path("a/../b")
     assert str(res).replace("\\", "/") == "b"
 
 
-def test_very_last_sanitize_path_null_byte_returns_err():
+def test_very_last_standard_very_last_sanitize_path_null_byte_returns_err():
     res = sanitize_path("a/\x00b")
     assert "\x00" not in str(res)
 
 
-def test_very_last_sanitize_path_absolute_returns_err():
+def test_very_last_standard_very_last_sanitize_path_absolute_returns_err():
     res = sanitize_path("/a/b")
     assert "a" in str(res) and "b" in str(res)
 
 
-def test_very_last_missing_optimizations_skipped():
+def test_very_last_standard_very_last_missing_optimizations_skipped():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
@@ -795,7 +795,7 @@ def test_very_last_missing_optimizations_skipped():
         assert len(res.skipped) == 0
 
 
-def test_very_last_missing_sanitizers_part_dot():
+def test_very_last_standard_very_last_missing_sanitizers_part_dot():
     from taipanstack.security.sanitizers import _process_path_part
 
     parts = []
@@ -804,7 +804,7 @@ def test_very_last_missing_sanitizers_part_dot():
     assert parts == []
 
 
-def test_very_last_missing_sanitizers_handle_normal_part():
+def test_very_last_standard_very_last_missing_sanitizers_handle_normal_part():
     from unittest.mock import patch
 
     from taipanstack.security.sanitizers import _handle_normal_part
@@ -820,7 +820,7 @@ def test_very_last_missing_sanitizers_handle_normal_part():
     assert parts == []
 
 
-def test_very_last_missing_optimizations_has_jit_false():
+def test_very_last_standard_very_last_missing_optimizations_has_jit_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -837,7 +837,7 @@ def test_very_last_missing_optimizations_has_jit_false():
         assert len(applied) == 0
 
 
-def test_very_last_missing_optimizations_has_free_threading_false():
+def test_very_last_standard_very_last_missing_optimizations_has_free_threading_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -855,7 +855,7 @@ def test_very_last_missing_optimizations_has_free_threading_false():
         assert "jit: available" in applied
 
 
-def test_very_last_missing_optimizations_apply_optimizations_skipped_false():
+def test_very_last_standard_very_last_missing_optimizations_apply_optimizations_skipped_false():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations

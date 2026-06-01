@@ -4,7 +4,7 @@ from taipanstack.core.result import Err
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
-def test_chaos_circuit_breaker_type_mutation_failure_exceptions():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
     # Should not crash with TypeError
@@ -12,14 +12,14 @@ def test_chaos_circuit_breaker_type_mutation_failure_exceptions():
     assert isinstance(res, Err)
 
 
-def test_chaos_circuit_breaker_type_mutation_excluded_exceptions():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_excluded_exceptions():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "excluded_exceptions", "corrupted")
     # Should not crash with TypeError
     cb._record_failure(ValueError("test"))
 
 
-def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
 
@@ -32,7 +32,7 @@ def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise():
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise():
+async def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
 
@@ -44,7 +44,7 @@ async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_rais
         await failing_func()
 
 
-def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure():
     cb = CircuitBreaker(failure_exceptions=(TypeError,))
 
     @cb
@@ -56,7 +56,7 @@ def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_f
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise_not_failure():
+async def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise_not_failure():
     cb = CircuitBreaker(failure_exceptions=(TypeError,))
 
     @cb

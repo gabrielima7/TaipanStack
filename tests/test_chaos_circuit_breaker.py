@@ -66,7 +66,7 @@ def test_chaos_circuit_breaker_circuit_breaker_thundering_herd_chaos():
     assert success_call_count <= breaker.config.success_threshold
 
 
-def test_circuit_breaker_chaos_time_and_timeout_corruption():
+def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption_standard():
     breaker = CircuitBreaker(failure_threshold=1)
 
     # Simulate a failure to open the circuit

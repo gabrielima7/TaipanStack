@@ -593,7 +593,7 @@ class TestSafeHttpClient:
         assert client._client is None
 
 
-def test_bridge_http_http_bridge_import_error_coverage() -> None:
+def test_bridge_http_standard_bridge_http_http_bridge_import_error_coverage() -> None:
     """Test http_bridge import error fallback branches."""
     import importlib
     import sys
@@ -613,7 +613,7 @@ def test_bridge_http_http_bridge_import_error_coverage() -> None:
         importlib.reload(http_mod)
 
 
-def test_bridge_http_import_error_coverage():
+def test_bridge_http_standard_bridge_http_import_error_coverage():
     import importlib
     import sys
 
@@ -637,7 +637,7 @@ def test_bridge_http_import_error_coverage():
         importlib.reload(http_bridge)
 
 
-def test_bridge_http_success_coverage():
+def test_bridge_http_standard_bridge_http_success_coverage():
     import importlib
     import sys
     from unittest.mock import MagicMock

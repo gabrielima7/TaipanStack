@@ -1,7 +1,7 @@
 from taipanstack.resilience.adaptive.adaptive_retry import AdaptiveRetry
 
 
-def test_adaptive_retry_calculate_delay_metrics():
+def test_coverage_adaptive_retry_adaptive_retry_calculate_delay_metrics_standard():
     ar = AdaptiveRetry()
 
     # Test empty delays
@@ -19,7 +19,7 @@ def test_adaptive_retry_calculate_delay_metrics():
     assert metrics.p95_delay == 3.0
 
 
-def test_adaptive_retry_to_retry_config():
+def test_coverage_adaptive_retry_adaptive_retry_to_retry_config_standard():
     ar = AdaptiveRetry(max_attempts=5, min_delay=0.5, max_delay=10.0)
     # Give it some history for attempt=1 to test get_delay logic in to_retry_config
     ar.record_outcome(1, True, 2.0)

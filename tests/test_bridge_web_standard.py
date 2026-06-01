@@ -258,7 +258,7 @@ class TestSendJsonResponse:
         assert capture.headers.get("x-custom") == "value"
 
 
-def test_bridge_web_send_json_response_err() -> None:
+def test_bridge_web_standard_bridge_web_send_json_response_err() -> None:
     import asyncio
 
     from taipanstack.core.result import Err

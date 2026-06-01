@@ -249,7 +249,7 @@ class TestSafeProjectName:
 # ---------------------------------------------------------------------------
 
 
-def test_security_types_safe_url_err_branch() -> None:
+def test_security_types_standard_security_types_safe_url_err_branch() -> None:
     import pytest
     from pydantic import BaseModel, ValidationError
 

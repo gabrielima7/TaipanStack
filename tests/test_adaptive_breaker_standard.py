@@ -192,7 +192,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.OPEN.value
 
 
-def test_adaptive_breaker_err_branch() -> None:
+def test_adaptive_breaker_standard_adaptive_breaker_err_branch() -> None:
     from taipanstack.core.result import Err
     from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
 

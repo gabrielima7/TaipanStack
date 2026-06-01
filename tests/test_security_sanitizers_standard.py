@@ -306,26 +306,26 @@ class TestSanitizePath:
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
 
 
-def test_security_sanitizers_sanitize_string_value_error():
+def test_security_sanitizers_standard_security_sanitizers_sanitize_string_value_error():
     import pytest
 
     with pytest.raises(TypeError):
         sanitize_string(123)
 
 
-def test_security_sanitizers_sanitize_filename_value_error():
+def test_security_sanitizers_standard_security_sanitizers_sanitize_filename_value_error():
     import pytest
 
     with pytest.raises(TypeError):
         sanitize_filename(123)
 
 
-def test_security_sanitizers_sanitize_filename_no_replacement():
+def test_security_sanitizers_standard_security_sanitizers_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
     assert sanitize_filename("foo/bar", replacement="") == "bar"
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage() -> None:
+def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage() -> None:
     """Test sanitizers filename validation fallback on re.error."""
     import re
 
@@ -352,7 +352,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage() -> None:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
+def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
     """Test sanitizers filename validation fallback on re.error with normal replacement."""
     import re
 

@@ -10,7 +10,7 @@ from taipanstack.resilience.watchdogs.health_pinger import HealthPinger, HealthT
 
 class DummyWatcher(BaseWatcher):
     async def _run(self) -> None:
-        pass
+        return None
 
 
 @pytest.mark.asyncio
