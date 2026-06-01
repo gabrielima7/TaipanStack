@@ -1,6 +1,7 @@
 <div align="center">
 
 # 🐍 Taipan Stack
+[![CI](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml/badge.svg)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml)
 
 ### **The Modern Python Foundation**
 
