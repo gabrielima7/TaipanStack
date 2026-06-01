@@ -325,7 +325,9 @@ def test_security_sanitizers_standard_security_sanitizers_sanitize_filename_no_r
     assert sanitize_filename("foo/bar", replacement="") == "bar"
 
 
-def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage() -> None:
+def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage() -> (
+    None
+):
     """Test sanitizers filename validation fallback on re.error."""
     import re
 
@@ -352,7 +354,9 @@ def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_co
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
 
-def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
+def test_security_sanitizers_standard_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> (
+    None
+):
     """Test sanitizers filename validation fallback on re.error with normal replacement."""
     import re
 

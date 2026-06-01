@@ -617,7 +617,9 @@ class TestOptimizationsEdgeCases:
         assert any("boom" in e for e in result.errors)
 
 
-def test_very_last_standard_very_last_guard_path_traversal_is_symlink_oserror(monkeypatch):
+def test_very_last_standard_very_last_guard_path_traversal_is_symlink_oserror(
+    monkeypatch,
+):
     from pathlib import Path
 
     from taipanstack.security.guards import SecurityError, guard_path_traversal

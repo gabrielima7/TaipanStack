@@ -328,7 +328,9 @@ class TestConfigWatcher:
         assert isinstance(result, Ok)
 
 
-def test_watchdog_config_standard_watchdog_config_config_watcher_hash_err_branch() -> None:
+def test_watchdog_config_standard_watchdog_config_config_watcher_hash_err_branch() -> (
+    None
+):
 
     from pydantic import BaseModel
 
@@ -409,7 +411,9 @@ def test_watchdog_config_standard_watchdog_config_config_watcher_validate_and_ap
 
 
 @pytest.mark.asyncio
-async def test_watchdog_config_standard_watchdog_config_config_watcher_change_detection_error_coverage() -> None:
+async def test_watchdog_config_standard_watchdog_config_config_watcher_change_detection_error_coverage() -> (
+    None
+):
     """Test config_watcher change detection error logging."""
     from unittest.mock import MagicMock, patch
 
@@ -434,7 +438,9 @@ async def test_watchdog_config_standard_watchdog_config_config_watcher_change_de
         )
 
 
-def test_watchdog_config_standard_watchdog_config_hash_file_too_large(tmp_path: Path) -> None:
+def test_watchdog_config_standard_watchdog_config_hash_file_too_large(
+    tmp_path: Path,
+) -> None:
     f = tmp_path / "large.txt"
     f.write_text("a" * 10)
     from taipanstack.resilience.watchdogs.config_watcher import _hash_file
@@ -446,7 +452,9 @@ def test_watchdog_config_standard_watchdog_config_hash_file_too_large(tmp_path: 
     assert "exceeds max size" in str(result.err_value)
 
 
-def test_watchdog_config_standard_watchdog_config_load_file_too_large(tmp_path: Path) -> None:
+def test_watchdog_config_standard_watchdog_config_load_file_too_large(
+    tmp_path: Path,
+) -> None:
     f = tmp_path / "large.json"
     f.write_text("{}")
     from taipanstack.resilience.watchdogs.config_watcher import _load_file_data

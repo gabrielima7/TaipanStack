@@ -36,7 +36,9 @@ def run_main_with_args(args):
         taipanstack.main()
 
 
-def test_taipanstack_script_standard_taipanstack_script_dry_run_does_not_create_files(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_dry_run_does_not_create_files(
+    tmp_path,
+):
     """
     Verifies that running with --dry-run does not create any configuration files.
     """
@@ -49,7 +51,9 @@ def test_taipanstack_script_standard_taipanstack_script_dry_run_does_not_create_
     assert not (tmp_path / ".github" / "dependabot.yml").exists()
 
 
-def test_taipanstack_script_standard_taipanstack_script_safe_write_creates_backup(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_safe_write_creates_backup(
+    tmp_path,
+):
     """
     Verifies that a backup (.bak) is created when a configuration file already exists.
     """
@@ -69,7 +73,9 @@ def test_taipanstack_script_standard_taipanstack_script_safe_write_creates_backu
     assert "pre-commit-hooks" in dummy_file.read_text()  # Checks new file content
 
 
-def test_taipanstack_script_standard_taipanstack_script_force_mode_overwrites_without_backup(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_force_mode_overwrites_without_backup(
+    tmp_path,
+):
     """
     Verifies that the --force flag overwrites the file directly without creating a backup.
     """
@@ -87,7 +93,9 @@ def test_taipanstack_script_standard_taipanstack_script_force_mode_overwrites_wi
     assert "pre-commit-hooks" in dummy_file.read_text()
 
 
-def test_taipanstack_script_standard_taipanstack_script_idempotency_for_pyproject_toml(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_idempotency_for_pyproject_toml(
+    tmp_path,
+):
     """
     Verifies that running the script twice does not duplicate sections in pyproject.toml.
     """
@@ -126,7 +134,9 @@ def test_taipanstack_script_standard_taipanstack_script_git_initialization(tmp_p
     # Note: may not exist if git is not installed on the test system
 
 
-def test_taipanstack_script_standard_taipanstack_script_project_structure_creation(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_project_structure_creation(
+    tmp_path,
+):
     """
     Verifies that the project folder structure is created correctly.
     """
@@ -150,7 +160,9 @@ def test_taipanstack_script_standard_taipanstack_script_project_structure_creati
     assert (tmp_path / "tests" / "test_example.py").exists()
 
 
-def test_taipanstack_script_standard_taipanstack_script_optional_dependencies_flag(tmp_path, monkeypatch):
+def test_taipanstack_script_standard_taipanstack_script_optional_dependencies_flag(
+    tmp_path, monkeypatch
+):
     """
     Verifies that the --install-runtime-deps flag controls dependency installation.
     """
@@ -171,7 +183,9 @@ def test_taipanstack_script_standard_taipanstack_script_optional_dependencies_fl
         assert len(poetry_add_calls) == 0
 
 
-def test_taipanstack_script_standard_taipanstack_script_install_runtime_deps_flag(tmp_path, monkeypatch):
+def test_taipanstack_script_standard_taipanstack_script_install_runtime_deps_flag(
+    tmp_path, monkeypatch
+):
     """
     Verifies that --install-runtime-deps installs the production dependencies.
     """
@@ -199,7 +213,9 @@ def test_taipanstack_script_standard_taipanstack_script_install_runtime_deps_fla
             )
 
 
-def test_taipanstack_script_standard_taipanstack_script_python_version_detection(tmp_path):
+def test_taipanstack_script_standard_taipanstack_script_python_version_detection(
+    tmp_path,
+):
     """
     Verifies that the Python version is dynamically detected.
     """

@@ -49,7 +49,9 @@ def test_utils_resilience_standard_utils_resilience_fallback_sync_unreachable() 
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_standard_utils_resilience_fallback_async_unreachable() -> None:
+async def test_utils_resilience_standard_utils_resilience_fallback_async_unreachable() -> (
+    None
+):
     """Test fallback async unreachable logic."""
 
     @fallback(fallback_value="safe")

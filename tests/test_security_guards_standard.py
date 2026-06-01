@@ -299,7 +299,9 @@ class TestGuardEnvVariable:
         assert result == "allowed_token"
 
 
-def test_security_guards_standard_security_guards_guard_ssrf_ok_and_other_branches() -> None:
+def test_security_guards_standard_security_guards_guard_ssrf_ok_and_other_branches() -> (
+    None
+):
     from taipanstack.core.result import Ok
     from taipanstack.security.guards import guard_ssrf
 
@@ -308,7 +310,9 @@ def test_security_guards_standard_security_guards_guard_ssrf_ok_and_other_branch
     assert isinstance(res, Ok)
 
 
-def test_security_guards_standard_security_guards_guard_ssrf_internal_err_branches() -> None:
+def test_security_guards_standard_security_guards_guard_ssrf_internal_err_branches() -> (
+    None
+):
     from taipanstack.core.result import Err
     from taipanstack.security.guards import guard_ssrf
 
@@ -321,13 +325,17 @@ def test_security_guards_standard_security_guards_guard_ssrf_internal_err_branch
     assert isinstance(res2, Err)
 
 
-def test_security_guards_standard_security_guards_command_injection_rejects_non_string_argument_type() -> None:
+def test_security_guards_standard_security_guards_command_injection_rejects_non_string_argument_type() -> (
+    None
+):
     """Test command args must all be strings."""
     with pytest.raises(TypeError, match="All command arguments must be strings"):
         guard_command_injection(["echo", 123])
 
 
-def test_security_guards_standard_security_guards_env_variable_name_must_be_string() -> None:
+def test_security_guards_standard_security_guards_env_variable_name_must_be_string() -> (
+    None
+):
     """Test env variable name type validation."""
     from taipanstack.security.guards import guard_env_variable
 
@@ -463,7 +471,9 @@ def test_security_guards_standard_security_guards_ssrf_missing_hostname():
     assert "URL has no resolvable hostname" in str(res.err_value)
 
 
-def test_security_guards_standard_security_guards_ssrf_unresolvable_hostname(monkeypatch):
+def test_security_guards_standard_security_guards_ssrf_unresolvable_hostname(
+    monkeypatch,
+):
     import socket
 
     from taipanstack.core.result import Err
@@ -649,7 +659,9 @@ def test_security_guards_standard_security_guards_env_variable_allowed_names_emp
         guard_env_variable("MY_TOKEN", allowed_names=[])
 
 
-def test_security_guards_standard_security_guards_ssrf_ip_is_safe_attribute_error(monkeypatch):
+def test_security_guards_standard_security_guards_ssrf_ip_is_safe_attribute_error(
+    monkeypatch,
+):
     import ipaddress
 
     from taipanstack.security.guards import _is_ip_safe

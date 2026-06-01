@@ -66,7 +66,9 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_returns_early(
     assert breaker._state == CircuitState.CLOSED
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failure(monkeypatch):
+def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failure(
+    monkeypatch,
+):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=0.0)
     breaker._state = CircuitState.OPEN
     breaker._last_opened_at = 0.0  # Force immediate recovery
@@ -95,7 +97,9 @@ def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failur
     assert breaker._state == CircuitState.OPEN
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open_standard(monkeypatch):
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open_standard(
+    monkeypatch,
+):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=0.0)
     breaker._state = CircuitState.OPEN
     breaker._last_opened_at = 0.0
@@ -113,7 +117,9 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_half_open_standard(monkeypatch):
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_half_open_standard(
+    monkeypatch,
+):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.HALF_OPEN
 
