@@ -35,8 +35,8 @@ def _hash_file(path: Path) -> Result[str, Exception]:
         if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
             return Err(
                 ValueError(
-                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
-                )
+                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)",
+                ),
             )
         data = path.read_bytes()
         return Ok(hashlib.sha256(data).hexdigest())
@@ -95,8 +95,8 @@ def _read_file_content(path: Path) -> Result[str, Exception]:
         if path.stat().st_size > MAX_CONFIG_FILE_SIZE:
             return Err(
                 ValueError(
-                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)"
-                )
+                    f"File {path} exceeds max size ({MAX_CONFIG_FILE_SIZE} bytes)",
+                ),
             )
         return Ok(path.read_text(encoding="utf-8"))
     except OSError as exc:
@@ -104,7 +104,8 @@ def _read_file_content(path: Path) -> Result[str, Exception]:
 
 
 def _parse_content_by_extension(
-    path: Path, text: str
+    path: Path,
+    text: str,
 ) -> Result[dict[str, object], Exception]:
     """Parse file content based on extension."""
     suffix = path.suffix.lower()
@@ -208,7 +209,10 @@ class ConfigWatcher(BaseWatcher):
         self._file_hashes: dict[Path, str] = {}
 
     def _process_hash_result(
-        self, path: Path, current_hash: str, changed: list[Path]
+        self,
+        path: Path,
+        current_hash: str,
+        changed: list[Path],
     ) -> None:
         """Process successful hash result and update changed list."""
         previous = self._file_hashes.get(path)
@@ -236,7 +240,9 @@ class ConfigWatcher(BaseWatcher):
         return Ok(changed)
 
     def _handle_validation_success(
-        self, path: Path, model: BaseModel
+        self,
+        path: Path,
+        model: BaseModel,
     ) -> Result[BaseModel, Exception]:
         """Handle successful validation."""
         logger.info(
@@ -248,7 +254,9 @@ class ConfigWatcher(BaseWatcher):
         return Ok(model)
 
     def _handle_validation_failure(
-        self, path: Path, val_error: Exception
+        self,
+        path: Path,
+        val_error: Exception,
     ) -> Result[BaseModel, Exception]:
         """Handle validation failure."""
         logger.error(

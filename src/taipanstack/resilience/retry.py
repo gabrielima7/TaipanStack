@@ -32,7 +32,8 @@ class RetryDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Awaitable[R]]
+        self,
+        func: Callable[P, Awaitable[R]],
     ) -> Callable[P, Awaitable[R]]: ...
 
 
@@ -49,7 +50,9 @@ except ImportError:
 
 
 def _validate_finite_or_default(
-    obj: object, attr_name: str, default_val: float | int
+    obj: object,
+    attr_name: str,
+    default_val: float | int,
 ) -> None:
     """Validate that an attribute is finite, falling back to a default."""
     try:

@@ -69,7 +69,8 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
 
 
 def _redact_mapping(
-    obj: MutableMapping[object, object], seen: set[int]
+    obj: MutableMapping[object, object],
+    seen: set[int],
 ) -> dict[object, object]:
     """Redact a mapping object."""
     seen.add(id(obj))
