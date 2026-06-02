@@ -135,7 +135,7 @@ def test_utils_cache_cached_sync_lru_eviction() -> None:
     """Test LRU eviction for sync cache."""
     call_count = 0
 
-    @cached(ttl=1.0, max_size=2)
+    @cached(ttl=60.0, max_size=2)
     def compute(val: int) -> Result[int, ValueError]:
         nonlocal call_count
         call_count += 1
@@ -165,7 +165,7 @@ async def test_utils_cache_cached_async_lru_eviction() -> None:
     """Test LRU eviction for async cache."""
     call_count = 0
 
-    @cached(ttl=1.0, max_size=2)
+    @cached(ttl=60.0, max_size=2)
     async def compute_async(val: int) -> Result[int, ValueError]:
         nonlocal call_count
         call_count += 1
