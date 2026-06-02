@@ -130,6 +130,7 @@ async def test_utils_cache_async_cache_stampede_prevention() -> None:
     # The actual computation should only run EXACTLY once due to locking
     assert call_count == 1
 
+
 def test_utils_cache_cached_sync_lru_eviction() -> None:
     """Test LRU eviction for sync cache."""
     call_count = 0
@@ -192,21 +193,25 @@ async def test_utils_cache_cached_async_lru_eviction() -> None:
 def test_utils_cache_invalid_max_size() -> None:
     """Test invalid max_size raises ValueError."""
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
+
         @cached(ttl=1.0, max_size=0)
         def compute_sync(val: int) -> Result[int, ValueError]:
             return Ok(val * 2)
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
+
         @cached(ttl=1.0, max_size=-1)
         def compute_sync_negative(val: int) -> Result[int, ValueError]:
             return Ok(val * 2)
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
-        @cached(ttl=1.0, max_size=1.5) # type: ignore
+
+        @cached(ttl=1.0, max_size=1.5)  # type: ignore
         def compute_sync_float(val: int) -> Result[int, ValueError]:
             return Ok(val * 2)
 
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
-        @cached(ttl=1.0, max_size=False) # type: ignore
+
+        @cached(ttl=1.0, max_size=False)  # type: ignore
         def compute_sync_bool(val: int) -> Result[int, ValueError]:
             return Ok(val * 2)
