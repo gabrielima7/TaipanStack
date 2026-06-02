@@ -99,7 +99,7 @@ DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
         "touch",
         "chmod",
         "which",
-    }
+    },
 )
 
 
