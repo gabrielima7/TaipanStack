@@ -112,6 +112,9 @@ def _redact_set(obj: set[object], seen: set[int]) -> set[object]:
 
 def _redact_collection(obj: object, seen: set[int]) -> object:
     """Dispatch redaction based on collection type."""
+    if isinstance(obj, dict):
+        return _redact_mapping(obj, seen)
+
     if isinstance(obj, MutableMapping):
         return _redact_mapping(obj, seen)
 
