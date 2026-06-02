@@ -163,7 +163,7 @@ def safe_read(
         file_size = path.stat().st_size
         if file_size > max_size_bytes:
             return Err(
-                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes)
+                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
             )
 
     return Ok(path.read_text(encoding=encoding))

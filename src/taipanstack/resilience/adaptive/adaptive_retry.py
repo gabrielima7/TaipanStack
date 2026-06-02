@@ -92,7 +92,7 @@ class AdaptiveRetry:
         self._outcomes: deque[_Outcome] = deque(maxlen=window_size)
         # Per-attempt successful delays
         self._success_delays: dict[int, deque[float]] = defaultdict(
-            lambda: deque(maxlen=window_size)
+            lambda: deque(maxlen=window_size),
         )
 
     def record_outcome(

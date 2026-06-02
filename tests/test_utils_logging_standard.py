@@ -424,3 +424,29 @@ def test_utils_logging_is_sensitive_regex_none_returns_false() -> None:
     from taipanstack.utils.logging import _is_sensitive
 
     assert _is_sensitive("password", None) is False
+
+
+def test_utils_logging_redact_custom_mutable_mapping() -> None:
+    """Test _redact with a custom MutableMapping that is not a dict."""
+    from collections.abc import MutableMapping, Iterator
+    from taipanstack.utils.logging import _redact
+
+    class CustomMapping(MutableMapping[Any, Any]):
+        def __init__(self, data: dict[Any, Any]):
+            self._data = data
+        def __getitem__(self, key: Any) -> Any:
+            return self._data[key]
+        def __setitem__(self, key: Any, value: Any) -> None:
+            self._data[key] = value
+        def __delitem__(self, key: Any) -> None:
+            del self._data[key]
+        def __iter__(self) -> Iterator[Any]:
+            return iter(self._data)
+        def __len__(self) -> int:
+            return len(self._data)
+
+    custom = CustomMapping({"password": "secret", "safe": "value"})
+    redacted = _redact(custom)
+    assert isinstance(redacted, dict)
+    assert redacted["password"] == REDACTED_VALUE
+    assert redacted["safe"] == "value"
