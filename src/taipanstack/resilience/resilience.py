@@ -105,12 +105,14 @@ class TimeoutDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: ResultFunc[P, T, E]
+        self,
+        func: ResultFunc[P, T, E],
     ) -> Callable[P, Result[T, TimeoutError | E]]: ...
 
     @overload
     def __call__(
-        self, func: AsyncResultFunc[P, T, E]
+        self,
+        func: AsyncResultFunc[P, T, E],
     ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...
 
 
@@ -137,7 +139,8 @@ def timeout(seconds: float) -> TimeoutDecorator:
 
             @functools.wraps(func)
             async def async_wrapper(
-                *args: P.args, **kwargs: P.kwargs
+                *args: P.args,
+                **kwargs: P.kwargs,
             ) -> Result[T, TimeoutError | E]:
                 if (
                     not isinstance(seconds, (int, float))
@@ -148,7 +151,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                         cast(
                             E,
                             ValueError("Timeout must be a finite non-negative number"),
-                        )
+                        ),
                     )
 
                 try:
@@ -162,14 +165,15 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     )
                 except TimeoutError:
                     return Err(
-                        TimeoutError(f"Execution timed out after {seconds} seconds.")
+                        TimeoutError(f"Execution timed out after {seconds} seconds."),
                     )
 
             return async_wrapper
 
         @functools.wraps(func)
         def sync_wrapper(
-            *args: P.args, **kwargs: P.kwargs
+            *args: P.args,
+            **kwargs: P.kwargs,
         ) -> Result[T, TimeoutError | E]:
             if (
                 not isinstance(seconds, (int, float))
@@ -180,7 +184,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     cast(
                         E,
                         ValueError("Timeout must be a finite non-negative number"),
-                    )
+                    ),
                 )
 
             result: list[Result[T, TimeoutError | E]] = []
@@ -206,7 +210,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
 
             if thread.is_alive():
                 return Err(
-                    TimeoutError(f"Execution timed out after {seconds} seconds.")
+                    TimeoutError(f"Execution timed out after {seconds} seconds."),
                 )
 
             if exception:
