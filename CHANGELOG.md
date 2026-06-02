@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.3 - 2026-06-02
+
+### Security
+- **Fix (Medium)**: Fixed file descriptor leaks in `safe_write` on `BaseException` inside the filesystem module (PR #838).
+- **Hardening**: Implemented fail-fast validation for the retry decorator and reverted capturing of `BaseException` to prevent masking critical system interrupts (PR #852).
+- **Hardening**: Hardened retry decorator against type mutations under chaos injection (PR #853).
+- **Hardening**: Hardened fallback decorator against runtime type mutations under chaos (PR #842).
+- **Hardening**: Enhanced circuit breaker resilience to time and state mutations (PR #856, PR #839).
+- **Hardening**: Allowed fatal system exceptions to propagate naturally during sleep inside retry decorator rather than masking them (PR #864).
+- **Fix**: Resolved mypy type binding issues in models and format code with ruff (Direct commit).
+
+### Resilience & Watchdogs
+- **Hardening**: Added chaos tests for watchdogs to improve logical robustness (PR #848).
+- **Hardening**: Added chaos testing and resilience hardening for `ConfigWatcher` (PR #860).
+- **Hardening**: Added resource exhaustion tests for ResilienceOrchestrator fallbacks (PR #853).
+
+### Refactoring & Typing
+- **Complexity**: Proactively reduced cyclomatic and cognitive complexity in orchestrator and circuit breaker modules (PR #862, PR #844).
+- **Complexity**: Proactively reduced cyclomatic complexity in utils/resilience modules and optimized collection type dispatch in `_redact_collection` (PR #866).
+- **Typing & Formatting**: Refactored static typing and formatting compliance across core modules (PR #869).
+
+### QA & Testing
+- **Coverage**: Achieved 100% genuine code and branch coverage on security `guards.py` (PR #843).
+- **Coverage**: Achieved 100% genuine code and branch coverage in `subprocess.py` (PR #857).
+- **Coverage**: Achieved 100% genuine code and branch coverage for adaptive resilience components (PR #850).
+- **Caching**: Added tests for cache LRU eviction policy and edge conditions in `@cached` decorator (PR #865).
+- **Standardization**: Refactored and standardized test suite naming conventions (PR #847).
+- **Test Count**: Standardized verified test suite at **1,344 passing tests** with 100% genuine coverage.
+
+### Documentation & CI/CD
+- **Link Corrections**: Resolved dead compare links in CHANGELOG and docs/releases, and fixed dead markdown links across all documentation portals (PR #854, PR #851).
+- **Synchronization**: Synchronized `ConfigWatcher` API constructor references and code examples in features guide (PR #867).
+- **CI Badge**: Updated CI badges to use Shields.io status format in README and index.md (PR #863).
+
 ## 0.5.2 - 2026-05-26
 
 ### Security
@@ -782,7 +816,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...v0.5.3
 [0.5.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.9...v0.5.0
 [0.4.9]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.8...v0.4.9
 [0.4.8]: https://github.com/gabrielima7/TaipanStack/compare/v0.4.7...v0.4.8
