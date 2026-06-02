@@ -126,7 +126,8 @@ class SafeFromDecorator(Protocol[E_co]):
 
     @overload
     def __call__(
-        self, func: Callable[P, Awaitable[T]]
+        self,
+        func: Callable[P, Awaitable[T]],
     ) -> Callable[P, Awaitable[Result[T, E_co]]]: ...
 
 
