@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from taipanstack.core.result import Err, Ok
+from taipanstack.core.result import Ok
 from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
 
@@ -38,7 +38,9 @@ def test_chaos_config_watcher_extreme_callback_failure() -> None:
         watcher._handle_validation_failure(Path("dummy.json"), ValueError("test"))
 
 
-def test_chaos_config_watcher_corrupted_file_type(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+def test_chaos_config_watcher_corrupted_file_type(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
     """Chaos test: Ensure ConfigWatcher handles reading a directory as a file."""
 
     watcher = ConfigWatcher(
@@ -50,4 +52,3 @@ def test_chaos_config_watcher_corrupted_file_type(tmp_path: Path, caplog: pytest
     result = watcher._detect_changes()
     assert result == Ok([])
     assert "Cannot hash" in caplog.text
-

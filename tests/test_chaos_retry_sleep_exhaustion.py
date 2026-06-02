@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from taipanstack.resilience.retry import Retrier, RetryError, retry
+from taipanstack.resilience.retry import Retrier, retry
 
 
 def test_chaos_retry_sync_sleep_oserror():
