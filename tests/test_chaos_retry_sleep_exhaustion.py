@@ -15,7 +15,7 @@ def test_chaos_retry_sync_sleep_oserror():
         raise ValueError("Oops")
 
     with patch("time.sleep", side_effect=OSError("System resource exhausted")):
-        with pytest.raises((ValueError, RetryError)):
+        with pytest.raises(OSError, match="System resource exhausted"):
             flaky_func()
 
     assert attempts == 1
@@ -32,7 +32,7 @@ async def test_chaos_retry_async_sleep_memoryerror():
         raise ValueError("Oops")
 
     with patch("asyncio.sleep", side_effect=MemoryError("Out of memory")):
-        with pytest.raises((ValueError, RetryError)):
+        with pytest.raises(MemoryError, match="Out of memory"):
             await flaky_func()
 
     assert attempts == 1
@@ -43,7 +43,7 @@ def test_chaos_retrier_sleep_exhaustion():
     attempts = 0
 
     with patch("time.sleep", side_effect=MemoryError("Out of memory")):
-        with pytest.raises((ValueError, RetryError)):
+        with pytest.raises(MemoryError, match="Out of memory"):
             with retrier:
                 attempts += 1
                 raise ValueError("Oops")
