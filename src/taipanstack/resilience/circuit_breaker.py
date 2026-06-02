@@ -31,7 +31,8 @@ class CircuitBreakerDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Awaitable[R]]
+        self,
+        func: Callable[P, Awaitable[R]],
     ) -> Callable[P, Awaitable[R]]: ...
 
 
@@ -149,16 +150,24 @@ class CircuitBreaker:
 
     @staticmethod
     def _validate_thresholds(
-        timeout: float, failure_threshold: int, success_threshold: int
+        timeout: float,
+        failure_threshold: int,
+        success_threshold: int,
     ) -> None:
         CircuitBreaker._check_finite_val(
-            timeout, 0, "timeout must be a finite non-negative number"
+            timeout,
+            0,
+            "timeout must be a finite non-negative number",
         )
         CircuitBreaker._check_finite_val(
-            failure_threshold, 1, "failure_threshold must be a finite number >= 1"
+            failure_threshold,
+            1,
+            "failure_threshold must be a finite number >= 1",
         )
         CircuitBreaker._check_finite_val(
-            success_threshold, 1, "success_threshold must be a finite number >= 1"
+            success_threshold,
+            1,
+            "success_threshold must be a finite number >= 1",
         )
 
     def __init__(
@@ -186,7 +195,9 @@ class CircuitBreaker:
 
         """
         CircuitBreaker._validate_thresholds(
-            timeout, failure_threshold, success_threshold
+            timeout,
+            failure_threshold,
+            success_threshold,
         )
 
         self.config = CircuitBreakerConfig(
@@ -278,7 +289,8 @@ class CircuitBreaker:
         return elapsed
 
     def _transition_to_half_open(
-        self, elapsed: float
+        self,
+        elapsed: float,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         """Transition the circuit to half-open state."""
         # Before transitioning, verify if we can make an attempt
@@ -324,7 +336,9 @@ class CircuitBreaker:
             return False
 
         success_threshold = self._get_safe_threshold(
-            self.config.success_threshold, 1, 2
+            self.config.success_threshold,
+            1,
+            2,
         )
 
         if self._state.half_open_attempts < success_threshold:
@@ -358,7 +372,9 @@ class CircuitBreaker:
             self._state.success_count += 1
 
         success_threshold = self._get_safe_threshold(
-            self.config.success_threshold, 1, 2
+            self.config.success_threshold,
+            1,
+            2,
         )
 
         if self._state.success_count >= success_threshold:
@@ -411,7 +427,9 @@ class CircuitBreaker:
             return (CircuitState.CLOSED, CircuitState.OPEN)
 
         failure_threshold = self._get_safe_threshold(
-            self.config.failure_threshold, 1, 5
+            self.config.failure_threshold,
+            1,
+            5,
         )
 
         if self._state.failure_count >= failure_threshold:
@@ -534,7 +552,8 @@ class CircuitBreaker:
                 self._safe_decrement_half_open_attempts()
 
     def __call__(
-        self, func: Callable[P, R] | Callable[P, Awaitable[R]]
+        self,
+        func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         """Decorate a sync or async function with circuit breaker protection."""
         if inspect.iscoroutinefunction(func):

@@ -192,7 +192,11 @@ async def _execute_single_attempt(
         return Ok(response)
     except Exception as exc:
         should_retry = await _handle_http_exception(
-            exc, attempt, max_attempts, retry_config, circuit_breaker
+            exc,
+            attempt,
+            max_attempts,
+            retry_config,
+            circuit_breaker,
         )
         if should_retry:
             return exc
@@ -268,8 +272,8 @@ async def safe_request(
         return Err(
             ImportError(
                 "httpx is required for HTTP bridge. "
-                "Install with: pip install taipanstack[bridges-http]"
-            )
+                "Install with: pip install taipanstack[bridges-http]",
+            ),
         )
 
     # SSRF check
@@ -286,7 +290,8 @@ async def safe_request(
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
             request_func = cast(
-                Callable[..., Awaitable[httpx.Response]], client.request
+                Callable[..., Awaitable[httpx.Response]],
+                client.request,
             )
             response = await request_func(method, url, **kwargs)
             return response
@@ -406,7 +411,8 @@ class SafeHttpClient:
             # We explicitly verified client is not None above
             client: httpx.AsyncClient = cast(httpx.AsyncClient, self._client)
             request_func = cast(
-                Callable[..., Awaitable[httpx.Response]], client.request
+                Callable[..., Awaitable[httpx.Response]],
+                client.request,
             )
             response = await request_func(method, url, **kwargs)
             return response
@@ -419,31 +425,41 @@ class SafeHttpClient:
         )
 
     async def get(
-        self, url: str, **kw: Unpack[HttpRequestKwargs]
+        self,
+        url: str,
+        **kw: Unpack[HttpRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a GET request."""
         return await self.request("GET", url, **kw)
 
     async def post(
-        self, url: str, **kw: Unpack[HttpRequestKwargs]
+        self,
+        url: str,
+        **kw: Unpack[HttpRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a POST request."""
         return await self.request("POST", url, **kw)
 
     async def put(
-        self, url: str, **kw: Unpack[HttpRequestKwargs]
+        self,
+        url: str,
+        **kw: Unpack[HttpRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a PUT request."""
         return await self.request("PUT", url, **kw)
 
     async def delete(
-        self, url: str, **kw: Unpack[HttpRequestKwargs]
+        self,
+        url: str,
+        **kw: Unpack[HttpRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a DELETE request."""
         return await self.request("DELETE", url, **kw)
 
     async def patch(
-        self, url: str, **kw: Unpack[HttpRequestKwargs]
+        self,
+        url: str,
+        **kw: Unpack[HttpRequestKwargs],
     ) -> Result[httpx.Response, Exception]:
         """Send a PATCH request."""
         return await self.request("PATCH", url, **kw)
