@@ -2234,19 +2234,26 @@
 <hr />
 <h2 id="config-watcher">Config Watcher<a class="headerlink" href="#config-watcher" title="Permanent link">&para;</a></h2>
 <p>Environment drift and configuration file tampering are common deployment blindspots. Use the <code>ConfigWatcher</code> to watch a <code>.env</code> or <code>.toml</code> file and trigger application reloads or alerts.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.watchdogs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigWatcher</span>
-</span><span id="__span-2-2">
-</span><span id="__span-2-3"><span class="k">def</span><span class="w"> </span><span class="nf">hot_reload</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="__span-2-4">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> changed! Reloading...&quot;</span><span class="p">)</span>
-</span><span id="__span-2-5">
-</span><span id="__span-2-6"><span class="c1"># Watches config.json using cryptographic SHA-256 fingerprinting</span>
-</span><span id="__span-2-7"><span class="n">config_watcher</span> <span class="o">=</span> <span class="n">ConfigWatcher</span><span class="p">(</span>
-</span><span id="__span-2-8">    <span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;config.json&quot;</span><span class="p">,</span>
-</span><span id="__span-2-9">    <span class="n">interval</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-</span><span id="__span-2-10">    <span class="n">on_change</span><span class="o">=</span><span class="n">hot_reload</span>
-</span><span id="__span-2-11"><span class="p">)</span>
-</span><span id="__span-2-12">
-</span><span id="__span-2-13"><span class="n">background_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">config_watcher</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-2-2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+</span><span id="__span-2-3"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.watchdogs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigWatcher</span>
+</span><span id="__span-2-4">
+</span><span id="__span-2-5"><span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-2-6">    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span id="__span-2-7">    <span class="n">max_connections</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-2-8">
+</span><span id="__span-2-9"><span class="k">def</span><span class="w"> </span><span class="nf">hot_reload</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">MyConfig</span><span class="p">):</span>
+</span><span id="__span-2-10">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config changed! New debug setting: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-2-11">
+</span><span id="__span-2-12"><span class="c1"># Watches config.json using cryptographic SHA-256 fingerprinting and validates with MyConfig</span>
+</span><span id="__span-2-13"><span class="n">config_watcher</span> <span class="o">=</span> <span class="n">ConfigWatcher</span><span class="p">(</span>
+</span><span id="__span-2-14">    <span class="n">config_paths</span><span class="o">=</span><span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;config.json&quot;</span><span class="p">)],</span>
+</span><span id="__span-2-15">    <span class="n">config_model</span><span class="o">=</span><span class="n">MyConfig</span><span class="p">,</span>
+</span><span id="__span-2-16">    <span class="n">interval</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+</span><span id="__span-2-17">    <span class="n">on_config_change</span><span class="o">=</span><span class="n">hot_reload</span>
+</span><span id="__span-2-18"><span class="p">)</span>
+</span><span id="__span-2-19">
+</span><span id="__span-2-20"><span class="n">background_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">config_watcher</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
 </span></code></pre></div>
 
 
