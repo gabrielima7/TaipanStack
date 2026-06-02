@@ -32,12 +32,14 @@ PROJECT_NAME_RESERVED = frozenset(
         "main",
         "app",
         "site-packages",
-    }
+    },
 )
 
 
 def _validate_type(
-    value: object, expected_type: type | tuple[type, ...], name: str
+    value: object,
+    expected_type: type | tuple[type, ...],
+    name: str,
 ) -> None:
     """Validate input type.
 
@@ -101,7 +103,9 @@ def _build_invalid_chars_msg(allow_hyphen: bool, allow_underscore: bool) -> str:
 
 
 def _check_project_name_chars(
-    name: str, allow_hyphen: bool, allow_underscore: bool
+    name: str,
+    allow_hyphen: bool,
+    allow_underscore: bool,
 ) -> None:
     """Check project name characters.
 
