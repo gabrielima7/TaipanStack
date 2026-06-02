@@ -38,7 +38,7 @@ class BulkheadFullError(Exception):
         self.max_queue = max_queue
         super().__init__(
             f"Bulkhead '{name}' is full "
-            f"(max_concurrent={max_concurrent}, max_queue={max_queue})"
+            f"(max_concurrent={max_concurrent}, max_queue={max_queue})",
         )
 
 
@@ -127,7 +127,7 @@ class Bulkhead:
                     self.name,
                     self._max_concurrent,
                     self._max_queue,
-                )
+                ),
             )
 
         self._queued += 1
@@ -142,8 +142,8 @@ class Bulkhead:
                 return Err(
                     TimeoutError(
                         f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit"
-                    )
+                        f"after {self._timeout}s waiting for permit",
+                    ),
                 )
             except (RuntimeError, OSError, MemoryError) as e:
                 return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
