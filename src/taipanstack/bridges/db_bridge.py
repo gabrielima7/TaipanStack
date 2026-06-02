@@ -166,8 +166,8 @@ class ResilientDatabase:
             return Err(
                 ImportError(
                     "sqlalchemy is required for ResilientDatabase. "
-                    "Install with: pip install taipanstack[bridges-db]"
-                )
+                    "Install with: pip install taipanstack[bridges-db]",
+                ),
             )
 
         # Circuit breaker gate
@@ -236,8 +236,8 @@ class ResilientRedis:
             return Err(
                 ImportError(
                     "redis is required for ResilientRedis. "
-                    "Install with: pip install taipanstack[bridges-db]"
-                )
+                    "Install with: pip install taipanstack[bridges-db]",
+                ),
             )
         return Ok(None)
 

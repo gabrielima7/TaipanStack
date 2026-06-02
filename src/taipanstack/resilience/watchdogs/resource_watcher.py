@@ -52,8 +52,8 @@ def check_resources() -> Result[ResourceSnapshot, Exception]:
         return Err(
             ImportError(
                 "psutil is required for resource monitoring. "
-                "Install with: pip install taipanstack[resilience]"
-            )
+                "Install with: pip install taipanstack[resilience]",
+            ),
         )
 
     cpu = psutil.cpu_percent(interval=0.1)
@@ -63,7 +63,7 @@ def check_resources() -> Result[ResourceSnapshot, Exception]:
             cpu_percent=cpu,
             memory_percent=mem,
             timestamp=time.monotonic(),
-        )
+        ),
     )
 
 
@@ -123,8 +123,8 @@ class ResourceWatcher(BaseWatcher):
             return Err(
                 ImportError(
                     "psutil is required for ResourceWatcher. "
-                    "Install with: pip install taipanstack[resilience]"
-                )
+                    "Install with: pip install taipanstack[resilience]",
+                ),
             )
         return await super().start()
 

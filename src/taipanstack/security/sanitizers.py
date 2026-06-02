@@ -16,10 +16,10 @@ _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no 
 _HTML_TAGS_RE = re.compile(r"<[^>]+>")  # pragma: no mutate
 # Remove control characters (C0 and C1 sets)
 _CONTROL_CHARS_RE = re.compile(
-    r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]"
+    r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]",
 )  # pragma: no mutate
 _VALID_SQL_PREFIX = frozenset(
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_",
 )  # pragma: no mutate
 _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
     {
@@ -45,7 +45,7 @@ _WINDOWS_RESERVED_NAMES = frozenset(  # pragma: no mutate
         "LPT7",
         "LPT8",
         "LPT9",
-    }
+    },
 )
 
 
@@ -123,7 +123,8 @@ def _has_valid_extension(name: str, idx: int) -> bool:
 
 
 def _extract_stem_and_suffix(
-    filename: str, preserve_extension: bool
+    filename: str,
+    preserve_extension: bool,
 ) -> tuple[str, str]:
     """Extract stem and suffix from a filename."""
     name = _get_filename_from_path(filename)
@@ -193,7 +194,10 @@ def _is_filename_safe(filename: str, max_length: int, stem: str) -> bool:
 
 
 def _finalize_filename(
-    safe_stem: str, replacement: str, suffix: str, max_length: int
+    safe_stem: str,
+    replacement: str,
+    suffix: str,
+    max_length: int,
 ) -> str:
     """Finalize the sanitized filename by handling reserved names and empty results."""
     # Handle reserved names (Windows)
