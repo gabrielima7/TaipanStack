@@ -69,7 +69,8 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
 
 
 def _redact_mapping(
-    obj: MutableMapping[object, object], seen: set[int]
+    obj: MutableMapping[object, object],
+    seen: set[int],
 ) -> dict[object, object]:
     """Redact a mapping object."""
     seen.add(id(obj))
@@ -110,7 +111,27 @@ def _redact_set(obj: set[object], seen: set[int]) -> set[object]:
     return redacted
 
 
-def _redact(obj: object, seen: set[int] | None = None) -> object:  # noqa: PLR0911
+def _redact_collection(obj: object, seen: set[int]) -> object:
+    """Dispatch redaction based on collection type."""
+    if isinstance(obj, dict):
+        return _redact_mapping(obj, seen)
+
+    if isinstance(obj, MutableMapping):
+        return _redact_mapping(obj, seen)
+
+    if isinstance(obj, list):
+        return _redact_list(obj, seen)
+
+    if isinstance(obj, tuple):
+        return _redact_tuple(obj, seen)
+
+    if isinstance(obj, set):
+        return _redact_set(obj, seen)
+
+    return obj
+
+
+def _redact(obj: object, seen: set[int] | None = None) -> object:
     """Redact sensitive data recursively with circular reference protection.
 
     Args:
@@ -131,19 +152,7 @@ def _redact(obj: object, seen: set[int] | None = None) -> object:  # noqa: PLR09
     if id(obj) in seen:
         return REDACTED_VALUE
 
-    if isinstance(obj, MutableMapping):
-        return _redact_mapping(obj, seen)
-
-    if isinstance(obj, list):
-        return _redact_list(obj, seen)
-
-    if isinstance(obj, tuple):
-        return _redact_tuple(obj, seen)
-
-    if isinstance(obj, set):
-        return _redact_set(obj, seen)
-
-    return obj
+    return _redact_collection(obj, seen)
 
 
 def _redact_dict(d: MutableMapping[str, object]) -> None:

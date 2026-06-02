@@ -44,7 +44,8 @@ class SecurityConfig(BaseModel):
     enable_pip_audit: bool = Field(default=True, description="Enable pip-audit SCA")
     enable_semgrep: bool = Field(default=True, description="Enable Semgrep")
     enable_detect_secrets: bool = Field(
-        default=True, description="Enable secret detection"
+        default=True,
+        description="Enable secret detection",
     )
     bandit_severity: Literal["low", "medium", "high"] = Field(
         default="low",
@@ -299,7 +300,7 @@ class StackConfig(BaseModel):
                 self.security.enable_pip_audit,
                 self.security.enable_semgrep,
                 self.security.enable_detect_secrets,
-            ]
+            ],
         )
         if self.security.level == "paranoid" and not all_tools_enabled:
             msg = "Paranoid security level requires all security tools enabled."
