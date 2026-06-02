@@ -165,6 +165,21 @@ class ResilienceOrchestrator(Generic[T]):
         self._fallback_value = value
         return self
 
+    async def _acquire_bulkhead(self, bh: Bulkhead) -> Result[None, Exception]:
+        """Attempt to acquire a bulkhead permit, handling timeouts and errors."""
+        try:
+            await asyncio.wait_for(
+                bh._semaphore.acquire(),
+                timeout=bh._timeout,
+            )
+            return Ok(None)
+        except TimeoutError:
+            return Err(
+                TimeoutError(f"Bulkhead '{bh.name}' timed out after {bh._timeout}s")
+            )
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+
     async def _execute_with_bulkhead(
         self,
         bh: Bulkhead,
@@ -181,23 +196,9 @@ class ResilienceOrchestrator(Generic[T]):
 
         bh._queued += 1
         try:
-            try:
-                await asyncio.wait_for(
-                    bh._semaphore.acquire(),
-                    timeout=bh._timeout,
-                )
-            except TimeoutError:
-                return self._apply_fallback(
-                    Err(
-                        TimeoutError(
-                            f"Bulkhead '{bh.name}' timed out after {bh._timeout}s",
-                        ),
-                    ),
-                )
-            except (RuntimeError, OSError, MemoryError) as e:
-                return self._apply_fallback(
-                    Err(RuntimeError(f"Resource exhaustion: {e!s}")),
-                )
+            acquire_result = await self._acquire_bulkhead(bh)
+            if isinstance(acquire_result, Err):
+                return self._apply_fallback(cast(Result[T, Exception], acquire_result))
         finally:
             bh._queued -= 1
 
@@ -349,6 +350,31 @@ class ResilienceOrchestrator(Generic[T]):
             return self._handle_circuit_breaker_open(cb_err, attempt)
         return None
 
+    async def _process_retry_attempt(
+        self,
+        attempt: int,
+        max_attempts: int,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception] | tuple[bool, Exception]:
+        """Process a single retry attempt including circuit breaker check."""
+        cb_res = self._check_circuit_breaker_for_attempt(attempt)
+        if cb_res is not None:
+            if isinstance(cb_res, Exception):
+                return False, cb_res
+            return cb_res
+
+        result = await self._execute_single_attempt(attempt, fn, *args, **kwargs)
+        if isinstance(result, Ok):
+            return result
+
+        last_error = result.err_value
+        should_continue = await self._handle_retry_failure(
+            last_error, attempt, max_attempts
+        )
+        return should_continue, last_error
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -358,19 +384,14 @@ class ResilienceOrchestrator(Generic[T]):
     ) -> Result[T, Exception]:
         last_error: Exception = RuntimeError("Execution failed")
         for attempt in range(1, max_attempts + 1):
-            cb_res = self._check_circuit_breaker_for_attempt(attempt)
-            if cb_res is not None:
-                if isinstance(cb_res, Exception):
-                    last_error = cb_res
-                    break
-                return cb_res
+            outcome = await self._process_retry_attempt(
+                attempt, max_attempts, fn, *args, **kwargs
+            )
+            if not isinstance(outcome, tuple):
+                return outcome
 
-            result = await self._execute_single_attempt(attempt, fn, *args, **kwargs)
-            if isinstance(result, Ok):
-                return result
-
-            last_error = result.err_value
-            if not await self._handle_retry_failure(last_error, attempt, max_attempts):
+            should_continue, last_error = outcome
+            if not should_continue:
                 break
 
         return self._apply_fallback(Err(last_error))
