@@ -328,19 +328,25 @@ def _raise_retry_error(
     )
 
 
-def _validate_retry_exceptions(
+def _ensure_tuple(
     on: tuple[type[Exception], ...] | type[Exception],
 ) -> tuple[type[Exception], ...]:
-    """Validate that the 'on' parameter contains valid exception types."""
+    """Ensure the exception parameter is a tuple of exception types."""
     if isinstance(on, type) and issubclass(on, BaseException):
-        on_tuple: tuple[type[Exception], ...] = (on,)
-    elif not isinstance(on, tuple):
+        return (on,)
+    if not isinstance(on, tuple):
         msg = (
             "'on' parameter must be an exception class or a tuple of exception classes"
         )
         raise TypeError(msg)
-    else:
-        on_tuple = on
+    return on
+
+
+def _validate_retry_exceptions(
+    on: tuple[type[Exception], ...] | type[Exception],
+) -> tuple[type[Exception], ...]:
+    """Validate that the 'on' parameter contains valid exception types."""
+    on_tuple = _ensure_tuple(on)
 
     for exc_type in on_tuple:
         if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
