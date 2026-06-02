@@ -464,10 +464,7 @@ def retry(  # noqa: PLR0915
                             delay,
                             config,
                         )
-                        try:
-                            await asyncio.sleep(min(delay, 3600.0))
-                        except Exception:
-                            break
+                        await asyncio.sleep(min(delay, 3600.0))
 
                 if last_result is not None and isinstance(last_result, Err):
                     return cast(R, last_result)
@@ -522,10 +519,7 @@ def retry(  # noqa: PLR0915
                         delay,
                         config,
                     )
-                    try:
-                        time.sleep(min(delay, 3600.0))
-                    except Exception:
-                        break
+                    time.sleep(min(delay, 3600.0))
 
             if last_result is not None and isinstance(last_result, Err):
                 return cast(R, last_result)
@@ -661,9 +655,6 @@ class Retrier:
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        try:
-            time.sleep(min(delay, 3600.0))
-        except Exception:
-            return False
+        time.sleep(min(delay, 3600.0))
 
         return True  # Suppress exception and retry
