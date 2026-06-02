@@ -66,17 +66,25 @@ background_task = asyncio.create_task(watcher.start())
 
 Environment drift and configuration file tampering are common deployment blindspots. Use the `ConfigWatcher` to watch a `.env` or `.toml` file and trigger application reloads or alerts.
 
+
 ```python
+from pathlib import Path
+from pydantic import BaseModel
 from taipanstack.resilience.watchdogs import ConfigWatcher
 
-def hot_reload(file_path: str, new_hash: str):
-    print(f"Config {file_path} changed! Reloading...")
+class MyConfig(BaseModel):
+    debug: bool
+    max_connections: int
 
-# Watches config.json using cryptographic SHA-256 fingerprinting
+def hot_reload(config: MyConfig):
+    print(f"Config changed! New debug setting: {config.debug}")
+
+# Watches config.json using cryptographic SHA-256 fingerprinting and validates with MyConfig
 config_watcher = ConfigWatcher(
-    file_path="config.json",
+    config_paths=[Path("config.json")],
+    config_model=MyConfig,
     interval=10.0,
-    on_change=hot_reload
+    on_config_change=hot_reload
 )
 
 background_task = asyncio.create_task(config_watcher.start())
