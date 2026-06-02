@@ -68,6 +68,7 @@ Environment drift and configuration file tampering are common deployment blindsp
 
 
 ```python
+from pathlib import Path
 from pydantic import BaseModel
 from taipanstack.resilience.watchdogs import ConfigWatcher
 
@@ -75,12 +76,12 @@ class MyConfig(BaseModel):
     debug: bool
     max_connections: int
 
-def hot_reload(file_path: str, new_hash: str):
-    print(f"Config {file_path} changed! Reloading...")
+def hot_reload(config: MyConfig):
+    print(f"Config changed! New debug setting: {config.debug}")
 
 # Watches config.json using cryptographic SHA-256 fingerprinting and validates with MyConfig
 config_watcher = ConfigWatcher(
-    config_paths=["config.json"],
+    config_paths=[Path("config.json")],
     config_model=MyConfig,
     interval=10.0,
     on_config_change=hot_reload
