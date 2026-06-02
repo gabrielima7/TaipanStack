@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from taipanstack.core.result import Err
+from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
 
@@ -11,8 +11,7 @@ class DummyConfig(BaseModel):
     foo: str
 
 
-@pytest.mark.asyncio
-async def test_chaos_config_watcher_extreme_callback_failure() -> None:
+def test_chaos_config_watcher_extreme_callback_failure() -> None:
     """Chaos test: Ensure ConfigWatcher handles extreme callback failures gracefully."""
 
     def exploding_callback(model: BaseModel) -> None:
@@ -39,8 +38,7 @@ async def test_chaos_config_watcher_extreme_callback_failure() -> None:
         watcher._handle_validation_failure(Path("dummy.json"), ValueError("test"))
 
 
-@pytest.mark.asyncio
-async def test_chaos_config_watcher_corrupted_file_type(tmp_path: Path) -> None:
+def test_chaos_config_watcher_corrupted_file_type(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
     """Chaos test: Ensure ConfigWatcher handles reading a directory as a file."""
 
     watcher = ConfigWatcher(
@@ -48,7 +46,8 @@ async def test_chaos_config_watcher_corrupted_file_type(tmp_path: Path) -> None:
         config_model=DummyConfig,
     )
 
-    # Should return Err instead of crashing when reading a directory
-    result = watcher._validate_and_apply(tmp_path)
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, Exception)
+    # Should log warning and return Ok([]) instead of crashing when reading a directory
+    result = watcher._detect_changes()
+    assert result == Ok([])
+    assert "Cannot hash" in caplog.text
+
