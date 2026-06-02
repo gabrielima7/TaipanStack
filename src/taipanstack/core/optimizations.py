@@ -259,7 +259,7 @@ def _apply_gc_tuning(
         applied.append(
             f"gc_threshold: {current} -> "
             f"({profile.gc_threshold_0}, {profile.gc_threshold_1}, "
-            f"{profile.gc_threshold_2})"
+            f"{profile.gc_threshold_2})",
         )
     except Exception as e:
         errors.append(f"gc_threshold: {e}")
@@ -301,7 +301,7 @@ def _apply_experimental(
         if features.has_free_threading:
             applied.append("free_threading: available")
         logger.warning(
-            "EXPERIMENTAL FEATURES ENABLED: Stability and security may be affected."
+            "EXPERIMENTAL FEATURES ENABLED: Stability and security may be affected.",
         )
     else:
         skipped.append("experimental: requires STACK_ENABLE_EXPERIMENTAL=1")

@@ -42,8 +42,8 @@ def require_dependency(
         return Err(
             ImportError(
                 f"'{module_name}' is required but not installed. "
-                f"Install with: {install_hint}"
-            )
+                f"Install with: {install_hint}",
+            ),
         )
 
 
