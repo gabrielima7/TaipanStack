@@ -384,7 +384,7 @@ def require_type(
                     if not isinstance(value, expected_type):
                         raise TypeError(
                             f"Parameter '{param_name}' expected "
-                            f"{expected_type.__name__}, got {type(value).__name__}"
+                            f"{expected_type.__name__}, got {type(value).__name__}",
                         )
 
             return func(*bound.args, **bound.kwargs)

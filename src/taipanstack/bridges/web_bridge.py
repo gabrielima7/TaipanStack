@@ -124,13 +124,13 @@ async def _send_json_response(
             "type": "http.response.start",
             "status": status,
             "headers": headers,
-        }
+        },
     )
     await send(
         {
             "type": "http.response.body",
             "body": payload,
-        }
+        },
     )
 
 
