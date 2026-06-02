@@ -31,12 +31,11 @@
 
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.5.2
-- **Sentinel Hardening**: Enforced multicast and unspecified IP address bounds checking inside `guard_ssrf` (PR #826) and added negative domain bounds checks to resilience LBYL type guards (PR #823).
-- **Resilience under Chaos**: Protected `CircuitBreaker` and `Retry` against runtime property type mutations and configuration exception changes under chaos, and fixed `NaN` `last_failure_time` lockout vulnerability (PR #811, #819, #830).
-- **Complexity Refactor**: Reduced cyclomatic and cognitive complexity in watchdogs, orchestrators, bridges, and circuit breakers (PR #813, #817, #821, #835).
-- **QA & Typing**: Standardized test naming convention (`test_*.py`) and refactored test suite to achieve 100% genuine coverage over **1,226 passing tests** (PR #816, #825, #831, #837).
-- **Bridges API Reference**: Added new API documentation reference for the Bridges module (PR #822).
+### ✨ What's New in v0.5.3
+- **Security Fixes & Hardening**: Fixed file descriptor leaks in `safe_write` on `BaseException` (PR #838). Hardened retry, fallback, and circuit breaker decorators/classes against runtime type mutations, clock jumps, and NaN state poisoning under chaos injection (PR #852, #853, #842, #856, #839, #864).
+- **Complexity Refactor**: Reduced cyclomatic and cognitive complexity in orchestrators, circuit breakers, and logging/retry utils (PR #862, #844, #866).
+- **QA & Test Count**: Standardized test naming conventions (PR #847), expanded test coverage to 100% genuine code and branch coverage across core components, verifying **1,344 passing tests** (PR #843, #857, #850).
+- **Documentation & CI/CD**: Cleaned up dead references and links (PR #854, #851), updated watchdogs code examples (PR #867), and synchronized CI badges (PR #863).
 
 <table>
 <tr>
@@ -73,7 +72,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1,226 tests)
+- **100% code coverage** (1,344 tests)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -115,7 +114,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1,226 tests)
+# Run tests with 100% coverage (1,344 tests)
 make test
 
 # Check architecture contracts
@@ -168,7 +167,7 @@ TaipanStack/
 │       ├── config/       # ⚙️ Configuration models & generators
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Logging, metrics, retry, filesystem
-├── tests/                # ✅ 1,226 tests, 100% coverage
+├── tests/                # ✅ 1,344 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
