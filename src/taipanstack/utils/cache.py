@@ -28,12 +28,14 @@ class CacheDecorator(Protocol):
 
     @overload
     def __call__(
-        self, func: Callable[P, Result[T, E]]
+        self,
+        func: Callable[P, Result[T, E]],
     ) -> Callable[P, Result[T, E]]: ...
 
     @overload
     def __call__(
-        self, func: Callable[P, Awaitable[Result[T, E]]]
+        self,
+        func: Callable[P, Awaitable[Result[T, E]]],
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
@@ -59,7 +61,9 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
     _lock_waiters: dict[CacheKey, int] = {}
 
     def get_cache_key(
-        func_name: str, args: tuple[object, ...], kwargs: dict[str, object]
+        func_name: str,
+        args: tuple[object, ...],
+        kwargs: dict[str, object],
     ) -> CacheKey:
         def _make_hashable(val: object) -> object:
             if isinstance(val, (tuple, list)):
@@ -74,7 +78,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
 
         hashable_args = tuple(_make_hashable(arg) for arg in args)
         hashable_kwargs = tuple(
-            sorted((k, _make_hashable(v)) for k, v in kwargs.items())
+            sorted((k, _make_hashable(v)) for k, v in kwargs.items()),
         )
         return (func_name, hashable_args, hashable_kwargs)
 

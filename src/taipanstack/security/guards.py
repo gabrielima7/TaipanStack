@@ -48,7 +48,7 @@ _DANGEROUS_COMMAND_PATTERNS: tuple[tuple[str, str], ...] = (
 
 # Pre-compiled regex and lookup map for fast-path command injection detection
 _DANGEROUS_COMMAND_RE = re.compile(
-    "|".join(re.escape(p) for p, _ in _DANGEROUS_COMMAND_PATTERNS)
+    "|".join(re.escape(p) for p, _ in _DANGEROUS_COMMAND_PATTERNS),
 )
 _DANGEROUS_COMMAND_LOOKUP = dict(_DANGEROUS_COMMAND_PATTERNS)
 
@@ -68,7 +68,7 @@ _DEFAULT_DENIED_EXTENSIONS = frozenset(
         "jsp",
         "asp",
         "aspx",  # Server-side scripts
-    ]
+    ],
 )
 
 _DEFAULT_DENIED_ENV_VARS = frozenset(
@@ -85,11 +85,11 @@ _DEFAULT_DENIED_ENV_VARS = frozenset(
         "PRIVATE_KEY",
         "API_KEY",
         "API_SECRET",
-    ]
+    ],
 )
 
 _SENSITIVE_ENV_VAR_PATTERN = re.compile(
-    r"SECRET|PASSWORD|TOKEN|PRIVATE.*?KEY|API.*?KEY"
+    r"SECRET|PASSWORD|TOKEN|PRIVATE.*?KEY|API.*?KEY",
 )
 
 _SAFE_HASH_ALGORITHMS = frozenset(
@@ -102,7 +102,7 @@ _SAFE_HASH_ALGORITHMS = frozenset(
         "sha3_512",
         "blake2b",
         "blake2s",
-    ]
+    ],
 )
 
 
@@ -275,7 +275,7 @@ def _check_command_patterns(cmd_list: list[str]) -> None:
         if not isinstance(arg, str):
             raise TypeError(
                 f"All command arguments must be strings, "
-                f"got {type(arg).__name__} at index {i}"
+                f"got {type(arg).__name__} at index {i}",
             )
 
         match = _DANGEROUS_COMMAND_RE.search(arg)
@@ -289,7 +289,8 @@ def _check_command_patterns(cmd_list: list[str]) -> None:
 
 
 def _check_allowed_commands(
-    cmd_list: list[str], allowed_commands: Sequence[str] | None
+    cmd_list: list[str],
+    allowed_commands: Sequence[str] | None,
 ) -> None:
     if allowed_commands is None:
         return
@@ -372,7 +373,9 @@ def _normalize_ext(e: str) -> str:
 
 
 def _check_denied_extension(
-    ext: str, original_name: str, denied_extensions: Sequence[str] | None
+    ext: str,
+    original_name: str,
+    denied_extensions: Sequence[str] | None,
 ) -> None:
     if denied_extensions is not None:
         denied = frozenset(_normalize_ext(e) for e in denied_extensions)
@@ -388,7 +391,9 @@ def _check_denied_extension(
 
 
 def _check_allowed_extension(
-    ext: str, original_name: str, allowed_extensions: Sequence[str] | None
+    ext: str,
+    original_name: str,
+    allowed_extensions: Sequence[str] | None,
 ) -> None:
     if allowed_extensions is not None:
         allowed = {_normalize_ext(e) for e in allowed_extensions}
@@ -551,7 +556,7 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
             SecurityError(
                 f"URL must be str, got {type(url).__name__}",
                 guard_name="ssrf",
-            )
+            ),
         )
 
     if not url:
@@ -563,13 +568,14 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
                 "URL length exceeds maximum allowed limit",
                 guard_name="ssrf",
                 value=url[:80],
-            )
+            ),
         )
     return Ok(url)
 
 
 def _validate_ssrf_url_parse(
-    url: str, allowed_schemes: frozenset[str]
+    url: str,
+    allowed_schemes: frozenset[str],
 ) -> Result[str, SecurityError]:
     try:
         parsed = urlsplit(url)
@@ -579,7 +585,7 @@ def _validate_ssrf_url_parse(
                 f"Malformed URL: {exc}",
                 guard_name="ssrf",
                 value=url[:80],
-            )
+            ),
         )
 
     if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
@@ -588,7 +594,7 @@ def _validate_ssrf_url_parse(
                 f"URL scheme '{parsed.scheme}' is not allowed",
                 guard_name="ssrf",
                 value=url[:80],
-            )
+            ),
         )
 
     hostname = parsed.hostname
@@ -598,7 +604,7 @@ def _validate_ssrf_url_parse(
                 "URL has no resolvable hostname",
                 guard_name="ssrf",
                 value=url[:80],
-            )
+            ),
         )
 
     return Ok(hostname)
@@ -643,7 +649,7 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
             SecurityError(
                 "Hostname could not be resolved or contains invalid characters",
                 guard_name="ssrf",
-            )
+            ),
         )
 
     for addr_info in addr_infos:
@@ -653,7 +659,7 @@ def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
                 SecurityError(
                     "SSRF detected: hostname resolves to private/reserved address",
                     guard_name="ssrf",
-                )
+                ),
             )
 
     return Ok(None)
