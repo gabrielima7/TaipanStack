@@ -190,7 +190,7 @@ class ResilienceOrchestrator(Generic[T]):
         """Execute through the bulkhead layer."""
         if bh.queued >= bh._max_queue:
             result: Result[T, Exception] = Err(
-                BulkheadFullError(bh.name, bh._max_concurrent, bh._max_queue)
+                BulkheadFullError(bh.name, bh._max_concurrent, bh._max_queue),
             )
             return self._apply_fallback(result)
 
@@ -234,7 +234,10 @@ class ResilienceOrchestrator(Generic[T]):
         # Layer 1: Bulkhead — use semaphore directly to avoid double-wrapping
         if self._bulkhead is not None:
             return await self._execute_with_bulkhead(
-                self._bulkhead, fn, *args, **kwargs
+                self._bulkhead,
+                fn,
+                *args,
+                **kwargs,
             )
 
         try:
@@ -250,14 +253,14 @@ class ResilienceOrchestrator(Generic[T]):
                     CircuitBreakerError(
                         f"Circuit '{self._adaptive_breaker.name}' is open",
                         state=self._adaptive_breaker.state,
-                    )
+                    ),
                 )
         elif self._breaker is not None and not self._breaker._should_attempt():
             return Err(
                 CircuitBreakerError(
                     f"Circuit '{self._breaker.name}' is open",
                     state=self._breaker.state,
-                )
+                ),
             )
         return None
 
@@ -315,7 +318,9 @@ class ResilienceOrchestrator(Generic[T]):
         return False
 
     def _handle_circuit_breaker_open(
-        self, cb_err: Err[Exception], attempt: int
+        self,
+        cb_err: Err[Exception],
+        attempt: int,
     ) -> Result[T, Exception] | Exception:
         """Handle circuit breaker evaluation logic."""
         if attempt == 1:
@@ -336,7 +341,8 @@ class ResilienceOrchestrator(Generic[T]):
         return result
 
     def _check_circuit_breaker_for_attempt(
-        self, attempt: int
+        self,
+        attempt: int,
     ) -> Result[T, Exception] | Exception | None:
         """Evaluate circuit breaker for the current attempt."""
         cb_err = self._evaluate_circuit_breaker()
@@ -381,7 +387,7 @@ class ResilienceOrchestrator(Generic[T]):
             outcome = await self._process_retry_attempt(
                 attempt, max_attempts, fn, *args, **kwargs
             )
-            if isinstance(outcome, (Ok, Err)):
+            if not isinstance(outcome, tuple):
                 return outcome
 
             should_continue, last_error = outcome
@@ -421,7 +427,9 @@ class ResilienceOrchestrator(Generic[T]):
             return Ok(result)
         except TimeoutError:
             return Err(
-                TimeoutError(f"Pipeline '{self.name}' timed out after {self._timeout}s")
+                TimeoutError(
+                    f"Pipeline '{self.name}' timed out after {self._timeout}s"
+                ),
             )
         except Exception as exc:
             return Err(exc)
