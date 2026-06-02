@@ -104,7 +104,7 @@ class TestCheckAll:
 class TestForceOpenBreaker:
     """Tests for _force_open_breaker helper."""
 
-    def test_watchdog_health_opens_closed_breaker(self) -> None:
+    def test_watchdog_health_opens_closed_breaker_expected(self) -> None:
         """Force-opens a CLOSED circuit breaker."""
         breaker = CircuitBreaker(name="test", failure_threshold=3)
         assert breaker.state == CircuitState.CLOSED

@@ -12,7 +12,7 @@ from taipanstack.core.compat import VersionTier
 class TestVersionRecommendations:
     """Test VersionRecommendations dataclass."""
 
-    def test_version_config_recommendations_creation(self) -> None:
+    def test_version_config_recommendations_creation_expected(self) -> None:
         """Test creating version recommendations."""
         rec = VersionRecommendations(
             version_tier=VersionTier.STABLE,
@@ -35,7 +35,7 @@ class TestVersionRecommendations:
         assert rec.min_version == "3.11.0"
         assert not rec.supports_true_parallelism
 
-    def test_version_config_recommendations_to_dict(self) -> None:
+    def test_version_config_recommendations_to_dict_expected(self) -> None:
         """Test converting recommendations to dictionary."""
         rec = VersionRecommendations(
             version_tier=VersionTier.ENHANCED,
@@ -68,7 +68,7 @@ class TestVersionRecommendations:
 class TestGetVersionRecommendations:
     """Test get_version_recommendations function."""
 
-    def test_version_config_recommendations_for_311(self) -> None:
+    def test_version_config_recommendations_for_311_expected(self) -> None:
         """Test recommendations for Python 3.11."""
         with patch("taipanstack.config.version_config.PY312", False):
             with patch("taipanstack.config.version_config.PY313", False):
@@ -82,7 +82,7 @@ class TestGetVersionRecommendations:
                     assert not rec.jit_available
                     assert not rec.supports_true_parallelism
 
-    def test_version_config_recommendations_for_312(self) -> None:
+    def test_version_config_recommendations_for_312_expected(self) -> None:
         """Test recommendations for Python 3.12."""
         with patch("taipanstack.config.version_config.PY312", True):
             with patch("taipanstack.config.version_config.PY313", False):
@@ -96,7 +96,7 @@ class TestGetVersionRecommendations:
                     assert not rec.jit_available
                     assert rec.recommended_optimization_level == 1
 
-    def test_version_config_recommendations_for_313(self) -> None:
+    def test_version_config_recommendations_for_313_expected(self) -> None:
         """Test recommendations for Python 3.13."""
         with patch("taipanstack.config.version_config.PY313", True):
             with patch("taipanstack.config.version_config.PY314", False):
@@ -106,7 +106,7 @@ class TestGetVersionRecommendations:
                 assert rec.use_deprecated_decorator
                 assert rec.recommended_optimization_level >= 1
 
-    def test_version_config_recommendations_for_313_with_features(
+    def test_version_config_recommendations_for_313_with_features_expected(
         self,
     ) -> None:
         """Test recommendations for Python 3.13 with features detected."""
@@ -136,7 +136,7 @@ class TestGetVersionRecommendations:
                     assert rec.recommended_gc_mode == "tuned"
                     assert rec.recommended_optimization_level == 2
 
-    def test_version_config_recommendations_for_313_without_experimental(
+    def test_version_config_recommendations_for_313_without_experimental_expected(
         self,
     ) -> None:
         """Test recommendations for Python 3.13 without experimental."""
@@ -165,7 +165,7 @@ class TestGetVersionRecommendations:
                     assert rec.recommended_gc_mode == "default"
                     assert rec.recommended_optimization_level == 1
 
-    def test_version_config_recommendations_for_314(self) -> None:
+    def test_version_config_recommendations_for_314_expected(self) -> None:
         """Test recommendations for Python 3.14."""
         with patch("taipanstack.config.version_config.PY314", True):
             rec = get_version_recommendations()
@@ -176,7 +176,7 @@ class TestGetVersionRecommendations:
             assert rec.recommended_gc_mode == "incremental"
             assert len(rec.notes) >= 4  # Should have comprehensive notes
 
-    def test_version_config_recommendations_for_314_with_features(
+    def test_version_config_recommendations_for_314_with_features_expected(
         self,
     ) -> None:
         """Test recommendations for Python 3.14 with experimental features."""
@@ -204,7 +204,7 @@ class TestGetVersionRecommendations:
                 assert rec.supports_true_parallelism
                 assert rec.recommended_optimization_level == 2
 
-    def test_version_config_recommendations_always_returns_valid_data(
+    def test_version_config_recommendations_always_returns_valid_data_expected(
         self,
     ) -> None:
         """Test that recommendations always return valid data."""
@@ -221,13 +221,13 @@ class TestGetVersionRecommendations:
         assert isinstance(rec.notes, tuple)
         assert len(rec.notes) > 0
 
-    def test_version_config_recommendations_threading_values(self) -> None:
+    def test_version_config_recommendations_threading_values_expected(self) -> None:
         """Test threading recommendations have valid values."""
         rec = get_version_recommendations()
         assert rec.recommended_thread_pool_size > 0
         assert isinstance(rec.supports_true_parallelism, bool)
 
-    def test_version_config_recommendations_code_style_values(self) -> None:
+    def test_version_config_recommendations_code_style_values_expected(self) -> None:
         """Test code style recommendations have valid values."""
         rec = get_version_recommendations()
         assert isinstance(rec.use_type_params, bool)

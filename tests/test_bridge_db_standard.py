@@ -281,7 +281,7 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
 
-def test_bridge_db_db_bridge_import_error_coverage() -> None:
+def test_bridge_db_db_bridge_import_error_coverage_expected() -> None:
     """Test db_bridge import error fallback branches."""
     import importlib
     import sys
@@ -308,7 +308,7 @@ def test_bridge_db_db_bridge_import_error_coverage() -> None:
         importlib.reload(db_mod)
 
 
-def test_bridge_db_success_coverage():
+def test_bridge_db_success_coverage_expected():
     import importlib
     import sys
     from unittest.mock import MagicMock

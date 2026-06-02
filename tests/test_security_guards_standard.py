@@ -15,7 +15,7 @@ from taipanstack.security.guards import (
 class TestGuardPathTraversal:
     """Tests for guard_path_traversal function."""
 
-    def test_security_guards_safe_path_passes(self, tmp_path: Path) -> None:
+    def test_security_guards_safe_path_passes_expected(self, tmp_path: Path) -> None:
         """Test that safe paths pass validation."""
         safe_file = tmp_path / "test.txt"
         safe_file.touch()
@@ -23,7 +23,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(safe_file, tmp_path)
         assert result == safe_file.resolve()
 
-    def test_security_guards_relative_path_within_base(self, tmp_path: Path) -> None:
+    def test_security_guards_relative_path_within_base_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that relative paths within base dir pass."""
         subdir = tmp_path / "subdir"
         subdir.mkdir()
@@ -53,7 +55,9 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal("%2e%2e/etc/passwd", tmp_path)
 
-    def test_security_guards_path_escapes_base_dir(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that paths escaping base dir are blocked."""
         # Create a separate base directory
         subdir = tmp_path / "allowed"
@@ -66,7 +70,9 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal(outside_file, subdir)
 
-    def test_security_guards_symlinks_blocked_by_default(self, tmp_path: Path) -> None:
+    def test_security_guards_symlinks_blocked_by_default_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that symlinks are blocked by default."""
         real_file = tmp_path / "real.txt"
         real_file.touch()
@@ -93,7 +99,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(symlink_path, tmp_path, allow_symlinks=True)
         assert result == real_file.resolve()
 
-    def test_security_guards_path_escapes_base_dir_msg(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_msg_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test the exact error msg for path escape."""
         subdir = tmp_path / "allowed"
         subdir.mkdir()
@@ -109,7 +117,7 @@ class TestGuardPathTraversal:
 class TestGuardCommandInjection:
     """Tests for guard_command_injection function."""
 
-    def test_security_guards_safe_command_passes(self) -> None:
+    def test_security_guards_safe_command_passes_expected(self) -> None:
         """Test that safe commands pass validation."""
         cmd = ["python", "-m", "pytest", "-v"]
         result = guard_command_injection(cmd)
@@ -141,7 +149,7 @@ class TestGuardCommandInjection:
         with pytest.raises(SecurityError):
             guard_command_injection(["echo", "$(whoami)"])
 
-    def test_security_guards_allowed_commands_whitelist(self) -> None:
+    def test_security_guards_allowed_commands_whitelist_expected(self) -> None:
         """Test command whitelist functionality."""
         cmd = ["python", "-c", "print('hello')"]
         result = guard_command_injection(cmd, allowed_commands=["python"])
@@ -156,7 +164,7 @@ class TestGuardCommandInjection:
             )
         assert "not in allowed list" in str(exc_info.value)
 
-    def test_security_guards_empty_allowed_commands_whitelist_blocks_all(
+    def test_security_guards_empty_allowed_commands_whitelist_blocks_all_expected(
         self,
     ) -> None:
         """Test that empty whitelist blocks all commands."""
@@ -171,7 +179,7 @@ class TestGuardCommandInjection:
 class TestGuardFileExtension:
     """Tests for guard_file_extension function."""
 
-    def test_security_guards_safe_extension_passes(self) -> None:
+    def test_security_guards_safe_extension_passes_expected(self) -> None:
         """Test that safe extensions pass."""
         result = guard_file_extension("script.py", allowed_extensions=["py", "txt"])
         assert result == Path("script.py")
@@ -182,23 +190,23 @@ class TestGuardFileExtension:
             guard_file_extension("evil.exe")
         assert "not allowed" in str(exc_info.value)
 
-    def test_security_guards_custom_denied_extensions(self) -> None:
+    def test_security_guards_custom_denied_extensions_expected(self) -> None:
         """Test custom denied extensions."""
         with pytest.raises(SecurityError):
             guard_file_extension("config.yaml", denied_extensions=["yaml", "yml"])
 
-    def test_security_guards_extension_with_dot(self) -> None:
+    def test_security_guards_extension_with_dot_expected(self) -> None:
         """Test that extensions with dots are handled."""
         result = guard_file_extension("file.txt", allowed_extensions=[".txt"])
         assert result == Path("file.txt")
 
-    def test_security_guards_normalize_ext_in_denied(self) -> None:
+    def test_security_guards_normalize_ext_in_denied_expected(self) -> None:
         """Test that denied_extensions are normalized correctly."""
         with pytest.raises(SecurityError, match="not allowed"):
             # Should deny 'file.yaml' even if denied list is uppercase and has dots
             guard_file_extension("file.yaml", denied_extensions=[".YAML"])
 
-    def test_security_guards_normalize_ext_in_allowed(self) -> None:
+    def test_security_guards_normalize_ext_in_allowed_expected(self) -> None:
         """Test that allowed_extensions are normalized correctly."""
         # Should allow 'file.txt' even if allowed list is uppercase and has dots
         result = guard_file_extension("file.txt", allowed_extensions=[".TXT"])
@@ -218,7 +226,7 @@ class TestGuardFileExtension:
 class TestGuardEnvVariable:
     """Tests for guard_env_variable function."""
 
-    def test_security_guards_safe_env_variable(
+    def test_security_guards_safe_env_variable_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that safe environment variables are returned."""
@@ -228,21 +236,21 @@ class TestGuardEnvVariable:
         result = guard_env_variable("SAFE_VAR")
         assert result == "safe_value"
 
-    def test_security_guards_blocked_default_sensitive(self) -> None:
+    def test_security_guards_blocked_default_sensitive_expected(self) -> None:
         """Test that default sensitive variables are blocked."""
         from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("AWS_SECRET_ACCESS_KEY")
 
-    def test_security_guards_blocked_password_pattern(self) -> None:
+    def test_security_guards_blocked_password_pattern_expected(self) -> None:
         """Test that PASSWORD pattern is blocked."""
         from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("DB_PASSWORD")
 
-    def test_security_guards_sensitive_env_set_denied_without_allowed_names(
+    def test_security_guards_sensitive_env_set_denied_without_allowed_names_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test set sensitive env var is denied when allowed_names is omitted."""
@@ -252,14 +260,14 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="potentially sensitive"):
             guard_env_variable("CUSTOM_TOKEN")
 
-    def test_security_guards_blocked_token_pattern(self) -> None:
+    def test_security_guards_blocked_token_pattern_expected(self) -> None:
         """Test that TOKEN pattern is blocked."""
         from taipanstack.security.guards import guard_env_variable
 
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("GITHUB_TOKEN")
 
-    def test_security_guards_missing_env_variable(
+    def test_security_guards_missing_env_variable_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that missing variables raise error."""
@@ -269,7 +277,7 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="not set"):
             guard_env_variable("NONEXISTENT_VAR")
 
-    def test_security_guards_custom_denied_names(
+    def test_security_guards_custom_denied_names_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test custom denied names."""
@@ -278,7 +286,7 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="denied"):
             guard_env_variable("CUSTOM_SECRET", denied_names=["CUSTOM_SECRET"])
 
-    def test_security_guards_allowed_names_not_matching_sensitive_name(
+    def test_security_guards_allowed_names_not_matching_sensitive_name_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test sensitive env var is denied when allowed_names does not include it."""
@@ -288,7 +296,7 @@ class TestGuardEnvVariable:
         with pytest.raises(SecurityError, match="potentially sensitive"):
             guard_env_variable("API_TOKEN", allowed_names=["SAFE_VAR"])
 
-    def test_security_guards_allowed_names_override(
+    def test_security_guards_allowed_names_override_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that allowed_names override pattern blocking."""
@@ -321,13 +329,15 @@ def test_security_guards_guard_ssrf_internal_err_branches() -> None:
     assert isinstance(res2, Err)
 
 
-def test_security_guards_command_injection_rejects_non_string_argument_type() -> None:
+def test_security_guards_command_injection_rejects_non_string_argument_type_expected() -> (
+    None
+):
     """Test command args must all be strings."""
     with pytest.raises(TypeError, match="All command arguments must be strings"):
         guard_command_injection(["echo", 123])
 
 
-def test_security_guards_env_variable_name_must_be_string() -> None:
+def test_security_guards_env_variable_name_must_be_string_expected() -> None:
     """Test env variable name type validation."""
     from taipanstack.security.guards import guard_env_variable
 
@@ -335,28 +345,28 @@ def test_security_guards_env_variable_name_must_be_string() -> None:
         guard_env_variable(123)
 
 
-def test_security_guards_path_traversal_invalid_base_dir_type():
+def test_security_guards_path_traversal_invalid_base_dir_type_expected():
     from taipanstack.security.guards import guard_path_traversal
 
     with pytest.raises(TypeError, match="base_dir must be str or Path"):
         guard_path_traversal("test.txt", base_dir=123)
 
 
-def test_security_guards_path_traversal_invalid_path_type():
+def test_security_guards_path_traversal_invalid_path_type_expected():
     from taipanstack.security.guards import guard_path_traversal
 
     with pytest.raises(TypeError, match="path must be str or Path"):
         guard_path_traversal(123, base_dir="test")
 
 
-def test_security_guards_path_traversal_null_bytes_in_path():
+def test_security_guards_path_traversal_null_bytes_in_path_expected():
     from taipanstack.security.guards import SecurityError, guard_path_traversal
 
     with pytest.raises(SecurityError, match="Path contains null bytes"):
         guard_path_traversal("test\x00.txt", base_dir="test")
 
 
-def test_security_guards_path_traversal_null_bytes_in_base_dir():
+def test_security_guards_path_traversal_null_bytes_in_base_dir_expected():
     from taipanstack.security.guards import SecurityError, guard_path_traversal
 
     with pytest.raises(SecurityError, match="Path contains null bytes"):
@@ -400,7 +410,7 @@ def test_security_guards_path_traversal_symlink_error(
         guard_path_traversal("subdir/test.txt", base_dir=tmp_path)
 
 
-def test_security_guards_command_injection_invalid_command_elements():
+def test_security_guards_command_injection_invalid_command_elements_expected():
     from taipanstack.security.guards import SecurityError, guard_command_injection
 
     with pytest.raises(
@@ -409,21 +419,21 @@ def test_security_guards_command_injection_invalid_command_elements():
         guard_command_injection(["echo", "hello\x00"])
 
 
-def test_security_guards_file_extension_max_length_exceeded():
+def test_security_guards_file_extension_max_length_exceeded_expected():
     from taipanstack.security.guards import SecurityError, guard_file_extension
 
     with pytest.raises(SecurityError, match="Filename length exceeds maximum"):
         guard_file_extension("a" * 2049 + ".txt")
 
 
-def test_security_guards_file_extension_null_bytes():
+def test_security_guards_file_extension_null_bytes_expected():
     from taipanstack.security.guards import SecurityError, guard_file_extension
 
     with pytest.raises(SecurityError, match="Filename contains null bytes"):
         guard_file_extension("file\x00.txt")
 
 
-def test_security_guards_ssrf_not_string_type():
+def test_security_guards_ssrf_not_string_type_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -433,7 +443,7 @@ def test_security_guards_ssrf_not_string_type():
     assert "URL must be str" in str(res.err_value)
 
 
-def test_security_guards_ssrf_empty_url():
+def test_security_guards_ssrf_empty_url_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -443,7 +453,7 @@ def test_security_guards_ssrf_empty_url():
     assert "URL cannot be empty" in str(res.err_value)
 
 
-def test_security_guards_ssrf_max_length_exceeded():
+def test_security_guards_ssrf_max_length_exceeded_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -453,7 +463,7 @@ def test_security_guards_ssrf_max_length_exceeded():
     assert "URL length exceeds maximum" in str(res.err_value)
 
 
-def test_security_guards_ssrf_missing_hostname():
+def test_security_guards_ssrf_missing_hostname_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -463,7 +473,7 @@ def test_security_guards_ssrf_missing_hostname():
     assert "URL has no resolvable hostname" in str(res.err_value)
 
 
-def test_security_guards_ssrf_unresolvable_hostname(monkeypatch):
+def test_security_guards_ssrf_unresolvable_hostname_expected(monkeypatch):
     import socket
 
     from taipanstack.core.result import Err
@@ -480,7 +490,7 @@ def test_security_guards_ssrf_unresolvable_hostname(monkeypatch):
     assert "Hostname could not be resolved" in str(res.err_value)
 
 
-def test_security_guards_file_extension_cleaning_dot():
+def test_security_guards_file_extension_cleaning_dot_expected():
 
     from taipanstack.security.guards import guard_file_extension
 
@@ -489,14 +499,14 @@ def test_security_guards_file_extension_cleaning_dot():
     assert res.name == "file.txt."
 
 
-def test_security_guards_file_extension_normalization():
+def test_security_guards_file_extension_normalization_expected():
     from taipanstack.security.guards import _normalize_ext
 
     assert _normalize_ext("TXT") == "txt"
     assert _normalize_ext(".TXT") == "txt"
 
 
-def test_security_guards_ssrf_malformed_url():
+def test_security_guards_ssrf_malformed_url_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -506,7 +516,7 @@ def test_security_guards_ssrf_malformed_url():
     assert "Malformed URL:" in str(res.err_value)
 
 
-def test_security_guards_ssrf_ip_multicast():
+def test_security_guards_ssrf_ip_multicast_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -517,7 +527,7 @@ def test_security_guards_ssrf_ip_multicast():
     assert "SSRF detected:" in str(res.err_value)
 
 
-def test_security_guards_ssrf_ip_unspecified():
+def test_security_guards_ssrf_ip_unspecified_expected():
     from taipanstack.core.result import Err
     from taipanstack.security.guards import SecurityError, guard_ssrf
 
@@ -528,7 +538,7 @@ def test_security_guards_ssrf_ip_unspecified():
     assert "SSRF detected:" in str(res.err_value)
 
 
-def test_security_guards_env_variable_empty():
+def test_security_guards_env_variable_empty_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_env_variable
@@ -539,7 +549,7 @@ def test_security_guards_env_variable_empty():
         guard_env_variable("")
 
 
-def test_security_guards_env_variable_whitespace():
+def test_security_guards_env_variable_whitespace_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_env_variable
@@ -550,7 +560,7 @@ def test_security_guards_env_variable_whitespace():
         guard_env_variable("   ")
 
 
-def test_security_guards_env_variable_null_bytes():
+def test_security_guards_env_variable_null_bytes_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_env_variable
@@ -561,7 +571,7 @@ def test_security_guards_env_variable_null_bytes():
         guard_env_variable("TOKEN\x00")
 
 
-def test_security_guards_file_extension_cleaning_z_category():
+def test_security_guards_file_extension_cleaning_z_category_expected():
 
     from taipanstack.security.guards import guard_file_extension
 
@@ -569,7 +579,7 @@ def test_security_guards_file_extension_cleaning_z_category():
     assert res.name == "file.txt\u00a0"
 
 
-def test_security_guards_file_extension_cleaning_c_category():
+def test_security_guards_file_extension_cleaning_c_category_expected():
 
     from taipanstack.security.guards import guard_file_extension
 
@@ -578,7 +588,7 @@ def test_security_guards_file_extension_cleaning_c_category():
     assert res.name == "file.txt\u200b"
 
 
-def test_security_guards_file_extension_cleaning_ad():
+def test_security_guards_file_extension_cleaning_ad_expected():
 
     from taipanstack.security.guards import guard_file_extension
 
@@ -606,7 +616,7 @@ def test_security_guards_ssrf_ip_resolve_error(monkeypatch):
     )
 
 
-def test_security_guards_file_extension_cleaning_non_matching_char():
+def test_security_guards_file_extension_cleaning_non_matching_char_expected():
 
     from taipanstack.security.guards import guard_file_extension
 
@@ -614,14 +624,14 @@ def test_security_guards_file_extension_cleaning_non_matching_char():
     assert res.name == "file.txta"
 
 
-def test_security_guards_file_extension_no_allowed():
+def test_security_guards_file_extension_no_allowed_expected():
     from taipanstack.security.guards import guard_file_extension
 
     res = guard_file_extension("file.txt", allowed_extensions=None)
     assert res.name == "file.txt"
 
 
-def test_security_guards_env_variable_allowed_names():
+def test_security_guards_env_variable_allowed_names_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_env_variable
@@ -631,7 +641,7 @@ def test_security_guards_env_variable_allowed_names():
         guard_env_variable("MY_TOKEN")
 
 
-def test_security_guards_file_extension_denied_default():
+def test_security_guards_file_extension_denied_default_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_file_extension
@@ -640,7 +650,7 @@ def test_security_guards_file_extension_denied_default():
         guard_file_extension("file.exe")
 
 
-def test_security_guards_env_variable_allowed_names_empty_list():
+def test_security_guards_env_variable_allowed_names_empty_list_expected():
     import pytest
 
     from taipanstack.security.guards import SecurityError, guard_env_variable
@@ -668,7 +678,7 @@ def test_security_guards_ssrf_ip_is_safe_attribute_error(monkeypatch):
     assert _is_ip_safe("8.8.8.8") is True
 
 
-def test_security_guards_file_extension_cleaning_empty_clean_name():
+def test_security_guards_file_extension_cleaning_empty_clean_name_expected():
     from taipanstack.security.guards import SecurityError, guard_file_extension
 
     with pytest.raises(SecurityError, match="not in allowed list"):

@@ -9,7 +9,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import fallback, timeout
 
 
-def test_utils_resilience_fallback_sync() -> None:
+def test_utils_resilience_fallback_sync_expected() -> None:
     """Test standard fallback."""
 
     @fallback(fallback_value="safe")
@@ -35,7 +35,7 @@ def test_utils_resilience_fallback_sync() -> None:
         sync_raise_unhandled()
 
 
-def test_utils_resilience_fallback_sync_unreachable() -> None:
+def test_utils_resilience_fallback_sync_unreachable_expected() -> None:
     """Test fallback sync unreachable logic."""
 
     @fallback(fallback_value="safe")
@@ -89,7 +89,7 @@ async def test_utils_resilience_fallback_async() -> None:
     assert await async_raise_handled() == Ok("safe_async")
 
 
-def test_utils_resilience_timeout_sync() -> None:
+def test_utils_resilience_timeout_sync_expected() -> None:
     """Test standard timeout."""
 
     @timeout(0.2)

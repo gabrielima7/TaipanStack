@@ -22,27 +22,27 @@ from taipanstack.core.compat import (
 class TestVersionConstants:
     """Test version detection constants."""
 
-    def test_compat_py_version_tuple(self) -> None:
+    def test_compat_py_version_tuple_expected(self) -> None:
         """Test PY_VERSION is a tuple."""
         assert isinstance(PY_VERSION, tuple)
         assert len(PY_VERSION) >= 3
 
-    def test_compat_py311_constant(self) -> None:
+    def test_compat_py311_constant_expected(self) -> None:
         """Test PY311 reflects actual Python version."""
         expected = sys.version_info >= (3, 11)
         assert expected == PY311
 
-    def test_compat_py312_constant(self) -> None:
+    def test_compat_py312_constant_expected(self) -> None:
         """Test PY312 reflects actual Python version."""
         expected = sys.version_info >= (3, 12)
         assert expected == PY312
 
-    def test_compat_py313_constant(self) -> None:
+    def test_compat_py313_constant_expected(self) -> None:
         """Test PY313 reflects actual Python version."""
         expected = sys.version_info >= (3, 13)
         assert expected == PY313
 
-    def test_compat_py314_constant(self) -> None:
+    def test_compat_py314_constant_expected(self) -> None:
         """Test PY314 reflects actual Python version."""
         expected = sys.version_info >= (3, 14)
         assert expected == PY314
@@ -51,14 +51,14 @@ class TestVersionConstants:
 class TestVersionTier:
     """Test VersionTier enum."""
 
-    def test_compat_version_tier_values(self) -> None:
+    def test_compat_version_tier_values_expected(self) -> None:
         """Test VersionTier has all expected values."""
         assert VersionTier.STABLE == "stable"
         assert VersionTier.ENHANCED == "enhanced"
         assert VersionTier.MODERN == "modern"
         assert VersionTier.CUTTING_EDGE == "cutting_edge"
 
-    def test_compat_version_tier_is_str(self) -> None:
+    def test_compat_version_tier_is_str_expected(self) -> None:
         """Test VersionTier members are strings."""
         assert isinstance(VersionTier.STABLE, str)
         assert isinstance(VersionTier.ENHANCED, str)
@@ -67,12 +67,12 @@ class TestVersionTier:
 class TestExperimentalFeatures:
     """Test experimental feature detection."""
 
-    def test_compat_experimental_disabled_by_default(self) -> None:
+    def test_compat_experimental_disabled_by_default_expected(self) -> None:
         """Test experimental features disabled by default."""
         with patch.dict(os.environ, {}, clear=True):
             assert not is_experimental_enabled(force_refresh=True)
 
-    def test_compat_experimental_enabled_with_1(self) -> None:
+    def test_compat_experimental_enabled_with_1_expected(self) -> None:
         """Test experimental enabled with value '1'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             assert is_experimental_enabled(force_refresh=True)
@@ -82,22 +82,22 @@ class TestExperimentalFeatures:
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "true"}):
             assert is_experimental_enabled(force_refresh=True)
 
-    def test_compat_experimental_enabled_with_yes(self) -> None:
+    def test_compat_experimental_enabled_with_yes_expected(self) -> None:
         """Test experimental enabled with value 'yes'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "yes"}):
             assert is_experimental_enabled(force_refresh=True)
 
-    def test_compat_experimental_enabled_with_on(self) -> None:
+    def test_compat_experimental_enabled_with_on_expected(self) -> None:
         """Test experimental enabled with value 'on'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "on"}):
             assert is_experimental_enabled(force_refresh=True)
 
-    def test_compat_experimental_disabled_with_0(self) -> None:
+    def test_compat_experimental_disabled_with_0_expected(self) -> None:
         """Test experimental disabled with value '0'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "0"}):
             assert not is_experimental_enabled(force_refresh=True)
 
-    def test_compat_experimental_case_insensitive(self) -> None:
+    def test_compat_experimental_case_insensitive_expected(self) -> None:
         """Test experimental check is case-insensitive."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "TRUE"}):
             assert is_experimental_enabled(force_refresh=True)
@@ -106,37 +106,37 @@ class TestExperimentalFeatures:
 class TestOptimizationLevel:
     """Test optimization level detection."""
 
-    def test_compat_default_optimization_level(self) -> None:
+    def test_compat_default_optimization_level_expected(self) -> None:
         """Test default optimization level is 1."""
         with patch.dict(os.environ, {}, clear=True):
             assert get_optimization_level(force_refresh=True) == 1
 
-    def test_compat_optimization_level_0(self) -> None:
+    def test_compat_optimization_level_0_expected(self) -> None:
         """Test optimization level can be set to 0."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "0"}):
             assert get_optimization_level(force_refresh=True) == 0
 
-    def test_compat_optimization_level_2(self) -> None:
+    def test_compat_optimization_level_2_expected(self) -> None:
         """Test optimization level can be set to 2."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
             assert get_optimization_level(force_refresh=True) == 2
 
-    def test_compat_optimization_level_clamped_low(self) -> None:
+    def test_compat_optimization_level_clamped_low_expected(self) -> None:
         """Test optimization level is clamped to minimum 0."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "-5"}):
             assert get_optimization_level(force_refresh=True) == 0
 
-    def test_compat_optimization_level_clamped_high(self) -> None:
+    def test_compat_optimization_level_clamped_high_expected(self) -> None:
         """Test optimization level is clamped to maximum 2."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "99"}):
             assert get_optimization_level(force_refresh=True) == 2
 
-    def test_compat_optimization_level_invalid(self) -> None:
+    def test_compat_optimization_level_invalid_expected(self) -> None:
         """Test invalid optimization level defaults to 1."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid"}):
             assert get_optimization_level(force_refresh=True) == 1
 
-    def test_compat_optimization_level_exceeds_int_limit(self) -> None:
+    def test_compat_optimization_level_exceeds_int_limit_expected(self) -> None:
         """Test ValueError from exceeding integer string conversion limit (CVE-2020-10735)."""
         # Create a string of digits exceeding the default limit (4300 digits)
         huge_int_str = "9" * 4500
@@ -157,12 +157,12 @@ class TestOptimizationLevel:
 class TestPythonFeatures:
     """Test PythonFeatures dataclass."""
 
-    def test_compat_get_features_returns_features(self) -> None:
+    def test_compat_get_features_returns_features_expected(self) -> None:
         """Test get_features returns PythonFeatures instance."""
         features = get_features()
         assert isinstance(features, PythonFeatures)
 
-    def test_compat_features_version(self) -> None:
+    def test_compat_features_version_expected(self) -> None:
         """Test features includes correct version."""
         features = get_features()
         assert features.version == (
@@ -174,7 +174,7 @@ class TestPythonFeatures:
             f"{PY_VERSION.major}.{PY_VERSION.minor}.{PY_VERSION.micro}"
         )
 
-    def test_compat_features_tier_stable(self) -> None:
+    def test_compat_features_tier_stable_expected(self) -> None:
         """Test version tier for Python 3.11."""
         with patch("taipanstack.core.compat.PY312", False):
             with patch("taipanstack.core.compat.PY313", False):
@@ -182,7 +182,7 @@ class TestPythonFeatures:
                     features = get_features(force_refresh=True)
                     assert features.tier == VersionTier.STABLE
 
-    def test_compat_features_tier_enhanced(self) -> None:
+    def test_compat_features_tier_enhanced_expected(self) -> None:
         """Test version tier for Python 3.12."""
         with patch("taipanstack.core.compat.PY312", True):
             with patch("taipanstack.core.compat.PY313", False):
@@ -190,40 +190,40 @@ class TestPythonFeatures:
                     features = get_features(force_refresh=True)
                     assert features.tier == VersionTier.ENHANCED
 
-    def test_compat_features_tier_modern(self) -> None:
+    def test_compat_features_tier_modern_expected(self) -> None:
         """Test version tier for Python 3.13."""
         with patch("taipanstack.core.compat.PY313", True):
             with patch("taipanstack.core.compat.PY314", False):
                 features = get_features(force_refresh=True)
                 assert features.tier == VersionTier.MODERN
 
-    def test_compat_features_tier_cutting_edge(self) -> None:
+    def test_compat_features_tier_cutting_edge_expected(self) -> None:
         """Test version tier for Python 3.14+."""
         with patch("taipanstack.core.compat.PY314", True):
             features = get_features(force_refresh=True)
             assert features.tier == VersionTier.CUTTING_EDGE
 
-    def test_compat_features_language_311(self) -> None:
+    def test_compat_features_language_311_expected(self) -> None:
         """Test language features for Python 3.11."""
         features = get_features()
         if PY311:
             assert features.has_exception_groups
             assert features.has_self_type
 
-    def test_compat_features_language_312(self) -> None:
+    def test_compat_features_language_312_expected(self) -> None:
         """Test language features for Python 3.12."""
         features = get_features()
         if PY312:
             assert features.has_type_params
             assert features.has_override_decorator
 
-    def test_compat_features_language_313(self) -> None:
+    def test_compat_features_language_313_expected(self) -> None:
         """Test language features for Python 3.13."""
         features = get_features()
         if PY313:
             assert features.has_deprecated_decorator
 
-    def test_compat_features_language_314(self) -> None:
+    def test_compat_features_language_314_expected(self) -> None:
         """Test language features for Python 3.14."""
         features = get_features()
         if PY314:
@@ -237,7 +237,7 @@ class TestPythonFeatures:
             assert not features.has_jit
             assert not features.has_free_threading
 
-    def test_compat_features_to_dict(self) -> None:
+    def test_compat_features_to_dict_expected(self) -> None:
         """Test features can be converted to dictionary."""
         features = get_features()
         data = features.to_dict()
@@ -249,13 +249,13 @@ class TestPythonFeatures:
         assert "language" in data
         assert "experimental_enabled" in data
 
-    def test_compat_features_cached(self) -> None:
+    def test_compat_features_cached_expected(self) -> None:
         """Test features are cached after first call."""
         features1 = get_features()
         features2 = get_features()
         assert features1 is features2
 
-    def test_compat_features_force_refresh(self) -> None:
+    def test_compat_features_force_refresh_expected(self) -> None:
         """Test force_refresh bypasses cache."""
         features1 = get_features()
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
@@ -267,7 +267,7 @@ class TestPythonFeatures:
 class TestGetPythonInfo:
     """Test get_python_info function."""
 
-    def test_compat_python_info_structure(self) -> None:
+    def test_compat_python_info_structure_expected(self) -> None:
         """Test python info returns expected structure."""
         info = get_python_info()
 
@@ -281,7 +281,7 @@ class TestGetPythonInfo:
         assert "features" in info
         assert "optimization_level" in info
 
-    def test_compat_python_info_values(self) -> None:
+    def test_compat_python_info_values_expected(self) -> None:
         """Test python info contains valid values."""
         info = get_python_info()
 
@@ -290,7 +290,7 @@ class TestGetPythonInfo:
         assert isinstance(info["tier"], str)
         assert isinstance(info["optimization_level"], int)
 
-    def test_compat_experimental_enabled_cached(self) -> None:
+    def test_compat_experimental_enabled_cached_expected(self) -> None:
         """Test is_experimental_enabled is cached."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             res1 = is_experimental_enabled(force_refresh=True)
@@ -303,7 +303,7 @@ class TestGetPythonInfo:
             res3 = is_experimental_enabled()
             assert res3 is True
 
-    def test_compat_optimization_level_cached(self) -> None:
+    def test_compat_optimization_level_cached_expected(self) -> None:
         """Test get_optimization_level is cached."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
             res1 = get_optimization_level(force_refresh=True)
