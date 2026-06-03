@@ -570,6 +570,16 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
                 value=url[:80],
             ),
         )
+
+    if any(c <= "\x20" or c == "\x7f" for c in url):
+        return Err(
+            SecurityError(
+                "URL contains invalid characters",
+                guard_name="ssrf",
+                value=url[:80],
+            ),
+        )
+
     return Ok(url)
 
 
