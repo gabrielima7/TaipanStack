@@ -14,15 +14,11 @@ def test_fuzz_url_control_chars_validators(text: str) -> None:
         validate_url(text)
     except ValueError:
         pass
-    except Exception as e:
-        if has_control and not isinstance(e, TypeError):
-            # If it failed with something else, and it had control chars,
-            # ideally validate_url should have caught it with ValueError.
-            pass
     else:
         if has_control:
             msg = f"Bypass found for URL with control chars: {text!r}"
             raise AssertionError(msg)
+
 
 
 @settings(max_examples=100)
