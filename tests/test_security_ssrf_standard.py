@@ -349,4 +349,3 @@ def test_guard_ssrf_invalid_control_characters() -> None:
         assert isinstance(result.unwrap_err(), SecurityError)
         assert result.unwrap_err().guard_name == "ssrf"
         assert "URL contains invalid characters" in str(result.unwrap_err())
-
