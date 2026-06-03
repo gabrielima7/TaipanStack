@@ -20,7 +20,6 @@ def test_fuzz_url_control_chars_validators(text: str) -> None:
             raise AssertionError(msg)
 
 
-
 @settings(max_examples=100)
 @given(st.text())
 def test_fuzz_url_control_chars_guards(text: str) -> None:
