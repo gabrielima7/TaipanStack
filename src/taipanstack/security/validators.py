@@ -314,6 +314,10 @@ def _check_url_basics(url: str) -> None:
         msg = f"URL length exceeds maximum allowed length of {MAX_URL_LENGTH}"
         raise ValueError(msg)
 
+    if any(c <= "\x20" or c == "\x7f" for c in url):
+        msg = "URL contains invalid characters"
+        raise ValueError(msg)
+
     if "\x00" in url or not url.isprintable():
         msg = "URL contains invalid characters"
         raise ValueError(msg)

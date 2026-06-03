@@ -327,3 +327,25 @@ class TestGuardSsrfCatchAllReserved:
         assert result.is_err()
         err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
+
+
+def test_guard_ssrf_invalid_control_characters() -> None:
+    """Test that URLs with control characters and spaces are rejected."""
+    # Test cases that should fail validation
+    invalid_cases = [
+        "http://example.com/ foo",
+        "http://example.com/foo\nbar",
+        "http://example.com/foo\rbar",
+        "http://example.com/foo\tbar",
+        "http://example.com/\x00foo",
+        "http://example.com/foo\x7fbar",
+        "http://example.com\x01/foo",
+        "http://\x20example.com",
+    ]
+
+    for url in invalid_cases:
+        result = guard_ssrf(url)
+        assert isinstance(result, Err), f"URL '{url}' should have been rejected"
+        assert isinstance(result.unwrap_err(), SecurityError)
+        assert result.unwrap_err().guard_name == "ssrf"
+        assert "URL contains invalid characters" in str(result.unwrap_err())
