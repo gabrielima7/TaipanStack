@@ -53,7 +53,34 @@ TaipanStack's resilience module provides components for ensuring system stabilit
 
 ## Watchdogs
 
-::: taipanstack.resilience.watchdogs
+::: taipanstack.resilience.watchdogs._base
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Config Watcher
+
+::: taipanstack.resilience.watchdogs.config_watcher
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Health Pinger
+
+::: taipanstack.resilience.watchdogs.health_pinger
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Resource Watcher
+
+::: taipanstack.resilience.watchdogs.resource_watcher
     options:
       show_root_heading: false
       members_order: source
