@@ -680,3 +680,11 @@ def test_security_guards_ssrf_ip_is_safe_value_error():
 
     # Check what happens when ip_address gets invalid IP
     assert _is_ip_safe("invalid_ip") is True
+
+def test_security_guards_ssrf_control_chars() -> None:
+    from taipanstack.security.guards import guard_ssrf
+
+    url = "http://example.com/\x00"
+    res = guard_ssrf(url)
+    assert res.is_err()
+    assert "invalid characters" in str(res.err_value)
