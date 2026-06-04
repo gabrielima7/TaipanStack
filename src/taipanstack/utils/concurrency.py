@@ -76,7 +76,7 @@ def _handle_async_concurrency(
                 if async_semaphore.locked():
                     return Err(OverloadError())
                 await async_semaphore.acquire()
-        except (RuntimeError, OSError, MemoryError) as e:
+        except Exception as e:
             return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
         try:
@@ -106,7 +106,7 @@ def _handle_sync_concurrency(
                 acquired = sync_semaphore.acquire(blocking=False)
                 if not acquired:
                     return Err(OverloadError())
-        except (RuntimeError, OSError, MemoryError) as e:
+        except Exception as e:
             return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
         try:
@@ -142,9 +142,9 @@ def limit_concurrency(
         Ok('data')
 
     """
-    if max_tasks <= 0:
+    if not isinstance(max_tasks, int) or max_tasks <= 0:
         raise ValueError("max_tasks must be > 0")
-    if not math.isfinite(timeout) or timeout < 0.0:
+    if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout < 0.0:
         raise ValueError("timeout must be a finite non-negative number")
 
     def decorator(
