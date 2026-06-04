@@ -144,7 +144,11 @@ def limit_concurrency(
     """
     if not isinstance(max_tasks, int) or max_tasks <= 0:
         raise ValueError("max_tasks must be > 0")
-    if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout < 0.0:
+    if (
+        not isinstance(timeout, (int, float))
+        or not math.isfinite(timeout)
+        or timeout < 0.0
+    ):
         raise ValueError("timeout must be a finite non-negative number")
 
     def decorator(
