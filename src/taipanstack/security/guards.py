@@ -550,7 +550,7 @@ def guard_env_variable(
 _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 
-def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
+def _check_ssrf_url_length(url: str) -> Result[str, SecurityError]:
     if not isinstance(url, str):
         return Err(
             SecurityError(
@@ -570,7 +570,10 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
                 value=url[:80],
             ),
         )
+    return Ok(url)
 
+
+def _check_ssrf_url_characters(url: str) -> Result[str, SecurityError]:
     if any(c <= "\x20" or c == "\x7f" for c in url):
         return Err(
             SecurityError(
@@ -579,8 +582,15 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
                 value=url[:80],
             ),
         )
-
     return Ok(url)
+
+
+def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
+    length_res = _check_ssrf_url_length(url)
+    if not isinstance(length_res, Ok):
+        return length_res
+
+    return _check_ssrf_url_characters(url)
 
 
 def _validate_ssrf_url_parse(
@@ -632,14 +642,8 @@ def _validate_ssrf_url(
     return _validate_ssrf_url_parse(url, allowed_schemes)
 
 
-@functools.lru_cache(maxsize=1024)
-def _is_ip_safe(raw_ip: str) -> bool:
-    """Check if a single IP address is safe (not private/loopback/reserved)."""
-    try:
-        addr = ipaddress.ip_address(raw_ip)
-    except ValueError:
-        return True
-
+def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+    """Evaluate if an ipaddress object represents a safe, public IP."""
     return not (
         addr.is_private
         or addr.is_loopback
@@ -648,6 +652,17 @@ def _is_ip_safe(raw_ip: str) -> bool:
         or getattr(addr, "is_multicast", False)
         or getattr(addr, "is_unspecified", False)
     )
+
+
+@functools.lru_cache(maxsize=1024)
+def _is_ip_safe(raw_ip: str) -> bool:
+    """Check if a single IP address is safe (not private/loopback/reserved)."""
+    try:
+        addr = ipaddress.ip_address(raw_ip)
+    except ValueError:
+        return True
+
+    return _is_ip_address_safe(addr)
 
 
 def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
