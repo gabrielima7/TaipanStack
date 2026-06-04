@@ -642,7 +642,7 @@ def _validate_ssrf_url(
     return _validate_ssrf_url_parse(url, allowed_schemes)
 
 
-def _is_ip_address_safe(addr: ipaddress._BaseAddress) -> bool:
+def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     """Evaluate if an ipaddress object represents a safe, public IP."""
     return not (
         addr.is_private
