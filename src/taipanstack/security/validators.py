@@ -302,10 +302,8 @@ def validate_email(email: str) -> str:
     return email
 
 
-def _check_url_basics(url: str) -> None:
-    """Check basic URL constraints like empty, length and invalid characters."""
-    _validate_type(url, str, "URL")
-
+def _check_url_length(url: str) -> None:
+    """Check URL length constraints."""
     if not url:
         msg = "URL cannot be empty"
         raise ValueError(msg)
@@ -314,6 +312,9 @@ def _check_url_basics(url: str) -> None:
         msg = f"URL length exceeds maximum allowed length of {MAX_URL_LENGTH}"
         raise ValueError(msg)
 
+
+def _check_url_characters(url: str) -> None:
+    """Check URL character constraints."""
     if any(c <= "\x20" or c == "\x7f" for c in url):
         msg = "URL contains invalid characters"
         raise ValueError(msg)
@@ -321,6 +322,13 @@ def _check_url_basics(url: str) -> None:
     if "\x00" in url or not url.isprintable():
         msg = "URL contains invalid characters"
         raise ValueError(msg)
+
+
+def _check_url_basics(url: str) -> None:
+    """Check basic URL constraints like empty, length and invalid characters."""
+    _validate_type(url, str, "URL")
+    _check_url_length(url)
+    _check_url_characters(url)
 
 
 def _check_scheme(
