@@ -81,7 +81,11 @@ class Bulkhead:
         self.name = name
         self._max_concurrent = max_concurrent
         self._max_queue = max_queue
-        if not math.isfinite(timeout) or timeout < 0:
+        if (
+            not isinstance(timeout, (int, float))
+            or not math.isfinite(timeout)
+            or timeout < 0
+        ):
             raise ValueError("timeout must be a finite non-negative number")
         self._timeout = timeout
         self._semaphore = asyncio.Semaphore(max_concurrent)

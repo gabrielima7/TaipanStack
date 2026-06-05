@@ -47,7 +47,12 @@ class RateLimiter:
             time_window: The time window in seconds.
 
         """
-        if not math.isfinite(max_calls) or not math.isfinite(time_window):
+        if (
+            not isinstance(max_calls, (int, float))
+            or not isinstance(time_window, (int, float))
+            or not math.isfinite(max_calls)
+            or not math.isfinite(time_window)
+        ):
             raise ValueError("max_calls and time_window must be finite numbers")
         if max_calls <= 0 or time_window <= 0:
             raise ValueError("max_calls and time_window must be > 0.0")

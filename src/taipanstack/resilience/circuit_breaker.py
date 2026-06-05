@@ -92,11 +92,17 @@ class CircuitBreakerConfig:
 
     def __post_init__(self) -> None:
         """Validate configuration values."""
-        if not math.isfinite(self.failure_threshold):
+        if not isinstance(self.failure_threshold, (int, float)) or not math.isfinite(
+            self.failure_threshold
+        ):
             raise ValueError("failure_threshold must be finite")
-        if not math.isfinite(self.success_threshold):
+        if not isinstance(self.success_threshold, (int, float)) or not math.isfinite(
+            self.success_threshold
+        ):
             raise ValueError("success_threshold must be finite")
-        if not math.isfinite(self.timeout):
+        if not isinstance(self.timeout, (int, float)) or not math.isfinite(
+            self.timeout
+        ):
             raise ValueError("timeout must be finite")
 
 
@@ -145,7 +151,11 @@ class CircuitBreaker:
 
     @staticmethod
     def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
-        if not math.isfinite(value) or value < min_val:
+        if (
+            not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            or value < min_val
+        ):
             raise ValueError(err_msg)
 
     @staticmethod

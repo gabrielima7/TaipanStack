@@ -220,7 +220,9 @@ def timeout(
     # and check for non-negative limits to prevent silent NaN propagation,
     # unhandled ValueError exceptions from threading/asyncio primitives,
     # or unexpected infinite blocking behaviors.
-    if not (math.isfinite(seconds) and seconds >= 0):
+    if not isinstance(seconds, (int, float)) or not (
+        math.isfinite(seconds) and seconds >= 0
+    ):
         raise ValueError("timeout must be a finite non-negative number")
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
