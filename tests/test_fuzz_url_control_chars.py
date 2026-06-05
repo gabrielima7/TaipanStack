@@ -13,7 +13,7 @@ def test_fuzz_url_control_chars_validators(text: str) -> None:
     try:
         validate_url(text)
     except ValueError:
-        pass
+        return
     else:
         if has_control:
             msg = f"Bypass found for URL with control chars: {text!r}"

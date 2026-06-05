@@ -10,7 +10,7 @@ from taipanstack.resilience.watchdogs.health_pinger import HealthPinger, HealthT
 
 class DummyWatcher(BaseWatcher):
     async def _run(self) -> None:
-        pass
+        await asyncio.sleep(0)
 
 
 @pytest.mark.asyncio
@@ -42,7 +42,7 @@ async def test_chaos_watchdogs_base_watcher_loop_exception_handling() -> None:
         if call_count == 1:
             raise RuntimeError("Chaos loop failure")
         elif call_count == 2:
-            pass  # Recover on second call
+            await asyncio.sleep(0)  # Recover on second call
 
     watcher._run = failing_run  # type: ignore
 

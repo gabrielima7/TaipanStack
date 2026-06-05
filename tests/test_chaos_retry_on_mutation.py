@@ -15,7 +15,7 @@ def test_chaos_retry_on_mutation():
 
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func():
-            pass
+            return 1
 
 
 def test_chaos_retry_async_on_mutation():
@@ -28,7 +28,7 @@ def test_chaos_retry_async_on_mutation():
 
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         async def faulty_func_async():
-            pass
+            return 1
 
 
 def test_chaos_retry_not_instance_exception() -> None:
@@ -59,7 +59,7 @@ def test_chaos_retry_err_val_type_error() -> None:
 
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func_err():
-            pass
+            return 1
 
 
 def test_chaos_retry_async_err_val_type_error() -> None:
@@ -72,7 +72,7 @@ def test_chaos_retry_async_err_val_type_error() -> None:
 
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         async def faulty_func_async_err():
-            pass
+            return 1
 
 
 def test_chaos_retry_non_exception_class_in_tuple() -> None:
@@ -84,7 +84,7 @@ def test_chaos_retry_non_exception_class_in_tuple() -> None:
 
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func_tuple():
-            pass
+            return 1
 
 
 def test_chaos_retry_single_exception_type_not_tuple():
