@@ -6,9 +6,27 @@ description: "API reference for TaipanStack's resilience module: Orchestrators, 
 
 TaipanStack's resilience module provides components for ensuring system stability and self-healing under failure conditions.
 
-## `taipanstack.resilience`
+## `taipanstack.resilience.circuit_breaker`
 
-::: taipanstack.resilience
+::: taipanstack.resilience.circuit_breaker
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## `taipanstack.resilience.resilience`
+
+::: taipanstack.resilience.resilience
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## `taipanstack.resilience.retry`
+
+::: taipanstack.resilience.retry
     options:
       show_root_heading: false
       members_order: source
