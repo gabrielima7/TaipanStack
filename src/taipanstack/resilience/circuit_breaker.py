@@ -15,7 +15,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import ParamSpec, Protocol, TypeVar, cast, overload
+from typing import ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
 
 from taipanstack.core.result import Err
 
@@ -128,7 +128,7 @@ class CircuitBreaker:
     """
 
     @staticmethod
-    def _is_valid_metric(value: object, min_val: float = 0) -> bool:
+    def _is_valid_metric(value: object, min_val: float = 0) -> TypeGuard[int | float]:
         """Check if metric is a valid finite number >= min_val."""
         return (
             isinstance(value, (int, float))
@@ -140,7 +140,7 @@ class CircuitBreaker:
     def _get_safe_threshold(value: object, min_val: float, default: float) -> float:
         """Return the threshold if valid, otherwise return the default."""
         if CircuitBreaker._is_valid_metric(value, min_val):
-            return float(value)  # type: ignore[arg-type]
+            return float(value)
         return default
 
     @staticmethod
@@ -269,7 +269,7 @@ class CircuitBreaker:
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
         if not isinstance(self._state.last_failure_time, (int, float)):
-            return None
+            return None  # type: ignore[unreachable]
 
         try:
             safe_timeout = float(self.config.timeout)

@@ -27,7 +27,7 @@ MAX_PASSWORD_LENGTH = 1024
 
 def _get_password_str(password: str | SecretStr) -> str:
     if not isinstance(password, (str, SecretStr)):
-        msg = "password must be a string or SecretStr"
+        msg = "password must be a string or SecretStr"  # type: ignore[unreachable]
         raise TypeError(msg)
 
     if isinstance(password, SecretStr):
@@ -121,7 +121,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
     password_str = _get_password_str(password)
 
     if not isinstance(password_hash, str):
-        msg = "password_hash must be a string"
+        msg = "password_hash must be a string"  # type: ignore[unreachable]
         raise TypeError(msg)
 
     if not password_str:
