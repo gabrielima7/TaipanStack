@@ -19,7 +19,7 @@ TaipanStack's configuration layer provides Pydantic v2 models, project scaffoldi
 
 ## Version Config
 
-::: taipanstack.config
+::: taipanstack.config.version_config
     options:
       show_root_heading: false
       members_order: source
