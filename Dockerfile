@@ -5,7 +5,7 @@
 # =============================================================================
 
 # ── Stage 1: Builder ────────────────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+FROM public.ecr.aws/docker/library/python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN poetry install --only main
 
 
 # ── Stage 2: Runtime (Slim — matching glibc for C extensions) ────────────────
-FROM python:3.11-slim AS runtime
+FROM public.ecr.aws/docker/library/python:3.11-slim AS runtime
 
 # Security labels (OCI Image Spec)
 LABEL org.opencontainers.image.title="TaipanStack" \
