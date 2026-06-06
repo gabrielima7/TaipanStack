@@ -12,6 +12,7 @@ def test_chaos_rate_limit_lock_acquire_exception():
     class BrokenLock:
         def __enter__(self):
             raise MemoryError("Out of memory")
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
 
@@ -20,13 +21,17 @@ def test_chaos_rate_limit_lock_acquire_exception():
     result = limiter.consume()
     assert result is False
 
+
 @pytest.mark.asyncio
 async def test_chaos_rate_limit_decorator_lock_acquire_exception_async():
     @rate_limit(10, 1.0)
     async def my_func():
         return "success"
 
-    with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=MemoryError("Out of memory")):
+    with patch(
+        "taipanstack.utils.rate_limit.RateLimiter.consume",
+        side_effect=MemoryError("Out of memory"),
+    ):
         result = await my_func()
         assert isinstance(result, Err)
         assert "Rate limit exceeded" in str(result.unwrap_err())
@@ -36,12 +41,16 @@ async def test_chaos_rate_limit_decorator_lock_acquire_exception_async():
     assert isinstance(result2, Ok)
     assert result2.unwrap() == "success"
 
+
 def test_chaos_rate_limit_decorator_lock_acquire_exception_sync():
     @rate_limit(10, 1.0)
     def my_func():
         return "success"
 
-    with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=MemoryError("Out of memory")):
+    with patch(
+        "taipanstack.utils.rate_limit.RateLimiter.consume",
+        side_effect=MemoryError("Out of memory"),
+    ):
         result = my_func()
         assert isinstance(result, Err)
         assert "Rate limit exceeded" in str(result.unwrap_err())
