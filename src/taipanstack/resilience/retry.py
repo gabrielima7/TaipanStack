@@ -338,7 +338,7 @@ def _ensure_tuple(
     if isinstance(on, type) and issubclass(on, BaseException):
         return (on,)
     if not isinstance(on, tuple):
-        msg = (
+        msg = (  # type: ignore[unreachable]
             "'on' parameter must be an exception class or a tuple of exception classes"
         )
         raise TypeError(msg)
@@ -353,7 +353,7 @@ def _validate_retry_exceptions(
 
     for exc_type in on_tuple:
         if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
-            msg = (
+            msg = (  # type: ignore[unreachable]
                 f"All elements in 'on' must be subclasses of BaseException, "
                 f"got {type(exc_type).__name__}"
             )

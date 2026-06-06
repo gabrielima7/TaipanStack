@@ -552,7 +552,7 @@ _ALLOWED_SSRF_SCHEMES: frozenset[str] = frozenset({"http", "https"})
 
 def _check_ssrf_url_length(url: str) -> Result[str, SecurityError]:
     if not isinstance(url, str):
-        return Err(
+        return Err(  # type: ignore[unreachable]
             SecurityError(
                 f"URL must be str, got {type(url).__name__}",
                 guard_name="ssrf",
