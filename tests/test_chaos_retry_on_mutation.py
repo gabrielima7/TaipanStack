@@ -39,6 +39,7 @@ def test_chaos_retry_single_exception_type_not_tuple():
     assert test_func() == "success"
     assert call_count == 2
 
+
 def test_chaos_retry_on_mutation():
     corrupted_on = "NotAnException"
 
@@ -46,6 +47,7 @@ def test_chaos_retry_on_mutation():
         TypeError,
         match="'on' parameter must be an exception class or a tuple of exception classes",
     ):
+
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func():
             raise ValueError("Should not run")
@@ -58,6 +60,7 @@ def test_chaos_retry_async_on_mutation():
         TypeError,
         match="'on' parameter must be an exception class or a tuple of exception classes",
     ):
+
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         async def faulty_func_async():
             raise ValueError("Should not run")
@@ -70,6 +73,7 @@ def test_chaos_retry_err_val_type_error() -> None:
         TypeError,
         match="'on' parameter must be an exception class or a tuple of exception classes",
     ):
+
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func_err():
             raise ValueError("Should not run")
@@ -82,6 +86,7 @@ def test_chaos_retry_async_err_val_type_error() -> None:
         TypeError,
         match="'on' parameter must be an exception class or a tuple of exception classes",
     ):
+
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         async def faulty_func_async_err():
             raise ValueError("Should not run")
@@ -93,6 +98,7 @@ def test_chaos_retry_non_exception_class_in_tuple() -> None:
     with pytest.raises(
         TypeError, match="All elements in 'on' must be subclasses of BaseException"
     ):
+
         @retry(max_attempts=2, on=corrupted_on)  # type: ignore
         def faulty_func_tuple():
             raise ValueError("Should not run")

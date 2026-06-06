@@ -12,7 +12,9 @@ from taipanstack.security.validators import validate_url
 def test_fuzz_url_control_chars_validators(text: str) -> None:
     has_control = any(c <= "\x20" or c == "\x7f" for c in text)
     if has_control:
-        with pytest.raises(ValueError, match="URL contains invalid characters|URL cannot be empty"):
+        with pytest.raises(
+            ValueError, match="URL contains invalid characters|URL cannot be empty"
+        ):
             validate_url(text)
 
 
