@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -10,14 +11,9 @@ from taipanstack.security.validators import validate_url
 @given(st.text())
 def test_fuzz_url_control_chars_validators(text: str) -> None:
     has_control = any(c <= "\x20" or c == "\x7f" for c in text)
-    try:
-        validate_url(text)
-    except ValueError:
-        pass
-    else:
-        if has_control:
-            msg = f"Bypass found for URL with control chars: {text!r}"
-            raise AssertionError(msg)
+    if has_control:
+        with pytest.raises(ValueError, match="URL contains invalid characters|URL cannot be empty"):
+            validate_url(text)
 
 
 @settings(max_examples=100)
