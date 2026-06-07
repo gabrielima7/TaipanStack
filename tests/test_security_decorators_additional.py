@@ -236,3 +236,17 @@ def test_security_decorators_additional_security_decorators_timeout_thread_timeo
 
     with pytest.raises(OperationTimeoutError):
         my_func()
+
+
+def test_security_decorators_additional_security_decorators_timeout_type_error():
+    import pytest
+
+    from taipanstack.security.decorators import timeout
+
+    with pytest.raises(
+        ValueError, match="timeout must be a finite non-negative number"
+    ):
+
+        @timeout("string")
+        def func() -> None:
+            return None
