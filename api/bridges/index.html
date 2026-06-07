@@ -2889,13 +2889,13 @@ TaipanStack's circuit breaker and retry patterns.</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">ResilientDatabase</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">engine</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.ext.asyncio.AsyncEngine">AsyncEngine</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="n">retry_config</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            RetryConfig
 
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-6"><span class="p">)</span>
 </span></code></pre></div>
 
@@ -2941,7 +2941,7 @@ TaipanStack's circuit breaker and retry patterns.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -2966,7 +2966,7 @@ TaipanStack's circuit breaker and retry patterns.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a> | None</code>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3028,7 +3028,7 @@ result = await db.execute(text("SELECT 1"))</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3053,7 +3053,7 @@ result = await db.execute(text("SELECT 1"))</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a> | None</code>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3253,7 +3253,7 @@ result = await db.execute(text("SELECT 1"))</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">ResilientRedis</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">client</span><span class="p">:</span> <span class="n"><span title="redis.asyncio.Redis">Redis</span></span><span class="p">[</span><span class="n"><span title="bytes">bytes</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span><span class="p">],</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-5"><span class="p">)</span>
 </span></code></pre></div>
 
@@ -3299,7 +3299,7 @@ result = await db.execute(text("SELECT 1"))</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3361,7 +3361,7 @@ result = await r.execute("GET", "my_key")</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3703,8 +3703,8 @@ validated against SSRF before the request is sent.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">retryable_status_codes</span><span class="p">:</span> <span class="n"><span title="frozenset">frozenset</span></span><span class="p">[</span>
 </span><span id="__span-0-7">        <span class="n"><span title="int">int</span></span>
 </span><span id="__span-0-8">    <span class="p">]</span> <span class="o">=</span> <span class="n"><span title="taipanstack.bridges.http_bridge._RETRYABLE_STATUS_CODES">_RETRYABLE_STATUS_CODES</span></span><span class="p">,</span>
@@ -3764,7 +3764,7 @@ validated against SSRF before the request is sent.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a> | None</code>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3784,7 +3784,7 @@ validated against SSRF before the request is sent.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3897,7 +3897,7 @@ validated against SSRF before the request is sent.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a> | None</code>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -3917,7 +3917,7 @@ validated against SSRF before the request is sent.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -4320,8 +4320,8 @@ Default timeout is 10.0 seconds if not provided.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-7">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-7">    <span class="n">circuit_breaker</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-8">    <span class="n">retryable_status_codes</span><span class="p">:</span> <span class="n"><span title="frozenset">frozenset</span></span><span class="p">[</span>
 </span><span id="__span-0-9">        <span class="n"><span title="int">int</span></span>
 </span><span id="__span-0-10">    <span class="p">]</span> <span class="o">=</span> <span class="n"><span title="taipanstack.bridges.http_bridge._RETRYABLE_STATUS_CODES">_RETRYABLE_STATUS_CODES</span></span><span class="p">,</span>
@@ -4411,7 +4411,7 @@ Default timeout is 10.0 seconds if not provided.</p>
 
   
       dataclass
-   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.RetryConfig">RetryConfig</a> | None</code>
+   (taipanstack.resilience.retry.RetryConfig)" href="../resilience/#taipanstack.resilience.retry.RetryConfig">RetryConfig</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
@@ -4431,7 +4431,7 @@ Default timeout is 10.0 seconds if not provided.</p>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.CircuitBreaker">CircuitBreaker</a> | None</code>
+                      <code><a class="autorefs autorefs-internal" title="            CircuitBreaker (taipanstack.resilience.circuit_breaker.CircuitBreaker)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitBreaker">CircuitBreaker</a> | None</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
