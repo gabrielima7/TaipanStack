@@ -252,7 +252,7 @@ async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
             raise TypeError("Chaos injected TypeError")
 
     class TypeErrorRaiserError(Exception, metaclass=TypeErrorRaiserMeta):
-        pass
+        """Custom exception to inject TypeError on instancecheck"""
 
     @retry(max_attempts=2, on=TypeErrorRaiserError)
     async def async_fail2():
