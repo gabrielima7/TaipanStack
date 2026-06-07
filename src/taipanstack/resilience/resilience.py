@@ -167,6 +167,12 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     return Err(
                         TimeoutError(f"Execution timed out after {seconds} seconds."),
                     )
+                except RuntimeError as e:
+                    return Err(cast(E, RuntimeError(f"Task exhaustion: {e!s}")))
+                except MemoryError as e:
+                    return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
+                except OSError as e:
+                    return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
 
             return async_wrapper
 
