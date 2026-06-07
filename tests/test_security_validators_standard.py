@@ -27,12 +27,16 @@ class TestValidateProjectName:
         with pytest.raises(ValueError, match="cannot be empty"):
             validate_project_name("")
 
-    def test_security_validators_name_must_start_with_letter_standard_expected(self) -> None:
+    def test_security_validators_name_must_start_with_letter_standard_expected(
+        self,
+    ) -> None:
         """Test names must start with a letter."""
         with pytest.raises(ValueError, match="must start with a letter"):
             validate_project_name("123project")
 
-    def test_security_validators_reserved_names_rejected_standard_expected(self) -> None:
+    def test_security_validators_reserved_names_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test reserved names are rejected."""
         with pytest.raises(ValueError, match="is reserved"):
             validate_project_name("test")
@@ -52,7 +56,9 @@ class TestValidatePythonVersion:
         assert validate_python_version("3.11") == "3.11"
         assert validate_python_version("3.12") == "3.12"
 
-    def test_security_validators_invalid_format_rejected_standard_expected(self) -> None:
+    def test_security_validators_invalid_format_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test invalid formats are rejected."""
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("python3.10")
@@ -60,7 +66,9 @@ class TestValidatePythonVersion:
         with pytest.raises(ValueError, match="Invalid version format"):
             validate_python_version("3.10.5")
 
-    def test_security_validators_unsupported_version_rejected_standard_expected(self) -> None:
+    def test_security_validators_unsupported_version_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test unsupported versions are rejected."""
         with pytest.raises(ValueError, match="not supported"):
             validate_python_version("3.9")
@@ -79,7 +87,9 @@ class TestValidatePythonVersion:
             with pytest.raises(ValueError, match="Invalid version numbers in 'a.b'"):
                 validate_python_version("a.b")
 
-    def test_security_validators_massive_version_string_fuzzing_standard_expected(self) -> None:
+    def test_security_validators_massive_version_string_fuzzing_standard_expected(
+        self,
+    ) -> None:
         """Test system does not crash on massive integer strings (DoS protection)."""
         # Create a massive string that exceeds Python's integer string conversion limit (4300)
         massive_version = "3." + "9" * 5000
@@ -110,7 +120,9 @@ class TestValidateEmail:
         with pytest.raises(ValueError, match="cannot be empty"):
             validate_email("")
 
-    def test_security_validators_invalid_format_rejected_standard_expected(self) -> None:
+    def test_security_validators_invalid_format_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test invalid formats are rejected."""
         with pytest.raises(ValueError, match="Invalid email format"):
             validate_email("not-an-email")
@@ -136,28 +148,38 @@ class TestValidateUrl:
         with pytest.raises(ValueError, match="cannot be empty"):
             validate_url("")
 
-    def test_security_validators_missing_scheme_rejected_standard_expected(self) -> None:
+    def test_security_validators_missing_scheme_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test URLs without scheme are rejected."""
         with pytest.raises(ValueError, match="must have a scheme"):
             validate_url("example.com")
 
-    def test_security_validators_invalid_scheme_rejected_standard_expected(self) -> None:
+    def test_security_validators_invalid_scheme_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test invalid schemes are rejected."""
         with pytest.raises(ValueError, match="not allowed"):
             validate_url("ftp://example.com")
 
-    def test_security_validators_invalid_format_parsing_error_standard_expected(self) -> None:
+    def test_security_validators_invalid_format_parsing_error_standard_expected(
+        self,
+    ) -> None:
         """Test URL parsing ValueError is caught and re-raised."""
         with pytest.raises(ValueError, match="Invalid URL format: Invalid IPv6 URL"):
             validate_url("http://[::1")
 
-    def test_security_validators_out_of_range_port_parsing_error_standard_expected(self) -> None:
+    def test_security_validators_out_of_range_port_parsing_error_standard_expected(
+        self,
+    ) -> None:
         """Test URL with an out of range port raises ValueError."""
         with pytest.raises(ValueError, match="Invalid URL format: Port out of range"):
             validate_url("http://example.com:99999999999")
 
 
-def test_security_validators_type_error_message_for_tuple_expected_types_standard_expected() -> None:
+def test_security_validators_type_error_message_for_tuple_expected_types_standard_expected() -> (
+    None
+):
     """Test tuple-type message path in _validate_type helper."""
     from taipanstack.security.validators import validate_python_version
 

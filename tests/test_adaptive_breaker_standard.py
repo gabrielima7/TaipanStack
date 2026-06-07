@@ -28,7 +28,9 @@ class TestAdaptiveCircuitBreaker:
         assert m.success_rate == 1.0
         assert m.state.value == CircuitState.CLOSED.value
 
-    def test_adaptive_breaker_record_failure_below_throughput_standard_expected(self) -> None:
+    def test_adaptive_breaker_record_failure_below_throughput_standard_expected(
+        self,
+    ) -> None:
         """Failures update window, but don't trip if below min throughput."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.1)
         # 4 failures, 0 successes (100% error rate). Below 5 throughput.
@@ -40,7 +42,9 @@ class TestAdaptiveCircuitBreaker:
         assert m.error_count == 4
         assert m.state.value == CircuitState.CLOSED.value
 
-    def test_adaptive_breaker_trips_open_on_enough_failures_standard_expected(self) -> None:
+    def test_adaptive_breaker_trips_open_on_enough_failures_standard_expected(
+        self,
+    ) -> None:
         """Breaker opens after enough cumulative failures (burst)."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.5)
 
@@ -51,7 +55,9 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.OPEN.value
         assert not ab.should_allow()
 
-    def test_adaptive_breaker_stays_closed_if_under_target_rate_standard_expected(self) -> None:
+    def test_adaptive_breaker_stays_closed_if_under_target_rate_standard_expected(
+        self,
+    ) -> None:
         """If error rate is below target, it stays closed even at high throughput."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=5, target_error_rate=0.5)
 
@@ -91,7 +97,9 @@ class TestAdaptiveCircuitBreaker:
             assert ab.state.value == CircuitState.CLOSED.value
             assert ab.metrics.total_calls == 1  # Just the success
 
-    def test_adaptive_breaker_half_open_failure_returns_to_open_standard_expected(self) -> None:
+    def test_adaptive_breaker_half_open_failure_returns_to_open_standard_expected(
+        self,
+    ) -> None:
         """Breaker transitions to HALF_OPEN after timeout, then back OPEN on failure."""
         with patch(
             "taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic"

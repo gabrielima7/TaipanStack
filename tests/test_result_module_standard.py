@@ -71,7 +71,9 @@ class TestSafeDecorator:
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
-    def test_result_module_safe_preserves_function_metadata_standard_expected(self) -> None:
+    def test_result_module_safe_preserves_function_metadata_standard_expected(
+        self,
+    ) -> None:
         """Test safe decorator preserves function name and docstring."""
 
         @safe
@@ -86,7 +88,9 @@ class TestSafeDecorator:
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""
 
-    def test_result_module_safe_from_catches_specified_exception_standard_expected(self) -> None:
+    def test_result_module_safe_from_catches_specified_exception_standard_expected(
+        self,
+    ) -> None:
         """Test safe_from catches specified exception types."""
 
         @safe_from(ValueError)
@@ -222,7 +226,9 @@ class TestUnwrapOrElse:
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or_else(lambda e: len(str(e))) == 5
 
-    def test_result_module_unwrap_or_else_with_exception_standard_expected(self) -> None:
+    def test_result_module_unwrap_or_else_with_exception_standard_expected(
+        self,
+    ) -> None:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
@@ -433,7 +439,9 @@ class TestUnwrapOrErrFallback:
 class TestResultStructuralCompatibility:
     """Tests for structural compatibility fallback branches in collect_results, map_async and and_then_async."""
 
-    def test_result_module_collect_results_structural_compatibility_standard_expected(self) -> None:
+    def test_result_module_collect_results_structural_compatibility_standard_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in collect_results."""
 
         class CustomResult:
@@ -457,7 +465,9 @@ class TestResultStructuralCompatibility:
         res = collect_results([MissingOkValue()])  # type: ignore
         assert isinstance(res, MissingOkValue)
 
-    def test_result_module_collect_tuple_attribute_error_standard_expected(self) -> None:
+    def test_result_module_collect_tuple_attribute_error_standard_expected(
+        self,
+    ) -> None:
         """Test the AttributeError handling with tuple in _collect_list."""
 
         class MissingOkValue:
@@ -506,7 +516,9 @@ class TestResultStructuralCompatibility:
         res = await and_then_async(custom_res, process)  # type: ignore
         assert res is custom_res
 
-    def test_result_module_collect_results_empty_iterable_standard_expected(self) -> None:
+    def test_result_module_collect_results_empty_iterable_standard_expected(
+        self,
+    ) -> None:
         """Test fallback empty iterable branch in collect_results."""
         from taipanstack.core.result import collect_results
 
@@ -516,7 +528,9 @@ class TestResultStructuralCompatibility:
         res = collect_results(empty_gen())
         assert res.unwrap() == []
 
-    def test_result_module_collect_results_iterable_all_ok_standard_expected(self) -> None:
+    def test_result_module_collect_results_iterable_all_ok_standard_expected(
+        self,
+    ) -> None:
         """Test fallback branch where an iterable of only Ok results returns Ok[list] in collect_results."""
         from result import Ok
 

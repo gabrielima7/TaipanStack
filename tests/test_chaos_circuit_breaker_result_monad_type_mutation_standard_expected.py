@@ -1,7 +1,9 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_standard_expected() -> None:
+def test_chaos_circuit_breaker_process_result_corrupted_result_standard_expected() -> (
+    None
+):
     """Test _process_result when result is an invalid state."""
     cb = CircuitBreaker()
 
@@ -14,7 +16,9 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_standard_expected
     assert cb._process_result(res) == res
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_error_standard_expected() -> None:
+def test_chaos_circuit_breaker_process_result_corrupted_result_error_standard_expected() -> (
+    None
+):
     from taipanstack.core.result import Err
 
     cb = CircuitBreaker()
@@ -33,7 +37,9 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_error_standard_ex
     assert cb._process_result(res_ex) == res_ex
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_ok_standard_expected() -> None:
+def test_chaos_circuit_breaker_process_result_corrupted_result_ok_standard_expected() -> (
+    None
+):
     from taipanstack.core.result import Ok
 
     cb = CircuitBreaker()
@@ -75,7 +81,9 @@ def test_chaos_circuit_breaker_corrupted_half_open_attempts_standard_expected() 
     assert cb._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count_standard_expected() -> None:
+def test_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count_standard_expected() -> (
+    None
+):
     """Test handle_failure_closed when failure count is corrupted."""
     cb = CircuitBreaker()
     cb._state.state = CircuitState.CLOSED

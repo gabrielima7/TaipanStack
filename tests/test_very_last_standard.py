@@ -36,7 +36,9 @@ from taipanstack.security.sanitizers import sanitize_path
 class TestValidatorsVersionConversion:
     """Test for validators.py lines 128-130 (version conversion ValueError)."""
 
-    def test_very_last_validate_python_version_with_letters_standard_expected(self) -> None:
+    def test_very_last_validate_python_version_with_letters_standard_expected(
+        self,
+    ) -> None:
         """Test validate_python_version with letters in version."""
         from taipanstack.security.validators import validate_python_version
 
@@ -50,7 +52,9 @@ class TestValidatorsVersionConversion:
 class TestGuardsOSErrorMocked:
     """Test for guards.py lines 97-98 (OSError in resolve)."""
 
-    def test_very_last_guard_path_basic_works_standard_expected(self, tmp_path: Path) -> None:
+    def test_very_last_guard_path_basic_works_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with basic case."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -108,7 +112,9 @@ class TestGuardsSymlinkMocked:
 class TestSanitizersResolveError:
     """Test for sanitizers.py lines 241-243 (resolve error)."""
 
-    def test_very_last_sanitize_path_works_standard_expected(self, tmp_path: Path) -> None:
+    def test_very_last_sanitize_path_works_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with valid path."""
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
@@ -139,7 +145,9 @@ class TestSanitizersResolveError:
                     max_depth=None,
                 )
 
-    def test_very_last_sanitize_path_resolve_runtime_error_standard_expected(self) -> None:
+    def test_very_last_sanitize_path_resolve_runtime_error_standard_expected(
+        self,
+    ) -> None:
         """Test sanitize_path with resolve=True raising RuntimeError (L241-243)."""
 
         call_count = 0
@@ -168,7 +176,9 @@ class TestSanitizersResolveError:
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
 
-    def test_very_last_safe_write_existing_permissions_standard_expected(self, tmp_path: Path) -> None:
+    def test_very_last_safe_write_existing_permissions_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -179,7 +189,9 @@ class TestFilesystemWriteError:
         result = safe_write(existing, "new", options=WriteOptions(atomic=True))
         assert result.read_text() == "new"
 
-    def test_very_last_ensure_dir_with_traversal_standard_expected(self, tmp_path: Path) -> None:
+    def test_very_last_ensure_dir_with_traversal_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test ensure_dir with '..' in path string (L243)."""
         from taipanstack.security.guards import SecurityError
         from taipanstack.utils.filesystem import ensure_dir
@@ -213,7 +225,9 @@ class TestRetryMaxAttemptsBranch:
 class TestSubprocessCheckCommand:
     """Test for subprocess.py coverage gaps."""
 
-    def test_very_last_run_safe_command_check_true_fails_standard_expected(self) -> None:
+    def test_very_last_run_safe_command_check_true_fails_standard_expected(
+        self,
+    ) -> None:
         """Test run_safe_command with check=True when command fails (L231)."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -395,7 +409,9 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is True
 
-    def test_very_last_check_free_threading_attribute_error_standard_expected(self) -> None:
+    def test_very_last_check_free_threading_attribute_error_standard_expected(
+        self,
+    ) -> None:
         """Test _check_free_threading_available catches AttributeError (L117-118)."""
         from taipanstack.core import compat
 
@@ -414,7 +430,9 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_very_last_check_mimalloc_available_on_py313_standard_expected(self) -> None:
+    def test_very_last_check_mimalloc_available_on_py313_standard_expected(
+        self,
+    ) -> None:
         """Test _check_mimalloc_available with mimalloc in config (L137-138)."""
         from taipanstack.core import compat
 
@@ -617,7 +635,9 @@ class TestOptimizationsEdgeCases:
         assert any("boom" in e for e in result.errors)
 
 
-def test_very_last_guard_path_traversal_is_symlink_oserror_standard_expected(monkeypatch):
+def test_very_last_guard_path_traversal_is_symlink_oserror_standard_expected(
+    monkeypatch,
+):
     from pathlib import Path
 
     from taipanstack.security.guards import SecurityError, guard_path_traversal
@@ -649,7 +669,9 @@ class TestCompatPy313FallbackExpected:
         with patch.object(compat, "PY313", False):
             assert compat._check_free_threading_available() is False
 
-    def test_very_last_check_mimalloc_available_not_py313_standard_expected(self) -> None:
+    def test_very_last_check_mimalloc_available_not_py313_standard_expected(
+        self,
+    ) -> None:
         """Test _check_mimalloc_available when PY313=False."""
         from taipanstack.core import compat
 

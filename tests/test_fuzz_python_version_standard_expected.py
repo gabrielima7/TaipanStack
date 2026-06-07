@@ -36,7 +36,9 @@ def test_fuzz_python_version_fuzz_version_massive_strings_dos_standard_expected(
         max_size=15,
     ).filter(lambda s: "\x00" in s)
 )
-def test_fuzz_python_version_fuzz_version_null_bytes_standard_expected(version: str) -> None:
+def test_fuzz_python_version_fuzz_version_null_bytes_standard_expected(
+    version: str,
+) -> None:
     """Fuzz validate_python_version with strings containing null bytes."""
     with pytest.raises(ValueError, match="Version contains invalid characters"):
         validate_python_version(version)

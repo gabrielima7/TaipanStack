@@ -51,7 +51,9 @@ class TestValidateInputs:
         with pytest.raises(ValidationError, match="Must be positive"):
             double(-5)
 
-    def test_security_decorators_validation_error_has_param_name_standard_expected(self) -> None:
+    def test_security_decorators_validation_error_has_param_name_standard_expected(
+        self,
+    ) -> None:
         """Test that ValidationError includes parameter name."""
 
         def always_fail(x: str) -> None:
@@ -98,7 +100,9 @@ class TestValidateInputs:
 class TestGuardExceptions:
     """Tests for @guard_exceptions decorator."""
 
-    def test_security_decorators_no_exception_passes_through_standard_expected(self) -> None:
+    def test_security_decorators_no_exception_passes_through_standard_expected(
+        self,
+    ) -> None:
         """Test that successful execution passes through."""
 
         @guard_exceptions(catch=(ValueError,))
@@ -118,7 +122,9 @@ class TestGuardExceptions:
 
         assert failing_func() == "fallback"
 
-    def test_security_decorators_uncaught_exception_propagates_standard_expected(self) -> None:
+    def test_security_decorators_uncaught_exception_propagates_standard_expected(
+        self,
+    ) -> None:
         """Test that uncaught exceptions propagate."""
 
         @guard_exceptions(catch=(ValueError,))
@@ -128,7 +134,9 @@ class TestGuardExceptions:
         with pytest.raises(TypeError):
             failing_func()
 
-    def test_security_decorators_reraise_as_security_error_standard_expected(self) -> None:
+    def test_security_decorators_reraise_as_security_error_standard_expected(
+        self,
+    ) -> None:
         """Test reraising as SecurityError."""
 
         @guard_exceptions(catch=(IOError,), reraise_as=SecurityError)
@@ -138,7 +146,9 @@ class TestGuardExceptions:
         with pytest.raises(SecurityError):
             read_file()
 
-    def test_security_decorators_reraise_as_custom_exception_standard_expected(self) -> None:
+    def test_security_decorators_reraise_as_custom_exception_standard_expected(
+        self,
+    ) -> None:
         """Test reraising as custom exception type."""
 
         class CustomError(Exception): ...
@@ -163,7 +173,9 @@ class TestTimeout:
 
         assert fast_func() == "done"
 
-    def test_security_decorators_slow_function_times_out_standard_expected(self) -> None:
+    def test_security_decorators_slow_function_times_out_standard_expected(
+        self,
+    ) -> None:
         """Test that slow functions time out."""
 
         @timeout(0.1, use_signal=False)
@@ -174,7 +186,9 @@ class TestTimeout:
         with pytest.raises(OperationTimeoutError):
             slow_func()
 
-    def test_security_decorators_timeout_error_has_details_standard_expected(self) -> None:
+    def test_security_decorators_timeout_error_has_details_standard_expected(
+        self,
+    ) -> None:
         """Test OperationTimeoutError has seconds and func_name."""
 
         @timeout(0.1, use_signal=False)
@@ -226,7 +240,9 @@ class TestTimeout:
         with pytest.raises(ValueError, match="Thread error"):
             func_raises()
 
-    def test_security_decorators_timeout_with_success_in_thread_standard_expected(self) -> None:
+    def test_security_decorators_timeout_with_success_in_thread_standard_expected(
+        self,
+    ) -> None:
         @timeout(1.0, use_signal=False)
         def func_success() -> str:
             return "success"
@@ -237,7 +253,9 @@ class TestTimeout:
 class TestDeprecated:
     """Tests for @deprecated decorator."""
 
-    def test_security_decorators_emits_deprecation_warning_standard_expected(self) -> None:
+    def test_security_decorators_emits_deprecation_warning_standard_expected(
+        self,
+    ) -> None:
         """Test that deprecated function emits warning."""
 
         @deprecated("Use new_func instead")
@@ -253,7 +271,9 @@ class TestDeprecated:
         assert issubclass(w[0].category, DeprecationWarning)
         assert "old_func is deprecated" in str(w[0].message)
 
-    def test_security_decorators_includes_removal_version_standard_expected(self) -> None:
+    def test_security_decorators_includes_removal_version_standard_expected(
+        self,
+    ) -> None:
         """Test that removal version is included in warning."""
 
         @deprecated(removal_version="2.0")
@@ -279,7 +299,9 @@ class TestRequireType:
 
         assert greet("World", 2) == "Hello WorldHello World"
 
-    def test_security_decorators_wrong_type_raises_type_error_standard_expected(self) -> None:
+    def test_security_decorators_wrong_type_raises_type_error_standard_expected(
+        self,
+    ) -> None:
         """Test that wrong type raises TypeError."""
 
         @require_type(name=str)
@@ -303,7 +325,9 @@ class TestRequireType:
 
 
 class TestWindowsSignalCoverage:
-    def test_security_decorators_windows_signal_coverage_standard_expected(self) -> None:
+    def test_security_decorators_windows_signal_coverage_standard_expected(
+        self,
+    ) -> None:
         """Mock Unix signal behavior to get coverage on Windows for _timeout_with_signal."""
         from unittest.mock import MagicMock, patch
 

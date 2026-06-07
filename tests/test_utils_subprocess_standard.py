@@ -18,7 +18,9 @@ from taipanstack.utils.subprocess import (
 class TestSafeCommandResult:
     """Tests for SafeCommandResult dataclass."""
 
-    def test_utils_subprocess_success_true_when_returncode_zero_standard_expected(self) -> None:
+    def test_utils_subprocess_success_true_when_returncode_zero_standard_expected(
+        self,
+    ) -> None:
         """Test success property returns True for returncode 0."""
         result = SafeCommandResult(
             command=["echo", "hello"],
@@ -71,7 +73,9 @@ class TestSafeCommandResult:
 class TestDefaultAllowedCommands:
     """Tests for DEFAULT_ALLOWED_COMMANDS."""
 
-    def test_utils_subprocess_contains_essential_commands_standard_expected(self) -> None:
+    def test_utils_subprocess_contains_essential_commands_standard_expected(
+        self,
+    ) -> None:
         """Test that essential commands are in the whitelist."""
         essential = ["python", "poetry", "git", "pytest", "mypy", "ruff"]
         for cmd in essential:
@@ -137,7 +141,9 @@ class TestRunSafeCommand:
         assert result.returncode == -1
         assert "timed out" in result.stderr
 
-    def test_utils_subprocess_working_directory_standard_expected(self, tmp_path: Path) -> None:
+    def test_utils_subprocess_working_directory_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that working directory is respected."""
         # Create a file in tmp_path to verify we can access it
         test_file = tmp_path / "test_cwd.txt"
@@ -190,7 +196,9 @@ class TestRunSafeCommand:
             run_safe_command(["echo", "hello"], timeout=float("inf"))
 
 
-def test_utils_subprocess_execute_command_timeout_with_bytes_stdout_standard_expected() -> None:
+def test_utils_subprocess_execute_command_timeout_with_bytes_stdout_standard_expected() -> (
+    None
+):
     """Test _execute_command timeout handling when stdout is bytes."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
@@ -203,7 +211,9 @@ def test_utils_subprocess_execute_command_timeout_with_bytes_stdout_standard_exp
         assert result.stdout == "some bytes output"
 
 
-def test_utils_subprocess_execute_command_timeout_without_stdout_standard_expected() -> None:
+def test_utils_subprocess_execute_command_timeout_without_stdout_standard_expected() -> (
+    None
+):
     """Test _execute_command timeout handling when stdout is None."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)
@@ -216,7 +226,9 @@ def test_utils_subprocess_execute_command_timeout_without_stdout_standard_expect
         assert result.stdout == ""
 
 
-def test_utils_subprocess_execute_command_timeout_with_str_stdout_standard_expected() -> None:
+def test_utils_subprocess_execute_command_timeout_with_str_stdout_standard_expected() -> (
+    None
+):
     """Test _execute_command timeout handling when stdout is str."""
     with patch("subprocess.run") as mock_run:
         err = subprocess.TimeoutExpired(["sleep", "10"], 1.0)

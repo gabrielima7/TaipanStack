@@ -69,7 +69,9 @@ def test_taipanstack_script_safe_write_creates_backup_standard_expected(tmp_path
     assert "pre-commit-hooks" in dummy_file.read_text()  # Checks new file content
 
 
-def test_taipanstack_script_force_mode_overwrites_without_backup_standard_expected(tmp_path):
+def test_taipanstack_script_force_mode_overwrites_without_backup_standard_expected(
+    tmp_path,
+):
     """
     Verifies that the --force flag overwrites the file directly without creating a backup.
     """
@@ -150,7 +152,9 @@ def test_taipanstack_script_project_structure_creation_standard_expected(tmp_pat
     assert (tmp_path / "tests" / "test_example.py").exists()
 
 
-def test_taipanstack_script_optional_dependencies_flag_standard_expected(tmp_path, monkeypatch):
+def test_taipanstack_script_optional_dependencies_flag_standard_expected(
+    tmp_path, monkeypatch
+):
     """
     Verifies that the --install-runtime-deps flag controls dependency installation.
     """
@@ -171,7 +175,9 @@ def test_taipanstack_script_optional_dependencies_flag_standard_expected(tmp_pat
         assert len(poetry_add_calls) == 0
 
 
-def test_taipanstack_script_install_runtime_deps_flag_standard_expected(tmp_path, monkeypatch):
+def test_taipanstack_script_install_runtime_deps_flag_standard_expected(
+    tmp_path, monkeypatch
+):
     """
     Verifies that --install-runtime-deps installs the production dependencies.
     """

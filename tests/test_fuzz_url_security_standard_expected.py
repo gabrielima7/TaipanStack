@@ -10,7 +10,9 @@ from taipanstack.security.validators import MAX_URL_LENGTH, validate_url
     max_examples=200,
 )
 @given(st.text(min_size=MAX_URL_LENGTH + 1, max_size=MAX_URL_LENGTH + 1000))
-def test_fuzz_url_security_fuzz_url_massive_strings_dos_standard_expected(url: str) -> None:
+def test_fuzz_url_security_fuzz_url_massive_strings_dos_standard_expected(
+    url: str,
+) -> None:
     """Fuzz validate_url with massive strings to ensure DoS protection limits are active."""
     with pytest.raises(ValueError, match="URL length exceeds maximum allowed"):
         validate_url(url)
@@ -42,7 +44,9 @@ def test_fuzz_url_security_fuzz_url_null_bytes_standard_expected(url: str) -> No
         max_size=10,
     )
 )
-def test_fuzz_url_security_fuzz_url_unprintable_chars_standard_expected(chars: str) -> None:
+def test_fuzz_url_security_fuzz_url_unprintable_chars_standard_expected(
+    chars: str,
+) -> None:
     """Fuzz validate_url with zero-width characters and unprintable unicode."""
     url = f"http://example.com/{chars}"
     with pytest.raises(ValueError, match="URL contains invalid characters"):
@@ -63,7 +67,9 @@ def test_fuzz_url_security_url_tld_ipv6_handling_standard_expected() -> None:
     assert validate_url(url) == url
 
 
-def test_fuzz_url_security_url_credentials_bypassing_tld_check_standard_expected() -> None:
+def test_fuzz_url_security_url_credentials_bypassing_tld_check_standard_expected() -> (
+    None
+):
     """Ensure credentials don't mess up the TLD checks because of manual splits on netloc."""
     url = "http://user:pass@notlocalhost"
     # missing TLD, and not localhost, so should raise

@@ -136,7 +136,9 @@ class TestOptimizationLevel:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "invalid"}):
             assert get_optimization_level(force_refresh=True) == 1
 
-    def test_compat_optimization_level_exceeds_int_limit_standard_expected(self) -> None:
+    def test_compat_optimization_level_exceeds_int_limit_standard_expected(
+        self,
+    ) -> None:
         """Test ValueError from exceeding integer string conversion limit (CVE-2020-10735)."""
         # Create a string of digits exceeding the default limit (4300 digits)
         huge_int_str = "9" * 4500

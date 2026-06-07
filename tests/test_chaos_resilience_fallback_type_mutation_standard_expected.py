@@ -51,7 +51,9 @@ async def test_chaos_resilience_fallback_type_mutation_async_success() -> None:
     assert result.unwrap() == "success"
 
 
-def test_chaos_resilience_fallback_type_mutation_not_isinstance_standard_expected() -> None:
+def test_chaos_resilience_fallback_type_mutation_not_isinstance_standard_expected() -> (
+    None
+):
     """Coverage: valid type but not matching."""
 
     @fallback("fallback_val", exceptions=(ValueError,))

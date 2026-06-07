@@ -113,7 +113,9 @@ def test_adaptive_breaker_evaluate_trip_with_half_open_standard_expected(monkeyp
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_adaptive_breaker_evaluate_trip_failure_with_half_open_standard_expected(monkeypatch):
+def test_adaptive_breaker_evaluate_trip_failure_with_half_open_standard_expected(
+    monkeypatch,
+):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.HALF_OPEN
 

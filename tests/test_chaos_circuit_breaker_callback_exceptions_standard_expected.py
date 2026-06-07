@@ -16,8 +16,6 @@ def test_circuit_breaker_callback_exception_logging_standard_expected():
     assert cb.state == CircuitState.OPEN
 
 
-
-
 def test_circuit_breaker_failure_count_property_standard_expected():
     cb = CircuitBreaker()
     cb._state.failure_count = 42

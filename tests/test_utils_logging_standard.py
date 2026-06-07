@@ -91,7 +91,9 @@ class TestStackLogger:
             logger.debug("debug message")
         assert "debug message" in caplog.text
 
-    def test_utils_logging_info_logging_standard_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_info_logging_standard_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test info logging."""
         with caplog.at_level(logging.INFO):
             logger = StackLogger(level="INFO")
@@ -271,7 +273,9 @@ class TestSetupLogging:
         """Test setup with detailed format."""
         setup_logging(format_type="detailed")
 
-    def test_utils_logging_setup_with_log_file_standard_expected(self, tmp_path: Path) -> None:
+    def test_utils_logging_setup_with_log_file_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test setup with a log file."""
         log_file = tmp_path / "test.log"
         setup_logging(log_file=str(log_file))
@@ -378,14 +382,18 @@ class TestLogOperation:
 class TestFormatConstants:
     """Tests for format string constants."""
 
-    def test_utils_logging_default_format_has_required_fields_standard_expected(self) -> None:
+    def test_utils_logging_default_format_has_required_fields_standard_expected(
+        self,
+    ) -> None:
         """Test DEFAULT_FORMAT has required placeholders."""
         assert "%(asctime)s" in DEFAULT_FORMAT
         assert "%(levelname)" in DEFAULT_FORMAT
         assert "%(name)s" in DEFAULT_FORMAT
         assert "%(message)s" in DEFAULT_FORMAT
 
-    def test_utils_logging_json_format_is_valid_json_template_standard_expected(self) -> None:
+    def test_utils_logging_json_format_is_valid_json_template_standard_expected(
+        self,
+    ) -> None:
         """Test JSON_FORMAT produces valid JSON structure."""
         assert "timestamp" in JSON_FORMAT
         assert "level" in JSON_FORMAT
@@ -396,7 +404,9 @@ class TestFormatConstants:
 class TestCorrelationId:
     """Tests for correlation_id contextvars."""
 
-    def test_utils_logging_correlation_id_processor_with_id_standard_expected(self) -> None:
+    def test_utils_logging_correlation_id_processor_with_id_standard_expected(
+        self,
+    ) -> None:
         """Test processor injects ID when set."""
         set_correlation_id("injected-id")
 
@@ -408,7 +418,9 @@ class TestCorrelationId:
 
         set_correlation_id(None)
 
-    def test_utils_logging_correlation_id_processor_without_id_standard_expected(self) -> None:
+    def test_utils_logging_correlation_id_processor_without_id_standard_expected(
+        self,
+    ) -> None:
         """Test processor does not inject ID when not set."""
         set_correlation_id(None)
 
@@ -419,7 +431,9 @@ class TestCorrelationId:
         assert new_dict["message"] == "test msg"
 
 
-def test_utils_logging_is_sensitive_regex_none_returns_false_standard_expected() -> None:
+def test_utils_logging_is_sensitive_regex_none_returns_false_standard_expected() -> (
+    None
+):
     """_is_sensitive returns False when regex is None."""
     from taipanstack.utils.logging import _is_sensitive
 

@@ -221,13 +221,17 @@ class TestGetVersionRecommendations:
         assert isinstance(rec.notes, tuple)
         assert len(rec.notes) > 0
 
-    def test_version_config_recommendations_threading_values_standard_expected(self) -> None:
+    def test_version_config_recommendations_threading_values_standard_expected(
+        self,
+    ) -> None:
         """Test threading recommendations have valid values."""
         rec = get_version_recommendations()
         assert rec.recommended_thread_pool_size > 0
         assert isinstance(rec.supports_true_parallelism, bool)
 
-    def test_version_config_recommendations_code_style_values_standard_expected(self) -> None:
+    def test_version_config_recommendations_code_style_values_standard_expected(
+        self,
+    ) -> None:
         """Test code style recommendations have valid values."""
         rec = get_version_recommendations()
         assert isinstance(rec.use_type_params, bool)

@@ -12,7 +12,9 @@ from taipanstack.utils.logging import REDACTED_VALUE
 class TestSecureBaseModel:
     """Tests for the SecureBaseModel."""
 
-    def test_security_models_model_dump_masks_sensitive_fields_standard_expected(self) -> None:
+    def test_security_models_model_dump_masks_sensitive_fields_standard_expected(
+        self,
+    ) -> None:
         """Test that model_dump redacts sensitive keys."""
 
         class User(SecureBaseModel):
@@ -75,7 +77,9 @@ class TestSecureBaseModel:
         assert dumped["db"][0]["password"] == REDACTED_VALUE
         assert dumped["db"][1]["password"] == REDACTED_VALUE
 
-    def test_security_models_model_dump_json_with_indent_standard_expected(self) -> None:
+    def test_security_models_model_dump_json_with_indent_standard_expected(
+        self,
+    ) -> None:
         """Test model_dump_json with indent."""
 
         class ApiKeyObj(SecureBaseModel):
@@ -86,7 +90,9 @@ class TestSecureBaseModel:
         assert "{\n" in json_str
         assert REDACTED_VALUE in json_str
 
-    def test_security_models_str_and_repr_mask_sensitive_fields_standard_expected(self) -> None:
+    def test_security_models_str_and_repr_mask_sensitive_fields_standard_expected(
+        self,
+    ) -> None:
         """Test that str() and repr() redact sensitive keys."""
 
         class User(SecureBaseModel):

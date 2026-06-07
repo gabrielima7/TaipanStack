@@ -29,7 +29,9 @@ def test_fuzz_guard_file_extension_null_bytes_standard_expected(filename: str) -
         max_size=10,
     )
 )
-def test_fuzz_guard_file_extension_whitespace_and_dots_standard_expected(padding: str) -> None:
+def test_fuzz_guard_file_extension_whitespace_and_dots_standard_expected(
+    padding: str,
+) -> None:
     """Ensure trailing spaces, dots, and control characters don't bypass the extension check."""
     # We want to catch Windows-style bypasses like 'test.exe.' or 'test.exe \n'
     # padding only contains whitespace, control chars, or dots

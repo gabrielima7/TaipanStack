@@ -5,7 +5,9 @@ import os
 from taipanstack.utils.subprocess import run_safe_command
 
 
-def test_security_subprocess_run_safe_command_filters_sensitive_env_vars_standard_expected() -> None:
+def test_security_subprocess_run_safe_command_filters_sensitive_env_vars_standard_expected() -> (
+    None
+):
     """Test that run_safe_command uses a whitelist approach to filter env vars."""
     env = os.environ.copy()
     env["AWS_SECRET_ACCESS_KEY"] = "my-secret"
@@ -22,7 +24,9 @@ def test_security_subprocess_run_safe_command_filters_sensitive_env_vars_standar
     assert result.success
 
 
-def test_security_subprocess_run_safe_command_filters_default_env_standard_expected() -> None:
+def test_security_subprocess_run_safe_command_filters_default_env_standard_expected() -> (
+    None
+):
     """Test that run_safe_command uses default whitelist (PATH) if not provided."""
     os.environ["SUPER_SECRET_TOKEN"] = "hidden"
     try:
@@ -33,7 +37,9 @@ def test_security_subprocess_run_safe_command_filters_default_env_standard_expec
         del os.environ["SUPER_SECRET_TOKEN"]
 
 
-def test_security_subprocess_run_safe_command_empty_whitelist_standard_expected() -> None:
+def test_security_subprocess_run_safe_command_empty_whitelist_standard_expected() -> (
+    None
+):
     """Test that run_safe_command can be given an empty whitelist to inherit an empty environment."""
     env = os.environ.copy()
     env["TEST_VAR"] = "test"

@@ -33,7 +33,9 @@ class TestMaskSensitiveDataProcessor:
         result = mask_sensitive_data_processor(None, "debug", event_dict)
         assert result["token"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_authorization_key_is_redacted_standard_expected(self) -> None:
+    def test_v034_logging_mask_authorization_key_is_redacted_standard_expected(
+        self,
+    ) -> None:
         """Value under an 'authorization' key is replaced with REDACTED_VALUE."""
         event_dict = {"authorization": "Basic dXNlcjpwYXNz", "event": "request"}
         result = mask_sensitive_data_processor(None, "info", event_dict)
@@ -53,25 +55,33 @@ class TestMaskSensitiveDataProcessor:
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["USER_PASSWORD"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_case_insensitive_matching_token_standard_expected(self) -> None:
+    def test_v034_logging_mask_case_insensitive_matching_token_standard_expected(
+        self,
+    ) -> None:
         """Keys containing 'TOKEN' (mixed case) are also redacted."""
         event_dict = {"OAuth_Token": "xyz", "event": "test"}
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["OAuth_Token"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_case_insensitive_matching_secret_standard_expected(self) -> None:
+    def test_v034_logging_mask_case_insensitive_matching_secret_standard_expected(
+        self,
+    ) -> None:
         """Keys containing 'Secret' (title case) are also redacted."""
         event_dict = {"ClientSecret": "very-secret", "event": "test"}
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["ClientSecret"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_partial_key_match_is_redacted_standard_expected(self) -> None:
+    def test_v034_logging_mask_partial_key_match_is_redacted_standard_expected(
+        self,
+    ) -> None:
         """Keys that contain a sensitive substring anywhere are redacted."""
         event_dict = {"db_password_hash": "xxxx", "event": "test"}
         result = mask_sensitive_data_processor(None, "info", event_dict)
         assert result["db_password_hash"] == REDACTED_VALUE
 
-    def test_v034_logging_mask_non_sensitive_keys_are_untouched_standard_expected(self) -> None:
+    def test_v034_logging_mask_non_sensitive_keys_are_untouched_standard_expected(
+        self,
+    ) -> None:
         """Keys not matching any sensitive pattern are left as-is."""
         event_dict = {
             "event": "startup",
@@ -116,7 +126,9 @@ class TestMaskSensitiveDataProcessor:
         assert result["api_key"] == REDACTED_VALUE
         assert result["name"] == "alice"
 
-    def test_v034_logging_mask_logger_and_method_args_ignored_standard_expected(self) -> None:
+    def test_v034_logging_mask_logger_and_method_args_ignored_standard_expected(
+        self,
+    ) -> None:
         """Processor ignores the logger and method arguments correctly."""
         # Both None and real-looking values are acceptable; result is unchanged
         event_dict = {"event": "check", "secret": "val"}
@@ -149,7 +161,9 @@ class TestSensitiveKeyPatternsConstant:
 class TestMaskSensitiveDataProcessorStructlogIntegration:
     """Integration tests: processor wired into a real structlog configuration."""
 
-    def test_v034_logging_mask_structlog_pipeline_masks_password_standard_expected(self) -> None:
+    def test_v034_logging_mask_structlog_pipeline_masks_password_standard_expected(
+        self,
+    ) -> None:
         """Password value is masked when processor is in the structlog chain."""
         import io
 
@@ -228,7 +242,9 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         assert "api" in captured
         assert "0.3.4" in captured
 
-    def test_v034_logging_mask_structlog_pipeline_masks_api_key_standard_expected(self) -> None:
+    def test_v034_logging_mask_structlog_pipeline_masks_api_key_standard_expected(
+        self,
+    ) -> None:
         """API key value is masked when wired through the structlog pipeline."""
         import io
 
@@ -253,7 +269,9 @@ class TestMaskSensitiveDataProcessorStructlogIntegration:
         assert "sk-abc-xyz-123" not in captured
         assert REDACTED_VALUE in captured
 
-    def test_v034_logging_mask_structlog_pipeline_masks_token_standard_expected(self) -> None:
+    def test_v034_logging_mask_structlog_pipeline_masks_token_standard_expected(
+        self,
+    ) -> None:
         """Token value is masked when wired through the structlog pipeline."""
         import io
 

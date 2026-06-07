@@ -81,7 +81,9 @@ class TestLoggingWithMockedStructlog:
 class TestSetupLoggingStructlog:
     """Tests for setup_logging with structlog."""
 
-    def test_structlog_branches_setup_logging_with_structlog_standard_expected(self) -> None:
+    def test_structlog_branches_setup_logging_with_structlog_standard_expected(
+        self,
+    ) -> None:
         """Test setup_logging when HAS_STRUCTLOG is True and use_structured=True."""
         mock_structlog = MagicMock()
 
@@ -133,7 +135,9 @@ class TestGuardsRemainingBranches:
 class TestFilesystemRemainingBranches:
     """Tests for remaining filesystem module branches."""
 
-    def test_structlog_branches_safe_write_create_parents_standard_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_safe_write_create_parents_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with create_parents=True."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -165,7 +169,9 @@ class TestFilesystemRemainingBranches:
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
 
-    def test_structlog_branches_sanitize_path_absolute_standard_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_sanitize_path_absolute_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with absolute path."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -195,7 +201,9 @@ class TestValidatorsRemainingBranches:
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("123project")
 
-    def test_structlog_branches_validate_project_name_max_length_standard_expected(self) -> None:
+    def test_structlog_branches_validate_project_name_max_length_standard_expected(
+        self,
+    ) -> None:
         """Test validate_project_name with max_length parameter."""
         from taipanstack.security.validators import validate_project_name
 
