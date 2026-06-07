@@ -232,7 +232,7 @@ def collect_results(
             return result
         else:
             # Fallback for structural compatibility
-            return result
+            return result  # type: ignore[unreachable]
     return ok_cls(values)
 
 
