@@ -11,7 +11,7 @@ from taipanstack.utils.concurrency import OverloadError, limit_concurrency
 class TestConcurrencyLimiter:
     """Tests for the bulkheading concurrency limiter."""
 
-    def test_utils_concurrency_invalid_initialization(self) -> None:
+    def test_utils_concurrency_invalid_initialization_standard_expected(self) -> None:
         """Test invalid args to limit_concurrency."""
         with pytest.raises(ValueError, match="must be > 0"):
             limit_concurrency(max_tasks=0)
