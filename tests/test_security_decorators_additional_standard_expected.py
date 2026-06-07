@@ -238,7 +238,7 @@ def test_security_decorators_additional_security_decorators_timeout_thread_timeo
         my_func()
 
 
-def test_security_decorators_additional_security_decorators_timeout_type_error():
+def test_security_decorators_additional_security_decorators_timeout_type_error_standard_expected():
     import pytest
 
     from taipanstack.security.decorators import timeout
