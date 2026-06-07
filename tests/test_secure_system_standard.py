@@ -87,7 +87,7 @@ def test_secure_system_create_user_failure(
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_create_user_already_exists(
+def test_secure_system_create_user_already_exists_standard_expected(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
@@ -119,7 +119,7 @@ def test_secure_system_create_user_already_exists(
     assert "Failed to create user" in caplog.text
 
 
-def test_secure_system_create_user_invalid_email() -> None:
+def test_secure_system_create_user_invalid_email_standard_expected() -> None:
     """Test creating a user with an invalid email raises ValidationError."""
     with pytest.raises(ValidationError):
         UserCreate(
@@ -129,7 +129,7 @@ def test_secure_system_create_user_invalid_email() -> None:
         )
 
 
-def test_secure_system_create_user_invalid_username() -> None:
+def test_secure_system_create_user_invalid_username_standard_expected() -> None:
     """Test creating a user with an invalid username raises ValidationError."""
     with pytest.raises(ValidationError):
         UserCreate(
@@ -139,7 +139,7 @@ def test_secure_system_create_user_invalid_username() -> None:
         )
 
 
-def test_secure_system_get_non_existent_user(
+def test_secure_system_get_non_existent_user_standard_expected(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test retrieving a non-existent user returns Err with UserNotFoundError."""
@@ -163,7 +163,7 @@ def test_secure_system_get_non_existent_user(
     assert f"user_id={user_id}" in caplog.text
 
 
-def test_secure_system_models_redaction() -> None:
+def test_secure_system_models_redaction_standard_expected() -> None:
     """Test that UserCreate and UserInDB models redact sensitive fields."""
     user_create = UserCreate(
         username="testuser",

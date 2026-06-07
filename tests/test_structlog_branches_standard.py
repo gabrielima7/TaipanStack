@@ -9,7 +9,7 @@ import pytest
 class TestLoggingWithMockedStructlog:
     """Tests for logging.py with mocked structlog to cover all branches."""
 
-    def test_structlog_branches_stack_logger_with_structured_true(
+    def test_structlog_branches_stack_logger_with_structured_true_standard_expected(
         self,
     ) -> None:
         """Test StackLogger when HAS_STRUCTLOG is True and use_structured=True."""
@@ -38,7 +38,7 @@ class TestLoggingWithMockedStructlog:
             logger.error("error message")
             logger.critical("critical message")
 
-    def test_structlog_branches_stack_logger_bind_with_structured(
+    def test_structlog_branches_stack_logger_bind_with_structured_standard_expected(
         self,
     ) -> None:
         """Test StackLogger.bind when _structured is True."""
@@ -57,7 +57,7 @@ class TestLoggingWithMockedStructlog:
             logger = logging_module.StackLogger(use_structured=True)
             logger.bind(user="test")
 
-    def test_structlog_branches_stack_logger_unbind_with_structured(
+    def test_structlog_branches_stack_logger_unbind_with_structured_standard_expected(
         self,
     ) -> None:
         """Test StackLogger.unbind when _structured is True."""
@@ -81,7 +81,7 @@ class TestLoggingWithMockedStructlog:
 class TestSetupLoggingStructlog:
     """Tests for setup_logging with structlog."""
 
-    def test_structlog_branches_setup_logging_with_structlog(self) -> None:
+    def test_structlog_branches_setup_logging_with_structlog_standard_expected(self) -> None:
         """Test setup_logging when HAS_STRUCTLOG is True and use_structured=True."""
         mock_structlog = MagicMock()
 
@@ -115,7 +115,7 @@ class TestSubprocessTimeoutBranches:
 class TestGuardsRemainingBranches:
     """Tests for remaining guards module branches."""
 
-    def test_structlog_branches_guard_path_traversal_symlink(
+    def test_structlog_branches_guard_path_traversal_symlink_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Test guard_path_traversal with symlinks."""
@@ -133,7 +133,7 @@ class TestGuardsRemainingBranches:
 class TestFilesystemRemainingBranches:
     """Tests for remaining filesystem module branches."""
 
-    def test_structlog_branches_safe_write_create_parents(self, tmp_path: Path) -> None:
+    def test_structlog_branches_safe_write_create_parents_standard_expected(self, tmp_path: Path) -> None:
         """Test safe_write with create_parents=True."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -146,7 +146,7 @@ class TestFilesystemRemainingBranches:
         assert result.exists()
         assert result.read_text() == "content"
 
-    def test_structlog_branches_safe_write_atomic_with_existing(
+    def test_structlog_branches_safe_write_atomic_with_existing_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Test safe_write atomic with existing file copies permissions."""
@@ -165,7 +165,7 @@ class TestFilesystemRemainingBranches:
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
 
-    def test_structlog_branches_sanitize_path_absolute(self, tmp_path: Path) -> None:
+    def test_structlog_branches_sanitize_path_absolute_standard_expected(self, tmp_path: Path) -> None:
         """Test sanitize_path with absolute path."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -175,7 +175,7 @@ class TestSanitizersRemainingBranches:
         # Result should contain the filename
         assert "file.txt" in str(result) or "file" in str(result)
 
-    def test_structlog_branches_sanitize_path_relative(self) -> None:
+    def test_structlog_branches_sanitize_path_relative_standard_expected(self) -> None:
         """Test sanitize_path with relative path."""
         from taipanstack.security.sanitizers import sanitize_path
 
@@ -186,7 +186,7 @@ class TestSanitizersRemainingBranches:
 class TestValidatorsRemainingBranches:
     """Tests for remaining validators module branches."""
 
-    def test_structlog_branches_validate_project_name_starts_with_digit(
+    def test_structlog_branches_validate_project_name_starts_with_digit_standard_expected(
         self,
     ) -> None:
         """Test validate_project_name starting with digit."""
@@ -195,7 +195,7 @@ class TestValidatorsRemainingBranches:
         with pytest.raises(ValueError, match="start with"):
             validate_project_name("123project")
 
-    def test_structlog_branches_validate_project_name_max_length(self) -> None:
+    def test_structlog_branches_validate_project_name_max_length_standard_expected(self) -> None:
         """Test validate_project_name with max_length parameter."""
         from taipanstack.security.validators import validate_project_name
 

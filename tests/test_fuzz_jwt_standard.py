@@ -34,7 +34,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256", "HS384", "HS512"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_payload(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_payload_standard_expected(
         self, payload, secret, algorithm
     ) -> None:
         """Bombard encode_jwt with extreme, malformed payload types."""
@@ -49,7 +49,7 @@ class TestFuzzJWT:
         audience=st.one_of(st.text(), st.lists(st.text())),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_decode_jwt_malformed_token(
+    def test_fuzz_jwt_fuzz_decode_jwt_malformed_token_standard_expected(
         self, token, secret, algorithms, audience
     ) -> None:
         """Bombard decode_jwt with extreme, malformed token types."""
@@ -63,7 +63,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_secret(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_secret_standard_expected(
         self, payload, secret, algorithm
     ) -> None:
         """Bombard encode_jwt with extreme, malformed secret types."""
@@ -78,7 +78,7 @@ class TestFuzzJWT:
         ),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_algorithm(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_algorithm_standard_expected(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
