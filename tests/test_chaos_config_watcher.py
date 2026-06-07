@@ -52,3 +52,34 @@ def test_chaos_config_watcher_corrupted_file_type(
     result = watcher._detect_changes()
     assert result == Ok([])
     assert "Cannot hash" in caplog.text
+
+
+def test_chaos_config_watcher_parse_env_empty_values() -> None:
+    """Test _parse_env with empty values and weird quoting."""
+    from taipanstack.resilience.watchdogs.config_watcher import _parse_env
+
+    env_content = """
+    A=
+    B=""
+    C=''
+    D=
+    E="   "
+    """
+    result = _parse_env(env_content)
+    assert result["A"] == ""
+    assert result["B"] == ""
+    assert result["C"] == ""
+    assert result["D"] == ""
+    assert result["E"] == "   "
+
+
+def test_chaos_config_watcher_parse_content_unsupported_ext(tmp_path: Path) -> None:
+    """Test _parse_content_by_extension with an unsupported extension."""
+    from taipanstack.core.result import Err
+    from taipanstack.resilience.watchdogs.config_watcher import (
+        _parse_content_by_extension,
+    )
+
+    result = _parse_content_by_extension(tmp_path / "config.yaml", "foo: bar")
+    assert isinstance(result, Err)
+    assert "Unsupported config file extension" in str(result.err_value)
