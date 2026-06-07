@@ -7,7 +7,9 @@ from taipanstack.security.password import hash_password, verify_password
 
 @settings(deadline=None)
 @given(st.text(), st.text())
-def test_fuzz_password_fuzz_verify_password_returns_bool_or_raises_error(pw, pw_hash):
+def test_fuzz_password_fuzz_verify_password_returns_bool_or_raises_error_standard_expected(
+    pw, pw_hash
+):
     try:
         result = verify_password(pw, pw_hash)
         assert isinstance(result, bool)
@@ -25,7 +27,9 @@ def test_fuzz_password_fuzz_verify_password_returns_bool_or_raises_error(pw, pw_
         st.builds(SecretStr, st.text()),
     )
 )
-def test_fuzz_password_fuzz_hash_password_returns_str_or_raises_error(pw):
+def test_fuzz_password_fuzz_hash_password_returns_str_or_raises_error_standard_expected(
+    pw,
+):
     try:
         result = hash_password(pw)
         assert isinstance(result, str)

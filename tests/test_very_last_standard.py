@@ -36,7 +36,9 @@ from taipanstack.security.sanitizers import sanitize_path
 class TestValidatorsVersionConversion:
     """Test for validators.py lines 128-130 (version conversion ValueError)."""
 
-    def test_very_last_validate_python_version_with_letters(self) -> None:
+    def test_very_last_validate_python_version_with_letters_standard_expected(
+        self,
+    ) -> None:
         """Test validate_python_version with letters in version."""
         from taipanstack.security.validators import validate_python_version
 
@@ -50,7 +52,9 @@ class TestValidatorsVersionConversion:
 class TestGuardsOSErrorMocked:
     """Test for guards.py lines 97-98 (OSError in resolve)."""
 
-    def test_very_last_guard_path_basic_works(self, tmp_path: Path) -> None:
+    def test_very_last_guard_path_basic_works_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test guard_path_traversal with basic case."""
         from taipanstack.security.guards import guard_path_traversal
 
@@ -60,7 +64,7 @@ class TestGuardsOSErrorMocked:
         result = guard_path_traversal(file, tmp_path)
         assert result.exists()
 
-    def test_very_last_guard_path_resolve_valueerror(self) -> None:
+    def test_very_last_guard_path_resolve_valueerror_standard_expected(self) -> None:
         """Test guard_path_traversal catching ValueError from resolve (L97-98)."""
         from taipanstack.security.guards import SecurityError, guard_path_traversal
 
@@ -87,7 +91,7 @@ class TestGuardsOSErrorMocked:
 class TestGuardsSymlinkMocked:
     """Test for guards.py line 118 (symlink detection)."""
 
-    def test_very_last_guard_path_traversal_symlink_mocked(
+    def test_very_last_guard_path_traversal_symlink_mocked_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Test guard_path_traversal symlink detection with mock."""
@@ -108,13 +112,15 @@ class TestGuardsSymlinkMocked:
 class TestSanitizersResolveError:
     """Test for sanitizers.py lines 241-243 (resolve error)."""
 
-    def test_very_last_sanitize_path_works(self, tmp_path: Path) -> None:
+    def test_very_last_sanitize_path_works_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with valid path."""
 
         result = sanitize_path("subdir/file.txt", base_dir=tmp_path, max_depth=None)
         assert result is not None
 
-    def test_very_last_sanitize_path_resolve_oserror(self) -> None:
+    def test_very_last_sanitize_path_resolve_oserror_standard_expected(self) -> None:
         """Test sanitize_path with resolve=True raising OSError (L241-243)."""
 
         # Use selective mock: first resolve call (base_dir) succeeds,
@@ -139,7 +145,9 @@ class TestSanitizersResolveError:
                     max_depth=None,
                 )
 
-    def test_very_last_sanitize_path_resolve_runtime_error(self) -> None:
+    def test_very_last_sanitize_path_resolve_runtime_error_standard_expected(
+        self,
+    ) -> None:
         """Test sanitize_path with resolve=True raising RuntimeError (L241-243)."""
 
         call_count = 0
@@ -168,7 +176,9 @@ class TestSanitizersResolveError:
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
 
-    def test_very_last_safe_write_existing_permissions(self, tmp_path: Path) -> None:
+    def test_very_last_safe_write_existing_permissions_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -179,7 +189,9 @@ class TestFilesystemWriteError:
         result = safe_write(existing, "new", options=WriteOptions(atomic=True))
         assert result.read_text() == "new"
 
-    def test_very_last_ensure_dir_with_traversal(self, tmp_path: Path) -> None:
+    def test_very_last_ensure_dir_with_traversal_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test ensure_dir with '..' in path string (L243)."""
         from taipanstack.security.guards import SecurityError
         from taipanstack.utils.filesystem import ensure_dir
@@ -195,7 +207,7 @@ class TestFilesystemWriteError:
 class TestRetryMaxAttemptsBranch:
     """Test for retry.py line 187/288."""
 
-    def test_very_last_retry_exhausts_all_attempts(self) -> None:
+    def test_very_last_retry_exhausts_all_attempts_standard_expected(self) -> None:
         """Test retry when all attempts fail."""
         from taipanstack.resilience.retry import RetryError, retry
 
@@ -213,7 +225,9 @@ class TestRetryMaxAttemptsBranch:
 class TestSubprocessCheckCommand:
     """Test for subprocess.py coverage gaps."""
 
-    def test_very_last_run_safe_command_check_true_fails(self) -> None:
+    def test_very_last_run_safe_command_check_true_fails_standard_expected(
+        self,
+    ) -> None:
         """Test run_safe_command with check=True when command fails (L231)."""
         from taipanstack.utils.subprocess import run_safe_command
 
@@ -230,7 +244,7 @@ class TestSubprocessCheckCommand:
 class TestLoggingStructlogBranches:
     """Test for remaining logging.py coverage gaps."""
 
-    def test_very_last_logging_with_structlog_real(self) -> None:
+    def test_very_last_logging_with_structlog_real_standard_expected(self) -> None:
         """Test logging with real structlog."""
         from taipanstack.utils.logging import HAS_STRUCTLOG, StackLogger
 
@@ -250,7 +264,7 @@ class TestLoggingStructlogBranches:
             logger.exception("Exception message", key="value")
         logger.unbind("test_key")
 
-    def test_very_last_logging_without_structlog(self) -> None:
+    def test_very_last_logging_without_structlog_standard_expected(self) -> None:
         """Test the HAS_STRUCTLOG=False branch (L20-21)."""
         # We can't truly un-import structlog, but we can test that the
         # fallback path works by forcing use_structured=False
@@ -269,7 +283,7 @@ class TestLoggingStructlogBranches:
             logger.exception("Exception message", key="value")
         logger.unbind("test_key")
 
-    def test_very_last_setup_logging_with_log_file(self) -> None:
+    def test_very_last_setup_logging_with_log_file_standard_expected(self) -> None:
         """Test setup_logging with a log_file parameter (L245)."""
         from taipanstack.utils.logging import setup_logging
 
@@ -302,7 +316,7 @@ class TestLoggingStructlogBranches:
 class TestGeneratorsParanoidLevel:
     """Test for generators.py line 165 (paranoid security level)."""
 
-    def test_very_last_pre_commit_config_paranoid_level(self) -> None:
+    def test_very_last_pre_commit_config_paranoid_level_standard_expected(self) -> None:
         """Test generate_pre_commit_config with paranoid security level."""
         from taipanstack.config.generators import generate_pre_commit_config
         from taipanstack.config.models import SecurityConfig, StackConfig
@@ -337,7 +351,7 @@ class TestGeneratorsParanoidLevel:
 class TestCompatPy313FeatureDetection:
     """Test compat.py JIT/free-threading/mimalloc detection branches."""
 
-    def test_very_last_check_jit_available_on_py313(self) -> None:
+    def test_very_last_check_jit_available_on_py313_standard_expected(self) -> None:
         """Test _check_jit_available when PY313=True (L91-96)."""
         from taipanstack.core import compat
 
@@ -346,7 +360,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_jit_available()
             assert isinstance(result, bool)
 
-    def test_very_last_check_jit_available_type_error(self) -> None:
+    def test_very_last_check_jit_available_type_error_standard_expected(self) -> None:
         """Test _check_jit_available catches TypeError (L95)."""
         from taipanstack.core import compat
 
@@ -360,7 +374,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_jit_available()
             assert result is False
 
-    def test_very_last_check_free_threading_with_nogil(self) -> None:
+    def test_very_last_check_free_threading_with_nogil_standard_expected(self) -> None:
         """Test _check_free_threading_available with nogil flag (L107-120)."""
         from taipanstack.core import compat
 
@@ -374,7 +388,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_very_last_check_free_threading_sysconfig_disable_gil(
+    def test_very_last_check_free_threading_sysconfig_disable_gil_standard_expected(
         self,
     ) -> None:
         """Test _check_free_threading_available via sysconfig CONFIG_ARGS (L114-120)."""
@@ -395,7 +409,9 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is True
 
-    def test_very_last_check_free_threading_attribute_error(self) -> None:
+    def test_very_last_check_free_threading_attribute_error_standard_expected(
+        self,
+    ) -> None:
         """Test _check_free_threading_available catches AttributeError (L117-118)."""
         from taipanstack.core import compat
 
@@ -414,7 +430,9 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_free_threading_available()
             assert result is False
 
-    def test_very_last_check_mimalloc_available_on_py313(self) -> None:
+    def test_very_last_check_mimalloc_available_on_py313_standard_expected(
+        self,
+    ) -> None:
         """Test _check_mimalloc_available with mimalloc in config (L137-138)."""
         from taipanstack.core import compat
 
@@ -430,7 +448,7 @@ class TestCompatPy313FeatureDetection:
             result = compat._check_mimalloc_available()
             assert result is True
 
-    def test_very_last_check_mimalloc_attribute_error(self) -> None:
+    def test_very_last_check_mimalloc_attribute_error_standard_expected(self) -> None:
         """Test _check_mimalloc_available catches AttributeError (L137-138)."""
         from taipanstack.core import compat
 
@@ -453,7 +471,7 @@ class TestCompatPy313FeatureDetection:
 class TestOptimizationsEdgeCases:
     """Test optimizations.py edge cases for coverage."""
 
-    def test_very_last_apply_gc_tuning_exception(self) -> None:
+    def test_very_last_apply_gc_tuning_exception_standard_expected(self) -> None:
         """Test _apply_gc_tuning when gc.set_threshold raises (L253-254)."""
         from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_tuning
 
@@ -467,7 +485,7 @@ class TestOptimizationsEdgeCases:
         assert len(errors) == 1
         assert "GC error" in errors[0]
 
-    def test_very_last_apply_gc_freeze_not_py312(self) -> None:
+    def test_very_last_apply_gc_freeze_not_py312_standard_expected(self) -> None:
         """Test _apply_gc_freeze skipped when not PY312 (L271-272)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -491,7 +509,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("requires Python 3.12" in s for s in skipped)
 
-    def test_very_last_apply_gc_freeze_not_freeze_after(self) -> None:
+    def test_very_last_apply_gc_freeze_not_freeze_after_standard_expected(self) -> None:
         """Test _apply_gc_freeze skipped when freeze_after is False (L282-283)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -541,7 +559,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("gc_freeze" in a for a in applied)
 
-    def test_very_last_apply_gc_freeze_exception(self) -> None:
+    def test_very_last_apply_gc_freeze_exception_standard_expected(self) -> None:
         """Test _apply_gc_freeze error handling (L269-270)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -568,7 +586,7 @@ class TestOptimizationsEdgeCases:
 
         assert any("freeze failed" in e for e in errors)
 
-    def test_very_last_apply_experimental_with_jit_and_free_threading(
+    def test_very_last_apply_experimental_with_jit_and_free_threading_standard_expected(
         self,
     ) -> None:
         """Test _apply_experimental when JIT and free-threading are available (L284, L286)."""
@@ -600,7 +618,7 @@ class TestOptimizationsEdgeCases:
         assert any("jit" in a for a in applied)
         assert any("free_threading" in a for a in applied)
 
-    def test_very_last_apply_optimizations_with_errors(self) -> None:
+    def test_very_last_apply_optimizations_with_errors_standard_expected(self) -> None:
         """Test apply_optimizations logs errors (L346)."""
         from taipanstack.core.optimizations import (
             OptimizationProfile,
@@ -617,7 +635,9 @@ class TestOptimizationsEdgeCases:
         assert any("boom" in e for e in result.errors)
 
 
-def test_very_last_guard_path_traversal_is_symlink_oserror(monkeypatch):
+def test_very_last_guard_path_traversal_is_symlink_oserror_standard_expected(
+    monkeypatch,
+):
     from pathlib import Path
 
     from taipanstack.security.guards import SecurityError, guard_path_traversal
@@ -635,21 +655,23 @@ def test_very_last_guard_path_traversal_is_symlink_oserror(monkeypatch):
 
 
 class TestCompatPy313FallbackExpected:
-    def test_very_last_check_jit_available_not_py313(self) -> None:
+    def test_very_last_check_jit_available_not_py313_standard_expected(self) -> None:
         """Test _check_jit_available when PY313=False."""
         from taipanstack.core import compat
 
         with patch.object(compat, "PY313", False):
             assert compat._check_jit_available() is False
 
-    def test_very_last_check_free_threading_not_py313(self) -> None:
+    def test_very_last_check_free_threading_not_py313_standard_expected(self) -> None:
         """Test _check_free_threading_available when PY313=False."""
         from taipanstack.core import compat
 
         with patch.object(compat, "PY313", False):
             assert compat._check_free_threading_available() is False
 
-    def test_very_last_check_mimalloc_available_not_py313(self) -> None:
+    def test_very_last_check_mimalloc_available_not_py313_standard_expected(
+        self,
+    ) -> None:
         """Test _check_mimalloc_available when PY313=False."""
         from taipanstack.core import compat
 
@@ -672,7 +694,7 @@ def test_very_last_optimizations_coverage_skipped_asserts_success():
         assert res.success
 
 
-def test_very_last_circuit_breaker_open_handling_remains_open():
+def test_very_last_circuit_breaker_open_handling_remains_open_standard_expected():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._record_success()
@@ -682,7 +704,7 @@ def test_very_last_circuit_breaker_open_handling_remains_open():
     assert cb._state.state == CircuitState.OPEN
 
 
-def test_very_last_validate_args_param_missing_returns_value():
+def test_very_last_validate_args_param_missing_returns_value_standard_expected():
     @validate_inputs(x=lambda x: x)
     def my_func(y: int):
         return y
@@ -690,7 +712,7 @@ def test_very_last_validate_args_param_missing_returns_value():
     assert my_func(y=1) == 1
 
 
-def test_very_last_validate_args_no_return_returns_value():
+def test_very_last_validate_args_no_return_returns_value_standard_expected():
     @validate_inputs(x=lambda _x: None)
     def my_func(x: int):
         return x
@@ -698,7 +720,7 @@ def test_very_last_validate_args_no_return_returns_value():
     assert my_func(x=1) == 1
 
 
-def test_very_last_validate_args_exception_returns_err():
+def test_very_last_validate_args_exception_returns_err_standard_expected():
     def failing_validator(x):
         raise ValueError("fail")
 
@@ -710,7 +732,7 @@ def test_very_last_validate_args_exception_returns_err():
         my_func(x=1)
 
 
-def test_very_last_safe_decorator_log_errors_false_returns_err():
+def test_very_last_safe_decorator_log_errors_false_returns_err_standard_expected():
     @guard_exceptions(log_errors=False, default=-1)
     def my_func():
         raise ValueError("error")
@@ -718,7 +740,7 @@ def test_very_last_safe_decorator_log_errors_false_returns_err():
     assert my_func() == -1
 
 
-def test_very_last_type_check_param_missing_returns_value():
+def test_very_last_type_check_param_missing_returns_value_standard_expected():
     @require_type(x=int)
     def my_func(y: int):
         return y
@@ -726,7 +748,7 @@ def test_very_last_type_check_param_missing_returns_value():
     assert my_func(y=1) == 1
 
 
-def test_very_last_type_check_exception_returns_err():
+def test_very_last_type_check_exception_returns_err_standard_expected():
     @require_type(x=int)
     def my_func(x):
         return x
@@ -735,47 +757,47 @@ def test_very_last_type_check_exception_returns_err():
         my_func(x="string")
 
 
-def test_very_last_check_allowed_extension_none_returns_true():
+def test_very_last_check_allowed_extension_none_returns_true_standard_expected():
     _check_allowed_extension(".txt", "file.txt", None)
     assert True
 
 
-def test_very_last_guard_file_extension_none_returns_ok():
+def test_very_last_guard_file_extension_none_returns_ok_standard_expected():
     guard_file_extension("file.txt", allowed_extensions=None)
     assert True
 
 
-def test_very_last_guard_file_extension_exception_returns_err():
+def test_very_last_guard_file_extension_exception_returns_err_standard_expected():
     with pytest.raises(SecurityError):
         guard_file_extension("file.txt", allowed_extensions=["pdf"])
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_returns_err():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_returns_err_standard_expected():
     res = sanitize_path("a/./b")
     assert str(res).replace("\\", "/") == "a/b"
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_2():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_2_standard_expected():
     res = sanitize_path("a/..b/c")
     assert str(res).replace("\\", "/") == "a/..b/c"
 
 
-def test_very_last_sanitize_path_part_empty_or_dot_dot_3():
+def test_very_last_sanitize_path_part_empty_or_dot_dot_3_standard_expected():
     res = sanitize_path("a/../b")
     assert str(res).replace("\\", "/") == "b"
 
 
-def test_very_last_sanitize_path_null_byte_returns_err():
+def test_very_last_sanitize_path_null_byte_returns_err_standard_expected():
     res = sanitize_path("a/\x00b")
     assert "\x00" not in str(res)
 
 
-def test_very_last_sanitize_path_absolute_returns_err():
+def test_very_last_sanitize_path_absolute_returns_err_standard_expected():
     res = sanitize_path("/a/b")
     assert "a" in str(res) and "b" in str(res)
 
 
-def test_very_last_missing_optimizations_skipped():
+def test_very_last_missing_optimizations_skipped_standard_expected():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations
@@ -795,7 +817,7 @@ def test_very_last_missing_optimizations_skipped():
         assert len(res.skipped) == 0
 
 
-def test_very_last_missing_sanitizers_part_dot():
+def test_very_last_missing_sanitizers_part_dot_standard_expected():
     from taipanstack.security.sanitizers import _process_path_part
 
     parts = []
@@ -804,7 +826,7 @@ def test_very_last_missing_sanitizers_part_dot():
     assert parts == []
 
 
-def test_very_last_missing_sanitizers_handle_normal_part():
+def test_very_last_missing_sanitizers_handle_normal_part_standard_expected():
     from unittest.mock import patch
 
     from taipanstack.security.sanitizers import _handle_normal_part
@@ -820,7 +842,7 @@ def test_very_last_missing_sanitizers_handle_normal_part():
     assert parts == []
 
 
-def test_very_last_missing_optimizations_has_jit_false():
+def test_very_last_missing_optimizations_has_jit_false_standard_expected():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -837,7 +859,7 @@ def test_very_last_missing_optimizations_has_jit_false():
         assert len(applied) == 0
 
 
-def test_very_last_missing_optimizations_has_free_threading_false():
+def test_very_last_missing_optimizations_has_free_threading_false_standard_expected():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -855,7 +877,7 @@ def test_very_last_missing_optimizations_has_free_threading_false():
         assert "jit: available" in applied
 
 
-def test_very_last_missing_optimizations_apply_optimizations_skipped_false():
+def test_very_last_missing_optimizations_apply_optimizations_skipped_false_standard_expected():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, apply_optimizations

@@ -17,14 +17,14 @@ from taipanstack.core.result import (
 class TestOkErr:
     """Tests for basic Ok/Err functionality."""
 
-    def test_result_module_ok_value(self) -> None:
+    def test_result_module_ok_value_standard_expected(self) -> None:
         """Test Ok wraps value correctly."""
         result: Result[int, Exception] = Ok(42)
         assert result.is_ok()
         assert not result.is_err()
         assert result.ok_value == 42
 
-    def test_result_module_err_value(self) -> None:
+    def test_result_module_err_value_standard_expected(self) -> None:
         """Test Err wraps error correctly."""
         error = ValueError("test error")
         result: Result[int, ValueError] = Err(error)
@@ -47,7 +47,7 @@ class TestSafeDecorator:
         assert result.is_ok()
         assert result.ok_value == 5
 
-    def test_result_module_safe_exception(self) -> None:
+    def test_result_module_safe_exception_standard_expected(self) -> None:
         """Test safe decorator returns Err on exception."""
 
         @safe
@@ -58,7 +58,7 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ZeroDivisionError)
 
-    def test_result_module_safe_basic_exception(self) -> None:
+    def test_result_module_safe_basic_exception_standard_expected(self) -> None:
         """Test safe decorator returns Err on base Exception."""
 
         @safe
@@ -71,7 +71,9 @@ class TestSafeDecorator:
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
-    def test_result_module_safe_preserves_function_metadata(self) -> None:
+    def test_result_module_safe_preserves_function_metadata_standard_expected(
+        self,
+    ) -> None:
         """Test safe decorator preserves function name and docstring."""
 
         @safe
@@ -86,7 +88,9 @@ class TestSafeDecorator:
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""
 
-    def test_result_module_safe_from_catches_specified_exception(self) -> None:
+    def test_result_module_safe_from_catches_specified_exception_standard_expected(
+        self,
+    ) -> None:
         """Test safe_from catches specified exception types."""
 
         @safe_from(ValueError)
@@ -97,7 +101,7 @@ class TestSafeFromDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
 
-    def test_result_module_safe_from_propagates_unspecified_exception(
+    def test_result_module_safe_from_propagates_unspecified_exception_standard_expected(
         self,
     ) -> None:
         """Test safe_from propagates unspecified exception types."""
@@ -109,7 +113,7 @@ class TestSafeFromDecorator:
         with pytest.raises(ZeroDivisionError):
             divide(10, 0)
 
-    def test_result_module_safe_from_multiple_types(self) -> None:
+    def test_result_module_safe_from_multiple_types_standard_expected(self) -> None:
         """Test safe_from with multiple exception types."""
 
         @safe_from(ValueError, TypeError)
@@ -126,7 +130,7 @@ class TestSafeFromDecorator:
         assert result2.is_err()
         assert isinstance(result2.err_value, TypeError)
 
-    def test_result_module_safe_from_explicit_raise(self) -> None:
+    def test_result_module_safe_from_explicit_raise_standard_expected(self) -> None:
         """Test safe_from decorator catching explicitly raised exception."""
 
         @safe_from(ValueError)
@@ -138,7 +142,7 @@ class TestSafeFromDecorator:
         assert isinstance(result.err_value, ValueError)
         assert str(result.err_value) == "explicitly raised"
 
-    def test_result_module_safe_from_inheritance(self) -> None:
+    def test_result_module_safe_from_inheritance_standard_expected(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
         class SubValueError(ValueError): ...
@@ -156,14 +160,14 @@ class TestSafeFromDecorator:
 class TestCollectResults:
     """Tests for collect_results function."""
 
-    def test_result_module_collect_all_ok(self) -> None:
+    def test_result_module_collect_all_ok_standard_expected(self) -> None:
         """Test collect_results with all Ok values."""
         results: list[Result[int, ValueError]] = [Ok(1), Ok(2), Ok(3)]
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok_value == [1, 2, 3]
 
-    def test_result_module_collect_with_err(self) -> None:
+    def test_result_module_collect_with_err_standard_expected(self) -> None:
         """Test collect_results stops at first Err."""
         results: list[Result[int, ValueError]] = [
             Ok(1),
@@ -175,14 +179,14 @@ class TestCollectResults:
         assert isinstance(collected.err_value, ValueError)
         assert str(collected.err_value) == "error"
 
-    def test_result_module_collect_empty(self) -> None:
+    def test_result_module_collect_empty_standard_expected(self) -> None:
         """Test collect_results with empty list."""
         results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
         assert collected.is_ok()
         assert collected.ok_value == []
 
-    def test_result_module_collect_first_err_returned(self) -> None:
+    def test_result_module_collect_first_err_returned_standard_expected(self) -> None:
         """Test collect_results returns first Err encountered."""
         results: list[Result[int, ValueError]] = [
             Ok(1),
@@ -198,12 +202,12 @@ class TestCollectResults:
 class TestUnwrapOr:
     """Tests for unwrap_or function."""
 
-    def test_result_module_unwrap_or_ok(self) -> None:
+    def test_result_module_unwrap_or_ok_standard_expected(self) -> None:
         """Test unwrap_or returns Ok value."""
         result: Result[int, ValueError] = Ok(42)
         assert result.unwrap_or(0) == 42
 
-    def test_result_module_unwrap_or_err(self) -> None:
+    def test_result_module_unwrap_or_err_standard_expected(self) -> None:
         """Test unwrap_or returns default on Err."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or(0) == 0
@@ -212,17 +216,19 @@ class TestUnwrapOr:
 class TestUnwrapOrElse:
     """Tests for unwrap_or_else function."""
 
-    def test_result_module_unwrap_or_else_ok(self) -> None:
+    def test_result_module_unwrap_or_else_ok_standard_expected(self) -> None:
         """Test unwrap_or_else returns Ok value."""
         result: Result[int, ValueError] = Ok(42)
         assert result.unwrap_or_else(len) == 42
 
-    def test_result_module_unwrap_or_else_err(self) -> None:
+    def test_result_module_unwrap_or_else_err_standard_expected(self) -> None:
         """Test unwrap_or_else computes default from error."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or_else(lambda e: len(str(e))) == 5
 
-    def test_result_module_unwrap_or_else_with_exception(self) -> None:
+    def test_result_module_unwrap_or_else_with_exception_standard_expected(
+        self,
+    ) -> None:
         """Test unwrap_or_else with exception error type."""
         error = ValueError("test message")
         result: Result[int, ValueError] = Err(error)
@@ -232,7 +238,7 @@ class TestUnwrapOrElse:
 class TestMatchCase:
     """Tests for match/case pattern matching with Result."""
 
-    def test_result_module_match_ok(self) -> None:
+    def test_result_module_match_ok_standard_expected(self) -> None:
         """Test match/case with Ok value."""
         result: Result[int, ValueError] = Ok(42)
         match result:
@@ -241,7 +247,7 @@ class TestMatchCase:
             case Err():
                 pytest.fail("Should not match Err")
 
-    def test_result_module_match_err(self) -> None:
+    def test_result_module_match_err_standard_expected(self) -> None:
         """Test match/case with Err value."""
         result: Result[int, ValueError] = Err(ValueError("error"))
         match result:
@@ -425,7 +431,7 @@ class TestSafeFromAsyncDecorator:
 class TestUnwrapOrErrFallback:
     """Tests for unwrap_or fallback coverage."""
 
-    def test_result_module_unwrap_or_err_branch(self) -> None:
+    def test_result_module_unwrap_or_err_branch_standard_expected(self) -> None:
         result: Result[int, ValueError] = Err(ValueError("err"))
         assert result.unwrap_or(42) == 42
 
@@ -433,7 +439,9 @@ class TestUnwrapOrErrFallback:
 class TestResultStructuralCompatibility:
     """Tests for structural compatibility fallback branches in collect_results, map_async and and_then_async."""
 
-    def test_result_module_collect_results_structural_compatibility(self) -> None:
+    def test_result_module_collect_results_structural_compatibility_standard_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in collect_results."""
 
         class CustomResult:
@@ -446,7 +454,7 @@ class TestResultStructuralCompatibility:
         res = collect_results([custom_res])  # type: ignore
         assert res is custom_res
 
-    def test_result_module_collect_list_attribute_error(self) -> None:
+    def test_result_module_collect_list_attribute_error_standard_expected(self) -> None:
         """Test the AttributeError handling in the optimized _collect_list path."""
 
         class MissingOkValue:
@@ -457,7 +465,9 @@ class TestResultStructuralCompatibility:
         res = collect_results([MissingOkValue()])  # type: ignore
         assert isinstance(res, MissingOkValue)
 
-    def test_result_module_collect_tuple_attribute_error(self) -> None:
+    def test_result_module_collect_tuple_attribute_error_standard_expected(
+        self,
+    ) -> None:
         """Test the AttributeError handling with tuple in _collect_list."""
 
         class MissingOkValue:
@@ -506,7 +516,9 @@ class TestResultStructuralCompatibility:
         res = await and_then_async(custom_res, process)  # type: ignore
         assert res is custom_res
 
-    def test_result_module_collect_results_empty_iterable(self) -> None:
+    def test_result_module_collect_results_empty_iterable_standard_expected(
+        self,
+    ) -> None:
         """Test fallback empty iterable branch in collect_results."""
         from taipanstack.core.result import collect_results
 
@@ -516,7 +528,9 @@ class TestResultStructuralCompatibility:
         res = collect_results(empty_gen())
         assert res.unwrap() == []
 
-    def test_result_module_collect_results_iterable_all_ok(self) -> None:
+    def test_result_module_collect_results_iterable_all_ok_standard_expected(
+        self,
+    ) -> None:
         """Test fallback branch where an iterable of only Ok results returns Ok[list] in collect_results."""
         from result import Ok
 
