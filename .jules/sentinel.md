@@ -61,3 +61,8 @@
 **Learning:** In the context of TaipanStack, the combination of multiple URL handling stages (e.g., validation vs actual fetch via httpx) means that an attacker could inject control characters to make `urlsplit` parse the URL differently than the HTTP client, potentially bypassing the IP address and hostname checks. Using Python's `str.isprintable()` is insufficient because it considers the space character (`\x20`) as printable.
 **Prevention:** Always explicitly check for and reject characters `<= '\x20'` and `'\x7f'` in any URL validation logic *before* calling `urlsplit` or performing network requests.
 
+
+## 2026-06-06 - [Timeout Validation Type Check]
+**Vulnerability:** The `timeout` decorator in `src/taipanstack/utils/subprocess.py` did not explicitly validate the type of its `timeout` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
+**Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
+**Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
