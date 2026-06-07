@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-04 19:57 +0000
+            created at 2026-06-07 01:10 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -422,7 +422,7 @@
     <p class="run"><span class="n"><a id="t338" href="#t338">338</a></span><span class="t">    <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">on</span><span class="op">,</span> <span class="nam">type</span><span class="op">)</span> <span class="key">and</span> <span class="nam">issubclass</span><span class="op">(</span><span class="nam">on</span><span class="op">,</span> <span class="nam">BaseException</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t339" href="#t339">339</a></span><span class="t">        <span class="key">return</span> <span class="op">(</span><span class="nam">on</span><span class="op">,</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t340" href="#t340">340</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">on</span><span class="op">,</span> <span class="nam">tuple</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t341" href="#t341">341</a></span><span class="t">        <span class="nam">msg</span> <span class="op">=</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t341" href="#t341">341</a></span><span class="t">        <span class="nam">msg</span> <span class="op">=</span> <span class="op">(</span>  <span class="com"># type: ignore[unreachable]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t342" href="#t342">342</a></span><span class="t">            <span class="str">"'on' parameter must be an exception class or a tuple of exception classes"</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t343" href="#t343">343</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t344" href="#t344">344</a></span><span class="t">        <span class="key">raise</span> <span class="nam">TypeError</span><span class="op">(</span><span class="nam">msg</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -437,7 +437,7 @@
     <p class="pln"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t354" href="#t354">354</a></span><span class="t">    <span class="key">for</span> <span class="nam">exc_type</span> <span class="key">in</span> <span class="nam">on_tuple</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t355" href="#t355">355</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">exc_type</span><span class="op">,</span> <span class="nam">type</span><span class="op">)</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">issubclass</span><span class="op">(</span><span class="nam">exc_type</span><span class="op">,</span> <span class="nam">BaseException</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t356" href="#t356">356</a></span><span class="t">            <span class="nam">msg</span> <span class="op">=</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t356" href="#t356">356</a></span><span class="t">            <span class="nam">msg</span> <span class="op">=</span> <span class="op">(</span>  <span class="com"># type: ignore[unreachable]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t357" href="#t357">357</a></span><span class="t">                <span class="str">f"All elements in 'on' must be subclasses of BaseException, "</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t358" href="#t358">358</a></span><span class="t">                <span class="str">f"got {type(exc_type).__name__}"</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t359" href="#t359">359</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -751,7 +751,7 @@
             <a class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-04 19:57 +0000
+            created at 2026-06-07 01:10 +0000
         </p>
     </div>
 </footer>
