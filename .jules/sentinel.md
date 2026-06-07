@@ -66,3 +66,8 @@
 **Vulnerability:** The `timeout` decorator in `src/taipanstack/utils/subprocess.py` did not explicitly validate the type of its `timeout` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
 **Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
 **Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
+
+## 2026-06-07 - [Timeout Validation Type Check Decorator]
+**Vulnerability:** The `timeout` decorator in `src/taipanstack/security/decorators.py` did not explicitly validate the type of its `seconds` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
+**Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
+**Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
