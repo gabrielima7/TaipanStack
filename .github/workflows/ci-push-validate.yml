@@ -70,6 +70,7 @@ jobs:
           flags: unittests
           name: "[Lint] TaipanStack-Codecov-Umbrella"
           fail_ci_if_error: true
+          skip_validation: true
 
   ci-lint:
     name: "[Lint] Quality Checks"
