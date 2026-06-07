@@ -91,19 +91,19 @@ class _ResponseCapture:
 class TestResultToResponse:
     """Tests for result_to_response."""
 
-    def test_bridge_web_ok_value(self) -> None:
+    def test_bridge_web_ok_value_standard_expected(self) -> None:
         """Ok result produces status 200 and data."""
         resp = result_to_response(Ok({"id": 1}))
         assert resp["status"] == 200
         assert resp["data"] == {"id": 1}
 
-    def test_bridge_web_err_value(self) -> None:
+    def test_bridge_web_err_value_standard_expected(self) -> None:
         """Err result produces status 500 and error string."""
         resp = result_to_response(Err(ValueError("bad")))
         assert resp["status"] == 500
         assert "bad" in resp["error"]
 
-    def test_bridge_web_custom_status_codes(self) -> None:
+    def test_bridge_web_custom_status_codes_standard_expected(self) -> None:
         """Custom status codes are respected."""
         resp = result_to_response(Ok("yes"), status_ok=201)
         assert resp["status"] == 201
@@ -118,7 +118,7 @@ class TestResultToResponse:
 class TestSecurityHeadersConfig:
     """Tests for SecurityHeadersConfig."""
 
-    def test_bridge_web_default_headers(self) -> None:
+    def test_bridge_web_default_headers_standard_expected(self) -> None:
         """Default config produces all 6 security headers."""
         config = SecurityHeadersConfig()
         headers = config.to_headers()
@@ -127,7 +127,7 @@ class TestSecurityHeadersConfig:
         assert b"x-content-type-options" in names
         assert b"x-frame-options" in names
 
-    def test_bridge_web_custom_values(self) -> None:
+    def test_bridge_web_custom_values_standard_expected(self) -> None:
         """Custom values are reflected in output."""
         config = SecurityHeadersConfig(x_frame_options="SAMEORIGIN")
         headers = dict(config.to_headers())
@@ -258,7 +258,7 @@ class TestSendJsonResponse:
         assert capture.headers.get("x-custom") == "value"
 
 
-def test_bridge_web_send_json_response_err() -> None:
+def test_bridge_web_send_json_response_err_standard_expected() -> None:
     import asyncio
 
     from taipanstack.core.result import Err

@@ -16,14 +16,14 @@ from taipanstack.resilience.watchdogs.resource_watcher import (
 class TestResourceSnapshot:
     """Tests for the ResourceSnapshot dataclass."""
 
-    def test_watchdog_resource_creation(self) -> None:
+    def test_watchdog_resource_creation_standard_expected(self) -> None:
         """Snapshot stores cpu, memory, and timestamp."""
         snap = ResourceSnapshot(cpu_percent=50.0, memory_percent=60.0, timestamp=1.0)
         assert snap.cpu_percent == 50.0
         assert snap.memory_percent == 60.0
         assert snap.timestamp == 1.0
 
-    def test_watchdog_resource_frozen(self) -> None:
+    def test_watchdog_resource_frozen_standard_expected(self) -> None:
         """Snapshot is immutable."""
         snap = ResourceSnapshot(cpu_percent=1.0, memory_percent=2.0, timestamp=0.0)
         with pytest.raises(AttributeError):
@@ -33,7 +33,7 @@ class TestResourceSnapshot:
 class TestCheckResources:
     """Tests for the one-shot check_resources function."""
 
-    def test_watchdog_resource_ok_with_psutil(self) -> None:
+    def test_watchdog_resource_ok_with_psutil_standard_expected(self) -> None:
         """Returns Ok(ResourceSnapshot) when psutil is available."""
         mock_vm = MagicMock()
         mock_vm.percent = 42.5
@@ -55,7 +55,7 @@ class TestCheckResources:
         assert snap.memory_percent == 42.5
         assert snap.timestamp > 0
 
-    def test_watchdog_resource_err_without_psutil(self) -> None:
+    def test_watchdog_resource_err_without_psutil_standard_expected(self) -> None:
         """Returns Err(ImportError) when psutil is not installed."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False
@@ -211,7 +211,7 @@ class TestResourceWatcher:
 class TestBaseWatcher:
     """Tests for BaseWatcher ABC."""
 
-    def test_watchdog_resource_repr(self) -> None:
+    def test_watchdog_resource_repr_standard_expected(self) -> None:
         """Repr includes class name and interval."""
         watcher = ResourceWatcher(interval=3.0)
         assert "ResourceWatcher" in repr(watcher)
@@ -314,7 +314,7 @@ async def test_watchdog_resource_resource_watcher_run_err_branch() -> None:
         await watcher._run()
 
 
-def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
+def test_watchdog_resource_resource_watcher_import_error_coverage_standard_expected() -> None:
     """Test resource_watcher import error fallback branches."""
     import asyncio
     import importlib
@@ -353,7 +353,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
         importlib.reload(res_mod)
 
 
-def test_watchdog_resource_resource_watcher_import_success_coverage() -> None:
+def test_watchdog_resource_resource_watcher_import_success_coverage_standard_expected() -> None:
     """Test resource_watcher import success branch."""
     import importlib
     import sys

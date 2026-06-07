@@ -17,7 +17,7 @@ class TestFilesystemTraversalExtended:
     """Tests for various traversal patterns and edge cases."""
 
     @pytest.mark.parametrize("pattern", ["%2e%2e", "%252e%252e", "~"])
-    def test_filesystem_traversal_extended_ensure_dir_traversal_patterns(
+    def test_filesystem_traversal_extended_ensure_dir_traversal_patterns_standard_expected(
         self, tmp_path: Path, pattern: str
     ):
         """Test that ensure_dir blocks various traversal patterns."""
@@ -25,7 +25,7 @@ class TestFilesystemTraversalExtended:
             ensure_dir(f"{pattern}/evil_dir")
         assert "path_traversal" in str(exc_info.value).lower()
 
-    def test_filesystem_traversal_extended_ensure_dir_absolute_path_not_blocked_by_default(
+    def test_filesystem_traversal_extended_ensure_dir_absolute_path_not_blocked_by_default_standard_expected(
         self, tmp_path: Path
     ):
         """Test that ensure_dir allows absolute paths when no base_dir is provided.
@@ -38,7 +38,7 @@ class TestFilesystemTraversalExtended:
         assert result.is_absolute()
 
     @pytest.mark.parametrize("pattern", ["%2e%2e", "%252e%252e"])
-    def test_filesystem_traversal_extended_safe_read_encoded_traversal(
+    def test_filesystem_traversal_extended_safe_read_encoded_traversal_standard_expected(
         self, tmp_path: Path, pattern: str
     ):
         """Test that safe_read blocks encoded traversal patterns."""
@@ -46,21 +46,21 @@ class TestFilesystemTraversalExtended:
         assert isinstance(result, Err)
         assert isinstance(result.err_value, SecurityError)
 
-    def test_filesystem_traversal_extended_safe_write_encoded_traversal(
+    def test_filesystem_traversal_extended_safe_write_encoded_traversal_standard_expected(
         self, tmp_path: Path
     ):
         """Test that safe_write blocks encoded traversal patterns."""
         with pytest.raises(SecurityError):
             safe_write("%2e%2e/evil.txt", "content")
 
-    def test_filesystem_traversal_extended_ensure_dir_with_explicit_base_dir_encoded(
+    def test_filesystem_traversal_extended_ensure_dir_with_explicit_base_dir_encoded_standard_expected(
         self, tmp_path: Path
     ):
         """Test ensure_dir with base_dir and encoded traversal."""
         with pytest.raises(SecurityError):
             ensure_dir("%2e%2e/evil", base_dir=tmp_path)
 
-    def test_filesystem_traversal_extended_tilde_in_middle_not_blocked(
+    def test_filesystem_traversal_extended_tilde_in_middle_not_blocked_standard_expected(
         self, tmp_path: Path
     ):
         """Test that tilde in the middle of a component (like Windows short paths) is not blocked."""

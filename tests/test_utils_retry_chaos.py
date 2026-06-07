@@ -3,7 +3,7 @@
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
-def test_utils_retry_chaos_retry_chaos_extreme_attempt() -> None:
+def test_utils_retry_chaos_retry_chaos_extreme_attempt_standard_expected() -> None:
     """Simulate a severe failure with a huge attempt number.
 
     A massively large attempt number can cause an OverflowError
@@ -27,7 +27,7 @@ def test_utils_retry_chaos_retry_chaos_extreme_attempt() -> None:
     assert delay >= 0.0
 
 
-def test_utils_retry_chaos_retry_chaos_nan_inf_config() -> None:
+def test_utils_retry_chaos_retry_chaos_nan_inf_config_standard_expected() -> None:
     """Simulate NaN or Inf values in the retry configuration.
 
     If configuration parameters accidentally become NaN or Inf,
@@ -50,7 +50,7 @@ def test_utils_retry_chaos_retry_chaos_nan_inf_config() -> None:
         )
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan_standard_expected() -> None:
     # Test line 121-123.
     # The config now catches this, so we bypass config to hit calculate delay directly.
     config = RetryConfig()
@@ -60,7 +60,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> None:
     assert delay == 0.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2_standard_expected() -> None:
     # Test line 134-140. Jitter exception.
     import pytest
 
@@ -77,7 +77,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2() -> None:
         assert delay == config.initial_delay * config.exponential_base
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_base_delay_finite() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_finite_standard_expected() -> None:
     # Test line 122->125 where delay is NOT finite but max_delay IS finite.
     config = RetryConfig(max_delay=60.0, jitter=False)
     object.__setattr__(config, "initial_delay", float("nan"))
