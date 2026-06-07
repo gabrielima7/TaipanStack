@@ -105,3 +105,17 @@ def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs(
             assert isinstance(result, (Ok, Err))
 
     asyncio.run(run_test())
+
+
+@pytest.mark.asyncio
+async def test_chaos_http_bridge_missing_httpx_coverage() -> None:
+    from unittest.mock import patch
+
+    from taipanstack.bridges.http_bridge import SafeHttpClient
+
+    with patch("taipanstack.bridges.http_bridge._HAS_HTTPX", False):
+        import pytest
+
+        with pytest.raises(ImportError, match="httpx is required"):
+            async with SafeHttpClient():
+                pass
