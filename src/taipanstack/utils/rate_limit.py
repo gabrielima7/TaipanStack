@@ -161,8 +161,11 @@ class RateLimiter:
         if tokens <= 0:
             return True
 
-        with self._lock:
-            return self._process_consumption(tokens)
+        try:
+            with self._lock:
+                return self._process_consumption(tokens)
+        except Exception:
+            return False
 
 
 class RateLimitDecorator(Protocol):
@@ -225,7 +228,10 @@ def rate_limit(
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> Result[T, RateLimitError]:
-                if not limiter.consume():
+                try:
+                    if not limiter.consume():
+                        return Err(RateLimitError())
+                except Exception:
                     return Err(RateLimitError())
                 return Ok(await func(*args, **kwargs))
 
@@ -233,7 +239,10 @@ def rate_limit(
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
-            if not limiter.consume():
+            try:
+                if not limiter.consume():
+                    return Err(RateLimitError())
+            except Exception:
                 return Err(RateLimitError())
             func_sync = cast(Callable[P, T], func)
             return Ok(func_sync(*args, **kwargs))
