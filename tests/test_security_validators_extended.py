@@ -33,12 +33,16 @@ class TestValidateProjectNameEdgeCases:
         with pytest.raises(ValueError, match="start with a letter"):
             validate_project_name("-myproject")
 
-    def test_security_validators_extended_hyphen_not_allowed_standard_expected(self) -> None:
+    def test_security_validators_extended_hyphen_not_allowed_standard_expected(
+        self,
+    ) -> None:
         """Test that hyphens can be disallowed."""
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my-project", allow_hyphen=False)
 
-    def test_security_validators_extended_underscore_not_allowed_standard_expected(self) -> None:
+    def test_security_validators_extended_underscore_not_allowed_standard_expected(
+        self,
+    ) -> None:
         """Test that underscores can be disallowed."""
         with pytest.raises(ValueError, match="invalid characters"):
             validate_project_name("my_project", allow_underscore=False)
@@ -89,13 +93,17 @@ class TestValidatePythonVersionEdgeCases:
 class TestValidateEmailEdgeCases:
     """Additional tests for validate_email."""
 
-    def test_security_validators_extended_local_part_too_long_standard_expected(self) -> None:
+    def test_security_validators_extended_local_part_too_long_standard_expected(
+        self,
+    ) -> None:
         """Test that local part exceeding max length is rejected."""
         long_local = "a" * 65
         with pytest.raises(ValueError):
             validate_email(f"{long_local}@example.com")
 
-    def test_security_validators_extended_domain_too_long_standard_expected(self) -> None:
+    def test_security_validators_extended_domain_too_long_standard_expected(
+        self,
+    ) -> None:
         """Test that domain exceeding max length is rejected."""
         long_domain = "a" * 256
         with pytest.raises(ValueError):
@@ -105,17 +113,23 @@ class TestValidateEmailEdgeCases:
 class TestValidateUrlEdgeCases:
     """Additional tests for validate_url."""
 
-    def test_security_validators_extended_invalid_scheme_standard_expected(self) -> None:
+    def test_security_validators_extended_invalid_scheme_standard_expected(
+        self,
+    ) -> None:
         """Test that invalid schemes are rejected."""
         with pytest.raises(ValueError, match="scheme"):
             validate_url("ftp://example.com")
 
-    def test_security_validators_extended_missing_domain_standard_expected(self) -> None:
+    def test_security_validators_extended_missing_domain_standard_expected(
+        self,
+    ) -> None:
         """Test that URLs without domain are rejected."""
         with pytest.raises(ValueError):
             validate_url("http://")
 
-    def test_security_validators_extended_localhost_allowed_standard_expected(self) -> None:
+    def test_security_validators_extended_localhost_allowed_standard_expected(
+        self,
+    ) -> None:
         """Test that localhost is allowed when TLD not required."""
         result = validate_url("http://localhost:8080", require_tld=False)
         assert "localhost" in result

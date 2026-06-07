@@ -23,7 +23,9 @@ def test_logging_redact_security_utils_logging_redact_tuple_redacted_standard_ex
     assert redacted[1] == 42
 
 
-def test_logging_redact_security_utils_logging_redact_no_regex_unmodified_standard_expected(monkeypatch):
+def test_logging_redact_security_utils_logging_redact_no_regex_unmodified_standard_expected(
+    monkeypatch,
+):
     monkeypatch.setattr("taipanstack.utils.logging._SENSITIVE_KEY_REGEX", None)
     obj = {"password": "123"}
     assert _redact(obj) is obj

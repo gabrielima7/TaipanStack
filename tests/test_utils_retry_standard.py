@@ -56,7 +56,9 @@ class TestRetryConfig:
 class TestCalculateDelay:
     """Tests for calculate_delay function."""
 
-    def test_utils_retry_first_attempt_uses_initial_delay_standard_expected(self) -> None:
+    def test_utils_retry_first_attempt_uses_initial_delay_standard_expected(
+        self,
+    ) -> None:
         """Test that first attempt uses initial delay."""
         config = RetryConfig(initial_delay=1.0, jitter=False)
         delay = calculate_delay(1, config)
@@ -152,7 +154,9 @@ class TestRetryDecorator:
             always_fail()
         assert exc_info.value.attempts == 2
 
-    def test_utils_retry_only_catches_specified_exceptions_standard_expected(self) -> None:
+    def test_utils_retry_only_catches_specified_exceptions_standard_expected(
+        self,
+    ) -> None:
         """Test that only specified exceptions trigger retry."""
 
         @retry(max_attempts=3, on=(ValueError,))
@@ -269,7 +273,9 @@ class TestAsyncRetryDecorator:
         assert exc_info.value.attempts == 2
 
     @pytest.mark.asyncio
-    async def test_utils_retry_only_catches_specified_exceptions_standard_expected(self) -> None:
+    async def test_utils_retry_only_catches_specified_exceptions_standard_expected(
+        self,
+    ) -> None:
         """Test that only specified exceptions trigger retry for async function."""
 
         @retry(max_attempts=3, on=(ValueError,))

@@ -35,7 +35,9 @@ from taipanstack.utils.retry import (
 class TestBackwardCompatShims:
     """Verify backward-compat shims re-export correctly."""
 
-    def test_backward_compat_shims_circuit_breaker_shim_exports_standard_expected(self) -> None:
+    def test_backward_compat_shims_circuit_breaker_shim_exports_standard_expected(
+        self,
+    ) -> None:
         """Old utils.circuit_breaker path re-exports all symbols."""
         assert CircuitBreaker is not None
         assert CircuitBreakerConfig is not None
@@ -69,7 +71,9 @@ class TestBackwardCompatShims:
         assert retry is not None
         assert retry_on_exception is not None
 
-    def test_backward_compat_shims_retry_shim_matches_canonical_standard_expected(self) -> None:
+    def test_backward_compat_shims_retry_shim_matches_canonical_standard_expected(
+        self,
+    ) -> None:
         """Retry shim symbols are identical to the canonical module."""
         from taipanstack.resilience.retry import (
             Retrier as CanonicalRetrier,
@@ -101,7 +105,9 @@ class TestBackwardCompatShims:
         assert retry is canonical_retry
         assert retry_on_exception is canonical_retry_on_exception
 
-    def test_backward_compat_shims_resilience_shim_exports_standard_expected(self) -> None:
+    def test_backward_compat_shims_resilience_shim_exports_standard_expected(
+        self,
+    ) -> None:
         """Old utils.resilience path re-exports all public decorator symbols."""
         assert AsyncResultFunc is not None
         assert FallbackDecorator is not None

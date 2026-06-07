@@ -6,11 +6,15 @@ from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
 
 
 class TestRateLimiter:
-    def test_utils_rate_limit_chaos_inf_time_window_return_standard_expected(self) -> None:
+    def test_utils_rate_limit_chaos_inf_time_window_return_standard_expected(
+        self,
+    ) -> None:
         with pytest.raises(ValueError):
             RateLimiter(10, float("inf"))
 
-    def test_utils_rate_limit_chaos_negative_time_window_return_standard_expected(self) -> None:
+    def test_utils_rate_limit_chaos_negative_time_window_return_standard_expected(
+        self,
+    ) -> None:
         with pytest.raises(ValueError):
             RateLimiter(10, -1.0)
 
@@ -73,7 +77,9 @@ class TestRateLimiter:
         assert not limiter.consume()
         assert limiter.tokens == limiter.capacity
 
-    def test_utils_rate_limit_chaos_consume_zero_or_negative_tokens_standard_expected(self) -> None:
+    def test_utils_rate_limit_chaos_consume_zero_or_negative_tokens_standard_expected(
+        self,
+    ) -> None:
         limiter = RateLimiter(10, 1.0)
         assert limiter.consume(0.0)
         assert limiter.consume(-1.0)

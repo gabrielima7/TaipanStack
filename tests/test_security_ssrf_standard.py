@@ -53,7 +53,9 @@ class TestGuardSsrfEmptyAndMalformed:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
-    def test_security_ssrf_disallowed_scheme_ftp_returns_err_standard_expected(self) -> None:
+    def test_security_ssrf_disallowed_scheme_ftp_returns_err_standard_expected(
+        self,
+    ) -> None:
         """FTP scheme is rejected as not allowed."""
         result = guard_ssrf("ftp://example.com/file")
         assert result.is_err()
@@ -61,7 +63,9 @@ class TestGuardSsrfEmptyAndMalformed:
         assert isinstance(err, SecurityError)
         assert "not allowed" in str(err)
 
-    def test_security_ssrf_disallowed_scheme_file_returns_err_standard_expected(self) -> None:
+    def test_security_ssrf_disallowed_scheme_file_returns_err_standard_expected(
+        self,
+    ) -> None:
         """file:// scheme is rejected."""
         result = guard_ssrf("file:///etc/passwd")
         assert result.is_err()
@@ -71,7 +75,9 @@ class TestGuardSsrfEmptyAndMalformed:
         result = guard_ssrf("http:///path-only")
         assert result.is_err()
 
-    def test_security_ssrf_unresolvable_hostname_returns_err_standard_expected(self) -> None:
+    def test_security_ssrf_unresolvable_hostname_returns_err_standard_expected(
+        self,
+    ) -> None:
         """Hostname that cannot be resolved returns Err. Verifies platform-independent error and truncation."""
         long_hostname = "a" * 100 + ".invalid"
         with patch(
@@ -118,7 +124,9 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
-    def test_security_ssrf_private_172_16_network_blocked_standard_expected(self) -> None:
+    def test_security_ssrf_private_172_16_network_blocked_standard_expected(
+        self,
+    ) -> None:
         """172.16.0.1 (RFC-1918 class B) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -127,7 +135,9 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
-    def test_security_ssrf_private_192_168_network_blocked_standard_expected(self) -> None:
+    def test_security_ssrf_private_192_168_network_blocked_standard_expected(
+        self,
+    ) -> None:
         """192.168.1.1 (RFC-1918 class C) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -136,7 +146,9 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("https://my-service.local/")
         assert result.is_err()
 
-    def test_security_ssrf_aws_metadata_endpoint_blocked_standard_expected(self) -> None:
+    def test_security_ssrf_aws_metadata_endpoint_blocked_standard_expected(
+        self,
+    ) -> None:
         """169.254.169.254 (AWS EC2 metadata) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -230,7 +242,9 @@ class TestGuardSsrfSafeUrls:
             result = guard_ssrf("https://example.com/api")
         assert result.is_ok()
 
-    def test_security_ssrf_custom_allowed_schemes_accepted_standard_expected(self) -> None:
+    def test_security_ssrf_custom_allowed_schemes_accepted_standard_expected(
+        self,
+    ) -> None:
         """A URL with a custom-allowed scheme passes when explicitly permitted."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -242,7 +256,9 @@ class TestGuardSsrfSafeUrls:
             )
         assert result.is_ok()
 
-    def test_security_ssrf_invalid_ip_in_addr_info_skipped_standard_expected(self) -> None:
+    def test_security_ssrf_invalid_ip_in_addr_info_skipped_standard_expected(
+        self,
+    ) -> None:
         """Invalid IP strings inside addr_info are skipped gracefully."""
         # Simulate a malformed entry followed by a safe public IP
         bad_entry = (socket.AF_INET, socket.SOCK_STREAM, 0, "", ("not-an-ip", 0))
@@ -261,7 +277,9 @@ class TestGuardSsrfErrorAttrs:
     def _mock_loopback(self) -> list[tuple[int, int, int, str, tuple[str, int]]]:
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", ("127.0.0.1", 0))]
 
-    def test_security_ssrf_security_error_guard_name_is_ssrf_standard_expected(self) -> None:
+    def test_security_ssrf_security_error_guard_name_is_ssrf_standard_expected(
+        self,
+    ) -> None:
         """SecurityError.guard_name must equal 'ssrf'."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -272,7 +290,9 @@ class TestGuardSsrfErrorAttrs:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
-    def test_security_ssrf_security_error_value_is_ip_string_standard_expected(self) -> None:
+    def test_security_ssrf_security_error_value_is_ip_string_standard_expected(
+        self,
+    ) -> None:
         """SecurityError.value must not expose the offending IP address anymore."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -293,7 +313,9 @@ class TestGuardSsrfCatchAllReserved:
         """Return a fake getaddrinfo response for the given IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
-    def test_security_ssrf_zero_address_blocked_by_catchall_standard_expected(self) -> None:
+    def test_security_ssrf_zero_address_blocked_by_catchall_standard_expected(
+        self,
+    ) -> None:
         """0.0.0.0 is is_private but not in explicit network list — hits catch-all."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",

@@ -44,13 +44,17 @@ class TestGenerateSecurityPolicy:
 
         assert "# Security Policy" in result
 
-    def test_config_generators_includes_reporting_instructions_standard_expected(self) -> None:
+    def test_config_generators_includes_reporting_instructions_standard_expected(
+        self,
+    ) -> None:
         """Test that reporting instructions are included."""
         result = generate_security_policy()
 
         assert "report" in result.lower() or "vulnerabilit" in result.lower()
 
-    def test_config_generators_includes_supported_versions_standard_expected(self) -> None:
+    def test_config_generators_includes_supported_versions_standard_expected(
+        self,
+    ) -> None:
         """Test that supported versions section exists."""
         result = generate_security_policy()
 
@@ -60,7 +64,9 @@ class TestGenerateSecurityPolicy:
 class TestGeneratePreCommitConfig:
     """Tests for generate_pre_commit_config."""
 
-    def test_config_generators_pre_commit_all_security_hooks_standard_expected(self) -> None:
+    def test_config_generators_pre_commit_all_security_hooks_standard_expected(
+        self,
+    ) -> None:
         """Test with all security hooks enabled."""
         config = StackConfig(
             project_name="test-project",
@@ -94,7 +100,9 @@ class TestGeneratePreCommitConfig:
         assert "repo: https://github.com/jendrikseipp/vulture" in result
         assert "repo: https://github.com/guilatrova/tryceratops" in result
 
-    def test_config_generators_pre_commit_no_security_hooks_standard_expected(self) -> None:
+    def test_config_generators_pre_commit_no_security_hooks_standard_expected(
+        self,
+    ) -> None:
         """Test with no security hooks enabled."""
         config = StackConfig(
             project_name="test-project",

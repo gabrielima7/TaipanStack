@@ -16,7 +16,9 @@ from taipanstack.security.jwt import decode_jwt
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_jwt_audience_decode_jwt_malformed_audience_standard_expected(audience) -> None:
+def test_fuzz_jwt_audience_decode_jwt_malformed_audience_standard_expected(
+    audience,
+) -> None:
     """Bombard decode_jwt with extreme, malformed audience types."""
     result = decode_jwt("token", "secret", algorithms=["HS256"], audience=audience)
     assert result.is_err()

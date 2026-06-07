@@ -73,7 +73,9 @@ def test_chaos_config_watcher_parse_env_empty_values_standard_expected() -> None
     assert result["E"] == "   "
 
 
-def test_chaos_config_watcher_parse_content_unsupported_ext_standard_expected(tmp_path: Path) -> None:
+def test_chaos_config_watcher_parse_content_unsupported_ext_standard_expected(
+    tmp_path: Path,
+) -> None:
     """Test _parse_content_by_extension with an unsupported extension."""
     from taipanstack.core.result import Err
     from taipanstack.resilience.watchdogs.config_watcher import (

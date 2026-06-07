@@ -199,14 +199,18 @@ class TestApplyOptimizations:
 class TestUtilityFunctions:
     """Test utility functions."""
 
-    def test_optimizations_get_recommended_thread_pool_size_standard_expected(self) -> None:
+    def test_optimizations_get_recommended_thread_pool_size_standard_expected(
+        self,
+    ) -> None:
         """Test thread pool size calculation."""
         size = get_recommended_thread_pool_size(force_refresh=True)
         assert isinstance(size, int)
         assert size > 0
         assert size <= 64  # Maximum from 3.14 profile
 
-    def test_optimizations_thread_pool_size_respects_multiplier_standard_expected(self) -> None:
+    def test_optimizations_thread_pool_size_respects_multiplier_standard_expected(
+        self,
+    ) -> None:
         """Test thread pool size uses profile multiplier."""
         with patch("taipanstack.core.optimizations.PY314", True):
             with patch("os.cpu_count", return_value=8):
@@ -214,7 +218,9 @@ class TestUtilityFunctions:
                 # 3.14 has multiplier of 2.0, so 8 * 2.0 = 16
                 assert size == 16
 
-    def test_optimizations_thread_pool_size_respects_max_standard_expected(self) -> None:
+    def test_optimizations_thread_pool_size_respects_max_standard_expected(
+        self,
+    ) -> None:
         """Test thread pool size doesn't exceed maximum."""
         with patch("taipanstack.core.optimizations.PY314", True):
             with patch("os.cpu_count", return_value=100):
@@ -222,7 +228,9 @@ class TestUtilityFunctions:
                 # Should be capped at max_thread_pool_size (64 for 3.14)
                 assert size == 64
 
-    def test_optimizations_thread_pool_size_with_none_cpu_count_standard_expected(self) -> None:
+    def test_optimizations_thread_pool_size_with_none_cpu_count_standard_expected(
+        self,
+    ) -> None:
         """Test thread pool size when cpu_count returns None."""
         with patch("os.cpu_count", return_value=None):
             size = get_recommended_thread_pool_size(force_refresh=True)

@@ -30,7 +30,9 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_standard_expect
     assert delay == 1.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_standard_expected() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_standard_expected() -> (
+    None
+):
     # Test line 140 (delay < 0 -> return 0.0)
     config = RetryConfig(initial_delay=-10.0, jitter=False)
     delay = calculate_delay(1, config)

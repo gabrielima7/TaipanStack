@@ -18,7 +18,9 @@ class TestAdaptiveRetry:
         assert d1 >= 0.1
         assert d2 > d1
 
-    def test_adaptive_retry_learned_delay_from_successes_standard_expected(self) -> None:
+    def test_adaptive_retry_learned_delay_from_successes_standard_expected(
+        self,
+    ) -> None:
         """Returns median of successful delays when data available."""
         ar = AdaptiveRetry(min_delay=0.1, max_delay=10.0)
         ar.record_outcome(attempt=1, success=True, elapsed=0.5)
@@ -28,7 +30,9 @@ class TestAdaptiveRetry:
         delay = ar.get_delay(1)
         assert 0.3 <= delay <= 0.7
 
-    def test_adaptive_retry_failure_does_not_affect_delay_standard_expected(self) -> None:
+    def test_adaptive_retry_failure_does_not_affect_delay_standard_expected(
+        self,
+    ) -> None:
         """Failures are not used for delay computation."""
         ar = AdaptiveRetry(min_delay=0.1, max_delay=10.0)
         ar.record_outcome(attempt=1, success=False, elapsed=5.0)
@@ -88,7 +92,9 @@ class TestAdaptiveRetry:
         assert ar.get_delay(1) == 1.0
         assert ar.get_delay(2) == 5.0
 
-    def test_adaptive_retry_max_delay_exponential_fallback_standard_expected(self) -> None:
+    def test_adaptive_retry_max_delay_exponential_fallback_standard_expected(
+        self,
+    ) -> None:
         """Exponential fallback respects max_delay."""
         ar = AdaptiveRetry(min_delay=1.0, max_delay=5.0)
         delay = ar.get_delay(10)

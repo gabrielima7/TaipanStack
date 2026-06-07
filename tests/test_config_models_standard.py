@@ -110,7 +110,9 @@ class TestStackConfig:
         config = StackConfig(project_name="my_awesome_project")
         assert config.project_name == "my_awesome_project"
 
-    def test_config_models_invalid_project_name_rejected_standard_expected(self) -> None:
+    def test_config_models_invalid_project_name_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test invalid project names are rejected."""
         with pytest.raises(ValidationError, match="invalid"):
             StackConfig(project_name="123invalid")
@@ -123,7 +125,9 @@ class TestStackConfig:
         config = StackConfig(python_version="3.11")
         assert config.python_version == "3.11"
 
-    def test_config_models_invalid_python_version_rejected_standard_expected(self) -> None:
+    def test_config_models_invalid_python_version_rejected_standard_expected(
+        self,
+    ) -> None:
         """Test invalid Python versions are rejected."""
         with pytest.raises(ValidationError):
             StackConfig(python_version="2.7")
@@ -131,17 +135,23 @@ class TestStackConfig:
         with pytest.raises(ValidationError, match="invalid"):
             StackConfig(python_version="invalid")
 
-    def test_config_models_valid_project_dir_standard_expected(self, tmp_path: Path) -> None:
+    def test_config_models_valid_project_dir_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test valid project directory is resolved."""
         config = StackConfig(project_dir=tmp_path)
         assert config.project_dir == tmp_path.resolve()
 
-    def test_config_models_path_traversal_rejected_standard_expected(self, tmp_path: Path) -> None:
+    def test_config_models_path_traversal_rejected_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test path traversal in project_dir is rejected."""
         with pytest.raises(ValidationError, match="Path traversal"):
             StackConfig(project_dir=Path("../../../etc"))
 
-    def test_config_models_absolute_path_accepted_standard_expected(self, tmp_path: Path) -> None:
+    def test_config_models_absolute_path_accepted_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test absolute path is accepted and resolved."""
         abs_path = tmp_path.resolve()
         config = StackConfig(project_dir=abs_path)
@@ -155,13 +165,17 @@ class TestStackConfig:
         config = StackConfig(project_dir=dot_path)
         assert config.project_dir == dot_path.resolve()
 
-    def test_config_models_non_existent_path_accepted_standard_expected(self, tmp_path: Path) -> None:
+    def test_config_models_non_existent_path_accepted_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test non-existent path is accepted (resolve handles it)."""
         non_existent = tmp_path / "new_project_dir"
         config = StackConfig(project_dir=non_existent)
         assert config.project_dir == non_existent.resolve()
 
-    def test_config_models_direct_validate_project_dir_call_standard_expected(self) -> None:
+    def test_config_models_direct_validate_project_dir_call_standard_expected(
+        self,
+    ) -> None:
         """Test direct call to validate_project_dir classmethod."""
         test_path = Path("some/path")
         resolved = StackConfig.validate_project_dir(test_path)
@@ -209,7 +223,9 @@ class TestStackConfig:
         assert config.security.level == "paranoid"
         assert config.logging.level == "DEBUG"
 
-    def test_config_models_invalid_python_version_too_old_standard_expected(self) -> None:
+    def test_config_models_invalid_python_version_too_old_standard_expected(
+        self,
+    ) -> None:
         """Test that a Python version older than supported is rejected."""
         with pytest.raises(ValidationError) as exc_info:
             StackConfig(python_version="3.9")

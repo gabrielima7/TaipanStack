@@ -23,7 +23,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(safe_file, tmp_path)
         assert result == safe_file.resolve()
 
-    def test_security_guards_relative_path_within_base_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_relative_path_within_base_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that relative paths within base dir pass."""
         subdir = tmp_path / "subdir"
         subdir.mkdir()
@@ -33,7 +35,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(Path("subdir/test.txt"), tmp_path)
         assert result == test_file.resolve()
 
-    def test_security_guards_path_traversal_blocked_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_traversal_blocked_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that path traversal attempts are blocked."""
         with pytest.raises(SecurityError) as exc_info:
             guard_path_traversal("../etc/passwd", tmp_path)
@@ -41,7 +45,9 @@ class TestGuardPathTraversal:
         assert "path_traversal" in str(exc_info.value)
         assert exc_info.value.guard_name == "path_traversal"
 
-    def test_security_guards_double_dot_blocked_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_double_dot_blocked_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that .. patterns are blocked."""
         with pytest.raises(SecurityError):
             guard_path_traversal("foo/../../../etc/passwd", tmp_path)
@@ -53,7 +59,9 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal("%2e%2e/etc/passwd", tmp_path)
 
-    def test_security_guards_path_escapes_base_dir_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that paths escaping base dir are blocked."""
         # Create a separate base directory
         subdir = tmp_path / "allowed"
@@ -66,7 +74,9 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal(outside_file, subdir)
 
-    def test_security_guards_symlinks_blocked_by_default_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_symlinks_blocked_by_default_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that symlinks are blocked by default."""
         real_file = tmp_path / "real.txt"
         real_file.touch()
@@ -93,7 +103,9 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(symlink_path, tmp_path, allow_symlinks=True)
         assert result == real_file.resolve()
 
-    def test_security_guards_path_escapes_base_dir_msg_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_path_escapes_base_dir_msg_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test the exact error msg for path escape."""
         subdir = tmp_path / "allowed"
         subdir.mkdir()
@@ -147,7 +159,9 @@ class TestGuardCommandInjection:
         result = guard_command_injection(cmd, allowed_commands=["python"])
         assert result == cmd
 
-    def test_security_guards_command_not_in_whitelist_blocked_standard_expected(self) -> None:
+    def test_security_guards_command_not_in_whitelist_blocked_standard_expected(
+        self,
+    ) -> None:
         """Test that commands not in whitelist are blocked."""
         with pytest.raises(SecurityError) as exc_info:
             guard_command_injection(
@@ -176,7 +190,9 @@ class TestGuardFileExtension:
         result = guard_file_extension("script.py", allowed_extensions=["py", "txt"])
         assert result == Path("script.py")
 
-    def test_security_guards_dangerous_extension_blocked_standard_expected(self) -> None:
+    def test_security_guards_dangerous_extension_blocked_standard_expected(
+        self,
+    ) -> None:
         """Test that dangerous extensions are blocked."""
         with pytest.raises(SecurityError) as exc_info:
             guard_file_extension("evil.exe")
@@ -321,7 +337,9 @@ def test_security_guards_guard_ssrf_internal_err_branches_standard_expected() ->
     assert isinstance(res2, Err)
 
 
-def test_security_guards_command_injection_rejects_non_string_argument_type_standard_expected() -> None:
+def test_security_guards_command_injection_rejects_non_string_argument_type_standard_expected() -> (
+    None
+):
     """Test command args must all be strings."""
     with pytest.raises(TypeError, match="All command arguments must be strings"):
         guard_command_injection(["echo", 123])

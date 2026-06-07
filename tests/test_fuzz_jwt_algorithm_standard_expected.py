@@ -17,7 +17,9 @@ from taipanstack.security.jwt import decode_jwt
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_jwt_algorithm_decode_jwt_malformed_algorithms_standard_expected(algorithms) -> None:
+def test_fuzz_jwt_algorithm_decode_jwt_malformed_algorithms_standard_expected(
+    algorithms,
+) -> None:
     """Bombard decode_jwt with extreme, malformed algorithm types."""
     result = decode_jwt("token", "secret", algorithms=algorithms, audience="app")
     assert result.is_err()

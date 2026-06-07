@@ -95,10 +95,6 @@ def test_core_optimizations_additional_core_optimizations_logging_branches_stand
         mock_logger.warning.assert_called_with("Optimization errors: %s", "err")
 
 
-
-
-
-
 def test_core_optimizations_additional_core_optimizations_apply_optimizations_with_errors_standard_expected():
     import gc
     from unittest.mock import patch

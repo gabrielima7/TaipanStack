@@ -47,7 +47,9 @@ def test_chaos_rl_nan_rate_limiter_chaos_time_corruption_has_tokens_standard_exp
     assert limiter.tokens == initial_tokens - 1.0
 
 
-def test_chaos_rl_nan_rate_limiter_chaos_consume_zero_tokens_standard_expected() -> None:
+def test_chaos_rl_nan_rate_limiter_chaos_consume_zero_tokens_standard_expected() -> (
+    None
+):
     limiter = RateLimiter(max_calls=5, time_window=10.0)
     assert limiter.consume(tokens=0) is True
     assert limiter.consume(tokens=-1) is True
