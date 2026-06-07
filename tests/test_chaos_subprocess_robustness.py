@@ -28,11 +28,23 @@ def test_chaos_subprocess_filter_environment_fuzzing(
 
 @given(
     env=st.dictionaries(
-        keys=st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=1, max_size=100),
-        values=st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=0, max_size=1000),
+        keys=st.text(
+            alphabet=st.characters(blacklist_categories=("Cs",)),
+            min_size=1,
+            max_size=100,
+        ),
+        values=st.text(
+            alphabet=st.characters(blacklist_categories=("Cs",)),
+            min_size=0,
+            max_size=1000,
+        ),
     ),
     allowed=st.lists(
-        st.text(alphabet=st.characters(blacklist_categories=("Cs",)), min_size=1, max_size=100),
+        st.text(
+            alphabet=st.characters(blacklist_categories=("Cs",)),
+            min_size=1,
+            max_size=100,
+        ),
         max_size=5,
     ),
 )
