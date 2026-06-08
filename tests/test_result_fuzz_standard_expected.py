@@ -31,7 +31,9 @@ def test_result_err_fuzz_standard_expected(value: str) -> None:
 
 
 @given(st.lists(st.text()))
-def test_result_collect_results_all_ok_fuzz_standard_expected(values: list[str]) -> None:
+def test_result_collect_results_all_ok_fuzz_standard_expected(
+    values: list[str],
+) -> None:
     results = [Ok(v) for v in values]
     res = collect_results(results)
     assert res.is_ok() is True
@@ -39,7 +41,9 @@ def test_result_collect_results_all_ok_fuzz_standard_expected(values: list[str])
 
 
 @given(st.lists(st.text(), min_size=1), st.integers(min_value=0))
-def test_result_collect_results_with_err_fuzz_standard_expected(values: list[str], err_index: int) -> None:
+def test_result_collect_results_with_err_fuzz_standard_expected(
+    values: list[str], err_index: int
+) -> None:
     err_idx = err_index % len(values)
     results: list[Result[str, Exception]] = []
     for i, v in enumerate(values):
