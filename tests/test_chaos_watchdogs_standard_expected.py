@@ -14,7 +14,7 @@ class DummyWatcher(BaseWatcher):
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_base_watcher_stop_cancelled_error() -> None:
+async def test_chaos_watchdogs_base_watcher_stop_cancelled_error_standard_expected() -> None:
     """Test that BaseWatcher.stop gracefully handles asyncio.CancelledError."""
     watcher = DummyWatcher(interval=0.1)
     await watcher.start()
@@ -30,7 +30,7 @@ async def test_chaos_watchdogs_base_watcher_stop_cancelled_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_base_watcher_loop_exception_handling() -> None:
+async def test_chaos_watchdogs_base_watcher_loop_exception_handling_standard_expected() -> None:
     """Test that BaseWatcher._loop catches Exceptions from _run without crashing the loop."""
     watcher = DummyWatcher(interval=0.1)
 
@@ -58,7 +58,7 @@ async def test_chaos_watchdogs_base_watcher_loop_exception_handling() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_health_pinger_skips_open_breaker() -> None:
+async def test_chaos_watchdogs_health_pinger_skips_open_breaker_standard_expected() -> None:
     """Test that _check_and_open_breaker skips if breaker is already OPEN."""
     breaker = CircuitBreaker(name="test_breaker", failure_threshold=5)
     breaker._state.state = CircuitState.OPEN
