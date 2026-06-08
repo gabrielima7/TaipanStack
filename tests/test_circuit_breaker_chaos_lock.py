@@ -1,5 +1,5 @@
-import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
 
 class ExplodingLock:
     def __enter__(self):
