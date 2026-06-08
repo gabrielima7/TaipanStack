@@ -351,13 +351,18 @@ class CircuitBreaker:
         state_change: tuple[CircuitState, CircuitState] | None = None
         should_attempt = False
 
-        with self._state.lock:
-            if self._state.state == CircuitState.CLOSED:
-                should_attempt = True
-            elif self._state.state == CircuitState.OPEN:
-                should_attempt, state_change = self._handle_open_state()
-            elif self._state.state == CircuitState.HALF_OPEN:
-                should_attempt = self._handle_attempt_half_open()
+        try:
+            with self._state.lock:
+                if self._state.state == CircuitState.CLOSED:
+                    should_attempt = True
+                elif self._state.state == CircuitState.OPEN:
+                    should_attempt, state_change = self._handle_open_state()
+                elif self._state.state == CircuitState.HALF_OPEN:
+                    should_attempt = self._handle_attempt_half_open()
+        except Exception as e:
+            # Safely degrade by rejecting attempt
+            logger.error("Circuit %s failed to determine attempt logic due to error: %s", self.name, str(e))
+            should_attempt = False
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -393,14 +398,17 @@ class CircuitBreaker:
         """Record a successful call."""
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        with self._state.lock:
-            if self._state.state == CircuitState.HALF_OPEN:
-                state_change = self._handle_success_half_open()
-            elif self._state.state == CircuitState.CLOSED:
-                # Reset failure count on success
-                self._state.failure_count = 0
-            elif self._state.state == CircuitState.OPEN:
-                pass  # Should not happen, but handle gracefully
+        try:
+            with self._state.lock:
+                if self._state.state == CircuitState.HALF_OPEN:
+                    state_change = self._handle_success_half_open()
+                elif self._state.state == CircuitState.CLOSED:
+                    # Reset failure count on success
+                    self._state.failure_count = 0
+                elif self._state.state == CircuitState.OPEN:
+                    pass  # Should not happen, but handle gracefully
+        except Exception as e:
+            logger.error("Circuit %s failed to record success metric due to error: %s", self.name, str(e))
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -479,21 +487,27 @@ class CircuitBreaker:
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        with self._state.lock:
-            self._update_failure_metrics()
-            state_change = self._get_failure_state_change()
+        try:
+            with self._state.lock:
+                self._update_failure_metrics()
+                state_change = self._get_failure_state_change()
+        except Exception as e:
+            logger.error("Circuit %s failed to record failure metric due to error: %s", self.name, str(e))
 
         if state_change:
             self._notify_state_change(*state_change)
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
-        with self._state.lock:
-            self._state.state = CircuitState.CLOSED
-            self._state.failure_count = 0
-            self._state.success_count = 0
-            self._state.half_open_attempts = 0
-            logger.info("Circuit %s manually reset", self.name)
+        try:
+            with self._state.lock:
+                self._state.state = CircuitState.CLOSED
+                self._state.failure_count = 0
+                self._state.success_count = 0
+                self._state.half_open_attempts = 0
+                logger.info("Circuit %s manually reset", self.name)
+        except Exception as e:
+            logger.error("Circuit %s failed to reset due to error: %s", self.name, str(e))
 
     def _process_result(self, result: R) -> R:
         """Process Result outcome and record success/failure.
@@ -548,8 +562,11 @@ class CircuitBreaker:
 
         """
         if is_half_open:
-            with self._state.lock:
-                self._safe_decrement_half_open_attempts()
+            try:
+                with self._state.lock:
+                    self._safe_decrement_half_open_attempts()
+            except Exception as e:
+                logger.error("Circuit %s failed to decrement half open metric due to error: %s", self.name, str(e))
 
     def __call__(
         self,
