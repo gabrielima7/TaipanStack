@@ -90,14 +90,15 @@ class CircuitBreakerConfig:
     excluded_exceptions: tuple[type[Exception], ...] = ()
     failure_exceptions: tuple[type[Exception], ...] = (Exception,)
 
+    def _check_finite(self, value: float, name: str) -> None:
+        if not math.isfinite(value):
+            raise ValueError(f"{name} must be finite")
+
     def __post_init__(self) -> None:
         """Validate configuration values."""
-        if not math.isfinite(self.failure_threshold):
-            raise ValueError("failure_threshold must be finite")
-        if not math.isfinite(self.success_threshold):
-            raise ValueError("success_threshold must be finite")
-        if not math.isfinite(self.timeout):
-            raise ValueError("timeout must be finite")
+        self._check_finite(self.failure_threshold, "failure_threshold")
+        self._check_finite(self.success_threshold, "success_threshold")
+        self._check_finite(self.timeout, "timeout")
 
 
 @dataclass
@@ -242,6 +243,20 @@ class CircuitBreaker:
                 str(e),
             )
 
+    def _log_structlog_warning(
+        self,
+        old_state: CircuitState,
+        new_state: CircuitState,
+    ) -> None:
+        if _HAS_STRUCTLOG and _structlog_logger is not None:
+            _structlog_logger.warning(
+                "circuit_state_changed",
+                circuit=self.name,
+                old_state=old_state.value,
+                new_state=new_state.value,
+                failure_count=self._state.failure_count,
+            )
+
     def _notify_state_change(
         self,
         old_state: CircuitState,
@@ -257,24 +272,22 @@ class CircuitBreaker:
                 self._on_state_change(old_state, new_state)
             except Exception as e:
                 self._log_callback_failure(old_state, new_state, e)
-        elif _HAS_STRUCTLOG and _structlog_logger is not None:
-            _structlog_logger.warning(
-                "circuit_state_changed",
-                circuit=self.name,
-                old_state=old_state.value,
-                new_state=new_state.value,
-                failure_count=self._state.failure_count,
-            )
+            return
+
+        self._log_structlog_warning(old_state, new_state)
+
+    def _get_safe_timeout(self) -> float:
+        try:
+            return float(self.config.timeout)
+        except (TypeError, ValueError):
+            return 30.0
 
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
         if not isinstance(self._state.last_failure_time, (int, float)):
             return None  # type: ignore[unreachable]
 
-        try:
-            safe_timeout = float(self.config.timeout)
-        except (TypeError, ValueError):
-            safe_timeout = 30.0
+        safe_timeout = self._get_safe_timeout()
 
         if not math.isfinite(self._state.last_failure_time):
             return safe_timeout
@@ -310,26 +323,32 @@ class CircuitBreaker:
         )
         return True, (CircuitState.OPEN, CircuitState.HALF_OPEN)
 
+    def _evaluate_open_timeout(
+        self,
+        elapsed: float,
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+        timeout = self._get_safe_threshold(self.config.timeout, 0, 30.0)
+        if elapsed >= timeout:
+            return self._transition_to_half_open(elapsed)
+        return False, None
+
+    def _get_valid_elapsed(self) -> float | None:
+        try:
+            now = time.monotonic()
+        except Exception:
+            return None
+        if not math.isfinite(now):
+            return None
+        return self._calculate_elapsed_time(now)
+
     def _handle_open_state(
         self,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         """Handle logic for OPEN state in _should_attempt."""
-        try:
-            now = time.monotonic()
-        except Exception:
-            return False, None
-
-        elapsed = self._calculate_elapsed_time(now)
-
+        elapsed = self._get_valid_elapsed()
         if elapsed is None:
             return False, None
-
-        timeout = self._get_safe_threshold(self.config.timeout, 0, 30.0)
-
-        if math.isfinite(now) and elapsed >= timeout:
-            return self._transition_to_half_open(elapsed)
-
-        return False, None
+        return self._evaluate_open_timeout(elapsed)
 
     def _handle_attempt_half_open(self) -> bool:
         if not self._is_valid_metric(self._state.half_open_attempts):
@@ -346,18 +365,22 @@ class CircuitBreaker:
             return True
         return False
 
+    def _evaluate_state_for_attempt(
+        self,
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+        state = self._state.state
+        if state == CircuitState.CLOSED:
+            return True, None
+        if state == CircuitState.OPEN:
+            return self._handle_open_state()
+        if state == CircuitState.HALF_OPEN:
+            return self._handle_attempt_half_open(), None
+        return False, None  # type: ignore[unreachable]
+
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
-        state_change: tuple[CircuitState, CircuitState] | None = None
-        should_attempt = False
-
         with self._state.lock:
-            if self._state.state == CircuitState.CLOSED:
-                should_attempt = True
-            elif self._state.state == CircuitState.OPEN:
-                should_attempt, state_change = self._handle_open_state()
-            elif self._state.state == CircuitState.HALF_OPEN:
-                should_attempt = self._handle_attempt_half_open()
+            should_attempt, state_change = self._evaluate_state_for_attempt()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -389,18 +412,20 @@ class CircuitBreaker:
             return (CircuitState.HALF_OPEN, CircuitState.CLOSED)
         return None
 
+    def _get_success_state_change(self) -> tuple[CircuitState, CircuitState] | None:
+        state = self._state.state
+        if state == CircuitState.HALF_OPEN:
+            return self._handle_success_half_open()
+        if state == CircuitState.CLOSED:
+            # Reset failure count on success
+            self._state.failure_count = 0
+            return None
+        return None
+
     def _record_success(self) -> None:
         """Record a successful call."""
-        state_change: tuple[CircuitState, CircuitState] | None = None
-
         with self._state.lock:
-            if self._state.state == CircuitState.HALF_OPEN:
-                state_change = self._handle_success_half_open()
-            elif self._state.state == CircuitState.CLOSED:
-                # Reset failure count on success
-                self._state.failure_count = 0
-            elif self._state.state == CircuitState.OPEN:
-                pass  # Should not happen, but handle gracefully
+            state_change = self._get_success_state_change()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -444,13 +469,16 @@ class CircuitBreaker:
 
         return None
 
-    def _update_failure_metrics(self) -> None:
+    def _increment_failure_count(self) -> None:
         if not self._is_valid_metric(self._state.failure_count):
             # Handle type mutation (e.g. failure_count became string) or Inf/NaN
             # Safe degradation: reset to max so it opens immediately
             self._state.failure_count = self.config.failure_threshold
         else:
             self._state.failure_count += 1
+
+    def _update_failure_metrics(self) -> None:
+        self._increment_failure_count()
 
         try:
             now = time.monotonic()
@@ -468,14 +496,16 @@ class CircuitBreaker:
             return self._handle_failure_closed()
         return None
 
+    def _is_excluded_exception(self, exc: Exception) -> bool:
+        try:
+            return isinstance(exc, self.config.excluded_exceptions)
+        except TypeError:
+            return False
+
     def _record_failure(self, exc: Exception) -> None:
         """Record a failed call."""
-        # Check if exception should be excluded
-        try:
-            if isinstance(exc, self.config.excluded_exceptions):
-                return
-        except TypeError:
-            pass  # Corrupted type, do not exclude
+        if self._is_excluded_exception(exc):
+            return
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
@@ -495,6 +525,12 @@ class CircuitBreaker:
             self._state.half_open_attempts = 0
             logger.info("Circuit %s manually reset", self.name)
 
+    def _is_failure_exception(self, exc: Exception) -> bool:
+        try:
+            return isinstance(exc, self.config.failure_exceptions)
+        except TypeError:
+            return True
+
     def _process_result(self, result: R) -> R:
         """Process Result outcome and record success/failure.
 
@@ -507,11 +543,7 @@ class CircuitBreaker:
         """
         if isinstance(result, Err):
             err_val = result.unwrap_err()
-            try:
-                is_failure = isinstance(err_val, self.config.failure_exceptions)
-            except TypeError:
-                is_failure = True
-            if is_failure:
+            if self._is_failure_exception(err_val):
                 self._record_failure(err_val)
                 return result
             # Ignored exception in Result monad
