@@ -698,3 +698,30 @@ def test_security_guards_ssrf_ip_is_safe_value_error_standard_expected():
 
     # Check what happens when ip_address gets invalid IP
     assert _is_ip_safe("invalid_ip") is True
+
+def test_security_guards_ssrf_url_invalid_characters_standard_expected() -> None:
+    """Test guard_ssrf rejects URLs with invalid characters."""
+    from taipanstack.core.result import Err
+    from taipanstack.security.guards import guard_ssrf
+
+    result = guard_ssrf("http://exa\x20mple.com")
+    assert isinstance(result, Err)
+    assert "URL contains invalid characters" in str(result.err_value)
+
+def test_security_guards_ssrf_url_valid_characters_standard_expected() -> None:
+    """Test guard_ssrf accepts URLs with valid characters."""
+    from taipanstack.core.result import Ok
+    from taipanstack.security.guards import guard_ssrf
+
+    result = guard_ssrf("http://example.com")
+    assert isinstance(result, Ok)
+
+def test_security_guards_ssrf_url_invalid_characters_branch_standard_expected() -> None:
+    """Test guard_ssrf rejects URLs with invalid characters (specifically covering the branch)."""
+    from taipanstack.core.result import Err
+    from taipanstack.security.guards import guard_ssrf
+
+    # This covers the c == "\x7f" part of the branch
+    result = guard_ssrf("http://example.com/\x7f")
+    assert isinstance(result, Err)
+    assert "URL contains invalid characters" in str(result.err_value)
