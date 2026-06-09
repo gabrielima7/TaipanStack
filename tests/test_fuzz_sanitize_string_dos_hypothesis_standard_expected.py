@@ -1,7 +1,8 @@
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from taipanstack.security.sanitizers import sanitize_string, MAX_PATH_LENGTH
+from taipanstack.security.sanitizers import MAX_PATH_LENGTH, sanitize_string
+
 
 @settings(
     suppress_health_check=[
