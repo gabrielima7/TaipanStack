@@ -96,6 +96,9 @@ def sanitize_string(
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
+    if len(value) > MAX_PATH_LENGTH:
+        raise ValueError("String length exceeds maximum allowed limit")
+
     if not value:
         return ""
 
