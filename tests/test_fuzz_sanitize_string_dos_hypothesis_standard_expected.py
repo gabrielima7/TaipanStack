@@ -16,5 +16,6 @@ from taipanstack.security.sanitizers import MAX_PATH_LENGTH, sanitize_string
 @given(st.text(min_size=MAX_PATH_LENGTH + 1, max_size=MAX_PATH_LENGTH + 50))
 def test_fuzz_sanitize_string_dos_hypothesis_standard_expected(value: str) -> None:
     import pytest
+
     with pytest.raises(ValueError, match="String length exceeds maximum allowed"):
         sanitize_string(value)
