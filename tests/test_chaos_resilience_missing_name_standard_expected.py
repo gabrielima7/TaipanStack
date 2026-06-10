@@ -1,10 +1,13 @@
 import functools
+
 import pytest
+
+from taipanstack.core.result import Ok
 from taipanstack.resilience.circuit_breaker import circuit_breaker
 from taipanstack.resilience.retry import retry
 from taipanstack.utils.cache import cached
 from taipanstack.utils.rate_limit import rate_limit
-from taipanstack.core.result import Ok
+
 
 def sync_func(x: int) -> int:
     return x
