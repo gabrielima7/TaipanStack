@@ -12,8 +12,10 @@ from taipanstack.utils.rate_limit import rate_limit
 def sync_func(x: int) -> int:
     return x
 
+
 async def async_func(x: int) -> int:
     return x
+
 
 def test_chaos_resilience_missing_name_sync_standard_expected() -> None:
     partial_func = functools.partial(sync_func, 1)
@@ -29,6 +31,7 @@ def test_chaos_resilience_missing_name_sync_standard_expected() -> None:
 
     rl_func = rate_limit(max_calls=1, time_window=1.0)(partial_func)
     assert rl_func() == Ok(1)
+
 
 @pytest.mark.asyncio
 async def test_chaos_resilience_missing_name_async_standard_expected() -> None:
