@@ -696,7 +696,7 @@ def circuit_breaker(
             timeout=timeout,
             excluded_exceptions=excluded_exceptions,
             failure_exceptions=failure_exceptions,
-            name=name or getattr(func, "__name__", "unknown"),
+            name=name or cast(str, getattr(func, "__name__", "unknown")),
             on_state_change=on_state_change,
         )
         return breaker(func)
