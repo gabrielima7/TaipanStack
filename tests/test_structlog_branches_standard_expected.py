@@ -103,7 +103,7 @@ class TestSetupLoggingStructlog:
 class TestSubprocessTimeoutBranches:
     """Tests for subprocess timeout branches."""
 
-    def test_structlog_branches_run_safe_command_with_failure(self) -> None:
+    def test_structlog_branches_run_safe_command_with_failure_expected(self) -> None:
         """Test run_safe_command with failing command."""
         from taipanstack.utils.subprocess import run_safe_command
 

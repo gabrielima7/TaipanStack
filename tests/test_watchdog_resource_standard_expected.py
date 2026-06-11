@@ -70,7 +70,9 @@ class TestResourceWatcher:
     """Tests for the ResourceWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_start_without_psutil_returns_err(self) -> None:
+    async def test_watchdog_resource_start_without_psutil_returns_err_expected(
+        self,
+    ) -> None:
         """Start returns Err when psutil is unavailable."""
         watcher = ResourceWatcher()
         with patch(
@@ -81,7 +83,7 @@ class TestResourceWatcher:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_start_stop_lifecycle(self) -> None:
+    async def test_watchdog_resource_start_stop_lifecycle_expected(self) -> None:
         """Watcher can be started and stopped."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
@@ -106,7 +108,7 @@ class TestResourceWatcher:
             assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_double_start_returns_err(self) -> None:
+    async def test_watchdog_resource_double_start_returns_err_expected(self) -> None:
         """Starting an already-running watcher returns Err."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
@@ -130,7 +132,7 @@ class TestResourceWatcher:
                 await watcher.stop()
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_threshold_breach_callback(self) -> None:
+    async def test_watchdog_resource_threshold_breach_callback_expected(self) -> None:
         """Callback fires when thresholds are breached."""
         breaches: list[tuple[str, float]] = []
 
@@ -161,7 +163,7 @@ class TestResourceWatcher:
         assert any(r == "memory" for r, _ in breaches)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_no_breach_below_threshold(self) -> None:
+    async def test_watchdog_resource_no_breach_below_threshold_expected(self) -> None:
         """No callback when values are below thresholds."""
         breaches: list[tuple[str, float]] = []
 
@@ -189,7 +191,7 @@ class TestResourceWatcher:
         assert len(breaches) == 0
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_run_handles_check_error(self) -> None:
+    async def test_watchdog_resource_run_handles_check_error_expected(self) -> None:
         """Error from check_resources is logged, not raised."""
         with (
             patch(
@@ -218,14 +220,14 @@ class TestBaseWatcher:
         assert "3.0" in repr(watcher)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_stop_without_start(self) -> None:
+    async def test_watchdog_resource_stop_without_start_expected(self) -> None:
         """Stopping a watcher that was never started is safe."""
         watcher = ResourceWatcher(interval=1.0)
         await watcher.stop()
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_stop_timeout_cancels_task(self) -> None:
+    async def test_watchdog_resource_stop_timeout_cancels_task_expected(self) -> None:
         """When the task doesn't stop in time, it gets cancelled."""
         mock_vm = MagicMock()
         mock_vm.percent = 10.0
@@ -259,7 +261,7 @@ class TestBaseWatcher:
             assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_run_err_branch_logged(self) -> None:
+    async def test_watchdog_resource_run_err_branch_logged_expected(self) -> None:
         """Err from check_resources in _run is handled gracefully."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher.check_resources"
@@ -271,7 +273,9 @@ class TestBaseWatcher:
             await watcher._run()
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_threshold_breach_without_callback(self) -> None:
+    async def test_watchdog_resource_threshold_breach_without_callback_expected(
+        self,
+    ) -> None:
         """Breach is logged but no crash when on_threshold_breach is None."""
         mock_vm = MagicMock()
         mock_vm.percent = 95.0
@@ -298,7 +302,7 @@ class TestBaseWatcher:
 
 
 @pytest.mark.asyncio
-async def test_watchdog_resource_resource_watcher_run_err_branch() -> None:
+async def test_watchdog_resource_resource_watcher_run_err_branch_expected() -> None:
     from unittest.mock import patch
 
     from taipanstack.core.result import Err
@@ -335,7 +339,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_standard_expec
         # Test the start error branch where psutil is not available
         watcher = res_mod.ResourceWatcher()
 
-        async def test_watchdog_resource_run_ok():
+        async def test_watchdog_resource_run_ok_expected():
             result = await watcher.start()
             assert isinstance(result, Err)
             # To test the unhandled _run case, we manually toggle _is_running
@@ -346,7 +350,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_standard_expec
             res = res_mod.check_resources()
             assert isinstance(res, Err)
 
-        asyncio.run(test_watchdog_resource_run_ok())
+        asyncio.run(test_watchdog_resource_run_ok_expected())
     finally:
         if original_psutil is not None:
             sys.modules["psutil"] = original_psutil
