@@ -127,7 +127,7 @@ class TestRetryDecorator:
         assert result == "success"
         assert call_count == 1
 
-    def test_utils_retry_retry_on_failure(self) -> None:
+    def test_utils_retry_retry_on_failure_expected(self) -> None:
         """Test function retries on failure."""
         call_count = 0
 
@@ -244,7 +244,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 1
 
     @pytest.mark.asyncio
-    async def test_utils_retry_retry_on_failure(self) -> None:
+    async def test_utils_retry_retry_on_failure_expected(self) -> None:
         """Test async function retries on failure."""
         call_count = 0
 
@@ -526,7 +526,7 @@ class TestRetryError:
         assert call_count == 0
 
     @pytest.mark.asyncio
-    async def test_utils_retry_retry_async_for_loop_exhaustion(self) -> None:
+    async def test_utils_retry_retry_async_for_loop_exhaustion_expected(self) -> None:
         """Test the retry async loop exhaustion explicitly."""
         from taipanstack.resilience.retry import RetryError, retry
 

@@ -535,7 +535,7 @@ class TestOptimizationsEdgeCases:
         assert not skipped
         assert not errors
 
-    def test_very_last_apply_gc_freeze_success(self) -> None:
+    def test_very_last_apply_gc_freeze_success_expected(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (
@@ -684,7 +684,7 @@ class TestCompatPy313FallbackExpected:
 # =============================================================================
 
 
-def test_very_last_optimizations_coverage_skipped_asserts_success():
+def test_very_last_optimizations_coverage_skipped_asserts_success_expected():
     with (
         patch("sys.version_info", (3, 11)),
         patch("platform.python_implementation", return_value="CPython"),
