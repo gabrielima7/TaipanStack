@@ -419,7 +419,9 @@ class TestSafeFromAsyncDecorator:
         assert isinstance(result.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_from_async_propagates_unspecified_expected(self) -> None:
+    async def test_result_module_safe_from_async_propagates_unspecified_expected(
+        self,
+    ) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise TypeError("invalid type")
@@ -479,7 +481,9 @@ class TestResultStructuralCompatibility:
         assert isinstance(res, MissingOkValue)
 
     @pytest.mark.asyncio
-    async def test_result_module_map_async_structural_compatibility_expected(self) -> None:
+    async def test_result_module_map_async_structural_compatibility_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in map_async."""
 
         class CustomResult:
@@ -497,7 +501,9 @@ class TestResultStructuralCompatibility:
         assert res is custom_res
 
     @pytest.mark.asyncio
-    async def test_result_module_and_then_async_structural_compatibility_expected(self) -> None:
+    async def test_result_module_and_then_async_structural_compatibility_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in and_then_async."""
 
         class CustomResult:

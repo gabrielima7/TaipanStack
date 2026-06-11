@@ -256,7 +256,9 @@ class TestSafeRequest:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_bridge_http_zero_attempts_returns_runtime_error_expected(self) -> None:
+    async def test_bridge_http_zero_attempts_returns_runtime_error_expected(
+        self,
+    ) -> None:
         """A zero-attempt retry config returns a runtime error wrapper."""
         from taipanstack.bridges.http_bridge import safe_request
 
@@ -352,7 +354,9 @@ class TestSafeHttpClient:
         mock_client.aclose.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_bridge_http_request_without_context_returns_err_expected(self) -> None:
+    async def test_bridge_http_request_without_context_returns_err_expected(
+        self,
+    ) -> None:
         """Request without entering context returns Err."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -558,7 +562,9 @@ class TestSafeHttpClient:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_bridge_http_client_zero_attempts_returns_runtime_error_expected(self) -> None:
+    async def test_bridge_http_client_zero_attempts_returns_runtime_error_expected(
+        self,
+    ) -> None:
         """Client returns a runtime error wrapper when retries are disabled."""
         from taipanstack.bridges.http_bridge import SafeHttpClient
 

@@ -173,7 +173,9 @@ class TestResilienceOrchestrator:
         assert "bulkhead" in str(result.err_value).lower()
 
     @pytest.mark.asyncio
-    async def test_orchestrator_bulkhead_acquire_timeout_returns_err_expected(self) -> None:
+    async def test_orchestrator_bulkhead_acquire_timeout_returns_err_expected(
+        self,
+    ) -> None:
         """Semaphore acquisition timeout returns an error result."""
         orch = ResilienceOrchestrator("test").with_bulkhead(
             max_concurrent=1, max_queue=1, timeout=0.01
@@ -239,7 +241,9 @@ class TestResilienceOrchestrator:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_orchestrator_zero_retry_attempts_returns_runtime_error_expected(self) -> None:
+    async def test_orchestrator_zero_retry_attempts_returns_runtime_error_expected(
+        self,
+    ) -> None:
         """A zero-attempt retry config returns the synthetic execution error."""
         orch = ResilienceOrchestrator("test").with_retry(
             RetryConfig(max_attempts=0, initial_delay=0.01, jitter=False)

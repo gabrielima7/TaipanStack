@@ -127,7 +127,9 @@ class TestResilientDatabase:
             _teardown_sqlalchemy_mock()
 
     @pytest.mark.asyncio
-    async def test_bridge_db_execute_zero_attempts_returns_runtime_error_expected(self) -> None:
+    async def test_bridge_db_execute_zero_attempts_returns_runtime_error_expected(
+        self,
+    ) -> None:
         """A zero-attempt retry config returns the synthetic DB error."""
         _setup_sqlalchemy_mock()
         try:
@@ -236,7 +238,9 @@ class TestResilientRedis:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_bridge_db_execute_failure_without_breaker_returns_err_expected(self) -> None:
+    async def test_bridge_db_execute_failure_without_breaker_returns_err_expected(
+        self,
+    ) -> None:
         """Failed commands still return Err when no breaker is configured."""
         mock_client = AsyncMock()
         mock_client.get = AsyncMock(side_effect=ConnectionError("lost"))

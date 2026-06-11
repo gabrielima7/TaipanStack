@@ -70,7 +70,9 @@ class TestResourceWatcher:
     """Tests for the ResourceWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_start_without_psutil_returns_err_expected(self) -> None:
+    async def test_watchdog_resource_start_without_psutil_returns_err_expected(
+        self,
+    ) -> None:
         """Start returns Err when psutil is unavailable."""
         watcher = ResourceWatcher()
         with patch(
@@ -271,7 +273,9 @@ class TestBaseWatcher:
             await watcher._run()
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_threshold_breach_without_callback_expected(self) -> None:
+    async def test_watchdog_resource_threshold_breach_without_callback_expected(
+        self,
+    ) -> None:
         """Breach is logged but no crash when on_threshold_breach is None."""
         mock_vm = MagicMock()
         mock_vm.percent = 95.0
