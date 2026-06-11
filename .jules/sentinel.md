@@ -71,3 +71,9 @@
 **Vulnerability:** The `timeout` decorator in `src/taipanstack/security/decorators.py` did not explicitly validate the type of its `seconds` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
 **Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
 **Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
+
+## 2026-06-11 - URL Smuggling Bypass via URL-Encoded Control Characters
+**Vulnerability:** The URL validation guard (`_check_url_characters` in `src/taipanstack/security/validators.py`) previously failed to account for URL-encoded control characters (e.g., `%00` or `%20`). By injecting these characters, attackers could bypass the initial check, potentially leading to HTTP Request Smuggling or SSRF if downstream components unquoted the URL before processing.
+**Learning:** Simply checking the raw URL string for ASCII control characters (`<= '\x20'` and `'\x7f'`) is insufficient because attackers can obfuscate these characters using URL encoding (`%XX`).
+**Prevention:** Always validate both the raw URL string and its `unquote`d variant to ensure no control characters exist in either representation.
+
