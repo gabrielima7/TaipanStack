@@ -1,0 +1,3 @@
+[submodule "pyapp/.pyapp-src"]
+	path = pyapp/.pyapp-src
+	url = https://github.com/ofek/pyapp.git
