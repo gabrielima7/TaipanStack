@@ -100,6 +100,9 @@ def sanitize_string(
     if len(value) > MAX_STRING_LENGTH:
         raise ValueError("String length exceeds maximum allowed limit")
 
+    if max_length is not None and max_length < 0:
+        raise ValueError("max_length cannot be negative")
+
     if not value:
         return ""
 
