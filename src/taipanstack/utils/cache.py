@@ -90,7 +90,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = get_cache_key(
-                    func.__name__,
+                    getattr(func, "__name__", "unknown"),
                     cast(tuple[object, ...], args),
                     cast(dict[str, object], kwargs),
                 )
@@ -145,7 +145,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
             cache_key = get_cache_key(
-                func.__name__,
+                getattr(func, "__name__", "unknown"),
                 cast(tuple[object, ...], args),
                 cast(dict[str, object], kwargs),
             )
