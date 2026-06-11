@@ -72,7 +72,7 @@ class ValidationError(Exception):
 
 
 def validate_inputs(
-    **validators: ValidatorFunc[object, object],
+    **validators: Callable[[object], object],
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator to validate function inputs.
 
