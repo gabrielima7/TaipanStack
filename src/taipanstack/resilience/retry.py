@@ -450,7 +450,7 @@ def retry(  # noqa: PLR0915
 
                         if attempt == max_attempts:
                             _log_all_failed(
-                                func_coro.__name__,
+                                getattr(func_coro, "__name__", "unknown"),
                                 e,
                                 config,
                             )
@@ -458,7 +458,7 @@ def retry(  # noqa: PLR0915
 
                         delay = calculate_delay(attempt, config)
                         _log_retry_attempt(
-                            func_coro.__name__,
+                            getattr(func_coro, "__name__", "unknown"),
                             attempt,
                             e,
                             delay,
@@ -469,7 +469,7 @@ def retry(  # noqa: PLR0915
                 if last_result is not None and isinstance(last_result, Err):
                     return cast(R, last_result)
                 _raise_retry_error(
-                    func_coro.__name__,
+                    getattr(func_coro, "__name__", "unknown"),
                     max_attempts,
                     reraise,
                     last_exception,
@@ -504,7 +504,7 @@ def retry(  # noqa: PLR0915
 
                     if attempt == max_attempts:
                         _log_all_failed(
-                            func_sync.__name__,
+                            getattr(func_sync, "__name__", "unknown"),
                             e,
                             config,
                         )
@@ -513,7 +513,7 @@ def retry(  # noqa: PLR0915
                     # Calculate delay and wait
                     delay = calculate_delay(attempt, config)
                     _log_retry_attempt(
-                        func_sync.__name__,
+                        getattr(func_sync, "__name__", "unknown"),
                         attempt,
                         e,
                         delay,
@@ -524,7 +524,7 @@ def retry(  # noqa: PLR0915
             if last_result is not None and isinstance(last_result, Err):
                 return cast(R, last_result)
             _raise_retry_error(
-                func_sync.__name__,
+                getattr(func_sync, "__name__", "unknown"),
                 max_attempts,
                 reraise,
                 last_exception,
