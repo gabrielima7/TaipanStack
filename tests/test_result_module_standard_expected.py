@@ -36,7 +36,7 @@ class TestOkErr:
 class TestSafeDecorator:
     """Tests for the @safe decorator."""
 
-    def test_result_module_safe_success(self) -> None:
+    def test_result_module_safe_success_expected(self) -> None:
         """Test safe decorator returns Ok on success."""
 
         @safe
@@ -262,7 +262,7 @@ class TestSafeAsyncDecorator:
     """Tests for the @safe decorator with async functions."""
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_async_success(self) -> None:
+    async def test_result_module_safe_async_success_expected(self) -> None:
         """Test safe decorator returns Ok on async success."""
 
         @safe
@@ -274,7 +274,7 @@ class TestSafeAsyncDecorator:
         assert result.ok_value == 5
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_async_exception(self) -> None:
+    async def test_result_module_safe_async_exception_expected(self) -> None:
         """Test safe decorator returns Err on async exception."""
 
         @safe
@@ -286,7 +286,7 @@ class TestSafeAsyncDecorator:
         assert isinstance(result.err_value, ZeroDivisionError)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_async_preserves_metadata(self) -> None:
+    async def test_result_module_safe_async_preserves_metadata_expected(self) -> None:
         """Test safe decorator preserves async function name and docstring."""
 
         @safe
@@ -298,7 +298,7 @@ class TestSafeAsyncDecorator:
         assert my_async_function.__doc__ == "Async docstring."
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_async_runtime_error(self) -> None:
+    async def test_result_module_safe_async_runtime_error_expected(self) -> None:
         """Test safe decorator catches RuntimeError in async function."""
 
         @safe
@@ -311,7 +311,7 @@ class TestSafeAsyncDecorator:
         assert isinstance(result.err_value, RuntimeError)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_async_basic_exception(self) -> None:
+    async def test_result_module_safe_async_basic_exception_expected(self) -> None:
         """Test safe decorator returns Err on base Exception in async function."""
 
         @safe
@@ -329,7 +329,7 @@ class TestMapAsync:
     """Tests for map_async function."""
 
     @pytest.mark.asyncio
-    async def test_result_module_map_async_ok(self) -> None:
+    async def test_result_module_map_async_ok_expected(self) -> None:
         """Test map_async with Ok value."""
 
         async def double(x: int) -> int:
@@ -341,7 +341,7 @@ class TestMapAsync:
         assert mapped.ok_value == 42
 
     @pytest.mark.asyncio
-    async def test_result_module_map_async_err(self) -> None:
+    async def test_result_module_map_async_err_expected(self) -> None:
         """Test map_async with Err value."""
 
         async def double(x: int) -> int:
@@ -357,7 +357,7 @@ class TestAndThenAsync:
     """Tests for and_then_async function."""
 
     @pytest.mark.asyncio
-    async def test_result_module_and_then_async_ok_to_ok(self) -> None:
+    async def test_result_module_and_then_async_ok_to_ok_expected(self) -> None:
         """Test and_then_async mapping Ok to Ok."""
 
         async def process(x: int) -> Result[str, ValueError]:
@@ -369,7 +369,7 @@ class TestAndThenAsync:
         assert chained.ok_value == "42"
 
     @pytest.mark.asyncio
-    async def test_result_module_and_then_async_ok_to_err(self) -> None:
+    async def test_result_module_and_then_async_ok_to_err_expected(self) -> None:
         """Test and_then_async mapping Ok to Err."""
 
         async def process(x: int) -> Result[str, ValueError]:
@@ -381,7 +381,7 @@ class TestAndThenAsync:
         assert isinstance(chained.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_result_module_and_then_async_err(self) -> None:
+    async def test_result_module_and_then_async_err_expected(self) -> None:
         """Test and_then_async with Err value skips execution."""
 
         executed = False
@@ -400,7 +400,7 @@ class TestAndThenAsync:
 
 class TestSafeFromAsyncDecorator:
     @pytest.mark.asyncio
-    async def test_result_module_safe_from_async_success(self) -> None:
+    async def test_result_module_safe_from_async_success_expected(self) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             return x * 2
@@ -409,7 +409,7 @@ class TestSafeFromAsyncDecorator:
         assert result == Ok(10)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_from_async_exception(self) -> None:
+    async def test_result_module_safe_from_async_exception_expected(self) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise ValueError("invalid")
@@ -419,7 +419,9 @@ class TestSafeFromAsyncDecorator:
         assert isinstance(result.err_value, ValueError)
 
     @pytest.mark.asyncio
-    async def test_result_module_safe_from_async_propagates_unspecified(self) -> None:
+    async def test_result_module_safe_from_async_propagates_unspecified_expected(
+        self,
+    ) -> None:
         @safe_from(ValueError)
         async def process(x: int) -> int:
             raise TypeError("invalid type")
@@ -479,7 +481,9 @@ class TestResultStructuralCompatibility:
         assert isinstance(res, MissingOkValue)
 
     @pytest.mark.asyncio
-    async def test_result_module_map_async_structural_compatibility(self) -> None:
+    async def test_result_module_map_async_structural_compatibility_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in map_async."""
 
         class CustomResult:
@@ -497,7 +501,9 @@ class TestResultStructuralCompatibility:
         assert res is custom_res
 
     @pytest.mark.asyncio
-    async def test_result_module_and_then_async_structural_compatibility(self) -> None:
+    async def test_result_module_and_then_async_structural_compatibility_expected(
+        self,
+    ) -> None:
         """Test fallback structural compatibility branch in and_then_async."""
 
         class CustomResult:

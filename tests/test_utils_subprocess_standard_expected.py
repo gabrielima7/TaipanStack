@@ -42,7 +42,7 @@ class TestSafeCommandResult:
         )
         assert result.success is False
 
-    def test_utils_subprocess_raise_on_error_success(self) -> None:
+    def test_utils_subprocess_raise_on_error_success_expected(self) -> None:
         """Test raise_on_error returns self on success."""
         result = SafeCommandResult(
             command=["echo", "test"],
@@ -51,7 +51,7 @@ class TestSafeCommandResult:
         )
         assert result.raise_on_error() is result
 
-    def test_utils_subprocess_raise_on_error_failure(self) -> None:
+    def test_utils_subprocess_raise_on_error_failure_expected(self) -> None:
         """Test raise_on_error raises CalledProcessError on failure."""
         result = SafeCommandResult(
             command=["bad", "command"],
