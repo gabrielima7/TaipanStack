@@ -15,6 +15,10 @@ from typing import TYPE_CHECKING, cast
 
 from typing_extensions import TypedDict, Unpack
 
+if TYPE_CHECKING:
+    import httpx
+
+
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
@@ -70,7 +74,7 @@ class HttpClientKwargs(TypedDict, total=False):
     mounts: Mapping[str, httpx.AsyncBaseTransport | None]
     follow_redirects: bool
     max_redirects: int
-    event_hooks: dict[str, list[Callable[..., object]]]
+    event_hooks: dict[str, list[Callable[..., Awaitable[object]]]]
     trust_env: bool
     default_encoding: str | Callable[[bytes], str]
 
