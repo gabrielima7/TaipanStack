@@ -300,7 +300,7 @@ class TestSanitizePath:
         assert "unnamed" in result.parts
         assert "bar" in result.parts
 
-    def test_security_sanitizers_resolve_with_base_dir_success(
+    def test_security_sanitizers_resolve_with_base_dir_success_expected(
         self, tmp_path: Path
     ) -> None:
         """Test resolving path with base directory."""
