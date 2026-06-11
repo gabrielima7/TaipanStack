@@ -12,7 +12,7 @@ control_char_url_encoded_strategy = st.builds(
 
 @given(url=control_char_url_encoded_strategy)
 @settings(max_examples=100)
-def test_url_smuggling_bypass(url: str) -> None:
+def test_url_smuggling_bypass_expected(url: str) -> None:
     try:
         validated = validate_url(url)
         unquoted = unquote(validated)
