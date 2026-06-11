@@ -6,7 +6,7 @@ project names, URLs, etc. All validators raise ValueError on invalid input.
 """
 
 import re
-from urllib.parse import SplitResult, urlsplit
+from urllib.parse import SplitResult, unquote, urlsplit
 
 # Constants to avoid magic values (PLR2004)
 PYTHON_MAJOR_VERSION = 3
@@ -315,11 +315,13 @@ def _check_url_length(url: str) -> None:
 
 def _check_url_characters(url: str) -> None:
     """Check URL character constraints."""
-    if any(c <= "\x20" or c == "\x7f" for c in url):
+    if any(c <= "\x20" or c == "\x7f" for c in url) or any(
+        c <= "\x20" or c == "\x7f" for c in unquote(url)
+    ):
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 
-    if "\x00" in url or not url.isprintable():
+    if "\x00" in url or not url.isprintable() or not unquote(url).isprintable():
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 
