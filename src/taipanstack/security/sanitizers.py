@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Constants to avoid magic values (PLR2004)
 MAX_PATH_LENGTH = 4096  # pragma: no mutate
+MAX_STRING_LENGTH = 1000000  # pragma: no mutate
 
 # Pre-compiled regex and sets for Performance Benchmarks
 _INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')  # pragma: no mutate
@@ -96,7 +97,7 @@ def sanitize_string(
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
-    if len(value) > MAX_PATH_LENGTH:
+    if len(value) > MAX_STRING_LENGTH:
         raise ValueError("String length exceeds maximum allowed limit")
 
     if not value:
