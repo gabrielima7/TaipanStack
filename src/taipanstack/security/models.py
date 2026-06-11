@@ -55,7 +55,20 @@ def _mask_set(data: set[object], depth: int) -> set[object]:
     return {_mask_data(item, depth) for item in data}
 
 
-def _mask_data(data: object, _depth: int = 0) -> object:  # noqa: PLR0911
+def _mask_collection(data: object, depth: int) -> object:
+    """Dispatch masking based on collection type."""
+    if isinstance(data, dict):
+        return _mask_dict(cast(dict[str, object], data), depth)
+    if isinstance(data, list):
+        return _mask_list(cast(list[object], data), depth)
+    if isinstance(data, tuple):
+        return _mask_tuple(cast(tuple[object, ...], data), depth)
+    if isinstance(data, set):
+        return _mask_set(cast(set[object], data), depth)
+    return data
+
+
+def _mask_data(data: object, _depth: int = 0) -> object:
     """Recursively mask sensitive keys in data."""
     if _SENSITIVE_KEY_REGEX is None:
         return data
@@ -64,18 +77,7 @@ def _mask_data(data: object, _depth: int = 0) -> object:  # noqa: PLR0911
     if _depth > _MAX_RECURSION_DEPTH:
         return "<MAX_DEPTH_REACHED>"
 
-    if isinstance(data, dict):
-        # The cast ensures that we type check against the dictionary types,
-        # but technically we only mask string keys in dicts in Pydantic.
-        # We can safely cast it because Pydantic mostly yields dict[str, object].
-        return _mask_dict(cast(dict[str, object], data), _depth + 1)
-    if isinstance(data, list):
-        return _mask_list(cast(list[object], data), _depth + 1)
-    if isinstance(data, tuple):
-        return _mask_tuple(cast(tuple[object, ...], data), _depth + 1)
-    if isinstance(data, set):
-        return _mask_set(cast(set[object], data), _depth + 1)
-    return data
+    return _mask_collection(data, _depth + 1)
 
 
 class SecureBaseModel(BaseModel):
