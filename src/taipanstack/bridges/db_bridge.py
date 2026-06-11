@@ -13,7 +13,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import redis.asyncio as aioredis
+    from sqlalchemy.engine import Result as SQLAlchemyResult
     from sqlalchemy.ext.asyncio import AsyncEngine
+    from sqlalchemy.sql.executable import Executable
 
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.circuit_breaker import (
@@ -127,10 +129,10 @@ class ResilientDatabase:
 
     async def _execute_loop(
         self,
-        statement: object,
+        statement: Executable,
         max_attempts: int,
         **kwargs: object,
-    ) -> Result[object, Exception]:
+    ) -> Result[SQLAlchemyResult[object], Exception]:
         """Execute the retry loop for database operations."""
         last_error: Exception | None = None
 
@@ -149,9 +151,9 @@ class ResilientDatabase:
 
     async def execute(
         self,
-        statement: object,
+        statement: Executable,
         **kwargs: object,
-    ) -> Result[object, Exception]:
+    ) -> Result[SQLAlchemyResult[object], Exception]:
         """Execute a SQL statement with resilience.
 
         Args:
