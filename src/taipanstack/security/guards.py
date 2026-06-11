@@ -14,7 +14,7 @@ import socket
 import unicodedata
 from collections.abc import Sequence
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from result import Err, Ok, Result
 
@@ -574,7 +574,17 @@ def _check_ssrf_url_length(url: str) -> Result[str, SecurityError]:
 
 
 def _check_ssrf_url_characters(url: str) -> Result[str, SecurityError]:
-    if any(c <= "\x20" or c == "\x7f" for c in url):
+    if any(c <= "\x20" or c == "\x7f" for c in url) or any(
+        c <= "\x20" or c == "\x7f" for c in unquote(url)
+    ):
+        return Err(
+            SecurityError(
+                "URL contains invalid characters",
+                guard_name="ssrf",
+                value=url[:80],
+            ),
+        )
+    if "\x00" in url or not url.isprintable() or not unquote(url).isprintable():
         return Err(
             SecurityError(
                 "URL contains invalid characters",

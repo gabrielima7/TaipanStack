@@ -1,7 +1,79 @@
-## 2024-06-11 - URL Smuggling Bypass via URL-Encoded Control Characters
+## 2026-03-09 - Path Traversal bypass via Symlinks checking with `.resolve()`
+**Vulnerability:** The path traversal guard logic `is_symlink()` check always evaluates to `False` because `path.resolve()` resolves the entire path natively, following symlinks and stripping them away. This means that a symlink pointing to an unauthorized directory could effectively bypass the `allow_symlinks=False` check.
+**Learning:** `path.resolve()` on a `pathlib.Path` follows symlinks intrinsically, therefore applying `.is_symlink()` directly to the `resolved` path guarantees a `False` result, making the security mechanism fail silently.
+**Prevention:** Iteratively loop through all parts of the *unresolved* path components upwards using `.parent` up until the base directory to properly call `.is_symlink()` and check for user-supplied symlinks correctly before attempting to resolve the file.
+## 2026-03-11 - Missing Path Traversal Guard in File Utilities
+**Vulnerability:** The `find_files` and `get_file_hash` utility functions in `taipanstack.utils.filesystem` did not apply a default path traversal check (`guard_path_traversal(..., Path.cwd())`) when `base_dir=None` was supplied. This oversight allowed them to process files outside of the current working directory, unlike all other functions in the module (`safe_read`, `safe_write`, `ensure_dir`, `safe_delete`) which did include the strict fallback.
+**Learning:** Similar functions across an API module can drift in their security constraints. A missing fallback traversal block can create a gap where read-only actions (like hashing or globbing) can bypass protections that write actions strictly enforce.
+**Prevention:** Ensure a unified, central path-validation mechanism or decorator that strictly defines fallbacks (e.g. `cwd`), rather than reimplementing the exact same `if base_dir ... elif ".." in str(path): ...` logic repetitively in every file utility function.
 
+## 2026-03-12 - Sensitive Data Exposure via BaseModel
+**Vulnerability:** Models representing users (`UserCreate` and `User`) inherited from Pydantic's `BaseModel` instead of `SecureBaseModel`. This allowed sensitive fields like `password` and `password_hash` to be included in plaintext when dumping the model to a dictionary or JSON, leading to potential credential leakage in logs or API responses.
+**Learning:** Standard Pydantic models do not provide automated redaction for sensitive keys. Even when using `SecretStr`, calling `.model_dump()` or `.model_dump_json()` on a `BaseModel` can still expose sensitive values depending on the configuration and usage.
+**Prevention:** Always use `SecureBaseModel` for any data models that handle Pydantic's `SecretStr` or contain fields with sensitive names (like `password`, `token`, `secret`, `api_key`). `SecureBaseModel` provides an extra layer of defense-in-depth by automatically masking these fields during serialization.
+
+## 2026-03-13 - Use of Weak Hash Algorithms in Filesystem Utilities
+**Vulnerability:** The `get_file_hash` function allowed any algorithm supported by `hashlib.new()`, including cryptographically weak ones like MD5 and SHA-1.
+**Learning:** Defaulting to arbitrary user-supplied strings for cryptographic primitives without validation can lead to the use of insecure or deprecated algorithms.
+**Prevention:** Implement a dedicated security guard (whitelist) for cryptographic algorithms and apply it consistently across all utilities that perform hashing or encryption.
+
+## 2026-03-20 - Prevent Information Leaks and ReDoS in Security Guards
+**Vulnerability:** Found an information leak in `guard_path_traversal` where the error message and `SecurityError.value` leaked the fully resolved absolute internal path. Also found `guard_ssrf` leaked the resolved internal IP address in the exception. Furthermore, `_SENSITIVE_ENV_VAR_PATTERN` was vulnerable to catastrophic backtracking (ReDoS) due to its use of unbounded `.*` inside a large regex alternation.
+**Learning:** Returning overly detailed error messages in security guards creates a secondary vulnerability by allowing an attacker to map out internal file systems and internal network topologies. Additionally, trying to make `re.match` act like `re.search` by padding with `.*` in complex alternations is extremely dangerous and can easily lead to Denial of Service.
+**Prevention:** Always return generic, opaque messages for security violations intended for untrusted callers. Do not include detailed paths or resolved IP addresses. Use `re.search` instead of `re.match` with padded `.*` patterns when attempting to match substrings.
+
+## 2026-04-05 - [Timeout Validation Security Enhancement]
+**Vulnerability:** The `timeout` decorator in `src/taipanstack/security/decorators.py` did not explicitly validate the bounds of its `seconds` parameter. Passing negative numbers or non-finite values (like `NaN` or `inf`) could lead to unhandled `ValueError` exceptions leaking from internal Python threading/asyncio primitives, or potentially cause infinite blocking, which is a Denial of Service (DoS) risk.
+**Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary. Relying on downstream libraries to catch invalid arguments often leads to less predictable failure modes and obscure exception traces.
+**Prevention:** Always use `math.isfinite()` and explicit bounds checking when handling raw numerical inputs for timers or timeouts.
+
+## 2026-05-01 - [Prevent TOCTOU in Atomic Filesystem Writes]
+**Vulnerability:** A Time-of-Check to Time-of-Use (TOCTOU) vulnerability existed in `_perform_atomic_write` within `src/taipanstack/utils/filesystem.py`. `tempfile.mkstemp` correctly securely created a file and returned an open file descriptor, but the original implementation closed the file descriptor and then reopened the file by its path (`temp_file.write_text(content, encoding=opts.encoding)`). During this window, an attacker could potentially replace the newly created temporary file with a symbolic link.
+**Learning:** Even when using secure functions like `tempfile.mkstemp`, Python's `Path.write_text` negates the security benefit because it opens the file by name rather than operating on the securely acquired file descriptor. In TaipanStack's file operations, this breaks the atomic safety guarantee.
+**Prevention:** To avoid this, always write directly to the returned file descriptor using `os.fdopen(fd, "w")` within a `with` block instead of closing it and reopening the file by its path. Additionally, ensure the descriptor is cleaned up on error using `contextlib.suppress(OSError): os.close(fd)`.
+
+## 2026-05-06 - Guaranteeing Disk Persistence in Atomic Writes
+**Vulnerability:** While `_perform_atomic_write` in `src/taipanstack/utils/filesystem.py` used `tempfile.mkstemp` and wrote securely to a temporary file before renaming it to the final destination, it lacked an explicit flush and synchronization to disk. If a system crash or power loss occurred immediately after the file was written and renamed, the data might not have actually been flushed to physical storage by the OS, leading to a zero-byte or corrupted file.
+**Learning:** Operating system level file buffering means that simply `write()`-ing to a file descriptor is not sufficient for true durability, especially when replacing critical configuration files or state. Renaming the temporary file does not force the original data to be flushed to disk. Furthermore, attempting to keep the file descriptor open *during* the rename to prevent TOCTOU is impossible in cross-platform code, as Windows will throw a `PermissionError` (WinError 32) if you attempt to move or delete a file with an open handle.
+**Prevention:** Always explicitly call `f.flush()` and `os.fsync(f.fileno())` *before* closing the file descriptor. The file descriptor MUST be closed before performing atomic filesystem operations like `.rename()` to ensure Windows compatibility.
+
+## 2024-05-13 - [Explicit Exception Capturing in Middleware and Watchdogs]
+**Vulnerability:** Unexpected exceptions within the Web Bridge (`TaipanMiddleware`) and Resilience Watchdogs (`BaseWatcher`) were caught via bare `except Exception:` blocks, calling `logger.exception()` without explicitly passing `exc_info=exc`.
+**Learning:** Due to TaipanStack's strict requirement for zero unhandled exceptions and 100% test coverage, generic `except Exception` blocks are sometimes necessary to enforce the `Result` pattern or prevent thread termination. However, implicitly relying on the global exception state in `logger.exception()` drops important context during concurrent async operations (e.g. `uvloop`), leading to information loss during a DoS or other application failures.
+**Prevention:** Always bind exceptions via `except Exception as exc:` and explicitly pass `exc_info=exc` to logging calls (`logger.exception("...", exc_info=exc)`). This ensures strict and robust error capturing for DevSecOps observability.
+
+## 2026-05-22 - [Fix] Add file size limits to config_watcher.py
+**Vulnerability:** Denial of Service (DoS) vulnerability due to reading entire files into memory without size limits.
+**Learning:** `src/taipanstack/resilience/watchdogs/config_watcher.py` uses `path.read_bytes()` and `path.read_text()` without enforcing a maximum file size using `path.stat().st_size` beforehand, which can lead to memory exhaustion.
+**Prevention:** Enforce a maximum file size limit using `path.stat().st_size` before reading files entirely into memory.
+## 2026-05-24 - [Fix] Bounds Validation for Resilience LBYL Type Guards
+**Vulnerability:** Missing `< 0` domain bounds validation in LBYL type guards within numerical resilience state metrics (`circuit_breaker.py` and `retry.py`). While `isinstance` and `math.isfinite` were checked, negative values could corrupt logic (e.g., negative attempts logic bypassing intended constraints).
+**Learning:** In addition to type checking and checking for infinite/NaN values, resilience logic state variables must be strictly bound-checked to prevent logical bypasses when negative numbers are processed.
+**Prevention:** Ensure explicit `< 0` checks are consistently implemented in numerical Look-Before-You-Leap (LBYL) type guards across all resilience classes.
+
+## 2026-05-25 - [Fix] SSRF guard bypassed by multicast and unspecified IP addresses
+**Vulnerability:** The internal function `_is_ip_safe` within `src/taipanstack/security/guards.py` checked if an IP address was private, loopback, link_local, or reserved using the `ipaddress` library, but missed multicast addresses (like `224.0.0.1`) and unspecified addresses (like `0.0.0.0` or `::`).
+**Learning:** Python's `ipaddress` module's `.is_private` property strictly follows RFC allocations and does *not* consider `0.0.0.0` (unspecified) or `224.0.0.1` (multicast) as private. `0.0.0.0` is particularly dangerous as it is often treated by operating systems and HTTP clients as an alias for `localhost`, creating a direct SSRF bypass to the host machine.
+**Prevention:** When validating IP addresses for SSRF, always explicitly deny `is_multicast` and `is_unspecified` properties alongside `is_private`, `is_loopback`, `is_link_local`, and `is_reserved`.
+
+## 2026-06-03 - [SSRF URL Smuggling via Control Characters]
+**Vulnerability:** Found that the SSRF protection mechanism `guard_ssrf` was vulnerable to HTTP Request Smuggling and URL parser differentials because it relied on Python's `urlsplit` without strictly rejecting ASCII control characters (such as `\n`, `\r`, `\t`, `\x00`, and `<space>`) beforehand.
+**Learning:** In the context of TaipanStack, the combination of multiple URL handling stages (e.g., validation vs actual fetch via httpx) means that an attacker could inject control characters to make `urlsplit` parse the URL differently than the HTTP client, potentially bypassing the IP address and hostname checks. Using Python's `str.isprintable()` is insufficient because it considers the space character (`\x20`) as printable.
+**Prevention:** Always explicitly check for and reject characters `<= '\x20'` and `'\x7f'` in any URL validation logic *before* calling `urlsplit` or performing network requests.
+
+
+## 2026-06-06 - [Timeout Validation Type Check]
+**Vulnerability:** The `timeout` decorator in `src/taipanstack/utils/subprocess.py` did not explicitly validate the type of its `timeout` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
+**Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
+**Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
+
+## 2026-06-07 - [Timeout Validation Type Check Decorator]
+**Vulnerability:** The `timeout` decorator in `src/taipanstack/security/decorators.py` did not explicitly validate the type of its `seconds` parameter before checking bounds. Passing a string or dict could lead to unhandled `TypeError` exceptions from `math.isfinite()`.
+**Learning:** In modular architectures wrapping lower-level synchronization primitives, parameter bounds validation must happen early at the API boundary, but it must be preceded by type checks. Relying on math primitives without type checks can cause type errors before bounds logic even executes.
+**Prevention:** Always use `isinstance(val, (int, float))` and explicit bounds checking when handling raw numerical inputs for timers or timeouts before calling `math.isfinite()`.
+
+## 2026-06-11 - URL Smuggling Bypass via URL-Encoded Control Characters
 **Vulnerability:** The URL validation guard (`_check_url_characters` in `src/taipanstack/security/validators.py`) previously failed to account for URL-encoded control characters (e.g., `%00` or `%20`). By injecting these characters, attackers could bypass the initial check, potentially leading to HTTP Request Smuggling or SSRF if downstream components unquoted the URL before processing.
-
 **Learning:** Simply checking the raw URL string for ASCII control characters (`<= '\x20'` and `'\x7f'`) is insufficient because attackers can obfuscate these characters using URL encoding (`%XX`).
-
 **Prevention:** Always validate both the raw URL string and its `unquote`d variant to ensure no control characters exist in either representation.
+
