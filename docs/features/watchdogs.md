@@ -84,7 +84,8 @@ config_watcher = ConfigWatcher(
     config_paths=[Path("config.json")],
     config_model=MyConfig,
     interval=10.0,
-    on_config_change=hot_reload
+    on_config_change=hot_reload,
+    on_validation_error=lambda e: print(f"Invalid config: {e}")
 )
 
 background_task = asyncio.create_task(config_watcher.start())
