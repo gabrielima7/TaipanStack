@@ -654,7 +654,7 @@ def test_very_last_guard_path_traversal_is_symlink_oserror_standard_expected(
         guard_path_traversal("some/path", Path("/safe_tmp"))
 
 
-class TestCompatPy313FallbackExpected:
+class TestCompatPy313FallbackStandardExpected:
     def test_very_last_check_jit_available_not_py313_standard_expected(self) -> None:
         """Test _check_jit_available when PY313=False."""
         from taipanstack.core import compat
@@ -684,7 +684,7 @@ class TestCompatPy313FallbackExpected:
 # =============================================================================
 
 
-def test_very_last_optimizations_coverage_skipped_asserts_success_expected():
+def test_very_last_optimizations_coverage_skipped_asserts_success_standard_expected():
     with (
         patch("sys.version_info", (3, 11)),
         patch("platform.python_implementation", return_value="CPython"),
