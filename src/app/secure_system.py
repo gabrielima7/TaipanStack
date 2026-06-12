@@ -98,7 +98,7 @@ class UserRepository(ABC):
     """Abstract base class for user data access."""
 
     @abstractmethod
-    def save(self, user: UserInDB) -> None:
+    def save(self, user: UserInDB) -> Result[None, UserAlreadyExistsError]:
         """
         Save a user to the repository.
 
@@ -128,7 +128,7 @@ class InMemoryUserRepository(UserRepository):
         """Initialize the in-memory repository."""
         self._storage: dict[UUID, UserInDB] = {}
 
-    def save(self, user: UserInDB) -> None:
+    def save(self, user: UserInDB) -> Result[None, UserAlreadyExistsError]:
         """
         Save a user to the in-memory storage.
 
@@ -136,7 +136,13 @@ class InMemoryUserRepository(UserRepository):
             user: The user to save.
 
         """
+        if any(
+            u.username == user.username or u.email == user.email
+            for u in self._storage.values()
+        ):
+            return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
         self._storage[user.id] = user
+        return Ok(None)
 
     def get_by_id(self, user_id: UUID) -> UserInDB | None:
         """
@@ -186,20 +192,23 @@ class UserService:
             email=user_create.email,
             password_hash=pwd_hash,
         )
-        try:
-            self._user_repository.save(user_in_db)
-            logger.info("User created successfully", user_id=user_in_db.id)
-            # Return the public User model, excluding the password hash
-            public_user = User(
-                id=user_in_db.id,
-                username=user_in_db.username,
-                email=user_in_db.email,
-                is_active=user_in_db.is_active,
-            )
-            return Ok(public_user)
-        except UserAlreadyExistsError as e:
-            logger.warning("Failed to create user", user_id=user_in_db.id)
-            return Err(UserCreationError(message=str(e)))
+        save_result = self._user_repository.save(user_in_db)
+        match save_result:
+            case Ok():
+                logger.info("User created successfully", user_id=user_in_db.id)
+                # Return the public User model, excluding the password hash
+                public_user = User(
+                    id=user_in_db.id,
+                    username=user_in_db.username,
+                    email=user_in_db.email,
+                    is_active=user_in_db.is_active,
+                )
+                return Ok(public_user)
+            case Err(error):
+                logger.warning("Failed to create user", user_id=user_in_db.id)
+                return Err(UserCreationError(message=str(error)))
+            case _:
+                return Err(UserCreationError(message="Unknown save error"))  # type: ignore[unreachable]
 
     def get_user(self, user_id: UUID) -> Result[User, UserNotFoundError]:
         """
