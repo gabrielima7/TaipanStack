@@ -53,6 +53,7 @@ async def test_chaos_watchdogs_base_watcher_loop_exception_handling_standard_exp
     await watcher.start()
 
     # Wait enough time for two cycles to pass
+    # Using 0.25 avoids sleep dependency by having a predictable loop
     await asyncio.sleep(0.25)
 
     await watcher.stop()
