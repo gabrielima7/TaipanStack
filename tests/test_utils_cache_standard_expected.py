@@ -46,7 +46,7 @@ def test_utils_cache_cached_sync_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async() -> None:
+async def test_utils_cache_cached_async_standard_expected() -> None:
     """Test async cache."""
     call_count = 0
 
@@ -67,7 +67,7 @@ async def test_utils_cache_cached_async() -> None:
     assert await compute_async(5) == Ok(10)
     assert call_count == 1
 
-    # Test error bypass
+    # Test error is not cached and correctly bypasses
     assert isinstance(await compute_async(5, should_fail=True), Err)
     assert call_count == 2
 
@@ -93,7 +93,7 @@ def test_utils_cache_cached_sync_err_branch_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_err_branch() -> None:
+async def test_utils_cache_cached_async_err_branch_expected() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
@@ -109,7 +109,7 @@ async def test_utils_cache_cached_async_err_branch() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_async_cache_stampede_prevention() -> None:
+async def test_utils_cache_async_cache_stampede_prevention_expected() -> None:
     """Test that multiple concurrent requests for the same key don't stampede."""
     call_count = 0
 
@@ -161,7 +161,7 @@ def test_utils_cache_cached_sync_lru_eviction_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_lru_eviction() -> None:
+async def test_utils_cache_cached_async_lru_eviction_expected() -> None:
     """Test LRU eviction for async cache."""
     call_count = 0
 

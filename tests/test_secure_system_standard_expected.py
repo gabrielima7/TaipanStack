@@ -16,7 +16,7 @@ from app.secure_system import (
     UserRepository,
     UserService,
 )
-from taipanstack.core.result import Err, Ok
+from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security import verify_password
 
 
@@ -65,8 +65,8 @@ def test_secure_system_create_user_failure_expected(
 
     # Mock repository to raise an error
     class FailingRepository(UserRepository):
-        def save(self, user: object) -> None:
-            raise UserAlreadyExistsError("Database error")
+        def save(self, user: object) -> Result[None, UserAlreadyExistsError]:
+            return Err(UserAlreadyExistsError("Database error"))
 
         def get_by_id(self, user_id: UUID) -> None:
             return None
@@ -93,8 +93,8 @@ def test_secure_system_create_user_already_exists_standard_expected(
     """Test creating a user that already exists raises UserAlreadyExistsError."""
 
     class AlreadyExistsRepository(UserRepository):
-        def save(self, user: object) -> None:
-            raise UserAlreadyExistsError("User already exists")
+        def save(self, user: object) -> Result[None, UserAlreadyExistsError]:
+            return Err(UserAlreadyExistsError("User already exists"))
 
         def get_by_id(self, user_id: UUID) -> None:
             return None
@@ -193,3 +193,88 @@ def test_secure_system_models_redaction_standard_expected() -> None:
     json_user = user_in_db.model_dump_json()
     assert "***REDACTED***" in json_user
     assert "some_hashed_value" not in json_user
+
+
+def test_secure_system_create_user_already_exists_same_email_standard_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test creating a user that already exists due to same email raises UserAlreadyExistsError."""
+    repository = InMemoryUserRepository()
+    service = UserService(repository)
+
+    user1 = UserCreate(
+        username="user1",
+        email="shared@example.com",
+        password=SecretStr("secure_password"),
+    )
+    user2 = UserCreate(
+        username="user2",
+        email="shared@example.com",
+        password=SecretStr("secure_password"),
+    )
+
+    service.create_user(user1)
+    with caplog.at_level(logging.WARNING):
+        result = service.create_user(user2)
+
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "already exists" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")
+
+
+def test_secure_system_create_user_unhandled_err_standard_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test unhandled error type from repository.save"""
+
+    class UnknownErrRepository(UserRepository):
+        def save(self, user: object) -> Result[None, Exception]:
+            return Err(Exception("Unknown DB error"))
+
+        def get_by_id(self, user_id: UUID) -> None:
+            return None
+
+    service = UserService(UnknownErrRepository())
+    user_create = UserCreate(
+        username="fail_user",
+        email="fail@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    result = service.create_user(user_create)
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "Unknown DB error" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")
+
+
+def test_secure_system_create_user_unhandled_match_standard_expected(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test match fallthrough."""
+
+    class UnknownErrRepository(UserRepository):
+        def save(self, user: object) -> Result[None, Exception]:
+            return "not_a_result"  # type: ignore
+
+        def get_by_id(self, user_id: UUID) -> None:
+            return None
+
+    service = UserService(UnknownErrRepository())
+    user_create = UserCreate(
+        username="fail_user",
+        email="fail@example.com",
+        password=SecretStr("password"),
+        ip_address=None,
+    )
+
+    result = service.create_user(user_create)
+    match result:
+        case Err(UserCreationError(message=msg)):
+            assert "Unknown save error" in msg
+        case _:
+            pytest.fail("Expected Err(UserCreationError)")

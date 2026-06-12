@@ -1,5 +1,3 @@
-from urllib.parse import unquote
-
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -12,10 +10,8 @@ control_char_url_encoded_strategy = st.builds(
 
 @given(url=control_char_url_encoded_strategy)
 @settings(max_examples=100)
-def test_url_smuggling_bypass_expected(url: str) -> None:
-    try:
-        validated = validate_url(url)
-        unquoted = unquote(validated)
-        assert not any(c <= "\x20" or c == "\x7f" for c in unquoted)
-    except ValueError:
-        pass
+def test_security_url_smuggling_bypass_standard_expected(url: str) -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="URL contains invalid characters"):
+        validate_url(url)
