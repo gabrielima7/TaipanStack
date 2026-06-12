@@ -67,6 +67,16 @@ def _handle_unicode(result: str, allow_unicode: bool) -> str:
     return result.encode("ascii", errors="ignore").decode("ascii")
 
 
+def _check_string_length(value: str) -> None:
+    if len(value) > MAX_STRING_LENGTH:
+        raise ValueError("String length exceeds maximum allowed limit")
+
+
+def _check_max_length_param(max_length: int | None) -> None:
+    if max_length is not None and max_length < 0:
+        raise ValueError("max_length cannot be negative")
+
+
 def sanitize_string(
     value: str,
     *,
@@ -97,11 +107,8 @@ def sanitize_string(
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
-    if len(value) > MAX_STRING_LENGTH:
-        raise ValueError("String length exceeds maximum allowed limit")
-
-    if max_length is not None and max_length < 0:
-        raise ValueError("max_length cannot be negative")
+    _check_string_length(value)
+    _check_max_length_param(max_length)
 
     if not value:
         return ""
