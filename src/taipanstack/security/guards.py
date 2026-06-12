@@ -573,18 +573,14 @@ def _check_ssrf_url_length(url: str) -> Result[str, SecurityError]:
     return Ok(url)
 
 
+def _has_invalid_url_chars(url: str) -> bool:
+    if any(c <= "\x20" or c == "\x7f" for c in url):
+        return True
+    return bool("\x00" in url or not url.isprintable())
+
+
 def _check_ssrf_url_characters(url: str) -> Result[str, SecurityError]:
-    if any(c <= "\x20" or c == "\x7f" for c in url) or any(
-        c <= "\x20" or c == "\x7f" for c in unquote(url)
-    ):
-        return Err(
-            SecurityError(
-                "URL contains invalid characters",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
-    if "\x00" in url or not url.isprintable() or not unquote(url).isprintable():
+    if _has_invalid_url_chars(url) or _has_invalid_url_chars(unquote(url)):
         return Err(
             SecurityError(
                 "URL contains invalid characters",
@@ -652,15 +648,23 @@ def _validate_ssrf_url(
     return _validate_ssrf_url_parse(url, allowed_schemes)
 
 
-def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
-    """Evaluate if an ipaddress object represents a safe, public IP."""
-    return not (
+def _is_ip_address_unsafe_bounds(
+    addr: ipaddress.IPv4Address | ipaddress.IPv6Address,
+) -> bool:
+    return (
         addr.is_private
         or addr.is_loopback
         or addr.is_link_local
         or addr.is_reserved
-        or getattr(addr, "is_multicast", False)
-        or getattr(addr, "is_unspecified", False)
+    )
+
+
+def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+    """Evaluate if an ipaddress object represents a safe, public IP."""
+    if _is_ip_address_unsafe_bounds(addr):
+        return False
+    return not (
+        getattr(addr, "is_multicast", False) or getattr(addr, "is_unspecified", False)
     )
 
 
