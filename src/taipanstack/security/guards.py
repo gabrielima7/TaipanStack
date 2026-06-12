@@ -651,12 +651,7 @@ def _validate_ssrf_url(
 def _is_ip_address_unsafe_bounds(
     addr: ipaddress.IPv4Address | ipaddress.IPv6Address,
 ) -> bool:
-    return (
-        addr.is_private
-        or addr.is_loopback
-        or addr.is_link_local
-        or addr.is_reserved
-    )
+    return addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
 
 
 def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
