@@ -313,15 +313,15 @@ def _check_url_length(url: str) -> None:
         raise ValueError(msg)
 
 
+def _has_invalid_url_chars(url: str) -> bool:
+    if any(c <= "\x20" or c == "\x7f" for c in url):
+        return True
+    return bool("\x00" in url or not url.isprintable())
+
+
 def _check_url_characters(url: str) -> None:
     """Check URL character constraints."""
-    if any(c <= "\x20" or c == "\x7f" for c in url) or any(
-        c <= "\x20" or c == "\x7f" for c in unquote(url)
-    ):
-        msg = "URL contains invalid characters"
-        raise ValueError(msg)
-
-    if "\x00" in url or not url.isprintable() or not unquote(url).isprintable():
+    if _has_invalid_url_chars(url) or _has_invalid_url_chars(unquote(url)):
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 

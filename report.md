@@ -1,4 +1,4 @@
-# TaipanStack Test Suite Refactoring Report
+# TaipanStack Test Suite and Security Refactoring Report
 
 ## Insights from agents.md
 - **Core Goal**: A modern, secure, and high-performance Python foundation.
@@ -20,6 +20,12 @@
 - Removed empty `pass` statement in `tests/test_very_last_standard_expected.py` and replaced it with genuine assertion return value (`return Path(args[0])`), guaranteeing standard behavioral verification for the `call_count == 1` state.
 - Formatted modified files with `poetry run ruff format tests`.
 - Ran the entire test suite using `poetry run pytest` and verified 100% structural branch coverage across all components with successful passing statuses.
+
+## Security Functions Refactoring (Complexity Reduction)
+Refactored `src/taipanstack/security/validators.py`, `src/taipanstack/security/guards.py`, and `src/taipanstack/security/sanitizers.py` to break nested evaluation logic and duplicated checks into dedicated helper functions:
+1. Extracted duplicate `_has_invalid_url_chars` logic from `_check_url_characters` in `validators.py` and `_check_ssrf_url_characters` in `guards.py`.
+2. Extracted `_is_ip_address_unsafe_bounds` logic from `_is_ip_address_safe` in `guards.py` to evaluate basic IP address bounds safely.
+3. Extracted `_check_string_length` and `_check_max_length_param` logic from `sanitize_string` in `sanitizers.py`.
 
 ## Final Output
 - Re-architected files were updated and fully validated.
