@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2837283573825bc5___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-13 19:10 +0000
+            created at 2026-06-13 19:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -277,7 +277,7 @@
     <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t">        <span class="key">async</span> <span class="key">def</span> <span class="nam">send_with_headers</span><span class="op">(</span><span class="nam">message</span><span class="op">:</span> <span class="nam">MutableMapping</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">object</span><span class="op">]</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t">            <span class="key">if</span> <span class="nam">message</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"type"</span><span class="op">)</span> <span class="op">==</span> <span class="str">"http.response.start"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t">                <span class="nam">headers</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"headers"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">                <span class="nam">existing</span> <span class="op">=</span> <span class="nam">list</span><span class="op">(</span><span class="nam">headers</span><span class="op">)</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">headers</span><span class="op">,</span> <span class="nam">list</span><span class="op">)</span> <span class="key">else</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">                <span class="nam">existing</span> <span class="op">=</span> <span class="nam">list</span><span class="op">(</span><span class="nam">headers</span><span class="op">)</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">headers</span><span class="op">,</span> <span class="op">(</span><span class="nam">list</span><span class="op">,</span> <span class="nam">tuple</span><span class="op">)</span><span class="op">)</span> <span class="key">else</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">                <span class="nam">existing</span><span class="op">.</span><span class="nam">extend</span><span class="op">(</span><span class="nam">extra_headers</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">                <span class="nam">message</span><span class="op">[</span><span class="str">"headers"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">existing</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">            <span class="key">await</span> <span class="nam">send</span><span class="op">(</span><span class="nam">message</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -354,7 +354,7 @@
             <a class="nav" href="z_2837283573825bc5___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-13 19:10 +0000
+            created at 2026-06-13 19:13 +0000
         </p>
     </div>
 </footer>
