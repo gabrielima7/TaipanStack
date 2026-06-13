@@ -15,12 +15,20 @@ graph TD
     A["🏢 Application Layer<br/>(your business logic)"]
     B["🛡️ Security Layer<br/>guards · sanitizers · validators · decorators"]
     C["⚙️ Config Layer<br/>models · generators · version_config"]
-    D["🔧 Utils Layer<br/>retry · circuit_breaker · metrics · logging · filesystem"]
+    D["🔧 Utils Layer<br/>logging · filesystem · context"]
     E["🎯 Core Layer<br/>result · compat · optimizations"]
+    F["🌊 Resilience Layer<br/>circuit_breaker · retry · watchdogs"]
+    G["🌉 Bridges Layer<br/>http · db"]
 
     A --> B
     A --> C
     A --> D
+    A --> F
+    A --> G
+    F --> D
+    F --> E
+    G --> B
+    G --> F
     B --> E
     C --> E
     D --> E
@@ -30,6 +38,8 @@ graph TD
     style C fill:#1A237E,color:#fff
     style D fill:#004D40,color:#fff
     style E fill:#BF360C,color:#fff
+    style F fill:#006064,color:#fff
+    style G fill:#E65100,color:#fff
 ```
 
 ### Dependency Contracts (Import Linter)
@@ -38,10 +48,12 @@ These contracts are **enforced statically in CI** via [Import Linter](https://gi
 
 | Contract | Rule |
 |----------|------|
-| `core` is independent | `taipanstack.core` cannot import from `security`, `utils`, or `config` |
-| `security` is independent | `taipanstack.security` cannot import from `utils` or `config` |
-| `utils` is independent | `taipanstack.utils` cannot import from `security` or `config` |
-| `config` only uses `core` | `taipanstack.config` cannot import from `security` or `utils` |
+| `core` is independent | `taipanstack.core` cannot import from `security`, `utils`, `config`, or `resilience` |
+| `security` is independent | `taipanstack.security` cannot import from `utils`, `config`, or `resilience` |
+| `utils` is independent | `taipanstack.utils` cannot import from `security`, `config`, or `resilience` |
+| `config` only uses `core` | `taipanstack.config` cannot import from `security`, `utils`, or `resilience` |
+| `resilience` only uses `core` | `taipanstack.resilience` cannot import from `security` or `config` |
+| `bridges` isolation | `taipanstack.bridges` cannot import from `config` |
 
 ---
 
