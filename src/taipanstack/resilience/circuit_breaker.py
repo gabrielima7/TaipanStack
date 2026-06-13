@@ -379,8 +379,12 @@ class CircuitBreaker:
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
-        with self._state.lock:
-            should_attempt, state_change = self._evaluate_state_for_attempt()
+        try:
+            with self._state.lock:
+                should_attempt, state_change = self._evaluate_state_for_attempt()
+        except Exception:
+            # If lock acquisition fails, fail-safe by preventing the call.
+            return False
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -424,8 +428,11 @@ class CircuitBreaker:
 
     def _record_success(self) -> None:
         """Record a successful call."""
-        with self._state.lock:
-            state_change = self._get_success_state_change()
+        try:
+            with self._state.lock:
+                state_change = self._get_success_state_change()
+        except Exception:
+            return
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -509,21 +516,27 @@ class CircuitBreaker:
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        with self._state.lock:
-            self._update_failure_metrics()
-            state_change = self._get_failure_state_change()
+        try:
+            with self._state.lock:
+                self._update_failure_metrics()
+                state_change = self._get_failure_state_change()
+        except Exception:
+            return
 
         if state_change:
             self._notify_state_change(*state_change)
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
-        with self._state.lock:
-            self._state.state = CircuitState.CLOSED
-            self._state.failure_count = 0
-            self._state.success_count = 0
-            self._state.half_open_attempts = 0
-            logger.info("Circuit %s manually reset", self.name)
+        try:
+            with self._state.lock:
+                self._state.state = CircuitState.CLOSED
+                self._state.failure_count = 0
+                self._state.success_count = 0
+                self._state.half_open_attempts = 0
+                logger.info("Circuit %s manually reset", self.name)
+        except Exception:
+            return
 
     def _is_failure_exception(self, exc: Exception) -> bool:
         try:
@@ -580,8 +593,11 @@ class CircuitBreaker:
 
         """
         if is_half_open:
-            with self._state.lock:
-                self._safe_decrement_half_open_attempts()
+            try:
+                with self._state.lock:
+                    self._safe_decrement_half_open_attempts()
+            except Exception:
+                return
 
     def __call__(
         self,
