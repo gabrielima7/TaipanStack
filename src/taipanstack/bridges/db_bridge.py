@@ -97,6 +97,23 @@ class ResilientDatabase:
         self._circuit_breaker = circuit_breaker
         self._retry_config = retry_config
 
+    def _check_db_dependencies(self) -> Result[None, Exception]:
+        if not _HAS_SQLALCHEMY:
+            return Err(
+                ImportError(
+                    "sqlalchemy is required for ResilientDatabase. "
+                    "Install with: pip install taipanstack[bridges-db]",
+                ),
+            )
+        return Ok(None)
+
+    def _check_breaker_gate(self) -> Result[None, Exception]:
+        if self._circuit_breaker is not None:
+            cb_err = _breaker_is_open(self._circuit_breaker)
+            if cb_err is not None:
+                return Err(cb_err)
+        return Ok(None)
+
     async def _handle_attempt_failure(
         self,
         exc: Exception,
@@ -127,6 +144,35 @@ class ResilientDatabase:
             return True
         return False
 
+    async def _execute_single_attempt(
+        self,
+        statement: Executable,
+        **kwargs: object,
+    ) -> Result[SQLAlchemyResult[object], Exception]:
+        try:
+            async with AsyncSession(self._engine) as session:
+                result = await session.execute(statement, **kwargs)
+                return Ok(result)
+        except Exception as exc:
+            return Err(exc)
+
+    async def _process_attempt(
+        self,
+        statement: Executable,
+        attempt: int,
+        max_attempts: int,
+        **kwargs: object,
+    ) -> Result[SQLAlchemyResult[object], Exception] | tuple[bool, Exception]:
+        result = await self._execute_single_attempt(statement, **kwargs)
+        if isinstance(result, Ok):
+            return result
+
+        last_error = result.err_value
+        should_continue = await self._handle_attempt_failure(
+            last_error, attempt, max_attempts
+        )
+        return should_continue, last_error
+
     async def _execute_loop(
         self,
         statement: Executable,
@@ -134,20 +180,20 @@ class ResilientDatabase:
         **kwargs: object,
     ) -> Result[SQLAlchemyResult[object], Exception]:
         """Execute the retry loop for database operations."""
-        last_error: Exception | None = None
+        last_error: Exception = RuntimeError("Database execute failed")
 
         for attempt in range(1, max_attempts + 1):
-            try:
-                async with AsyncSession(self._engine) as session:
-                    result = await session.execute(statement, **kwargs)
-                    return Ok(result)
-            except Exception as exc:
-                last_error = exc
-                if await self._handle_attempt_failure(exc, attempt, max_attempts):
-                    continue
+            outcome = await self._process_attempt(
+                statement, attempt, max_attempts, **kwargs
+            )
+            if not isinstance(outcome, tuple):
+                return outcome
+
+            should_continue, last_error = outcome
+            if not should_continue:
                 break
 
-        return Err(last_error or RuntimeError("Database execute failed"))
+        return Err(last_error)
 
     async def execute(
         self,
@@ -164,19 +210,13 @@ class ResilientDatabase:
             ``Ok(result)`` on success, ``Err`` on failure.
 
         """
-        if not _HAS_SQLALCHEMY:
-            return Err(
-                ImportError(
-                    "sqlalchemy is required for ResilientDatabase. "
-                    "Install with: pip install taipanstack[bridges-db]",
-                ),
-            )
+        dep_result = self._check_db_dependencies()
+        if isinstance(dep_result, Err):
+            return dep_result
 
-        # Circuit breaker gate
-        if self._circuit_breaker is not None:
-            cb_err = _breaker_is_open(self._circuit_breaker)
-            if cb_err is not None:
-                return Err(cb_err)
+        cb_result = self._check_breaker_gate()
+        if isinstance(cb_result, Err):
+            return cb_result
 
         max_attempts = 1
         if self._retry_config is not None:
@@ -250,6 +290,21 @@ class ResilientRedis:
                 return Err(cb_err)
         return Ok(None)
 
+    async def _execute_command(
+        self,
+        command: str,
+        *args: object,
+    ) -> Result[object, Exception]:
+        try:
+            fn = getattr(self._client, command.lower())
+            result = await fn(*args)
+            return Ok(result)
+        except Exception as exc:
+            logger.warning("Redis command '%s' failed: %s", command, exc)
+            if self._circuit_breaker is not None:
+                self._circuit_breaker._record_failure(exc)
+            return Err(exc)
+
     async def execute(
         self,
         command: str,
@@ -273,15 +328,7 @@ class ResilientRedis:
         if isinstance(cb_result, Err):
             return cb_result
 
-        try:
-            fn = getattr(self._client, command.lower())
-            result = await fn(*args)
-            return Ok(result)
-        except Exception as exc:
-            logger.warning("Redis command '%s' failed: %s", command, exc)
-            if self._circuit_breaker is not None:
-                self._circuit_breaker._record_failure(exc)
-            return Err(exc)
+        return await self._execute_command(command, *args)
 
     async def health_check(self) -> Result[bool, Exception]:
         """Check Redis connectivity via PING.
