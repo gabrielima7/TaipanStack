@@ -275,3 +275,39 @@ def test_bridge_web_send_json_response_err_standard_expected() -> None:
         result_to_response(Err(ValueError("err")))
 
     asyncio.run(run_test())
+
+
+@pytest.mark.asyncio
+async def test_bridge_web_headers_tuple_edge_case_standard_expected() -> None:
+    from typing import Any
+    from unittest.mock import AsyncMock
+
+    from taipanstack.bridges.web_bridge import TaipanMiddleware
+
+    async def dummy_app_tuple_headers(scope: Any, receive: Any, send: Any) -> None:
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 200,
+                "headers": ((b"x-original", b"value"),),
+            }
+        )
+        await send(
+            {
+                "type": "http.response.body",
+                "body": b"OK",
+            }
+        )
+
+    mw = TaipanMiddleware(dummy_app_tuple_headers, security_headers=True)
+    messages = []
+
+    async def capture_send(msg: Any) -> None:
+        messages.append(msg)
+
+    await mw({"type": "http"}, AsyncMock(), capture_send)
+
+    start_msg = messages[0]
+    headers = {k.decode(): v.decode() for k, v in start_msg.get("headers", [])}
+    assert headers.get("x-original") == "value"
+    assert headers.get("x-content-type-options") == "nosniff"

@@ -245,17 +245,21 @@ class ResilienceOrchestrator(Generic[T]):
         except Exception as exc:
             return self._apply_fallback(Err(exc))
 
-    def _evaluate_circuit_breaker(self) -> Err[Exception] | None:
-        """Check if execution is allowed by the circuit breaker."""
-        if self._adaptive_breaker is not None:
-            if not self._adaptive_breaker.should_allow():
-                return Err(
-                    CircuitBreakerError(
-                        f"Circuit '{self._adaptive_breaker.name}' is open",
-                        state=self._adaptive_breaker.state,
-                    ),
-                )
-        elif self._breaker is not None and not self._breaker._should_attempt():
+    def _evaluate_adaptive_breaker(self) -> Err[Exception] | None:
+        if (
+            self._adaptive_breaker is not None
+            and not self._adaptive_breaker.should_allow()
+        ):
+            return Err(
+                CircuitBreakerError(
+                    f"Circuit '{self._adaptive_breaker.name}' is open",
+                    state=self._adaptive_breaker.state,
+                ),
+            )
+        return None
+
+    def _evaluate_standard_breaker(self) -> Err[Exception] | None:
+        if self._breaker is not None and not self._breaker._should_attempt():
             return Err(
                 CircuitBreakerError(
                     f"Circuit '{self._breaker.name}' is open",
@@ -263,6 +267,12 @@ class ResilienceOrchestrator(Generic[T]):
                 ),
             )
         return None
+
+    def _evaluate_circuit_breaker(self) -> Err[Exception] | None:
+        """Check if execution is allowed by the circuit breaker."""
+        if self._adaptive_breaker is not None:
+            return self._evaluate_adaptive_breaker()
+        return self._evaluate_standard_breaker()
 
     def _record_success_outcome(self, attempt: int) -> None:
         """Record a successful execution outcome."""
@@ -396,6 +406,19 @@ class ResilienceOrchestrator(Generic[T]):
 
         return self._apply_fallback(Err(last_error))
 
+    async def _run_fn_with_timeout(
+        self,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> T | Result[T, Exception]:
+        if self._timeout is not None:
+            return await asyncio.wait_for(
+                fn(*args, **kwargs),
+                timeout=self._timeout,
+            )
+        return await fn(*args, **kwargs)
+
     async def _execute_with_timeout(
         self,
         fn: Callable[P, Awaitable[T]],
@@ -414,13 +437,7 @@ class ResilienceOrchestrator(Generic[T]):
 
         """
         try:
-            if self._timeout is not None:
-                result = await asyncio.wait_for(
-                    fn(*args, **kwargs),
-                    timeout=self._timeout,
-                )
-            else:
-                result = await fn(*args, **kwargs)
+            result = await self._run_fn_with_timeout(fn, *args, **kwargs)
 
             if isinstance(result, (Ok, Err)):
                 return cast(Result[T, Exception], result)
