@@ -2293,12 +2293,20 @@
     A["🏢 Application Layer&lt;br/&gt;(your business logic)"]
     B["🛡️ Security Layer&lt;br/&gt;guards · sanitizers · validators · decorators"]
     C["⚙️ Config Layer&lt;br/&gt;models · generators · version_config"]
-    D["🔧 Utils Layer&lt;br/&gt;retry · circuit_breaker · metrics · logging · filesystem"]
+    D["🔧 Utils Layer&lt;br/&gt;logging · filesystem · context"]
     E["🎯 Core Layer&lt;br/&gt;result · compat · optimizations"]
+    F["🌊 Resilience Layer&lt;br/&gt;circuit_breaker · retry · watchdogs"]
+    G["🌉 Bridges Layer&lt;br/&gt;http · db"]
 
     A --&gt; B
     A --&gt; C
     A --&gt; D
+    A --&gt; F
+    A --&gt; G
+    F --&gt; D
+    F --&gt; E
+    G --&gt; B
+    G --&gt; F
     B --&gt; E
     C --&gt; E
     D --&gt; E
@@ -2307,7 +2315,9 @@
     style B fill:#880E4F,color:#fff
     style C fill:#1A237E,color:#fff
     style D fill:#004D40,color:#fff
-    style E fill:#BF360C,color:#fff</code></pre>
+    style E fill:#BF360C,color:#fff
+    style F fill:#006064,color:#fff
+    style G fill:#E65100,color:#fff</code></pre>
 <h3 id="dependency-contracts-import-linter">Dependency Contracts (Import Linter)<a class="headerlink" href="#dependency-contracts-import-linter" title="Permanent link">&para;</a></h3>
 <p>These contracts are <strong>enforced statically in CI</strong> via <a href="https://github.com/seddonym/import-linter">Import Linter</a>. Any violation fails the build immediately.</p>
 <table>
@@ -2320,19 +2330,27 @@
 <tbody>
 <tr>
 <td><code>core</code> is independent</td>
-<td><code>taipanstack.core</code> cannot import from <code>security</code>, <code>utils</code>, or <code>config</code></td>
+<td><code>taipanstack.core</code> cannot import from <code>security</code>, <code>utils</code>, <code>config</code>, or <code>resilience</code></td>
 </tr>
 <tr>
 <td><code>security</code> is independent</td>
-<td><code>taipanstack.security</code> cannot import from <code>utils</code> or <code>config</code></td>
+<td><code>taipanstack.security</code> cannot import from <code>utils</code>, <code>config</code>, or <code>resilience</code></td>
 </tr>
 <tr>
 <td><code>utils</code> is independent</td>
-<td><code>taipanstack.utils</code> cannot import from <code>security</code> or <code>config</code></td>
+<td><code>taipanstack.utils</code> cannot import from <code>security</code>, <code>config</code>, or <code>resilience</code></td>
 </tr>
 <tr>
 <td><code>config</code> only uses <code>core</code></td>
-<td><code>taipanstack.config</code> cannot import from <code>security</code> or <code>utils</code></td>
+<td><code>taipanstack.config</code> cannot import from <code>security</code>, <code>utils</code>, or <code>resilience</code></td>
+</tr>
+<tr>
+<td><code>resilience</code> only uses <code>core</code></td>
+<td><code>taipanstack.resilience</code> cannot import from <code>security</code> or <code>config</code></td>
+</tr>
+<tr>
+<td><code>bridges</code> isolation</td>
+<td><code>taipanstack.bridges</code> cannot import from <code>config</code></td>
 </tr>
 </tbody>
 </table>
