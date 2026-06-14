@@ -5,7 +5,6 @@ Provides secure wrappers around file operations with path validation,
 atomic writes, and proper error handling using Result types.
 """
 
-import contextlib
 import os
 import shutil
 import tempfile
@@ -222,9 +221,9 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
             path.unlink()
         temp_file.rename(path)
     except BaseException:
-        # Clean up descriptor and temp file on error
-        with contextlib.suppress(OSError):
-            os.close(_fd)
+        # Clean up temp file on error; _fd is already managed by the context manager's
+        # __exit__ if the exception happens inside the block.
+        # If it happens before/after, we unlink.
         Path(temp_path).unlink(missing_ok=True)
         raise
 
