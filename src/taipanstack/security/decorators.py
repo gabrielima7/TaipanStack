@@ -14,23 +14,13 @@ import sys
 import threading
 from collections.abc import Callable
 from types import FrameType
-from typing import ParamSpec, Protocol, TypeVar
+from typing import ParamSpec, TypeVar
 
 from taipanstack.security.guards import SecurityError
 
 P = ParamSpec("P")
 R = TypeVar("R")
 T = TypeVar("T")
-V_contra = TypeVar("V_contra", contravariant=True)
-V_co = TypeVar("V_co", covariant=True)
-
-
-class ValidatorFunc(Protocol[V_contra, V_co]):
-    """Protocol defining the signature of input validators."""
-
-    def __call__(self, value: V_contra, /) -> V_co:
-        """Validate an input value."""
-        ...
 
 
 class OperationTimeoutError(Exception):
