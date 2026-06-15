@@ -54,9 +54,9 @@ app = FastAPI()
 app.add_middleware(
     TaipanMiddleware,
     security_headers=True,
-    security_config=SecurityHeadersConfig(
-        frame_options="DENY",
-        csp="default-src 'self'"
+    headers_config=SecurityHeadersConfig(
+        x_frame_options="DENY",
+        content_security_policy="default-src 'self'"
     )
 )
 ```
