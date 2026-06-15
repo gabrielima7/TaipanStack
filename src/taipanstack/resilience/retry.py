@@ -630,7 +630,7 @@ class Retrier:
         self.attempt += 1
         return True
 
-    def _should_retry(self, exc_type: type[BaseException] | None) -> tuple[bool, float]:
+    def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
         """Determine if an exception should trigger a retry."""
         if exc_type is None:
             return False
@@ -650,7 +650,7 @@ class Retrier:
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         _exc_tb: TracebackType | None,
-    ) -> tuple[bool, float]:
+    ) -> bool:
         """Exit the retry context.
 
         Returns True to suppress the exception if we should retry,
