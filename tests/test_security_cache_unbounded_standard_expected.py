@@ -57,7 +57,7 @@ def test_security_cache_unbounded_security_cache_bounded_standard_expected():
 
 
 @pytest.mark.asyncio
-async def test_security_cache_unbounded_security_cache_bounded_async_expected():
+async def test_security_cache_unbounded_security_cache_bounded_async_expected_standard_expected():
     """Verify async cache bounding and LRU."""
     max_size = 5
 

@@ -32,7 +32,7 @@ def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_stand
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise():
+async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise_standard_expected():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
 
@@ -44,7 +44,7 @@ async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_rais
         await failing_func()
 
 
-def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure():
+def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure_standard_expected():
     cb = CircuitBreaker(failure_exceptions=(TypeError,))
 
     @cb
@@ -56,7 +56,7 @@ def test_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_f
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise_not_failure():
+async def test_chaos_circuit_breaker_type_mutation_failure_exceptions_async_raise_not_failure_standard_expected():
     cb = CircuitBreaker(failure_exceptions=(TypeError,))
 
     @cb

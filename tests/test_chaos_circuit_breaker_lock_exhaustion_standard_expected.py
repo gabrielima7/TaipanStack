@@ -8,7 +8,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_circuit_breaker_lock_acquire_exception_sync():
+def test_chaos_circuit_breaker_lock_acquire_exception_sync_standard_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class BrokenLock:
@@ -16,7 +16,7 @@ def test_chaos_circuit_breaker_lock_acquire_exception_sync():
             raise MemoryError("Out of memory")
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
+            return False
 
     breaker._state.lock = BrokenLock()
     assert breaker._should_attempt() is False
@@ -27,7 +27,7 @@ def test_chaos_circuit_breaker_lock_acquire_exception_sync():
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
+async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async_standard_expected():
     @circuit_breaker(failure_threshold=2)
     async def my_func():
         return Ok("success")
@@ -39,7 +39,7 @@ async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
             raise MemoryError("Out of memory")
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
+            return False
 
     breaker_instance._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):
@@ -58,7 +58,7 @@ def test_chaos_circuit_breaker_decorator_lock_acquire_exception_sync_standard_ex
             raise MemoryError("Out of memory")
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
+            return False
 
     breaker_instance._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):

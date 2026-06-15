@@ -12,7 +12,7 @@ from taipanstack.resilience.retry import RetryConfig
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_full_pipeline_success():
+async def test_orchestrator_full_pipeline_success_standard_expected():
     orch = (
         ResilienceOrchestrator()
         .with_bulkhead(max_concurrent=1)
@@ -30,7 +30,7 @@ async def test_orchestrator_full_pipeline_success():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_timeout_failure():
+async def test_orchestrator_timeout_failure_standard_expected():
     orch = ResilienceOrchestrator().with_timeout(0.01)
 
     async def slow_fn():
@@ -43,7 +43,7 @@ async def test_orchestrator_timeout_failure():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_circuit_breaker_open():
+async def test_orchestrator_circuit_breaker_open_standard_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.0)
     breaker.record_failure(ValueError("fail"))  # Open the breaker
 
@@ -65,7 +65,7 @@ def test_orchestrator_invalid_timeout_standard_expected():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_classic_circuit_breaker():
+async def test_orchestrator_classic_circuit_breaker_standard_expected():
     breaker = CircuitBreaker(failure_threshold=1)
     breaker._record_failure(ValueError("fail"))  # Open the breaker
 
@@ -80,7 +80,7 @@ async def test_orchestrator_classic_circuit_breaker():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_classic_retry_config():
+async def test_orchestrator_classic_retry_config_standard_expected():
     orch = ResilienceOrchestrator().with_retry(RetryConfig(max_attempts=3))
 
     attempts = 0
@@ -98,7 +98,7 @@ async def test_orchestrator_classic_retry_config():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_fallback_on_error():
+async def test_orchestrator_fallback_on_error_standard_expected():
     orch = ResilienceOrchestrator().with_fallback("default")
 
     async def failing_fn():
@@ -109,7 +109,7 @@ async def test_orchestrator_fallback_on_error():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_timeout_without_fallback():
+async def test_orchestrator_timeout_without_fallback_standard_expected():
     orch = ResilienceOrchestrator().with_timeout(0.01)
 
     async def slow_fn():
@@ -122,7 +122,7 @@ async def test_orchestrator_timeout_without_fallback():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_returns_result():
+async def test_orchestrator_execute_returns_result_standard_expected():
     orch = ResilienceOrchestrator()
 
     async def result_fn():
@@ -133,7 +133,7 @@ async def test_orchestrator_execute_returns_result():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_full():
+async def test_orchestrator_bulkhead_full_standard_expected():
     orch = ResilienceOrchestrator().with_bulkhead(max_concurrent=1, max_queue=0)
 
     async def slow_fn():
@@ -153,7 +153,7 @@ async def test_orchestrator_bulkhead_full():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_timeout():
+async def test_orchestrator_bulkhead_timeout_standard_expected():
     # Set a very low timeout for semaphore acquisition
     orch = ResilienceOrchestrator().with_bulkhead(
         max_concurrent=1, max_queue=5, timeout=0.01
@@ -177,7 +177,7 @@ async def test_orchestrator_bulkhead_timeout():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_circuit_breaker_exception_second_attempt():
+async def test_orchestrator_circuit_breaker_exception_second_attempt_standard_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.0)
     # Open the breaker
     breaker.record_failure(ValueError("fail"))
@@ -198,7 +198,7 @@ async def test_orchestrator_circuit_breaker_exception_second_attempt():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_circuit_breaker_exception_second_attempt_real():
+async def test_orchestrator_circuit_breaker_exception_second_attempt_real_standard_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.0)
 
     orch = (
@@ -225,7 +225,7 @@ async def test_orchestrator_circuit_breaker_exception_second_attempt_real():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_general_exceptions():
+async def test_orchestrator_general_exceptions_standard_expected():
     orch = ResilienceOrchestrator()
 
     async def failing_fn():
@@ -236,7 +236,7 @@ async def test_orchestrator_general_exceptions():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_general_exceptions_with_bulkhead():
+async def test_orchestrator_general_exceptions_with_bulkhead_standard_expected():
     orch = ResilienceOrchestrator().with_bulkhead(max_concurrent=1)
 
     async def failing_fn():
@@ -247,7 +247,7 @@ async def test_orchestrator_general_exceptions_with_bulkhead():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_max_attempts_zero():
+async def test_orchestrator_max_attempts_zero_standard_expected():
     # Covers the for-loop not executing
     orch = ResilienceOrchestrator().with_retry(RetryConfig(max_attempts=0))
 
@@ -260,7 +260,7 @@ async def test_orchestrator_max_attempts_zero():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_bulkhead_invalid_timeout():
+async def test_orchestrator_bulkhead_invalid_timeout_standard_expected():
     with pytest.raises(
         ValueError, match="timeout must be a finite non-negative number"
     ):
@@ -268,7 +268,7 @@ async def test_orchestrator_bulkhead_invalid_timeout():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_record_outcomes_with_adaptive_retry():
+async def test_orchestrator_record_outcomes_with_adaptive_retry_standard_expected():
     ar = AdaptiveRetry(max_attempts=3)
     orch = ResilienceOrchestrator().with_retry(ar)
 
@@ -287,14 +287,14 @@ async def test_orchestrator_record_outcomes_with_adaptive_retry():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_calculate_retry_delay():
+async def test_orchestrator_calculate_retry_delay_standard_expected():
     # Covers _calculate_retry_delay when _retry_config is None
     orch = ResilienceOrchestrator()
     assert orch._calculate_retry_delay(1) == 0.0
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_classic_circuit_breaker_record_success():
+async def test_orchestrator_classic_circuit_breaker_record_success_standard_expected():
     breaker = CircuitBreaker(failure_threshold=1)
     orch = ResilienceOrchestrator().with_circuit_breaker(breaker)
 
@@ -306,7 +306,7 @@ async def test_orchestrator_classic_circuit_breaker_record_success():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_classic_circuit_breaker_record_failure():
+async def test_orchestrator_classic_circuit_breaker_record_failure_standard_expected():
     breaker = CircuitBreaker(failure_threshold=1)
     orch = ResilienceOrchestrator().with_circuit_breaker(breaker)
 
@@ -318,7 +318,7 @@ async def test_orchestrator_classic_circuit_breaker_record_failure():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_inner_exception():
+async def test_orchestrator_execute_inner_exception_standard_expected():
     # Make _execute_inner raise directly to hit line 230-231
     orch = ResilienceOrchestrator()
 
@@ -333,7 +333,7 @@ async def test_orchestrator_execute_inner_exception():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_inner_exception_with_bulkhead():
+async def test_orchestrator_execute_inner_exception_with_bulkhead_standard_expected():
     # Make _execute_inner raise directly to hit line 222-223
     orch = ResilienceOrchestrator().with_bulkhead(max_concurrent=1)
 

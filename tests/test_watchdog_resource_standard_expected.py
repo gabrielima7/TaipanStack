@@ -302,7 +302,7 @@ class TestBaseWatcher:
 
 
 @pytest.mark.asyncio
-async def test_watchdog_resource_resource_watcher_run_err_branch_expected() -> None:
+async def test_watchdog_resource_resource_watcher_run_err_branch_expected_standard_expected() -> None:
     from unittest.mock import patch
 
     from taipanstack.core.result import Err
