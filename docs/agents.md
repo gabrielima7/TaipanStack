@@ -22,8 +22,10 @@ The layered structure is heavily enforced via **Import Linter**. Respect the fol
 1. **`src/app/`**: Application entry point. Outermost layer.
 2. **`src/taipanstack/security/`**: Guards, sanitizers, validators, and authentication.
 3. **`src/taipanstack/config/`**: Configuration models and generators.
-4. **`src/taipanstack/utils/`**: Cross-cutting utilities (logs, rate limits, filesystem).
-5. **`src/taipanstack/core/`**: The absolute core (`Result` types, optimizations). **Must never import from upper layers**.
+4. **`src/taipanstack/bridges/`**: External communication integrations (http, db).
+5. **`src/taipanstack/resilience/`**: Reliability patterns (circuit breakers, retries, watchdogs).
+6. **`src/taipanstack/utils/`**: Cross-cutting utilities (logs, filesystem, context).
+7. **`src/taipanstack/core/`**: The absolute core (`Result` types, optimizations). **Must never import from upper layers**.
 
 ## 5. Security & DevSecOps (Secure-by-Design)
 - **Sanitization:** User inputs, subprocess calls, and file access must pass through `taipanstack.security.guards` (e.g., `guard_path_traversal`, `guard_command_injection`).
