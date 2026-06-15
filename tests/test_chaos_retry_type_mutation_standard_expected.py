@@ -207,7 +207,7 @@ def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val_standard_expect
             raise CustomExc()
 
 
-def test_chaos_retry_exit_success() -> None:
+def test_chaos_retry_exit_success_standard_expected() -> None:
     r = Retrier()
     r.__exit__(None, None, None)
 
@@ -227,7 +227,9 @@ def test_chaos_retry_should_retry_type_error_for_issubclass_standard_expected() 
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
+async def test_chaos_retry_decorator_type_error_for_isinstance_standard_expected() -> (
+    None
+):
     """
     Test the try...except TypeError block for isinstance inside the retry decorator.
     """

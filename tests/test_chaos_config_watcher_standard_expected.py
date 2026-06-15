@@ -11,7 +11,7 @@ class DummyConfig(BaseModel):
     foo: str
 
 
-def test_chaos_config_watcher_extreme_callback_failure() -> None:
+def test_chaos_config_watcher_extreme_callback_failure_standard_expected() -> None:
     """Chaos test: Ensure ConfigWatcher handles extreme callback failures gracefully."""
 
     def exploding_callback(model: BaseModel) -> None:

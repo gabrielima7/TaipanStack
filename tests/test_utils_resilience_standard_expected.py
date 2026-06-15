@@ -49,7 +49,9 @@ def test_utils_resilience_fallback_sync_unreachable_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_fallback_async_unreachable_expected() -> None:
+async def test_utils_resilience_fallback_async_unreachable_expected_standard_expected() -> (
+    None
+):
     """Test fallback async unreachable logic."""
 
     @fallback(fallback_value="safe")
@@ -63,7 +65,7 @@ async def test_utils_resilience_fallback_async_unreachable_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_fallback_async_expected() -> None:
+async def test_utils_resilience_fallback_async_expected_standard_expected() -> None:
     """Test async fallback."""
 
     @fallback(fallback_value="safe_async")
@@ -115,7 +117,7 @@ def test_utils_resilience_timeout_sync_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_timeout_async_expected() -> None:
+async def test_utils_resilience_timeout_async_expected_standard_expected() -> None:
     """Test async timeout."""
 
     @timeout(0.2)

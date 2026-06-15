@@ -84,7 +84,7 @@ def test_fuzz_logging_redact_dict_does_not_crash_standard_expected(
         ) from e
 
 
-def test_fuzz_logging_redact_redact_set_standard():
+def test_fuzz_logging_redact_redact_set_standard_standard_expected():
     seen = set()
     s = {"secret_val", 123}
     redacted = _redact_set(s, seen)
@@ -133,7 +133,7 @@ class StringMock:
         self.val = val
 
 
-def test_fuzz_logging_redact_redact_string_standard():
+def test_fuzz_logging_redact_redact_string_standard_standard_expected():
     from taipanstack.utils.logging import _is_sensitive
 
     assert not _is_sensitive(StringMock("test"), None)
