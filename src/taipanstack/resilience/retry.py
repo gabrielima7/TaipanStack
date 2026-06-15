@@ -24,6 +24,45 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
+def _handle_retry_exception(
+    e: Exception,
+    attempt: int,
+    func_name: str,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    config: "RetryConfig",
+) -> tuple[bool, float]:
+    """Handle a retry attempt exception.
+
+    Args:
+        e: The exception raised.
+        attempt: The current attempt number.
+        func_name: The name of the function.
+        valid_on: The exception types to retry on.
+        config: The retry configuration.
+
+    Returns:
+        True if the exception should be retried, False otherwise.
+
+    Raises:
+        Exception: If the exception is not matched and should not be retried.
+
+    """
+    try:
+        is_match = isinstance(e, valid_on)
+    except TypeError:
+        is_match = False
+    if not is_match:
+        raise e
+
+    if attempt == config.max_attempts:
+        _log_all_failed(func_name, e, config)
+        return False, 0.0
+
+    delay = calculate_delay(attempt, config)
+    _log_retry_attempt(func_name, attempt, e, delay, config)
+    return True, delay
+
+
 class RetryDecorator(Protocol):
     """Protocol for the retry decorator."""
 
@@ -362,7 +401,7 @@ def _validate_retry_exceptions(
     return on_tuple
 
 
-def retry(  # noqa: PLR0915
+def retry(
     *,
     max_attempts: int = 3,
     initial_delay: float = 1.0,
@@ -419,7 +458,7 @@ def retry(  # noqa: PLR0915
         on_retry=on_retry,
     )
 
-    def decorator(  # noqa: PLR0915
+    def decorator(
         func: Callable[P, R] | Callable[P, Awaitable[R]],
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
@@ -440,30 +479,16 @@ def retry(  # noqa: PLR0915
                                 raise err_val  # noqa: TRY301
                         return last_result
                     except Exception as e:
-                        try:
-                            is_match = isinstance(e, valid_on)
-                        except TypeError:
-                            is_match = False
-                        if not is_match:
-                            raise
                         last_exception = e
-
-                        if attempt == max_attempts:
-                            _log_all_failed(
-                                cast(str, getattr(func_coro, "__name__", "unknown")),
-                                e,
-                                config,
-                            )
-                            break
-
-                        delay = calculate_delay(attempt, config)
-                        _log_retry_attempt(
-                            cast(str, getattr(func_coro, "__name__", "unknown")),
-                            attempt,
+                        should_retry, delay = _handle_retry_exception(
                             e,
-                            delay,
+                            attempt,
+                            cast(str, getattr(func_coro, "__name__", "unknown")),
+                            valid_on,
                             config,
                         )
+                        if not should_retry:
+                            break
                         await asyncio.sleep(min(delay, 3600.0))
 
                 if last_result is not None and isinstance(last_result, Err):
@@ -494,31 +519,16 @@ def retry(  # noqa: PLR0915
                             raise err_val  # noqa: TRY301
                     return last_result
                 except Exception as e:
-                    try:
-                        is_match = isinstance(e, valid_on)
-                    except TypeError:
-                        is_match = False
-                    if not is_match:
-                        raise
                     last_exception = e
-
-                    if attempt == max_attempts:
-                        _log_all_failed(
-                            cast(str, getattr(func_sync, "__name__", "unknown")),
-                            e,
-                            config,
-                        )
-                        break
-
-                    # Calculate delay and wait
-                    delay = calculate_delay(attempt, config)
-                    _log_retry_attempt(
-                        cast(str, getattr(func_sync, "__name__", "unknown")),
-                        attempt,
+                    should_retry, delay = _handle_retry_exception(
                         e,
-                        delay,
+                        attempt,
+                        cast(str, getattr(func_sync, "__name__", "unknown")),
+                        valid_on,
                         config,
                     )
+                    if not should_retry:
+                        break
                     time.sleep(min(delay, 3600.0))
 
             if last_result is not None and isinstance(last_result, Err):
@@ -620,7 +630,7 @@ class Retrier:
         self.attempt += 1
         return True
 
-    def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
+    def _should_retry(self, exc_type: type[BaseException] | None) -> tuple[bool, float]:
         """Determine if an exception should trigger a retry."""
         if exc_type is None:
             return False
@@ -640,7 +650,7 @@ class Retrier:
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         _exc_tb: TracebackType | None,
-    ) -> bool:
+    ) -> tuple[bool, float]:
         """Exit the retry context.
 
         Returns True to suppress the exception if we should retry,
