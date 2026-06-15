@@ -2320,8 +2320,10 @@
 1. <strong><code>src/app/</code></strong>: Application entry point. Outermost layer.
 2. <strong><code>src/taipanstack/security/</code></strong>: Guards, sanitizers, validators, and authentication.
 3. <strong><code>src/taipanstack/config/</code></strong>: Configuration models and generators.
-4. <strong><code>src/taipanstack/utils/</code></strong>: Cross-cutting utilities (logs, rate limits, filesystem).
-5. <strong><code>src/taipanstack/core/</code></strong>: The absolute core (<code>Result</code> types, optimizations). <strong>Must never import from upper layers</strong>.</p>
+4. <strong><code>src/taipanstack/bridges/</code></strong>: External communication integrations (http, db).
+5. <strong><code>src/taipanstack/resilience/</code></strong>: Reliability patterns (circuit breakers, retries, watchdogs).
+6. <strong><code>src/taipanstack/utils/</code></strong>: Cross-cutting utilities (logs, filesystem, context).
+7. <strong><code>src/taipanstack/core/</code></strong>: The absolute core (<code>Result</code> types, optimizations). <strong>Must never import from upper layers</strong>.</p>
 <h2 id="5-security-devsecops-secure-by-design">5. Security &amp; DevSecOps (Secure-by-Design)<a class="headerlink" href="#5-security-devsecops-secure-by-design" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Sanitization:</strong> User inputs, subprocess calls, and file access must pass through <code>taipanstack.security.guards</code> (e.g., <code>guard_path_traversal</code>, <code>guard_command_injection</code>).</li>

@@ -2375,9 +2375,9 @@
 </span><span id="__span-1-7"><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
 </span><span id="__span-1-8">    <span class="n">TaipanMiddleware</span><span class="p">,</span>
 </span><span id="__span-1-9">    <span class="n">security_headers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-1-10">    <span class="n">security_config</span><span class="o">=</span><span class="n">SecurityHeadersConfig</span><span class="p">(</span>
-</span><span id="__span-1-11">        <span class="n">frame_options</span><span class="o">=</span><span class="s2">&quot;DENY&quot;</span><span class="p">,</span>
-</span><span id="__span-1-12">        <span class="n">csp</span><span class="o">=</span><span class="s2">&quot;default-src &#39;self&#39;&quot;</span>
+</span><span id="__span-1-10">    <span class="n">headers_config</span><span class="o">=</span><span class="n">SecurityHeadersConfig</span><span class="p">(</span>
+</span><span id="__span-1-11">        <span class="n">x_frame_options</span><span class="o">=</span><span class="s2">&quot;DENY&quot;</span><span class="p">,</span>
+</span><span id="__span-1-12">        <span class="n">content_security_policy</span><span class="o">=</span><span class="s2">&quot;default-src &#39;self&#39;&quot;</span>
 </span><span id="__span-1-13">    <span class="p">)</span>
 </span><span id="__span-1-14"><span class="p">)</span>
 </span></code></pre></div>
