@@ -22,7 +22,7 @@ def test_security_password_hash_password_secret_str_standard_expected() -> None:
     assert verify_password(password, pwd_hash)
 
 
-def test_security_password_verify_password_success() -> None:
+def test_security_password_verify_password_success_standard_expected() -> None:
     """Test that a correct password verifies successfully."""
     password = "my_password"
     pwd_hash = hash_password(password)
@@ -31,7 +31,7 @@ def test_security_password_verify_password_success() -> None:
     assert verify_password(SecretStr(password), pwd_hash) is True
 
 
-def test_security_password_verify_password_failure() -> None:
+def test_security_password_verify_password_failure_standard_expected() -> None:
     """Test that an incorrect password fails verification."""
     password = "my_password"
     pwd_hash = hash_password(password)

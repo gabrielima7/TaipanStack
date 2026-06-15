@@ -19,7 +19,7 @@ def test_chaos_resilience_timeout_type_mutation_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_timeout_type_mutation_async() -> None:
+async def test_chaos_resilience_timeout_type_mutation_async_standard_expected() -> None:
     """Simulate a severe production failure where timeout 'seconds' is corrupted to a string."""
 
     @timeout(cast(float, "1.0"))

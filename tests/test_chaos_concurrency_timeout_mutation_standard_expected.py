@@ -7,7 +7,7 @@ from taipanstack.utils.concurrency import OverloadError, limit_concurrency
 
 
 @pytest.mark.asyncio
-async def test_concurrency_async_timeout_mutation():
+async def test_concurrency_async_timeout_mutation_standard_expected():
     @limit_concurrency(max_tasks=1, timeout=1.0)
     async def fast_op():
         return "success"

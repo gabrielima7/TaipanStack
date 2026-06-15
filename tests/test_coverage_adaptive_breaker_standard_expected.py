@@ -66,7 +66,7 @@ def test_adaptive_breaker_evaluate_trip_returns_early_standard_expected():
     assert breaker._state == CircuitState.CLOSED
 
 
-def test_adaptive_breaker_half_open_success_and_failure(monkeypatch):
+def test_adaptive_breaker_half_open_success_and_failure_standard_expected(monkeypatch):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=0.0)
     breaker._state = CircuitState.OPEN
     breaker._last_opened_at = 0.0  # Force immediate recovery

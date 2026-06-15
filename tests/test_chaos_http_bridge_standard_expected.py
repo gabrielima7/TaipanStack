@@ -11,7 +11,9 @@ from taipanstack.core.result import Err, Ok
 
 
 @pytest.mark.asyncio
-async def test_chaos_http_bridge_safe_client_exception_extreme() -> None:
+async def test_chaos_http_bridge_safe_client_exception_extreme_standard_expected() -> (
+    None
+):
     """Simulate a severe exception thrown during safe client initialization."""
     from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -25,7 +27,7 @@ async def test_chaos_http_bridge_safe_client_exception_extreme() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_http_bridge_request_extreme_delay() -> None:
+async def test_chaos_http_bridge_request_extreme_delay_standard_expected() -> None:
     """Test HTTP bridge handles extreme delays simulating stuck network."""
     from taipanstack.bridges.http_bridge import SafeHttpClient
 
@@ -108,7 +110,7 @@ def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs_standard_expected(
 
 
 @pytest.mark.asyncio
-async def test_chaos_http_bridge_missing_httpx_coverage() -> None:
+async def test_chaos_http_bridge_missing_httpx_coverage_standard_expected() -> None:
     from unittest.mock import patch
 
     from taipanstack.bridges.http_bridge import SafeHttpClient

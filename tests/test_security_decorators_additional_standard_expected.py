@@ -130,7 +130,7 @@ def test_security_decorators_additional_security_decorators_validate_inputs_vali
         my_func(x=5)
 
 
-def test_security_decorators_additional_security_decorators_timeout_thread_success():
+def test_security_decorators_additional_security_decorators_timeout_thread_success_standard_expected():
 
     from taipanstack.security.decorators import timeout
 
@@ -153,7 +153,7 @@ def test_security_decorators_additional_security_decorators_timeout_thread_excep
         my_func()
 
 
-def test_security_decorators_additional_security_decorators_timeout_signal_success():
+def test_security_decorators_additional_security_decorators_timeout_signal_success_standard_expected():
     from taipanstack.security.decorators import timeout
 
     @timeout(1.0, use_signal=True)

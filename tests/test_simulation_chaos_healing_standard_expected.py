@@ -11,7 +11,7 @@ from taipanstack.utils.rate_limit import rate_limit
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_chaos() -> None:
+async def test_complex_microservice_simulation_chaos_standard_expected() -> None:
     """Simulates a highly concurrent microservice handling malicious payloads."""
     # 1. Setup Architecture
     orchestrator = (
@@ -66,7 +66,9 @@ async def test_complex_microservice_simulation_chaos() -> None:
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_orchestrator_exception() -> None:
+async def test_complex_microservice_simulation_orchestrator_exception_standard_expected() -> (
+    None
+):
     """Tests the new except Exception branch wrapping _execute_inner."""
     orchestrator_with_bh = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
     orchestrator_without_bh = ResilienceOrchestrator()
@@ -88,7 +90,7 @@ async def test_complex_microservice_simulation_orchestrator_exception() -> None:
 
 
 @pytest.mark.asyncio
-async def test_complex_microservice_simulation_orchestrator_exception_coverage() -> (
+async def test_complex_microservice_simulation_orchestrator_exception_coverage_standard_expected() -> (
     None
 ):
     """Coverage to hit the except Exception logic inside orchestrator execute().

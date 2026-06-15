@@ -427,7 +427,7 @@ def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_cal
 
 
 @pytest.mark.asyncio
-async def test_watchdog_config_config_watcher_change_detection_error_coverage_expected() -> (
+async def test_watchdog_config_config_watcher_change_detection_error_coverage_expected_standard_expected() -> (
     None
 ):
     """Test config_watcher change detection error logging."""

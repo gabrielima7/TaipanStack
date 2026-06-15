@@ -23,7 +23,7 @@ def test_chaos_rate_limit_lock_acquire_exception_standard_expected():
 
 
 @pytest.mark.asyncio
-async def test_chaos_rate_limit_decorator_lock_acquire_exception_async():
+async def test_chaos_rate_limit_decorator_lock_acquire_exception_async_standard_expected():
     @rate_limit(10, 1.0)
     async def my_func():
         return "success"

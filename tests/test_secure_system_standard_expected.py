@@ -20,7 +20,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security import verify_password
 
 
-def test_secure_system_create_user_success_expected(
+def test_secure_system_create_user_success_expected_standard_expected(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test creating a user with valid data."""
@@ -58,7 +58,7 @@ def test_secure_system_create_user_success_expected(
     assert f"user_id={user.id}" in caplog.text
 
 
-def test_secure_system_create_user_failure_expected(
+def test_secure_system_create_user_failure_expected_standard_expected(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test user creation failure handled gracefully."""
