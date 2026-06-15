@@ -3,7 +3,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
-def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_success() -> (
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_success_standard_expected() -> (
     None
 ):
     """Test what happens if the state is an invalid value when _record_success is called."""
@@ -17,7 +17,7 @@ def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_succe
     cb._record_success()
 
 
-def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure() -> (
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure_standard_expected() -> (
     None
 ):
     """Test what happens if the state is an invalid value when _record_failure is called."""

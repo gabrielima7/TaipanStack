@@ -22,7 +22,7 @@ def test_chaos_retry_sync_sleep_oserror_standard_expected():
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_async_sleep_memoryerror():
+async def test_chaos_retry_async_sleep_memoryerror_standard_expected():
     attempts = 0
 
     @retry(max_attempts=3, on=(ValueError,), reraise=True)

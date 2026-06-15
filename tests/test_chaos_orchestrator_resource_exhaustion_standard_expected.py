@@ -7,7 +7,7 @@ from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_returns_err() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_returns_err_standard_expected() -> (
     None
 ):
     """Chaos test: Inject OSError when acquiring semaphore in Orchestrator."""
@@ -28,7 +28,7 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oser
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_returns_err() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_returns_err_standard_expected() -> (
     None
 ):
     """Chaos test: Inject MemoryError when acquiring semaphore in Orchestrator."""
@@ -49,7 +49,7 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memo
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_returns_err() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_returns_err_standard_expected() -> (
     None
 ):
     """Chaos test: Inject RuntimeError when acquiring semaphore in Orchestrator."""
@@ -72,7 +72,7 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runt
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_with_fallback() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oserror_chaos_with_fallback_standard_expected() -> (
     None
 ):
     """Chaos test: Inject OSError when acquiring semaphore in Orchestrator and test fallback."""
@@ -93,7 +93,7 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_oser
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_with_fallback() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memoryerror_chaos_with_fallback_standard_expected() -> (
     None
 ):
     """Chaos test: Inject MemoryError when acquiring semaphore in Orchestrator and test fallback."""
@@ -114,7 +114,7 @@ async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_memo
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_with_fallback() -> (
+async def test_chaos_orchestrator_resource_exhaustion_orchestrator_bulkhead_runtimeerror_chaos_with_fallback_standard_expected() -> (
     None
 ):
     """Chaos test: Inject RuntimeError when acquiring semaphore in Orchestrator and test fallback."""

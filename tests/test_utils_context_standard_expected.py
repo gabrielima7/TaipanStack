@@ -33,7 +33,7 @@ def test_utils_context_correlation_scope_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_context_correlation_id_async_isolation() -> None:
+async def test_utils_context_correlation_id_async_isolation_standard_expected() -> None:
     """Test that correlation IDs are isolated across async tasks."""
 
     async def worker(worker_id: str, delay: float) -> str | None:
