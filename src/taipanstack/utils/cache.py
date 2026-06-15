@@ -23,6 +23,37 @@ CacheValue: TypeAlias = tuple[float, object]
 CacheDict: TypeAlias = dict[CacheKey, CacheValue]
 
 
+def _check_cache(
+    cache_key: CacheKey,
+    cache: CacheDict,
+    now: float,
+) -> tuple[bool, object]:
+    if cache_key in cache:
+        expiry, value = cache[cache_key]
+        if now < expiry:
+            # Move to end to mark as recently used
+            cache[cache_key] = cache.pop(cache_key)
+            return True, value
+        del cache[cache_key]
+    return False, None
+
+
+def _update_cache(
+    cache_key: CacheKey,
+    result: Result[T, E],
+    cache: CacheDict,
+    max_size: int,
+    now: float,
+    ttl: float,
+) -> None:
+    if isinstance(result, Ok):
+        if len(cache) >= max_size:
+            # Evict least recently used (first item)
+            lru_key = next(iter(cache))
+            del cache[lru_key]
+        cache[cache_key] = (now + ttl, result.ok_value)
+
+
 class CacheDecorator(Protocol):
     """Protocol for the cache decorator."""
 
@@ -39,7 +70,7 @@ class CacheDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
-def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
+def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
     """Cache the Ok() results of a function for a given TTL.
 
     Err() results are not cached. Supports both async and sync functions.
@@ -97,12 +128,9 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
 
                 # Check cache before acquiring lock
                 now = time.monotonic()
-                if cache_key in _cache:
-                    expiry, value = _cache[cache_key]
-                    if now < expiry:
-                        # Move to end to mark as recently used
-                        _cache[cache_key] = _cache.pop(cache_key)
-                        return Ok(cast(T, value))
+                hit, value = _check_cache(cache_key, _cache, now)
+                if hit:
+                    return Ok(cast(T, value))
 
                 if cache_key not in _locks:
                     _locks[cache_key] = asyncio.Lock()
@@ -115,24 +143,14 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
                     async with lock:
                         # Double-check cache after acquiring lock
                         now = time.monotonic()
-                        if cache_key in _cache:
-                            expiry, value = _cache[cache_key]
-                            if now < expiry:
-                                # Move to end to mark as recently used
-                                _cache[cache_key] = _cache.pop(cache_key)
-                                return Ok(cast(T, value))
-                            del _cache[cache_key]
+                        hit, value = _check_cache(cache_key, _cache, now)
+                        if hit:
+                            return Ok(cast(T, value))
 
                         func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
                         result = await func_coro(*args, **kwargs)
 
-                        if isinstance(result, Ok):
-                            if len(_cache) >= max_size:
-                                # Evict least recently used (first item)
-                                lru_key = next(iter(_cache))
-                                del _cache[lru_key]
-                            _cache[cache_key] = (now + ttl, result.ok_value)
-
+                        _update_cache(cache_key, result, _cache, max_size, now, ttl)
                         return result
                 finally:
                     _lock_waiters[cache_key] -= 1
@@ -151,24 +169,14 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
             )
             now = time.monotonic()
 
-            if cache_key in _cache:
-                expiry, value = _cache[cache_key]
-                if now < expiry:
-                    # Move to end to mark as recently used
-                    _cache[cache_key] = _cache.pop(cache_key)
-                    return Ok(cast(T, value))
-                del _cache[cache_key]
+            hit, value = _check_cache(cache_key, _cache, now)
+            if hit:
+                return Ok(cast(T, value))
 
             func_sync = cast(Callable[P, Result[T, E]], func)
             result = func_sync(*args, **kwargs)
 
-            if isinstance(result, Ok):
-                if len(_cache) >= max_size:
-                    # Evict least recently used (first item)
-                    lru_key = next(iter(_cache))
-                    del _cache[lru_key]
-                _cache[cache_key] = (now + ttl, result.ok_value)
-
+            _update_cache(cache_key, result, _cache, max_size, now, ttl)
             return result
 
         return sync_wrapper
