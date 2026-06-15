@@ -298,7 +298,9 @@ async def test_orchestrator_fallback_err_branch_expected_standard_expected() -> 
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_timeout_err_branch_expected_standard_expected() -> None:
+async def test_orchestrator_execute_timeout_err_branch_expected_standard_expected() -> (
+    None
+):
     from taipanstack.core.result import Err
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig
@@ -316,7 +318,9 @@ async def test_orchestrator_execute_timeout_err_branch_expected_standard_expecte
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_timeout_result_return_expected_standard_expected() -> None:
+async def test_orchestrator_execute_timeout_result_return_expected_standard_expected() -> (
+    None
+):
     """Test _execute_with_timeout returns Ok unwrapped if it's already a Result."""
     orch = ResilienceOrchestrator("test_timeout")
 
@@ -329,7 +333,9 @@ async def test_orchestrator_execute_timeout_result_return_expected_standard_expe
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_timeout_result_err_return_expected_standard_expected() -> None:
+async def test_orchestrator_execute_timeout_result_err_return_expected_standard_expected() -> (
+    None
+):
     """Test _execute_with_timeout returns Err unwrapped if it's already a Result."""
     orch = ResilienceOrchestrator("test_timeout")
 

@@ -248,7 +248,9 @@ class TestHealthPinger:
 
 
 @pytest.mark.asyncio
-async def test_watchdog_health_health_pinger_check_all_err_branch_expected_standard_expected() -> None:
+async def test_watchdog_health_health_pinger_check_all_err_branch_expected_standard_expected() -> (
+    None
+):
     from taipanstack.resilience.watchdogs.health_pinger import HealthTarget, check_all
 
     async def always_fail():
@@ -262,7 +264,9 @@ async def test_watchdog_health_health_pinger_check_all_err_branch_expected_stand
 
 
 @pytest.mark.asyncio
-async def test_watchdog_health_health_pinger_run_err_branch_expected_standard_expected() -> None:
+async def test_watchdog_health_health_pinger_run_err_branch_expected_standard_expected() -> (
+    None
+):
 
     from taipanstack.resilience.watchdogs.health_pinger import (
         HealthPinger,

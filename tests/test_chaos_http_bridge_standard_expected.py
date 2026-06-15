@@ -11,7 +11,9 @@ from taipanstack.core.result import Err, Ok
 
 
 @pytest.mark.asyncio
-async def test_chaos_http_bridge_safe_client_exception_extreme_standard_expected() -> None:
+async def test_chaos_http_bridge_safe_client_exception_extreme_standard_expected() -> (
+    None
+):
     """Simulate a severe exception thrown during safe client initialization."""
     from taipanstack.bridges.http_bridge import SafeHttpClient
 
