@@ -18,7 +18,7 @@ from urllib.parse import unquote, urlsplit
 
 from result import Err, Ok, Result
 
-from taipanstack.security.validators import MAX_URL_LENGTH
+from taipanstack.security.validators import MAX_ENV_VAR_LENGTH, MAX_URL_LENGTH
 
 # Build regex for traversal patterns.
 # Note: we handle ~ specially to only match at start of path or after a separator
@@ -490,6 +490,13 @@ def _validate_env_var_name(name: object) -> str:
     """Validate environment variable name."""
     if not isinstance(name, str):
         raise TypeError(f"Variable name must be str, got {type(name).__name__}")
+
+    if len(name) > MAX_ENV_VAR_LENGTH:
+        raise SecurityError(
+            "Environment variable name exceeds maximum length",
+            guard_name="env_variable",
+            value=name[:80],
+        )
 
     if not name or not name.strip():
         raise SecurityError(
