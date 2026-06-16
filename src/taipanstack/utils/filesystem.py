@@ -112,6 +112,27 @@ ReadFileError: TypeAlias = (
 )
 
 
+def _check_read_path(path: Path) -> Result[None, ReadFileError]:
+    if not path.exists():
+        return Err(FileNotFoundErr(path=path))
+    if not path.is_file():
+        return Err(NotAFileErr(path=path))
+    return Ok(None)
+
+
+def _check_read_size(
+    path: Path,
+    max_size_bytes: int | None,
+) -> Result[None, ReadFileError]:
+    if max_size_bytes is not None:
+        file_size = path.stat().st_size
+        if file_size > max_size_bytes:
+            return Err(
+                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
+            )
+    return Ok(None)
+
+
 def safe_read(
     path: Path | str,
     *,
@@ -151,19 +172,13 @@ def safe_read(
     except SecurityError as e:
         return Err(e)
 
-    if not path.exists():
-        return Err(FileNotFoundErr(path=path))
+    path_check = _check_read_path(path)
+    if isinstance(path_check, Err):
+        return path_check
 
-    if not path.is_file():
-        return Err(NotAFileErr(path=path))
-
-    # Check file size
-    if max_size_bytes is not None:
-        file_size = path.stat().st_size
-        if file_size > max_size_bytes:
-            return Err(
-                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
-            )
+    size_check = _check_read_size(path, max_size_bytes)
+    if isinstance(size_check, Err):
+        return size_check
 
     return Ok(path.read_text(encoding=encoding))
 
@@ -228,6 +243,17 @@ def _perform_atomic_write(path: Path, content: str, opts: WriteOptions) -> None:
         raise
 
 
+def _prepare_write_dir(path: Path, create_parents: bool) -> None:
+    if create_parents:
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def _create_write_backup(path: Path, backup: bool) -> None:
+    if backup and path.exists():
+        backup_path = path.with_suffix(f"{path.suffix}.bak")
+        shutil.copy2(path, backup_path)
+
+
 def safe_write(
     path: Path | str,
     content: str,
@@ -254,14 +280,8 @@ def safe_write(
     _validate_safe_write_path(path, opts)
     path = _sanitize_write_path(path)
 
-    # Create parents if needed
-    if opts.create_parents:
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Create backup if file exists
-    if opts.backup and path.exists():
-        backup_path = path.with_suffix(f"{path.suffix}.bak")
-        shutil.copy2(path, backup_path)
+    _prepare_write_dir(path, opts.create_parents)
+    _create_write_backup(path, opts.backup)
 
     # Write file
     if opts.atomic:
