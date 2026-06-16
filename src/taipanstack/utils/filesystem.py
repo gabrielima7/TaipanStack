@@ -7,6 +7,7 @@ atomic writes, and proper error handling using Result types.
 
 import os
 import shutil
+import stat
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -112,20 +113,20 @@ ReadFileError: TypeAlias = (
 )
 
 
-def _check_read_path(path: Path) -> Result[None, ReadFileError]:
-    if not path.exists():
-        return Err(FileNotFoundErr(path=path))
-    if not path.is_file():
-        return Err(NotAFileErr(path=path))
-    return Ok(None)
-
-
-def _check_read_size(
+def _check_read_path_and_size(
     path: Path,
     max_size_bytes: int | None,
 ) -> Result[None, ReadFileError]:
+    try:
+        st = path.stat()
+    except (FileNotFoundError, OSError):
+        return Err(FileNotFoundErr(path=path))
+
+    if not stat.S_ISREG(st.st_mode):
+        return Err(NotAFileErr(path=path))
+
     if max_size_bytes is not None:
-        file_size = path.stat().st_size
+        file_size = st.st_size
         if file_size > max_size_bytes:
             return Err(
                 FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
@@ -172,13 +173,9 @@ def safe_read(
     except SecurityError as e:
         return Err(e)
 
-    path_check = _check_read_path(path)
+    path_check = _check_read_path_and_size(path, max_size_bytes)
     if isinstance(path_check, Err):
         return path_check
-
-    size_check = _check_read_size(path, max_size_bytes)
-    if isinstance(size_check, Err):
-        return size_check
 
     return Ok(path.read_text(encoding=encoding))
 
@@ -249,7 +246,7 @@ def _prepare_write_dir(path: Path, create_parents: bool) -> None:
 
 
 def _create_write_backup(path: Path, backup: bool) -> None:
-    if backup and path.exists():
+    if backup and path.is_file():
         backup_path = path.with_suffix(f"{path.suffix}.bak")
         shutil.copy2(path, backup_path)
 
