@@ -156,6 +156,7 @@ class TestBulkhead:
     async def test_bulkhead_cancellation_release_expected(self) -> None:
         """Test that semaphore is released if task is cancelled after permit acquisition."""
         from unittest.mock import patch
+
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.1)
 
         async def mock_wait_for(fut, timeout):
@@ -167,3 +168,27 @@ class TestBulkhead:
                 await bulk.execute(asyncio.sleep, 1)
 
         assert bulk._semaphore._value == 1
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_queued_cancellation_expected(self) -> None:
+        """Test that a queued task can be cancelled while waiting, and cleans up its acquire task."""
+        bulk = Bulkhead("test", max_concurrent=1, max_queue=5)
+        gate = asyncio.Event()
+
+        async def blocking():
+            await gate.wait()
+
+        t1 = asyncio.create_task(bulk.execute(blocking))
+        await asyncio.sleep(0.01)
+
+        t2 = asyncio.create_task(bulk.execute(blocking))
+        await asyncio.sleep(0.01)
+
+        # Cancel t2 while it is waiting in the queue
+        t2.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await t2
+
+        # Cleanup t1
+        gate.set()
+        await t1
