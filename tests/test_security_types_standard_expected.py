@@ -141,7 +141,9 @@ class TestSafePath:
         with pytest.raises(ValidationError):
             PathModel(path="~/secrets")
 
-    def test_security_types_absolute_path_in_base_passes_standard_expected(self) -> None:
+    def test_security_types_absolute_path_in_base_passes_standard_expected(
+        self,
+    ) -> None:
         """Absolute path within cwd passes validation."""
         import pathlib
 
@@ -229,7 +231,9 @@ class TestSafeProjectName:
         m = ProjectModel(name="my_project")
         assert m.name == "my_project"
 
-    def test_security_types_valid_name_with_hyphens_passes_standard_expected(self) -> None:
+    def test_security_types_valid_name_with_hyphens_passes_standard_expected(
+        self,
+    ) -> None:
         """A project name with hyphens passes validation."""
         m = ProjectModel(name="my-project")
         assert m.name == "my-project"

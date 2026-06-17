@@ -15,7 +15,9 @@ from taipanstack.security.guards import (
 class TestGuardPathTraversal:
     """Tests for guard_path_traversal function."""
 
-    def test_security_guards_safe_path_passes_standard_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_safe_path_passes_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that safe paths pass validation."""
         safe_file = tmp_path / "test.txt"
         safe_file.touch()
