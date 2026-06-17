@@ -151,3 +151,19 @@ class TestBulkhead:
         assert err.bulkhead_name == "api"
         assert err.max_concurrent == 10
         assert "full" in str(err).lower()
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_cancellation_release_expected(self) -> None:
+        """Test that semaphore is released if task is cancelled after permit acquisition."""
+        from unittest.mock import patch
+        bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.1)
+
+        async def mock_wait_for(fut, timeout):
+            await fut
+            raise asyncio.CancelledError()
+
+        with patch("asyncio.wait_for", mock_wait_for):
+            with pytest.raises(asyncio.CancelledError):
+                await bulk.execute(asyncio.sleep, 1)
+
+        assert bulk._semaphore._value == 1
