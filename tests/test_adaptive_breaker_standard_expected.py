@@ -19,7 +19,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.CLOSED.value
         assert ab.should_allow()
 
-    def test_adaptive_breaker_record_success_expected(self) -> None:
+    def test_adaptive_breaker_record_success_standard_expected(self) -> None:
         """Success updates window and keeps state closed."""
         ab = AdaptiveCircuitBreaker("test")
         ab.record_success()

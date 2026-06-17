@@ -184,11 +184,11 @@ def test_chaos_retry_on_exception_standard_expected() -> None:
     from taipanstack.resilience.retry import RetryError, retry_on_exception
 
     @retry_on_exception((ValueError,), max_attempts=2)
-    def test_func_standard_standard():
+    def test_func_standard_standard_expected():
         raise ValueError("test")
 
     with pytest.raises(RetryError):
-        test_func_standard_standard()
+        test_func_standard_standard_expected()
 
 
 def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val_standard_expected() -> (

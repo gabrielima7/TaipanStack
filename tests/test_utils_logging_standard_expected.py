@@ -342,7 +342,7 @@ class TestLogOperation:
         assert "custom_op" in caplog.text
         assert "custom_op_logger" in caplog.text
 
-    def test_utils_logging_logs_exception_on_failure_expected(
+    def test_utils_logging_logs_exception_on_failure_standard_expected(
         self, caplog: pytest.LogCaptureFixture
     ) -> None:
         """Test that exception is logged on failure."""
