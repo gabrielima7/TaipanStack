@@ -535,7 +535,7 @@ class TestOptimizationsEdgeCases:
         assert not skipped
         assert not errors
 
-    def test_very_last_apply_gc_freeze_success_expected(self) -> None:
+    def test_very_last_apply_gc_freeze_success_standard_expected(self) -> None:
         """Test _apply_gc_freeze succeeds on PY312+ (L267-268)."""
         from taipanstack.core import optimizations
         from taipanstack.core.optimizations import (

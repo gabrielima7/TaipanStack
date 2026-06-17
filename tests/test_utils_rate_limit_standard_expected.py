@@ -93,7 +93,7 @@ class TestRateLimiter:
         with pytest.raises(ValueError, match="must be > 0"):
             RateLimiter(10, -1.0)
 
-    def test_utils_rate_limit_consume_success(self) -> None:
+    def test_utils_rate_limit_consume_success_standard_expected(self) -> None:
         """Test consuming tokens successfully."""
         limiter = RateLimiter(max_calls=2, time_window=1.0)
         assert limiter.consume() is True

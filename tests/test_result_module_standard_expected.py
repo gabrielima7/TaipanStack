@@ -36,7 +36,7 @@ class TestOkErr:
 class TestSafeDecorator:
     """Tests for the @safe decorator."""
 
-    def test_result_module_safe_success_expected(self) -> None:
+    def test_result_module_safe_success_standard_expected(self) -> None:
         """Test safe decorator returns Ok on success."""
 
         @safe
