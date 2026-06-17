@@ -15,7 +15,9 @@ from taipanstack.security.guards import (
 class TestGuardPathTraversal:
     """Tests for guard_path_traversal function."""
 
-    def test_security_guards_safe_path_passes_expected(self, tmp_path: Path) -> None:
+    def test_security_guards_safe_path_passes_standard_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test that safe paths pass validation."""
         safe_file = tmp_path / "test.txt"
         safe_file.touch()
@@ -121,7 +123,7 @@ class TestGuardPathTraversal:
 class TestGuardCommandInjection:
     """Tests for guard_command_injection function."""
 
-    def test_security_guards_safe_command_passes_expected(self) -> None:
+    def test_security_guards_safe_command_passes_standard_expected(self) -> None:
         """Test that safe commands pass validation."""
         cmd = ["python", "-m", "pytest", "-v"]
         result = guard_command_injection(cmd)
@@ -185,7 +187,7 @@ class TestGuardCommandInjection:
 class TestGuardFileExtension:
     """Tests for guard_file_extension function."""
 
-    def test_security_guards_safe_extension_passes_expected(self) -> None:
+    def test_security_guards_safe_extension_passes_standard_expected(self) -> None:
         """Test that safe extensions pass."""
         result = guard_file_extension("script.py", allowed_extensions=["py", "txt"])
         assert result == Path("script.py")

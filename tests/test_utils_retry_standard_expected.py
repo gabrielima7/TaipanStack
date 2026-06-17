@@ -127,7 +127,7 @@ class TestRetryDecorator:
         assert result == "success"
         assert call_count == 1
 
-    def test_utils_retry_retry_on_failure_expected(self) -> None:
+    def test_utils_retry_retry_on_failure_standard_expected(self) -> None:
         """Test function retries on failure."""
         call_count = 0
 
@@ -244,7 +244,7 @@ class TestAsyncRetryDecorator:
         assert call_count == 1
 
     @pytest.mark.asyncio
-    async def test_utils_retry_retry_on_failure_expected(self) -> None:
+    async def test_utils_retry_retry_on_failure_standard_expected(self) -> None:
         """Test async function retries on failure."""
         call_count = 0
 

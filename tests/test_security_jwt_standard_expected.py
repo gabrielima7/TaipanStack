@@ -10,7 +10,7 @@ from taipanstack.security.jwt import decode_jwt, encode_jwt
 class TestEncodeJWT:
     """Tests for encode_jwt."""
 
-    def test_security_jwt_encode_success(self) -> None:
+    def test_security_jwt_encode_success_standard_expected(self) -> None:
         """Test successful encoding of a JWT."""
         payload = {"sub": "user_123", "aud": "my_app"}
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
@@ -39,7 +39,7 @@ class TestEncodeJWT:
 class TestDecodeJWT:
     """Tests for decode_jwt."""
 
-    def test_security_jwt_decode_success(self) -> None:
+    def test_security_jwt_decode_success_standard_expected(self) -> None:
         """Test successful decoding of a fully validated JWT."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         # Calculate Future expiration time manually since PyJWT uses naive UTC heavily
