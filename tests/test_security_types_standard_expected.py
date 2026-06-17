@@ -27,7 +27,7 @@ class UrlModel(BaseModel):
 class TestSafeUrl:
     """Tests for SafeUrl Pydantic type."""
 
-    def test_security_types_valid_public_url_passes_expected(self) -> None:
+    def test_security_types_valid_public_url_passes_standard_expected(self) -> None:
         """A well-formed public HTTPS URL passes validation."""
         # Using a well-known public domain that DNS resolves to a public IP
         # Guard against environments with no network by catching ValidationError
@@ -117,7 +117,7 @@ class PathModel(BaseModel):
 class TestSafePath:
     """Tests for SafePath Pydantic type."""
 
-    def test_security_types_simple_path_passes_expected(self) -> None:
+    def test_security_types_simple_path_passes_standard_expected(self) -> None:
         """A path without traversal markers passes validation."""
         m = PathModel(path="uploads/image.png")
         assert m.path == "uploads/image.png"
@@ -141,7 +141,9 @@ class TestSafePath:
         with pytest.raises(ValidationError):
             PathModel(path="~/secrets")
 
-    def test_security_types_absolute_path_in_base_passes_expected(self) -> None:
+    def test_security_types_absolute_path_in_base_passes_standard_expected(
+        self,
+    ) -> None:
         """Absolute path within cwd passes validation."""
         import pathlib
 
@@ -164,7 +166,7 @@ class CommandModel(BaseModel):
 class TestSafeCommand:
     """Tests for SafeCommand Pydantic type."""
 
-    def test_security_types_simple_command_passes_expected(self) -> None:
+    def test_security_types_simple_command_passes_standard_expected(self) -> None:
         """A benign command string passes validation."""
         m = CommandModel(command="ls")
         assert m.command == "ls"
@@ -224,12 +226,14 @@ class ProjectModel(BaseModel):
 class TestSafeProjectName:
     """Tests for SafeProjectName Pydantic type."""
 
-    def test_security_types_valid_name_passes_expected(self) -> None:
+    def test_security_types_valid_name_passes_standard_expected(self) -> None:
         """A valid project name passes validation."""
         m = ProjectModel(name="my_project")
         assert m.name == "my_project"
 
-    def test_security_types_valid_name_with_hyphens_passes_expected(self) -> None:
+    def test_security_types_valid_name_with_hyphens_passes_standard_expected(
+        self,
+    ) -> None:
         """A project name with hyphens passes validation."""
         m = ProjectModel(name="my-project")
         assert m.name == "my-project"
