@@ -103,6 +103,49 @@ class Bulkhead:
         """Number of currently executing tasks."""
         return self._active
 
+    async def _acquire_permit(self) -> Result[None, Exception]:
+        """Acquire a permit from the semaphore."""
+        self._queued += 1
+        try:
+            await asyncio.wait_for(
+                self._semaphore.acquire(),
+                timeout=self._timeout,
+            )
+            return Ok(None)
+        except TimeoutError:
+            return Err(
+                TimeoutError(
+                    f"Bulkhead '{self.name}' timed out "
+                    f"after {self._timeout}s waiting for permit",
+                ),
+            )
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+        finally:
+            self._queued -= 1
+
+    async def _execute_with_permit(
+        self,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        """Execute the function within the acquired permit."""
+        self._active += 1
+        try:
+            result = await fn(*args, **kwargs)
+            return Ok(result)
+        except Exception as exc:
+            logger.warning(
+                "Bulkhead '%s' execution failed: %s",
+                self.name,
+                exc,
+            )
+            return Err(exc)
+        finally:
+            self._active -= 1
+            self._semaphore.release()
+
     async def execute(
         self,
         fn: Callable[P, Awaitable[T]],
@@ -130,38 +173,8 @@ class Bulkhead:
                 ),
             )
 
-        self._queued += 1
-        try:
-            # Wait for a permit
-            try:
-                await asyncio.wait_for(
-                    self._semaphore.acquire(),
-                    timeout=self._timeout,
-                )
-            except TimeoutError:
-                return Err(
-                    TimeoutError(
-                        f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit",
-                    ),
-                )
-            except (RuntimeError, OSError, MemoryError) as e:
-                return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
-        finally:
-            self._queued -= 1
+        acquire_result = await self._acquire_permit()
+        if isinstance(acquire_result, Err):
+            return acquire_result
 
-        # Execute within the permit
-        self._active += 1
-        try:
-            result = await fn(*args, **kwargs)
-            return Ok(result)
-        except Exception as exc:
-            logger.warning(
-                "Bulkhead '%s' execution failed: %s",
-                self.name,
-                exc,
-            )
-            return Err(exc)
-        finally:
-            self._active -= 1
-            self._semaphore.release()
+        return await self._execute_with_permit(fn, *args, **kwargs)
