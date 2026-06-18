@@ -8,7 +8,6 @@ failing dependency from consuming all available resources.
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import logging
 import math
 from collections.abc import Awaitable, Callable
@@ -116,8 +115,11 @@ class Bulkhead:
                 return Ok(None)
             except TimeoutError:
                 acquire_task.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
+                try:
                     await acquire_task
+                    self._semaphore.release()
+                except asyncio.CancelledError:
+                    pass
                 return Err(
                     TimeoutError(
                         f"Bulkhead '{self.name}' timed out "
@@ -125,16 +127,12 @@ class Bulkhead:
                     ),
                 )
             except asyncio.CancelledError:
-                if (
-                    acquire_task.done()
-                    and not acquire_task.cancelled()
-                    and acquire_task.exception() is None
-                ):
+                acquire_task.cancel()
+                try:
+                    await acquire_task
                     self._semaphore.release()
-                else:
-                    acquire_task.cancel()
-                    with contextlib.suppress(asyncio.CancelledError):
-                        await acquire_task
+                except asyncio.CancelledError:
+                    pass
                 raise
         except (RuntimeError, OSError, MemoryError) as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
