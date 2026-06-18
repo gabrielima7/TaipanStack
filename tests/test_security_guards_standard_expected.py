@@ -501,7 +501,6 @@ def test_security_guards_ssrf_unresolvable_hostname_standard_expected(monkeypatc
 
 
 def test_security_guards_file_extension_cleaning_dot_standard_expected():
-
     from taipanstack.security.guards import guard_file_extension
 
     # Test cleaning trailing dots
@@ -582,7 +581,6 @@ def test_security_guards_env_variable_null_bytes_standard_expected():
 
 
 def test_security_guards_file_extension_cleaning_z_category_standard_expected():
-
     from taipanstack.security.guards import guard_file_extension
 
     res = guard_file_extension("file.txt\u00a0", allowed_extensions=["txt"])
@@ -590,7 +588,6 @@ def test_security_guards_file_extension_cleaning_z_category_standard_expected():
 
 
 def test_security_guards_file_extension_cleaning_c_category_standard_expected():
-
     from taipanstack.security.guards import guard_file_extension
 
     # \u200b is a zero width space (Cf category)
@@ -599,7 +596,6 @@ def test_security_guards_file_extension_cleaning_c_category_standard_expected():
 
 
 def test_security_guards_file_extension_cleaning_ad_standard_expected():
-
     from taipanstack.security.guards import guard_file_extension
 
     # Test cleaning soft hyphen
@@ -627,7 +623,6 @@ def test_security_guards_ssrf_ip_resolve_error_standard_expected(monkeypatch):
 
 
 def test_security_guards_file_extension_cleaning_non_matching_char_standard_expected():
-
     from taipanstack.security.guards import guard_file_extension
 
     res = guard_file_extension("file.txta", allowed_extensions=["txta"])

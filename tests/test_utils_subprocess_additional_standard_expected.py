@@ -52,7 +52,6 @@ def test_utils_subprocess_additional_filter_environment_none_allowed_standard_ex
 
 
 def test_utils_subprocess_additional_run_safe_command_timeout_standard_expected():
-
     import pytest
 
     from taipanstack.utils.subprocess import run_safe_command

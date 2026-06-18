@@ -200,9 +200,9 @@ def test_taipanstack_script_install_runtime_deps_flag_standard_expected(
                 and "add" in str(call[0][0])
                 and any("pydantic" in str(arg) for arg in call[0][0])
             ]
-            assert len(poetry_add_calls) > 0, (
-                "Poetry add with pydantic should have been called"
-            )
+            assert (
+                len(poetry_add_calls) > 0
+            ), "Poetry add with pydantic should have been called"
 
 
 def test_taipanstack_script_python_version_detection_standard_expected(tmp_path):

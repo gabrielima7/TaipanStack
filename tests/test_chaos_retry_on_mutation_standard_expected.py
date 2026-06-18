@@ -6,7 +6,6 @@ from taipanstack.resilience.retry import retry
 
 
 def test_chaos_retry_not_instance_exception_standard_expected() -> None:
-
     @retry(max_attempts=2, on=(ValueError,))
     def faulty_func_not_isinstance():
         raise KeyError("Key")
@@ -16,7 +15,6 @@ def test_chaos_retry_not_instance_exception_standard_expected() -> None:
 
 
 def test_chaos_retry_async_not_instance_exception_standard_expected() -> None:
-
     @retry(max_attempts=2, on=(ValueError,))
     async def faulty_func_async_not_isinstance():
         raise KeyError("Key async")
