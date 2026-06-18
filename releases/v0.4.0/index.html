@@ -2261,7 +2261,7 @@
 <hr />
 <h3 id="taipan-bridges">🌉 Taipan Bridges<a class="headerlink" href="#taipan-bridges" title="Permanent link">&para;</a></h3>
 <p>A plug-and-play modular ecosystem that injects resilience by design into the classic tools of the asynchronous ecosystem.
-* <strong>Imports Bridge (<code>_imports.py</code>)</strong>: Lazy initialization returning safe encapsulations based on the <em>Result Monad</em>. 
+* <strong>Imports Bridge (<code>_imports.py</code>)</strong>: Lazy initialization returning safe encapsulations based on the <em>Result Monad</em>.
 * <strong>HTTP Bridge (<code>http_bridge.py</code>)</strong>: <code>SafeHttpClient</code> client based on HTTPX. Embedded SSRF protection and natively connected to our retry mechanism and circuit breaker.
 * <strong>DB Bridge (<code>db_bridge.py</code>)</strong>: Protective proxy for SQLAlchemy ACID Sessions and Redis async pools ensuring reconnection without bottlenecking <em>event-loops</em>.
 * <strong>Web Bridge (<code>web_bridge.py</code>)</strong>: Implements the ASGI edge middleware <code>TaipanMiddleware</code> from scratch. Rate limits requests (Rate Limit Token Bucket), exposes native restrictive CSPs (Content Security Policies) headers, and standardizes non-leaking HTTP Error JSON outputs.</p>
