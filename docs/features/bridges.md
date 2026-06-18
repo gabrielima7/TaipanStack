@@ -4,7 +4,7 @@ TaipanStack introduces an agnostic, optionally loadable integration layer called
 
 ---
 
-## The SafeHTTPClient 
+## The SafeHTTPClient
 
 When making external connections, developers often use raw `httpx`, risking vulnerabilities such as **SSRF** (Server-Side Request Forgery) and lack of circuit breaking for degraded dependencies.
 
@@ -23,7 +23,7 @@ async def call_external_api():
     async with SafeHttpClient(name="external-api", ssrf_protection=True) as client:
         # Resolves URL, checks if IP is private/reserved, limits timeouts, and retries.
         result = await client.get("https://api.github.com/users/gabrielima7")
-        
+
         match result:
             case Ok(response):
                 print("Data:", response.json())

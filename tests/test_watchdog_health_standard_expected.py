@@ -267,7 +267,6 @@ async def test_watchdog_health_health_pinger_check_all_err_branch_expected_stand
 async def test_watchdog_health_health_pinger_run_err_branch_expected_standard_expected() -> (
     None
 ):
-
     from taipanstack.resilience.watchdogs.health_pinger import (
         HealthPinger,
         HealthTarget,

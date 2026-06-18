@@ -10,7 +10,9 @@ Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibi
 
 import logging
 import os
+import platform
 import sys
+import sysconfig
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final
@@ -106,7 +108,6 @@ def _check_free_threading_available() -> bool:
             return bool(sys.flags.nogil)
 
         # Alternative check for 3.13+
-        import sysconfig  # noqa: PLC0415
 
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
     except (AttributeError, TypeError):
@@ -124,8 +125,6 @@ def _check_mimalloc_available() -> bool:
         return False
 
     try:
-        import sysconfig  # noqa: PLC0415 - lazy import for optional module
-
         # Check if built with mimalloc
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
         return "mimalloc" in config_args.lower()
@@ -348,8 +347,6 @@ def get_python_info() -> dict[str, object]:
         Dictionary with version, platform, and feature information.
 
     """
-    import platform  # noqa: PLC0415 - lazy import for optional module
-
     features = get_features()
 
     return {

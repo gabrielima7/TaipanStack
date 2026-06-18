@@ -399,13 +399,11 @@ class TestCompatPy313FeatureDetection:
         with (
             patch.object(compat, "PY313", True),
             patch.object(sys, "flags", mock_flags),
-            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+            patch(
+                "taipanstack.core.compat.sysconfig.get_config_var",
+                return_value="--disable-gil --with-pydebug",
+            ),
         ):
-            import sysconfig
-
-            sysconfig.get_config_var = MagicMock(  # type: ignore[attr-defined]
-                return_value="--disable-gil --with-pydebug"
-            )
             result = compat._check_free_threading_available()
             assert result is True
 
@@ -420,13 +418,11 @@ class TestCompatPy313FeatureDetection:
         with (
             patch.object(compat, "PY313", True),
             patch.object(sys, "flags", mock_flags),
-            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+            patch(
+                "taipanstack.core.compat.sysconfig.get_config_var",
+                side_effect=AttributeError,
+            ),
         ):
-            import sysconfig
-
-            sysconfig.get_config_var = MagicMock(  # type: ignore[attr-defined]
-                side_effect=AttributeError
-            )
             result = compat._check_free_threading_available()
             assert result is False
 
@@ -438,13 +434,11 @@ class TestCompatPy313FeatureDetection:
 
         with (
             patch.object(compat, "PY313", True),
-            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+            patch(
+                "taipanstack.core.compat.sysconfig.get_config_var",
+                return_value="--with-mimalloc",
+            ),
         ):
-            import sysconfig
-
-            sysconfig.get_config_var = MagicMock(  # type: ignore[attr-defined]
-                return_value="--with-mimalloc"
-            )
             result = compat._check_mimalloc_available()
             assert result is True
 
@@ -454,13 +448,11 @@ class TestCompatPy313FeatureDetection:
 
         with (
             patch.object(compat, "PY313", True),
-            patch.dict("sys.modules", {"sysconfig": MagicMock()}),
+            patch(
+                "taipanstack.core.compat.sysconfig.get_config_var",
+                side_effect=AttributeError,
+            ),
         ):
-            import sysconfig
-
-            sysconfig.get_config_var = MagicMock(  # type: ignore[attr-defined]
-                side_effect=AttributeError
-            )
             result = compat._check_mimalloc_available()
             assert result is False
 
