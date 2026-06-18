@@ -86,7 +86,6 @@ def test_security_decorators_additional_security_decorators_guard_exceptions_log
 
 
 def test_security_decorators_additional_security_decorators_timeout_exception_standard_expected():
-
     from taipanstack.security.decorators import timeout
 
     @timeout(0.01, use_signal=False)
@@ -131,7 +130,6 @@ def test_security_decorators_additional_security_decorators_validate_inputs_vali
 
 
 def test_security_decorators_additional_security_decorators_timeout_thread_success_standard_expected():
-
     from taipanstack.security.decorators import timeout
 
     @timeout(1.0, use_signal=False)
@@ -142,7 +140,6 @@ def test_security_decorators_additional_security_decorators_timeout_thread_succe
 
 
 def test_security_decorators_additional_security_decorators_timeout_thread_exception_standard_expected():
-
     from taipanstack.security.decorators import timeout
 
     @timeout(1.0, use_signal=False)
@@ -178,7 +175,6 @@ def test_security_decorators_additional_security_decorators_timeout_signal_timeo
 
 
 def test_security_decorators_additional_security_decorators_deprecated_standard_expected():
-
     from taipanstack.security.decorators import deprecated
 
     @deprecated(removal_version="2.0", message="Use new_func instead")
@@ -203,7 +199,6 @@ def test_security_decorators_additional_security_decorators_timeout_invalid_time
 
 
 def test_security_decorators_additional_security_decorators_deprecated_no_version_no_message_standard_expected():
-
     from taipanstack.security.decorators import deprecated
 
     @deprecated()
