@@ -192,3 +192,21 @@ class TestBulkhead:
         # Cleanup t1
         gate.set()
         await t1
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_timeout_release_on_race_expected(self) -> None:
+        """Test that semaphore is released if TimeoutError occurs but permit was acquired."""
+        from unittest.mock import patch
+
+        bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.1)
+
+        async def mock_wait_for(fut, timeout):
+            await fut
+            raise TimeoutError()
+
+        with patch("asyncio.wait_for", mock_wait_for):
+            result = await bulk.execute(asyncio.sleep, 0.01)
+            assert isinstance(result, Err)
+            assert isinstance(result.err_value, TimeoutError)
+
+        assert bulk._semaphore._value == 1
