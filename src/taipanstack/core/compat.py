@@ -125,7 +125,6 @@ def _check_mimalloc_available() -> bool:
         return False
 
     try:
-
         # Check if built with mimalloc
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
         return "mimalloc" in config_args.lower()
