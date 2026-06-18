@@ -8,7 +8,6 @@ failing dependency from consuming all available resources.
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import logging
 import math
 from collections.abc import Awaitable, Callable
@@ -104,6 +103,40 @@ class Bulkhead:
         """Number of currently executing tasks."""
         return self._active
 
+    async def _acquire_permit(self) -> Result[None, Exception]:
+        """Wait for and acquire a concurrency permit."""
+        try:
+            acquire_task = asyncio.create_task(self._semaphore.acquire())
+            try:
+                await asyncio.wait_for(
+                    asyncio.shield(acquire_task),
+                    timeout=self._timeout,
+                )
+                return Ok(None)
+            except TimeoutError:
+                acquire_task.cancel()
+                try:
+                    await acquire_task
+                    self._semaphore.release()
+                except asyncio.CancelledError:
+                    pass
+                return Err(
+                    TimeoutError(
+                        f"Bulkhead '{self.name}' timed out "
+                        f"after {self._timeout}s waiting for permit",
+                    ),
+                )
+            except asyncio.CancelledError:
+                acquire_task.cancel()
+                try:
+                    await acquire_task
+                    self._semaphore.release()
+                except asyncio.CancelledError:
+                    pass
+                raise
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+
     async def execute(
         self,
         fn: Callable[P, Awaitable[T]],
@@ -133,36 +166,9 @@ class Bulkhead:
 
         self._queued += 1
         try:
-            acquire_task = asyncio.create_task(self._semaphore.acquire())
-            try:
-                await asyncio.wait_for(
-                    asyncio.shield(acquire_task),
-                    timeout=self._timeout,
-                )
-            except TimeoutError:
-                acquire_task.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await acquire_task
-                return Err(
-                    TimeoutError(
-                        f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit",
-                    ),
-                )
-            except asyncio.CancelledError:
-                if (
-                    acquire_task.done()
-                    and not acquire_task.cancelled()
-                    and acquire_task.exception() is None
-                ):
-                    self._semaphore.release()
-                else:
-                    acquire_task.cancel()
-                    with contextlib.suppress(asyncio.CancelledError):
-                        await acquire_task
-                raise
-        except (RuntimeError, OSError, MemoryError) as e:
-            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+            permit_result = await self._acquire_permit()
+            if isinstance(permit_result, Err):
+                return permit_result
         finally:
             self._queued -= 1
 
