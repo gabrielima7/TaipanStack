@@ -103,37 +103,42 @@ class Bulkhead:
         """Number of currently executing tasks."""
         return self._active
 
+    async def _safe_cancel_task(self, acquire_task: asyncio.Task[bool]) -> None:
+        """Cancel task and safely release semaphore if acquired."""
+        acquire_task.cancel()
+        try:
+            await acquire_task
+            self._semaphore.release()
+        except asyncio.CancelledError:
+            return None
+
+    async def _wait_for_permit(
+        self, acquire_task: asyncio.Task[bool]
+    ) -> Result[None, Exception]:
+        """Wait for the acquire task to complete."""
+        try:
+            await asyncio.wait_for(
+                asyncio.shield(acquire_task),
+                timeout=self._timeout,
+            )
+            return Ok(None)
+        except TimeoutError:
+            await self._safe_cancel_task(acquire_task)
+            return Err(
+                TimeoutError(
+                    f"Bulkhead '{self.name}' timed out "
+                    f"after {self._timeout}s waiting for permit",
+                ),
+            )
+        except asyncio.CancelledError:
+            await self._safe_cancel_task(acquire_task)
+            raise
+
     async def _acquire_permit(self) -> Result[None, Exception]:
         """Wait for and acquire a concurrency permit."""
         try:
             acquire_task = asyncio.create_task(self._semaphore.acquire())
-            try:
-                await asyncio.wait_for(
-                    asyncio.shield(acquire_task),
-                    timeout=self._timeout,
-                )
-                return Ok(None)
-            except TimeoutError:
-                acquire_task.cancel()
-                try:
-                    await acquire_task
-                    self._semaphore.release()
-                except asyncio.CancelledError:
-                    pass
-                return Err(
-                    TimeoutError(
-                        f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit",
-                    ),
-                )
-            except asyncio.CancelledError:
-                acquire_task.cancel()
-                try:
-                    await acquire_task
-                    self._semaphore.release()
-                except asyncio.CancelledError:
-                    pass
-                raise
+            return await self._wait_for_permit(acquire_task)
         except (RuntimeError, OSError, MemoryError) as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
