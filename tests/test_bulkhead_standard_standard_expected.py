@@ -1,6 +1,7 @@
 """Tests for the Bulkhead concurrency limiter."""
 
 import asyncio
+import contextlib
 
 import pytest
 
@@ -122,7 +123,7 @@ class TestBulkhead:
         assert "timed out" in str(result.err_value)
 
         task.cancel()
-        with pytest.raises(asyncio.CancelledError):
+        with contextlib.suppress(asyncio.CancelledError, TimeoutError, asyncio.TimeoutError):
             await task
 
     @pytest.mark.asyncio

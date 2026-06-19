@@ -112,6 +112,8 @@ class Bulkhead:
         except asyncio.CancelledError:
             return None
 
+        return None
+
     async def _wait_for_permit(
         self, acquire_task: asyncio.Task[bool]
     ) -> Result[None, Exception]:
