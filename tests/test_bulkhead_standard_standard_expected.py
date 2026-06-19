@@ -123,7 +123,9 @@ class TestBulkhead:
         assert "timed out" in str(result.err_value)
 
         task.cancel()
-        with contextlib.suppress(asyncio.CancelledError, TimeoutError, asyncio.TimeoutError):
+        with contextlib.suppress(
+            asyncio.CancelledError, TimeoutError, asyncio.TimeoutError
+        ):
             await task
 
     @pytest.mark.asyncio
