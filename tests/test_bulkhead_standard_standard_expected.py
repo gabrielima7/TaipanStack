@@ -192,3 +192,40 @@ class TestBulkhead:
         # Cleanup t1
         gate.set()
         await t1
+
+    def test_bulkhead_invalid_timeout_expected(self) -> None:
+        """ValueError raised on invalid timeout."""
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            Bulkhead("test", timeout=-1.0)
+
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            Bulkhead("test", timeout=float("inf"))
+
+        with pytest.raises(
+            ValueError, match="timeout must be a finite non-negative number"
+        ):
+            Bulkhead("test", timeout=float("nan"))
+
+    @pytest.mark.asyncio
+    async def test_bulkhead_timeout_release_semaphore_expected(self) -> None:
+        """Test that if wait_for times out but acquire_task finished, semaphore is released."""
+        from unittest.mock import patch
+
+        bulk = Bulkhead("test", max_concurrent=1, timeout=0.1)
+
+        async def mock_wait_for(*args, **kwargs):
+            # Wait for acquire_task to finish acquiring
+            await asyncio.sleep(0.01)
+            raise TimeoutError()
+
+        with patch("asyncio.wait_for", mock_wait_for):
+            result = await bulk.execute(asyncio.sleep, 1)
+
+        assert isinstance(result, Err)
+        assert isinstance(result.err_value, TimeoutError)
+        # Verify semaphore was released back to 1
+        assert bulk._semaphore._value == 1
