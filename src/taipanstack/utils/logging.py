@@ -1,4 +1,3 @@
-
 """
 Structured logging with context.
 
@@ -394,8 +393,6 @@ class StackLogger:
 def _configure_structlog(*, level: int | str | None = None) -> None:
     """Configure structlog with default processors and settings."""
     if level is not None:
-
-
         if isinstance(level, str):
             level = getattr(_std_logging, level.upper(), _std_logging.INFO)
         _std_logging.basicConfig(level=level)
