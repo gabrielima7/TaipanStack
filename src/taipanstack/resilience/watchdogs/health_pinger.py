@@ -190,9 +190,20 @@ def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
 
     """
     synthetic = ConnectionError(f"Health ping failed for '{target_name}'")
-    # Record failures until the breaker opens
-    while breaker.state != CircuitState.OPEN:
+
+    # Record failures until the breaker opens, but cap it to avoid infinite loops
+    # if the circuit breaker's state is corrupted or mutated.
+    max_attempts = breaker.config.failure_threshold + 5
+    attempts = 0
+
+    while breaker.state != CircuitState.OPEN and attempts < max_attempts:
         breaker._record_failure(synthetic)
+        attempts += 1
+
+    if breaker.state != CircuitState.OPEN:
+        # Force open if it didn't open normally
+        breaker._state.state = CircuitState.OPEN
+
     logger.warning(
         "Circuit breaker '%s' opened preventively for target '%s'",
         breaker.name,

@@ -1,3 +1,4 @@
+
 """
 Structured logging with context.
 
@@ -6,6 +7,7 @@ context propagation, and proper formatting.
 """
 
 import logging
+import logging as _std_logging
 import re
 import sys
 from collections.abc import Iterator, MutableMapping
@@ -389,8 +391,15 @@ class StackLogger:
             self._logger.exception(self._format_message(message, **kwargs))
 
 
-def _configure_structlog() -> None:
+def _configure_structlog(*, level: int | str | None = None) -> None:
     """Configure structlog with default processors and settings."""
+    if level is not None:
+
+
+        if isinstance(level, str):
+            level = getattr(_std_logging, level.upper(), _std_logging.INFO)
+        _std_logging.basicConfig(level=level)
+
     structlog.configure(
         processors=[
             structlog.stdlib.filter_by_level,
