@@ -1,11 +1,15 @@
-import threading
-import pytest
 import asyncio
+import threading
+
+import pytest
+
 from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import timeout
-from typing import cast
 
-def test_chaos_resilience_timeout_thread_exhaustion_runtime_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_chaos_resilience_timeout_thread_exhaustion_runtime_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     def dummy_func() -> Result[str, Exception]:
         return Ok("success")
@@ -20,7 +24,10 @@ def test_chaos_resilience_timeout_thread_exhaustion_runtime_error_standard_expec
     assert isinstance(result.err_value, RuntimeError)
     assert "Thread exhaustion:" in str(result.err_value)
 
-def test_chaos_resilience_timeout_thread_exhaustion_memory_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_chaos_resilience_timeout_thread_exhaustion_memory_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     def dummy_func() -> Result[str, Exception]:
         return Ok("success")
@@ -35,7 +42,10 @@ def test_chaos_resilience_timeout_thread_exhaustion_memory_error_standard_expect
     assert isinstance(result.err_value, RuntimeError)
     assert "Memory exhaustion:" in str(result.err_value)
 
-def test_chaos_resilience_timeout_thread_exhaustion_os_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_chaos_resilience_timeout_thread_exhaustion_os_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     def dummy_func() -> Result[str, Exception]:
         return Ok("success")
@@ -50,8 +60,11 @@ def test_chaos_resilience_timeout_thread_exhaustion_os_error_standard_expected(m
     assert isinstance(result.err_value, RuntimeError)
     assert "Resource exhaustion:" in str(result.err_value)
 
+
 @pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_runtime_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_chaos_resilience_timeout_async_exhaustion_runtime_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     async def dummy_func() -> Result[str, Exception]:
         return Ok("success")
@@ -69,8 +82,11 @@ async def test_chaos_resilience_timeout_async_exhaustion_runtime_error_standard_
     assert isinstance(result.err_value, RuntimeError)
     assert "Task exhaustion:" in str(result.err_value)
 
+
 @pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_memory_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_chaos_resilience_timeout_async_exhaustion_memory_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     async def dummy_func() -> Result[str, Exception]:
         return Ok("success")
@@ -87,8 +103,11 @@ async def test_chaos_resilience_timeout_async_exhaustion_memory_error_standard_e
     assert isinstance(result.err_value, RuntimeError)
     assert "Memory exhaustion:" in str(result.err_value)
 
+
 @pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_os_error_standard_expected(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_chaos_resilience_timeout_async_exhaustion_os_error_standard_expected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @timeout(1.0)
     async def dummy_func() -> Result[str, Exception]:
         return Ok("success")
