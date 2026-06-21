@@ -8,8 +8,8 @@ failing dependency from consuming all available resources.
 from __future__ import annotations
 
 import asyncio
-import logging
 import contextlib
+import logging
 import math
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, TypeVar
@@ -104,8 +104,11 @@ class Bulkhead:
         """Number of currently executing tasks."""
         return self._active
 
-    async def _cleanup_acquire_task(self, acquire_task: asyncio.Task[bool]) -> None:
-        """Helper to cancel an acquisition task and release the semaphore if acquired."""
+    async def _cleanup_acquire_task(
+        self,
+        acquire_task: asyncio.Task[bool],
+    ) -> None:
+        """Helper to cancel an acquisition task and release semaphore if acquired."""
         acquire_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await acquire_task
