@@ -21,7 +21,9 @@ from taipanstack.resilience.retry import RetryError, retry
 class TestRetryAsyncSupport:
     """Verify @retry works transparently with async def functions."""
 
-    async def test_v034_async_retry_circuit_async_success_no_retry_standard_expected(self) -> None:
+    async def test_v034_async_retry_circuit_async_success_no_retry_standard_expected(
+        self,
+    ) -> None:
         """Successful async function is called only once."""
         call_count = 0
 
@@ -35,7 +37,9 @@ class TestRetryAsyncSupport:
         assert result == "ok"
         assert call_count == 1
 
-    async def test_v034_async_retry_circuit_async_retries_then_succeeds_standard_expected(self) -> None:
+    async def test_v034_async_retry_circuit_async_retries_then_succeeds_standard_expected(
+        self,
+    ) -> None:
         """Async function is retried and eventually succeeds."""
         call_count = 0
 
@@ -217,7 +221,9 @@ class TestRetryAsyncSupport:
 class TestCircuitBreakerAsyncSupport:
     """Verify CircuitBreaker works transparently with async def functions."""
 
-    async def test_v034_async_retry_circuit_async_success_keeps_closed_standard_expected(self) -> None:
+    async def test_v034_async_retry_circuit_async_success_keeps_closed_standard_expected(
+        self,
+    ) -> None:
         """Successful async calls keep circuit in CLOSED state."""
         breaker = CircuitBreaker(failure_threshold=3, name="test_async_closed")
 
@@ -230,7 +236,9 @@ class TestCircuitBreakerAsyncSupport:
 
         assert breaker.state == CircuitState.CLOSED
 
-    async def test_v034_async_retry_circuit_async_failures_open_circuit_standard_expected(self) -> None:
+    async def test_v034_async_retry_circuit_async_failures_open_circuit_standard_expected(
+        self,
+    ) -> None:
         """Async failures trip the circuit after reaching the threshold."""
         breaker = CircuitBreaker(failure_threshold=2, name="test_async_open")
 
