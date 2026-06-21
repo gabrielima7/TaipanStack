@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import contextlib
 import math
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, TypeVar
@@ -103,6 +104,13 @@ class Bulkhead:
         """Number of currently executing tasks."""
         return self._active
 
+    async def _cleanup_acquire_task(self, acquire_task: asyncio.Task[bool]) -> None:
+        """Helper to cancel an acquisition task and release the semaphore if acquired."""
+        acquire_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await acquire_task
+            self._semaphore.release()
+
     async def _acquire_permit(self) -> Result[None, Exception]:
         """Wait for and acquire a concurrency permit."""
         try:
@@ -114,12 +122,7 @@ class Bulkhead:
                 )
                 return Ok(None)
             except TimeoutError:
-                acquire_task.cancel()
-                try:
-                    await acquire_task
-                    self._semaphore.release()
-                except asyncio.CancelledError:
-                    pass
+                await self._cleanup_acquire_task(acquire_task)
                 return Err(
                     TimeoutError(
                         f"Bulkhead '{self.name}' timed out "
@@ -127,12 +130,7 @@ class Bulkhead:
                     ),
                 )
             except asyncio.CancelledError:
-                acquire_task.cancel()
-                try:
-                    await acquire_task
-                    self._semaphore.release()
-                except asyncio.CancelledError:
-                    pass
+                await self._cleanup_acquire_task(acquire_task)
                 raise
         except (RuntimeError, OSError, MemoryError) as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
