@@ -360,7 +360,9 @@ class TestCircuitBreakerDecorator:
 
         assert my_func() == "ok"
 
-    async def test_utils_circuit_breaker_decorator_async_success(self) -> None:
+    async def test_utils_circuit_breaker_decorator_async_success_standard_expected(
+        self,
+    ) -> None:
         """Test that decorator works with async functions."""
 
         @circuit_breaker(failure_threshold=2)
@@ -369,7 +371,7 @@ class TestCircuitBreakerDecorator:
 
         assert await my_async_func() == "async_ok"
 
-    async def test_utils_circuit_breaker_decorator_async_failure_opens_circuit(
+    async def test_utils_circuit_breaker_decorator_async_failure_opens_circuit_standard_expected(
         self,
     ) -> None:
         """Test that failures in async functions open the circuit."""
