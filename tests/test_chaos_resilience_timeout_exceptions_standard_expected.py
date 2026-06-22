@@ -25,10 +25,9 @@ async def test_chaos_timeout_async_cancelled_error_standard_expected():
         raise asyncio.CancelledError("mocked cancellation")
 
     with patch("asyncio.wait_for", side_effect=side_effect):
-        result = await my_async_func()
-        assert isinstance(result, Err)
-        assert isinstance(result.unwrap_err(), RuntimeError)
-        assert "Resource exhaustion" in str(result.unwrap_err())
+        with pytest.raises(asyncio.CancelledError) as exc_info:
+            await my_async_func()
+        assert "mocked cancellation" in str(exc_info.value)
 
 
 @pytest.mark.asyncio

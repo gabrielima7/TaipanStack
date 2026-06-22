@@ -171,7 +171,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     return Err(cast(E, RuntimeError(f"Task exhaustion: {e!s}")))
                 except MemoryError as e:
                     return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
-                except (OSError, asyncio.CancelledError, OverflowError) as e:
+                except (OSError, OverflowError) as e:
                     return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
 
             return async_wrapper
