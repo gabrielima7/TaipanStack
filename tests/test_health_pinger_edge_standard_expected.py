@@ -21,3 +21,19 @@ def test_health_pinger_force_open_normal_standard_expected():
     _force_open_breaker(b, "test_target")
 
     assert b.state == CircuitState.OPEN
+
+
+def test_health_pinger_force_open_triggers_callback_standard_expected():
+    called = []
+
+    def callback(old_state, new_state):
+        called.append((old_state, new_state))
+
+    b = CircuitBreaker(on_state_change=callback)
+    b._state.state = CircuitState.CLOSED
+    b._state.failure_count = float("-inf")
+    b._is_valid_metric = lambda _x: True
+
+    _force_open_breaker(b, "test_target")
+    assert b.state == CircuitState.OPEN
+    assert called == [(CircuitState.CLOSED, CircuitState.OPEN)]
