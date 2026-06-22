@@ -140,14 +140,12 @@ class InMemoryUserRepository(UserRepository):
         """
         with self._lock:
             if any(
-                (u.username == user.username or u.email == user.email) \
-                    and u.id != user.id
+                (u.username == user.username or u.email == user.email)
+                and u.id != user.id
                 for u in self._storage.values()
             ):
                 return Err(
-                    UserAlreadyExistsError(
-                        f"User {user.username} already exists."
-                    )
+                    UserAlreadyExistsError(f"User {user.username} already exists.")
                 )
             self._storage[user.id] = user
             return Ok(None)
