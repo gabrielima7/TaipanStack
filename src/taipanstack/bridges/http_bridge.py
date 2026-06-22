@@ -256,7 +256,7 @@ def _check_preconditions(
         return ssrf_check
 
     if circuit_breaker is not None:
-        cb_err = _check_circuit_breaker(circuit_breaker)
+        cb_err: Exception | None = _check_circuit_breaker(circuit_breaker)
         if cb_err is not None:
             return Err(cb_err)
 

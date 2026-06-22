@@ -1,6 +1,7 @@
 """Tests for the secure_system module."""
 
 import logging
+import threading
 from uuid import UUID, uuid4
 
 import pytest
@@ -278,3 +279,36 @@ def test_secure_system_create_user_unhandled_match_standard_expected(
             assert "Unknown save error" in msg
         case _:
             pytest.fail("Expected Err(UserCreationError)")
+
+
+def test_secure_system_concurrent_chaos_expected_standard_expected() -> None:
+    """Test that concurrent creates do not raise RuntimeError."""
+    repository = InMemoryUserRepository()
+    service = UserService(repository)
+
+    errors = []
+
+    def worker(i: int):
+        user_create = UserCreate(
+            username=f"chaos_user_{i}",
+            email=f"chaos_{i}@example.com",
+            password=SecretStr("password"),
+        )
+        try:
+            service.create_user(user_create)
+        except Exception as e:
+            errors.append(e)
+
+    threads = []
+    for i in range(10):
+        t = threading.Thread(target=worker, args=(i,))
+        threads.append(t)
+
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    assert not errors, f"Unexpected errors during concurrent run: {errors}"
+    assert len(repository._storage) == 10

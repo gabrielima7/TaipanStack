@@ -5,6 +5,7 @@ This module demonstrates a secure implementation of a user management service
 following strict typing and security guidelines.
 """
 
+import threading
 from abc import ABC, abstractmethod
 from uuid import UUID, uuid4
 
@@ -127,6 +128,7 @@ class InMemoryUserRepository(UserRepository):
     def __init__(self) -> None:
         """Initialize the in-memory repository."""
         self._storage: dict[UUID, UserInDB] = {}
+        self._lock = threading.Lock()
 
     def save(self, user: UserInDB) -> Result[None, UserAlreadyExistsError]:
         """
@@ -136,13 +138,17 @@ class InMemoryUserRepository(UserRepository):
             user: The user to save.
 
         """
-        if any(
-            (u.username == user.username or u.email == user.email) and u.id != user.id
-            for u in self._storage.values()
-        ):
-            return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
-        self._storage[user.id] = user
-        return Ok(None)
+        with self._lock:
+            if any(
+                (u.username == user.username or u.email == user.email)
+                and u.id != user.id
+                for u in self._storage.values()
+            ):
+                return Err(
+                    UserAlreadyExistsError(f"User {user.username} already exists.")
+                )
+            self._storage[user.id] = user
+            return Ok(None)
 
     def get_by_id(self, user_id: UUID) -> UserInDB | None:
         """
@@ -155,7 +161,8 @@ class InMemoryUserRepository(UserRepository):
             The UserInDB object if found, otherwise None.
 
         """
-        return self._storage.get(user_id)
+        with self._lock:
+            return self._storage.get(user_id)
 
 
 class UserService:
