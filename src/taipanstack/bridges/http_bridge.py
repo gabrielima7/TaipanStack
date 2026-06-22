@@ -245,6 +245,24 @@ async def _execute_with_retries(
     return Err(last_error)
 
 
+def _check_preconditions(
+    url: str,
+    ssrf_protection: bool,
+    circuit_breaker: CircuitBreaker | None,
+) -> Err[Exception] | None:
+    """Check SSRF and circuit breaker preconditions."""
+    ssrf_check = _check_ssrf(url, ssrf_protection)
+    if isinstance(ssrf_check, Err):
+        return ssrf_check
+
+    if circuit_breaker is not None:
+        cb_err: Exception | None = _check_circuit_breaker(circuit_breaker)
+        if cb_err is not None:
+            return Err(cb_err)
+
+    return None
+
+
 async def safe_request(
     method: str,
     url: str,
@@ -280,16 +298,9 @@ async def safe_request(
             ),
         )
 
-    # SSRF check
-    ssrf_check = _check_ssrf(url, ssrf_protection)
-    if isinstance(ssrf_check, Err):
-        return ssrf_check
-
-    # Circuit breaker gate
-    if circuit_breaker is not None:
-        cb_err = _check_circuit_breaker(circuit_breaker)
-        if cb_err is not None:
-            return Err(cb_err)
+    precondition_err = _check_preconditions(url, ssrf_protection, circuit_breaker)
+    if precondition_err is not None:
+        return precondition_err
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
@@ -400,16 +411,11 @@ class SafeHttpClient:
         if self._client is None:
             return Err(RuntimeError("Client not initialised. Use 'async with'."))
 
-        # SSRF check
-        ssrf_check = _check_ssrf(url, self._ssrf_protection)
-        if isinstance(ssrf_check, Err):
-            return ssrf_check
-
-        # Circuit breaker gate
-        if self._circuit_breaker is not None:
-            cb_err = _check_circuit_breaker(self._circuit_breaker)
-            if cb_err is not None:
-                return Err(cb_err)
+        precondition_err = _check_preconditions(
+            url, self._ssrf_protection, self._circuit_breaker
+        )
+        if precondition_err is not None:
+            return precondition_err
 
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above

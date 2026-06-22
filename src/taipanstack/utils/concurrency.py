@@ -52,6 +52,28 @@ class ConcurrencyLimitDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...
 
 
+async def _acquire_async_semaphore(
+    async_semaphore: asyncio.Semaphore,
+    timeout: float,
+) -> Result[None, OverloadError]:
+    """Acquire async semaphore with optional timeout."""
+    try:
+        if timeout <= 0.0:
+            if async_semaphore.locked():
+                return Err(OverloadError())
+            await async_semaphore.acquire()
+            return Ok(None)
+
+        try:
+            async with asyncio.timeout(timeout):
+                await async_semaphore.acquire()
+                return Ok(None)
+        except TimeoutError:
+            return Err(OverloadError())
+    except Exception as e:
+        return Err(OverloadError(f"Resource exhaustion: {e!s}"))
+
+
 def _handle_async_concurrency(
     func: Callable[P, Awaitable[T]],
     max_tasks: int,
@@ -65,19 +87,9 @@ def _handle_async_concurrency(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, OverloadError]:
-        try:
-            if timeout > 0.0:
-                try:
-                    async with asyncio.timeout(timeout):
-                        await async_semaphore.acquire()
-                except TimeoutError:
-                    return Err(OverloadError())
-            else:
-                if async_semaphore.locked():
-                    return Err(OverloadError())
-                await async_semaphore.acquire()
-        except Exception as e:
-            return Err(OverloadError(f"Resource exhaustion: {e!s}"))
+        acquire_result = await _acquire_async_semaphore(async_semaphore, timeout)
+        if isinstance(acquire_result, Err):
+            return acquire_result
 
         try:
             return Ok(await func(*args, **kwargs))
@@ -85,6 +97,24 @@ def _handle_async_concurrency(
             async_semaphore.release()
 
     return async_wrapper
+
+
+def _acquire_sync_semaphore(
+    sync_semaphore: threading.Semaphore,
+    timeout: float,
+) -> Result[None, OverloadError]:
+    """Acquire sync semaphore with optional timeout."""
+    try:
+        if timeout <= 0.0:
+            acquired = sync_semaphore.acquire(blocking=False)
+        else:
+            acquired = sync_semaphore.acquire(timeout=timeout)
+
+        if not acquired:
+            return Err(OverloadError())
+        return Ok(None)
+    except Exception as e:
+        return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
 
 def _handle_sync_concurrency(
@@ -97,17 +127,9 @@ def _handle_sync_concurrency(
 
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, OverloadError]:
-        try:
-            if timeout > 0.0:
-                acquired = sync_semaphore.acquire(timeout=timeout)
-                if not acquired:
-                    return Err(OverloadError())
-            else:
-                acquired = sync_semaphore.acquire(blocking=False)
-                if not acquired:
-                    return Err(OverloadError())
-        except Exception as e:
-            return Err(OverloadError(f"Resource exhaustion: {e!s}"))
+        acquire_result = _acquire_sync_semaphore(sync_semaphore, timeout)
+        if isinstance(acquire_result, Err):
+            return acquire_result
 
         try:
             return Ok(func(*args, **kwargs))
@@ -115,6 +137,28 @@ def _handle_sync_concurrency(
             sync_semaphore.release()
 
     return wrapper
+
+
+def _validate_max_tasks(max_tasks: int) -> None:
+    """Validate max_tasks argument."""
+    if not isinstance(max_tasks, int) or max_tasks <= 0:
+        raise ValueError("max_tasks must be > 0")
+
+
+def _validate_timeout(timeout: float) -> None:
+    """Validate timeout argument."""
+    if (
+        not isinstance(timeout, (int, float))
+        or not math.isfinite(timeout)
+        or timeout < 0.0
+    ):
+        raise ValueError("timeout must be a finite non-negative number")
+
+
+def _validate_limit_concurrency_args(max_tasks: int, timeout: float) -> None:
+    """Validate arguments for limit_concurrency."""
+    _validate_max_tasks(max_tasks)
+    _validate_timeout(timeout)
 
 
 def limit_concurrency(
@@ -142,14 +186,7 @@ def limit_concurrency(
         Ok('data')
 
     """
-    if not isinstance(max_tasks, int) or max_tasks <= 0:
-        raise ValueError("max_tasks must be > 0")
-    if (
-        not isinstance(timeout, (int, float))
-        or not math.isfinite(timeout)
-        or timeout < 0.0
-    ):
-        raise ValueError("timeout must be a finite non-negative number")
+    _validate_limit_concurrency_args(max_tasks, timeout)
 
     def decorator(
         func: Callable[P, T] | Callable[P, Awaitable[T]],
