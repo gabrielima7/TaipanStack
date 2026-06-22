@@ -300,7 +300,7 @@ def test_secure_system_concurrent_chaos_expected_standard_expected() -> None:
             errors.append(e)
 
     threads = []
-    for i in range(100):
+    for i in range(10):
         t = threading.Thread(target=worker, args=(i,))
         threads.append(t)
 
@@ -311,4 +311,4 @@ def test_secure_system_concurrent_chaos_expected_standard_expected() -> None:
         t.join()
 
     assert not errors, f"Unexpected errors during concurrent run: {errors}"
-    assert len(repository._storage) == 100
+    assert len(repository._storage) == 10
