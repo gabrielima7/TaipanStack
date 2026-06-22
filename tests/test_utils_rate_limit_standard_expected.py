@@ -151,7 +151,7 @@ class TestRateLimitDecorator:
         assert isinstance(res3.err_value, RateLimitError)
 
     @pytest.mark.asyncio
-    async def test_utils_rate_limit_async_rate_limit(self) -> None:
+    async def test_utils_rate_limit_async_rate_limit_standard_expected(self) -> None:
         """Test rate limit applied to async function."""
 
         @rate_limit(max_calls=1, time_window=10.0)
