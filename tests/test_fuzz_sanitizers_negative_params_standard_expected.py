@@ -12,23 +12,22 @@ from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
 def test_fuzz_sanitize_filename_negative_max_length_standard_expected(
     filename: str, max_len: int, replacement: str, preserve: bool
 ) -> None:
-    try:
+    with pytest.raises((ValueError, TypeError)) as exc_info:
         sanitize_filename(
             filename,
             max_length=max_len,
             replacement=replacement,
             preserve_extension=preserve,
         )
-    except Exception as e:
-        error_msg = str(e)
-        if isinstance(e, ValueError) and (
+    
+    error_msg = str(exc_info.value)
+    if isinstance(exc_info.value, ValueError):
+        assert (
             "max_length cannot be negative" in error_msg
             or "Filename length exceeds maximum allowed limit" in error_msg
-        ):
-            return
-        if isinstance(e, TypeError) and "must be str" in error_msg:
-            return
-        pytest.fail(f"Unexpected exception: {type(e)} {e}")
+        )
+    elif isinstance(exc_info.value, TypeError):
+        assert "must be str" in error_msg
 
 
 @settings(max_examples=100)
@@ -41,16 +40,13 @@ def test_fuzz_sanitize_filename_negative_max_length_standard_expected(
 def test_fuzz_sanitize_path_negative_max_depth_standard_expected(
     path: str | Path, base_dir: Path | None, max_depth: int, resolve: bool
 ) -> None:
-    try:
+    with pytest.raises((ValueError, TypeError)) as exc_info:
         sanitize_path(path, base_dir=base_dir, max_depth=max_depth, resolve=resolve)
-    except Exception as e:
-        error_msg = str(e)
-        if isinstance(e, ValueError) and (
+    
+    error_msg = str(exc_info.value)
+    if isinstance(exc_info.value, ValueError):
+        assert (
             "max_depth cannot be negative" in error_msg
             or "Path length exceeds maximum allowed" in error_msg
             or "Cannot resolve path" in error_msg
-        ):
-            return
-        if isinstance(e, TypeError):
-            return
-        pytest.fail(f"Unexpected exception: {type(e)} {e}")
+        )
