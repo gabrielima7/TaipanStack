@@ -257,6 +257,8 @@ def sanitize_filename(
     if not isinstance(filename, str):
         raise TypeError(f"filename must be str, got {type(filename).__name__}")
 
+    _check_max_length_param(max_length)
+
     if len(filename) > MAX_PATH_LENGTH:
         raise ValueError("Filename length exceeds maximum allowed limit")
 
@@ -407,6 +409,9 @@ def sanitize_path(
         ValueError: If path is invalid or too deep.
 
     """
+    if max_depth is not None and max_depth < 0:
+        raise ValueError("max_depth cannot be negative")
+
     normalized_path = _normalize_path_input(path)
     parts = _clean_path_parts(normalized_path)
     sanitized = _reconstruct_path(normalized_path, parts)
