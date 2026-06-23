@@ -193,6 +193,27 @@ def _collect_list(
         return None
 
 
+def _collect_iterable(
+    results: Iterable[Result[T, E]],
+) -> Result[list[T], E]:
+    """Collect an iterable of Results iteratively."""
+    ok_cls = Ok
+    err_cls = Err
+    values: list[T] = []
+    append = values.append
+    for result in results:
+        # We use explicit type checks (isinstance) but pre-cache the constructors.
+        # type(result) is ok_cls would be even faster but breaks subclassing.
+        if isinstance(result, ok_cls):
+            append(result.ok_value)
+        elif isinstance(result, err_cls):
+            return result
+        else:
+            # Fallback for structural compatibility
+            return result  # type: ignore[unreachable]
+    return ok_cls(values)
+
+
 def collect_results(
     results: Iterable[Result[T, E]],
 ) -> Result[list[T], E]:
@@ -219,21 +240,7 @@ def collect_results(
         if optimized_res is not None:
             return optimized_res
 
-    ok_cls = Ok
-    err_cls = Err
-    values: list[T] = []
-    append = values.append
-    for result in results:
-        # We use explicit type checks (isinstance) but pre-cache the constructors.
-        # type(result) is ok_cls would be even faster but breaks subclassing.
-        if isinstance(result, ok_cls):
-            append(result.ok_value)
-        elif isinstance(result, err_cls):
-            return result
-        else:
-            # Fallback for structural compatibility
-            return result  # type: ignore[unreachable]
-    return ok_cls(values)
+    return _collect_iterable(results)
 
 
 @overload
