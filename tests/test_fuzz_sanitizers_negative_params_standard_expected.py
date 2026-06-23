@@ -19,7 +19,7 @@ def test_fuzz_sanitize_filename_negative_max_length_standard_expected(
             replacement=replacement,
             preserve_extension=preserve,
         )
-    
+
     error_msg = str(exc_info.value)
     if isinstance(exc_info.value, ValueError):
         assert (
@@ -42,7 +42,7 @@ def test_fuzz_sanitize_path_negative_max_depth_standard_expected(
 ) -> None:
     with pytest.raises((ValueError, TypeError)) as exc_info:
         sanitize_path(path, base_dir=base_dir, max_depth=max_depth, resolve=resolve)
-    
+
     error_msg = str(exc_info.value)
     if isinstance(exc_info.value, ValueError):
         assert (
