@@ -242,14 +242,14 @@ def _generate_paranoid_hooks() -> str:
 """
 
 
-def generate_pre_commit_config(config: StackConfig) -> str:
-    """Generate .pre-commit-config.yaml content.
+def _collect_security_hooks(config: StackConfig) -> list[str]:
+    """Collect security hooks based on configuration.
 
     Args:
         config: The Stack configuration.
 
     Returns:
-        Pre-commit configuration YAML string.
+        A list of security hook YAML strings.
 
     """
     security_hooks: list[str] = []
@@ -269,6 +269,21 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     # Add extra hooks for paranoid mode
     if config.security.level == "paranoid":
         security_hooks.append(_generate_paranoid_hooks())
+
+    return security_hooks
+
+
+def generate_pre_commit_config(config: StackConfig) -> str:
+    """Generate .pre-commit-config.yaml content.
+
+    Args:
+        config: The Stack configuration.
+
+    Returns:
+        Pre-commit configuration YAML string.
+
+    """
+    security_hooks = _collect_security_hooks(config)
 
     return f"""# Stack v2.0 Pre-commit Configuration
 # Security Level: {config.security.level}
