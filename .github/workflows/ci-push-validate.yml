@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python ${{ matrix.python-version }}"
         id: setup-python
@@ -40,7 +40,7 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: "[Setup] Cache dependencies"
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .venv
           key: taipanstack-v3-${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -152,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -174,7 +174,7 @@ jobs:
     needs: [ci-test, ci-lint, ci-typecheck]
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -217,7 +217,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Setup] Set up Python"
         uses: actions/setup-python@v6
@@ -238,7 +238,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "[Setup] Checkout code"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "[Build] Build Hardened Docker Image"
         run: docker build -t taipanstack:ci-test .
