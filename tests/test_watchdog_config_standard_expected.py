@@ -162,7 +162,7 @@ class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_start_stop_lifecycle_expected(
+    async def test_watchdog_config_start_stop_lifecycle_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Watcher can be started and stopped."""
@@ -183,7 +183,7 @@ class TestConfigWatcher:
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_detects_file_change_expected(
+    async def test_watchdog_config_detects_file_change_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Callback fires when a config file changes."""
@@ -213,7 +213,7 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_invalid_config_calls_error_callback_expected(
+    async def test_watchdog_config_invalid_config_calls_error_callback_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """Validation error callback fires on bad config."""
@@ -239,7 +239,7 @@ class TestConfigWatcher:
         assert len(errors) >= 1
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_missing_file_does_not_crash_expected(
+    async def test_watchdog_config_missing_file_does_not_crash_standard_expected(
         self, tmp_path: Path
     ) -> None:
         """A watched file that disappears is handled gracefully."""
