@@ -15,7 +15,7 @@ class TestBulkhead:
     """Tests for the Bulkhead pattern."""
 
     @pytest.mark.asyncio
-    async def test_bulkhead_execute_success_expected(self) -> None:
+    async def test_bulkhead_execute_success_standard_expected(self) -> None:
         """Successful execution returns Ok."""
         bulk = Bulkhead("test", max_concurrent=5)
 
@@ -27,7 +27,7 @@ class TestBulkhead:
         assert result.ok_value == "done"
 
     @pytest.mark.asyncio
-    async def test_bulkhead_execute_failure_expected(self) -> None:
+    async def test_bulkhead_execute_failure_standard_expected(self) -> None:
         """Failed execution returns Err."""
         bulk = Bulkhead("test")
 
@@ -39,7 +39,7 @@ class TestBulkhead:
         assert isinstance(result, Err)
 
     @pytest.mark.asyncio
-    async def test_bulkhead_concurrency_limit_expected(self) -> None:
+    async def test_bulkhead_concurrency_limit_standard_expected(self) -> None:
         """Only max_concurrent tasks run simultaneously."""
         max_seen = 0
         current = 0
@@ -64,7 +64,7 @@ class TestBulkhead:
         assert max_seen <= 2
 
     @pytest.mark.asyncio
-    async def test_bulkhead_queue_overflow_expected(self) -> None:
+    async def test_bulkhead_queue_overflow_standard_expected(self) -> None:
         """Returns Err when queue is full."""
         # max_concurrent=1 + max_queue=1 means: 1 running + 1 waiting = full
         bulk = Bulkhead("test", max_concurrent=1, max_queue=1, timeout=1.0)
@@ -105,7 +105,7 @@ class TestBulkhead:
         assert raised_t2
 
     @pytest.mark.asyncio
-    async def test_bulkhead_timeout_ok_expected(self) -> None:
+    async def test_bulkhead_timeout_ok_standard_expected(self) -> None:
         """Returns Err on permit acquisition timeout."""
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5, timeout=0.05)
 
@@ -126,7 +126,7 @@ class TestBulkhead:
             await task
 
     @pytest.mark.asyncio
-    async def test_bulkhead_permits_tracking_expected(self) -> None:
+    async def test_bulkhead_permits_tracking_standard_expected(self) -> None:
         """Permits are correctly tracked."""
         bulk = Bulkhead("test", max_concurrent=5)
         assert bulk.available_permits == 5
@@ -134,7 +134,7 @@ class TestBulkhead:
         assert bulk.active == 0
 
     @pytest.mark.asyncio
-    async def test_bulkhead_with_arguments_expected(self) -> None:
+    async def test_bulkhead_with_arguments_standard_expected(self) -> None:
         """Execute passes args/kwargs correctly."""
         bulk = Bulkhead("test")
 
@@ -153,7 +153,7 @@ class TestBulkhead:
         assert "full" in str(err).lower()
 
     @pytest.mark.asyncio
-    async def test_bulkhead_cancellation_release_expected(self) -> None:
+    async def test_bulkhead_cancellation_release_standard_expected(self) -> None:
         """Test that semaphore is released if task is cancelled after permit acquisition."""
         from unittest.mock import patch
 
@@ -170,7 +170,7 @@ class TestBulkhead:
         assert bulk._semaphore._value == 1
 
     @pytest.mark.asyncio
-    async def test_bulkhead_queued_cancellation_expected(self) -> None:
+    async def test_bulkhead_queued_cancellation_standard_expected(self) -> None:
         """Test that a queued task can be cancelled while waiting, and cleans up its acquire task."""
         bulk = Bulkhead("test", max_concurrent=1, max_queue=5)
         gate = asyncio.Event()
@@ -194,7 +194,7 @@ class TestBulkhead:
         await t1
 
     @pytest.mark.asyncio
-    async def test_bulkhead_timeout_release_on_race_expected(self) -> None:
+    async def test_bulkhead_timeout_release_on_race_standard_expected(self) -> None:
         """Test that semaphore is released if TimeoutError occurs but permit was acquired."""
         from unittest.mock import patch
 

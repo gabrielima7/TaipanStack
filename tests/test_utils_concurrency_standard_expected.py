@@ -107,7 +107,7 @@ class TestConcurrencyLimiter:
         assert isinstance(res.err_value, OverloadError)
 
     @pytest.mark.asyncio
-    async def test_utils_concurrency_async_limit_concurrency_no_timeout_success_expected(
+    async def test_utils_concurrency_async_limit_concurrency_no_timeout_success_standard_expected(
         self,
     ) -> None:
         """Test async limit_concurrency without timeout."""
@@ -121,7 +121,7 @@ class TestConcurrencyLimiter:
         assert res.ok_value == "async data"
 
     @pytest.mark.asyncio
-    async def test_utils_concurrency_async_limit_concurrency_timeout_success_expected(
+    async def test_utils_concurrency_async_limit_concurrency_timeout_success_standard_expected(
         self,
     ) -> None:
         """Test async limit_concurrency with timeout."""
@@ -135,7 +135,7 @@ class TestConcurrencyLimiter:
         assert res.ok_value == "async data"
 
     @pytest.mark.asyncio
-    async def test_utils_concurrency_async_limit_concurrency_no_timeout_failure_expected(
+    async def test_utils_concurrency_async_limit_concurrency_no_timeout_failure_standard_expected(
         self,
     ) -> None:
         """Test async limit_concurrency failure without timeout."""
@@ -161,7 +161,7 @@ class TestConcurrencyLimiter:
         assert isinstance(res.err_value, OverloadError)
 
     @pytest.mark.asyncio
-    async def test_utils_concurrency_async_limit_concurrency_with_timeout_failure_expected(
+    async def test_utils_concurrency_async_limit_concurrency_with_timeout_failure_standard_expected(
         self,
     ) -> None:
         """Test async limit_concurrency failure with timeout."""
