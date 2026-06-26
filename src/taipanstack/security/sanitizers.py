@@ -77,6 +77,27 @@ def _check_max_length_param(max_length: int | None) -> None:
         raise ValueError("max_length cannot be negative")
 
 
+def _apply_truncation(result: str, max_length: int | None) -> str:
+    """Truncate the string to the maximum length if provided."""
+    if max_length is not None and len(result) > max_length:
+        return result[:max_length]
+    return result
+
+
+def _clean_string(
+    value: str,
+    *,
+    allow_html: bool,
+    allow_unicode: bool,
+    strip_whitespace: bool,
+) -> str:
+    """Apply base string cleaning operations."""
+    result = value.strip() if strip_whitespace else value
+    result = _CONTROL_CHARS_RE.sub("", result)
+    result = _handle_html(result, allow_html)
+    return _handle_unicode(result, allow_unicode)
+
+
 def sanitize_string(
     value: str,
     *,
@@ -113,14 +134,13 @@ def sanitize_string(
     if not value:
         return ""
 
-    result = value.strip() if strip_whitespace else value
-    result = _CONTROL_CHARS_RE.sub("", result)
-    result = _handle_html(result, allow_html)
-    result = _handle_unicode(result, allow_unicode)
-
-    if max_length is not None and len(result) > max_length:
-        return result[:max_length]
-    return result
+    result = _clean_string(
+        value,
+        allow_html=allow_html,
+        allow_unicode=allow_unicode,
+        strip_whitespace=strip_whitespace,
+    )
+    return _apply_truncation(result, max_length)
 
 
 def _get_filename_from_path(filename: str) -> str:

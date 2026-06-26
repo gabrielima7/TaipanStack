@@ -93,6 +93,23 @@ def _check_jit_available() -> bool:
         return False
 
 
+def _has_nogil_flag() -> bool:
+    """Check if the nogil flag is set in sys.flags."""
+    if hasattr(sys.flags, "nogil"):
+        return bool(sys.flags.nogil)
+    return False
+
+
+def _has_disable_gil_config() -> bool:
+    """Check if the build was configured with --disable-gil."""
+    try:
+        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
+    except (AttributeError, TypeError):
+        return False
+    else:
+        return "--disable-gil" in config_args
+
+
 def _check_free_threading_available() -> bool:
     """Check if free-threading (no-GIL) build is being used.
 
@@ -101,19 +118,7 @@ def _check_free_threading_available() -> bool:
     if not PY313:
         return False
 
-    try:
-        # In free-threaded builds, sys.flags.nogil is True
-        # or the build was configured with --disable-gil
-        if hasattr(sys.flags, "nogil"):
-            return bool(sys.flags.nogil)
-
-        # Alternative check for 3.13+
-
-        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
-    except (AttributeError, TypeError):
-        return False
-    else:
-        return "--disable-gil" in config_args
+    return _has_nogil_flag() or _has_disable_gil_config()
 
 
 def _check_mimalloc_available() -> bool:
