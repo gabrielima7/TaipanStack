@@ -91,7 +91,6 @@ def _validate_string_params(value: str, max_length: int | None) -> None:
     _check_max_length_param(max_length)
 
 
-
 def sanitize_string(
     value: str,
     *,
