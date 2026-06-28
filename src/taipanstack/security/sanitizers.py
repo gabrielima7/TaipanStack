@@ -77,6 +77,15 @@ def _check_max_length_param(max_length: int | None) -> None:
         raise ValueError("max_length cannot be negative")
 
 
+def _validate_string_params(value: str, max_length: int | None) -> None:
+    """Validate parameters for sanitize_string."""
+    if not isinstance(value, str):
+        raise TypeError(f"value must be str, got {type(value).__name__}")
+
+    _check_string_length(value)
+    _check_max_length_param(max_length)
+
+
 def sanitize_string(
     value: str,
     *,
@@ -104,11 +113,7 @@ def sanitize_string(
         ```
 
     """
-    if not isinstance(value, str):
-        raise TypeError(f"value must be str, got {type(value).__name__}")
-
-    _check_string_length(value)
-    _check_max_length_param(max_length)
+    _validate_string_params(value, max_length)
 
     if not value:
         return ""
@@ -225,6 +230,30 @@ def _finalize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
+def _validate_filename_params(
+    filename: str, max_length: int, replacement: str, preserve_extension: bool
+) -> None:
+    """Validate parameters for sanitize_filename."""
+    if not isinstance(filename, str):
+        raise TypeError(f"filename must be str, got {type(filename).__name__}")
+
+    if not isinstance(max_length, int) or isinstance(max_length, bool):
+        raise TypeError(f"max_length must be int, got {type(max_length).__name__}")
+
+    if not isinstance(replacement, str):
+        raise TypeError(f"replacement must be str, got {type(replacement).__name__}")
+
+    if not isinstance(preserve_extension, bool):
+        raise TypeError(
+            f"preserve_extension must be bool, got {type(preserve_extension).__name__}"
+        )
+
+    _check_max_length_param(max_length)
+
+    if len(filename) > MAX_PATH_LENGTH:
+        raise ValueError("Filename length exceeds maximum allowed limit")
+
+
 def sanitize_filename(
     filename: str,
     *,
@@ -254,24 +283,7 @@ def sanitize_filename(
         ```
 
     """
-    if not isinstance(filename, str):
-        raise TypeError(f"filename must be str, got {type(filename).__name__}")
-
-    if not isinstance(max_length, int) or isinstance(max_length, bool):
-        raise TypeError(f"max_length must be int, got {type(max_length).__name__}")
-
-    if not isinstance(replacement, str):
-        raise TypeError(f"replacement must be str, got {type(replacement).__name__}")
-
-    if not isinstance(preserve_extension, bool):
-        raise TypeError(
-            f"preserve_extension must be bool, got {type(preserve_extension).__name__}"
-        )
-
-    _check_max_length_param(max_length)
-
-    if len(filename) > MAX_PATH_LENGTH:
-        raise ValueError("Filename length exceeds maximum allowed limit")
+    _validate_filename_params(filename, max_length, replacement, preserve_extension)
 
     if not filename:
         filename = "unnamed"
