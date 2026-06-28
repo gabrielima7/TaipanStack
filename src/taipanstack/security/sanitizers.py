@@ -82,7 +82,9 @@ def _validate_string_params(value: str, max_length: int | None) -> None:
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
-    if max_length is not None and (not isinstance(max_length, int) or isinstance(max_length, bool)):
+    if max_length is not None and (
+        not isinstance(max_length, int) or isinstance(max_length, bool)
+    ):
         raise TypeError(f"max_length must be int, got {type(max_length).__name__}")
 
     _check_string_length(value)
