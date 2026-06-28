@@ -338,6 +338,16 @@ def test_security_sanitizers_sanitize_string_value_error_standard_expected():
     with pytest.raises(TypeError):
         sanitize_string(123)
 
+    with pytest.raises(TypeError):
+        sanitize_string("test", max_length="5")
+
+    with pytest.raises(TypeError):
+        sanitize_string("test", max_length=True)
+
+    with pytest.raises(TypeError):
+        sanitize_string("test", max_length=False)
+
+
 
 def test_security_sanitizers_sanitize_filename_value_error_standard_expected():
     import pytest
