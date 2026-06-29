@@ -18,6 +18,7 @@ from urllib.parse import unquote, urlsplit
 
 from result import Err, Ok, Result
 
+from taipanstack.security.sanitizers import MAX_PATH_LENGTH
 from taipanstack.security.validators import MAX_ENV_VAR_LENGTH, MAX_URL_LENGTH
 
 # Build regex for traversal patterns.
@@ -194,6 +195,18 @@ def _validate_path_types(path: object, base_dir: object) -> None:
         raise TypeError(f"path must be str or Path, got {type(path).__name__}")
     if base_dir is not None and not isinstance(base_dir, (str, Path)):
         raise TypeError(f"base_dir must be str or Path, got {type(base_dir).__name__}")
+
+    if len(str(path)) > MAX_PATH_LENGTH:
+        raise SecurityError(
+            f"Path length exceeds maximum allowed limit of {MAX_PATH_LENGTH}",
+            guard_name="path_traversal",
+        )
+
+    if base_dir is not None and len(str(base_dir)) > MAX_PATH_LENGTH:
+        raise SecurityError(
+            f"Base directory length exceeds maximum allowed limit of {MAX_PATH_LENGTH}",
+            guard_name="path_traversal",
+        )
 
 
 def _check_path_null_bytes(path: Path | str, base_dir: Path | str | None) -> None:
