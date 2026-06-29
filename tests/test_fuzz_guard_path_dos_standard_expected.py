@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
@@ -14,9 +15,7 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
 )
 @given(path=st.text(min_size=4097, max_size=5000))
 def test_fuzz_guard_path_traversal_exceeds_max_path_length_standard_expected(path):
-    import contextlib
-
-    with contextlib.suppress(ValueError, TypeError, SecurityError):
+    with pytest.raises(SecurityError):
         guard_path_traversal(path)
 
 
@@ -32,7 +31,5 @@ def test_fuzz_guard_path_traversal_exceeds_max_path_length_standard_expected(pat
 def test_fuzz_guard_path_traversal_base_dir_exceeds_max_path_length_standard_expected(
     base_dir,
 ):
-    import contextlib
-
-    with contextlib.suppress(ValueError, TypeError, SecurityError):
+    with pytest.raises(SecurityError):
         guard_path_traversal("a", base_dir=base_dir)
