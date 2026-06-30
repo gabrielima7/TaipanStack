@@ -235,7 +235,7 @@ def _finalize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
-def _check_filename_type_str(filename: str, replacement: str) -> None:
+def _check_filename_type_str(filename: object, replacement: object) -> None:
     """Check str types of parameters for sanitize_filename."""
     if not isinstance(filename, str):
         raise TypeError(f"filename must be str, got {type(filename).__name__}")
@@ -244,7 +244,10 @@ def _check_filename_type_str(filename: str, replacement: str) -> None:
 
 
 def _check_filename_types(
-    filename: str, max_length: int, replacement: str, preserve_extension: bool
+    filename: object,
+    max_length: object,
+    replacement: object,
+    preserve_extension: object,
 ) -> None:
     """Check types of parameters for sanitize_filename."""
     _check_filename_type_str(filename, replacement)
