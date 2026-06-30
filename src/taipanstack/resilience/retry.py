@@ -469,7 +469,7 @@ def retry(
                 last_exception: Exception | None = None
                 last_result: R | None = None
 
-                for attempt in range(1, max_attempts + 1):
+                for attempt in range(1, config.max_attempts + 1):
                     last_result = None
                     try:
                         last_result = await func_coro(*args, **kwargs)
@@ -495,7 +495,7 @@ def retry(
                     return cast(R, last_result)
                 _raise_retry_error(
                     cast(str, getattr(func_coro, "__name__", "unknown")),
-                    max_attempts,
+                    config.max_attempts,
                     reraise,
                     last_exception,
                 )
@@ -509,7 +509,7 @@ def retry(
             last_exception: Exception | None = None
             last_result: R | None = None
 
-            for attempt in range(1, max_attempts + 1):
+            for attempt in range(1, config.max_attempts + 1):
                 last_result = None
                 try:
                     last_result = func_sync(*args, **kwargs)
@@ -535,7 +535,7 @@ def retry(
                 return cast(R, last_result)
             _raise_retry_error(
                 cast(str, getattr(func_sync, "__name__", "unknown")),
-                max_attempts,
+                config.max_attempts,
                 reraise,
                 last_exception,
             )
