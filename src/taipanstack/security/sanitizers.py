@@ -235,28 +235,45 @@ def _finalize_filename(
     return _truncate_filename(safe_stem, suffix, max_length)
 
 
-def _validate_filename_params(
-    filename: str, max_length: int, replacement: str, preserve_extension: bool
-) -> None:
-    """Validate parameters for sanitize_filename."""
+def _check_filename_type_str(filename: object, replacement: object) -> None:
+    """Check str types of parameters for sanitize_filename."""
     if not isinstance(filename, str):
         raise TypeError(f"filename must be str, got {type(filename).__name__}")
+    if not isinstance(replacement, str):
+        raise TypeError(f"replacement must be str, got {type(replacement).__name__}")
+
+
+def _check_filename_types(
+    filename: object,
+    max_length: object,
+    replacement: object,
+    preserve_extension: object,
+) -> None:
+    """Check types of parameters for sanitize_filename."""
+    _check_filename_type_str(filename, replacement)
 
     if not isinstance(max_length, int) or isinstance(max_length, bool):
         raise TypeError(f"max_length must be int, got {type(max_length).__name__}")
-
-    if not isinstance(replacement, str):
-        raise TypeError(f"replacement must be str, got {type(replacement).__name__}")
 
     if not isinstance(preserve_extension, bool):
         raise TypeError(
             f"preserve_extension must be bool, got {type(preserve_extension).__name__}"
         )
 
-    _check_max_length_param(max_length)
 
+def _check_filename_length(filename: str, max_length: int) -> None:
+    """Check max_length param and filename length."""
+    _check_max_length_param(max_length)
     if len(filename) > MAX_PATH_LENGTH:
         raise ValueError("Filename length exceeds maximum allowed limit")
+
+
+def _validate_filename_params(
+    filename: str, max_length: int, replacement: str, preserve_extension: bool
+) -> None:
+    """Validate parameters for sanitize_filename."""
+    _check_filename_types(filename, max_length, replacement, preserve_extension)
+    _check_filename_length(filename, max_length)
 
 
 def sanitize_filename(
