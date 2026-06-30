@@ -495,7 +495,7 @@ def retry(
                     return cast(R, last_result)
                 _raise_retry_error(
                     cast(str, getattr(func_coro, "__name__", "unknown")),
-                    max_attempts,
+                    config.max_attempts,
                     reraise,
                     last_exception,
                 )
@@ -535,7 +535,7 @@ def retry(
                 return cast(R, last_result)
             _raise_retry_error(
                 cast(str, getattr(func_sync, "__name__", "unknown")),
-                max_attempts,
+                config.max_attempts,
                 reraise,
                 last_exception,
             )

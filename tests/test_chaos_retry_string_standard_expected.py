@@ -27,8 +27,11 @@ def test_chaos_retry_string_max_attempts_failure_standard_expected() -> None:
     def my_func() -> Ok[str]:
         raise ValueError("test")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(RetryError) as exc_info:
         my_func()
+
+    assert exc_info.value.attempts == 3
+    assert isinstance(exc_info.value.attempts, int)
 
 
 @pytest.mark.asyncio
@@ -39,5 +42,8 @@ async def test_chaos_retry_string_max_attempts_async_failure_standard_expected()
     async def my_func() -> Ok[str]:
         raise ValueError("test")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(RetryError) as exc_info:
         await my_func()
+
+    assert exc_info.value.attempts == 3
+    assert isinstance(exc_info.value.attempts, int)
