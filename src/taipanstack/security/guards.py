@@ -189,13 +189,16 @@ def _check_symlink_safety(full_path: Path, base_dir: Path) -> None:
         current = current.parent
 
 
-def _validate_path_types(path: object, base_dir: object) -> None:
+def _check_path_types(path: object, base_dir: object) -> None:
     """Validate types of path and base_dir."""
     if not isinstance(path, (str, Path)):
         raise TypeError(f"path must be str or Path, got {type(path).__name__}")
     if base_dir is not None and not isinstance(base_dir, (str, Path)):
         raise TypeError(f"base_dir must be str or Path, got {type(base_dir).__name__}")
 
+
+def _check_path_lengths(path: object, base_dir: object) -> None:
+    """Validate lengths of path and base_dir."""
     if len(str(path)) > MAX_PATH_LENGTH:
         raise SecurityError(
             f"Path length exceeds maximum allowed limit of {MAX_PATH_LENGTH}",
@@ -207,6 +210,12 @@ def _validate_path_types(path: object, base_dir: object) -> None:
             f"Base directory length exceeds maximum allowed limit of {MAX_PATH_LENGTH}",
             guard_name="path_traversal",
         )
+
+
+def _validate_path_types(path: object, base_dir: object) -> None:
+    """Validate types and lengths of path and base_dir."""
+    _check_path_types(path, base_dir)
+    _check_path_lengths(path, base_dir)
 
 
 def _check_path_null_bytes(path: Path | str, base_dir: Path | str | None) -> None:
