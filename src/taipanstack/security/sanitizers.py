@@ -380,6 +380,11 @@ def _apply_base_dir_constraint(
 
 def _normalize_path_input(path: str | Path) -> Path:
     """Normalize input path string or Path object."""
+    if not isinstance(path, (str, Path)):
+        raise TypeError(
+            f"path must be a string or Path object, got {type(path).__name__}"
+        )
+
     if isinstance(path, str):
         if len(path) > MAX_PATH_LENGTH:
             msg = "Path length exceeds maximum allowed"
