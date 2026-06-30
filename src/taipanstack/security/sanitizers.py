@@ -5,6 +5,7 @@ Provides functions to sanitize strings, filenames, and paths
 to remove potentially dangerous characters.
 """
 
+import os
 import re
 from pathlib import Path
 
@@ -378,11 +379,11 @@ def _apply_base_dir_constraint(
     return sanitized
 
 
-def _normalize_path_input(path: str | Path) -> Path:
+def _normalize_path_input(path: str | os.PathLike[str]) -> Path:
     """Normalize input path string or Path object."""
-    if not isinstance(path, (str, Path)):
+    if not isinstance(path, (str, os.PathLike)):
         raise TypeError(
-            f"path must be a string or Path object, got {type(path).__name__}"
+            f"path must be a string or PathLike object, got {type(path).__name__}"
         )
 
     if isinstance(path, str):
