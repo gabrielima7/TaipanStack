@@ -12,7 +12,7 @@ import json
 import logging
 from collections.abc import Awaitable, Callable, MutableMapping
 from dataclasses import dataclass
-from typing import TypeAlias, TypeVar
+from typing import Literal, TypeAlias, TypeVar
 
 from taipanstack.core.result import Ok, Result
 from taipanstack.utils.rate_limit import RateLimiter
@@ -42,11 +42,23 @@ class SecurityHeadersConfig:
 
     """
 
-    x_content_type_options: str = "nosniff"
-    x_frame_options: str = "DENY"
-    x_xss_protection: str = "1; mode=block"
+    x_content_type_options: Literal["nosniff"] | str = "nosniff"
+    x_frame_options: Literal["DENY", "SAMEORIGIN"] | str = "DENY"
+    x_xss_protection: Literal["1; mode=block", "0"] | str = "1; mode=block"
     strict_transport_security: str = "max-age=31536000; includeSubDomains"
-    referrer_policy: str = "strict-origin-when-cross-origin"
+    referrer_policy: (
+        Literal[
+            "no-referrer",
+            "no-referrer-when-downgrade",
+            "origin",
+            "origin-when-cross-origin",
+            "same-origin",
+            "strict-origin",
+            "strict-origin-when-cross-origin",
+            "unsafe-url",
+        ]
+        | str
+    ) = "strict-origin-when-cross-origin"
     content_security_policy: str = "default-src 'self'"
 
     def to_headers(self) -> list[tuple[bytes, bytes]]:
