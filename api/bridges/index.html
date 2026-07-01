@@ -4587,13 +4587,26 @@ application (FastAPI, Litestar, Starlette, etc.).</p>
 
 <a href="#taipanstack.bridges.web_bridge.SecurityHeadersConfig" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">SecurityHeadersConfig</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">x_content_type_options</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;nosniff&quot;</span><span class="p">,</span>
-</span><span id="__span-0-3">    <span class="n">x_frame_options</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;DENY&quot;</span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">x_xss_protection</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;1; mode=block&quot;</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">strict_transport_security</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;max-age=31536000; includeSubDomains&quot;</span><span class="p">,</span>
-</span><span id="__span-0-6">    <span class="n">referrer_policy</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;strict-origin-when-cross-origin&quot;</span><span class="p">,</span>
-</span><span id="__span-0-7">    <span class="n">content_security_policy</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;default-src &#39;self&#39;&quot;</span><span class="p">,</span>
-</span><span id="__span-0-8"><span class="p">)</span>
+</span><span id="__span-0-2">    <span class="n">x_content_type_options</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;nosniff&quot;</span><span class="p">]</span>
+</span><span id="__span-0-3">    <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;nosniff&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">x_frame_options</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;DENY&quot;</span><span class="p">,</span> <span class="s2">&quot;SAMEORIGIN&quot;</span><span class="p">]</span>
+</span><span id="__span-0-5">    <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;DENY&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6">    <span class="n">x_xss_protection</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;1; mode=block&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">]</span>
+</span><span id="__span-0-7">    <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;1; mode=block&quot;</span><span class="p">,</span>
+</span><span id="__span-0-8">    <span class="n">strict_transport_security</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;max-age=31536000; includeSubDomains&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9">    <span class="n">referrer_policy</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
+</span><span id="__span-0-10">        <span class="s2">&quot;no-referrer&quot;</span><span class="p">,</span>
+</span><span id="__span-0-11">        <span class="s2">&quot;no-referrer-when-downgrade&quot;</span><span class="p">,</span>
+</span><span id="__span-0-12">        <span class="s2">&quot;origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-13">        <span class="s2">&quot;origin-when-cross-origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-14">        <span class="s2">&quot;same-origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-15">        <span class="s2">&quot;strict-origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-16">        <span class="s2">&quot;strict-origin-when-cross-origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-17">        <span class="s2">&quot;unsafe-url&quot;</span><span class="p">,</span>
+</span><span id="__span-0-18">    <span class="p">]</span>
+</span><span id="__span-0-19">    <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;strict-origin-when-cross-origin&quot;</span><span class="p">,</span>
+</span><span id="__span-0-20">    <span class="n">content_security_policy</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;default-src &#39;self&#39;&quot;</span><span class="p">,</span>
+</span><span id="__span-0-21"><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4620,7 +4633,7 @@ application (FastAPI, Litestar, Starlette, etc.).</p>
               <p>
                   <span class="doc-attribute-annotation">
                     <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
+                      <code><span title="typing.Literal">Literal</span>[&#39;nosniff&#39;] | <span title="str">str</span></code>
                   </span>
               </p>
             </td>
@@ -4634,7 +4647,7 @@ application (FastAPI, Litestar, Starlette, etc.).</p>
               <p>
                   <span class="doc-attribute-annotation">
                     <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
+                      <code><span title="typing.Literal">Literal</span>[&#39;DENY&#39;, &#39;SAMEORIGIN&#39;] | <span title="str">str</span></code>
                   </span>
               </p>
             </td>
@@ -4648,7 +4661,7 @@ application (FastAPI, Litestar, Starlette, etc.).</p>
               <p>
                   <span class="doc-attribute-annotation">
                     <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
+                      <code><span title="typing.Literal">Literal</span>[&#39;1; mode=block&#39;, &#39;0&#39;] | <span title="str">str</span></code>
                   </span>
               </p>
             </td>
@@ -4676,7 +4689,7 @@ application (FastAPI, Litestar, Starlette, etc.).</p>
               <p>
                   <span class="doc-attribute-annotation">
                     <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
+                      <code><span title="typing.Literal">Literal</span>[&#39;no-referrer&#39;, &#39;no-referrer-when-downgrade&#39;, &#39;origin&#39;, &#39;origin-when-cross-origin&#39;, &#39;same-origin&#39;, &#39;strict-origin&#39;, &#39;strict-origin-when-cross-origin&#39;, &#39;unsafe-url&#39;] | <span title="str">str</span></code>
                   </span>
               </p>
             </td>
