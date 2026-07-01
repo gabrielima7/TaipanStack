@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypeAlias, cast
 
 from typing_extensions import TypedDict, Unpack
 
@@ -30,6 +30,10 @@ from taipanstack.security.guards import guard_ssrf
 logger = logging.getLogger("taipanstack.bridges.http")
 
 
+# JsonType definition for robust typing
+JsonType: TypeAlias = dict[str, object] | list[object] | str | int | float | bool | None
+
+
 class HttpRequestKwargs(TypedDict, total=False):
     """Type definitions for HTTP request kwargs."""
 
@@ -42,7 +46,7 @@ class HttpRequestKwargs(TypedDict, total=False):
         | None
     )
     files: dict[str, bytes | tuple[str, bytes]]
-    json: dict[str, object] | list[object] | str | int | float | bool | None
+    json: JsonType
     params: (
         dict[
             str,
