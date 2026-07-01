@@ -508,11 +508,13 @@ def _check_env_sensitive(
     )
 
 
-def _validate_env_var_name(name: object) -> str:
-    """Validate environment variable name."""
+def _check_env_var_type(name: object) -> str:
     if not isinstance(name, str):
         raise TypeError(f"Variable name must be str, got {type(name).__name__}")
+    return name
 
+
+def _check_env_var_length(name: str) -> None:
     if len(name) > MAX_ENV_VAR_LENGTH:
         raise SecurityError(
             "Environment variable name exceeds maximum length",
@@ -520,6 +522,8 @@ def _validate_env_var_name(name: object) -> str:
             value=name[:80],
         )
 
+
+def _check_env_var_content(name: str) -> None:
     if not name or not name.strip():
         raise SecurityError(
             "Environment variable name cannot be empty or whitespace",
@@ -532,7 +536,14 @@ def _validate_env_var_name(name: object) -> str:
             guard_name="env_variable",
         )
 
-    return name
+
+def _validate_env_var_name(name: object) -> str:
+    """Validate environment variable name."""
+    valid_name = _check_env_var_type(name)
+    _check_env_var_length(valid_name)
+    _check_env_var_content(valid_name)
+
+    return valid_name
 
 
 def guard_env_variable(
