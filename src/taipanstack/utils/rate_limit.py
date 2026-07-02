@@ -125,6 +125,10 @@ class RateLimiter:
         """Attempt to consume the tokens from the bucket if available."""
         if not isinstance(self.tokens, (int, float)):
             return False  # type: ignore[unreachable]
+        if not math.isfinite(self.tokens):
+            # Reset to capacity if state is corrupted to inf/nan
+            self.tokens = self.capacity
+            return False
         if self.tokens >= tokens:
             self.tokens -= tokens
             return True
