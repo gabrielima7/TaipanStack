@@ -24,9 +24,11 @@ def test_chaos_rate_limit_token_inf_mutation_standard_expected() -> None:
     limiter.tokens = float("inf")
     result = limiter.consume(1.0)
     assert result is False
+    assert limiter.tokens == limiter.capacity
 
     # Run through the full consume flow with nan
     limiter.last_update = time.monotonic()
     limiter.tokens = float("nan")
     result = limiter.consume(1.0)
     assert result is False
+    assert limiter.tokens == limiter.capacity
