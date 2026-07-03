@@ -53,6 +53,10 @@ def _validate_type(
         TypeError: If value is not of the expected type.
 
     """
+    # Explicitly reject bools if expecting an int (but not if expecting bool)
+    if expected_type is int and isinstance(value, bool):
+        raise TypeError(f"{name} must be int, got bool")
+
     if not isinstance(value, expected_type):
         type_name = (
             expected_type.__name__
@@ -173,6 +177,9 @@ def validate_project_name(
 
     """
     _validate_type(name, str, "Project name")
+    _validate_type(max_length, int, "max_length")
+    _validate_type(allow_hyphen, bool, "allow_hyphen")
+    _validate_type(allow_underscore, bool, "allow_underscore")
     _check_project_name_length(name, max_length)
     _check_project_name_chars(name, allow_hyphen, allow_underscore)
     _check_project_name_reserved(name)
