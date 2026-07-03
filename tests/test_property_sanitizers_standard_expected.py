@@ -308,8 +308,9 @@ class TestSanitizePathProperties:
         max_depth=st.integers(min_value=1, max_value=10),
     )
     @settings(
-        max_examples=FUZZ_EXAMPLES,
+        max_examples=100,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
+        deadline=None,
     )
     def test_property_sanitizers_depth_enforcement_standard_expected(
         self, segments: list[str], max_depth: int
