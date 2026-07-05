@@ -9,6 +9,7 @@ from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBrea
 from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 from taipanstack.resilience.circuit_breaker import CircuitBreakerError
 
+
 @pytest.mark.asyncio
 async def test_chaos_orchestrator_evaluate_standard_breaker_standard_expected() -> None:
     from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
@@ -26,6 +27,7 @@ async def test_chaos_orchestrator_evaluate_standard_breaker_standard_expected() 
     assert isinstance(res, Err)
     assert isinstance(res.err_value, CircuitBreakerError)
     assert "Circuit 'test_std_cb' is open" in str(res.err_value)
+
 
 @pytest.mark.asyncio
 async def test_chaos_orchestrator_evaluate_adaptive_breaker_standard_expected() -> None:
@@ -62,10 +64,12 @@ async def test_chaos_orchestrator_bulkhead_edge_standard_expected() -> None:
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     errors = [
-        r for r in results
+        r
+        for r in results
         if isinstance(r, Err) and isinstance(r.err_value, BulkheadFullError)
     ]
     assert len(errors) >= 1
+
 
 @pytest.mark.asyncio
 async def test_chaos_orchestrator_resource_exhaustion_standard_expected() -> None:
@@ -80,6 +84,7 @@ async def test_chaos_orchestrator_resource_exhaustion_standard_expected() -> Non
 
     assert isinstance(res, Err)
     assert isinstance(res.err_value, MemoryError)
+
 
 @pytest.mark.asyncio
 async def test_chaos_orchestrator_cancellation_standard_expected() -> None:
@@ -107,15 +112,20 @@ async def test_chaos_orchestrator_cancellation_standard_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_handle_retry_failure_timeout_standard_expected() -> None:
+async def test_chaos_orchestrator_handle_retry_failure_timeout_standard_expected() -> (
+    None
+):
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig
 
     # We want to trigger the specific branch in _handle_retry_failure
-    orchestrator = ResilienceOrchestrator().with_retry(RetryConfig(max_attempts=3, initial_delay=0.01))
+    orchestrator = ResilienceOrchestrator().with_retry(
+        RetryConfig(max_attempts=3, initial_delay=0.01)
+    )
 
     # Let's mock _calculate_retry_delay to return a huge value so we can hit the `delay` branch logic
     with patch.object(orchestrator, "_calculate_retry_delay", return_value=0.01):
+
         async def dummy() -> Result[str, Exception]:
             raise ValueError("fail")
 
