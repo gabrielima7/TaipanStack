@@ -53,6 +53,22 @@ result = await bulkhead.execute(heavy_db_join_query)
 
 ---
 
+## Adaptive Retry
+
+The **AdaptiveRetry** strategy monitors the effectiveness of exponential backoff and automatically learns the optimal *sleep* latencies to successfully retry failing operations. It keeps track of successes and failures across a rolling window and adjusts its delay.
+
+```python
+from taipanstack.resilience.adaptive import AdaptiveRetry
+
+# Learns optimal backoffs based on recent execution outcomes.
+adaptive_retry = AdaptiveRetry(min_delay=0.1, max_delay=30.0, window_size=50)
+
+# Record outcome for attempt level 1
+adaptive_retry.record_outcome(attempt=1, success=True, elapsed=0.5)
+```
+
+---
+
 ## The Resilience Orchestrator
 
 The ultimate way to secure a dependency is by composing multiple patterns:
@@ -70,7 +86,7 @@ orch = (
     ResilienceOrchestrator("ai-service")
     .with_bulkhead(max_concurrent=5)
     .with_circuit_breaker(AdaptiveCircuitBreaker("ai", window_size=50))
-
+    .with_retry(AdaptiveRetry(min_delay=0.1, max_delay=10.0))
     .with_fallback({"status": "cached", "data": []})
 )
 
