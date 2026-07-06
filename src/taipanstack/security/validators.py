@@ -187,7 +187,7 @@ def validate_project_name(
     return name
 
 
-def _check_version_format(version: str) -> None:
+def _check_version_string_safety(version: str) -> None:
     """Check the basic formatting and safety of a version string."""
     # Prevent DoS from massive integer string conversion limit in Python
     if len(version) > MAX_PYTHON_VERSION_LENGTH:
@@ -198,6 +198,9 @@ def _check_version_format(version: str) -> None:
         msg = "Version contains invalid characters"
         raise ValueError(msg)
 
+
+def _check_version_regex_pattern(version: str) -> None:
+    """Check the regex pattern of a version string."""
     if not version.isascii():
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
@@ -207,6 +210,12 @@ def _check_version_format(version: str) -> None:
     if not re.match(pattern, version):
         msg = f"Invalid version format: '{version}'. Use 'X.Y' format (e.g., '3.12')"
         raise ValueError(msg)
+
+
+def _check_version_format(version: str) -> None:
+    """Check the basic formatting and safety of a version string."""
+    _check_version_string_safety(version)
+    _check_version_regex_pattern(version)
 
 
 def _check_version_numbers(version: str) -> None:
