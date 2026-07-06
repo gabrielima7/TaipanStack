@@ -980,6 +980,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adaptive-retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptive Retry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-resilience-orchestrator" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2208,6 +2219,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adaptive-retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptive Retry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-resilience-orchestrator" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2280,6 +2302,17 @@
 </span><span id="__span-1-8"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">bulkhead</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">heavy_db_join_query</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
+<h2 id="adaptive-retry">Adaptive Retry<a class="headerlink" href="#adaptive-retry" title="Permanent link">&para;</a></h2>
+<p>The <strong>AdaptiveRetry</strong> strategy monitors the effectiveness of exponential backoff and automatically learns the optimal <em>sleep</em> latencies to successfully retry failing operations. It keeps track of successes and failures across a rolling window and adjusts its delay.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdaptiveRetry</span>
+</span><span id="__span-2-2">
+</span><span id="__span-2-3"><span class="c1"># Learns optimal backoffs based on recent execution outcomes.</span>
+</span><span id="__span-2-4"><span class="n">adaptive_retry</span> <span class="o">=</span> <span class="n">AdaptiveRetry</span><span class="p">(</span><span class="n">min_delay</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_delay</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</span><span id="__span-2-5">
+</span><span id="__span-2-6"><span class="c1"># Record outcome for attempt level 1</span>
+</span><span id="__span-2-7"><span class="n">adaptive_retry</span><span class="o">.</span><span class="n">record_outcome</span><span class="p">(</span><span class="n">attempt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">elapsed</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
 <h2 id="the-resilience-orchestrator">The Resilience Orchestrator<a class="headerlink" href="#the-resilience-orchestrator" title="Permanent link">&para;</a></h2>
 <p>The ultimate way to secure a dependency is by composing multiple patterns:
 1. Limit concurrency to avoid thread exhaustion (<em>Bulkhead</em>).
@@ -2287,20 +2320,20 @@
 3. Retry transient errors with memory (<em>Adaptive Retry</em>).
 4. Impose a hard deadline (<em>Timeout</em>).
 5. Default to safe parameters if all fails (<em>Fallback</em>).</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
-</span><span id="__span-2-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResilienceOrchestrator</span>
-</span><span id="__span-2-3">
-</span><span id="__span-2-4"><span class="n">orch</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="__span-2-5">    <span class="n">ResilienceOrchestrator</span><span class="p">(</span><span class="s2">&quot;ai-service&quot;</span><span class="p">)</span>
-</span><span id="__span-2-6">    <span class="o">.</span><span class="n">with_bulkhead</span><span class="p">(</span><span class="n">max_concurrent</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-2-7">    <span class="o">.</span><span class="n">with_circuit_breaker</span><span class="p">(</span><span class="n">AdaptiveCircuitBreaker</span><span class="p">(</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
-</span><span id="__span-2-8">
-</span><span id="__span-2-9">    <span class="o">.</span><span class="n">with_fallback</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;cached&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]})</span>
-</span><span id="__span-2-10"><span class="p">)</span>
-</span><span id="__span-2-11">
-</span><span id="__span-2-12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_ai_recommendation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
-</span><span id="__span-2-13">    <span class="c1"># Seamlessly managed execution</span>
-</span><span id="__span-2-14">    <span class="k">return</span> <span class="k">await</span> <span class="n">orch</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ai_client</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
+</span><span id="__span-3-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResilienceOrchestrator</span>
+</span><span id="__span-3-3">
+</span><span id="__span-3-4"><span class="n">orch</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-3-5">    <span class="n">ResilienceOrchestrator</span><span class="p">(</span><span class="s2">&quot;ai-service&quot;</span><span class="p">)</span>
+</span><span id="__span-3-6">    <span class="o">.</span><span class="n">with_bulkhead</span><span class="p">(</span><span class="n">max_concurrent</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-3-7">    <span class="o">.</span><span class="n">with_circuit_breaker</span><span class="p">(</span><span class="n">AdaptiveCircuitBreaker</span><span class="p">(</span><span class="s2">&quot;ai&quot;</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+</span><span id="__span-3-8">    <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">AdaptiveRetry</span><span class="p">(</span><span class="n">min_delay</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_delay</span><span class="o">=</span><span class="mf">10.0</span><span class="p">))</span>
+</span><span id="__span-3-9">    <span class="o">.</span><span class="n">with_fallback</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;cached&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]})</span>
+</span><span id="__span-3-10"><span class="p">)</span>
+</span><span id="__span-3-11">
+</span><span id="__span-3-12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_ai_recommendation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">]:</span>
+</span><span id="__span-3-13">    <span class="c1"># Seamlessly managed execution</span>
+</span><span id="__span-3-14">    <span class="k">return</span> <span class="k">await</span> <span class="n">orch</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ai_client</span><span class="o">.</span><span class="n">generate</span><span class="p">)</span>
 </span></code></pre></div>
 
 
