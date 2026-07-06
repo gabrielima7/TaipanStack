@@ -396,6 +396,23 @@ def _apply_base_dir_constraint(
     return sanitized
 
 
+def _process_string_path(path: str) -> Path:
+    """Process a string path, removing null bytes and validating length."""
+    if len(path) > MAX_PATH_LENGTH:
+        msg = "Path length exceeds maximum allowed"
+        raise ValueError(msg)
+    if "\x00" in path:
+        path = path.replace("\x00", "")
+    return Path(path)
+
+
+def _check_pathlike_length(path: os.PathLike[str]) -> None:
+    """Check the length of a PathLike object."""
+    if len(str(path)) > MAX_PATH_LENGTH:
+        msg = "Path length exceeds maximum allowed"
+        raise ValueError(msg)
+
+
 def _normalize_path_input(path: str | os.PathLike[str]) -> Path:
     """Normalize input path string or Path object."""
     if not isinstance(path, (str, os.PathLike)):
@@ -404,16 +421,9 @@ def _normalize_path_input(path: str | os.PathLike[str]) -> Path:
         )
 
     if isinstance(path, str):
-        if len(path) > MAX_PATH_LENGTH:
-            msg = "Path length exceeds maximum allowed"
-            raise ValueError(msg)
-        if "\x00" in path:
-            path = path.replace("\x00", "")
-        return Path(path)
+        return _process_string_path(path)
 
-    if len(str(path)) > MAX_PATH_LENGTH:
-        msg = "Path length exceeds maximum allowed"
-        raise ValueError(msg)
+    _check_pathlike_length(path)
     return Path(path)
 
 
