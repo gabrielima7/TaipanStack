@@ -16,7 +16,7 @@ def test_core_compat_additional_core_compat_check_jit_available_attribute_error_
 
 
 def test_core_compat_additional_core_compat_check_free_threading_available_type_error_standard_expected():
-    from taipanstack.core.compat import _check_free_threading_available
+    from taipanstack.core.compat import _check_nogil_flag, _check_free_threading_available
 
     class MockSys:
         @property
@@ -24,11 +24,12 @@ def test_core_compat_additional_core_compat_check_free_threading_available_type_
             raise TypeError("mocked")
 
     with patch("taipanstack.core.compat.sys", MockSys()):
+        assert _check_nogil_flag() is False
         assert _check_free_threading_available() is False
 
 
 def test_core_compat_additional_core_compat_check_free_threading_available_config_vars_error_standard_expected():
-    from taipanstack.core.compat import _check_free_threading_available
+    from taipanstack.core.compat import _check_disable_gil_config, _check_free_threading_available
 
     class MockSysNoFlags:
         def __init__(self):
@@ -36,7 +37,27 @@ def test_core_compat_additional_core_compat_check_free_threading_available_confi
 
     with patch("taipanstack.core.compat.sys", MockSysNoFlags()):
         with patch("sysconfig.get_config_var", side_effect=TypeError("mocked")):
+            assert _check_disable_gil_config() is False
             assert _check_free_threading_available() is False
+
+
+def test_core_compat_additional_core_compat_check_nogil_flag_true_standard_expected():
+    from taipanstack.core.compat import _check_nogil_flag
+
+    class MockSysTrue:
+        class flags:
+            nogil = True
+
+    with patch("taipanstack.core.compat.sys", MockSysTrue()):
+        assert _check_nogil_flag() is True
+
+
+def test_core_compat_additional_core_compat_check_free_threading_available_true_standard_expected():
+    from taipanstack.core.compat import _check_free_threading_available
+
+    with patch("taipanstack.core.compat.PY313", True):
+        with patch("taipanstack.core.compat._check_nogil_flag", return_value=True):
+            assert _check_free_threading_available() is True
 
 
 def test_core_compat_additional_core_compat_check_mimalloc_available_error_standard_expected():
