@@ -100,7 +100,9 @@ def test_core_compat_additional_core_compat_check_free_threading_available_false
     with patch("taipanstack.core.compat.PY313", True):
         with patch("taipanstack.core.compat._check_nogil_flag", return_value=False):
             # Even if config states gil is disabled, if flag exists and is False, it should return False
-            with patch("taipanstack.core.compat._check_disable_gil_config", return_value=True):
+            with patch(
+                "taipanstack.core.compat._check_disable_gil_config", return_value=True
+            ):
                 assert _check_free_threading_available() is False
 
 
