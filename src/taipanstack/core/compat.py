@@ -107,9 +107,10 @@ def _check_disable_gil_config() -> bool:
     """Check if build was configured with --disable-gil."""
     try:
         config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
-        return "--disable-gil" in config_args
     except (AttributeError, TypeError):
         return False
+    else:
+        return "--disable-gil" in config_args
 
 
 def _check_free_threading_available() -> bool:

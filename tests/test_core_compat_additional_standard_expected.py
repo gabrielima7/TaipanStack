@@ -16,7 +16,10 @@ def test_core_compat_additional_core_compat_check_jit_available_attribute_error_
 
 
 def test_core_compat_additional_core_compat_check_free_threading_available_type_error_standard_expected():
-    from taipanstack.core.compat import _check_nogil_flag, _check_free_threading_available
+    from taipanstack.core.compat import (
+        _check_free_threading_available,
+        _check_nogil_flag,
+    )
 
     class MockSys:
         @property
@@ -29,7 +32,10 @@ def test_core_compat_additional_core_compat_check_free_threading_available_type_
 
 
 def test_core_compat_additional_core_compat_check_free_threading_available_config_vars_error_standard_expected():
-    from taipanstack.core.compat import _check_disable_gil_config, _check_free_threading_available
+    from taipanstack.core.compat import (
+        _check_disable_gil_config,
+        _check_free_threading_available,
+    )
 
     class MockSysNoFlags:
         def __init__(self):
@@ -45,8 +51,10 @@ def test_core_compat_additional_core_compat_check_nogil_flag_true_standard_expec
     from taipanstack.core.compat import _check_nogil_flag
 
     class MockSysTrue:
-        class flags:
+        class Flags:
             nogil = True
+
+        flags = Flags()
 
     with patch("taipanstack.core.compat.sys", MockSysTrue()):
         assert _check_nogil_flag() is True
