@@ -27,7 +27,7 @@ def test_core_compat_additional_core_compat_check_free_threading_available_type_
             raise TypeError("mocked")
 
     with patch("taipanstack.core.compat.sys", MockSys()):
-        assert _check_nogil_flag() is False
+        assert _check_nogil_flag() is None
         assert _check_free_threading_available() is False
 
 
@@ -60,12 +60,48 @@ def test_core_compat_additional_core_compat_check_nogil_flag_true_standard_expec
         assert _check_nogil_flag() is True
 
 
+def test_core_compat_additional_core_compat_check_nogil_flag_false_standard_expected():
+    from taipanstack.core.compat import _check_nogil_flag
+
+    class MockSysFalse:
+        class Flags:
+            nogil = False
+
+        flags = Flags()
+
+    with patch("taipanstack.core.compat.sys", MockSysFalse()):
+        assert _check_nogil_flag() is False
+
+
+def test_core_compat_additional_core_compat_check_nogil_flag_none_standard_expected():
+    from taipanstack.core.compat import _check_nogil_flag
+
+    class MockSysNone:
+        class Flags:
+            pass
+
+        flags = Flags()
+
+    with patch("taipanstack.core.compat.sys", MockSysNone()):
+        assert _check_nogil_flag() is None
+
+
 def test_core_compat_additional_core_compat_check_free_threading_available_true_standard_expected():
     from taipanstack.core.compat import _check_free_threading_available
 
     with patch("taipanstack.core.compat.PY313", True):
         with patch("taipanstack.core.compat._check_nogil_flag", return_value=True):
             assert _check_free_threading_available() is True
+
+
+def test_core_compat_additional_core_compat_check_free_threading_available_false_when_nogil_false_standard_expected():
+    from taipanstack.core.compat import _check_free_threading_available
+
+    with patch("taipanstack.core.compat.PY313", True):
+        with patch("taipanstack.core.compat._check_nogil_flag", return_value=False):
+            # Even if config states gil is disabled, if flag exists and is False, it should return False
+            with patch("taipanstack.core.compat._check_disable_gil_config", return_value=True):
+                assert _check_free_threading_available() is False
 
 
 def test_core_compat_additional_core_compat_check_mimalloc_available_error_standard_expected():

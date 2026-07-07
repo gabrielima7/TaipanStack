@@ -93,14 +93,21 @@ def _check_jit_available() -> bool:
         return False
 
 
-def _check_nogil_flag() -> bool:
-    """Check if nogil flag is present and enabled."""
+def _check_nogil_flag() -> bool | None:
+    """Check if nogil flag is present and enabled.
+
+    Returns:
+        True if the flag is present and True.
+        False if the flag is present and False.
+        None if the flag is not present.
+
+    """
     try:
         if hasattr(sys.flags, "nogil"):
             return bool(sys.flags.nogil)
     except (AttributeError, TypeError):
         pass
-    return False
+    return None
 
 
 def _check_disable_gil_config() -> bool:
@@ -121,8 +128,9 @@ def _check_free_threading_available() -> bool:
     if not PY313:
         return False
 
-    if _check_nogil_flag():
-        return True
+    nogil = _check_nogil_flag()
+    if nogil is not None:
+        return nogil
 
     return _check_disable_gil_config()
 
