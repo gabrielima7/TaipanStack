@@ -1,4 +1,6 @@
-def test_security_validators_type_error_message_for_int_expected_type_bool_standard_expected() -> None:
+def test_security_validators_type_error_message_for_int_expected_type_bool_standard_expected() -> (
+    None
+):
     import pytest
 
     from taipanstack.security.validators import _validate_type
