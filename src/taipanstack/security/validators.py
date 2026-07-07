@@ -37,6 +37,13 @@ PROJECT_NAME_RESERVED = frozenset(
 )
 
 
+def _get_type_name(expected_type: type | tuple[type, ...]) -> str:
+    """Get the string representation of expected type(s)."""
+    if isinstance(expected_type, type):
+        return expected_type.__name__
+    return " | ".join(t.__name__ for t in expected_type)
+
+
 def _validate_type(
     value: object,
     expected_type: type | tuple[type, ...],
@@ -58,11 +65,7 @@ def _validate_type(
         raise TypeError(f"{name} must be int, got bool")
 
     if not isinstance(value, expected_type):
-        type_name = (
-            expected_type.__name__
-            if isinstance(expected_type, type)
-            else " | ".join(t.__name__ for t in expected_type)
-        )
+        type_name = _get_type_name(expected_type)
         msg = f"{name} must be {type_name}, got {type(value).__name__}"
         raise TypeError(msg)
 

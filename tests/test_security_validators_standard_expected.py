@@ -181,7 +181,13 @@ def test_security_validators_type_error_message_for_tuple_expected_types_standar
     None
 ):
     """Test tuple-type message path in _validate_type helper."""
-    from taipanstack.security.validators import validate_python_version
+    from taipanstack.security.validators import _validate_type, validate_python_version
 
     with pytest.raises(TypeError, match="Version must be str, got tuple"):
         validate_python_version((3, 11))
+
+    with pytest.raises(TypeError, match="Value must be int \\| str, got list"):
+        _validate_type([], (int, str), "Value")
+
+    with pytest.raises(TypeError, match="Value must be int, got bool"):
+        _validate_type(True, int, "Value")
