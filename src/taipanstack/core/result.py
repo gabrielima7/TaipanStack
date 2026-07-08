@@ -185,12 +185,12 @@ def safe_from(
 def _collect_list(
     results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
-    try:
-        # We use a runtime # type: ignore to bypass mypy's strict check
-        # on the AttributeError strategy for extreme performance on the hot path
-        return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
-    except AttributeError:
-        return None
+    ok_values: list[T] = []
+    for r in results:
+        if not isinstance(r, Ok):
+            return None
+        ok_values.append(r.ok_value)
+    return Ok(ok_values)
 
 
 def _collect_iterable(
