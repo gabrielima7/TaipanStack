@@ -206,6 +206,29 @@ def _build_aggressive_profile(profile: OptimizationProfile) -> OptimizationProfi
     )
 
 
+def _determine_optimization_profile(
+    opt_level: int,
+    experimental: bool,
+    base_profile: OptimizationProfile,
+) -> OptimizationProfile:
+    """Determine the optimization profile based on level and experimental flag.
+
+    Args:
+        opt_level: The configured optimization level.
+        experimental: Whether experimental features are enabled.
+        base_profile: The base profile for the current Python version.
+
+    Returns:
+        The resolved OptimizationProfile.
+
+    """
+    if opt_level == OPT_LEVEL_NONE:
+        return _PROFILE_311
+    if opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
+        return _build_aggressive_profile(base_profile)
+    return base_profile
+
+
 def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProfile:
     """Get the optimization profile for the current Python version.
 
@@ -225,15 +248,13 @@ def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProf
     experimental = is_experimental_enabled(force_refresh=force_refresh)
     opt_level = get_optimization_level(force_refresh=force_refresh)
 
-    profile = _get_base_profile()
+    base_profile = _get_base_profile()
 
-    # Adjust for optimization level
-    if opt_level == OPT_LEVEL_NONE:
-        _cached_optimization_profile = _PROFILE_311
-    elif opt_level == OPT_LEVEL_AGGRESSIVE and experimental:
-        _cached_optimization_profile = _build_aggressive_profile(profile)
-    else:
-        _cached_optimization_profile = profile
+    _cached_optimization_profile = _determine_optimization_profile(
+        opt_level,
+        experimental,
+        base_profile,
+    )
 
     return _cached_optimization_profile
 
