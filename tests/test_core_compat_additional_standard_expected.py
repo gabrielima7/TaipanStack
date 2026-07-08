@@ -78,7 +78,7 @@ def test_core_compat_additional_core_compat_check_nogil_flag_none_standard_expec
 
     class MockSysNone:
         class Flags:
-            pass
+            """Mock flags."""
 
         flags = Flags()
 
