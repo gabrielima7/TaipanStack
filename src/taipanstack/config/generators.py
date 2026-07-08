@@ -242,6 +242,40 @@ def _generate_paranoid_hooks() -> str:
 """
 
 
+def _collect_standard_security_hooks(config: StackConfig, hooks: list[str]) -> None:
+    """Collect standard security hooks.
+
+    Args:
+        config: The Stack configuration.
+        hooks: The list to append hooks to.
+
+    """
+    if config.security.enable_bandit:
+        hooks.append(_generate_bandit_hook(config.security.bandit_severity))
+
+    if config.security.enable_pip_audit:
+        hooks.append(_generate_pip_audit_hook())
+
+    if config.security.enable_semgrep:
+        hooks.append(_generate_semgrep_hook())
+
+
+def _collect_additional_security_hooks(config: StackConfig, hooks: list[str]) -> None:
+    """Collect additional security hooks based on configuration level.
+
+    Args:
+        config: The Stack configuration.
+        hooks: The list to append hooks to.
+
+    """
+    if config.security.enable_detect_secrets:
+        hooks.append(_generate_detect_secrets_hook())
+
+    # Add extra hooks for paranoid mode
+    if config.security.level == "paranoid":
+        hooks.append(_generate_paranoid_hooks())
+
+
 def _collect_security_hooks(config: StackConfig) -> list[str]:
     """Collect security hooks based on configuration.
 
@@ -254,21 +288,8 @@ def _collect_security_hooks(config: StackConfig) -> list[str]:
     """
     security_hooks: list[str] = []
 
-    if config.security.enable_bandit:
-        security_hooks.append(_generate_bandit_hook(config.security.bandit_severity))
-
-    if config.security.enable_pip_audit:
-        security_hooks.append(_generate_pip_audit_hook())
-
-    if config.security.enable_semgrep:
-        security_hooks.append(_generate_semgrep_hook())
-
-    if config.security.enable_detect_secrets:
-        security_hooks.append(_generate_detect_secrets_hook())
-
-    # Add extra hooks for paranoid mode
-    if config.security.level == "paranoid":
-        security_hooks.append(_generate_paranoid_hooks())
+    _collect_standard_security_hooks(config, security_hooks)
+    _collect_additional_security_hooks(config, security_hooks)
 
     return security_hooks
 
