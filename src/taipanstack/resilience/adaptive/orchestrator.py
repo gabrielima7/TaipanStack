@@ -167,18 +167,7 @@ class ResilienceOrchestrator(Generic[T]):
 
     async def _acquire_bulkhead(self, bh: Bulkhead) -> Result[None, Exception]:
         """Attempt to acquire a bulkhead permit, handling timeouts and errors."""
-        try:
-            await asyncio.wait_for(
-                bh._semaphore.acquire(),
-                timeout=bh._timeout,
-            )
-            return Ok(None)
-        except TimeoutError:
-            return Err(
-                TimeoutError(f"Bulkhead '{bh.name}' timed out after {bh._timeout}s")
-            )
-        except (RuntimeError, OSError, MemoryError) as e:
-            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+        return await bh._acquire_permit()
 
     async def _execute_with_bulkhead(
         self,
