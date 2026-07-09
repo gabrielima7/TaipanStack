@@ -151,6 +151,9 @@ nav:
       - v0.2.1: releases/v0.2.1.md
       - v0.2.0: releases/v0.2.0.md
       - v0.1.0: releases/v0.1.0.md
+  - SDET Reports:
+      - Audit Report: sdet_audit_report.md
+      - Chaos Report: sdet_chaos_report.md
 
 # ── Extra ────────────────────────────────────────────────────────────────────
 extra:
