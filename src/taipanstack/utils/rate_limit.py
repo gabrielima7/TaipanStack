@@ -93,6 +93,15 @@ class RateLimiter:
         self.tokens = min(self.tokens, self.capacity)
         return True
 
+    def _calculate_elapsed(self, now: float) -> float | None:
+        """Calculate the elapsed time since the last update."""
+        if not isinstance(self.last_update, (int, float)):
+            return None  # type: ignore[unreachable]
+        raw_elapsed = now - self.last_update
+        if not math.isfinite(raw_elapsed):
+            return None
+        return max(0.0, raw_elapsed)
+
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
 
@@ -103,12 +112,10 @@ class RateLimiter:
             True if token update succeeds, False if state corruption is detected.
 
         """
-        if not isinstance(self.last_update, (int, float)):
-            return False  # type: ignore[unreachable]
-        raw_elapsed = now - self.last_update
-        if not math.isfinite(raw_elapsed):
+        elapsed = self._calculate_elapsed(now)
+        if elapsed is None:
             return False
-        elapsed = max(0.0, raw_elapsed)
+
         self.last_update = now
 
         # Prevent state corruption or infinite elapsed time

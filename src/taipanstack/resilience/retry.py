@@ -630,14 +630,18 @@ class Retrier:
         self.attempt += 1
         return True
 
-    def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
-        """Determine if an exception should trigger a retry."""
+    def _is_matching_exception(self, exc_type: type[BaseException] | None) -> bool:
+        """Check if the exception matches the types to retry on."""
         if exc_type is None:
             return False
         try:
-            if not issubclass(exc_type, self.exception_types):
-                return False
+            return issubclass(exc_type, self.exception_types)
         except TypeError:
+            return False
+
+    def _should_retry(self, exc_type: type[BaseException] | None) -> bool:
+        """Determine if an exception should trigger a retry."""
+        if not self._is_matching_exception(exc_type):
             return False
 
         if not self._increment_attempt():
