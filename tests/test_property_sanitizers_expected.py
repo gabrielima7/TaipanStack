@@ -101,9 +101,7 @@ class TestSanitizeStringProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_returns_string_type_expected(
-        self, text: str
-    ) -> None:
+    def test_property_sanitizers_returns_string_type_expected(self, text: str) -> None:
         """Output must always be a string."""
         result = sanitize_string(text)
         assert isinstance(result, str)
@@ -145,9 +143,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_path_separators_expected(
-        self, text: str
-    ) -> None:
+    def test_property_sanitizers_no_path_separators_expected(self, text: str) -> None:
         """Output stem must not contain path separator characters.
 
         Note: sanitize_filename sanitizes the *stem* only; the extension
@@ -164,9 +160,7 @@ class TestSanitizeFilenameProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_null_bytes_expected(
-        self, text: str
-    ) -> None:
+    def test_property_sanitizers_no_null_bytes_expected(self, text: str) -> None:
         """Stem portion of output must not contain null bytes.
 
         Note: sanitize_filename sanitizes the stem only; the extension
@@ -289,9 +283,7 @@ class TestSanitizePathProperties:
         max_examples=FUZZ_EXAMPLES,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.differing_executors],
     )
-    def test_property_sanitizers_no_null_bytes_expected(
-        self, text: str
-    ) -> None:
+    def test_property_sanitizers_no_null_bytes_expected(self, text: str) -> None:
         """Output path must not contain null bytes."""
         try:
             result = sanitize_path(text, max_depth=None)

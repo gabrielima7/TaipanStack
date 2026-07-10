@@ -1,9 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_expected() -> (
-    None
-):
+def test_chaos_circuit_breaker_process_result_corrupted_result_expected() -> None:
     """Test _process_result when result is an invalid state."""
     cb = CircuitBreaker()
 
@@ -16,9 +14,7 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_expected() -> (
     assert cb._process_result(res) == res
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_error_expected() -> (
-    None
-):
+def test_chaos_circuit_breaker_process_result_corrupted_result_error_expected() -> None:
     from taipanstack.core.result import Err
 
     cb = CircuitBreaker()
@@ -37,9 +33,7 @@ def test_chaos_circuit_breaker_process_result_corrupted_result_error_expected() 
     assert cb._process_result(res_ex) == res_ex
 
 
-def test_chaos_circuit_breaker_process_result_corrupted_result_ok_expected() -> (
-    None
-):
+def test_chaos_circuit_breaker_process_result_corrupted_result_ok_expected() -> None:
     from taipanstack.core.result import Ok
 
     cb = CircuitBreaker()

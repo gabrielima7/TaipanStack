@@ -35,9 +35,7 @@ def test_chaos_retry_string_max_attempts_failure_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_string_max_attempts_async_failure_expected() -> (
-    None
-):
+async def test_chaos_retry_string_max_attempts_async_failure_expected() -> None:
     @retry(max_attempts="3", on=ValueError)  # type: ignore
     async def my_func() -> Ok[str]:
         raise ValueError("test")

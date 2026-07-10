@@ -273,9 +273,7 @@ class TestSetupLogging:
         """Test setup with detailed format."""
         setup_logging(format_type="detailed")
 
-    def test_utils_logging_setup_with_log_file_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_logging_setup_with_log_file_expected(self, tmp_path: Path) -> None:
         """Test setup with a log file."""
         log_file = tmp_path / "test.log"
         setup_logging(log_file=str(log_file))
@@ -431,9 +429,7 @@ class TestCorrelationId:
         assert new_dict["message"] == "test msg"
 
 
-def test_utils_logging_is_sensitive_regex_none_returns_false_expected() -> (
-    None
-):
+def test_utils_logging_is_sensitive_regex_none_returns_false_expected() -> None:
     """_is_sensitive returns False when regex is None."""
     from taipanstack.utils.logging import _is_sensitive
 

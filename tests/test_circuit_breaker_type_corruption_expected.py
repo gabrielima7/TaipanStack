@@ -25,9 +25,7 @@ def test_circuit_breaker_type_corruption_success_count_expected() -> None:
     assert breaker._state.state == CircuitState.HALF_OPEN
 
 
-def test_circuit_breaker_type_corruption_failure_count_in_update_expected() -> (
-    None
-):
+def test_circuit_breaker_type_corruption_failure_count_in_update_expected() -> None:
     breaker = CircuitBreaker(
         name="test_failure_update", failure_threshold=3, success_threshold=2
     )

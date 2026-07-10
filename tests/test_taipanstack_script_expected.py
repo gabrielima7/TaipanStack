@@ -152,9 +152,7 @@ def test_taipanstack_script_project_structure_creation_expected(tmp_path):
     assert (tmp_path / "tests" / "test_example.py").exists()
 
 
-def test_taipanstack_script_optional_dependencies_flag_expected(
-    tmp_path, monkeypatch
-):
+def test_taipanstack_script_optional_dependencies_flag_expected(tmp_path, monkeypatch):
     """
     Verifies that the --install-runtime-deps flag controls dependency installation.
     """
@@ -175,9 +173,7 @@ def test_taipanstack_script_optional_dependencies_flag_expected(
         assert len(poetry_add_calls) == 0
 
 
-def test_taipanstack_script_install_runtime_deps_flag_expected(
-    tmp_path, monkeypatch
-):
+def test_taipanstack_script_install_runtime_deps_flag_expected(tmp_path, monkeypatch):
     """
     Verifies that --install-runtime-deps installs the production dependencies.
     """

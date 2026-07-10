@@ -8,9 +8,7 @@ import pytest
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition_expected() -> (
-    None
-):
+def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition_expected() -> None:
     """Simulate a severe race condition in RateLimiter.consume.
 
     Multiple threads attempt to consume a token simultaneously. By adding

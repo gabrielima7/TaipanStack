@@ -18,9 +18,7 @@ def test_chaos_resilience_fallback_type_mutation_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_fallback_type_mutation_async_expected() -> (
-    None
-):
+async def test_chaos_resilience_fallback_type_mutation_async_expected() -> None:
     """Simulate a severe production failure where fallback 'exceptions' is corrupted to a string."""
 
     @fallback("fallback_val", exceptions="string_mutation")  # type: ignore
@@ -42,9 +40,7 @@ def test_chaos_resilience_fallback_type_mutation_success_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_fallback_type_mutation_async_success_expected() -> (
-    None
-):
+async def test_chaos_resilience_fallback_type_mutation_async_success_expected() -> None:
     """Test standard success behavior for async when exceptions type is invalid."""
 
     @fallback("fallback_val", exceptions="string_mutation")  # type: ignore
@@ -55,9 +51,7 @@ async def test_chaos_resilience_fallback_type_mutation_async_success_expected() 
     assert result.unwrap() == "success"
 
 
-def test_chaos_resilience_fallback_type_mutation_not_isinstance_expected() -> (
-    None
-):
+def test_chaos_resilience_fallback_type_mutation_not_isinstance_expected() -> None:
     """Coverage: valid type but not matching."""
 
     @fallback("fallback_val", exceptions=(ValueError,))

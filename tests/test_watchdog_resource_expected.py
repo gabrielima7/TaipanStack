@@ -334,9 +334,7 @@ async def test_watchdog_resource_resource_watcher_run_err_branch_expected_expect
         await watcher._run()
 
 
-def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> (
-    None
-):
+def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> None:
     """Test resource_watcher import error fallback branches."""
     import asyncio
     import importlib
@@ -375,9 +373,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage_expected() -> 
         importlib.reload(res_mod)
 
 
-def test_watchdog_resource_resource_watcher_import_success_coverage_expected() -> (
-    None
-):
+def test_watchdog_resource_resource_watcher_import_success_coverage_expected() -> None:
     """Test resource_watcher import success branch."""
     import importlib
     import sys

@@ -109,9 +109,7 @@ async def test_utils_cache_cached_async_err_branch_expected_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_async_cache_stampede_prevention_expected_expected() -> (
-    None
-):
+async def test_utils_cache_async_cache_stampede_prevention_expected_expected() -> None:
     """Test that multiple concurrent requests for the same key don't stampede."""
     call_count = 0
 
@@ -163,9 +161,7 @@ def test_utils_cache_cached_sync_lru_eviction_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_lru_eviction_expected_expected() -> (
-    None
-):
+async def test_utils_cache_cached_async_lru_eviction_expected_expected() -> None:
     """Test LRU eviction for async cache."""
     call_count = 0
 

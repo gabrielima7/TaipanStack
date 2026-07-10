@@ -38,9 +38,7 @@ def test_chaos_retry_type_mutation_retrier_attempt_nan_mutation_graceful_degrada
             raise ValueError("Expected failure")
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_expected() -> (
-    None
-):
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_expected() -> None:
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "initial_delay", "string_mutation")
     delay = calculate_delay(1, config)
@@ -135,9 +133,7 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_apply_jitter_mutation_delay2_expected() -> (
-    None
-):
+def test_chaos_retry_type_mutation_apply_jitter_mutation_delay2_expected() -> None:
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "jitter_factor", 1.0)
     object.__setattr__(config, "jitter", "string_mutation")
@@ -163,9 +159,7 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_retry_config_init_type_mutation_expected() -> (
-    None
-):
+def test_chaos_retry_type_mutation_retry_config_init_type_mutation_expected() -> None:
     config = RetryConfig(
         max_attempts="string_mutation",  # type: ignore
         initial_delay="string_mutation",  # type: ignore
@@ -191,9 +185,7 @@ def test_chaos_retry_on_exception_expected() -> None:
         test_func_standard_expected()
 
 
-def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val_expected() -> (
-    None
-):
+def test_chaos_retry_exit_should_retry_false_due_to_none_exc_val_expected() -> None:
     # Coverage for `self.last_exception = exc_val if isinstance(exc_val, Exception) else None`
     # When exc_val is None (or not Exception, like BaseException).
     r = Retrier()
@@ -227,9 +219,7 @@ def test_chaos_retry_should_retry_type_error_for_issubclass_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_decorator_type_error_for_isinstance_expected() -> (
-    None
-):
+async def test_chaos_retry_decorator_type_error_for_isinstance_expected() -> None:
     """
     Test the try...except TypeError block for isinstance inside the retry decorator.
     """

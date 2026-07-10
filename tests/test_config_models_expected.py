@@ -135,9 +135,7 @@ class TestStackConfig:
         with pytest.raises(ValidationError, match="invalid"):
             StackConfig(python_version="invalid")
 
-    def test_config_models_valid_project_dir_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_config_models_valid_project_dir_expected(self, tmp_path: Path) -> None:
         """Test valid project directory is resolved."""
         config = StackConfig(project_dir=tmp_path)
         assert config.project_dir == tmp_path.resolve()

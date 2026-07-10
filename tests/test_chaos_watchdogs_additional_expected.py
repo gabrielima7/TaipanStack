@@ -12,9 +12,7 @@ class DummyWatcher(BaseWatcher):
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_base_watcher_stop_timeout_error_expected() -> (
-    None
-):
+async def test_chaos_watchdogs_base_watcher_stop_timeout_error_expected() -> None:
     """Test that BaseWatcher.stop gracefully handles TimeoutError."""
     watcher = DummyWatcher(interval=0.1)
     await watcher.start()
@@ -49,9 +47,7 @@ async def test_chaos_watchdogs_base_watcher_stop_oserror_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_base_watcher_loop_timeout_error_expected() -> (
-    None
-):
+async def test_chaos_watchdogs_base_watcher_loop_timeout_error_expected() -> None:
     """Test that BaseWatcher._loop catches TimeoutError from stop_event.wait."""
     watcher = DummyWatcher(interval=0.1)
 
@@ -78,9 +74,7 @@ async def test_chaos_watchdogs_base_watcher_loop_timeout_error_expected() -> (
 
 
 @pytest.mark.asyncio
-async def test_chaos_watchdogs_base_watcher_start_stop_event_clear_expected() -> (
-    None
-):
+async def test_chaos_watchdogs_base_watcher_start_stop_event_clear_expected() -> None:
     watcher = DummyWatcher(interval=0.1)
     await watcher.start()
     await watcher.stop()

@@ -107,9 +107,7 @@ def test_security_password_hash_password_is_random_expected() -> None:
     assert verify_password(password, hash2) is True
 
 
-def test_security_password_verify_password_invalid_type_password_expected() -> (
-    None
-):
+def test_security_password_verify_password_invalid_type_password_expected() -> None:
     """Test that an invalid type for password raises a TypeError."""
     import pytest
 
@@ -119,9 +117,7 @@ def test_security_password_verify_password_invalid_type_password_expected() -> (
         verify_password(123, pwd_hash)  # type: ignore[arg-type]
 
 
-def test_security_password_verify_password_invalid_type_hash_expected() -> (
-    None
-):
+def test_security_password_verify_password_invalid_type_hash_expected() -> None:
     """Test that an invalid type for password_hash raises a TypeError."""
     import pytest
 

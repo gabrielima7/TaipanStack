@@ -19,9 +19,7 @@ def test_chaos_fallback_exceptions_tuple_mutation_expected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_fallback_exceptions_tuple_mutation_async_expected() -> (
-    None
-):
+async def test_chaos_fallback_exceptions_tuple_mutation_async_expected() -> None:
     """Simulate type corruption where exceptions parameter is mutated in async."""
 
     @fallback("fallback", exceptions=cast(tuple, "string_mutation"))
@@ -32,9 +30,7 @@ async def test_chaos_fallback_exceptions_tuple_mutation_async_expected() -> (
         await async_dummy()
 
 
-def test_chaos_fallback_exceptions_tuple_mutation_sync_result_expected() -> (
-    None
-):
+def test_chaos_fallback_exceptions_tuple_mutation_sync_result_expected() -> None:
     """Simulate type corruption where exceptions parameter is mutated, but function returns Ok."""
 
     @fallback("fallback", exceptions=cast(tuple, "string_mutation"))
@@ -45,9 +41,7 @@ def test_chaos_fallback_exceptions_tuple_mutation_sync_result_expected() -> (
 
 
 @pytest.mark.asyncio
-async def test_chaos_fallback_exceptions_tuple_mutation_async_result_expected() -> (
-    None
-):
+async def test_chaos_fallback_exceptions_tuple_mutation_async_result_expected() -> None:
     """Simulate type corruption where exceptions parameter is mutated, but async function returns Ok."""
 
     @fallback("fallback", exceptions=cast(tuple, "string_mutation"))

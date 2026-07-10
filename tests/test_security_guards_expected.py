@@ -15,9 +15,7 @@ from taipanstack.security.guards import (
 class TestGuardPathTraversal:
     """Tests for guard_path_traversal function."""
 
-    def test_security_guards_safe_path_passes_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_safe_path_passes_expected(self, tmp_path: Path) -> None:
         """Test that safe paths pass validation."""
         safe_file = tmp_path / "test.txt"
         safe_file.touch()
@@ -47,9 +45,7 @@ class TestGuardPathTraversal:
         assert "path_traversal" in str(exc_info.value)
         assert exc_info.value.guard_name == "path_traversal"
 
-    def test_security_guards_double_dot_blocked_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_double_dot_blocked_expected(self, tmp_path: Path) -> None:
         """Test that .. patterns are blocked."""
         with pytest.raises(SecurityError):
             guard_path_traversal("foo/../../../etc/passwd", tmp_path)

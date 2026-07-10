@@ -67,9 +67,7 @@ def test_fuzz_url_security_url_tld_ipv6_handling_expected() -> None:
     assert validate_url(url) == url
 
 
-def test_fuzz_url_security_url_credentials_bypassing_tld_check_expected() -> (
-    None
-):
+def test_fuzz_url_security_url_credentials_bypassing_tld_check_expected() -> None:
     """Ensure credentials don't mess up the TLD checks because of manual splits on netloc."""
     url = "http://user:pass@notlocalhost"
     # missing TLD, and not localhost, so should raise

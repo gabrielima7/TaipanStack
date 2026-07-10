@@ -20,9 +20,7 @@ from taipanstack.utils.filesystem import (
 class TestSafeRead:
     """Tests for safe_read function."""
 
-    def test_utils_filesystem_read_no_max_size_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_no_max_size_expected(self, tmp_path: Path) -> None:
         """Test reading a file with max_size_bytes=None."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("hello")
@@ -30,9 +28,7 @@ class TestSafeRead:
         result = safe_read(test_file, max_size_bytes=None)
         assert result.ok_value == "hello"
 
-    def test_utils_filesystem_read_existing_file_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_existing_file_expected(self, tmp_path: Path) -> None:
         """Test reading an existing file."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("Hello, World!", encoding="utf-8")
@@ -44,9 +40,7 @@ class TestSafeRead:
             case Err():
                 pytest.fail("Expected Ok but got Err")
 
-    def test_utils_filesystem_read_with_base_dir_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_with_base_dir_expected(self, tmp_path: Path) -> None:
         """Test reading with base directory constraint."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("content", encoding="utf-8")
@@ -138,9 +132,7 @@ class TestSafeRead:
 class TestSafeWrite:
     """Tests for safe_write function."""
 
-    def test_utils_filesystem_write_new_file_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_new_file_expected(self, tmp_path: Path) -> None:
         """Test writing a new file."""
         test_file = tmp_path / "new.txt"
         result = safe_write(test_file, "content")
@@ -204,9 +196,7 @@ class TestSafeWrite:
         assert (tmp_path / "test.txt.bak").exists()
         assert (tmp_path / "test.txt.bak").read_text() == "original"
 
-    def test_utils_filesystem_write_no_backup_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_no_backup_expected(self, tmp_path: Path) -> None:
         """Test writing without backup."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
@@ -216,18 +206,14 @@ class TestSafeWrite:
         assert test_file.read_text() == "updated"
         assert not (tmp_path / "test.txt.bak").exists()
 
-    def test_utils_filesystem_atomic_write_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_atomic_write_expected(self, tmp_path: Path) -> None:
         """Test atomic write mode."""
         test_file = tmp_path / "atomic.txt"
         safe_write(test_file, "atomic content", options=WriteOptions(atomic=True))
 
         assert test_file.read_text() == "atomic content"
 
-    def test_utils_filesystem_non_atomic_write_expected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_non_atomic_write_expected(self, tmp_path: Path) -> None:
         """Test non-atomic write mode."""
         test_file = tmp_path / "direct.txt"
         safe_write(test_file, "direct content", options=WriteOptions(atomic=False))
