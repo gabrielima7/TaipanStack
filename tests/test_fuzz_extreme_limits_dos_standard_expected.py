@@ -2,7 +2,12 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from taipanstack.security.validators import validate_project_name, validate_url, validate_email
+from taipanstack.security.validators import (
+    validate_email,
+    validate_project_name,
+    validate_url,
+)
+
 
 def test_fuzz_project_name_massive_dos_standard_expected() -> None:
     """Fuzz validate_project_name with massive strings."""
