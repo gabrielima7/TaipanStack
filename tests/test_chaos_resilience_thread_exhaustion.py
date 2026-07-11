@@ -18,4 +18,4 @@ def test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion():
 
 
 if __name__ == "__main__":
-    test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion_standard_expected()
+    test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion()

@@ -33,4 +33,4 @@ def test_chaos_circuit_breaker_untracked_err_consistency():
 
 
 if __name__ == "__main__":
-    test_chaos_circuit_breaker_untracked_err_consistency_standard_expected()
+    test_chaos_circuit_breaker_untracked_err_consistency()
