@@ -337,6 +337,7 @@ def _get_missing_parents(resolved_path: Path) -> list[Path]:
 
     Raises:
         FileExistsError: If a file exists in the path that is not a directory.
+
     """
     paths_to_create: list[Path] = []
     current_path = resolved_path
