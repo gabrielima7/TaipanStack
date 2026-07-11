@@ -103,6 +103,13 @@ def _verify_argon2(password_str: str, password_hash: str) -> bool:
         return False
 
 
+def _is_valid_password_string(password_str: str) -> bool:
+    """Validate a password string for emptiness and maximum length."""
+    if not password_str:
+        return False
+    return len(password_str) <= MAX_PASSWORD_LENGTH
+
+
 def verify_password(password: str | SecretStr, password_hash: str) -> bool:
     """
     Verify a password against an Argon2 or legacy PBKDF2-HMAC-SHA256 hash.
@@ -124,10 +131,7 @@ def verify_password(password: str | SecretStr, password_hash: str) -> bool:
         msg = "password_hash must be a string"  # type: ignore[unreachable]
         raise TypeError(msg)
 
-    if not password_str:
-        return False
-
-    if len(password_str) > MAX_PASSWORD_LENGTH:
+    if not _is_valid_password_string(password_str):
         return False
 
     if password_hash.startswith(LEGACY_FORMAT + "$"):
