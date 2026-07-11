@@ -44,6 +44,19 @@ def _hash_file(path: Path) -> Result[str, Exception]:
         return Err(exc)
 
 
+def _is_valid_env_line(line: str) -> bool:
+    """Check if a line is a valid .env assignment."""
+    if not line or line.startswith("#"):
+        return False
+    return "=" in line
+
+
+def _parse_env_line(line: str) -> tuple[str, str]:
+    """Parse a valid .env assignment line into key and value."""
+    key, _, value = line.partition("=")
+    return key.strip(), value.strip().strip("\"'")
+
+
 def _parse_env(text: str) -> dict[str, object]:
     """Parse a simple ``.env`` key=value file.
 
@@ -60,13 +73,9 @@ def _parse_env(text: str) -> dict[str, object]:
     result: dict[str, object] = {}
     for line in text.splitlines():
         stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if "=" not in stripped:
-            continue
-        key, _, value = stripped.partition("=")
-        value = value.strip().strip("\"'")
-        result[key.strip()] = value
+        if _is_valid_env_line(stripped):
+            key, value = _parse_env_line(stripped)
+            result[key] = value
     return result
 
 
