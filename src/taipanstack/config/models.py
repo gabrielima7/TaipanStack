@@ -23,6 +23,27 @@ PYTHON_MAJOR_VERSION = 3
 MIN_PYTHON_MINOR_VERSION = 10
 
 
+def _check_python_version_format(value: str) -> None:
+    """Validate Python version matches the X.Y format."""
+    pattern = r"^\d+\.\d+\Z"
+    if not re.match(pattern, value):
+        msg = f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
+        raise ValueError(msg)
+
+
+def _check_python_minimum_version(major: int, minor: int, value: str) -> None:
+    """Validate Python version meets the minimum supported requirement."""
+    is_old_python = major < PYTHON_MAJOR_VERSION or (
+        major == PYTHON_MAJOR_VERSION and minor < MIN_PYTHON_MINOR_VERSION
+    )
+    if is_old_python:
+        msg = (
+            f"Python version {value} is not supported. "
+            f"Minimum is {PYTHON_MAJOR_VERSION}.{MIN_PYTHON_MINOR_VERSION}."
+        )
+        raise ValueError(msg)
+
+
 class SecurityConfig(BaseModel):
     """Security-related configuration options.
 
@@ -237,23 +258,10 @@ class StackConfig(BaseModel):
 
         """
         _ = cls
-        pattern = r"^\d+\.\d+\Z"
-        if not re.match(pattern, value):
-            msg = (
-                f"Python version '{value}' is invalid. Use format 'X.Y' (e.g., '3.12')."
-            )
-            raise ValueError(msg)
+        _check_python_version_format(value)
 
         major, minor = map(int, value.split("."))
-        is_old_python = major < PYTHON_MAJOR_VERSION or (
-            major == PYTHON_MAJOR_VERSION and minor < MIN_PYTHON_MINOR_VERSION
-        )
-        if is_old_python:
-            msg = (
-                f"Python version {value} is not supported. "
-                f"Minimum is {PYTHON_MAJOR_VERSION}.{MIN_PYTHON_MINOR_VERSION}."
-            )
-            raise ValueError(msg)
+        _check_python_minimum_version(major, minor, value)
 
         return value
 

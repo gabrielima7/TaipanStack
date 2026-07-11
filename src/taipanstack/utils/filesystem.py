@@ -317,7 +317,28 @@ def ensure_dir(
     path = _validate_path(path, base_dir, allow_symlinks=True)
     resolved_path = path.resolve()
 
-    # Identify missing parent directories from root to leaf
+    paths_to_create = _get_missing_parents(resolved_path)
+
+    # Iterate through parents and create them with specific mode
+    for p in paths_to_create:
+        p.mkdir(mode=mode, exist_ok=True)
+
+    return resolved_path
+
+
+def _get_missing_parents(resolved_path: Path) -> list[Path]:
+    """Identify missing parent directories from root to leaf.
+
+    Args:
+        resolved_path: The fully resolved path to check.
+
+    Returns:
+        List of paths to create in order from root to leaf.
+
+    Raises:
+        FileExistsError: If a file exists in the path that is not a directory.
+
+    """
     paths_to_create: list[Path] = []
     current_path = resolved_path
 
@@ -330,8 +351,4 @@ def ensure_dir(
             break
         current_path = parent
 
-    # Iterate through parents and create them with specific mode
-    for p in paths_to_create:
-        p.mkdir(mode=mode, exist_ok=True)
-
-    return resolved_path
+    return paths_to_create
