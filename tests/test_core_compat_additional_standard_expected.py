@@ -42,7 +42,7 @@ def test_core_compat_additional_core_compat_check_free_threading_available_confi
             self.name = "MockSysNoFlags"
 
     with patch("taipanstack.core.compat.sys", MockSysNoFlags()):
-        with patch("sysconfig.get_config_var", side_effect=TypeError("mocked")):
+        with patch("taipanstack.core.compat.sysconfig.get_config_var", side_effect=TypeError("mocked")):
             assert _check_disable_gil_config() is False
             assert _check_free_threading_available() is False
 
@@ -109,5 +109,5 @@ def test_core_compat_additional_core_compat_check_free_threading_available_false
 def test_core_compat_additional_core_compat_check_mimalloc_available_error_standard_expected():
     from taipanstack.core.compat import _check_mimalloc_available
 
-    with patch("sysconfig.get_config_var", side_effect=TypeError("mock")):
+    with patch("taipanstack.core.compat.sysconfig.get_config_var", side_effect=TypeError("mock")):
         assert _check_mimalloc_available() is False
