@@ -7,7 +7,6 @@ declarative, type-safe input validation inside ``BaseModel``
 definitions.
 """
 
-import re
 from typing import Annotated
 
 from pydantic.functional_validators import AfterValidator
@@ -131,6 +130,3 @@ SafeCommand = Annotated[str, AfterValidator(_validate_safe_command)]
 
 SafeProjectName = Annotated[str, AfterValidator(_validate_safe_project_name)]
 """A project name validated for safe naming conventions."""
-
-
-_SQL_IDENTIFIER_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*\Z")

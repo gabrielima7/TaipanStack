@@ -93,19 +93,6 @@ _SENSITIVE_ENV_VAR_PATTERN = re.compile(
     r"SECRET|PASSWORD|TOKEN|PRIVATE.*?KEY|API.*?KEY",
 )
 
-_SAFE_HASH_ALGORITHMS = frozenset(
-    [
-        "sha256",
-        "sha384",
-        "sha512",
-        "sha3_256",
-        "sha3_384",
-        "sha3_512",
-        "blake2b",
-        "blake2s",
-    ],
-)
-
 
 class SecurityError(Exception):
     """Raised when a security guard detects a violation.
