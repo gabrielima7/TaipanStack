@@ -15,9 +15,7 @@ from taipanstack.security.guards import (
 class TestGuardPathTraversal:
     """Tests for guard_path_traversal function."""
 
-    def test_security_guards_safe_path_passes(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_safe_path_passes(self, tmp_path: Path) -> None:
         """Test that safe paths pass validation."""
         safe_file = tmp_path / "test.txt"
         safe_file.touch()
@@ -25,9 +23,7 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(safe_file, tmp_path)
         assert result == safe_file.resolve()
 
-    def test_security_guards_relative_path_within_base(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_relative_path_within_base(self, tmp_path: Path) -> None:
         """Test that relative paths within base dir pass."""
         subdir = tmp_path / "subdir"
         subdir.mkdir()
@@ -37,9 +33,7 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(Path("subdir/test.txt"), tmp_path)
         assert result == test_file.resolve()
 
-    def test_security_guards_path_traversal_blocked(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal attempts are blocked."""
         with pytest.raises(SecurityError) as exc_info:
             guard_path_traversal("../etc/passwd", tmp_path)
@@ -47,9 +41,7 @@ class TestGuardPathTraversal:
         assert "path_traversal" in str(exc_info.value)
         assert exc_info.value.guard_name == "path_traversal"
 
-    def test_security_guards_double_dot_blocked(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_double_dot_blocked(self, tmp_path: Path) -> None:
         """Test that .. patterns are blocked."""
         with pytest.raises(SecurityError):
             guard_path_traversal("foo/../../../etc/passwd", tmp_path)
@@ -61,9 +53,7 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal("%2e%2e/etc/passwd", tmp_path)
 
-    def test_security_guards_path_escapes_base_dir(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_path_escapes_base_dir(self, tmp_path: Path) -> None:
         """Test that paths escaping base dir are blocked."""
         # Create a separate base directory
         subdir = tmp_path / "allowed"
@@ -76,9 +66,7 @@ class TestGuardPathTraversal:
         with pytest.raises(SecurityError):
             guard_path_traversal(outside_file, subdir)
 
-    def test_security_guards_symlinks_blocked_by_default(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_symlinks_blocked_by_default(self, tmp_path: Path) -> None:
         """Test that symlinks are blocked by default."""
         real_file = tmp_path / "real.txt"
         real_file.touch()
@@ -105,9 +93,7 @@ class TestGuardPathTraversal:
         result = guard_path_traversal(symlink_path, tmp_path, allow_symlinks=True)
         assert result == real_file.resolve()
 
-    def test_security_guards_path_escapes_base_dir_msg(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_guards_path_escapes_base_dir_msg(self, tmp_path: Path) -> None:
         """Test the exact error msg for path escape."""
         subdir = tmp_path / "allowed"
         subdir.mkdir()
@@ -339,9 +325,7 @@ def test_security_guards_guard_ssrf_internal_err_branches() -> None:
     assert isinstance(res2, Err)
 
 
-def test_security_guards_command_injection_rejects_non_string_argument_type() -> (
-    None
-):
+def test_security_guards_command_injection_rejects_non_string_argument_type() -> None:
     """Test command args must all be strings."""
     with pytest.raises(TypeError, match="All command arguments must be strings"):
         guard_command_injection(["echo", 123])

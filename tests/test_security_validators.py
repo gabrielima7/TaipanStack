@@ -177,9 +177,7 @@ class TestValidateUrl:
             validate_url("http://example.com:99999999999")
 
 
-def test_security_validators_type_error_message_for_tuple_expected_types() -> (
-    None
-):
+def test_security_validators_type_error_message_for_tuple_expected_types() -> None:
     """Test tuple-type message path in _validate_type helper."""
     from taipanstack.security.validators import _validate_type, validate_python_version
 

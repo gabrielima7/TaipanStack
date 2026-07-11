@@ -25,9 +25,7 @@ def test_circuit_breaker_type_corruption_success_count() -> None:
     assert breaker._state.state == CircuitState.HALF_OPEN
 
 
-def test_circuit_breaker_type_corruption_failure_count_in_update() -> (
-    None
-):
+def test_circuit_breaker_type_corruption_failure_count_in_update() -> None:
     breaker = CircuitBreaker(
         name="test_failure_update", failure_threshold=3, success_threshold=2
     )
@@ -40,9 +38,7 @@ def test_circuit_breaker_type_corruption_failure_count_in_update() -> (
     assert breaker._state.failure_count == 3
 
 
-def test_circuit_breaker_type_corruption_handle_failure_closed_direct() -> (
-    None
-):
+def test_circuit_breaker_type_corruption_handle_failure_closed_direct() -> None:
     breaker = CircuitBreaker(
         name="test_failure_closed", failure_threshold=3, success_threshold=2
     )

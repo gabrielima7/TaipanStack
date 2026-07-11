@@ -50,9 +50,7 @@ def test_utils_retry_chaos_retry_chaos_nan_inf_config() -> None:
         )
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> (
-    None
-):
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> None:
     # Test line 121-123.
     # The config now catches this, so we bypass config to hit calculate delay directly.
     config = RetryConfig()
@@ -62,9 +60,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> (
     assert delay == 0.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2() -> (
-    None
-):
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2() -> None:
     # Test line 134-140. Jitter exception.
     import pytest
 
@@ -81,9 +77,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_2() -> (
         assert delay == config.initial_delay * config.exponential_base
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_base_delay_finite() -> (
-    None
-):
+def test_utils_retry_chaos_coverage_retry_chaos_base_delay_finite() -> None:
     # Test line 122->125 where delay is NOT finite but max_delay IS finite.
     config = RetryConfig(max_delay=60.0, jitter=False)
     object.__setattr__(config, "initial_delay", float("nan"))

@@ -79,9 +79,7 @@ class TestParseJson:
 class TestHashFile:
     """Tests for _hash_file helper."""
 
-    def test_watchdog_config_hash_existing_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_hash_existing_file(self, tmp_path: Path) -> None:
         """Returns Ok with hash for existing file."""
         f = tmp_path / "test.txt"
         f.write_text("hello")
@@ -89,9 +87,7 @@ class TestHashFile:
         assert isinstance(result, Ok)
         assert len(result.ok_value) == 64  # SHA-256 hex digest
 
-    def test_watchdog_config_hash_missing_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_hash_missing_file(self, tmp_path: Path) -> None:
         """Returns Err for missing file."""
         result = _hash_file(tmp_path / "missing.txt")
         assert isinstance(result, Err)
@@ -101,9 +97,7 @@ class TestHashFile:
 class TestLoadFileData:
     """Tests for _load_file_data helper."""
 
-    def test_watchdog_config_load_json_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_load_json_file(self, tmp_path: Path) -> None:
         """Loads and parses a .json file."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "db"}))
@@ -111,9 +105,7 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["host"] == "db"
 
-    def test_watchdog_config_load_env_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_load_env_file(self, tmp_path: Path) -> None:
         """Loads and parses a .env file."""
         f = tmp_path / ".env"
         f.write_text("HOST=db\nPORT=3306\n")
@@ -121,9 +113,7 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["HOST"] == "db"
 
-    def test_watchdog_config_unsupported_extension(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_unsupported_extension(self, tmp_path: Path) -> None:
         """Returns Err for unsupported file extensions."""
         f = tmp_path / "config.xml"
         f.write_text("<config/>")
@@ -131,9 +121,7 @@ class TestLoadFileData:
         assert isinstance(result, Err)
         assert "Unsupported" in str(result.err_value)
 
-    def test_watchdog_config_missing_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_missing_file(self, tmp_path: Path) -> None:
         """Returns Err for missing file."""
         result = _load_file_data(tmp_path / "nope.json")
         assert isinstance(result, Err)
@@ -162,9 +150,7 @@ class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_start_stop_lifecycle(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_watchdog_config_start_stop_lifecycle(self, tmp_path: Path) -> None:
         """Watcher can be started and stopped."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -183,9 +169,7 @@ class TestConfigWatcher:
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_detects_file_change(
-        self, tmp_path: Path
-    ) -> None:
+    async def test_watchdog_config_detects_file_change(self, tmp_path: Path) -> None:
         """Callback fires when a config file changes."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "old", "port": 1}))
@@ -258,9 +242,7 @@ class TestConfigWatcher:
         await asyncio.sleep(0.15)
         await watcher.stop()
 
-    def test_watchdog_config_detect_changes_no_change(
-        self, tmp_path: Path
-    ) -> None:
+    def test_watchdog_config_detect_changes_no_change(self, tmp_path: Path) -> None:
         """No changed paths when files haven't been modified."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))

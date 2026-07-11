@@ -135,23 +135,17 @@ class TestStackConfig:
         with pytest.raises(ValidationError, match="invalid"):
             StackConfig(python_version="invalid")
 
-    def test_config_models_valid_project_dir(
-        self, tmp_path: Path
-    ) -> None:
+    def test_config_models_valid_project_dir(self, tmp_path: Path) -> None:
         """Test valid project directory is resolved."""
         config = StackConfig(project_dir=tmp_path)
         assert config.project_dir == tmp_path.resolve()
 
-    def test_config_models_path_traversal_rejected(
-        self, tmp_path: Path
-    ) -> None:
+    def test_config_models_path_traversal_rejected(self, tmp_path: Path) -> None:
         """Test path traversal in project_dir is rejected."""
         with pytest.raises(ValidationError, match="Path traversal"):
             StackConfig(project_dir=Path("../../../etc"))
 
-    def test_config_models_absolute_path_accepted(
-        self, tmp_path: Path
-    ) -> None:
+    def test_config_models_absolute_path_accepted(self, tmp_path: Path) -> None:
         """Test absolute path is accepted and resolved."""
         abs_path = tmp_path.resolve()
         config = StackConfig(project_dir=abs_path)
@@ -165,9 +159,7 @@ class TestStackConfig:
         config = StackConfig(project_dir=dot_path)
         assert config.project_dir == dot_path.resolve()
 
-    def test_config_models_non_existent_path_accepted(
-        self, tmp_path: Path
-    ) -> None:
+    def test_config_models_non_existent_path_accepted(self, tmp_path: Path) -> None:
         """Test non-existent path is accepted (resolve handles it)."""
         non_existent = tmp_path / "new_project_dir"
         config = StackConfig(project_dir=non_existent)

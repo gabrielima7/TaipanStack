@@ -112,9 +112,7 @@ async def test_chaos_orchestrator_cancellation() -> None:
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_handle_retry_failure_timeout() -> (
-    None
-):
+async def test_chaos_orchestrator_handle_retry_failure_timeout() -> None:
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig
 

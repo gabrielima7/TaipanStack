@@ -9,9 +9,7 @@ from taipanstack.security.sanitizers import (
 )
 
 
-def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings() -> (
-    None
-):
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_strings() -> None:
     """Fuzz sanitize_path with massive strings to ensure DoS protection limits are active."""
     massive_path = "a/" * 5000
     with pytest.raises(ValueError, match="Path length exceeds maximum allowed"):
@@ -42,9 +40,7 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis(
         sanitize_path(path)
 
 
-def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object() -> (
-    None
-):
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object() -> None:
     """Ensure DoS protection limits are active when passing massive Path objects."""
     massive_path_str = "a" * 5000
     massive_path_obj = Path(massive_path_str)

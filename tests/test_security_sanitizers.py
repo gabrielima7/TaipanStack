@@ -246,9 +246,7 @@ class TestSanitizePath:
         with pytest.raises(ValueError, match="depth"):
             sanitize_path(deep_path, max_depth=5)
 
-    def test_security_sanitizers_with_base_dir(
-        self, tmp_path: Path
-    ) -> None:
+    def test_security_sanitizers_with_base_dir(self, tmp_path: Path) -> None:
         """Test path with base directory."""
         base = tmp_path / "base"
         base.mkdir()
@@ -387,9 +385,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage() -> None:
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> (
-    None
-):
+def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
     """Test sanitizers filename validation fallback on re.error with normal replacement."""
     import re
 

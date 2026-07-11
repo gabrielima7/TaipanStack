@@ -83,9 +83,7 @@ def test_security_password_verify_legacy_password() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_legacy_password_too_many_iterations() -> (
-    None
-):
+def test_security_password_verify_legacy_password_too_many_iterations() -> None:
     """Test that legacy PBKDF2 hashes with too many iterations are rejected."""
     password = "my_password"
     salt = b"1234567890123456"
@@ -107,9 +105,7 @@ def test_security_password_hash_password_is_random() -> None:
     assert verify_password(password, hash2) is True
 
 
-def test_security_password_verify_password_invalid_type_password() -> (
-    None
-):
+def test_security_password_verify_password_invalid_type_password() -> None:
     """Test that an invalid type for password raises a TypeError."""
     import pytest
 
@@ -119,9 +115,7 @@ def test_security_password_verify_password_invalid_type_password() -> (
         verify_password(123, pwd_hash)  # type: ignore[arg-type]
 
 
-def test_security_password_verify_password_invalid_type_hash() -> (
-    None
-):
+def test_security_password_verify_password_invalid_type_hash() -> None:
     """Test that an invalid type for password_hash raises a TypeError."""
     import pytest
 

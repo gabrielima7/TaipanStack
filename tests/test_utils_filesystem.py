@@ -20,9 +20,7 @@ from taipanstack.utils.filesystem import (
 class TestSafeRead:
     """Tests for safe_read function."""
 
-    def test_utils_filesystem_read_no_max_size(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_no_max_size(self, tmp_path: Path) -> None:
         """Test reading a file with max_size_bytes=None."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("hello")
@@ -30,9 +28,7 @@ class TestSafeRead:
         result = safe_read(test_file, max_size_bytes=None)
         assert result.ok_value == "hello"
 
-    def test_utils_filesystem_read_existing_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_existing_file(self, tmp_path: Path) -> None:
         """Test reading an existing file."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("Hello, World!", encoding="utf-8")
@@ -44,9 +40,7 @@ class TestSafeRead:
             case Err():
                 pytest.fail("Expected Ok but got Err")
 
-    def test_utils_filesystem_read_with_base_dir(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_with_base_dir(self, tmp_path: Path) -> None:
         """Test reading with base directory constraint."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("content", encoding="utf-8")
@@ -58,9 +52,7 @@ class TestSafeRead:
             case Err():
                 pytest.fail("Expected Ok but got Err")
 
-    def test_utils_filesystem_read_nonexistent_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_nonexistent_file(self, tmp_path: Path) -> None:
         """Test reading non-existent file returns Err."""
         result = safe_read(tmp_path / "nonexistent.txt")
         match result:
@@ -70,9 +62,7 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(FileNotFoundErr)")
 
-    def test_utils_filesystem_read_directory_fails(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_directory_fails(self, tmp_path: Path) -> None:
         """Test reading a directory returns Err."""
         result = safe_read(tmp_path)
         match result:
@@ -82,9 +72,7 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(NotAFileErr)")
 
-    def test_utils_filesystem_read_file_too_large(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_file_too_large(self, tmp_path: Path) -> None:
         """Test reading file exceeding max_size returns Err."""
         test_file = tmp_path / "large.txt"
         test_file.write_text("A" * 1000, encoding="utf-8")
@@ -98,9 +86,7 @@ class TestSafeRead:
             case _:
                 pytest.fail("Expected Err(FileTooLargeErr)")
 
-    def test_utils_filesystem_read_with_custom_encoding(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_read_with_custom_encoding(self, tmp_path: Path) -> None:
         """Test reading with custom encoding."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("ÄÖÅÜ", encoding="utf-8")
@@ -112,9 +98,7 @@ class TestSafeRead:
             case Err():
                 pytest.fail("Expected Ok")
 
-    def test_utils_filesystem_path_traversal_blocked(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         result = safe_read(tmp_path / ".." / "etc" / "passwd", base_dir=tmp_path)
         match result:
@@ -138,9 +122,7 @@ class TestSafeRead:
 class TestSafeWrite:
     """Tests for safe_write function."""
 
-    def test_utils_filesystem_write_new_file(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_new_file(self, tmp_path: Path) -> None:
         """Test writing a new file."""
         test_file = tmp_path / "new.txt"
         result = safe_write(test_file, "content")
@@ -160,9 +142,7 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "new"
 
-    def test_utils_filesystem_write_no_create_parents(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_no_create_parents(self, tmp_path: Path) -> None:
         """Test writing a file with create_parents=False."""
         test_file = tmp_path / "direct.txt"
         result = safe_write(
@@ -172,9 +152,7 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == "content"
 
-    def test_utils_filesystem_write_empty_content(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_empty_content(self, tmp_path: Path) -> None:
         """Test writing an empty string."""
         test_file = tmp_path / "empty.txt"
         result = safe_write(test_file, "")
@@ -182,18 +160,14 @@ class TestSafeWrite:
         assert result.exists()
         assert result.read_text() == ""
 
-    def test_utils_filesystem_write_creates_parent_dirs(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_creates_parent_dirs(self, tmp_path: Path) -> None:
         """Test that parent directories are created."""
         test_file = tmp_path / "subdir" / "nested" / "file.txt"
         safe_write(test_file, "nested content")
 
         assert test_file.exists()
 
-    def test_utils_filesystem_write_creates_backup(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_creates_backup(self, tmp_path: Path) -> None:
         """Test that backup is created for existing file."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
@@ -204,9 +178,7 @@ class TestSafeWrite:
         assert (tmp_path / "test.txt.bak").exists()
         assert (tmp_path / "test.txt.bak").read_text() == "original"
 
-    def test_utils_filesystem_write_no_backup(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_write_no_backup(self, tmp_path: Path) -> None:
         """Test writing without backup."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("original")
@@ -216,18 +188,14 @@ class TestSafeWrite:
         assert test_file.read_text() == "updated"
         assert not (tmp_path / "test.txt.bak").exists()
 
-    def test_utils_filesystem_atomic_write(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_atomic_write(self, tmp_path: Path) -> None:
         """Test atomic write mode."""
         test_file = tmp_path / "atomic.txt"
         safe_write(test_file, "atomic content", options=WriteOptions(atomic=True))
 
         assert test_file.read_text() == "atomic content"
 
-    def test_utils_filesystem_non_atomic_write(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_non_atomic_write(self, tmp_path: Path) -> None:
         """Test non-atomic write mode."""
         test_file = tmp_path / "direct.txt"
         safe_write(test_file, "direct content", options=WriteOptions(atomic=False))
@@ -251,9 +219,7 @@ class TestSafeWrite:
                 with pytest.raises(PermissionError, match="Permission denied"):
                     safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
-    def test_utils_filesystem_safe_write_cleanup_succeeds(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_safe_write_cleanup_succeeds(self, tmp_path: Path) -> None:
         """Test that cleanup during write unlinks the temp file."""
         test_file = tmp_path / "cleanup.txt"
 
@@ -264,9 +230,7 @@ class TestSafeWrite:
             with pytest.raises(ValueError, match="Rename failed"):
                 safe_write(test_file, "content", options=WriteOptions(atomic=True))
 
-    def test_utils_filesystem_path_traversal_blocked(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
             safe_write(
@@ -296,9 +260,7 @@ class TestSafeWrite:
 class TestEnsureDir:
     """Tests for ensure_dir function."""
 
-    def test_utils_filesystem_create_new_directory(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_create_new_directory(self, tmp_path: Path) -> None:
         """Test creating a new directory."""
         new_dir = tmp_path / "new_dir"
         result = ensure_dir(new_dir)
@@ -306,16 +268,12 @@ class TestEnsureDir:
         assert result.exists()
         assert result.is_dir()
 
-    def test_utils_filesystem_existing_directory_ok(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_existing_directory_ok(self, tmp_path: Path) -> None:
         """Test that existing directory is OK."""
         result = ensure_dir(tmp_path)
         assert result.exists()
 
-    def test_utils_filesystem_create_nested_directories(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_create_nested_directories(self, tmp_path: Path) -> None:
         """Test creating nested directories."""
         nested = tmp_path / "a" / "b" / "c"
         result = ensure_dir(nested)
@@ -323,9 +281,7 @@ class TestEnsureDir:
         assert result.exists()
         assert result.is_dir()
 
-    def test_utils_filesystem_path_traversal_blocked(
-        self, tmp_path: Path
-    ) -> None:
+    def test_utils_filesystem_path_traversal_blocked(self, tmp_path: Path) -> None:
         """Test that path traversal is blocked."""
         with pytest.raises(SecurityError):
             ensure_dir(tmp_path / ".." / "etc" / "evil_dir", base_dir=tmp_path)
