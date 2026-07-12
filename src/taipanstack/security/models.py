@@ -25,15 +25,20 @@ _SENSITIVE_KEY_REGEX = (
 _MAX_RECURSION_DEPTH = 100
 
 
+def _is_sensitive_key(key: object) -> bool:
+    """Check if a given key is considered sensitive."""
+    return (
+        isinstance(key, str)
+        and _SENSITIVE_KEY_REGEX is not None
+        and bool(_SENSITIVE_KEY_REGEX.search(key))
+    )
+
+
 def _mask_dict(data: dict[str, object], depth: int) -> dict[str, object]:
     """Mask sensitive keys in a dictionary."""
     masked: dict[str, object] = {}
     for k, v in data.items():
-        if (
-            isinstance(k, str)
-            and _SENSITIVE_KEY_REGEX is not None
-            and _SENSITIVE_KEY_REGEX.search(k)
-        ):
+        if _is_sensitive_key(k):
             masked[k] = REDACTED_VALUE
         else:
             masked[k] = _mask_data(v, depth)
@@ -92,11 +97,7 @@ class SecureBaseModel(BaseModel):
     def __repr_args__(self) -> Iterator[tuple[str | None, object]]:
         """Provide arguments for string representation, redacting sensitive fields."""
         for k, v in super().__repr_args__():
-            if (
-                isinstance(k, str)
-                and _SENSITIVE_KEY_REGEX is not None
-                and _SENSITIVE_KEY_REGEX.search(k)
-            ):
+            if _is_sensitive_key(k):
                 yield k, REDACTED_VALUE
             else:
                 yield k, v
