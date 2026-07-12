@@ -14,6 +14,7 @@ This guarantees that application endpoints calling the DB won't even try and tim
 import asyncio
 from taipanstack.resilience.watchdogs import HealthPinger, HealthTarget
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
+from taipanstack.core.result import Ok
 
 db_breaker = CircuitBreaker("pg-db")
 
