@@ -2448,11 +2448,11 @@
 </span><span id="__span-0-11">
 </span><span id="__span-0-12"><span class="c1"># You can use it as a standard breaker, but it calculates optimum protection.</span>
 </span><span id="__span-0-13"><span class="k">if</span> <span class="n">breaker</span><span class="o">.</span><span class="n">should_allow</span><span class="p">():</span>
-</span><span id="__span-0-14">    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-15">        <span class="n">call_api</span><span class="p">()</span>
+</span><span id="__span-0-14">    <span class="n">result</span> <span class="o">=</span> <span class="n">call_api</span><span class="p">()</span>
+</span><span id="__span-0-15">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Ok</span><span class="p">):</span>
 </span><span id="__span-0-16">        <span class="n">breaker</span><span class="o">.</span><span class="n">record_success</span><span class="p">()</span>
-</span><span id="__span-0-17">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span id="__span-0-18">        <span class="n">breaker</span><span class="o">.</span><span class="n">record_failure</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span id="__span-0-17">    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-18">        <span class="n">breaker</span><span class="o">.</span><span class="n">record_failure</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">err_value</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="bulkhead-concurrency-limiter">Bulkhead (Concurrency Limiter)<a class="headerlink" href="#bulkhead-concurrency-limiter" title="Permanent link">&para;</a></h2>

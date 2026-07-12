@@ -2412,27 +2412,25 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 </span><span id="__span-0-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.watchdogs</span><span class="w"> </span><span class="kn">import</span> <span class="n">HealthPinger</span><span class="p">,</span> <span class="n">HealthTarget</span>
 </span><span id="__span-0-3"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
-</span><span id="__span-0-4">
-</span><span id="__span-0-5"><span class="n">db_breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="s2">&quot;pg-db&quot;</span><span class="p">)</span>
-</span><span id="__span-0-6">
-</span><span id="__span-0-7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="__span-0-8">    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-9">        <span class="c1"># Fast query</span>
-</span><span id="__span-0-10">        <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-11">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span id="__span-0-12">        <span class="k">return</span> <span class="kc">False</span>
-</span><span id="__span-0-13">
-</span><span id="__span-0-14"><span class="c1"># Runs every 5 seconds</span>
-</span><span id="__span-0-15"><span class="n">pinger</span> <span class="o">=</span> <span class="n">HealthPinger</span><span class="p">(</span>
-</span><span id="__span-0-16">    <span class="n">interval</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
-</span><span id="__span-0-17">    <span class="n">targets</span><span class="o">=</span><span class="p">[</span>
-</span><span id="__span-0-18">        <span class="n">HealthTarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check_db</span><span class="p">,</span> <span class="n">circuit_breaker</span><span class="o">=</span><span class="n">db_breaker</span><span class="p">)</span>
-</span><span id="__span-0-19">    <span class="p">],</span>
-</span><span id="__span-0-20">    <span class="n">on_health_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">,</span> <span class="n">healthy</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is now </span><span class="si">{</span><span class="n">healthy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-21"><span class="p">)</span>
-</span><span id="__span-0-22">
-</span><span id="__span-0-23"><span class="c1"># Run in background via asyncio.create_task()</span>
-</span><span id="__span-0-24"><span class="n">background_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">pinger</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+</span><span id="__span-0-4"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ok</span>
+</span><span id="__span-0-5">
+</span><span id="__span-0-6"><span class="n">db_breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="s2">&quot;pg-db&quot;</span><span class="p">)</span>
+</span><span id="__span-0-7">
+</span><span id="__span-0-8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_db</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-0-9">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">execute_fast_query</span><span class="p">()</span>
+</span><span id="__span-0-10">    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Ok</span><span class="p">)</span>
+</span><span id="__span-0-11">
+</span><span id="__span-0-12"><span class="c1"># Runs every 5 seconds</span>
+</span><span id="__span-0-13"><span class="n">pinger</span> <span class="o">=</span> <span class="n">HealthPinger</span><span class="p">(</span>
+</span><span id="__span-0-14">    <span class="n">interval</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+</span><span id="__span-0-15">    <span class="n">targets</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-16">        <span class="n">HealthTarget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check_db</span><span class="p">,</span> <span class="n">circuit_breaker</span><span class="o">=</span><span class="n">db_breaker</span><span class="p">)</span>
+</span><span id="__span-0-17">    <span class="p">],</span>
+</span><span id="__span-0-18">    <span class="n">on_health_change</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">,</span> <span class="n">healthy</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is now </span><span class="si">{</span><span class="n">healthy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-19"><span class="p">)</span>
+</span><span id="__span-0-20">
+</span><span id="__span-0-21"><span class="c1"># Run in background via asyncio.create_task()</span>
+</span><span id="__span-0-22"><span class="n">background_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">pinger</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
 </span></code></pre></div>
 <hr />
 <h2 id="resource-watcher">Resource Watcher<a class="headerlink" href="#resource-watcher" title="Permanent link">&para;</a></h2>
