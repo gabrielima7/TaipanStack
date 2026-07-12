@@ -27,11 +27,11 @@ breaker = AdaptiveCircuitBreaker(
 
 # You can use it as a standard breaker, but it calculates optimum protection.
 if breaker.should_allow():
-    try:
-        call_api()
+    result = call_api()
+    if isinstance(result, Ok):
         breaker.record_success()
-    except Exception as e:
-        breaker.record_failure(e)
+    else:
+        breaker.record_failure(result.err_value)
 ```
 
 ---

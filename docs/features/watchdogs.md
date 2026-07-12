@@ -18,11 +18,8 @@ from taipanstack.resilience.circuit_breaker import CircuitBreaker
 db_breaker = CircuitBreaker("pg-db")
 
 async def check_db() -> bool:
-    try:
-        # Fast query
-        return True
-    except Exception:
-        return False
+    result = await execute_fast_query()
+    return isinstance(result, Ok)
 
 # Runs every 5 seconds
 pinger = HealthPinger(
