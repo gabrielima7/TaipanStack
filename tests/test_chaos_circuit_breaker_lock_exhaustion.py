@@ -15,7 +15,7 @@ def test_chaos_circuit_breaker_lock_acquire_exception_sync():
         def __enter__(self):
             raise MemoryError("Out of memory")
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
+        def __exit__(self, _exc_type, _exc_val, _exc_tb):
             return False
 
     breaker._state.lock = BrokenLock()
@@ -38,7 +38,7 @@ async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
         def __enter__(self):
             raise MemoryError("Out of memory")
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
+        def __exit__(self, _exc_type, _exc_val, _exc_tb):
             return False
 
     breaker_instance._state.lock = BrokenLock()
@@ -57,7 +57,7 @@ def test_chaos_circuit_breaker_decorator_lock_acquire_exception_sync():
         def __enter__(self):
             raise MemoryError("Out of memory")
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
+        def __exit__(self, _exc_type, _exc_val, _exc_tb):
             return False
 
     breaker_instance._state.lock = BrokenLock()

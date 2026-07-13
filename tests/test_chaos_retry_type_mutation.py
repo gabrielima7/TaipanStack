@@ -232,7 +232,7 @@ async def test_chaos_retry_decorator_type_error_for_isinstance() -> None:
         raise ValueError("sync fail")
 
     class TypeErrorRaiserMeta(type):
-        def __instancecheck__(cls, instance):
+        def __instancecheck__(cls, _instance):
             raise TypeError("Chaos injected TypeError")
 
     class TypeErrorRaiserError(Exception, metaclass=TypeErrorRaiserMeta):

@@ -19,7 +19,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos():
     caller or corrupting its internal state.
     """
 
-    def faulty_callback(old: CircuitState, new: CircuitState) -> None:
+    def faulty_callback(_old: CircuitState, _new: CircuitState) -> None:
         # Simulate a rare memory limit or unexpected attribute error
         raise ValueError("Simulated adversarial failure in callback")
 
@@ -73,7 +73,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_
         sys.modules["taipanstack.resilience.circuit_breaker"], "_HAS_STRUCTLOG", False
     )
 
-    def faulty_callback(old: CircuitState, new: CircuitState) -> None:
+    def faulty_callback(_old: CircuitState, _new: CircuitState) -> None:
         raise ValueError("Simulated failure without structlog")
 
     breaker = CircuitBreaker(

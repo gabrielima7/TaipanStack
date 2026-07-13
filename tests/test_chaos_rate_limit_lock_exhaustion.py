@@ -13,7 +13,7 @@ def test_chaos_rate_limit_lock_acquire_exception():
         def __enter__(self):
             raise MemoryError("Out of memory")
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
+        def __exit__(self, _exc_type, _exc_val, _exc_tb):
             raise AssertionError("Should not be reached")
 
     limiter._lock = BrokenLock()
