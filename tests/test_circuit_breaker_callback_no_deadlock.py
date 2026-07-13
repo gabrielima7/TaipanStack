@@ -11,7 +11,7 @@ def test_circuit_breaker_callback_no_deadlock_circuit_breaker_callback_deadlock_
     in_callback = threading.Event()
     finish_callback = threading.Event()
 
-    def on_change(old, new):
+    def on_change(_old, _new):
         in_callback.set()
         finish_callback.wait(timeout=5.0)
 
