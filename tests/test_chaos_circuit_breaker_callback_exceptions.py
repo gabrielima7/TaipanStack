@@ -4,7 +4,7 @@ from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
 def test_circuit_breaker_callback_exception_logging():
-    def exploding_callback(old, new):
+    def exploding_callback(_old, _new):
         raise ValueError("Boom!")
 
     cb = CircuitBreaker(on_state_change=exploding_callback)
