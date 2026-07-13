@@ -137,7 +137,7 @@ class TestSecureBaseModel:
         assert _mask_data(data)["test"] != {}
 
     def test_security_models_collection_types(self) -> None:
-        from taipanstack.security.models import _mask_tuple, _mask_set
+        from taipanstack.security.models import _mask_set, _mask_tuple
         data_tuple = ("password", "12345")
         data_set = {"password", "12345"}
         _mask_tuple(data_tuple, 0)
