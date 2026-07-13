@@ -129,15 +129,17 @@ class TestSecureBaseModel:
 
     def test_security_models_max_recursion_depth(self) -> None:
         from taipanstack.security.models import _mask_data
+
         data: dict[str, object] = {}
         curr = data
         for _ in range(105):
             curr["test"] = {}
-            curr = curr["test"] # type: ignore
+            curr = curr["test"]  # type: ignore
         assert _mask_data(data)["test"] != {}
 
     def test_security_models_collection_types(self) -> None:
         from taipanstack.security.models import _mask_set, _mask_tuple
+
         data_tuple = ("password", "12345")
         data_set = {"password", "12345"}
         _mask_tuple(data_tuple, 0)
@@ -160,4 +162,5 @@ class TestSecureBaseModel:
         # Also need to hit the exact lines for masking tuple/set containing dicts to trigger deep masking
         # Let's trigger it by just running mask_collection directly with a tuple of dicts
         from taipanstack.security.models import _mask_collection
+
         _mask_collection(({"password": "sec"},), 0)
