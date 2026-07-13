@@ -64,26 +64,35 @@ TaipanStack/
 ├── src/
 │   └── taipanstack/
 │       ├── __init__.py       # Public API surface
-│       ├── core/             # 🎯 Result types, compat, optimizations
-│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
-│       │   ├── compat.py     #    Python version feature flags
-│       │   └── optimizations.py # uvloop / orjson bootstrap
+│       ├── bridges/          # 🌉 External communication integrations
+│       │   ├── http_bridge.py     #    Safe HTTP client
+│       │   ├── db_bridge.py       #    Resilient database connector
+│       │   └── web_bridge.py      #    Result-to-HTTP response utilities
 │       ├── config/           # ⚙️ Configuration models & generators
 │       │   ├── models.py     #    StackConfig (Pydantic v2)
 │       │   ├── generators.py #    Project scaffolding templates
 │       │   └── version_config.py # Version-aware recommendations
+│       ├── core/             # 🎯 Result types, compat, optimizations
+│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
+│       │   ├── compat.py     #    Python version feature flags
+│       │   └── optimizations.py # uvloop / orjson bootstrap
+│       ├── resilience/       # 🌊 Reliability patterns
+│       │   ├── adaptive/          #    Orchestrators and Bulkheads
+│       │   ├── watchdogs/         #    System health monitoring
+│       │   ├── circuit_breaker.py #    Circuit breaker with on_state_change callback
+│       │   └── retry.py           #    Exponential backoff with on_retry callback
 │       ├── security/         # 🛡️ Guards, sanitizers, validators
 │       │   ├── guards.py     #    Path traversal, command injection, env guards
 │       │   ├── sanitizers.py #    XSS, filename, SQL, env value sanitization
 │       │   ├── validators.py #    Email, URL, project name, Python version
 │       │   └── decorators.py #    @safe_path, @safe_env wrappers
-│       └── utils/            # 🔧 Resilience & observability utilities
-│           ├── circuit_breaker.py # Circuit breaker with on_state_change callback
-│           ├── retry.py           # Exponential backoff with on_retry callback
-│           ├── metrics.py         # @timed, @counted decorators
-│           ├── logging.py         # Structured logging (structlog)
-│           ├── filesystem.py      # Safe file operations
-│           └── subprocess.py      # Sandboxed subprocess execution
+│       └── utils/            # 🔧 Cross-cutting utilities
+│           ├── cache.py           #    Caching with @cached decorator
+│           ├── logging.py         #    Structured logging (structlog)
+│           ├── filesystem.py      #    Safe file operations
+│           ├── rate_limit.py      #    Rate limiters
+│           ├── concurrency.py     #    Async utilities
+│           └── subprocess.py      #    Sandboxed subprocess execution
 ├── tests/                    # ✅ 1,344 tests, 100% coverage
 │   ├── test_property_sanitizers_standard.py # Hypothesis fuzzing
 │   └── test_v034_async_retry_circuit.py # Async tests for retry and circuit breaker

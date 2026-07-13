@@ -163,10 +163,12 @@ TaipanStack/
 ├── src/
 │   ├── app/              # Application entry point
 │   └── taipanstack/
-│       ├── core/         # 🎯 Result types, functional patterns
+│       ├── bridges/      # 🌉 External communication integrations (http, db, web)
 │       ├── config/       # ⚙️ Configuration models & generators
+│       ├── core/         # 🎯 Result types, functional patterns
+│       ├── resilience/   # 🌊 Reliability patterns (circuit breakers, retries, watchdogs)
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
-│       └── utils/        # 🔧 Logging, metrics, retry, filesystem
+│       └── utils/        # 🔧 Cross-cutting utilities (logging, cache, filesystem)
 ├── tests/                # ✅ 1,430 tests, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
