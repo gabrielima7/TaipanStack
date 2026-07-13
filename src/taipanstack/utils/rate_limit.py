@@ -39,6 +39,13 @@ class RateLimitError(Exception):
 class RateLimiter:
     """Token bucket rate limiter logic."""
 
+    def _validate_init_params(self, max_calls: int, time_window: float) -> None:
+        """Validate initialization parameters."""
+        if not math.isfinite(max_calls) or not math.isfinite(time_window):
+            raise ValueError("max_calls and time_window must be finite numbers")
+        if max_calls <= 0 or time_window <= 0:
+            raise ValueError("max_calls and time_window must be > 0.0")
+
     def __init__(self, max_calls: int, time_window: float) -> None:
         """Initialize the token bucket.
 
@@ -47,10 +54,7 @@ class RateLimiter:
             time_window: The time window in seconds.
 
         """
-        if not math.isfinite(max_calls) or not math.isfinite(time_window):
-            raise ValueError("max_calls and time_window must be finite numbers")
-        if max_calls <= 0 or time_window <= 0:
-            raise ValueError("max_calls and time_window must be > 0.0")
+        self._validate_init_params(max_calls, time_window)
         self.capacity: float = float(max_calls)
         self.time_window: float = float(time_window)
         self.tokens: float = self.capacity
@@ -141,21 +145,44 @@ class RateLimiter:
             return True
         return False
 
+    def _get_current_time(self) -> float | None:
+        """Get current monotonic time safely."""
+        try:
+            return time.monotonic()
+        except Exception:
+            return None
+
+    def _validate_and_add_tokens(self, now: float | None) -> bool:
+        """Validate time and add tokens.
+
+        Returns True if tokens were added successfully, False otherwise.
+        """
+        if now is None:
+            return False
+        if not isinstance(now, (int, float)):
+            return False  # type: ignore[unreachable]
+        if not math.isfinite(now):
+            # If not finite, we can't add tokens, but we shouldn't fail
+            # the consumption if there are already tokens.
+            return True
+        return self._add_tokens(now)
+
     def _process_consumption(self, tokens: float) -> bool:
         """Process token consumption inside the lock."""
-        try:
-            now = time.monotonic()
-        except Exception:
-            return False
+        now = self._get_current_time()
 
         # Prevent time corruption from poisoning the bucket state.
         # Only try to add tokens if time is finite.
-        if not isinstance(now, (int, float)) or (
-            math.isfinite(now) and not self._add_tokens(now)
-        ):
+        if not self._validate_and_add_tokens(now):
             return False
 
         return self._try_consume(tokens)
+
+    def _is_valid_token_amount(self, tokens: float) -> bool:
+        """Check if requested token amount is valid."""
+        if not isinstance(tokens, (int, float)):
+            return False  # type: ignore[unreachable]
+        return math.isfinite(tokens)
 
     def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
@@ -167,7 +194,7 @@ class RateLimiter:
             True if tokens were consumed (allow), False otherwise (limit exceeded).
 
         """
-        if not isinstance(tokens, (int, float)) or not math.isfinite(tokens):
+        if not self._is_valid_token_amount(tokens):
             return False
         if tokens <= 0:
             return True
