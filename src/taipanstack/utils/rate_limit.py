@@ -137,8 +137,6 @@ class RateLimiter:
         if not isinstance(self.tokens, (int, float)):
             return False  # type: ignore[unreachable]
         if not math.isfinite(self.tokens):
-            # Reset to capacity if state is corrupted to inf/nan
-            self.tokens = self.capacity
             return False
         if self.tokens >= tokens:
             self.tokens -= tokens
@@ -266,10 +264,7 @@ def rate_limit(
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> Result[T, RateLimitError]:
-                try:
-                    if not limiter.consume():
-                        return Err(RateLimitError())
-                except Exception:
+                if not limiter.consume():
                     return Err(RateLimitError())
                 return Ok(await func(*args, **kwargs))
 
@@ -277,10 +272,7 @@ def rate_limit(
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
-            try:
-                if not limiter.consume():
-                    return Err(RateLimitError())
-            except Exception:
+            if not limiter.consume():
                 return Err(RateLimitError())
             func_sync = cast(Callable[P, T], func)
             return Ok(func_sync(*args, **kwargs))
