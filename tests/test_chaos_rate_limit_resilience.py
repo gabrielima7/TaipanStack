@@ -316,7 +316,7 @@ def test_chaos_rate_limit_get_current_time_exception():
     import time
     orig_mono = time.monotonic
     def mock_mono():
-        raise Exception("Simulated time exception")
+        raise RuntimeError("Simulated time exception")
     time.monotonic = mock_mono
     res = limiter.consume()
     assert isinstance(res, bool)
