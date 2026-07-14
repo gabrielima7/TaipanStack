@@ -203,6 +203,39 @@ You can override this behaviour at any time by passing `on_retry` or `on_state_c
 
 ---
 
+## Example 4 — Environment Variable Protection
+
+```python
+import os
+from fastapi import FastAPI, HTTPException
+
+from taipanstack.security.guards import SecurityError, guard_env_variable
+
+app = FastAPI()
+
+@app.get("/config")
+def get_safe_config(env_key: str) -> dict[str, str]:
+    """Retrieve an environment variable safely with bounds checking."""
+
+    # 1. guard_env_variable checks bounds to prevent DoS attacks
+    # (e.g. extremely long strings) and validates allowed names.
+    try:
+        safe_key = guard_env_variable(
+            env_key,
+            allowed_names=["DEBUG", "ENVIRONMENT", "LOG_LEVEL"]
+        )
+    except SecurityError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    value = os.getenv(safe_key, "not set")
+    return {safe_key: value}
+```
+
+!!! tip "DoS Protection & Bounds Checking"
+    Since **v0.6.0**, `guard_env_variable` enforces strict boundary checks (e.g., maximum string length for variable names) and performs format validation before parsing to prevent Denial-of-Service (DoS) and potential memory exhaustion attacks.
+
+---
+
 ## Summary
 
 ```mermaid
