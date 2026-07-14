@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-07-14
+
+### Security
+- **Rate Limiter Hardening**: Hardened `rate_limit.py` against infinite token mutations, float precision issues, and float/int type confusion under extreme loads (PR #966).
+- **JWT Secret Validation**: Hardened key verification checks in `decode_jwt` and added property-based fuzz tests to protect JWT decoding against invalid parameters and malformed keys (PR #973).
+- **Project Name Validation**: Hardened validation guards in `validate_project_name` to correctly handle extreme or malformed argument inputs for `max_length`, `allow_hyphen`, and `allow_underscore`, modifying `_validate_type` to correctly reject boolean inputs (PR #968).
+- **Large Password Crash Fix**: Resolved a crash inside `UserService.create_user` when validating extremely large password payloads (PR #967).
+- **Dead Code Elimination**: Removed unused private constants `_SAFE_HASH_ALGORITHMS` in `guards.py`, `_VALID_SQL_PREFIX` in `sanitizers.py`, and `_SQL_IDENTIFIER_REGEX` in `types.py` to reduce attack and maintenance surface (PR #989).
+- **Environment Variable Bounds**: Documented strict boundary validations for `guard_env_variable` (PR #1006).
+
+### Concurrency & Resilience
+- **Orchestrator Concurrency Leak Fix**: Resolved a bulkhead acquisition memory leak in `ResilienceOrchestrator` under concurrent execution (PR #980).
+- **Adaptive Resilience & Retry**: Enhanced robustness of adaptive features and documented `AdaptiveRetry` patterns (PR #974).
+
+### Refactoring & Typing
+- **Complexity Reductions**: Proactively refactored and extracted nested structures into dedicated private helpers across core compatibility (PR #979), version config validation (PR #976), retry and rate limiting (PR #984), filesystem directory traversal (PR #993), environment file lines and password logic (PR #988), token bucket rate limiting (PR #1002), and model validator mapping (PR #997).
+- **Type Hint Enhancements**: Enforced strict type annotations on web bridge header configurations (PR #971) and refactored signature arguments in Pydantic models to eliminate type ignores (PR #1003).
+- **Dead Code Elimination**: Purged unused variables and dead components from test suites and main modules (PR #1000).
+
+### QA & Testing
+- **Test Suite Naming Standardization**: Audited and renamed the full test suite to strictly follow the standardized `test_<module>_<behavior>_<expected_result>` discovery convention, removing legacy `_standard_expected.py` naming suffixes (PR #994, PR #981, PR #975).
+- **Chaos & Integration Validation**: Implemented concurrent chaos integration tests to simulate real-world microservice resilience, generating SDET reports verifying zero deadlock guarantees (PR #1004, PR #999, PR #995, PR #986).
+- **Target Mock Corrections**: Corrected target patching paths in `sysconfig` compatibility tests to avoid mock leakage (PR #992).
+- **Property-based Fuzzing**: Integrated property-based boundary fuzz testing to verify input validators and prevent Denial of Service vectors under extreme parameters (PR #990).
+- **Edge Conditions**: Covered edge case scenarios in the chaos orchestrator under variable configurations (PR #972).
+
+### Documentation
+- **Monadic Result Monad Pattern**: Aligned code snippets in documentation with monadic `Result` patterns (PR #998).
+- **Architecture Updates**: Updated documentation maps to represent bridge structures and adaptive layers (PR #1001).
+- **MkDocs Fixes**: Fixed orphaned pages breaking strict mkdocs building pipelines (PR #985).
+- **SDET Proof Reports**: Integrated proof and simulation reports under the docs directory (`sdet_proof_report.md`, `sdet_chaos_report.md`, `sdet_audit_report.md`) (PR #995, PR #986).
+
 ## [0.6.0] - 2026-07-01
 
 ### Security
@@ -849,7 +881,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.1...v0.5.2
