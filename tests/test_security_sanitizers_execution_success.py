@@ -14,17 +14,17 @@ from taipanstack.security.sanitizers import (
 class TestSanitizeString:
     """Tests for sanitize_string function."""
 
-    def test_security_sanitizers_empty_string_execution_success(self) -> None:
+    def test_security_sanitizers_empty_string(self) -> None:
         """Test empty string returns empty."""
         assert sanitize_string("") == ""
 
-    def test_security_sanitizers_normal_string_unchanged_execution_success(
+    def test_security_sanitizers_normal_string_unchanged(
         self,
     ) -> None:
         """Test normal string passes through."""
         assert sanitize_string("Hello World") == "Hello World"
 
-    def test_security_sanitizers_strips_whitespace_execution_success(self) -> None:
+    def test_security_sanitizers_strips_whitespace(self) -> None:
         """Test whitespace is stripped by default."""
         assert sanitize_string("  hello  ") == "hello"
 
@@ -41,7 +41,7 @@ class TestSanitizeString:
             " \t\n\r ",  # Mixed whitespace
         ],
     )
-    def test_security_sanitizers_strips_various_whitespace_execution_success(
+    def test_security_sanitizers_strips_various_whitespace(
         self, whitespace: str
     ) -> None:
         """Test various whitespace characters are stripped correctly."""
@@ -50,41 +50,41 @@ class TestSanitizeString:
         # Test string with only whitespace (should become empty)
         assert sanitize_string(whitespace) == ""
 
-    def test_security_sanitizers_no_strip_whitespace_execution_success(self) -> None:
+    def test_security_sanitizers_no_strip_whitespace(self) -> None:
         """Test whitespace preserved when disabled."""
         result = sanitize_string("  hello  ", strip_whitespace=False)
         assert result == "  hello  "
 
-    def test_security_sanitizers_removes_null_bytes_execution_success(self) -> None:
+    def test_security_sanitizers_removes_null_bytes(self) -> None:
         """Test null bytes are removed."""
         assert sanitize_string("hel\x00lo") == "hello"
 
-    def test_security_sanitizers_removes_html_tags_execution_success(self) -> None:
+    def test_security_sanitizers_removes_html_tags(self) -> None:
         """Test HTML tags are removed by default."""
         result = sanitize_string("<script>alert('xss')</script>")
         assert "<script>" not in result
         assert "alert" in result  # Text content preserved
 
-    def test_security_sanitizers_allows_html_when_enabled_execution_success(
+    def test_security_sanitizers_allows_html_when_enabled(
         self,
     ) -> None:
         """Test HTML tags preserved when allowed."""
         result = sanitize_string("<b>bold</b>", allow_html=True)
         assert "<b>" in result
 
-    def test_security_sanitizers_removes_control_characters_execution_success(
+    def test_security_sanitizers_removes_control_characters(
         self,
     ) -> None:
         """Test control characters are removed."""
         result = sanitize_string("hello\x01\x02world")
         assert result == "helloworld"
 
-    def test_security_sanitizers_preserves_newlines_execution_success(self) -> None:
+    def test_security_sanitizers_preserves_newlines(self) -> None:
         """Test newlines are preserved."""
         result = sanitize_string("line1\nline2")
         assert "\n" in result
 
-    def test_security_sanitizers_removes_unicode_when_disabled_execution_success(
+    def test_security_sanitizers_removes_unicode_when_disabled(
         self,
     ) -> None:
         """Test unicode removed when not allowed."""
@@ -92,7 +92,7 @@ class TestSanitizeString:
         assert "é" not in result
         assert "ö" not in result
 
-    def test_security_sanitizers_truncates_to_max_length_execution_success(
+    def test_security_sanitizers_truncates_to_max_length(
         self,
     ) -> None:
         """Test string is truncated."""
@@ -100,7 +100,7 @@ class TestSanitizeString:
         assert result == "hello"
         assert len(result) == 5
 
-    def test_security_sanitizers_escapes_html_entities_execution_success(self) -> None:
+    def test_security_sanitizers_escapes_html_entities(self) -> None:
         """Test HTML entities are escaped after tag removal."""
         # Note: < and > inside text (not as tags) get escaped after tag stripping
         result = sanitize_string("text&more")
@@ -110,15 +110,15 @@ class TestSanitizeString:
 class TestSanitizeFilename:
     """Tests for sanitize_filename function."""
 
-    def test_security_sanitizers_empty_filename_execution_success(self) -> None:
+    def test_security_sanitizers_empty_filename(self) -> None:
         """Test empty filename returns 'unnamed'."""
         assert sanitize_filename("") == "unnamed"
 
-    def test_security_sanitizers_normal_filename_execution_success(self) -> None:
+    def test_security_sanitizers_normal_filename(self) -> None:
         """Test normal filename passes through."""
         assert sanitize_filename("test.txt") == "test.txt"
 
-    def test_security_sanitizers_removes_path_characters_execution_success(
+    def test_security_sanitizers_removes_path_characters(
         self,
     ) -> None:
         """Test path characters are removed."""
@@ -126,7 +126,7 @@ class TestSanitizeFilename:
         assert "/" not in result
         assert ".." not in result
 
-    def test_security_sanitizers_removes_invalid_windows_chars_execution_success(
+    def test_security_sanitizers_removes_invalid_windows_chars(
         self,
     ) -> None:
         """Test Windows invalid chars are removed."""
@@ -135,30 +135,30 @@ class TestSanitizeFilename:
         assert ">" not in result
         assert ":" not in result
 
-    def test_security_sanitizers_preserves_extension_execution_success(self) -> None:
+    def test_security_sanitizers_preserves_extension(self) -> None:
         """Test extension is preserved by default."""
         result = sanitize_filename("bad<file>name.txt")
         assert result.endswith(".txt")
 
-    def test_security_sanitizers_no_preserve_extension_execution_success(self) -> None:
+    def test_security_sanitizers_no_preserve_extension(self) -> None:
         """Test extension not preserved when disabled."""
         result = sanitize_filename("test.txt", preserve_extension=False)
         assert result == "test"
 
-    def test_security_sanitizers_handles_reserved_names_execution_success(self) -> None:
+    def test_security_sanitizers_handles_reserved_names(self) -> None:
         """Test Windows reserved names are handled."""
         result = sanitize_filename("CON")
         assert result != "CON"
         assert result.upper() != "CON"
 
-    def test_security_sanitizers_handles_dot_names_execution_success(self) -> None:
+    def test_security_sanitizers_handles_dot_names(self) -> None:
         """Test fast-path avoids passing dotfiles directly without stripping."""
         result = sanitize_filename(".")
         assert result == "unnamed"
         result2 = sanitize_filename("..")
         assert result2 == "unnamed"
 
-    def test_security_sanitizers_max_length_with_extension_execution_success(
+    def test_security_sanitizers_max_length_with_extension(
         self,
     ) -> None:
         """Test max length preserves extension."""
@@ -166,7 +166,7 @@ class TestSanitizeFilename:
         assert len(result) <= 10
         assert result.endswith(".txt")
 
-    def test_security_sanitizers_max_length_with_long_extension_execution_success(
+    def test_security_sanitizers_max_length_with_long_extension(
         self,
     ) -> None:
         """Test max length when extension is longer than max_length."""
@@ -175,13 +175,13 @@ class TestSanitizeFilename:
         assert len(result) == 5
         assert result == "file."
 
-    def test_security_sanitizers_custom_replacement_execution_success(self) -> None:
+    def test_security_sanitizers_custom_replacement(self) -> None:
         """Test custom replacement character."""
         result = sanitize_filename("bad:name.txt", replacement="-")
         assert ":" not in result
         assert "-" in result
 
-    def test_security_sanitizers_collapses_multiple_replacements_execution_success(
+    def test_security_sanitizers_collapses_multiple_replacements(
         self,
     ) -> None:
         """Test multiple invalid chars become single replacement."""
@@ -192,7 +192,7 @@ class TestSanitizeFilename:
 class TestSanitizePath:
     """Tests for sanitize_path function."""
 
-    def test_security_sanitizers_sanitize_path_absolute_with_base_dir_execution_success(
+    def test_security_sanitizers_sanitize_path_absolute_with_base_dir(
         self, tmp_path: Path
     ) -> None:
         """Test sanitize_path when sanitized is absolute and base_dir is given."""
@@ -207,7 +207,7 @@ class TestSanitizePath:
         assert result.is_absolute()
         assert result.parts[-2:] == ("absolute", "path")
 
-    def test_security_sanitizers_sanitize_path_absolute_with_parts_execution_success(
+    def test_security_sanitizers_sanitize_path_absolute_with_parts(
         self, tmp_path: Path
     ) -> None:
         """Test sanitize_path when path is absolute and has parts."""
@@ -217,36 +217,36 @@ class TestSanitizePath:
         assert result.is_absolute()
         assert result.parts[-2:] == ("absolute", "path")
 
-    def test_security_sanitizers_sanitize_path_empty_execution_success(self) -> None:
+    def test_security_sanitizers_sanitize_path_empty(self) -> None:
         """Test sanitize_path when path is empty (no parts, not absolute)."""
         # Covers the else branch where parts are empty and path is not absolute
         result = sanitize_path("")
         assert not result.is_absolute()
         assert result == Path()
 
-    def test_security_sanitizers_simple_path_execution_success(self) -> None:
+    def test_security_sanitizers_simple_path(self) -> None:
         """Test simple path passes through."""
         result = sanitize_path("test/file.txt")
         assert "test" in str(result)
         assert "file.txt" in str(result)
 
-    def test_security_sanitizers_removes_traversal_execution_success(self) -> None:
+    def test_security_sanitizers_removes_traversal(self) -> None:
         """Test path traversal is removed."""
         result = sanitize_path("../etc/passwd")
         assert ".." not in str(result)
 
-    def test_security_sanitizers_removes_null_bytes_execution_success(self) -> None:
+    def test_security_sanitizers_removes_null_bytes(self) -> None:
         """Test null bytes in path are removed."""
         result = sanitize_path("test\x00file.txt")
         assert "\x00" not in str(result)
 
-    def test_security_sanitizers_max_depth_enforced_execution_success(self) -> None:
+    def test_security_sanitizers_max_depth_enforced(self) -> None:
         """Test max depth is enforced."""
         deep_path = "/".join(["dir"] * 20)
         with pytest.raises(ValueError, match="depth"):
             sanitize_path(deep_path, max_depth=5)
 
-    def test_security_sanitizers_with_base_dir_execution_success(self, tmp_path: Path) -> None:
+    def test_security_sanitizers_with_base_dir(self, tmp_path: Path) -> None:
         """Test path with base directory."""
         base = tmp_path / "base"
         base.mkdir()
@@ -255,7 +255,7 @@ class TestSanitizePath:
         # Check result is under base directory using Path comparison
         assert str(base) in str(result)
 
-    def test_security_sanitizers_removes_parent_traversal_execution_success(
+    def test_security_sanitizers_removes_parent_traversal(
         self,
     ) -> None:
         """Test path traversal with parent directory is resolved."""
@@ -263,7 +263,7 @@ class TestSanitizePath:
         assert "bar" in str(result)
         assert "foo" not in str(result)
 
-    def test_security_sanitizers_removes_multiple_parent_traversals_execution_success(
+    def test_security_sanitizers_removes_multiple_parent_traversals(
         self,
     ) -> None:
         """Test path traversal with multiple parent directories."""
@@ -272,7 +272,7 @@ class TestSanitizePath:
         assert "foo" not in str(result)
         assert "bar" not in str(result)
 
-    def test_security_sanitizers_handles_empty_parts_execution_success(self) -> None:
+    def test_security_sanitizers_handles_empty_parts(self) -> None:
         """Test path with empty parts after sanitization."""
         # To trigger an absolute path traversal resulting in empty parts cross-platform,
         # we resolve the root path (so it gets C:/ on Windows) and append ..
@@ -288,7 +288,7 @@ class TestSanitizePath:
         result = sanitize_path("foo/../")
         assert result == Path()
 
-    def test_security_sanitizers_handles_invalid_character_parts_execution_success(
+    def test_security_sanitizers_handles_invalid_character_parts(
         self,
     ) -> None:
         """Test path with parts that become unnamed due to invalid characters."""
@@ -298,7 +298,7 @@ class TestSanitizePath:
         assert "unnamed" in result.parts
         assert "bar" in result.parts
 
-    def test_security_sanitizers_resolve_with_base_dir_success_execution_success(
+    def test_security_sanitizers_resolve_with_base_dir_success(
         self, tmp_path: Path
     ) -> None:
         """Test resolving path with base directory."""
@@ -311,7 +311,7 @@ class TestSanitizePath:
         )
         assert isinstance(result, Path)
 
-    def test_security_sanitizers_resolve_with_base_dir_error_execution_success(
+    def test_security_sanitizers_resolve_with_base_dir_error(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test resolving path with base directory raises ValueError on error."""
@@ -330,7 +330,7 @@ class TestSanitizePath:
             sanitize_path("subdir", base_dir=base, max_depth=None, resolve=True)
 
 
-def test_security_sanitizers_sanitize_string_value_error_execution_success():
+def test_security_sanitizers_sanitize_string_value_error():
     import pytest
 
     with pytest.raises(TypeError):
@@ -346,19 +346,19 @@ def test_security_sanitizers_sanitize_string_value_error_execution_success():
         sanitize_string("test", max_length=False)
 
 
-def test_security_sanitizers_sanitize_filename_value_error_execution_success():
+def test_security_sanitizers_sanitize_filename_value_error():
     import pytest
 
     with pytest.raises(TypeError):
         sanitize_filename(123)
 
 
-def test_security_sanitizers_sanitize_filename_no_replacement_execution_success():
+def test_security_sanitizers_sanitize_filename_no_replacement():
     # test replacement='' to hit the if replacement: branch fallback
     assert sanitize_filename("foo/bar", replacement="") == "bar"
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage_execution_success() -> None:
+def test_security_sanitizers_sanitizers_re_error_coverage() -> None:
     """Test sanitizers filename validation fallback on re.error."""
     import re
 
@@ -385,7 +385,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_execution_success() ->
         sanitizers_mod._INVALID_FILENAME_CHARS_RE = original_re
 
 
-def test_security_sanitizers_sanitizers_re_error_coverage_no_slash_execution_success() -> None:
+def test_security_sanitizers_sanitizers_re_error_coverage_no_slash() -> None:
     """Test sanitizers filename validation fallback on re.error with normal replacement."""
     import re
 
@@ -415,7 +415,7 @@ def test_security_sanitizers_sanitizers_re_error_coverage_no_slash_execution_suc
 class TestSanitizerFallthrough:
     """Test fallthrough cases for sanitizers."""
 
-    def test_security_sanitizers_sanitize_path_fallthroughs_execution_success(
+    def test_security_sanitizers_sanitize_path_fallthroughs(
         self,
     ) -> None:
         """Test the implicit fallthrough cases in path sanitization."""

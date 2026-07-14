@@ -91,19 +91,19 @@ class _ResponseCapture:
 class TestResultToResponse:
     """Tests for result_to_response."""
 
-    def test_bridge_web_ok_value_execution_success(self) -> None:
+    def test_bridge_web_ok_value(self) -> None:
         """Ok result produces status 200 and data."""
         resp = result_to_response(Ok({"id": 1}))
         assert resp["status"] == 200
         assert resp["data"] == {"id": 1}
 
-    def test_bridge_web_err_value_execution_success(self) -> None:
+    def test_bridge_web_err_value(self) -> None:
         """Err result produces status 500 and error string."""
         resp = result_to_response(Err(ValueError("bad")))
         assert resp["status"] == 500
         assert "bad" in resp["error"]
 
-    def test_bridge_web_custom_status_codes_execution_success(self) -> None:
+    def test_bridge_web_custom_status_codes(self) -> None:
         """Custom status codes are respected."""
         resp = result_to_response(Ok("yes"), status_ok=201)
         assert resp["status"] == 201
@@ -118,7 +118,7 @@ class TestResultToResponse:
 class TestSecurityHeadersConfig:
     """Tests for SecurityHeadersConfig."""
 
-    def test_bridge_web_default_headers_execution_success(self) -> None:
+    def test_bridge_web_default_headers(self) -> None:
         """Default config produces all 6 security headers."""
         config = SecurityHeadersConfig()
         headers = config.to_headers()
@@ -127,7 +127,7 @@ class TestSecurityHeadersConfig:
         assert b"x-content-type-options" in names
         assert b"x-frame-options" in names
 
-    def test_bridge_web_custom_values_execution_success(self) -> None:
+    def test_bridge_web_custom_values(self) -> None:
         """Custom values are reflected in output."""
         config = SecurityHeadersConfig(x_frame_options="SAMEORIGIN")
         headers = dict(config.to_headers())
@@ -141,7 +141,7 @@ class TestTaipanMiddleware:
     """Tests for the ASGI middleware."""
 
     @pytest.mark.asyncio
-    async def test_bridge_web_passthrough_http_execution_success(self) -> None:
+    async def test_bridge_web_passthrough_http(self) -> None:
         """HTTP requests pass through to the app."""
         mw = TaipanMiddleware(_make_dummy_app, security_headers=False)
         capture = _ResponseCapture()
@@ -150,7 +150,7 @@ class TestTaipanMiddleware:
         assert capture.status == 200
 
     @pytest.mark.asyncio
-    async def test_bridge_web_passthrough_non_http_execution_success(self) -> None:
+    async def test_bridge_web_passthrough_non_http(self) -> None:
         """Non-HTTP requests (e.g. websocket) pass through unchanged."""
         called = False
 
@@ -163,7 +163,7 @@ class TestTaipanMiddleware:
         assert called
 
     @pytest.mark.asyncio
-    async def test_bridge_web_rate_limit_returns_429_execution_success(self) -> None:
+    async def test_bridge_web_rate_limit_returns_429(self) -> None:
         """429 when rate limit is exceeded."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
         mw = TaipanMiddleware(
@@ -185,7 +185,7 @@ class TestTaipanMiddleware:
         assert "Rate limit" in body["error"]
 
     @pytest.mark.asyncio
-    async def test_bridge_web_security_headers_injected_execution_success(self) -> None:
+    async def test_bridge_web_security_headers_injected(self) -> None:
         """Security headers are added to responses."""
         mw = TaipanMiddleware(_make_dummy_app, security_headers=True)
         capture = _ResponseCapture()
@@ -196,7 +196,7 @@ class TestTaipanMiddleware:
         assert headers.get("x-frame-options") == "DENY"
 
     @pytest.mark.asyncio
-    async def test_bridge_web_security_headers_on_429_execution_success(self) -> None:
+    async def test_bridge_web_security_headers_on_429(self) -> None:
         """Security headers are also on 429 responses."""
         limiter = RateLimiter(max_calls=1, time_window=60.0)
         mw = TaipanMiddleware(
@@ -212,7 +212,7 @@ class TestTaipanMiddleware:
         assert "x-content-type-options" in capture.headers
 
     @pytest.mark.asyncio
-    async def test_bridge_web_unhandled_exception_returns_500_execution_success(
+    async def test_bridge_web_unhandled_exception_returns_500(
         self,
     ) -> None:
         """Unhandled exceptions produce a 500 JSON response."""
@@ -235,7 +235,7 @@ class TestSendJsonResponse:
     """Tests for _send_json_response helper."""
 
     @pytest.mark.asyncio
-    async def test_bridge_web_sends_json_execution_success(self) -> None:
+    async def test_bridge_web_sends_json(self) -> None:
         """Sends a valid JSON response."""
         capture = _ResponseCapture()
         await _send_json_response(
@@ -248,7 +248,7 @@ class TestSendJsonResponse:
         assert parsed["created"] is True
 
     @pytest.mark.asyncio
-    async def test_bridge_web_extra_headers_execution_success(self) -> None:
+    async def test_bridge_web_extra_headers(self) -> None:
         """Extra headers are included."""
         capture = _ResponseCapture()
         await _send_json_response(
@@ -260,7 +260,7 @@ class TestSendJsonResponse:
         assert capture.headers.get("x-custom") == "value"
 
 
-def test_bridge_web_send_json_response_err_execution_success() -> None:
+def test_bridge_web_send_json_response_err() -> None:
     import asyncio
 
     from taipanstack.core.result import Err
@@ -280,7 +280,7 @@ def test_bridge_web_send_json_response_err_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_bridge_web_headers_tuple_edge_case_execution_success() -> None:
+async def test_bridge_web_headers_tuple_edge_case() -> None:
     from typing import Any
     from unittest.mock import AsyncMock
 

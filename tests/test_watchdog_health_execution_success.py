@@ -36,7 +36,7 @@ class TestCheckTarget:
     """Tests for the one-shot check_target function."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_healthy_target_execution_success(self) -> None:
+    async def test_watchdog_health_healthy_target(self) -> None:
         """Returns Ok(True) for a healthy target."""
         target = HealthTarget(name="db", check=_healthy)
         result = await check_target(target)
@@ -44,7 +44,7 @@ class TestCheckTarget:
         assert result.ok_value is True
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_unhealthy_target_execution_success(self) -> None:
+    async def test_watchdog_health_unhealthy_target(self) -> None:
         """Returns Ok(False) for an unhealthy target."""
         target = HealthTarget(name="db", check=_unhealthy)
         result = await check_target(target)
@@ -52,7 +52,7 @@ class TestCheckTarget:
         assert result.ok_value is False
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_exploding_target_execution_success(self) -> None:
+    async def test_watchdog_health_exploding_target(self) -> None:
         """Returns Err when the check raises."""
         target = HealthTarget(name="db", check=_exploding)
         result = await check_target(target)
@@ -67,7 +67,7 @@ class TestCheckAll:
     """Tests for check_all function."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_all_healthy_execution_success(self) -> None:
+    async def test_watchdog_health_all_healthy(self) -> None:
         """All targets healthy."""
         targets = [
             HealthTarget(name="db", check=_healthy),
@@ -78,7 +78,7 @@ class TestCheckAll:
         assert result.ok_value == {"db": True, "cache": True}
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_mixed_health_execution_success(self) -> None:
+    async def test_watchdog_health_mixed_health(self) -> None:
         """Mix of healthy and unhealthy."""
         targets = [
             HealthTarget(name="db", check=_healthy),
@@ -90,7 +90,7 @@ class TestCheckAll:
         assert result.ok_value["cache"] is False
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_exploding_counted_as_unhealthy_execution_success(
+    async def test_watchdog_health_exploding_counted_as_unhealthy(
         self,
     ) -> None:
         """An exception from check is treated as unhealthy."""
@@ -106,7 +106,7 @@ class TestCheckAll:
 class TestForceOpenBreaker:
     """Tests for _force_open_breaker helper."""
 
-    def test_watchdog_health_opens_closed_breaker_execution_success(self) -> None:
+    def test_watchdog_health_opens_closed_breaker(self) -> None:
         """Force-opens a CLOSED circuit breaker."""
         breaker = CircuitBreaker(name="test", failure_threshold=3)
         assert breaker.state == CircuitState.CLOSED
@@ -122,7 +122,7 @@ class TestHealthPinger:
     """Tests for the HealthPinger background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_start_stop_lifecycle_execution_success(self) -> None:
+    async def test_watchdog_health_start_stop_lifecycle(self) -> None:
         """Pinger can be started and stopped."""
         pinger = HealthPinger(
             targets=[HealthTarget(name="db", check=_healthy)],
@@ -137,7 +137,7 @@ class TestHealthPinger:
         assert not pinger.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_health_change_callback_execution_success(
+    async def test_watchdog_health_health_change_callback(
         self,
     ) -> None:
         """Callback fires on status transitions."""
@@ -164,7 +164,7 @@ class TestHealthPinger:
         assert "svc" in names
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_opens_breaker_on_failure_execution_success(
+    async def test_watchdog_health_opens_breaker_on_failure(
         self,
     ) -> None:
         """Circuit breaker is opened when target is unhealthy."""
@@ -183,7 +183,7 @@ class TestHealthPinger:
         assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_does_not_close_breaker_on_recovery_execution_success(
+    async def test_watchdog_health_does_not_close_breaker_on_recovery(
         self,
     ) -> None:
         """Recovery does NOT force-close the circuit breaker.
@@ -213,7 +213,7 @@ class TestHealthPinger:
         assert breaker.state.value == CircuitState.OPEN.value
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_exception_in_check_treated_as_unhealthy_execution_success(
+    async def test_watchdog_health_exception_in_check_treated_as_unhealthy(
         self,
     ) -> None:
         """An exception from the check coroutine is treated as unhealthy."""
@@ -231,7 +231,7 @@ class TestHealthPinger:
         assert any(h is False for _, h in changes)
 
     @pytest.mark.asyncio
-    async def test_watchdog_health_no_duplicate_callback_on_same_status_execution_success(
+    async def test_watchdog_health_no_duplicate_callback_on_same_status(
         self,
     ) -> None:
         """Callback only fires on *transitions*, not every cycle."""
@@ -252,7 +252,7 @@ class TestHealthPinger:
 
 
 @pytest.mark.asyncio
-async def test_watchdog_health_health_pinger_check_all_err_branch_expected_execution_success() -> None:
+async def test_watchdog_health_health_pinger_check_all_err_branch_expected() -> None:
     from taipanstack.resilience.watchdogs.health_pinger import HealthTarget, check_all
 
     async def always_fail():
@@ -266,7 +266,7 @@ async def test_watchdog_health_health_pinger_check_all_err_branch_expected_execu
 
 
 @pytest.mark.asyncio
-async def test_watchdog_health_health_pinger_run_err_branch_expected_execution_success() -> None:
+async def test_watchdog_health_health_pinger_run_err_branch_expected() -> None:
     from taipanstack.resilience.watchdogs.health_pinger import (
         HealthPinger,
         HealthTarget,

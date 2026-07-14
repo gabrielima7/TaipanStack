@@ -9,7 +9,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.utils.cache import cached
 
 
-def test_utils_cache_cached_sync_execution_success() -> None:
+def test_utils_cache_cached_sync() -> None:
     """Test standard sync cache."""
     call_count = 0
 
@@ -46,7 +46,7 @@ def test_utils_cache_cached_sync_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_execution_success() -> None:
+async def test_utils_cache_cached_async() -> None:
     """Test async cache."""
     call_count = 0
 
@@ -77,7 +77,7 @@ async def test_utils_cache_cached_async_execution_success() -> None:
     assert call_count == 3
 
 
-def test_utils_cache_cached_sync_err_branch_execution_success() -> None:
+def test_utils_cache_cached_sync_err_branch() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
@@ -93,7 +93,7 @@ def test_utils_cache_cached_sync_err_branch_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_err_branch_expected_execution_success() -> None:
+async def test_utils_cache_cached_async_err_branch_expected() -> None:
     call_count = 0
 
     @cached(ttl=0.1)
@@ -109,7 +109,7 @@ async def test_utils_cache_cached_async_err_branch_expected_execution_success() 
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_async_cache_stampede_prevention_expected_execution_success() -> None:
+async def test_utils_cache_async_cache_stampede_prevention_expected() -> None:
     """Test that multiple concurrent requests for the same key don't stampede."""
     call_count = 0
 
@@ -131,7 +131,7 @@ async def test_utils_cache_async_cache_stampede_prevention_expected_execution_su
     assert call_count == 1
 
 
-def test_utils_cache_cached_sync_lru_eviction_execution_success() -> None:
+def test_utils_cache_cached_sync_lru_eviction() -> None:
     """Test LRU eviction for sync cache."""
     call_count = 0
 
@@ -161,7 +161,7 @@ def test_utils_cache_cached_sync_lru_eviction_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_cache_cached_async_lru_eviction_expected_execution_success() -> None:
+async def test_utils_cache_cached_async_lru_eviction_expected() -> None:
     """Test LRU eviction for async cache."""
     call_count = 0
 
@@ -190,7 +190,7 @@ async def test_utils_cache_cached_async_lru_eviction_expected_execution_success(
     assert call_count == 4
 
 
-def test_utils_cache_invalid_max_size_execution_success() -> None:
+def test_utils_cache_invalid_max_size() -> None:
     """Test invalid max_size raises ValueError."""
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 

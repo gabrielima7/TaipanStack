@@ -9,7 +9,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import fallback, timeout
 
 
-def test_utils_resilience_fallback_sync_execution_success() -> None:
+def test_utils_resilience_fallback_sync() -> None:
     """Test standard fallback."""
 
     @fallback(fallback_value="safe")
@@ -35,7 +35,7 @@ def test_utils_resilience_fallback_sync_execution_success() -> None:
         sync_raise_unhandled()
 
 
-def test_utils_resilience_fallback_sync_unreachable_execution_success() -> None:
+def test_utils_resilience_fallback_sync_unreachable() -> None:
     """Test fallback sync unreachable logic."""
 
     @fallback(fallback_value="safe")
@@ -49,7 +49,7 @@ def test_utils_resilience_fallback_sync_unreachable_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_fallback_async_unreachable_expected_execution_success() -> None:
+async def test_utils_resilience_fallback_async_unreachable_expected() -> None:
     """Test fallback async unreachable logic."""
 
     @fallback(fallback_value="safe")
@@ -63,7 +63,7 @@ async def test_utils_resilience_fallback_async_unreachable_expected_execution_su
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_fallback_async_expected_execution_success() -> None:
+async def test_utils_resilience_fallback_async_expected() -> None:
     """Test async fallback."""
 
     @fallback(fallback_value="safe_async")
@@ -89,7 +89,7 @@ async def test_utils_resilience_fallback_async_expected_execution_success() -> N
     assert await async_raise_handled() == Ok("safe_async")
 
 
-def test_utils_resilience_timeout_sync_execution_success() -> None:
+def test_utils_resilience_timeout_sync() -> None:
     """Test standard timeout."""
 
     @timeout(0.2)
@@ -115,7 +115,7 @@ def test_utils_resilience_timeout_sync_execution_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_utils_resilience_timeout_async_expected_execution_success() -> None:
+async def test_utils_resilience_timeout_async_expected() -> None:
     """Test async timeout."""
 
     @timeout(0.2)

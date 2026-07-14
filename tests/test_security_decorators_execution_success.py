@@ -20,7 +20,7 @@ from taipanstack.security.guards import SecurityError
 class TestValidateInputs:
     """Tests for @validate_inputs decorator."""
 
-    def test_security_decorators_valid_inputs_pass_execution_success(self) -> None:
+    def test_security_decorators_valid_inputs_pass(self) -> None:
         """Test that valid inputs pass through."""
 
         def positive_int(x: int) -> int:
@@ -34,7 +34,7 @@ class TestValidateInputs:
 
         assert double(5) == 10
 
-    def test_security_decorators_invalid_input_raises_validation_error_execution_success(
+    def test_security_decorators_invalid_input_raises_validation_error(
         self,
     ) -> None:
         """Test that invalid input raises ValidationError."""
@@ -51,7 +51,7 @@ class TestValidateInputs:
         with pytest.raises(ValidationError, match="Must be positive"):
             double(-5)
 
-    def test_security_decorators_validation_error_has_param_name_execution_success(
+    def test_security_decorators_validation_error_has_param_name(
         self,
     ) -> None:
         """Test that ValidationError includes parameter name."""
@@ -67,7 +67,7 @@ class TestValidateInputs:
             greet("test")
         assert exc_info.value.param_name == "name"
 
-    def test_security_decorators_multiple_validators_execution_success(self) -> None:
+    def test_security_decorators_multiple_validators(self) -> None:
         """Test multiple validators on different params."""
 
         def min_length(s: str) -> str:
@@ -100,7 +100,7 @@ class TestValidateInputs:
 class TestGuardExceptions:
     """Tests for @guard_exceptions decorator."""
 
-    def test_security_decorators_no_exception_passes_through_execution_success(
+    def test_security_decorators_no_exception_passes_through(
         self,
     ) -> None:
         """Test that successful execution passes through."""
@@ -111,7 +111,7 @@ class TestGuardExceptions:
 
         assert safe_func() == "success"
 
-    def test_security_decorators_caught_exception_returns_default_execution_success(
+    def test_security_decorators_caught_exception_returns_default(
         self,
     ) -> None:
         """Test that caught exception returns default."""
@@ -122,7 +122,7 @@ class TestGuardExceptions:
 
         assert failing_func() == "fallback"
 
-    def test_security_decorators_uncaught_exception_propagates_execution_success(
+    def test_security_decorators_uncaught_exception_propagates(
         self,
     ) -> None:
         """Test that uncaught exceptions propagate."""
@@ -134,7 +134,7 @@ class TestGuardExceptions:
         with pytest.raises(TypeError):
             failing_func()
 
-    def test_security_decorators_reraise_as_security_error_execution_success(
+    def test_security_decorators_reraise_as_security_error(
         self,
     ) -> None:
         """Test reraising as SecurityError."""
@@ -146,7 +146,7 @@ class TestGuardExceptions:
         with pytest.raises(SecurityError):
             read_file()
 
-    def test_security_decorators_reraise_as_custom_exception_execution_success(
+    def test_security_decorators_reraise_as_custom_exception(
         self,
     ) -> None:
         """Test reraising as custom exception type."""
@@ -164,7 +164,7 @@ class TestGuardExceptions:
 class TestTimeout:
     """Tests for @timeout decorator."""
 
-    def test_security_decorators_fast_function_succeeds_execution_success(self) -> None:
+    def test_security_decorators_fast_function_succeeds(self) -> None:
         """Test that fast functions succeed."""
 
         @timeout(5.0)
@@ -173,7 +173,7 @@ class TestTimeout:
 
         assert fast_func() == "done"
 
-    def test_security_decorators_slow_function_times_out_execution_success(
+    def test_security_decorators_slow_function_times_out(
         self,
     ) -> None:
         """Test that slow functions time out."""
@@ -186,7 +186,7 @@ class TestTimeout:
         with pytest.raises(OperationTimeoutError):
             slow_func()
 
-    def test_security_decorators_timeout_error_has_details_execution_success(
+    def test_security_decorators_timeout_error_has_details(
         self,
     ) -> None:
         """Test OperationTimeoutError has seconds and func_name."""
@@ -200,7 +200,7 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
-    def test_security_decorators_timeout_negative_value_execution_success(self) -> None:
+    def test_security_decorators_timeout_negative_value(self) -> None:
         """Test timeout with negative seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"
@@ -210,7 +210,7 @@ class TestTimeout:
             def func() -> None:
                 return None
 
-    def test_security_decorators_timeout_nan_value_execution_success(self) -> None:
+    def test_security_decorators_timeout_nan_value(self) -> None:
         """Test timeout with NaN seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"
@@ -220,7 +220,7 @@ class TestTimeout:
             def func() -> None:
                 return None
 
-    def test_security_decorators_timeout_inf_value_execution_success(self) -> None:
+    def test_security_decorators_timeout_inf_value(self) -> None:
         """Test timeout with Infinity seconds."""
         with pytest.raises(
             ValueError, match="timeout must be a finite non-negative number"
@@ -230,7 +230,7 @@ class TestTimeout:
             def func() -> None:
                 return None
 
-    def test_security_decorators_timeout_with_exception_in_thread_execution_success(
+    def test_security_decorators_timeout_with_exception_in_thread(
         self,
     ) -> None:
         @timeout(1.0, use_signal=False)
@@ -240,7 +240,7 @@ class TestTimeout:
         with pytest.raises(ValueError, match="Thread error"):
             func_raises()
 
-    def test_security_decorators_timeout_with_success_in_thread_execution_success(
+    def test_security_decorators_timeout_with_success_in_thread(
         self,
     ) -> None:
         @timeout(1.0, use_signal=False)
@@ -253,7 +253,7 @@ class TestTimeout:
 class TestDeprecated:
     """Tests for @deprecated decorator."""
 
-    def test_security_decorators_emits_deprecation_warning_execution_success(
+    def test_security_decorators_emits_deprecation_warning(
         self,
     ) -> None:
         """Test that deprecated function emits warning."""
@@ -271,7 +271,7 @@ class TestDeprecated:
         assert issubclass(w[0].category, DeprecationWarning)
         assert "old_func is deprecated" in str(w[0].message)
 
-    def test_security_decorators_includes_removal_version_execution_success(
+    def test_security_decorators_includes_removal_version(
         self,
     ) -> None:
         """Test that removal version is included in warning."""
@@ -290,7 +290,7 @@ class TestDeprecated:
 class TestRequireType:
     """Tests for @require_type decorator."""
 
-    def test_security_decorators_correct_types_pass_execution_success(self) -> None:
+    def test_security_decorators_correct_types_pass(self) -> None:
         """Test that correct types pass through."""
 
         @require_type(name=str, count=int)
@@ -299,7 +299,7 @@ class TestRequireType:
 
         assert greet("World", 2) == "Hello WorldHello World"
 
-    def test_security_decorators_wrong_type_raises_type_error_execution_success(
+    def test_security_decorators_wrong_type_raises_type_error(
         self,
     ) -> None:
         """Test that wrong type raises TypeError."""
@@ -311,7 +311,7 @@ class TestRequireType:
         with pytest.raises(TypeError, match="expected str, got int"):
             greet(123)
 
-    def test_security_decorators_multiple_type_checks_execution_success(self) -> None:
+    def test_security_decorators_multiple_type_checks(self) -> None:
         """Test checking multiple parameters."""
 
         @require_type(a=int, b=int)
@@ -325,7 +325,7 @@ class TestRequireType:
 
 
 class TestWindowsSignalCoverage:
-    def test_security_decorators_windows_signal_coverage_execution_success(
+    def test_security_decorators_windows_signal_coverage(
         self,
     ) -> None:
         """Mock Unix signal behavior to get coverage on Windows for _timeout_with_signal."""

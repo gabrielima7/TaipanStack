@@ -12,7 +12,7 @@ from taipanstack.core.result import (
 
 
 @given(st.text())
-def test_result_ok_fuzz_execution_success(value: str) -> None:
+def test_result_ok_fuzz(value: str) -> None:
     res = Ok(value)
     assert res.is_ok() is True
     assert res.is_err() is False
@@ -21,7 +21,7 @@ def test_result_ok_fuzz_execution_success(value: str) -> None:
 
 
 @given(st.text())
-def test_result_err_fuzz_execution_success(value: str) -> None:
+def test_result_err_fuzz(value: str) -> None:
     err = ValueError(value)
     res = Err(err)
     assert res.is_ok() is False
@@ -31,7 +31,7 @@ def test_result_err_fuzz_execution_success(value: str) -> None:
 
 
 @given(st.lists(st.text()))
-def test_result_collect_results_all_ok_fuzz_execution_success(
+def test_result_collect_results_all_ok_fuzz(
     values: list[str],
 ) -> None:
     results = [Ok(v) for v in values]
@@ -41,7 +41,7 @@ def test_result_collect_results_all_ok_fuzz_execution_success(
 
 
 @given(st.lists(st.text(), min_size=1), st.integers(min_value=0))
-def test_result_collect_results_with_err_fuzz_execution_success(
+def test_result_collect_results_with_err_fuzz(
     values: list[str], err_index: int
 ) -> None:
     err_idx = err_index % len(values)
@@ -58,7 +58,7 @@ def test_result_collect_results_with_err_fuzz_execution_success(
 
 
 @given(st.lists(st.one_of(st.text(), st.integers())))
-def test_result_safe_fuzz_execution_success(values: list[object]) -> None:
+def test_result_safe_fuzz(values: list[object]) -> None:
     @safe
     def maybe_fail(v: object) -> str:
         if isinstance(v, int):
@@ -75,7 +75,7 @@ def test_result_safe_fuzz_execution_success(values: list[object]) -> None:
 
 
 @given(st.lists(st.one_of(st.text(), st.integers())))
-def test_result_safe_from_fuzz_execution_success(values: list[object]) -> None:
+def test_result_safe_from_fuzz(values: list[object]) -> None:
     @safe_from(TypeError)
     def maybe_fail(v: object) -> str:
         if isinstance(v, int):

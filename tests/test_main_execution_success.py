@@ -12,7 +12,7 @@ def test_main_greet_execution_success() -> None:
     assert greet("Alice") == "Hello, Alice!"
 
 
-def test_main_function_logs_execution_success(caplog: pytest.LogCaptureFixture) -> None:
+def test_main_function_logs(caplog: pytest.LogCaptureFixture) -> None:
     """Test that main function logs the greeting."""
     with caplog.at_level(logging.INFO):
         main()

@@ -11,7 +11,7 @@ from taipanstack.config.models import SecurityConfig, StackConfig
 class TestGeneratePyprojectConfig:
     """Tests for generate_pyproject_config function."""
 
-    def test_config_generators_generates_ruff_config_execution_success(self) -> None:
+    def test_config_generators_generates_ruff_config(self) -> None:
         """Test that Ruff configuration is generated."""
         config = StackConfig(project_name="test-project")
         result = generate_pyproject_config(config)
@@ -19,7 +19,7 @@ class TestGeneratePyprojectConfig:
         assert "[tool.ruff]" in result
         assert "line-length" in result
 
-    def test_config_generators_generates_mypy_config_execution_success(self) -> None:
+    def test_config_generators_generates_mypy_config(self) -> None:
         """Test that Mypy configuration is generated."""
         config = StackConfig(project_name="test-project")
         result = generate_pyproject_config(config)
@@ -27,7 +27,7 @@ class TestGeneratePyprojectConfig:
         assert "[tool.mypy]" in result
         assert "python_version" in result
 
-    def test_config_generators_generates_pytest_config_execution_success(self) -> None:
+    def test_config_generators_generates_pytest_config(self) -> None:
         """Test that Pytest configuration is generated."""
         config = StackConfig(project_name="test-project")
         result = generate_pyproject_config(config)
@@ -38,13 +38,13 @@ class TestGeneratePyprojectConfig:
 class TestGenerateSecurityPolicy:
     """Tests for generate_security_policy function."""
 
-    def test_config_generators_generates_markdown_execution_success(self) -> None:
+    def test_config_generators_generates_markdown(self) -> None:
         """Test that Markdown is generated."""
         result = generate_security_policy()
 
         assert "# Security Policy" in result
 
-    def test_config_generators_includes_reporting_instructions_execution_success(
+    def test_config_generators_includes_reporting_instructions(
         self,
     ) -> None:
         """Test that reporting instructions are included."""
@@ -52,7 +52,7 @@ class TestGenerateSecurityPolicy:
 
         assert "report" in result.lower() or "vulnerabilit" in result.lower()
 
-    def test_config_generators_includes_supported_versions_execution_success(
+    def test_config_generators_includes_supported_versions(
         self,
     ) -> None:
         """Test that supported versions section exists."""
@@ -64,7 +64,7 @@ class TestGenerateSecurityPolicy:
 class TestGeneratePreCommitConfig:
     """Tests for generate_pre_commit_config."""
 
-    def test_config_generators_pre_commit_all_security_hooks_execution_success(
+    def test_config_generators_pre_commit_all_security_hooks(
         self,
     ) -> None:
         """Test with all security hooks enabled."""
@@ -87,7 +87,7 @@ class TestGeneratePreCommitConfig:
         assert "repo: https://github.com/Yelp/detect-secrets" in result
         assert "repo: https://github.com/trailofbits/pip-audit" not in result
 
-    def test_config_generators_pre_commit_paranoid_execution_success(self) -> None:
+    def test_config_generators_pre_commit_paranoid(self) -> None:
         """Test paranoid mode adds extra hooks."""
         config = StackConfig(
             project_name="test-project",
@@ -100,7 +100,7 @@ class TestGeneratePreCommitConfig:
         assert "repo: https://github.com/jendrikseipp/vulture" in result
         assert "repo: https://github.com/guilatrova/tryceratops" in result
 
-    def test_config_generators_pre_commit_no_security_hooks_execution_success(
+    def test_config_generators_pre_commit_no_security_hooks(
         self,
     ) -> None:
         """Test with no security hooks enabled."""

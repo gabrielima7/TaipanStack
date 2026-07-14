@@ -20,7 +20,7 @@ def my_func(*args, **kwargs):
         max_size=10,
     ),
 )
-def test_fuzz_cache_fuzz_cached_unhashable_execution_success(args, kwargs):
+def test_fuzz_cache_fuzz_cached_unhashable(args, kwargs):
     # First call puts result in cache
     result1 = my_func(*args, **kwargs)
     # Second call should return exactly the same Result instance from the cache
@@ -41,7 +41,7 @@ class RecursiveDummy:
     __hash__ = None  # type: ignore
 
 
-def test_fuzz_cache_cache_fallback_to_string_and_sets_execution_success():
+def test_fuzz_cache_cache_fallback_to_string_and_sets():
     """Ensure sets of hashable objects still work, and unhashable raises TypeError."""
     dummy1 = UnhashableDummy()
 

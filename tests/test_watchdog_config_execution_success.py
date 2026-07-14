@@ -29,26 +29,26 @@ class SampleConfig(BaseModel):
 class TestParseEnv:
     """Tests for _parse_env helper."""
 
-    def test_watchdog_config_basic_parsing_execution_success(self) -> None:
+    def test_watchdog_config_basic_parsing(self) -> None:
         """Parse simple key=value pairs."""
         text = "HOST=localhost\nPORT=8080\n"
         result = _parse_env(text)
         assert result == {"HOST": "localhost", "PORT": "8080"}
 
-    def test_watchdog_config_skips_comments_and_blanks_execution_success(self) -> None:
+    def test_watchdog_config_skips_comments_and_blanks(self) -> None:
         """Comments and empty lines are ignored."""
         text = "# comment\n\nKEY=value\n"
         result = _parse_env(text)
         assert result == {"KEY": "value"}
 
-    def test_watchdog_config_strips_quotes_execution_success(self) -> None:
+    def test_watchdog_config_strips_quotes(self) -> None:
         """Surrounding quotes are removed from values."""
         text = "KEY=\"quoted\"\nK2='single'\n"
         result = _parse_env(text)
         assert result["KEY"] == "quoted"
         assert result["K2"] == "single"
 
-    def test_watchdog_config_skips_lines_without_equals_execution_success(self) -> None:
+    def test_watchdog_config_skips_lines_without_equals(self) -> None:
         """Lines without '=' are skipped."""
         text = "invalid_line\nKEY=value\n"
         result = _parse_env(text)
@@ -58,18 +58,18 @@ class TestParseEnv:
 class TestParseJson:
     """Tests for _parse_json helper."""
 
-    def test_watchdog_config_valid_json_execution_success(self) -> None:
+    def test_watchdog_config_valid_json(self) -> None:
         """Parses valid JSON object."""
         result = _parse_json('{"host": "db", "port": 5432}')
         assert isinstance(result, Ok)
         assert result.ok_value == {"host": "db", "port": 5432}
 
-    def test_watchdog_config_invalid_json_execution_success(self) -> None:
+    def test_watchdog_config_invalid_json(self) -> None:
         """Returns Err for malformed JSON."""
         result = _parse_json("{broken")
         assert isinstance(result, Err)
 
-    def test_watchdog_config_non_dict_json_execution_success(self) -> None:
+    def test_watchdog_config_non_dict_json(self) -> None:
         """Returns Err when JSON root is not an object."""
         result = _parse_json("[1, 2, 3]")
         assert isinstance(result, Err)
@@ -79,7 +79,7 @@ class TestParseJson:
 class TestHashFile:
     """Tests for _hash_file helper."""
 
-    def test_watchdog_config_hash_existing_file_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_hash_existing_file(self, tmp_path: Path) -> None:
         """Returns Ok with hash for existing file."""
         f = tmp_path / "test.txt"
         f.write_text("hello")
@@ -87,7 +87,7 @@ class TestHashFile:
         assert isinstance(result, Ok)
         assert len(result.ok_value) == 64  # SHA-256 hex digest
 
-    def test_watchdog_config_hash_missing_file_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_hash_missing_file(self, tmp_path: Path) -> None:
         """Returns Err for missing file."""
         result = _hash_file(tmp_path / "missing.txt")
         assert isinstance(result, Err)
@@ -97,7 +97,7 @@ class TestHashFile:
 class TestLoadFileData:
     """Tests for _load_file_data helper."""
 
-    def test_watchdog_config_load_json_file_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_load_json_file(self, tmp_path: Path) -> None:
         """Loads and parses a .json file."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "db"}))
@@ -105,7 +105,7 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["host"] == "db"
 
-    def test_watchdog_config_load_env_file_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_load_env_file(self, tmp_path: Path) -> None:
         """Loads and parses a .env file."""
         f = tmp_path / ".env"
         f.write_text("HOST=db\nPORT=3306\n")
@@ -113,7 +113,7 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["HOST"] == "db"
 
-    def test_watchdog_config_unsupported_extension_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_unsupported_extension(self, tmp_path: Path) -> None:
         """Returns Err for unsupported file extensions."""
         f = tmp_path / "config.xml"
         f.write_text("<config/>")
@@ -121,7 +121,7 @@ class TestLoadFileData:
         assert isinstance(result, Err)
         assert "Unsupported" in str(result.err_value)
 
-    def test_watchdog_config_missing_file_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_missing_file(self, tmp_path: Path) -> None:
         """Returns Err for missing file."""
         result = _load_file_data(tmp_path / "nope.json")
         assert isinstance(result, Err)
@@ -131,7 +131,7 @@ class TestLoadFileData:
 class TestValidateConfig:
     """Tests for validate_config."""
 
-    def test_watchdog_config_valid_data_execution_success(self) -> None:
+    def test_watchdog_config_valid_data(self) -> None:
         """Returns Ok(model) for valid data."""
         result = validate_config({"host": "db", "port": 5432}, SampleConfig)
         assert isinstance(result, Ok)
@@ -140,7 +140,7 @@ class TestValidateConfig:
         assert val.host == "db"
         assert val.port == 5432
 
-    def test_watchdog_config_invalid_data_execution_success(self) -> None:
+    def test_watchdog_config_invalid_data(self) -> None:
         """Returns Err for data that fails validation."""
         result = validate_config({"port": "not_a_number"}, SampleConfig)
         assert isinstance(result, Err)
@@ -150,7 +150,7 @@ class TestConfigWatcher:
     """Tests for the ConfigWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_start_stop_lifecycle_execution_success(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_start_stop_lifecycle(self, tmp_path: Path) -> None:
         """Watcher can be started and stopped."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -169,7 +169,7 @@ class TestConfigWatcher:
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_detects_file_change_execution_success(self, tmp_path: Path) -> None:
+    async def test_watchdog_config_detects_file_change(self, tmp_path: Path) -> None:
         """Callback fires when a config file changes."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "old", "port": 1}))
@@ -197,7 +197,7 @@ class TestConfigWatcher:
         assert model.host == "new"
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_invalid_config_calls_error_callback_execution_success(
+    async def test_watchdog_config_invalid_config_calls_error_callback(
         self, tmp_path: Path
     ) -> None:
         """Validation error callback fires on bad config."""
@@ -223,7 +223,7 @@ class TestConfigWatcher:
         assert len(errors) >= 1
 
     @pytest.mark.asyncio
-    async def test_watchdog_config_missing_file_does_not_crash_execution_success(
+    async def test_watchdog_config_missing_file_does_not_crash(
         self, tmp_path: Path
     ) -> None:
         """A watched file that disappears is handled gracefully."""
@@ -242,7 +242,7 @@ class TestConfigWatcher:
         await asyncio.sleep(0.15)
         await watcher.stop()
 
-    def test_watchdog_config_detect_changes_no_change_execution_success(self, tmp_path: Path) -> None:
+    def test_watchdog_config_detect_changes_no_change(self, tmp_path: Path) -> None:
         """No changed paths when files haven't been modified."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))
@@ -262,7 +262,7 @@ class TestConfigWatcher:
         assert isinstance(result2, Ok)
         assert result2.ok_value == []
 
-    def test_watchdog_config_validate_and_apply_with_env_file_execution_success(
+    def test_watchdog_config_validate_and_apply_with_env_file(
         self, tmp_path: Path
     ) -> None:
         """Hot-reload works for .env files."""
@@ -285,7 +285,7 @@ class TestConfigWatcher:
         assert isinstance(result, Ok)
         assert len(changes) == 1
 
-    def test_watchdog_config_validate_and_apply_missing_file_execution_success(
+    def test_watchdog_config_validate_and_apply_missing_file(
         self, tmp_path: Path
     ) -> None:
         """_validate_and_apply returns Err when file can't be loaded."""
@@ -297,7 +297,7 @@ class TestConfigWatcher:
         assert isinstance(result, Err)
         assert isinstance(result.err_value, OSError)
 
-    def test_watchdog_config_validate_and_apply_invalid_without_error_callback_execution_success(
+    def test_watchdog_config_validate_and_apply_invalid_without_error_callback(
         self, tmp_path: Path
     ) -> None:
         """No crash when validation fails and on_validation_error is None."""
@@ -312,7 +312,7 @@ class TestConfigWatcher:
         result = watcher._validate_and_apply(f)
         assert isinstance(result, Err)
 
-    def test_watchdog_config_validate_and_apply_valid_without_change_callback_execution_success(
+    def test_watchdog_config_validate_and_apply_valid_without_change_callback(
         self, tmp_path: Path
     ) -> None:
         """No crash when config is valid and on_config_change is None."""
@@ -328,7 +328,7 @@ class TestConfigWatcher:
         assert isinstance(result, Ok)
 
 
-def test_watchdog_config_config_watcher_hash_err_branch_execution_success() -> None:
+def test_watchdog_config_config_watcher_hash_err_branch() -> None:
     from pydantic import BaseModel
 
     from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
@@ -351,7 +351,7 @@ def test_watchdog_config_config_watcher_hash_err_branch_execution_success() -> N
     watcher._detect_changes()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch_execution_success() -> (
+def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_callback_branch() -> (
     None
 ):
     import json
@@ -379,7 +379,7 @@ def test_watchdog_config_config_watcher_validate_and_apply_err_without_error_cal
     Path("test_bad_validate.json").unlink()
 
 
-def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch_execution_success() -> (
+def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_callback_branch() -> (
     None
 ):
     import json
@@ -408,7 +408,7 @@ def test_watchdog_config_config_watcher_validate_and_apply_ok_without_change_cal
 
 
 @pytest.mark.asyncio
-async def test_watchdog_config_config_watcher_change_detection_error_coverage_expected_execution_success() -> (
+async def test_watchdog_config_config_watcher_change_detection_error_coverage_expected() -> (
     None
 ):
     """Test config_watcher change detection error logging."""
@@ -435,7 +435,7 @@ async def test_watchdog_config_config_watcher_change_detection_error_coverage_ex
         )
 
 
-def test_watchdog_config_hash_file_too_large_execution_success(tmp_path: Path) -> None:
+def test_watchdog_config_hash_file_too_large(tmp_path: Path) -> None:
     f = tmp_path / "large.txt"
     f.write_text("a" * 10)
     from taipanstack.resilience.watchdogs.config_watcher import _hash_file
@@ -447,7 +447,7 @@ def test_watchdog_config_hash_file_too_large_execution_success(tmp_path: Path) -
     assert "exceeds max size" in str(result.err_value)
 
 
-def test_watchdog_config_load_file_too_large_execution_success(tmp_path: Path) -> None:
+def test_watchdog_config_load_file_too_large(tmp_path: Path) -> None:
     f = tmp_path / "large.json"
     f.write_text("{}")
     from taipanstack.resilience.watchdogs.config_watcher import _load_file_data

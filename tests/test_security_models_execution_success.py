@@ -12,7 +12,7 @@ from taipanstack.utils.logging import REDACTED_VALUE
 class TestSecureBaseModel:
     """Tests for the SecureBaseModel."""
 
-    def test_security_models_model_dump_masks_sensitive_fields_execution_success(
+    def test_security_models_model_dump_masks_sensitive_fields(
         self,
     ) -> None:
         """Test that model_dump redacts sensitive keys."""
@@ -36,7 +36,7 @@ class TestSecureBaseModel:
         assert dumped["secret_token"] == REDACTED_VALUE
         assert dumped["api_key"] == REDACTED_VALUE
 
-    def test_security_models_model_dump_json_masks_sensitive_fields_execution_success(
+    def test_security_models_model_dump_json_masks_sensitive_fields(
         self,
     ) -> None:
         """Test that model_dump_json redacts sensitive keys."""
@@ -52,7 +52,7 @@ class TestSecureBaseModel:
         assert parsed["app_name"] == "MyApp"
         assert parsed["db_password"] == REDACTED_VALUE
 
-    def test_security_models_nested_masking_execution_success(self) -> None:
+    def test_security_models_nested_masking(self) -> None:
         """Test masking works on nested models."""
 
         class DbConfig(BaseModel):
@@ -77,7 +77,7 @@ class TestSecureBaseModel:
         assert dumped["db"][0]["password"] == REDACTED_VALUE
         assert dumped["db"][1]["password"] == REDACTED_VALUE
 
-    def test_security_models_model_dump_json_with_indent_execution_success(
+    def test_security_models_model_dump_json_with_indent(
         self,
     ) -> None:
         """Test model_dump_json with indent."""
@@ -90,7 +90,7 @@ class TestSecureBaseModel:
         assert "{\n" in json_str
         assert REDACTED_VALUE in json_str
 
-    def test_security_models_str_and_repr_mask_sensitive_fields_execution_success(
+    def test_security_models_str_and_repr_mask_sensitive_fields(
         self,
     ) -> None:
         """Test that str() and repr() redact sensitive keys."""
@@ -112,7 +112,7 @@ class TestSecureBaseModel:
         assert "super_secret_password" not in user_repr
         assert REDACTED_VALUE in user_repr
 
-    def test_security_models_masking_disabled_when_no_regex_execution_success(
+    def test_security_models_masking_disabled_when_no_regex(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that data is returned verbatim when no regex is active."""
@@ -127,7 +127,7 @@ class TestSecureBaseModel:
         dumped = obj.model_dump()
         assert dumped["password"] == "will_not_be_masked"
 
-    def test_security_models_max_recursion_depth_execution_success(self) -> None:
+    def test_security_models_max_recursion_depth(self) -> None:
         from taipanstack.security.models import _mask_data
 
         data: dict[str, object] = {}
@@ -137,7 +137,7 @@ class TestSecureBaseModel:
             curr = curr["test"]  # type: ignore
         assert _mask_data(data)["test"] != {}
 
-    def test_security_models_collection_types_execution_success(self) -> None:
+    def test_security_models_collection_types(self) -> None:
         from taipanstack.security.models import _mask_set, _mask_tuple
 
         data_tuple = ("password", "12345")
@@ -145,7 +145,7 @@ class TestSecureBaseModel:
         _mask_tuple(data_tuple, 0)
         _mask_set(data_set, 0)
 
-    def test_security_models_collection_types_with_sensitive_keys_execution_success(self) -> None:
+    def test_security_models_collection_types_with_sensitive_keys(self) -> None:
         from taipanstack.security.models import _mask_data
 
         # Test tuple with dict inside that has sensitive keys

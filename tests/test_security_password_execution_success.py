@@ -5,7 +5,7 @@ from pydantic import SecretStr
 from taipanstack.security.password import hash_password, verify_password
 
 
-def test_security_password_hash_password_execution_success() -> None:
+def test_security_password_hash_password() -> None:
     """Test that hashing a password produces a valid-looking hash."""
     password = "secure_password"
     pwd_hash = hash_password(password)
@@ -13,7 +13,7 @@ def test_security_password_hash_password_execution_success() -> None:
     assert pwd_hash.startswith("$argon2")
 
 
-def test_security_password_hash_password_secret_str_execution_success() -> None:
+def test_security_password_hash_password_secret_str() -> None:
     """Test that hashing a SecretStr works correctly."""
     password = SecretStr("secure_password")
     pwd_hash = hash_password(password)
@@ -22,7 +22,7 @@ def test_security_password_hash_password_secret_str_execution_success() -> None:
     assert verify_password(password, pwd_hash)
 
 
-def test_security_password_verify_password_success_execution_success() -> None:
+def test_security_password_verify_password_success() -> None:
     """Test that a correct password verifies successfully."""
     password = "my_password"
     pwd_hash = hash_password(password)
@@ -31,7 +31,7 @@ def test_security_password_verify_password_success_execution_success() -> None:
     assert verify_password(SecretStr(password), pwd_hash) is True
 
 
-def test_security_password_verify_password_failure_execution_success() -> None:
+def test_security_password_verify_password_failure() -> None:
     """Test that an incorrect password fails verification."""
     password = "my_password"
     pwd_hash = hash_password(password)
@@ -39,7 +39,7 @@ def test_security_password_verify_password_failure_execution_success() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_password_invalid_hash_execution_success() -> None:
+def test_security_password_verify_password_invalid_hash() -> None:
     """Test that invalid hash formats are handled gracefully."""
     password = "my_password"
 
@@ -60,7 +60,7 @@ def test_security_password_verify_password_invalid_hash_execution_success() -> N
     )  # Invalid parts length
 
 
-def test_security_password_verify_legacy_password_execution_success() -> None:
+def test_security_password_verify_legacy_password() -> None:
     """Test that legacy PBKDF2 hashes are still verifiable."""
     password = "my_password"
     # This is a pre-generated PBKDF2 hash of "my_password"
@@ -83,7 +83,7 @@ def test_security_password_verify_legacy_password_execution_success() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_legacy_password_too_many_iterations_execution_success() -> None:
+def test_security_password_verify_legacy_password_too_many_iterations() -> None:
     """Test that legacy PBKDF2 hashes with too many iterations are rejected."""
     password = "my_password"
     salt = b"1234567890123456"
@@ -94,7 +94,7 @@ def test_security_password_verify_legacy_password_too_many_iterations_execution_
     assert verify_password(password, pwd_hash) is False
 
 
-def test_security_password_hash_password_is_random_execution_success() -> None:
+def test_security_password_hash_password_is_random() -> None:
     """Test that hashing the same password twice produces different hashes due to salt."""
     password = "my_password"
     hash1 = hash_password(password)
@@ -105,7 +105,7 @@ def test_security_password_hash_password_is_random_execution_success() -> None:
     assert verify_password(password, hash2) is True
 
 
-def test_security_password_verify_password_invalid_type_password_execution_success() -> None:
+def test_security_password_verify_password_invalid_type_password() -> None:
     """Test that an invalid type for password raises a TypeError."""
     import pytest
 
@@ -115,7 +115,7 @@ def test_security_password_verify_password_invalid_type_password_execution_succe
         verify_password(123, pwd_hash)  # type: ignore[arg-type]
 
 
-def test_security_password_verify_password_invalid_type_hash_execution_success() -> None:
+def test_security_password_verify_password_invalid_type_hash() -> None:
     """Test that an invalid type for password_hash raises a TypeError."""
     import pytest
 
@@ -123,19 +123,19 @@ def test_security_password_verify_password_invalid_type_hash_execution_success()
         verify_password("my_password", 123)  # type: ignore[arg-type]
 
 
-def test_security_password_verify_password_empty_execution_success() -> None:
+def test_security_password_verify_password_empty() -> None:
     """Test that verifying an empty password returns False."""
     assert verify_password("", "hash") is False
     assert verify_password(SecretStr(""), "hash") is False
 
 
-def test_security_password_verify_password_too_long_execution_success() -> None:
+def test_security_password_verify_password_too_long() -> None:
     """Test that verifying a too long password returns False."""
     assert verify_password("a" * 1025, "hash") is False
     assert verify_password(SecretStr("a" * 1025), "hash") is False
 
 
-def test_security_password_hash_password_empty_execution_success() -> None:
+def test_security_password_hash_password_empty() -> None:
     """Test that hashing an empty password raises ValueError."""
     import pytest
 
@@ -143,7 +143,7 @@ def test_security_password_hash_password_empty_execution_success() -> None:
         hash_password("")
 
 
-def test_security_password_hash_password_too_long_execution_success() -> None:
+def test_security_password_hash_password_too_long() -> None:
     """Test that hashing a too long password raises ValueError."""
     import pytest
 
