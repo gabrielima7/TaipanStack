@@ -24,14 +24,17 @@ orchestrator = (
     .with_timeout(2.0)
 )
 
+
 async def async_create_user(user_data: UserCreate) -> Result:
     # Simulate async network call to db
     await asyncio.sleep(0.001)
     return service.create_user(user_data)
 
+
 @pytest.mark.asyncio
 async def test_app_chaos_orchestrator_resilience_ok():
     """Simulates thundering herd of valid and invalid user creations."""
+
     async def worker(i):
         # Generate some valid and invalid data
         username = f"user_{i}"
