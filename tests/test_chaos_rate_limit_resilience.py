@@ -1,8 +1,10 @@
-import pytest
 import time
-import asyncio
-from taipanstack.utils.rate_limit import RateLimiter, rate_limit, RateLimitError
-from taipanstack.core.result import Err, Ok
+
+import pytest
+
+from taipanstack.core.result import Err
+from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
+
 
 def test_chaos_rate_limit_time_goes_backwards():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
@@ -15,7 +17,7 @@ def test_chaos_rate_limit_time_goes_backwards():
 def test_chaos_rate_limit_time_nan():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
     assert limiter.consume() is True
-    limiter.last_update = float('nan')
+    limiter.last_update = float("nan")
     res = limiter.consume()
     assert isinstance(res, bool)
 
@@ -63,13 +65,13 @@ def test_chaos_rate_limit_state_corruption():
 
 def test_chaos_rate_limit_time_window_nan():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
-    limiter.time_window = float('nan')
+    limiter.time_window = float("nan")
     res = limiter.consume()
     assert isinstance(res, bool)
 
 def test_chaos_rate_limit_capacity_nan():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
-    limiter.capacity = float('nan')
+    limiter.capacity = float("nan")
     res = limiter.consume()
     assert isinstance(res, bool)
 
@@ -85,15 +87,15 @@ def test_chaos_rate_limit_token_type_negative():
 
 def test_chaos_rate_limit_token_amount_nan():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
-    res = limiter.consume(float('nan'))
+    res = limiter.consume(float("nan"))
     assert res is False
 
 def test_chaos_rate_limit_initialization_nan():
     with pytest.raises(ValueError, match="must be finite numbers"):
-        RateLimiter(max_calls=float('nan'), time_window=1.0)
+        RateLimiter(max_calls=float("nan"), time_window=1.0)
 
     with pytest.raises(ValueError, match="must be finite numbers"):
-        RateLimiter(max_calls=1, time_window=float('nan'))
+        RateLimiter(max_calls=1, time_window=float("nan"))
 
 def test_chaos_rate_limit_initialization_negative():
     with pytest.raises(ValueError, match="must be > 0.0"):
@@ -114,15 +116,15 @@ def test_chaos_rate_limit_validate_init_type_mutation():
 
 def test_chaos_rate_limit_validate_init_params_mutation():
     with pytest.raises(ValueError, match="must be finite numbers"):
-        RateLimiter(max_calls=float('inf'), time_window=1.0)
+        RateLimiter(max_calls=float("inf"), time_window=1.0)
 
     with pytest.raises(ValueError, match="must be finite numbers"):
-        RateLimiter(max_calls=1, time_window=float('inf'))
+        RateLimiter(max_calls=1, time_window=float("inf"))
 
 def test_chaos_rate_limit_elapsed_time_infinity():
     limiter = RateLimiter(max_calls=1, time_window=1.0)
     def mock_time():
-        return float('inf')
+        return float("inf")
     limiter._get_current_time = mock_time
     res = limiter.consume()
     assert isinstance(res, bool)
@@ -136,7 +138,7 @@ def test_chaos_rate_limit_validate_add_tokens_mutation():
     assert isinstance(res, bool)
 
     def mock_time_nan():
-        return float('nan')
+        return float("nan")
     limiter._get_current_time = mock_time_nan
     res = limiter.consume()
     assert isinstance(res, bool)
@@ -150,7 +152,7 @@ def test_chaos_rate_limit_validate_add_tokens_null():
     assert isinstance(res, bool)
 
     def mock_time_inf():
-        return float('inf')
+        return float("inf")
     limiter._get_current_time = mock_time_inf
     res = limiter.consume()
     assert isinstance(res, bool)

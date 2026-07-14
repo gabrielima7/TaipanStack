@@ -1,7 +1,9 @@
+
 import pytest
-import asyncio
-from taipanstack.utils.rate_limit import RateLimiter, rate_limit, RateLimitError
-from taipanstack.core.result import Err, Ok
+
+from taipanstack.core.result import Err
+from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
+
 
 def test_chaos_rate_limit_decorator_exception():
     @rate_limit(max_calls=1, time_window=1.0)
