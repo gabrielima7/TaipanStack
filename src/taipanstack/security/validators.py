@@ -270,7 +270,11 @@ def _check_email_basics(email: str) -> None:
         msg = "Email length exceeds maximum allowed"
         raise ValueError(msg)
 
-    if "\x00" in email or not email.isprintable():
+    if (
+        "\x00" in email
+        or any(c <= "\x20" or c == "\x7f" for c in email)
+        or not email.isprintable()
+    ):
         msg = "Email contains invalid characters"
         raise ValueError(msg)
 
