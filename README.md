@@ -72,7 +72,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 
 ### 🔧 Developer Experience
 - Pre-configured quality tools
-- **100% code coverage** (1,430 tests)
+- **100% code coverage** (comprehensive test suite)
 - Architecture enforcement
 - Hardened Docker template
 
@@ -114,7 +114,7 @@ make all
 ### Verify Installation
 
 ```bash
-# Run tests with 100% coverage (1,430 tests)
+# Run tests with 100% coverage (comprehensive test suite)
 make test
 
 # Check architecture contracts
@@ -169,7 +169,7 @@ TaipanStack/
 │       ├── resilience/   # 🌊 Reliability patterns (circuit breakers, retries, watchdogs)
 │       ├── security/     # 🛡️ Guards, sanitizers, validators
 │       └── utils/        # 🔧 Cross-cutting utilities (logging, cache, filesystem)
-├── tests/                # ✅ 1,430 tests, 100% coverage
+├── tests/                # ✅ comprehensive test suite, 100% coverage
 ├── .semgrep/             # 🔍 Custom SAST rules
 ├── .github/              # 🔄 CI/CD + SBOM/SLSA workflows
 ├── Dockerfile            # 🐳 Hardened multi-stage container
