@@ -160,7 +160,11 @@ class RetryError(Exception):
 
 def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     """Calculate base delay with exponential backoff."""
-    safe_attempt = max(1, attempt)
+    try:
+        safe_attempt = max(1, attempt)
+    except TypeError:
+        safe_attempt = 1
+
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
         if not math.isfinite(delay):
