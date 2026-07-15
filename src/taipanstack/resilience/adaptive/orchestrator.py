@@ -360,7 +360,6 @@ class ResilienceOrchestrator(Generic[T]):
         """Process a single retry attempt including circuit breaker check."""
         cb_res = self._check_circuit_breaker_for_attempt(attempt)
         if cb_res is not None:
-
             if isinstance(cb_res, Err):
                 return False, cb_res.err_value
             return cb_res
