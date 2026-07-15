@@ -7,7 +7,7 @@ import pytest
 from app.main import greet, main
 
 
-def test_main_greet() -> None:
+def test_main_greet_returns_hello_string() -> None:
     """Test greet function returns expected format."""
     assert greet("Alice") == "Hello, Alice!"
 
