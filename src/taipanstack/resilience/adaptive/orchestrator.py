@@ -320,11 +320,11 @@ class ResilienceOrchestrator(Generic[T]):
         self,
         cb_err: Err[Exception],
         attempt: int,
-    ) -> Result[T, Exception] | Exception:
+    ) -> Result[T, Exception]:
         """Handle circuit breaker evaluation logic."""
         if attempt == 1:
             return self._apply_fallback(cb_err)
-        return cb_err.err_value
+        return cb_err
 
     async def _execute_single_attempt(
         self,
@@ -342,7 +342,7 @@ class ResilienceOrchestrator(Generic[T]):
     def _check_circuit_breaker_for_attempt(
         self,
         attempt: int,
-    ) -> Result[T, Exception] | Exception | None:
+    ) -> Result[T, Exception] | None:
         """Evaluate circuit breaker for the current attempt."""
         cb_err = self._evaluate_circuit_breaker()
         if cb_err is not None:
@@ -360,8 +360,9 @@ class ResilienceOrchestrator(Generic[T]):
         """Process a single retry attempt including circuit breaker check."""
         cb_res = self._check_circuit_breaker_for_attempt(attempt)
         if cb_res is not None:
-            if isinstance(cb_res, Exception):
-                return False, cb_res
+
+            if isinstance(cb_res, Err):
+                return False, cb_res.err_value
             return cb_res
 
         result = await self._execute_single_attempt(attempt, fn, *args, **kwargs)
