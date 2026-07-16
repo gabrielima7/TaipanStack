@@ -7,6 +7,7 @@ watchdog tasks running on the asyncio event loop.
 
 import asyncio
 import logging
+import math
 from abc import ABC, abstractmethod
 
 from taipanstack.core.result import Err, Ok, Result
@@ -39,6 +40,8 @@ class BaseWatcher(ABC):
             interval: Seconds between each poll cycle.
 
         """
+        if not math.isfinite(interval) or interval <= 0:
+            raise ValueError("interval must be a finite positive number")
         self._interval = interval
         self._stop_event: asyncio.Event = asyncio.Event()
         self._task: asyncio.Task[None] | None = None

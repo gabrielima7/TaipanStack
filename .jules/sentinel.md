@@ -81,3 +81,8 @@
 **Vulnerability:** The URL validation guard (`_check_url_characters` in `src/taipanstack/security/validators.py`) previously failed to account for URL-encoded control characters (e.g., `%00` or `%20`). By injecting these characters, attackers could bypass the initial check, potentially leading to HTTP Request Smuggling or SSRF if downstream components unquoted the URL before processing.
 **Learning:** Simply checking the raw URL string for ASCII control characters (`<= '\x20'` and `'\x7f'`) is insufficient because attackers can obfuscate these characters using URL encoding (`%XX`).
 **Prevention:** Always validate both the raw URL string and its `unquote`d variant to ensure no control characters exist in either representation.
+
+## 2026-07-16 - [Fix] Missing isfinite Check for Watchdog Parameters
+**Vulnerability:** The watchdog classes (`BaseWatcher`, `ConfigWatcher`, `HealthPinger`, `ResourceWatcher`) in `src/taipanstack/resilience/watchdogs/` lacked explicit bounds and `math.isfinite` validation for numerical parameters such as `interval`, `cpu_threshold`, and `memory_threshold`. Supplying non-finite values (like `float('inf')` or `float('NaN')`) or negative numbers could silently bypass intended constraints or propagate `ValueError` from lower-level async primitives, leading to potential DoS or logic bugs.
+**Learning:** Even internal watchdog loops must rigorously validate their configuration bounds upon initialization. Without `math.isfinite()` and explicit bounds checking, configuration errors can lead to infinite loops or unexpected asynchronous task behavior.
+**Prevention:** Always validate all numerical timeout and interval parameters with `math.isfinite` and proper bounds checks (e.g., `> 0` or `>= 0`) upon initialization.
