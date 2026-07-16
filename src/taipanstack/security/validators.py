@@ -260,6 +260,20 @@ def validate_python_version(version: str) -> str:
     return version
 
 
+def _has_control_chars(text: str) -> bool:
+    """Check if string contains control characters."""
+    return any(c <= "\x20" or c == "\x7f" for c in text)
+
+
+def _has_invalid_chars(text: str) -> bool:
+    """Check if string contains any invalid characters."""
+    if "\x00" in text:
+        return True
+    if not text.isprintable():
+        return True
+    return _has_control_chars(text)
+
+
 def _check_email_basics(email: str) -> None:
     """Check basic email constraints like empty, length and invalid characters."""
     if not email:
@@ -270,11 +284,7 @@ def _check_email_basics(email: str) -> None:
         msg = "Email length exceeds maximum allowed"
         raise ValueError(msg)
 
-    if (
-        "\x00" in email
-        or any(c <= "\x20" or c == "\x7f" for c in email)
-        or not email.isprintable()
-    ):
+    if _has_invalid_chars(email):
         msg = "Email contains invalid characters"
         raise ValueError(msg)
 
@@ -338,9 +348,7 @@ def _check_url_length(url: str) -> None:
 
 
 def _has_invalid_url_chars(url: str) -> bool:
-    if any(c <= "\x20" or c == "\x7f" for c in url):
-        return True
-    return bool("\x00" in url or not url.isprintable())
+    return _has_invalid_chars(url)
 
 
 def _check_url_characters(url: str) -> None:
