@@ -8,6 +8,7 @@ and validates new content via Pydantic before applying changes.
 import hashlib
 import json
 import logging
+import math
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
@@ -210,6 +211,8 @@ class ConfigWatcher(BaseWatcher):
             on_validation_error: Callback for validation failures.
 
         """
+        if not math.isfinite(interval) or interval <= 0:
+            raise ValueError("interval must be a finite positive number")
         super().__init__(interval=interval)
         self._config_paths = list(config_paths)
         self._config_model = config_model

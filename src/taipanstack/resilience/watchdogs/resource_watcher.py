@@ -6,6 +6,7 @@ so the application can react (e.g. tighten rate limits).
 """
 
 import logging
+import math
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -106,6 +107,12 @@ class ResourceWatcher(BaseWatcher):
             on_threshold_breach: Optional breach callback.
 
         """
+        if not math.isfinite(interval) or interval <= 0:
+            raise ValueError("interval must be a finite positive number")
+        if not math.isfinite(cpu_threshold) or cpu_threshold < 0:
+            raise ValueError("cpu_threshold must be a finite non-negative number")
+        if not math.isfinite(memory_threshold) or memory_threshold < 0:
+            raise ValueError("memory_threshold must be a finite non-negative number")
         super().__init__(interval=interval)
         self._cpu_threshold = cpu_threshold
         self._memory_threshold = memory_threshold

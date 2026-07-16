@@ -8,6 +8,7 @@ preventively.
 
 import asyncio
 import logging
+import math
 from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
 
@@ -120,6 +121,8 @@ class HealthPinger(BaseWatcher):
             on_health_change: Optional callback on status change.
 
         """
+        if not math.isfinite(interval) or interval <= 0:
+            raise ValueError("interval must be a finite positive number")
         super().__init__(interval=interval)
         self._targets = list(targets)
         self._on_health_change = on_health_change
