@@ -6,7 +6,9 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import timeout
 
 
-def test_chaos_resilience_timeout_type_mutation_chaos_resilience_timeout_type_mutation() -> None:
+def test_chaos_resilience_timeout_type_mutation_chaos_resilience_timeout_type_mutation() -> (
+    None
+):
     """Simulate a severe production failure where timeout 'seconds' is corrupted to a string."""
 
     @timeout(cast(float, "1.0"))

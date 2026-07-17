@@ -139,13 +139,17 @@ class TestGetOptimizationProfile:
 class TestApplyOptimizations:
     """Test apply_optimizations function."""
 
-    def test_optimizations_standard_optimizations_apply_default_optimizations(self) -> None:
+    def test_optimizations_standard_optimizations_apply_default_optimizations(
+        self,
+    ) -> None:
         """Test applying default optimizations."""
         result = apply_optimizations()
         assert isinstance(result, OptimizationResult)
         assert result.success
 
-    def test_optimizations_standard_optimizations_apply_with_custom_profile(self) -> None:
+    def test_optimizations_standard_optimizations_apply_with_custom_profile(
+        self,
+    ) -> None:
         """Test applying optimizations with custom profile."""
         custom_profile = OptimizationProfile(
             gc_threshold_0=999,
@@ -170,26 +174,34 @@ class TestApplyOptimizations:
         result = apply_optimizations(freeze_after=True)
         assert result.success
 
-    def test_optimizations_standard_optimizations_apply_experimental_enabled(self) -> None:
+    def test_optimizations_standard_optimizations_apply_experimental_enabled(
+        self,
+    ) -> None:
         """Test experimental features logged when enabled."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             profile = OptimizationProfile(enable_experimental=True)
             result = apply_optimizations(profile=profile)
             assert result.success
 
-    def test_optimizations_standard_optimizations_apply_experimental_disabled(self) -> None:
+    def test_optimizations_standard_optimizations_apply_experimental_disabled(
+        self,
+    ) -> None:
         """Test experimental features skipped when disabled."""
         profile = OptimizationProfile(enable_experimental=False)
         result = apply_optimizations(profile=profile)
         assert any("experimental" in s for s in result.skipped)
 
-    def test_optimizations_standard_optimizations_apply_perf_hints_enabled(self) -> None:
+    def test_optimizations_standard_optimizations_apply_perf_hints_enabled(
+        self,
+    ) -> None:
         """Test performance hints reported when enabled."""
         profile = OptimizationProfile(enable_perf_hints=True)
         result = apply_optimizations(profile=profile)
         assert any("perf_hints: enabled" in s for s in result.applied)
 
-    def test_optimizations_standard_optimizations_apply_perf_hints_disabled(self) -> None:
+    def test_optimizations_standard_optimizations_apply_perf_hints_disabled(
+        self,
+    ) -> None:
         """Test performance hints skipped when disabled."""
         profile = OptimizationProfile(enable_perf_hints=False)
         result = apply_optimizations(profile=profile)
@@ -237,7 +249,9 @@ class TestUtilityFunctions:
             # Should default to 4 CPUs
             assert size >= 4
 
-    def test_optimizations_standard_optimizations_optimization_profile_cached(self) -> None:
+    def test_optimizations_standard_optimizations_optimization_profile_cached(
+        self,
+    ) -> None:
         """Test get_optimization_profile is cached."""
         with patch.dict(
             os.environ,
