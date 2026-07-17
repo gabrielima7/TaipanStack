@@ -160,7 +160,7 @@ max-complexity = 10
 # TaipanStack bootstrapper: allow print, long lines, complex branches, docstring style, unused args
 "taipanstack_bootstrapper.py" = ["T201", "E501", "PLR0912", "TRY300", "S603", "D205", "ARG001"]
 # Utils: allow too many args, subprocess, random for jitter
-"src/taipanstack/utils/*.py" = ["PLR0913", "S603", "TRY300", "S311", "TRY400"]
+"src/taipanstack/utils/*.py" = ["PLR0913", "S603", "TRY300", "S311", "TRY400", "PLR0915"]
 # Config generators: allow long lines in generated content
 "src/taipanstack/config/generators.py" = ["E501"]
 # Sanitizers: allow many branches for complex validation logic
