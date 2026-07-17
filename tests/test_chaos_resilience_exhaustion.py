@@ -16,7 +16,10 @@ def test_sync_timeout_thread_start_generic_exhaustion():
     with patch("threading.Thread.start", side_effect=Exception("OS thread error")):
         res = my_func()
         assert isinstance(res, Err)
-        assert "Thread exhaustion" in str(res.unwrap_err()) or "OS thread error" in str(res.unwrap_err())
+        assert "Thread exhaustion" in str(res.unwrap_err()) or "OS thread error" in str(
+            res.unwrap_err()
+        )
+
 
 def test_sync_timeout_thread_start_system_exit():
     @timeout(1.0)
@@ -27,6 +30,7 @@ def test_sync_timeout_thread_start_system_exit():
         with pytest.raises(SystemExit):
             my_func()
 
+
 @pytest.mark.asyncio
 async def test_async_timeout_wait_for_generic_exhaustion():
     @timeout(1.0)
@@ -36,7 +40,10 @@ async def test_async_timeout_wait_for_generic_exhaustion():
     with patch("asyncio.wait_for", side_effect=Exception("mocked task exhaustion")):
         res = await my_func()
         assert isinstance(res, Err)
-        assert "Task exhaustion" in str(res.unwrap_err()) or "mocked task exhaustion" in str(res.unwrap_err())
+        assert "Task exhaustion" in str(
+            res.unwrap_err()
+        ) or "mocked task exhaustion" in str(res.unwrap_err())
+
 
 @pytest.mark.asyncio
 async def test_async_timeout_wait_for_cancelled_error():
@@ -61,6 +68,7 @@ def test_sync_retry_sleep_generic_exhaustion():
         assert hasattr(exc_info.value, "last_exception")
         assert "mocked sleep failure" in str(exc_info.value.last_exception)
 
+
 def test_sync_retry_sleep_system_exit():
     @retry(max_attempts=3, initial_delay=0.1)
     def my_func():
@@ -69,6 +77,7 @@ def test_sync_retry_sleep_system_exit():
     with patch("time.sleep", side_effect=SystemExit(1)):
         with pytest.raises(SystemExit):
             my_func()
+
 
 @pytest.mark.asyncio
 async def test_async_retry_sleep_generic_exhaustion():

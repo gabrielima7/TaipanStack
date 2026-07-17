@@ -14,12 +14,14 @@ def test_retrier_sleep_exhaustion_keyboard_interrupt():
             with retrier:
                 raise ValueError("Oops")
 
+
 def test_retrier_sleep_exhaustion_generic():
     retrier = Retrier(max_attempts=3, on=(ValueError,))
     with patch("time.sleep", side_effect=Exception("mock sleep error")):
         with pytest.raises(ValueError):
             with retrier:
                 raise ValueError("Oops")
+
 
 @pytest.mark.asyncio
 async def test_timeout_wait_for_keyboard_interrupt():
@@ -30,6 +32,7 @@ async def test_timeout_wait_for_keyboard_interrupt():
     with patch("asyncio.wait_for", side_effect=KeyboardInterrupt()):
         with pytest.raises(KeyboardInterrupt):
             await my_func()
+
 
 @pytest.mark.asyncio
 async def test_retry_async_sleep_keyboard_interrupt():
