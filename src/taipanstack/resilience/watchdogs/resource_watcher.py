@@ -41,6 +41,18 @@ class ResourceSnapshot:
     timestamp: float
 
 
+def _validate_interval(interval: float) -> None:
+    """Validate interval parameter."""
+    if not math.isfinite(interval) or interval <= 0:
+        raise ValueError("interval must be a finite positive number")
+
+
+def _validate_threshold(name: str, value: float) -> None:
+    """Validate a threshold parameter."""
+    if not math.isfinite(value) or value < 0:
+        raise ValueError(f"{name} must be a finite non-negative number")
+
+
 def check_resources() -> Result[ResourceSnapshot, Exception]:
     """Take a one-shot resource reading.
 
@@ -107,12 +119,10 @@ class ResourceWatcher(BaseWatcher):
             on_threshold_breach: Optional breach callback.
 
         """
-        if not math.isfinite(interval) or interval <= 0:
-            raise ValueError("interval must be a finite positive number")
-        if not math.isfinite(cpu_threshold) or cpu_threshold < 0:
-            raise ValueError("cpu_threshold must be a finite non-negative number")
-        if not math.isfinite(memory_threshold) or memory_threshold < 0:
-            raise ValueError("memory_threshold must be a finite non-negative number")
+        _validate_interval(interval)
+        _validate_threshold("cpu_threshold", cpu_threshold)
+        _validate_threshold("memory_threshold", memory_threshold)
+
         super().__init__(interval=interval)
         self._cpu_threshold = cpu_threshold
         self._memory_threshold = memory_threshold

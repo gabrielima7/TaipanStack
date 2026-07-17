@@ -39,12 +39,24 @@ class RateLimitError(Exception):
 class RateLimiter:
     """Token bucket rate limiter logic."""
 
+    def _validate_finite(self, max_calls: int, time_window: float) -> None:
+        """Check if parameters are finite numbers."""
+        if not math.isfinite(max_calls):
+            raise ValueError("max_calls and time_window must be finite numbers")
+        if not math.isfinite(time_window):
+            raise ValueError("max_calls and time_window must be finite numbers")
+
+    def _validate_positive(self, max_calls: int, time_window: float) -> None:
+        """Check if parameters are positive."""
+        if max_calls <= 0:
+            raise ValueError("max_calls and time_window must be > 0.0")
+        if time_window <= 0:
+            raise ValueError("max_calls and time_window must be > 0.0")
+
     def _validate_init_params(self, max_calls: int, time_window: float) -> None:
         """Validate initialization parameters."""
-        if not math.isfinite(max_calls) or not math.isfinite(time_window):
-            raise ValueError("max_calls and time_window must be finite numbers")
-        if max_calls <= 0 or time_window <= 0:
-            raise ValueError("max_calls and time_window must be > 0.0")
+        self._validate_finite(max_calls, time_window)
+        self._validate_positive(max_calls, time_window)
 
     def __init__(self, max_calls: int, time_window: float) -> None:
         """Initialize the token bucket.
