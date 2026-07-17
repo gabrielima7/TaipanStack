@@ -30,7 +30,9 @@ async def test_chaos_fallback_exceptions_tuple_mutation_async() -> None:
         await async_dummy()
 
 
-def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_sync_result() -> None:
+def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_sync_result() -> (
+    None
+):
     """Simulate type corruption where exceptions parameter is mutated, but function returns Ok."""
 
     @fallback("fallback", exceptions=cast(tuple, "string_mutation"))
