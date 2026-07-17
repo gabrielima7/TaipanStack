@@ -93,7 +93,7 @@ TaipanStack/
 │           ├── rate_limit.py      #    Rate limiters
 │           ├── concurrency.py     #    Async utilities
 │           └── subprocess.py      #    Sandboxed subprocess execution
-├── tests/                    # ✅ 1,344 tests, 100% coverage
+├── tests/                    # ✅ comprehensive test suite, 100% coverage
 │   ├── test_property_sanitizers_standard.py # Hypothesis fuzzing
 │   └── test_v034_async_retry_circuit.py # Async tests for retry and circuit breaker
 ├── docs/                     # 📖 MkDocs Material documentation
