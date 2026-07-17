@@ -145,7 +145,7 @@ class TestBulkhead:
         assert isinstance(result, Ok)
         assert result.ok_value == 7
 
-    def test_bulkhead_full_error(self) -> None:
+    def test_bulkhead_standard_bulkhead_full_error(self) -> None:
         """BulkheadFullError contains metadata."""
         err = BulkheadFullError("api", 10, 50)
         assert err.bulkhead_name == "api"

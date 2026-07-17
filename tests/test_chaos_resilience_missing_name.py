@@ -17,7 +17,7 @@ async def async_func(x: int) -> int:
     return x
 
 
-def test_chaos_resilience_missing_name_sync() -> None:
+def test_chaos_resilience_missing_name_sync_expected() -> None:
     partial_func = functools.partial(sync_func, 1)
 
     cb_func = circuit_breaker()(partial_func)

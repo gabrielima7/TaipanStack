@@ -116,7 +116,7 @@ async def test_complex_microservice_simulation_orchestrator_exception_coverage()
         assert isinstance(res_no_bh.err_value, RuntimeError)
 
 
-def test_complex_microservice_simulation_filesystem_base_exception_leak(
+def test_simulation_chaos_healing_complex_microservice_simulation_filesystem_base_exception_leak(
     tmp_path,
 ) -> None:
     import unittest.mock

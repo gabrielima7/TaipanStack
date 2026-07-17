@@ -17,7 +17,7 @@ from taipanstack.security.sanitizers import sanitize_filename
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_sanitize_filename_malformed_replacement(
+def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_replacement(
     replacement,
 ) -> None:
     """Bombard sanitize_filename with extreme, malformed replacement types."""
@@ -37,7 +37,7 @@ def test_fuzz_sanitize_filename_malformed_replacement(
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_sanitize_filename_malformed_preserve_extension(
+def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_preserve_extension(
     preserve_extension,
 ) -> None:
     """Bombard sanitize_filename with extreme, malformed preserve_extension types."""
@@ -58,7 +58,7 @@ def test_fuzz_sanitize_filename_malformed_preserve_extension(
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_sanitize_filename_malformed_max_length(
+def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_max_length(
     max_length,
 ) -> None:
     """Bombard sanitize_filename with extreme, malformed max_length types."""
