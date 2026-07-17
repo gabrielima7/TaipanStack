@@ -400,7 +400,7 @@ class TestCircuitBreakerError:
         error = CircuitBreakerError("test", CircuitState.OPEN)
         assert error.state == CircuitState.OPEN
 
-    def test_utils_circuit_breaker_message(self) -> None:
+    def test_utils_circuit_breaker_message_expected(self) -> None:
         """Test error message."""
         error = CircuitBreakerError("Circuit is open", CircuitState.OPEN)
         assert "Circuit is open" in str(error)

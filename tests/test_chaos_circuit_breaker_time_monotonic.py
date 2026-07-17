@@ -4,7 +4,7 @@ from unittest import mock
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_circuit_breaker_time_monotonic_exception_update_metrics():
+def test_chaos_circuit_breaker_time_monotonic_circuit_breaker_time_monotonic_exception_update_metrics():
     # Setup
     breaker = CircuitBreaker(failure_threshold=5)
     breaker._state.state = CircuitState.CLOSED
@@ -19,7 +19,7 @@ def test_circuit_breaker_time_monotonic_exception_update_metrics():
     assert breaker._state.failure_count == 5
 
 
-def test_circuit_breaker_time_monotonic_exception_handle_open():
+def test_chaos_circuit_breaker_time_monotonic_circuit_breaker_time_monotonic_exception_handle_open():
     # Setup
     breaker = CircuitBreaker(timeout=1.0)
     breaker._state.state = CircuitState.OPEN

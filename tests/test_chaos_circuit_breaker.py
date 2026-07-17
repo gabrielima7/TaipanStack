@@ -7,7 +7,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_circuit_breaker_chaos_time_and_timeout_corruption():
+def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption():
     breaker = CircuitBreaker(failure_threshold=1)
 
     # Simulate a failure to open the circuit

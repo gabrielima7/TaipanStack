@@ -46,7 +46,7 @@ class TestRetryConfig:
         assert config.initial_delay == 0.5
         assert config.max_delay == 30.0
 
-    def test_utils_retry_frozen(self) -> None:
+    def test_utils_retry_frozen_expected(self) -> None:
         """Test that config is immutable."""
         config = RetryConfig()
         with pytest.raises(AttributeError):
@@ -503,7 +503,7 @@ class TestRetryError:
         error = RetryError("Failed", attempts=3, last_exception=original)
         assert error.last_exception is original
 
-    def test_utils_retry_message(self) -> None:
+    def test_utils_retry_message_expected(self) -> None:
         """Test RetryError message."""
         error = RetryError("All attempts failed", attempts=3)
         assert "All attempts failed" in str(error)
