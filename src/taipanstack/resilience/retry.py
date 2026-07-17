@@ -489,7 +489,15 @@ def retry(
                         )
                         if not should_retry:
                             break
-                        await asyncio.sleep(min(delay, 3600.0))
+                        try:
+                            await asyncio.sleep(min(delay, 3600.0))
+                        except asyncio.CancelledError:
+                            raise
+                        except BaseException as sleep_e:
+                            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt)):
+                                raise
+                            last_exception = sleep_e
+                            break
 
                 if last_result is not None and isinstance(last_result, Err):
                     return cast(R, last_result)
@@ -529,7 +537,13 @@ def retry(
                     )
                     if not should_retry:
                         break
-                    time.sleep(min(delay, 3600.0))
+                    try:
+                        time.sleep(min(delay, 3600.0))
+                    except BaseException as sleep_e:
+                        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt)):
+                            raise
+                        last_exception = sleep_e
+                        break
 
             if last_result is not None and isinstance(last_result, Err):
                 return cast(R, last_result)
@@ -669,6 +683,12 @@ class Retrier:
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        time.sleep(min(delay, 3600.0))
+        try:
+            time.sleep(min(delay, 3600.0))
+        except BaseException as sleep_e:
+            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt)):
+                raise
+            # If sleep fails, we cannot retry properly, let original exception propagate
+            return False
 
         return True  # Suppress exception and retry

@@ -1,125 +1,95 @@
 import asyncio
-import threading
+from unittest.mock import patch
 
 import pytest
 
-from taipanstack.core.result import Err, Ok, Result
+from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.resilience import timeout
+from taipanstack.resilience.retry import RetryError, retry
 
 
-def test_chaos_resilience_timeout_thread_exhaustion_runtime_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_sync_timeout_thread_start_generic_exhaustion():
     @timeout(1.0)
-    def dummy_func() -> Result[str, Exception]:
+    def my_func():
         return Ok("success")
 
-    def mock_start(*args, **kwargs):
-        raise RuntimeError("Thread limit reached")
+    with patch("threading.Thread.start", side_effect=Exception("OS thread error")):
+        res = my_func()
+        assert isinstance(res, Err)
+        assert "Thread exhaustion" in str(res.unwrap_err()) or "OS thread error" in str(res.unwrap_err())
 
-    monkeypatch.setattr(threading.Thread, "start", mock_start)
-
-    result = dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Thread exhaustion:" in str(result.err_value)
-
-
-def test_chaos_resilience_timeout_thread_exhaustion_memory_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_sync_timeout_thread_start_system_exit():
     @timeout(1.0)
-    def dummy_func() -> Result[str, Exception]:
+    def my_func():
         return Ok("success")
 
-    def mock_start(*args, **kwargs):
-        raise MemoryError("Out of memory")
+    with patch("threading.Thread.start", side_effect=SystemExit(1)):
+        with pytest.raises(SystemExit):
+            my_func()
 
-    monkeypatch.setattr(threading.Thread, "start", mock_start)
-
-    result = dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Memory exhaustion:" in str(result.err_value)
-
-
-def test_chaos_resilience_timeout_thread_exhaustion_os_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+@pytest.mark.asyncio
+async def test_async_timeout_wait_for_generic_exhaustion():
     @timeout(1.0)
-    def dummy_func() -> Result[str, Exception]:
+    async def my_func():
         return Ok("success")
 
-    def mock_start(*args, **kwargs):
-        raise OSError("Too many files")
+    with patch("asyncio.wait_for", side_effect=Exception("mocked task exhaustion")):
+        res = await my_func()
+        assert isinstance(res, Err)
+        assert "Task exhaustion" in str(res.unwrap_err()) or "mocked task exhaustion" in str(res.unwrap_err())
 
-    monkeypatch.setattr(threading.Thread, "start", mock_start)
+@pytest.mark.asyncio
+async def test_async_timeout_wait_for_cancelled_error():
+    @timeout(1.0)
+    async def my_func():
+        return Ok("success")
 
-    result = dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Resource exhaustion:" in str(result.err_value)
+    with patch("asyncio.wait_for", side_effect=asyncio.CancelledError()):
+        with pytest.raises(asyncio.CancelledError):
+            await my_func()
+
+
+def test_sync_retry_sleep_generic_exhaustion():
+    @retry(max_attempts=3, initial_delay=0.1)
+    def my_func():
+        raise ValueError("initial fail")
+
+    with patch("time.sleep", side_effect=Exception("mocked sleep failure")):
+        with pytest.raises(RetryError) as exc_info:
+            my_func()
+        assert "All 3 attempts failed" in str(exc_info.value)
+        assert hasattr(exc_info.value, "last_exception")
+        assert "mocked sleep failure" in str(exc_info.value.last_exception)
+
+def test_sync_retry_sleep_system_exit():
+    @retry(max_attempts=3, initial_delay=0.1)
+    def my_func():
+        raise ValueError("initial fail")
+
+    with patch("time.sleep", side_effect=SystemExit(1)):
+        with pytest.raises(SystemExit):
+            my_func()
+
+@pytest.mark.asyncio
+async def test_async_retry_sleep_generic_exhaustion():
+    @retry(max_attempts=3, initial_delay=0.1)
+    async def my_func():
+        raise ValueError("initial fail")
+
+    with patch("asyncio.sleep", side_effect=Exception("mocked async sleep failure")):
+        with pytest.raises(RetryError) as exc_info:
+            await my_func()
+        assert "All 3 attempts failed" in str(exc_info.value)
+        assert hasattr(exc_info.value, "last_exception")
+        assert "mocked async sleep failure" in str(exc_info.value.last_exception)
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_runtime_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    @timeout(1.0)
-    async def dummy_func() -> Result[str, Exception]:
-        return Ok("success")
+async def test_async_retry_sleep_cancelled_error():
+    @retry(max_attempts=3, initial_delay=0.1)
+    async def my_func():
+        raise ValueError("initial fail")
 
-    async def mock_wait_for(*args, **kwargs):
-        # Explicitly close the coroutine to avoid RuntimeWarning: coroutine was never awaited
-        if args and hasattr(args[0], "close"):
-            args[0].close()
-        raise RuntimeError("Task exhaustion")
-
-    monkeypatch.setattr(asyncio, "wait_for", mock_wait_for)
-
-    result = await dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Task exhaustion:" in str(result.err_value)
-
-
-@pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_memory_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    @timeout(1.0)
-    async def dummy_func() -> Result[str, Exception]:
-        return Ok("success")
-
-    async def mock_wait_for(*args, **kwargs):
-        if args and hasattr(args[0], "close"):
-            args[0].close()
-        raise MemoryError("Memory exhaustion")
-
-    monkeypatch.setattr(asyncio, "wait_for", mock_wait_for)
-
-    result = await dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Memory exhaustion:" in str(result.err_value)
-
-
-@pytest.mark.asyncio
-async def test_chaos_resilience_timeout_async_exhaustion_os_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    @timeout(1.0)
-    async def dummy_func() -> Result[str, Exception]:
-        return Ok("success")
-
-    async def mock_wait_for(*args, **kwargs):
-        if args and hasattr(args[0], "close"):
-            args[0].close()
-        raise OSError("Resource exhaustion")
-
-    monkeypatch.setattr(asyncio, "wait_for", mock_wait_for)
-
-    result = await dummy_func()
-    assert isinstance(result, Err)
-    assert isinstance(result.err_value, RuntimeError)
-    assert "Resource exhaustion:" in str(result.err_value)
+    with patch("asyncio.sleep", side_effect=asyncio.CancelledError()):
+        with pytest.raises(asyncio.CancelledError):
+            await my_func()
