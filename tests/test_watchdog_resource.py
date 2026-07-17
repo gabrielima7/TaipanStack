@@ -16,14 +16,14 @@ from taipanstack.resilience.watchdogs.resource_watcher import (
 class TestResourceSnapshot:
     """Tests for the ResourceSnapshot dataclass."""
 
-    def test_watchdog_resource_creation(self) -> None:
+    def test_watchdog_resource_creation_expected(self) -> None:
         """Snapshot stores cpu, memory, and timestamp."""
         snap = ResourceSnapshot(cpu_percent=50.0, memory_percent=60.0, timestamp=1.0)
         assert snap.cpu_percent == 50.0
         assert snap.memory_percent == 60.0
         assert snap.timestamp == 1.0
 
-    def test_watchdog_resource_frozen(self) -> None:
+    def test_watchdog_resource_frozen_expected(self) -> None:
         """Snapshot is immutable."""
         snap = ResourceSnapshot(cpu_percent=1.0, memory_percent=2.0, timestamp=0.0)
         with pytest.raises(AttributeError):
@@ -223,7 +223,7 @@ class TestResourceWatcher:
 class TestBaseWatcher:
     """Tests for BaseWatcher ABC."""
 
-    def test_watchdog_resource_repr(self) -> None:
+    def test_watchdog_resource_repr_expected(self) -> None:
         """Repr includes class name and interval."""
         watcher = ResourceWatcher(interval=3.0)
         assert "ResourceWatcher" in repr(watcher)

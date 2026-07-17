@@ -2,7 +2,7 @@ from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 from taipanstack.resilience.watchdogs.health_pinger import _force_open_breaker
 
 
-def test_health_pinger_force_open_cap():
+def test_health_pinger_edge_health_pinger_force_open_cap():
     b = CircuitBreaker()
     b._state.state = CircuitState.CLOSED
     b._state.failure_count = float("-inf")
@@ -14,7 +14,7 @@ def test_health_pinger_force_open_cap():
     assert b.state == CircuitState.OPEN
 
 
-def test_health_pinger_force_open_normal():
+def test_health_pinger_edge_health_pinger_force_open_normal():
     b = CircuitBreaker(failure_threshold=2)
     b._state.state = CircuitState.CLOSED
 
@@ -23,7 +23,7 @@ def test_health_pinger_force_open_normal():
     assert b.state == CircuitState.OPEN
 
 
-def test_health_pinger_force_open_triggers_callback():
+def test_health_pinger_edge_health_pinger_force_open_triggers_callback():
     called = []
 
     def callback(old_state, new_state):

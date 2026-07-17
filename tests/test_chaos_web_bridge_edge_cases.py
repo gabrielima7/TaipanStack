@@ -4,7 +4,7 @@ from taipanstack.bridges.web_bridge import SecurityHeadersConfig, result_to_resp
 from taipanstack.core.result import Err, Ok
 
 
-def test_chaos_web_bridge_result_to_response_extreme_status_expected() -> None:
+def test_chaos_web_bridge_edge_cases_chaos_web_bridge_result_to_response_extreme_status_expected() -> None:
     """Test result_to_response with extreme HTTP status codes."""
     res1 = result_to_response(Ok("data"), status_ok=999)
     assert res1["status"] == 999
@@ -13,7 +13,7 @@ def test_chaos_web_bridge_result_to_response_extreme_status_expected() -> None:
     assert res2["status"] == -1
 
 
-def test_chaos_web_bridge_security_headers_extreme_config_expected() -> None:
+def test_chaos_web_bridge_edge_cases_chaos_web_bridge_security_headers_extreme_config_expected() -> None:
     """Test SecurityHeadersConfig with extreme length values."""
     massive_string = "A" * 10000
     config = SecurityHeadersConfig(x_frame_options=massive_string)

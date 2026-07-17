@@ -4,7 +4,7 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.resilience import timeout
 
 
-def test_chaos_resilience_resource_exhaustion_timeout():
+def test_chaos_resilience_resource_exhaustion_timeout_expected():
     @timeout(1.0)
     def my_func():
         return Ok("done")
@@ -17,7 +17,7 @@ def test_chaos_resilience_resource_exhaustion_timeout():
         assert "Resource exhaustion: Too many open files" in str(result.unwrap_err())
 
 
-def test_chaos_resilience_memory_exhaustion_timeout():
+def test_chaos_resilience_resource_exhaustion_chaos_resilience_memory_exhaustion_timeout():
     @timeout(1.0)
     def my_func():
         return Ok("done")

@@ -351,7 +351,7 @@ class TestGuardSsrfCatchAllReserved:
         assert isinstance(err, SecurityError)
 
 
-def test_guard_ssrf_invalid_control_characters() -> None:
+def test_security_ssrf_guard_ssrf_invalid_control_characters() -> None:
     """Test that URLs with control characters and spaces are rejected."""
     # Test cases that should fail validation
     invalid_cases = [

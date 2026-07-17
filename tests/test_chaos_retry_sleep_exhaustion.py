@@ -5,7 +5,7 @@ import pytest
 from taipanstack.resilience.retry import Retrier, retry
 
 
-def test_chaos_retry_sync_sleep_oserror():
+def test_chaos_retry_sleep_exhaustion_chaos_retry_sync_sleep_oserror():
     attempts = 0
 
     @retry(max_attempts=3, on=(ValueError,), reraise=True)
@@ -38,7 +38,7 @@ async def test_chaos_retry_async_sleep_memoryerror():
     assert attempts == 1
 
 
-def test_chaos_retrier_sleep_exhaustion():
+def test_chaos_retry_sleep_exhaustion_chaos_retrier_sleep_exhaustion():
     retrier = Retrier(max_attempts=3, on=(ValueError,))
     attempts = 0
 

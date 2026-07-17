@@ -7,7 +7,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.resilience.resilience import timeout
 
 
-def test_chaos_resilience_timeout_thread_exhaustion_runtime_error(
+def test_chaos_resilience_exhaustion_chaos_resilience_timeout_thread_exhaustion_runtime_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     @timeout(1.0)
@@ -25,7 +25,7 @@ def test_chaos_resilience_timeout_thread_exhaustion_runtime_error(
     assert "Thread exhaustion:" in str(result.err_value)
 
 
-def test_chaos_resilience_timeout_thread_exhaustion_memory_error(
+def test_chaos_resilience_exhaustion_chaos_resilience_timeout_thread_exhaustion_memory_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     @timeout(1.0)
@@ -43,7 +43,7 @@ def test_chaos_resilience_timeout_thread_exhaustion_memory_error(
     assert "Memory exhaustion:" in str(result.err_value)
 
 
-def test_chaos_resilience_timeout_thread_exhaustion_os_error(
+def test_chaos_resilience_exhaustion_chaos_resilience_timeout_thread_exhaustion_os_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     @timeout(1.0)

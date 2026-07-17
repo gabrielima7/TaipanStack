@@ -4,7 +4,7 @@ from taipanstack.core.result import Result
 from taipanstack.resilience.resilience import fallback
 
 
-def test_chaos_fallback_chaos_type_mutation_sync():
+def test_chaos_fallback_type_mutation_chaos_fallback_chaos_type_mutation_sync():
     """Verify fallback exception tuple mutation safely defaults to re-raising original error."""
     # We mutate it to an integer or string
 

@@ -19,7 +19,7 @@ async def test_concurrency_async_timeout_mutation():
         assert "Resource exhaustion" in str(res.unwrap_err())
 
 
-def test_concurrency_sync_timeout_mutation():
+def test_chaos_concurrency_timeout_mutation_concurrency_sync_timeout_mutation():
     @limit_concurrency(max_tasks=1, timeout=1.0)
     def fast_op_sync():
         return "success"
@@ -33,7 +33,7 @@ def test_concurrency_sync_timeout_mutation():
         assert "Resource exhaustion" in str(res.unwrap_err())
 
 
-def test_concurrency_timeout_type_mutation():
+def test_chaos_concurrency_timeout_mutation_concurrency_timeout_type_mutation():
     with pytest.raises(
         ValueError, match="timeout must be a finite non-negative number"
     ):
@@ -43,7 +43,7 @@ def test_concurrency_timeout_type_mutation():
             return "success"
 
 
-def test_concurrency_max_tasks_type_mutation():
+def test_chaos_concurrency_timeout_mutation_concurrency_max_tasks_type_mutation():
     with pytest.raises(ValueError, match="max_tasks must be > 0"):
 
         @limit_concurrency(max_tasks="string", timeout=1.0)  # type: ignore
