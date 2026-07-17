@@ -8,6 +8,7 @@ ignoring caching for Err() results.
 import asyncio
 import functools
 import inspect
+import math
 import time
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
@@ -70,7 +71,7 @@ class CacheDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
-def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
+def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:  # noqa: PLR0915
     """Cache the Ok() results of a function for a given TTL.
 
     Err() results are not cached. Supports both async and sync functions.
@@ -84,6 +85,9 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
         Decorator function.
 
     """
+    if not isinstance(ttl, (int, float)) or not math.isfinite(ttl) or ttl < 0:
+        raise ValueError("ttl must be a finite non-negative number")
+
     if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
         raise ValueError("max_size must be a positive integer")
 

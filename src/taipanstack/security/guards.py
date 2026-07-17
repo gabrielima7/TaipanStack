@@ -681,24 +681,19 @@ def _is_ip_address_unsafe_bounds(
     return addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
 
 
-def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
-    """Evaluate if an ipaddress object represents a safe, public IP."""
-    if _is_ip_address_unsafe_bounds(addr):
-        return False
-    return not (
-        getattr(addr, "is_multicast", False) or getattr(addr, "is_unspecified", False)
-    )
-
-
 @functools.lru_cache(maxsize=1024)
 def _is_ip_safe(raw_ip: str) -> bool:
-    """Check if a single IP address is safe (not private/loopback/reserved)."""
+    """Check if a single IP address is safe."""
     try:
         addr = ipaddress.ip_address(raw_ip)
     except ValueError:
         return True
 
-    return _is_ip_address_safe(addr)
+    if _is_ip_address_unsafe_bounds(addr):
+        return False
+    return not (
+        getattr(addr, "is_multicast", False) or getattr(addr, "is_unspecified", False)
+    )
 
 
 def _check_ip_safety(hostname: str) -> Result[None, SecurityError]:
