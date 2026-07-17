@@ -167,12 +167,16 @@ def timeout(seconds: float) -> TimeoutDecorator:
                     return Err(
                         TimeoutError(f"Execution timed out after {seconds} seconds."),
                     )
-                except RuntimeError as e:
+                except asyncio.CancelledError:
+                    raise
+                except BaseException as e:
+                    if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                        raise
+                    if isinstance(e, MemoryError):
+                        return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
+                    if isinstance(e, (OSError, OverflowError)):
+                        return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
                     return Err(cast(E, RuntimeError(f"Task exhaustion: {e!s}")))
-                except MemoryError as e:
-                    return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
-                except (OSError, OverflowError) as e:
-                    return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
 
             return async_wrapper
 
@@ -207,12 +211,14 @@ def timeout(seconds: float) -> TimeoutDecorator:
             try:
                 thread.start()
                 thread.join(timeout=seconds)
-            except RuntimeError as e:
+            except BaseException as e:
+                if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                    raise
+                if isinstance(e, MemoryError):
+                    return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
+                if isinstance(e, (OSError, OverflowError)):
+                    return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
                 return Err(cast(E, RuntimeError(f"Thread exhaustion: {e!s}")))
-            except (OSError, OverflowError) as e:
-                return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
-            except MemoryError as e:
-                return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
 
             if thread.is_alive():
                 return Err(

@@ -170,7 +170,7 @@ max-complexity = 10
 # Core result: allow D401 for utility function docstrings
 "src/taipanstack/core/result.py" = ["D401"]
 # Resilience module: allow D401, too many args, random for jitter
-"src/taipanstack/resilience/*.py" = ["PLR0913", "D401", "S311", "TRY300", "TRY400"]
+"src/taipanstack/resilience/*.py" = ["PLR0913", "PLR0915", "D401", "S311", "TRY300", "TRY400"]
 "src/taipanstack/resilience/watchdogs/*.py" = ["PLR0913", "D401", "TRY300", "TRY400"]
 "src/taipanstack/resilience/adaptive/*.py" = ["PLR0913", "PLR0912", "D401", "TRY300", "TRY400"]
 "src/taipanstack/bridges/*.py" = ["PLR0913", "D401", "TRY300", "TRY400", "ANN401"]
