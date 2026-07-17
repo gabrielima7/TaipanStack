@@ -143,7 +143,7 @@ class RetryError(Exception):
         self,
         message: str,
         attempts: int,
-        last_exception: Exception | None = None,
+        last_exception: BaseException | None = None,
     ) -> None:
         """Initialize RetryError.
 
@@ -342,7 +342,7 @@ def _raise_retry_error(
     func_name: str,
     max_attempts: int,
     reraise: bool,
-    last_exception: Exception | None,
+    last_exception: BaseException | None,
 ) -> NoReturn:
     """Raise a RetryError after all attempts fail.
 
@@ -466,7 +466,7 @@ def retry(
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                last_exception: Exception | None = None
+                last_exception: BaseException | None = None
                 last_result: R | None = None
 
                 for attempt in range(1, config.max_attempts + 1):
@@ -514,7 +514,7 @@ def retry(
 
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            last_exception: Exception | None = None
+            last_exception: BaseException | None = None
             last_result: R | None = None
 
             for attempt in range(1, config.max_attempts + 1):
@@ -626,7 +626,7 @@ class Retrier:
         )
         self.exception_types = on
         self.attempt = 0
-        self.last_exception: Exception | None = None
+        self.last_exception: BaseException | None = None
 
     def __enter__(self) -> "Retrier":
         """Enter the retry context."""
