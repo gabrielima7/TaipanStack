@@ -170,7 +170,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                 except asyncio.CancelledError:
                     raise
                 except BaseException as e:
-                    if isinstance(e, (SystemExit, KeyboardInterrupt)):
+                    if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
                         raise
                     if isinstance(e, MemoryError):
                         return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
@@ -212,7 +212,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                 thread.start()
                 thread.join(timeout=seconds)
             except BaseException as e:
-                if isinstance(e, (SystemExit, KeyboardInterrupt)):
+                if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
                     raise
                 if isinstance(e, MemoryError):
                     return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
