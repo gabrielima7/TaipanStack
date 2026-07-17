@@ -494,7 +494,9 @@ def retry(
                         except asyncio.CancelledError:
                             raise
                         except BaseException as sleep_e:
-                            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                            if isinstance(
+                                sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)
+                            ):
                                 raise
                             last_exception = sleep_e
                             break
@@ -540,7 +542,9 @@ def retry(
                     try:
                         time.sleep(min(delay, 3600.0))
                     except BaseException as sleep_e:
-                        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                        if isinstance(
+                            sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)
+                        ):
                             raise
                         last_exception = sleep_e
                         break
