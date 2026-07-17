@@ -4,7 +4,7 @@ from taipanstack.core.result import Err
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_untracked_err_consistency():
+def test_chaos_circuit_breaker_untracked_err_consistency_expected():
     breaker = CircuitBreaker(
         failure_threshold=1,
         success_threshold=2,
@@ -33,4 +33,4 @@ def test_chaos_circuit_breaker_untracked_err_consistency():
 
 
 if __name__ == "__main__":
-    test_chaos_circuit_breaker_untracked_err_consistency()
+    test_chaos_circuit_breaker_untracked_err_consistency_expected()

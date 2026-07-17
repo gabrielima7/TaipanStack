@@ -44,7 +44,7 @@ async def test_chaos_timeout_async_overflow_error():
         assert "Resource exhaustion" in str(result.unwrap_err())
 
 
-def test_chaos_timeout_sync_overflow_error():
+def test_chaos_resilience_timeout_exceptions_chaos_timeout_sync_overflow_error():
     with patch(
         "threading.Thread.join", side_effect=OverflowError("timeout value is too large")
     ):

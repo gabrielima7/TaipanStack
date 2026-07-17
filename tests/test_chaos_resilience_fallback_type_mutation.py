@@ -6,7 +6,7 @@ from taipanstack.core.result import Ok
 from taipanstack.resilience.resilience import fallback
 
 
-def test_chaos_resilience_fallback_type_mutation() -> None:
+def test_chaos_resilience_fallback_type_mutation_chaos_resilience_fallback_type_mutation() -> None:
     """Simulate a severe production failure where fallback 'exceptions' is corrupted to a string."""
 
     @fallback("fallback_val", exceptions="string_mutation")  # type: ignore
@@ -29,7 +29,7 @@ async def test_chaos_resilience_fallback_type_mutation_async() -> None:
         await dummy()
 
 
-def test_chaos_resilience_fallback_type_mutation_success() -> None:
+def test_chaos_resilience_fallback_type_mutation_success_expected() -> None:
     """Test standard success behavior when exceptions type is invalid."""
 
     @fallback("fallback_val", exceptions="string_mutation")  # type: ignore

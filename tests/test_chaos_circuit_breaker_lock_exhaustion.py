@@ -8,7 +8,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_circuit_breaker_lock_acquire_exception_sync():
+def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquire_exception_sync():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class BrokenLock:
@@ -46,7 +46,7 @@ async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
         await my_func()
 
 
-def test_chaos_circuit_breaker_decorator_lock_acquire_exception_sync():
+def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_lock_acquire_exception_sync():
     @circuit_breaker(failure_threshold=2)
     def my_func():
         return Ok("success")

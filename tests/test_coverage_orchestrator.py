@@ -57,7 +57,7 @@ async def test_orchestrator_circuit_breaker_open():
     assert "is open" in str(result.err_value)
 
 
-def test_orchestrator_invalid_timeout():
+def test_coverage_orchestrator_orchestrator_invalid_timeout():
     with pytest.raises(
         ValueError, match="timeout must be a finite non-negative number"
     ):

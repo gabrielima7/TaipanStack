@@ -271,7 +271,7 @@ class TestResilienceOrchestrator:
         assert orch.with_timeout(1.0) is orch
         assert orch.with_fallback("x") is orch
 
-    def test_orchestrator_apply_fallback_keeps_ok_result(
+    def test_orchestrator_standard_orchestrator_apply_fallback_keeps_ok_result(
         self,
     ) -> None:
         """Fallback logic leaves successful results untouched."""
