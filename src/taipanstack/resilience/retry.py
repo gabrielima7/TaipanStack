@@ -143,7 +143,7 @@ class RetryError(Exception):
         self,
         message: str,
         attempts: int,
-        last_exception: Exception | None = None,
+        last_exception: BaseException | None = None,
     ) -> None:
         """Initialize RetryError.
 
@@ -342,7 +342,7 @@ def _raise_retry_error(
     func_name: str,
     max_attempts: int,
     reraise: bool,
-    last_exception: Exception | None,
+    last_exception: BaseException | None,
 ) -> NoReturn:
     """Raise a RetryError after all attempts fail.
 
@@ -466,7 +466,7 @@ def retry(
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                last_exception: Exception | None = None
+                last_exception: BaseException | None = None
                 last_result: R | None = None
 
                 for attempt in range(1, config.max_attempts + 1):
@@ -489,7 +489,15 @@ def retry(
                         )
                         if not should_retry:
                             break
-                        await asyncio.sleep(min(delay, 3600.0))
+                        try:
+                            await asyncio.sleep(min(delay, 3600.0))
+                        except asyncio.CancelledError:
+                            raise
+                        except BaseException as sleep_e:
+                            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                                raise
+                            last_exception = sleep_e
+                            break
 
                 if last_result is not None and isinstance(last_result, Err):
                     return cast(R, last_result)
@@ -506,7 +514,7 @@ def retry(
 
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            last_exception: Exception | None = None
+            last_exception: BaseException | None = None
             last_result: R | None = None
 
             for attempt in range(1, config.max_attempts + 1):
@@ -529,7 +537,13 @@ def retry(
                     )
                     if not should_retry:
                         break
-                    time.sleep(min(delay, 3600.0))
+                    try:
+                        time.sleep(min(delay, 3600.0))
+                    except BaseException as sleep_e:
+                        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                            raise
+                        last_exception = sleep_e
+                        break
 
             if last_result is not None and isinstance(last_result, Err):
                 return cast(R, last_result)
@@ -612,7 +626,7 @@ class Retrier:
         )
         self.exception_types = on
         self.attempt = 0
-        self.last_exception: Exception | None = None
+        self.last_exception: BaseException | None = None
 
     def __enter__(self) -> "Retrier":
         """Enter the retry context."""
@@ -669,6 +683,12 @@ class Retrier:
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        time.sleep(min(delay, 3600.0))
+        try:
+            time.sleep(min(delay, 3600.0))
+        except BaseException as sleep_e:
+            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                raise
+            # If sleep fails, we cannot retry properly, let original exception propagate
+            return False
 
         return True  # Suppress exception and retry
