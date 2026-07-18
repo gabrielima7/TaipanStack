@@ -192,6 +192,7 @@ class TestRateLimitDecorator:
     def test_utils_rate_limit_unreachable_last_update(self) -> None:
         limiter = RateLimiter(10, 1.0)
         import time
+
         limiter.last_update = "not a number"  # type: ignore
         assert limiter._calculate_elapsed(time.monotonic()) is None
 
@@ -203,6 +204,7 @@ class TestRateLimitDecorator:
 
     def test_utils_rate_limit_get_current_time_exception(self) -> None:
         from unittest.mock import patch
+
         limiter = RateLimiter(10, 1.0)
         with patch("time.monotonic", side_effect=Exception("mocked error")):
             assert limiter._get_current_time() is None
@@ -221,17 +223,24 @@ class TestRateLimitDecorator:
 
     def test_utils_rate_limit_consume_exception(self) -> None:
         from unittest.mock import patch
+
         limiter = RateLimiter(10, 1.0)
-        with patch.object(limiter, "_process_consumption", side_effect=Exception("mocked error")):
+        with patch.object(
+            limiter, "_process_consumption", side_effect=Exception("mocked error")
+        ):
             assert limiter.consume(1.0) is False
 
     def test_utils_rate_limit_decorator_sync_exception(self) -> None:
         from unittest.mock import patch
+
         @rate_limit(max_calls=10, time_window=1.0)
         def func() -> str:
             return "data"
 
-        with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=Exception("mocked error")):
+        with patch(
+            "taipanstack.utils.rate_limit.RateLimiter.consume",
+            side_effect=Exception("mocked error"),
+        ):
             result = func()
             assert result.is_err()
             assert isinstance(result.unwrap_err(), RateLimitError)
@@ -239,11 +248,15 @@ class TestRateLimitDecorator:
     @pytest.mark.asyncio
     async def test_utils_rate_limit_decorator_async_exception(self) -> None:
         from unittest.mock import patch
+
         @rate_limit(max_calls=10, time_window=1.0)
         async def func() -> str:
             return "data"
 
-        with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=Exception("mocked error")):
+        with patch(
+            "taipanstack.utils.rate_limit.RateLimiter.consume",
+            side_effect=Exception("mocked error"),
+        ):
             result = await func()
             assert result.is_err()
             assert isinstance(result.unwrap_err(), RateLimitError)
@@ -256,8 +269,11 @@ class TestRateLimitDecorator:
         limiter = RateLimiter(10, 1.0)
         assert limiter.consume(None) is False  # type: ignore
 
-    def test_utils_rate_limit_process_consumption_returns_false_if_validate_and_add_tokens_returns_false(self) -> None:
+    def test_utils_rate_limit_process_consumption_returns_false_if_validate_and_add_tokens_returns_false(
+        self,
+    ) -> None:
         from unittest.mock import patch
+
         limiter = RateLimiter(10, 1.0)
         with patch.object(limiter, "_validate_and_add_tokens", return_value=False):
             assert limiter._process_consumption(1.0) is False
