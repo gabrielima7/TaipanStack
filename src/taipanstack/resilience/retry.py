@@ -667,6 +667,18 @@ class Retrier:
 
         return self.attempt < self.config.max_attempts
 
+    def _wait_for_retry(self) -> bool:
+        """Wait before the next retry attempt."""
+        delay = calculate_delay(self.attempt, self.config)
+        try:
+            time.sleep(min(delay, 3600.0))
+            return True
+        except BaseException as sleep_e:
+            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                raise
+            # If sleep fails, we cannot retry properly, let original exception propagate
+            return False
+
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
@@ -686,13 +698,4 @@ class Retrier:
             return False
 
         # Calculate delay and wait
-        delay = calculate_delay(self.attempt, self.config)
-        try:
-            time.sleep(min(delay, 3600.0))
-        except BaseException as sleep_e:
-            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-                raise
-            # If sleep fails, we cannot retry properly, let original exception propagate
-            return False
-
-        return True  # Suppress exception and retry
+        return self._wait_for_retry()

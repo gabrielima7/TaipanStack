@@ -71,6 +71,64 @@ class CacheDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, E]]]: ...
 
 
+def _make_hashable_iterable(
+    val: tuple[object, ...] | list[object],
+) -> tuple[object, ...]:
+    return tuple(_make_hashable(item) for item in val)
+
+
+def _make_hashable_dict(val: dict[object, object]) -> tuple[object, ...]:
+    return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+
+
+def _make_hashable_set(val: set[object]) -> frozenset[object]:
+    return frozenset(_make_hashable(item) for item in val)
+
+
+def _make_hashable(val: object) -> object:
+    if isinstance(val, (tuple, list)):
+        return _make_hashable_iterable(val)
+    if isinstance(val, dict):
+        return _make_hashable_dict(val)
+    if isinstance(val, set):
+        return _make_hashable_set(val)
+
+    hash(val)
+    return val
+
+
+def _get_cache_key(
+    func_name: str,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> CacheKey:
+    hashable_args = tuple(_make_hashable(arg) for arg in args)
+    hashable_kwargs = tuple(
+        sorted((k, _make_hashable(v)) for k, v in kwargs.items()),
+    )
+    return (func_name, hashable_args, hashable_kwargs)
+
+
+def _validate_ttl(ttl: float) -> None:
+    if (
+        not isinstance(ttl, (int, float))
+        or isinstance(ttl, bool)
+        or not math.isfinite(ttl)
+        or ttl < 0
+    ):
+        raise ValueError("ttl must be a finite non-negative number")
+
+
+def _validate_max_size(max_size: int) -> None:
+    if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
+        raise ValueError("max_size must be a positive integer")
+
+
+def _validate_cache_params(ttl: float, max_size: int) -> None:
+    _validate_ttl(ttl)
+    _validate_max_size(max_size)
+
+
 def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
     """Cache the Ok() results of a function for a given TTL.
 
@@ -85,42 +143,11 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
         Decorator function.
 
     """
-    if (
-        not isinstance(ttl, (int, float))
-        or isinstance(ttl, bool)
-        or not math.isfinite(ttl)
-        or ttl < 0
-    ):
-        raise ValueError("ttl must be a finite non-negative number")
-
-    if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
-        raise ValueError("max_size must be a positive integer")
+    _validate_cache_params(ttl, max_size)
 
     _cache: CacheDict = {}
     _locks: dict[CacheKey, asyncio.Lock] = {}
     _lock_waiters: dict[CacheKey, int] = {}
-
-    def get_cache_key(
-        func_name: str,
-        args: tuple[object, ...],
-        kwargs: dict[str, object],
-    ) -> CacheKey:
-        def _make_hashable(val: object) -> object:
-            if isinstance(val, (tuple, list)):
-                return tuple(_make_hashable(item) for item in val)
-            elif isinstance(val, dict):
-                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
-            elif isinstance(val, set):
-                return frozenset(_make_hashable(item) for item in val)
-            else:
-                hash(val)
-                return val
-
-        hashable_args = tuple(_make_hashable(arg) for arg in args)
-        hashable_kwargs = tuple(
-            sorted((k, _make_hashable(v)) for k, v in kwargs.items()),
-        )
-        return (func_name, hashable_args, hashable_kwargs)
 
     def decorator(
         func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
@@ -129,7 +156,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
 
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-                cache_key = get_cache_key(
+                cache_key = _get_cache_key(
                     cast(str, getattr(func, "__name__", "unknown")),
                     cast(tuple[object, ...], args),
                     cast(dict[str, object], kwargs),
@@ -171,7 +198,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(
+            cache_key = _get_cache_key(
                 cast(str, getattr(func, "__name__", "unknown")),
                 cast(tuple[object, ...], args),
                 cast(dict[str, object], kwargs),
