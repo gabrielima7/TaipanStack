@@ -165,3 +165,99 @@ class TestRateLimitDecorator:
         res2 = await fetch_data()
         assert res2.is_err()
         assert isinstance(res2.err_value, RateLimitError)
+
+    def test_utils_rate_limit_unreachable_time_window(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        limiter.time_window = "not a number"  # type: ignore
+        assert limiter._is_valid_time_window() is False
+
+    def test_utils_rate_limit_unreachable_capacity(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        limiter.capacity = "not a number"  # type: ignore
+        assert limiter._is_valid_capacity() is False
+
+    def test_utils_rate_limit_unreachable_tokens(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        limiter.tokens = "not a number"  # type: ignore
+        assert limiter._apply_new_tokens(1.0) is False
+        assert limiter.tokens == limiter.capacity
+
+        limiter.tokens = "not a number"  # type: ignore
+        assert limiter._try_consume(1.0) is False
+
+    def test_utils_rate_limit_unreachable_new_tokens(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter._apply_new_tokens("not a number") is False  # type: ignore
+
+    def test_utils_rate_limit_unreachable_last_update(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        import time
+        limiter.last_update = "not a number"  # type: ignore
+        assert limiter._calculate_elapsed(time.monotonic()) is None
+
+    def test_utils_rate_limit_tokens_corrupted_nan(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        limiter.tokens = float("nan")
+        assert limiter._try_consume(1.0) is False
+        assert limiter.tokens == limiter.capacity
+
+    def test_utils_rate_limit_get_current_time_exception(self) -> None:
+        from unittest.mock import patch
+        limiter = RateLimiter(10, 1.0)
+        with patch("time.monotonic", side_effect=Exception("mocked error")):
+            assert limiter._get_current_time() is None
+
+    def test_utils_rate_limit_validate_and_add_tokens_unreachable_now(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter._validate_and_add_tokens("not a number") is False  # type: ignore
+
+    def test_utils_rate_limit_validate_and_add_tokens_not_finite(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter._validate_and_add_tokens(float("inf")) is True
+
+    def test_utils_rate_limit_is_valid_token_amount_unreachable(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter._is_valid_token_amount("not a number") is False  # type: ignore
+
+    def test_utils_rate_limit_consume_exception(self) -> None:
+        from unittest.mock import patch
+        limiter = RateLimiter(10, 1.0)
+        with patch.object(limiter, "_process_consumption", side_effect=Exception("mocked error")):
+            assert limiter.consume(1.0) is False
+
+    def test_utils_rate_limit_decorator_sync_exception(self) -> None:
+        from unittest.mock import patch
+        @rate_limit(max_calls=10, time_window=1.0)
+        def func() -> str:
+            return "data"
+
+        with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=Exception("mocked error")):
+            result = func()
+            assert result.is_err()
+            assert isinstance(result.unwrap_err(), RateLimitError)
+
+    @pytest.mark.asyncio
+    async def test_utils_rate_limit_decorator_async_exception(self) -> None:
+        from unittest.mock import patch
+        @rate_limit(max_calls=10, time_window=1.0)
+        async def func() -> str:
+            return "data"
+
+        with patch("taipanstack.utils.rate_limit.RateLimiter.consume", side_effect=Exception("mocked error")):
+            result = await func()
+            assert result.is_err()
+            assert isinstance(result.unwrap_err(), RateLimitError)
+
+    def test_utils_rate_limit_validate_and_add_tokens_none(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter._validate_and_add_tokens(None) is False
+
+    def test_utils_rate_limit_is_valid_token_amount_none(self) -> None:
+        limiter = RateLimiter(10, 1.0)
+        assert limiter.consume(None) is False  # type: ignore
+
+    def test_utils_rate_limit_process_consumption_returns_false_if_validate_and_add_tokens_returns_false(self) -> None:
+        from unittest.mock import patch
+        limiter = RateLimiter(10, 1.0)
+        with patch.object(limiter, "_validate_and_add_tokens", return_value=False):
+            assert limiter._process_consumption(1.0) is False
