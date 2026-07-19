@@ -667,6 +667,26 @@ class Retrier:
 
         return self.attempt < self.config.max_attempts
 
+    def _handle_exception(self, exc_val: BaseException | None) -> None:
+        """Store the exception safely."""
+        if exc_val is not None:
+            self.last_exception = exc_val if isinstance(exc_val, Exception) else None
+
+    def _sleep_for_retry(self, delay: float) -> bool:
+        """Sleep for the retry delay.
+
+        Returns True if sleep was successful, False if it was interrupted
+        by a non-critical exception.
+        """
+        try:
+            time.sleep(min(delay, 3600.0))
+        except BaseException as sleep_e:
+            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+                raise
+            # If sleep fails, we cannot retry properly, let original exception propagate
+            return False
+        return True
+
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
@@ -679,20 +699,11 @@ class Retrier:
         False to let it propagate.
         """
         # Safe cast: check inside _should_retry ensures we handle it right
-        if exc_val is not None:
-            self.last_exception = exc_val if isinstance(exc_val, Exception) else None
+        self._handle_exception(exc_val)
 
         if not self._should_retry(exc_type):
             return False
 
         # Calculate delay and wait
         delay = calculate_delay(self.attempt, self.config)
-        try:
-            time.sleep(min(delay, 3600.0))
-        except BaseException as sleep_e:
-            if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-                raise
-            # If sleep fails, we cannot retry properly, let original exception propagate
-            return False
-
-        return True  # Suppress exception and retry
+        return self._sleep_for_retry(delay)

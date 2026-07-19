@@ -55,6 +55,67 @@ def _update_cache(
         cache[cache_key] = (now + ttl, result.ok_value)
 
 
+def _make_hashable(val: object) -> object:
+    if isinstance(val, (tuple, list)):
+        return tuple(_make_hashable(item) for item in val)
+    elif isinstance(val, dict):
+        return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+    elif isinstance(val, set):
+        return frozenset(_make_hashable(item) for item in val)
+    else:
+        hash(val)
+        return val
+
+
+def _get_cache_key(
+    func_name: str,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> CacheKey:
+    hashable_args = tuple(_make_hashable(arg) for arg in args)
+    hashable_kwargs = tuple(
+        sorted((k, _make_hashable(v)) for k, v in kwargs.items()),
+    )
+    return (func_name, hashable_args, hashable_kwargs)
+
+
+def _validate_ttl_max_size(ttl: float, max_size: int) -> None:
+    if (
+        not isinstance(ttl, (int, float))
+        or isinstance(ttl, bool)
+        or not math.isfinite(ttl)
+        or ttl < 0
+    ):
+        raise ValueError("ttl must be a finite non-negative number")
+
+    if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
+        raise ValueError("max_size must be a positive integer")
+
+
+def _get_or_create_lock(
+    cache_key: CacheKey,
+    locks: dict[CacheKey, asyncio.Lock],
+    lock_waiters: dict[CacheKey, int],
+) -> asyncio.Lock:
+    if cache_key not in locks:
+        locks[cache_key] = asyncio.Lock()
+        lock_waiters[cache_key] = 0
+
+    lock_waiters[cache_key] += 1
+    return locks[cache_key]
+
+
+def _release_lock(
+    cache_key: CacheKey,
+    locks: dict[CacheKey, asyncio.Lock],
+    lock_waiters: dict[CacheKey, int],
+) -> None:
+    lock_waiters[cache_key] -= 1
+    if lock_waiters[cache_key] == 0:
+        locks.pop(cache_key, None)
+        lock_waiters.pop(cache_key, None)
+
+
 class CacheDecorator(Protocol):
     """Protocol for the cache decorator."""
 
@@ -85,42 +146,11 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
         Decorator function.
 
     """
-    if (
-        not isinstance(ttl, (int, float))
-        or isinstance(ttl, bool)
-        or not math.isfinite(ttl)
-        or ttl < 0
-    ):
-        raise ValueError("ttl must be a finite non-negative number")
-
-    if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
-        raise ValueError("max_size must be a positive integer")
+    _validate_ttl_max_size(ttl, max_size)
 
     _cache: CacheDict = {}
     _locks: dict[CacheKey, asyncio.Lock] = {}
     _lock_waiters: dict[CacheKey, int] = {}
-
-    def get_cache_key(
-        func_name: str,
-        args: tuple[object, ...],
-        kwargs: dict[str, object],
-    ) -> CacheKey:
-        def _make_hashable(val: object) -> object:
-            if isinstance(val, (tuple, list)):
-                return tuple(_make_hashable(item) for item in val)
-            elif isinstance(val, dict):
-                return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
-            elif isinstance(val, set):
-                return frozenset(_make_hashable(item) for item in val)
-            else:
-                hash(val)
-                return val
-
-        hashable_args = tuple(_make_hashable(arg) for arg in args)
-        hashable_kwargs = tuple(
-            sorted((k, _make_hashable(v)) for k, v in kwargs.items()),
-        )
-        return (func_name, hashable_args, hashable_kwargs)
 
     def decorator(
         func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
@@ -129,7 +159,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
 
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-                cache_key = get_cache_key(
+                cache_key = _get_cache_key(
                     cast(str, getattr(func, "__name__", "unknown")),
                     cast(tuple[object, ...], args),
                     cast(dict[str, object], kwargs),
@@ -141,12 +171,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
                 if hit:
                     return Ok(cast(T, value))
 
-                if cache_key not in _locks:
-                    _locks[cache_key] = asyncio.Lock()
-                    _lock_waiters[cache_key] = 0
-
-                _lock_waiters[cache_key] += 1
-                lock = _locks[cache_key]
+                lock = _get_or_create_lock(cache_key, _locks, _lock_waiters)
 
                 try:
                     async with lock:
@@ -162,16 +187,13 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
                         _update_cache(cache_key, result, _cache, max_size, now, ttl)
                         return result
                 finally:
-                    _lock_waiters[cache_key] -= 1
-                    if _lock_waiters[cache_key] == 0:
-                        _locks.pop(cache_key, None)
-                        _lock_waiters.pop(cache_key, None)
+                    _release_lock(cache_key, _locks, _lock_waiters)
 
             return async_wrapper
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = get_cache_key(
+            cache_key = _get_cache_key(
                 cast(str, getattr(func, "__name__", "unknown")),
                 cast(tuple[object, ...], args),
                 cast(dict[str, object], kwargs),
