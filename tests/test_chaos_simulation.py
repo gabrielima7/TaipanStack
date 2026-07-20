@@ -11,7 +11,7 @@ from taipanstack.resilience import (
 
 
 @pytest.mark.asyncio
-async def test_chaos_simulation():
+async def test_chaos_simulation_chaos_simulation():
     breaker = CircuitBreaker(failure_threshold=3, timeout=0.1)
     orch = (
         ResilienceOrchestrator("unreliable")

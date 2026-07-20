@@ -27,7 +27,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
 
 
 @pytest.mark.asyncio
-async def test_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
+async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
     @circuit_breaker(failure_threshold=2)
     async def my_func():
         return Ok("success")

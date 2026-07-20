@@ -7,8 +7,11 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.resilience import timeout
 from taipanstack.resilience.retry import RetryError, retry
 
+pytestmark = pytest.mark.filterwarnings("ignore::RuntimeWarning")
 
-def test_sync_timeout_thread_start_generic_exhaustion():
+
+
+def test_chaos_resilience_exhaustion_sync_timeout_thread_start_generic_exhaustion():
     @timeout(1.0)
     def my_func():
         return Ok("success")
@@ -21,7 +24,7 @@ def test_sync_timeout_thread_start_generic_exhaustion():
         )
 
 
-def test_sync_timeout_thread_start_system_exit():
+def test_chaos_resilience_exhaustion_sync_timeout_thread_start_system_exit():
     @timeout(1.0)
     def my_func():
         return Ok("success")
@@ -32,7 +35,7 @@ def test_sync_timeout_thread_start_system_exit():
 
 
 @pytest.mark.asyncio
-async def test_async_timeout_wait_for_generic_exhaustion():
+async def test_chaos_resilience_exhaustion_async_timeout_wait_for_generic_exhaustion():
     @timeout(1.0)
     async def my_func():
         return Ok("success")
@@ -46,7 +49,7 @@ async def test_async_timeout_wait_for_generic_exhaustion():
 
 
 @pytest.mark.asyncio
-async def test_async_timeout_wait_for_cancelled_error():
+async def test_chaos_resilience_exhaustion_async_timeout_wait_for_cancelled_error():
     @timeout(1.0)
     async def my_func():
         return Ok("success")
@@ -56,7 +59,7 @@ async def test_async_timeout_wait_for_cancelled_error():
             await my_func()
 
 
-def test_sync_retry_sleep_generic_exhaustion():
+def test_chaos_resilience_exhaustion_sync_retry_sleep_generic_exhaustion():
     @retry(max_attempts=3, initial_delay=0.1)
     def my_func():
         raise ValueError("initial fail")
@@ -69,7 +72,7 @@ def test_sync_retry_sleep_generic_exhaustion():
         assert "mocked sleep failure" in str(exc_info.value.last_exception)
 
 
-def test_sync_retry_sleep_system_exit():
+def test_chaos_resilience_exhaustion_sync_retry_sleep_system_exit():
     @retry(max_attempts=3, initial_delay=0.1)
     def my_func():
         raise ValueError("initial fail")
@@ -80,7 +83,7 @@ def test_sync_retry_sleep_system_exit():
 
 
 @pytest.mark.asyncio
-async def test_async_retry_sleep_generic_exhaustion():
+async def test_chaos_resilience_exhaustion_async_retry_sleep_generic_exhaustion():
     @retry(max_attempts=3, initial_delay=0.1)
     async def my_func():
         raise ValueError("initial fail")
@@ -94,7 +97,7 @@ async def test_async_retry_sleep_generic_exhaustion():
 
 
 @pytest.mark.asyncio
-async def test_async_retry_sleep_cancelled_error():
+async def test_chaos_resilience_exhaustion_async_retry_sleep_cancelled_error():
     @retry(max_attempts=3, initial_delay=0.1)
     async def my_func():
         raise ValueError("initial fail")

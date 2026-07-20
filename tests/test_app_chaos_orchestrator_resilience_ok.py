@@ -32,7 +32,7 @@ async def async_create_user(user_data: UserCreate) -> Result:
 
 
 @pytest.mark.asyncio
-async def test_app_chaos_orchestrator_resilience_ok():
+async def test_app_chaos_orchestrator_resilience_ok_app_chaos_orchestrator_resilience_ok():
     """Simulates thundering herd of valid and invalid user creations."""
 
     async def worker(i):

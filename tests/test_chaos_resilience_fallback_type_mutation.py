@@ -5,6 +5,9 @@ import pytest
 from taipanstack.core.result import Ok
 from taipanstack.resilience.resilience import fallback
 
+pytestmark = pytest.mark.filterwarnings("ignore::RuntimeWarning")
+
+
 
 def test_chaos_resilience_fallback_type_mutation_chaos_resilience_fallback_type_mutation() -> (
     None

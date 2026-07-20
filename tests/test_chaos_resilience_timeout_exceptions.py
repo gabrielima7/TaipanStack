@@ -18,7 +18,7 @@ def my_sync_func():
 
 
 @pytest.mark.asyncio
-async def test_chaos_timeout_async_cancelled_error():
+async def test_chaos_resilience_timeout_exceptions_chaos_timeout_async_cancelled_error():
     def side_effect(*args, **kwargs):
         # Prevent "coroutine was never awaited" warning
         args[0].close()
@@ -31,7 +31,7 @@ async def test_chaos_timeout_async_cancelled_error():
 
 
 @pytest.mark.asyncio
-async def test_chaos_timeout_async_overflow_error():
+async def test_chaos_resilience_timeout_exceptions_chaos_timeout_async_overflow_error():
     def side_effect(*args, **kwargs):
         # Prevent "coroutine was never awaited" warning
         args[0].close()

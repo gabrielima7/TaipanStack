@@ -7,7 +7,8 @@ from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
 
 class DummyModel(BaseModel):
-    pass
+    """Dummy Pydantic model for testing."""
+    dummy_field: str = "dummy"
 
 
 def test_watchdog_config_validation_negative_interval():

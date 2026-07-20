@@ -7,7 +7,8 @@ from taipanstack.resilience.watchdogs._base import BaseWatcher
 
 class DummyWatcher(BaseWatcher):
     async def _run(self) -> None:
-        pass
+        """Dummy implementation of abstract method."""
+        return None
 
 
 def test_watchdog_base_validation_negative_interval():
