@@ -66,7 +66,9 @@ async def test_simulation_chaos_healing_complex_microservice_simulation_chaos() 
 
 
 @pytest.mark.asyncio
-async def test_simulation_chaos_healing_complex_microservice_simulation_orchestrator_exception() -> None:
+async def test_simulation_chaos_healing_complex_microservice_simulation_orchestrator_exception() -> (
+    None
+):
     """Tests the new except Exception branch wrapping _execute_inner."""
     orchestrator_with_bh = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
     orchestrator_without_bh = ResilienceOrchestrator()

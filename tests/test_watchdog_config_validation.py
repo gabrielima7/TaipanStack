@@ -8,6 +8,7 @@ from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
 class DummyModel(BaseModel):
     """Dummy Pydantic model for testing."""
+
     dummy_field: str = "dummy"
 
 

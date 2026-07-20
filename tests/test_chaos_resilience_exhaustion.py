@@ -10,7 +10,6 @@ from taipanstack.resilience.retry import RetryError, retry
 pytestmark = pytest.mark.filterwarnings("ignore::RuntimeWarning")
 
 
-
 def test_chaos_resilience_exhaustion_sync_timeout_thread_start_generic_exhaustion():
     @timeout(1.0)
     def my_func():

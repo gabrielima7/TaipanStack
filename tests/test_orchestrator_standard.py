@@ -86,7 +86,9 @@ class TestResilienceOrchestrator:
         assert call_count == 3
 
     @pytest.mark.asyncio
-    async def test_orchestrator_standard_orchestrator_with_circuit_breaker(self) -> None:
+    async def test_orchestrator_standard_orchestrator_with_circuit_breaker(
+        self,
+    ) -> None:
         """Circuit breaker blocks calls when open."""
         breaker = CircuitBreaker(name="orch", failure_threshold=1)
         breaker._record_failure(Exception("trip"))
@@ -97,7 +99,9 @@ class TestResilienceOrchestrator:
         assert "open" in str(result.err_value).lower()
 
     @pytest.mark.asyncio
-    async def test_orchestrator_standard_orchestrator_with_adaptive_breaker(self) -> None:
+    async def test_orchestrator_standard_orchestrator_with_adaptive_breaker(
+        self,
+    ) -> None:
         """Adaptive breaker integrates with orchestrator."""
         ab = AdaptiveCircuitBreaker("orch", min_throughput=2, target_error_rate=0.5)
         for _ in range(5):
@@ -264,7 +268,9 @@ class TestResilienceOrchestrator:
         assert str(result.err_value) == "Execution failed"
 
     @pytest.mark.asyncio
-    async def test_orchestrator_standard_orchestrator_chaining_returns_self(self) -> None:
+    async def test_orchestrator_standard_orchestrator_chaining_returns_self(
+        self,
+    ) -> None:
         """Builder methods return self for chaining."""
         orch = ResilienceOrchestrator("test")
         assert orch.with_bulkhead() is orch
@@ -292,7 +298,9 @@ class TestResilienceOrchestrator:
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_standard_orchestrator_fallback_err_branch_expected() -> None:
+async def test_orchestrator_standard_orchestrator_fallback_err_branch_expected() -> (
+    None
+):
     from taipanstack.core.result import Ok
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
 
@@ -308,7 +316,9 @@ async def test_orchestrator_standard_orchestrator_fallback_err_branch_expected()
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_standard_orchestrator_execute_timeout_err_branch_expected() -> None:
+async def test_orchestrator_standard_orchestrator_execute_timeout_err_branch_expected() -> (
+    None
+):
     from taipanstack.core.result import Err
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig
@@ -326,7 +336,9 @@ async def test_orchestrator_standard_orchestrator_execute_timeout_err_branch_exp
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_standard_orchestrator_execute_timeout_result_return_expected() -> None:
+async def test_orchestrator_standard_orchestrator_execute_timeout_result_return_expected() -> (
+    None
+):
     """Test _execute_with_timeout returns Ok unwrapped if it's already a Result."""
     orch = ResilienceOrchestrator("test_timeout")
 
@@ -339,7 +351,9 @@ async def test_orchestrator_standard_orchestrator_execute_timeout_result_return_
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_standard_orchestrator_execute_timeout_result_err_return_expected() -> None:
+async def test_orchestrator_standard_orchestrator_execute_timeout_result_err_return_expected() -> (
+    None
+):
     """Test _execute_with_timeout returns Err unwrapped if it's already a Result."""
     orch = ResilienceOrchestrator("test_timeout")
 

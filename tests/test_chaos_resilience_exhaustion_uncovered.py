@@ -9,7 +9,6 @@ from taipanstack.resilience.retry import Retrier
 pytestmark = pytest.mark.filterwarnings("ignore::RuntimeWarning")
 
 
-
 def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_keyboard_interrupt():
     retrier = Retrier(max_attempts=3, on=(ValueError,))
     with patch("time.sleep", side_effect=KeyboardInterrupt()):
