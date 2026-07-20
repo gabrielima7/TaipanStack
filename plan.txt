@@ -1,0 +1,1 @@
+1. We need to add boundary validations with `math.isfinite()` and explicit bounds checking `> 0` or `>= 0` to numerical parameters of `AdaptiveRetry` initialization, as seen in the journal entry about `watchdogs` missing these validations and `AdaptiveBreaker` having them.
