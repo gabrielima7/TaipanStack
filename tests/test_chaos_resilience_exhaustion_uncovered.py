@@ -29,7 +29,11 @@ async def test_timeout_wait_for_keyboard_interrupt():
     async def my_func():
         return Ok("success")
 
-    with patch("asyncio.wait_for", side_effect=KeyboardInterrupt()):
+    async def mock_wait_for(coro, timeout=None):
+        coro.close()
+        raise KeyboardInterrupt()
+
+    with patch("asyncio.wait_for", new=mock_wait_for):
         with pytest.raises(KeyboardInterrupt):
             await my_func()
 

@@ -37,7 +37,11 @@ async def test_async_timeout_wait_for_generic_exhaustion():
     async def my_func():
         return Ok("success")
 
-    with patch("asyncio.wait_for", side_effect=Exception("mocked task exhaustion")):
+    async def mock_wait_for1(coro, timeout=None):
+        coro.close()
+        raise RuntimeError("mocked task exhaustion")
+
+    with patch("asyncio.wait_for", new=mock_wait_for1):
         res = await my_func()
         assert isinstance(res, Err)
         assert "Task exhaustion" in str(
@@ -51,7 +55,11 @@ async def test_async_timeout_wait_for_cancelled_error():
     async def my_func():
         return Ok("success")
 
-    with patch("asyncio.wait_for", side_effect=asyncio.CancelledError()):
+    async def mock_wait_for2(coro, timeout=None):
+        coro.close()
+        raise asyncio.CancelledError()
+
+    with patch("asyncio.wait_for", new=mock_wait_for2):
         with pytest.raises(asyncio.CancelledError):
             await my_func()
 
