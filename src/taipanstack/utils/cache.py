@@ -55,13 +55,27 @@ def _update_cache(
         cache[cache_key] = (now + ttl, result.ok_value)
 
 
+def _hash_sequence(val: tuple[object, ...] | list[object]) -> tuple[object, ...]:
+    return tuple(_make_hashable(item) for item in val)
+
+
+def _hash_dict(val: dict[object, object]) -> tuple[object, ...]:
+    items = [(_make_hashable(k), _make_hashable(v)) for k, v in val.items()]
+    items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))
+    return tuple(items)
+
+
+def _hash_set(val: set[object]) -> frozenset[object]:
+    return frozenset(_make_hashable(item) for item in val)
+
+
 def _make_hashable(val: object) -> object:
     if isinstance(val, (tuple, list)):
-        return tuple(_make_hashable(item) for item in val)
+        return _hash_sequence(val)
     elif isinstance(val, dict):
-        return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+        return _hash_dict(val)
     elif isinstance(val, set):
-        return frozenset(_make_hashable(item) for item in val)
+        return _hash_set(val)
     else:
         hash(val)
         return val
@@ -79,7 +93,7 @@ def _get_cache_key(
     return (func_name, hashable_args, hashable_kwargs)
 
 
-def _validate_ttl_max_size(ttl: float, max_size: int) -> None:
+def _validate_ttl(ttl: float) -> None:
     if (
         not isinstance(ttl, (int, float))
         or isinstance(ttl, bool)
@@ -88,8 +102,15 @@ def _validate_ttl_max_size(ttl: float, max_size: int) -> None:
     ):
         raise ValueError("ttl must be a finite non-negative number")
 
+
+def _validate_max_size(max_size: int) -> None:
     if not isinstance(max_size, int) or isinstance(max_size, bool) or max_size <= 0:
         raise ValueError("max_size must be a positive integer")
+
+
+def _validate_ttl_max_size(ttl: float, max_size: int) -> None:
+    _validate_ttl(ttl)
+    _validate_max_size(max_size)
 
 
 def _get_or_create_lock(
