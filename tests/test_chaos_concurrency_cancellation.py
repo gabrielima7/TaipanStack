@@ -14,7 +14,7 @@ async def test_limit_concurrency_cancellation():
 
     # Queue a slow task to occupy the semaphore
     slow_future = asyncio.create_task(task_func(0.5))
-    await asyncio.sleep(0.1) # Let it acquire the semaphore
+    await asyncio.sleep(0.1)  # Let it acquire the semaphore
 
     # Queue another task which should block and wait
     blocked_future = asyncio.create_task(task_func(0.1))
