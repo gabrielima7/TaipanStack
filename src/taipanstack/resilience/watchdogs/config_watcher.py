@@ -211,7 +211,11 @@ class ConfigWatcher(BaseWatcher):
             on_validation_error: Callback for validation failures.
 
         """
-        if not math.isfinite(interval) or interval <= 0:
+        if (
+            not isinstance(interval, (int, float))
+            or not math.isfinite(interval)
+            or interval <= 0
+        ):
             raise ValueError("interval must be a finite positive number")
         super().__init__(interval=interval)
         self._config_paths = list(config_paths)

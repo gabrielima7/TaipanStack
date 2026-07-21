@@ -1,12 +1,13 @@
 import secrets
 
+import pytest
+
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
 def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan(
     monkeypatch,
 ) -> None:
-    import pytest
 
     # Test line 133 -> 139 where math.isfinite(jitter_amount) is False
     with pytest.raises(ValueError, match="finite"):
@@ -32,7 +33,8 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception(
 
 def test_utils_retry_chaos_coverage_retry_chaos_delay_negative() -> None:
     # Test line 140 (delay < 0 -> return 0.0)
-    config = RetryConfig(initial_delay=-10.0, jitter=False)
+    config = RetryConfig(initial_delay=1.0, jitter=False)
+    object.__setattr__(config, "initial_delay", -10.0)
     delay = calculate_delay(1, config)
     assert delay == 0.0
 
