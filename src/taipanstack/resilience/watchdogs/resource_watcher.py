@@ -53,11 +53,7 @@ def _validate_interval(interval: float) -> None:
 
 def _validate_threshold(name: str, value: float) -> None:
     """Validate a threshold parameter."""
-    if (
-        not isinstance(value, (int, float))
-        or not math.isfinite(value)
-        or value < 0
-    ):
+    if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
         raise ValueError(f"{name} must be a finite non-negative number")
 
 
