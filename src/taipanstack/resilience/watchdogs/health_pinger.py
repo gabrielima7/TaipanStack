@@ -121,7 +121,11 @@ class HealthPinger(BaseWatcher):
             on_health_change: Optional callback on status change.
 
         """
-        if not math.isfinite(interval) or interval <= 0:
+        if (
+            not isinstance(interval, (int, float))
+            or not math.isfinite(interval)
+            or interval <= 0
+        ):
             raise ValueError("interval must be a finite positive number")
         super().__init__(interval=interval)
         self._targets = list(targets)
