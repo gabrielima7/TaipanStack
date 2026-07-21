@@ -60,7 +60,9 @@ def _hash_sequence(val: tuple[object, ...] | list[object]) -> tuple[object, ...]
 
 
 def _hash_dict(val: dict[object, object]) -> tuple[object, ...]:
-    return tuple(sorted((k, _make_hashable(v)) for k, v in val.items()))
+    items = [(_make_hashable(k), _make_hashable(v)) for k, v in val.items()]
+    items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))
+    return tuple(items)
 
 
 def _hash_set(val: set[object]) -> frozenset[object]:
