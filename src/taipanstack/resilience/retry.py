@@ -96,8 +96,8 @@ def _validate_finite_or_default(
     """Validate that an attribute is finite, falling back to a default."""
     try:
         val = cast(float | int, getattr(obj, attr_name))
-        if not math.isfinite(val):
-            raise ValueError(f"{attr_name} must be a finite number")
+        if not math.isfinite(val) or val < 0:
+            raise ValueError(f"{attr_name} must be a finite non-negative number")
     except TypeError:
         object.__setattr__(obj, attr_name, default_val)
 

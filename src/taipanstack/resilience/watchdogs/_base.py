@@ -40,7 +40,11 @@ class BaseWatcher(ABC):
             interval: Seconds between each poll cycle.
 
         """
-        if not math.isfinite(interval) or interval <= 0:
+        if (
+            not isinstance(interval, (int, float))
+            or not math.isfinite(interval)
+            or interval <= 0
+        ):
             raise ValueError("interval must be a finite positive number")
         self._interval = interval
         self._stop_event: asyncio.Event = asyncio.Event()
