@@ -70,8 +70,6 @@ async def _acquire_async_semaphore(
                 return Ok(None)
         except TimeoutError:
             return Err(OverloadError())
-    except asyncio.CancelledError:
-        raise
     except Exception as e:
         return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
