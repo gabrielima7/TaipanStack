@@ -80,7 +80,19 @@ class Bulkhead:
 
         """
         self.name = name
+        if (
+            not isinstance(max_concurrent, int)
+            or isinstance(max_concurrent, bool)
+            or max_concurrent < 1
+        ):
+            raise ValueError("max_concurrent must be an integer >= 1")
         self._max_concurrent = max_concurrent
+        if (
+            not isinstance(max_queue, int)
+            or isinstance(max_queue, bool)
+            or max_queue < 0
+        ):
+            raise ValueError("max_queue must be an integer >= 0")
         self._max_queue = max_queue
         if not math.isfinite(timeout) or timeout < 0:
             raise ValueError("timeout must be a finite non-negative number")
