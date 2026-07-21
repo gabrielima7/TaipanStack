@@ -14,8 +14,12 @@ def test_chaos_adaptive_limits_retry_overflow():
 
 
 @given(
-    max_concurrent=st.one_of(st.integers(max_value=0), st.floats(), st.text(), st.booleans()),
-    max_queue=st.one_of(st.integers(max_value=-1), st.floats(), st.text(), st.booleans()),
+    max_concurrent=st.one_of(
+        st.integers(max_value=0), st.floats(), st.text(), st.booleans()
+    ),
+    max_queue=st.one_of(
+        st.integers(max_value=-1), st.floats(), st.text(), st.booleans()
+    ),
 )
 def test_chaos_adaptive_limits_bulkhead_invalid_params(max_concurrent, max_queue):
     with pytest.raises((ValueError, TypeError)):
