@@ -138,7 +138,10 @@ class AdaptiveRetry:
             return max(self._min_delay, min(learned, self._max_delay))
 
         # Fallback: exponential backoff
-        fallback_delay = self._min_delay * (2.0 ** (attempt - 1))
+        try:
+            fallback_delay = self._min_delay * (2.0 ** (attempt - 1))
+        except OverflowError:
+            fallback_delay = self._max_delay
         return max(self._min_delay, min(fallback_delay, self._max_delay))
 
     def to_retry_config(self) -> RetryConfig:
