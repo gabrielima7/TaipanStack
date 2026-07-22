@@ -15,7 +15,9 @@ from taipanstack.security.guards import (
 
 
 @pytest.mark.asyncio
-async def test_extreme_concurrent_microservice_chaos() -> None:
+async def test_chaos_engineering_mathematical_proof_extreme_concurrent_microservice_chaos() -> (
+    None
+):
     """
     Simulates real-world chaotic conditions on the ResilienceOrchestrator.
     This acts as our chaos microservice simulation, hitting 100 tasks.

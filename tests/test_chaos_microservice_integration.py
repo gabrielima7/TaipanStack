@@ -45,7 +45,9 @@ async def process_user_request(
 
 
 @pytest.mark.asyncio
-async def test_high_concurrency_chaos_integration() -> None:
+async def test_chaos_microservice_integration_high_concurrency_chaos_integration() -> (
+    None
+):
     urls = [
         "https://api.example.com",
         "http://169.254.169.254/latest/meta-data/",
@@ -85,7 +87,7 @@ async def test_high_concurrency_chaos_integration() -> None:
 )
 @settings(max_examples=50, deadline=None)
 @pytest.mark.asyncio
-async def test_property_based_chaos_endpoint(
+async def test_chaos_microservice_integration_property_based_chaos_endpoint(
     url: str, filepath: str, crash: bool, hang: bool
 ) -> None:
     payload = {"crash": crash, "hang": hang}

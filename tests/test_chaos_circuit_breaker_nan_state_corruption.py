@@ -3,7 +3,7 @@ import math
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_nan_state_corruption_chaos_circuit_breaker_nan_state_corruption():
+def test_chaos_circuit_breaker_nan_state_corruption():
     """Simulate extreme state corruption in CircuitBreaker counters.
 
     If memory or state gets corrupted such that `failure_count`, `success_count`,

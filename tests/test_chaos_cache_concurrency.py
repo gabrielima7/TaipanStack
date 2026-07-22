@@ -9,7 +9,7 @@ from taipanstack.utils.cache import cached
 
 
 @pytest.mark.asyncio
-async def test_chaos_cache_task_cancellation() -> None:
+async def test_chaos_cache_concurrency_chaos_cache_task_cancellation() -> None:
     """Test cache behavior when tasks are cancelled during lock acquisition."""
     call_count = 0
 

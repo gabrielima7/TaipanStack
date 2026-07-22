@@ -7,7 +7,7 @@ from taipanstack.resilience.resilience import timeout
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_memory_exhaustion_async_timeout():
+async def test_chaos_resilience_thread_exhaustion_async2_chaos_resilience_memory_exhaustion_async_timeout():
     @timeout(1.0)
     async def my_func():
         return Ok("done")
@@ -23,7 +23,7 @@ async def test_chaos_resilience_memory_exhaustion_async_timeout():
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_resource_exhaustion_async_timeout():
+async def test_chaos_resilience_thread_exhaustion_async2_chaos_resilience_resource_exhaustion_async_timeout():
     @timeout(1.0)
     async def my_func():
         return Ok("done")
