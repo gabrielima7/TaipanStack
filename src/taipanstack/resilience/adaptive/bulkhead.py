@@ -80,26 +80,30 @@ class Bulkhead:
 
         """
         self.name = name
-        if (
-            not isinstance(max_concurrent, int)
-            or isinstance(max_concurrent, bool)
-            or max_concurrent < 1
-        ):
-            raise ValueError("max_concurrent must be an integer >= 1")
-        self._max_concurrent = max_concurrent
-        if (
-            not isinstance(max_queue, int)
-            or isinstance(max_queue, bool)
-            or max_queue < 0
-        ):
-            raise ValueError("max_queue must be an integer >= 0")
-        self._max_queue = max_queue
-        if not math.isfinite(timeout) or timeout < 0:
-            raise ValueError("timeout must be a finite non-negative number")
-        self._timeout = timeout
-        self._semaphore = asyncio.Semaphore(max_concurrent)
+        self._max_concurrent = self._validate_max_concurrent(max_concurrent)
+        self._max_queue = self._validate_max_queue(max_queue)
+        self._timeout = self._validate_timeout(timeout)
+        self._semaphore = asyncio.Semaphore(self._max_concurrent)
         self._queued = 0
         self._active = 0
+
+    @staticmethod
+    def _validate_max_concurrent(value: int) -> int:
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            raise ValueError("max_concurrent must be an integer >= 1")
+        return value
+
+    @staticmethod
+    def _validate_max_queue(value: int) -> int:
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError("max_queue must be an integer >= 0")
+        return value
+
+    @staticmethod
+    def _validate_timeout(value: float) -> float:
+        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+            raise ValueError("timeout must be a finite non-negative number")
+        return float(value)
 
     @property
     def available_permits(self) -> int:
