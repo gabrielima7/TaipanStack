@@ -6,7 +6,7 @@ from taipanstack.utils.concurrency import limit_concurrency
 
 
 @pytest.mark.asyncio
-async def test_limit_concurrency_cancellation():
+async def test_chaos_concurrency_cancellation_limit_concurrency_cancellation():
     started_event = asyncio.Event()
     release_event = asyncio.Event()
 

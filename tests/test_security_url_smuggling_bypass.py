@@ -10,7 +10,7 @@ control_char_url_encoded_strategy = st.builds(
 
 @given(url=control_char_url_encoded_strategy)
 @settings(max_examples=100)
-def test_security_url_smuggling_bypass_security_url_smuggling_bypass(url: str) -> None:
+def test_security_url_smuggling_bypass(url: str) -> None:
     import pytest
 
     with pytest.raises(ValueError, match="URL contains invalid characters"):
