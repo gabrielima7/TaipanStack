@@ -27,18 +27,18 @@ def test_chaos_retry_on_mutation_chaos_retry_single_exception_type_not_tuple():
     call_count = 0
 
     @retry(max_attempts=2, on=ValueError)
-    def test_func():
+    def test_chaos_retry_on_mutation_func():
         nonlocal call_count
         call_count += 1
         if call_count < 2:
             raise ValueError("fail first")
         return "success"
 
-    assert test_func() == "success"
+    assert test_chaos_retry_on_mutation_func() == "success"
     assert call_count == 2
 
 
-def test_chaos_retry_on_mutation_chaos_retry_on_mutation():
+def test_chaos_retry_on_mutation():
     corrupted_on = "NotAnException"
 
     with pytest.raises(

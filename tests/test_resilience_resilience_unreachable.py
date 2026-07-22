@@ -16,7 +16,7 @@ def test_resilience_resilience_unreachable_resilience_fallback_unreachable_sync(
 
 
 @pytest.mark.asyncio
-async def test_resilience_fallback_unreachable_async():
+async def test_resilience_resilience_unreachable_resilience_fallback_unreachable_async():
     """Test unreachable condition in async fallback wrapper."""
 
     @fallback("fallback_val", exceptions=(ValueError,))

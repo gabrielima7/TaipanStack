@@ -17,7 +17,7 @@ def test_chaos_fallback_type_mutation_chaos_fallback_chaos_type_mutation_sync():
 
 
 @pytest.mark.asyncio
-async def test_chaos_fallback_chaos_type_mutation_async():
+async def test_chaos_fallback_type_mutation_chaos_fallback_chaos_type_mutation_async():
     """Verify fallback exception tuple mutation safely defaults to re-raising original error in async."""
 
     @fallback("fallback", exceptions=123)  # type: ignore

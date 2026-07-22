@@ -3,7 +3,7 @@ import time
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_chaos_rate_limit_token_inf_mutation_chaos_rate_limit_token_inf_mutation() -> (
+def test_chaos_rate_limit_token_inf_mutation() -> (
     None
 ):
     """Test that RateLimiter handles infinite token mutation gracefully."""
