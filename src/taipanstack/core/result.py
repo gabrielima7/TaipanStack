@@ -190,6 +190,8 @@ def _collect_list(
         # on the AttributeError strategy for extreme performance on the hot path
         return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
     except AttributeError:
+        # Type-bound failure. If an object didn't have ok_value, we fall back
+        # to the safer (but slower) _collect_iterable to raise a proper TypeError.
         return None
 
 
@@ -209,8 +211,7 @@ def _collect_iterable(
         elif isinstance(result, err_cls):
             return result
         else:
-            # Fallback for structural compatibility
-            return result  # type: ignore[unreachable]
+            raise TypeError(f"Expected Result, got {type(result)}")
     return ok_cls(values)
 
 
