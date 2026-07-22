@@ -458,41 +458,47 @@ class TestResultStructuralCompatibility:
     def test_result_module_collect_results_structural_compatibility(
         self,
     ) -> None:
-        """Test fallback structural compatibility branch in collect_results."""
+        """Test fallback structural compatibility branch in collect_results raises TypeError."""
 
         class CustomResult:
             def __init__(self, value):
                 self.value = value
 
         custom_res = CustomResult(42)
+        import pytest
+
         from taipanstack.core.result import collect_results
 
-        res = collect_results([custom_res])  # type: ignore
-        assert res is custom_res
+        with pytest.raises(TypeError):
+            collect_results([custom_res])  # type: ignore
 
     def test_result_module_collect_list_attribute_error(self) -> None:
-        """Test the AttributeError handling in the optimized _collect_list path."""
+        """Test the TypeError handling in the optimized _collect_list path."""
 
         class MissingOkValue:
             marker = "missing"
 
+        import pytest
+
         from taipanstack.core.result import collect_results
 
-        res = collect_results([MissingOkValue()])  # type: ignore
-        assert isinstance(res, MissingOkValue)
+        with pytest.raises(TypeError):
+            collect_results([MissingOkValue()])  # type: ignore
 
     def test_result_module_collect_tuple_attribute_error(
         self,
     ) -> None:
-        """Test the AttributeError handling with tuple in _collect_list."""
+        """Test the TypeError handling with tuple in _collect_list."""
 
         class MissingOkValue:
             marker = "missing"
 
+        import pytest
+
         from taipanstack.core.result import collect_results
 
-        res = collect_results((MissingOkValue(),))  # type: ignore
-        assert isinstance(res, MissingOkValue)
+        with pytest.raises(TypeError):
+            collect_results((MissingOkValue(),))  # type: ignore
 
     @pytest.mark.asyncio
     async def test_result_module_map_async_structural_compatibility(
