@@ -221,7 +221,9 @@ def test_chaos_retry_type_mutation_chaos_retry_should_retry_type_error_for_issub
 
 
 @pytest.mark.asyncio
-async def test_chaos_retry_type_mutation_chaos_retry_decorator_type_error_for_isinstance() -> None:
+async def test_chaos_retry_type_mutation_chaos_retry_decorator_type_error_for_isinstance() -> (
+    None
+):
     """
     Test the try...except TypeError block for isinstance inside the retry decorator.
     """

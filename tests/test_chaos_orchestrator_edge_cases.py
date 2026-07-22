@@ -11,7 +11,9 @@ from taipanstack.resilience.circuit_breaker import CircuitBreakerError
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_standard_breaker() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_standard_breaker() -> (
+    None
+):
     from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
     cb = CircuitBreaker(name="test_std_cb", failure_threshold=1, timeout=60.0)
@@ -30,7 +32,9 @@ async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_standar
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_adaptive_breaker() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_adaptive_breaker() -> (
+    None
+):
     from taipanstack.resilience.circuit_breaker import CircuitState
 
     cb = AdaptiveCircuitBreaker(name="test_adapt_cb", recovery_timeout=60.0)
@@ -72,7 +76,9 @@ async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_bulkhead_edge() 
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_resource_exhaustion() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_resource_exhaustion() -> (
+    None
+):
     orchestrator = ResilienceOrchestrator().with_bulkhead(
         max_concurrent=1, max_queue=1, timeout=0.1
     )
@@ -112,7 +118,9 @@ async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_cancellation() -
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_handle_retry_failure_timeout() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_handle_retry_failure_timeout() -> (
+    None
+):
     from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
     from taipanstack.resilience.retry import RetryConfig
 

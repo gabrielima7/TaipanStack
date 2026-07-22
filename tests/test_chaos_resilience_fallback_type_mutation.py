@@ -6,9 +6,7 @@ from taipanstack.core.result import Ok
 from taipanstack.resilience.resilience import fallback
 
 
-def test_chaos_resilience_fallback_type_mutation() -> (
-    None
-):
+def test_chaos_resilience_fallback_type_mutation() -> None:
     """Simulate a severe production failure where fallback 'exceptions' is corrupted to a string."""
 
     @fallback("fallback_val", exceptions="string_mutation")  # type: ignore

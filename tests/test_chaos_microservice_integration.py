@@ -45,7 +45,9 @@ async def process_user_request(
 
 
 @pytest.mark.asyncio
-async def test_chaos_microservice_integration_high_concurrency_chaos_integration() -> None:
+async def test_chaos_microservice_integration_high_concurrency_chaos_integration() -> (
+    None
+):
     urls = [
         "https://api.example.com",
         "http://169.254.169.254/latest/meta-data/",
