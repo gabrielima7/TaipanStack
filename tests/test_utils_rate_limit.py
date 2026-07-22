@@ -277,3 +277,79 @@ class TestRateLimitDecorator:
         limiter = RateLimiter(10, 1.0)
         with patch.object(limiter, "_validate_and_add_tokens", return_value=False):
             assert limiter._process_consumption(1.0) is False
+
+
+def test_utils_rate_limit_is_valid_time_window_unreachable():
+    """Test _is_valid_time_window with unreachable logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    # Bypass type checking to test the branch
+    limiter.time_window = "invalid"  # type: ignore
+    assert limiter._is_valid_time_window() is False
+
+
+def test_utils_rate_limit_is_valid_capacity_unreachable():
+    """Test _is_valid_capacity with unreachable logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    limiter.capacity = "invalid"  # type: ignore
+    assert limiter._is_valid_capacity() is False
+
+
+def test_utils_rate_limit_apply_new_tokens_unreachable_tokens():
+    """Test _apply_new_tokens with unreachable tokens logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    limiter.tokens = "invalid"  # type: ignore
+    assert limiter._apply_new_tokens(1.0) is False
+    assert limiter.tokens == limiter.capacity
+
+
+def test_utils_rate_limit_apply_new_tokens_unreachable_new_tokens():
+    """Test _apply_new_tokens with unreachable new_tokens logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    assert limiter._apply_new_tokens("invalid") is False  # type: ignore
+
+
+def test_utils_rate_limit_calculate_elapsed_unreachable():
+    """Test _calculate_elapsed with unreachable logic."""
+    import time
+
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    limiter.last_update = "invalid"  # type: ignore
+    assert limiter._calculate_elapsed(time.monotonic()) is None
+
+
+def test_utils_rate_limit_try_consume_unreachable():
+    """Test _try_consume with unreachable logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    limiter.tokens = "invalid"  # type: ignore
+    assert limiter._try_consume(1.0) is False
+
+
+def test_utils_rate_limit_process_consumption_unreachable():
+    """Test _process_consumption with unreachable logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    import unittest.mock
+
+    with unittest.mock.patch.object(limiter, "_get_current_time", return_value=None):
+        assert limiter._process_consumption(1.0) is False
+
+
+def test_utils_rate_limit_is_valid_token_amount_unreachable():
+    """Test _is_valid_token_amount with unreachable logic."""
+    from taipanstack.utils.rate_limit import RateLimiter
+
+    limiter = RateLimiter(10, 1.0)
+    assert limiter._is_valid_token_amount("invalid") is False  # type: ignore

@@ -232,12 +232,14 @@ def test_utils_subprocess_execute_command_timeout_with_str_stdout() -> None:
         assert result.returncode == -1
         assert result.stdout == "some text output"
 
+
 def test_utils_subprocess_get_allowed_keys_empty_list():
     """Test _get_allowed_keys with empty list."""
     from taipanstack.utils.subprocess import _get_allowed_keys
 
     res = _get_allowed_keys([])
     assert res == set()
+
 
 def test_utils_subprocess_filter_environment_empty_allowed_keys():
     """Test _filter_environment with empty allowed keys."""
@@ -246,13 +248,18 @@ def test_utils_subprocess_filter_environment_empty_allowed_keys():
     res = _filter_environment({"SOME_VAR": "value"}, allowed_env_vars=[])
     assert res == {}
 
+
 def test_utils_subprocess_run_safe_command_check_raises():
     """Test run_safe_command with check=True raises on error."""
     # Mocking the execute_command function to return an error result
     import unittest.mock
 
     from taipanstack.utils.subprocess import run_safe_command
-    with unittest.mock.patch("taipanstack.utils.subprocess._execute_command") as mock_exec:
+
+    with unittest.mock.patch(
+        "taipanstack.utils.subprocess._execute_command"
+    ) as mock_exec:
+
         class DummyResult:
             def raise_on_error(self):
                 raise RuntimeError("Command failed")
