@@ -198,8 +198,8 @@ def _extract_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
     """
     if not hasattr(e, "stdout") or e.stdout is None:
         return ""
-    if isinstance(e.stdout, str):  # type: ignore[unreachable]
-        return e.stdout  # type: ignore[unreachable]
+    if isinstance(e.stdout, str):
+        return e.stdout
     return e.stdout.decode("utf-8", errors="replace")
 
 

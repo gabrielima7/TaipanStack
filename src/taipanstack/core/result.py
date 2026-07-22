@@ -210,7 +210,7 @@ def _collect_iterable(
             return result
         else:
             # Fallback for structural compatibility
-            return result  # type: ignore[unreachable]
+            return result
     return ok_cls(values)
 
 

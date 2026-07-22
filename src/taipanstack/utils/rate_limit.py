@@ -76,13 +76,13 @@ class RateLimiter:
     def _is_valid_time_window(self) -> bool:
         """Check if time window is valid."""
         if not isinstance(self.time_window, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         return math.isfinite(self.time_window) and self.time_window > 0.0
 
     def _is_valid_capacity(self) -> bool:
         """Check if capacity is valid."""
         if not isinstance(self.capacity, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         return math.isfinite(self.capacity) and self.capacity > 0.0
 
     def _is_valid_bucket_state(self) -> bool:
@@ -97,10 +97,10 @@ class RateLimiter:
     def _apply_new_tokens(self, new_tokens: float) -> bool:
         """Apply new tokens to the bucket."""
         if not isinstance(self.tokens, (int, float)):
-            self.tokens = self.capacity  # type: ignore[unreachable]
+            self.tokens = self.capacity
             return False
         if not isinstance(new_tokens, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         self.tokens += new_tokens
         if not math.isfinite(self.tokens):
             # Reset to previous state or capacity if corrupted
@@ -112,7 +112,7 @@ class RateLimiter:
     def _calculate_elapsed(self, now: float) -> float | None:
         """Calculate the elapsed time since the last update."""
         if not isinstance(self.last_update, (int, float)):
-            return None  # type: ignore[unreachable]
+            return None
         raw_elapsed = now - self.last_update
         if not math.isfinite(raw_elapsed):
             return None
@@ -147,7 +147,7 @@ class RateLimiter:
     def _try_consume(self, tokens: float) -> bool:
         """Attempt to consume the tokens from the bucket if available."""
         if not isinstance(self.tokens, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         if not math.isfinite(self.tokens):
             # Reset to capacity if state is corrupted to inf/nan
             self.tokens = self.capacity
@@ -172,7 +172,7 @@ class RateLimiter:
         if now is None:
             return False
         if not isinstance(now, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         if not math.isfinite(now):
             # If not finite, we can't add tokens, but we shouldn't fail
             # the consumption if there are already tokens.
@@ -193,7 +193,7 @@ class RateLimiter:
     def _is_valid_token_amount(self, tokens: float) -> bool:
         """Check if requested token amount is valid."""
         if not isinstance(tokens, (int, float)):
-            return False  # type: ignore[unreachable]
+            return False
         return math.isfinite(tokens)
 
     def consume(self, tokens: float = 1.0) -> bool:

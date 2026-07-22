@@ -72,7 +72,7 @@ def fallback(
                     except TypeError:
                         pass
                     raise
-                return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
+                return Err(cast(E, RuntimeError("Unreachable")))
 
             return async_wrapper
 
@@ -93,7 +93,7 @@ def fallback(
                 except TypeError:
                     pass
                 raise
-            return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
+            return Err(cast(E, RuntimeError("Unreachable")))
 
         return sync_wrapper
 

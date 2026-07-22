@@ -285,7 +285,7 @@ class CircuitBreaker:
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
         if not isinstance(self._state.last_failure_time, (int, float)):
-            return None  # type: ignore[unreachable]
+            return None
 
         safe_timeout = self._get_safe_timeout()
 
@@ -375,7 +375,7 @@ class CircuitBreaker:
             return self._handle_open_state()
         if state == CircuitState.HALF_OPEN:
             return self._handle_attempt_half_open(), None
-        return False, None  # type: ignore[unreachable]
+        return False, None
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
