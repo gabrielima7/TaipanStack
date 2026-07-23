@@ -80,7 +80,11 @@ class AdaptiveCircuitBreaker:
             raise ValueError("min_throughput must be at least 1")
         self._min_throughput = min_throughput
         self._target_error_rate = target_error_rate
-        if not math.isfinite(recovery_timeout) or recovery_timeout < 0:
+        if (
+            not isinstance(recovery_timeout, (int, float))
+            or not math.isfinite(recovery_timeout)
+            or recovery_timeout < 0
+        ):
             raise ValueError("recovery_timeout must be a finite non-negative number")
         self._recovery_timeout = recovery_timeout
 
