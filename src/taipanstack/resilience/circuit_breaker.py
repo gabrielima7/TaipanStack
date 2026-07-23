@@ -91,7 +91,7 @@ class CircuitBreakerConfig:
     failure_exceptions: tuple[type[Exception], ...] = (Exception,)
 
     def _check_finite(self, value: float, name: str) -> None:
-        if not math.isfinite(value) or value < 0:
+        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
             raise ValueError(f"{name} must be finite and non-negative")
 
     def __post_init__(self) -> None:
@@ -146,7 +146,11 @@ class CircuitBreaker:
 
     @staticmethod
     def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
-        if not math.isfinite(value) or value < min_val:
+        if (
+            not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            or value < min_val
+        ):
             raise ValueError(err_msg)
 
     @staticmethod
