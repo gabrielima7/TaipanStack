@@ -89,6 +89,12 @@ def _validate_string_params(value: str, max_length: int | None) -> None:
     _check_max_length_param(max_length)
 
 
+def _enforce_max_length(value: str, max_length: int | None) -> str:
+    if max_length is not None and len(value) > max_length:
+        return value[:max_length]
+    return value
+
+
 def sanitize_string(
     value: str,
     *,
@@ -126,9 +132,7 @@ def sanitize_string(
     result = _handle_html(result, allow_html)
     result = _handle_unicode(result, allow_unicode)
 
-    if max_length is not None and len(result) > max_length:
-        return result[:max_length]
-    return result
+    return _enforce_max_length(result, max_length)
 
 
 def _get_filename_from_path(filename: str) -> str:

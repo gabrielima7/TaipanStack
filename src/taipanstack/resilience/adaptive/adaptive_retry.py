@@ -172,15 +172,27 @@ class AdaptiveRetry:
         p95_delay = sorted_delays[min(idx, len(sorted_delays) - 1)]
         return avg_delay, p95_delay
 
-    @property
-    def metrics(self) -> RetryMetrics:
-        """Snapshot of current adaptive retry metrics."""
+    def _get_outcome_stats(self) -> tuple[int, int, list[float]]:
         with self._lock:
             total = len(self._outcomes)
             successes = sum(1 for o in self._outcomes if o.success)
             all_delays = [o.elapsed for o in self._outcomes]
+        return total, successes, all_delays
 
-        success_rate = successes / total if total > 0 else 1.0
+    @property
+    def metrics(self) -> RetryMetrics:
+        """Snapshot of current adaptive retry metrics."""
+        total, successes, all_delays = self._get_outcome_stats()
+
+        if total == 0:
+            return RetryMetrics(
+                success_rate=1.0,
+                avg_delay=0.0,
+                p95_delay=0.0,
+                total_outcomes=0,
+            )
+
+        success_rate = successes / total
         avg_delay, p95_delay = self._calculate_delay_metrics(all_delays)
 
         return RetryMetrics(
