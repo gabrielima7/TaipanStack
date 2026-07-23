@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-07-22 20:56 +0000
+            created at 2026-07-23 20:37 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -178,12 +178,12 @@
     <p class="run run2"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">    <span class="nam">default_val</span><span class="op">:</span> <span class="nam">float</span> <span class="op">|</span> <span class="nam">int</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="str">"""Validate that an attribute is finite, falling back to a default."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">    <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">        <span class="nam">val</span> <span class="op">=</span> <span class="nam">cast</span><span class="op">(</span><span class="nam">float</span> <span class="op">|</span> <span class="nam">int</span><span class="op">,</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">obj</span><span class="op">,</span> <span class="nam">attr_name</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">math</span><span class="op">.</span><span class="nam">isfinite</span><span class="op">(</span><span class="nam">val</span><span class="op">)</span> <span class="key">or</span> <span class="nam">val</span> <span class="op">&lt;</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">            <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">f"{attr_name} must be a finite non-negative number"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">    <span class="key">except</span> <span class="nam">TypeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">        <span class="nam">object</span><span class="op">.</span><span class="nam">__setattr__</span><span class="op">(</span><span class="nam">obj</span><span class="op">,</span> <span class="nam">attr_name</span><span class="op">,</span> <span class="nam">default_val</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">    <span class="nam">val</span> <span class="op">=</span> <span class="nam">getattr</span><span class="op">(</span><span class="nam">obj</span><span class="op">,</span> <span class="nam">attr_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">val</span><span class="op">,</span> <span class="op">(</span><span class="nam">int</span><span class="op">,</span> <span class="nam">float</span><span class="op">)</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">        <span class="nam">object</span><span class="op">.</span><span class="nam">__setattr__</span><span class="op">(</span><span class="nam">obj</span><span class="op">,</span> <span class="nam">attr_name</span><span class="op">,</span> <span class="nam">default_val</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">        <span class="key">return</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">math</span><span class="op">.</span><span class="nam">isfinite</span><span class="op">(</span><span class="nam">val</span><span class="op">)</span> <span class="key">or</span> <span class="nam">val</span> <span class="op">&lt;</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">        <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">f"{attr_name} must be a finite non-negative number"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="op">@</span><span class="nam">dataclass</span><span class="op">(</span><span class="nam">frozen</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -800,7 +800,7 @@
             <a class="nav" href="z_ca669a1525cc1a2f___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-07-22 20:56 +0000
+            created at 2026-07-23 20:37 +0000
         </p>
     </div>
 </footer>
