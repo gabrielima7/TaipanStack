@@ -94,12 +94,12 @@ def _validate_finite_or_default(
     default_val: float | int,
 ) -> None:
     """Validate that an attribute is finite, falling back to a default."""
-    try:
-        val = cast(float | int, getattr(obj, attr_name))
-        if not math.isfinite(val) or val < 0:
-            raise ValueError(f"{attr_name} must be a finite non-negative number")
-    except TypeError:
+    val = getattr(obj, attr_name)
+    if not isinstance(val, (int, float)):
         object.__setattr__(obj, attr_name, default_val)
+        return
+    if not math.isfinite(val) or val < 0:
+        raise ValueError(f"{attr_name} must be a finite non-negative number")
 
 
 @dataclass(frozen=True)
