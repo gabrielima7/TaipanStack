@@ -219,10 +219,12 @@ def get_safe_config(env_key: str) -> dict[str, str]:
 
     # 1. guard_env_variable checks bounds to prevent DoS attacks
     # (e.g. extremely long strings) and validates allowed names.
+    # You can also use `denied_names` to block specific variables.
     try:
         safe_key = guard_env_variable(
             env_key,
-            allowed_names=["DEBUG", "ENVIRONMENT", "LOG_LEVEL"]
+            allowed_names=["DEBUG", "ENVIRONMENT", "LOG_LEVEL"],
+            denied_names=["AWS_SECRET_ACCESS_KEY", "DATABASE_URL"]
         )
     except SecurityError as e:
         raise HTTPException(status_code=400, detail=str(e))
