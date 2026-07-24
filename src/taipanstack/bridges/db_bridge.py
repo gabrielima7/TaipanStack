@@ -187,7 +187,7 @@ class ResilientDatabase:
                 statement,  # type: ignore[misc]
                 attempt,
                 max_attempts,
-                **kwargs,  # type: ignore[misc]
+                **kwargs,
             )
             if not isinstance(outcome, tuple):  # type: ignore[misc]
                 return outcome  # type: ignore[misc]
