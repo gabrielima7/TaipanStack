@@ -90,14 +90,18 @@ def test_utils_subprocess_additional_extract_timeout_stdout_not_str():
     err.stdout = b"some bytes"
     assert _extract_timeout_stdout(err) == "some bytes"
 
+
 def test_utils_subprocess_validate_timeout_type_error() -> None:
     """Test _validate_timeout with invalid types."""
     from taipanstack.utils.subprocess import _validate_timeout
+
     with pytest.raises(TypeError, match="timeout must be a finite non-negative number"):
-        _validate_timeout("10") # type: ignore
+        _validate_timeout("10")  # type: ignore
+
 
 def test_utils_subprocess_validate_timeout_none() -> None:
     """Test _validate_timeout with None."""
     from taipanstack.utils.subprocess import _validate_timeout
+
     # Should not raise
-    _validate_timeout(None) # type: ignore
+    _validate_timeout(None)  # type: ignore
