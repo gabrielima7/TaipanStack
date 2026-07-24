@@ -291,9 +291,16 @@ def _validate_timeout(timeout: float) -> None:
         ValueError: If timeout is invalid.
 
     """
-    if timeout is not None and not (
-        isinstance(timeout, (int, float)) and math.isfinite(timeout) and timeout >= 0
-    ):
+    if timeout is None:
+        return  # type: ignore[unreachable]
+
+    if not isinstance(timeout, (int, float)):
+        raise TypeError("timeout must be a finite non-negative number")
+
+    if not math.isfinite(timeout):
+        raise ValueError("timeout must be a finite non-negative number")
+
+    if timeout < 0:
         raise ValueError("timeout must be a finite non-negative number")
 
 
