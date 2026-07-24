@@ -61,7 +61,7 @@ def _hash_sequence(val: tuple[object, ...] | list[object]) -> tuple[object, ...]
 
 def _hash_dict(val: dict[object, object]) -> tuple[object, ...]:
     items = [(_make_hashable(k), _make_hashable(v)) for k, v in val.items()]
-    items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))
+    items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))  # type: ignore[misc]
     return tuple(items)
 
 
@@ -178,10 +178,10 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 cache_key = _get_cache_key(
-                    cast(str, getattr(func, "__name__", "unknown")),
+                    cast(str, getattr(func, "__name__", "unknown")),  # type: ignore[misc]
                     cast(tuple[object, ...], args),
                     cast(dict[str, object], kwargs),
                 )
@@ -210,7 +210,7 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
                 finally:
                     _release_lock(cache_key, _locks, _lock_waiters)
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:

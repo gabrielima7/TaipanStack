@@ -41,7 +41,7 @@ logger = logging.getLogger("taipanstack.resilience.circuit_breaker")
 try:
     import structlog as _structlog
 
-    _structlog_logger = _structlog.get_logger("taipanstack.resilience.circuit_breaker")
+    _structlog_logger = _structlog.get_logger("taipanstack.resilience.circuit_breaker")  # type: ignore[misc]
     _HAS_STRUCTLOG = True
 except ImportError:
     _structlog_logger = None
@@ -232,8 +232,8 @@ class CircuitBreaker:
         new_state: CircuitState,
         e: Exception,
     ) -> None:
-        if _HAS_STRUCTLOG and _structlog_logger is not None:
-            _structlog_logger.error(
+        if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
+            _structlog_logger.error(  # type: ignore[misc]
                 "circuit_state_change_callback_failed",
                 circuit=self.name,
                 old_state=old_state.value,
@@ -252,8 +252,8 @@ class CircuitBreaker:
         old_state: CircuitState,
         new_state: CircuitState,
     ) -> None:
-        if _HAS_STRUCTLOG and _structlog_logger is not None:
-            _structlog_logger.warning(
+        if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
+            _structlog_logger.warning(  # type: ignore[misc]
                 "circuit_state_changed",
                 circuit=self.name,
                 old_state=old_state.value,
@@ -636,7 +636,7 @@ class CircuitBreaker:
                 finally:
                     self._decrement_half_open(is_half_open)
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         func_sync = cast(Callable[P, R], func)
 

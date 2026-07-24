@@ -686,11 +686,11 @@ def _is_ip_address_safe(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -> 
     if _is_ip_address_unsafe_bounds(addr):
         return False
     return not (
-        getattr(addr, "is_multicast", False) or getattr(addr, "is_unspecified", False)
+        getattr(addr, "is_multicast", False) or getattr(addr, "is_unspecified", False)  # type: ignore[misc]
     )
 
 
-@functools.lru_cache(maxsize=1024)
+@functools.lru_cache(maxsize=1024)  # type: ignore[misc]
 def _is_ip_safe(raw_ip: str) -> bool:
     """Check if a single IP address is safe (not private/loopback/reserved)."""
     try:

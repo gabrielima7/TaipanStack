@@ -96,7 +96,7 @@ def _handle_async_concurrency(
         finally:
             async_semaphore.release()
 
-    return async_wrapper
+    return async_wrapper  # type: ignore[misc]
 
 
 def _acquire_sync_semaphore(
@@ -196,7 +196,7 @@ def limit_concurrency(
     ):
         if inspect.iscoroutinefunction(func):
             return _handle_async_concurrency(
-                func,
+                func,  # type: ignore[misc]
                 max_tasks,
                 timeout,
             )

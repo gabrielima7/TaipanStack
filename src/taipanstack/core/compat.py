@@ -104,7 +104,7 @@ def _check_nogil_flag() -> bool | None:
     """
     try:
         if hasattr(sys.flags, "nogil"):
-            return bool(sys.flags.nogil)
+            return bool(sys.flags.nogil)  # type: ignore[misc]
     except (AttributeError, TypeError):
         pass
     return None
@@ -113,11 +113,11 @@ def _check_nogil_flag() -> bool | None:
 def _check_disable_gil_config() -> bool:
     """Check if build was configured with --disable-gil."""
     try:
-        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
+        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""  # type: ignore[misc]
     except (AttributeError, TypeError):
         return False
     else:
-        return "--disable-gil" in config_args
+        return "--disable-gil" in config_args  # type: ignore[misc]
 
 
 def _check_free_threading_available() -> bool:
@@ -145,8 +145,8 @@ def _check_mimalloc_available() -> bool:
 
     try:
         # Check if built with mimalloc
-        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
-        return "mimalloc" in config_args.lower()
+        config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""  # type: ignore[misc]
+        return "mimalloc" in config_args.lower()  # type: ignore[misc]
     except (AttributeError, TypeError):
         return False
 

@@ -55,7 +55,7 @@ def fallback(
     ) -> ResultFunc[P, T, E] | AsyncResultFunc[P, T, E]:
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
                     # func is a coroutine function here
@@ -74,7 +74,7 @@ def fallback(
                     raise
                 return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
@@ -137,7 +137,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
     ):
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(
                 *args: P.args,
                 **kwargs: P.kwargs,
@@ -178,7 +178,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
                         return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
                     return Err(cast(E, RuntimeError(f"Task exhaustion: {e!s}")))
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         @functools.wraps(func)
         def sync_wrapper(

@@ -96,23 +96,23 @@ def validate_inputs(
 
             # Validate each parameter that has a validator
             for param_name, validator in validators.items():
-                if param_name in bound.arguments:
-                    value = bound.arguments[param_name]
+                if param_name in bound.arguments:  # type: ignore[misc]
+                    value = bound.arguments[param_name]  # type: ignore[misc]
                     try:
                         # Call validator - it should raise on invalid input
-                        validated = validator(value)
+                        validated = validator(value)  # type: ignore[misc]
                         # Update to validated value if returned
                         if validated is not None:
-                            bound.arguments[param_name] = validated
+                            bound.arguments[param_name] = validated  # type: ignore[misc]
                     except (ValueError, TypeError) as e:
                         raise ValidationError(
                             str(e),
                             param_name=param_name,
-                            value=repr(value)[:100],
+                            value=repr(value)[:100],  # type: ignore[misc]
                         ) from e
 
             # Call original function with validated arguments
-            return func(*bound.args, **bound.kwargs)
+            return func(*bound.args, **bound.kwargs)  # type: ignore[misc]
 
         return wrapper
 
@@ -255,7 +255,7 @@ def _timeout_with_signal(
     """Implement timeout using Unix signals."""
 
     def handler(_signum: int, _frame: FrameType | None) -> None:
-        raise OperationTimeoutError(seconds, func.__name__)
+        raise OperationTimeoutError(seconds, func.__name__)  # type: ignore[misc]
 
     # Set up signal handler
     old_handler = signal.signal(signal.SIGALRM, handler)
@@ -292,7 +292,7 @@ def _timeout_with_thread(
 
     if thread.is_alive():
         # Thread still running - timeout occurred
-        raise OperationTimeoutError(seconds, func.__name__)
+        raise OperationTimeoutError(seconds, func.__name__)  # type: ignore[misc]
 
     if exception:
         raise exception[0]
@@ -373,15 +373,15 @@ def require_type(
             bound.apply_defaults()
 
             for param_name, expected_type in type_hints.items():
-                if param_name in bound.arguments:
-                    value = bound.arguments[param_name]
-                    if not isinstance(value, expected_type):
+                if param_name in bound.arguments:  # type: ignore[misc]
+                    value = bound.arguments[param_name]  # type: ignore[misc]
+                    if not isinstance(value, expected_type):  # type: ignore[misc]
                         raise TypeError(
                             f"Parameter '{param_name}' expected "
-                            f"{expected_type.__name__}, got {type(value).__name__}",
+                            f"{expected_type.__name__}, got {type(value).__name__}",  # type: ignore[misc]
                         )
 
-            return func(*bound.args, **bound.kwargs)
+            return func(*bound.args, **bound.kwargs)  # type: ignore[misc]
 
         return wrapper
 

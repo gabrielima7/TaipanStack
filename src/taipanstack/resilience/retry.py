@@ -81,7 +81,7 @@ logger = logging.getLogger("taipanstack.resilience.retry")
 try:
     import structlog as _structlog
 
-    _structlog_logger = _structlog.get_logger("taipanstack.resilience.retry")
+    _structlog_logger = _structlog.get_logger("taipanstack.resilience.retry")  # type: ignore[misc]
     _HAS_STRUCTLOG = True
 except ImportError:
     _structlog_logger = None
@@ -94,8 +94,8 @@ def _validate_finite_or_default(
     default_val: float | int,
 ) -> None:
     """Validate that an attribute is finite, falling back to a default."""
-    val = getattr(obj, attr_name)
-    if not isinstance(val, (int, float)):
+    val = getattr(obj, attr_name)  # type: ignore[misc]
+    if not isinstance(val, (int, float)):  # type: ignore[misc]
         object.__setattr__(obj, attr_name, default_val)
         return
     if not math.isfinite(val) or val < 0:
@@ -227,8 +227,8 @@ def calculate_delay(
 
 def _log_retry_callback_failure(func_name: str, e: Exception) -> None:
     """Log a failure during the retry callback execution."""
-    if _HAS_STRUCTLOG and _structlog_logger is not None:
-        _structlog_logger.error(
+    if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
+        _structlog_logger.error(  # type: ignore[misc]
             "retry_callback_failed",
             function=func_name,
             error=str(e),
@@ -249,8 +249,8 @@ def _log_retry_attempt_fallback(
     config: RetryConfig,
 ) -> None:
     """Log the retry attempt if no callback is provided."""
-    if _HAS_STRUCTLOG and _structlog_logger is not None:
-        _structlog_logger.warning(
+    if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
+        _structlog_logger.warning(  # type: ignore[misc]
             "retry_attempted",
             function=func_name,
             attempt=attempt,
@@ -374,7 +374,7 @@ def _ensure_tuple(
     on: tuple[type[Exception], ...] | type[Exception],
 ) -> tuple[type[Exception], ...]:
     """Ensure the exception parameter is a tuple of exception types."""
-    if isinstance(on, type) and issubclass(on, BaseException):
+    if isinstance(on, type) and issubclass(on, BaseException):  # type: ignore[misc]
         return (on,)
     if not isinstance(on, tuple):
         msg = (  # type: ignore[unreachable]
@@ -391,7 +391,7 @@ def _validate_retry_exceptions(
     on_tuple = _ensure_tuple(on)
 
     for exc_type in on_tuple:
-        if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):
+        if not isinstance(exc_type, type) or not issubclass(exc_type, BaseException):  # type: ignore[misc]
             msg = (  # type: ignore[unreachable]
                 f"All elements in 'on' must be subclasses of BaseException, "
                 f"got {type(exc_type).__name__}"
@@ -510,7 +510,7 @@ def retry(
                     last_exception,
                 )
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         func_sync = cast(Callable[P, R], func)
 

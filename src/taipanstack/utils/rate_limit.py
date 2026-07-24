@@ -273,7 +273,7 @@ def rate_limit(
 
         if inspect.iscoroutinefunction(func):
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(
                 *args: P.args,
                 **kwargs: P.kwargs,
@@ -283,9 +283,9 @@ def rate_limit(
                         return Err(RateLimitError())
                 except Exception:
                     return Err(RateLimitError())
-                return Ok(await func(*args, **kwargs))
+                return Ok(await func(*args, **kwargs))  # type: ignore[misc]
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[misc]
 
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
