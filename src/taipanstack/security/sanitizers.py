@@ -169,7 +169,7 @@ def _remove_invalid_chars(stem: str, replacement: str) -> str:
     try:
         if "\\" in replacement:
             # Use lambda to avoid processing regex escape sequences in replacement
-            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)
+            safe_stem = _INVALID_FILENAME_CHARS_RE.sub(lambda _: replacement, stem)  # type: ignore[misc]
         else:
             safe_stem = _INVALID_FILENAME_CHARS_RE.sub(replacement, stem)
     except re.error:

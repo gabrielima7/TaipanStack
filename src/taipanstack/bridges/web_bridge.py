@@ -202,9 +202,9 @@ class TaipanMiddleware:
         async def send_with_headers(message: MutableMapping[str, object]) -> None:
             if message.get("type") == "http.response.start":
                 headers = message.get("headers")
-                existing = list(headers) if isinstance(headers, (list, tuple)) else []
-                existing.extend(extra_headers)
-                message["headers"] = existing
+                existing = list(headers) if isinstance(headers, (list, tuple)) else []  # type: ignore[misc]
+                existing.extend(extra_headers)  # type: ignore[misc]
+                message["headers"] = existing  # type: ignore[misc]
             await send(message)
 
         return send_with_headers

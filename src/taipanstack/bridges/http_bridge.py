@@ -308,7 +308,7 @@ async def safe_request(
 
     async def _do_request() -> httpx.Response:
         async with httpx.AsyncClient(timeout=timeout) as client:  # nosemgrep
-            request_func = cast(
+            request_func = cast(  # type: ignore[misc]
                 Callable[..., Awaitable[httpx.Response]],
                 client.request,
             )
@@ -366,7 +366,7 @@ class SafeHttpClient:
         self._retry_config = retry_config
         self._circuit_breaker = circuit_breaker
         self._retryable_status_codes = retryable_status_codes
-        self._client_kwargs = client_kwargs
+        self._client_kwargs = client_kwargs  # type: ignore[misc]
         self._timeout = timeout
         self._client: httpx.AsyncClient | None = None
 
@@ -380,7 +380,7 @@ class SafeHttpClient:
             raise ImportError(msg)
         self._client = httpx.AsyncClient(
             timeout=self._timeout,
-            **self._client_kwargs,
+            **self._client_kwargs,  # type: ignore[misc]
         )  # nosemgrep
         return self
 
@@ -424,7 +424,7 @@ class SafeHttpClient:
         async def _do_request() -> httpx.Response:
             # We explicitly verified client is not None above
             client: httpx.AsyncClient = cast(httpx.AsyncClient, self._client)
-            request_func = cast(
+            request_func = cast(  # type: ignore[misc]
                 Callable[..., Awaitable[httpx.Response]],
                 client.request,
             )

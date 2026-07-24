@@ -62,6 +62,6 @@ def get_attr_or_err(
 
     """
     try:
-        return Ok(getattr(module, name))
+        return Ok(getattr(module, name))  # type: ignore[misc]
     except AttributeError as exc:
         return Err(exc)
