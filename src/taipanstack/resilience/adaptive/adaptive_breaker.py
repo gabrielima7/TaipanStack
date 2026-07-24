@@ -76,23 +76,31 @@ class AdaptiveCircuitBreaker:
     ) -> None:
         """Initialize the adaptive circuit breaker."""
         self.name = name
-        if min_throughput < 1:
-            raise ValueError("min_throughput must be at least 1")
-        self._min_throughput = min_throughput
+        self._min_throughput = self._validate_min_throughput(min_throughput)
         self._target_error_rate = target_error_rate
-        if (
-            not isinstance(recovery_timeout, (int, float))
-            or not math.isfinite(recovery_timeout)
-            or recovery_timeout < 0
-        ):
-            raise ValueError("recovery_timeout must be a finite non-negative number")
-        self._recovery_timeout = recovery_timeout
+        self._recovery_timeout = self._validate_recovery_timeout(recovery_timeout)
 
         # Rolling window: True = success, False = failure
         self._window: deque[bool] = deque(maxlen=window_size)
         self._state = CircuitState.CLOSED
         self._last_opened_at: float = 0.0
         self._lock = threading.Lock()
+
+    @staticmethod
+    def _validate_min_throughput(min_throughput: int) -> int:
+        if min_throughput < 1:
+            raise ValueError("min_throughput must be at least 1")
+        return min_throughput
+
+    @staticmethod
+    def _validate_recovery_timeout(recovery_timeout: float) -> float:
+        if not isinstance(recovery_timeout, (int, float)):
+            raise TypeError("recovery_timeout must be a finite non-negative number")
+        if not math.isfinite(recovery_timeout):
+            raise ValueError("recovery_timeout must be a finite non-negative number")
+        if recovery_timeout < 0:
+            raise ValueError("recovery_timeout must be a finite non-negative number")
+        return float(recovery_timeout)
 
     def _calculate_elapsed_time(self, now: float) -> float:
         """Calculate elapsed time since the circuit opened."""
