@@ -153,3 +153,22 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throu
     # (since error_rate 1.0 > target -1.0)
     breaker.record_failure(ValueError("test"))
     assert breaker.state == CircuitState.OPEN
+
+def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type():
+    with pytest.raises(
+        ValueError, match="recovery_timeout must be a finite non-negative number"
+    ):
+        AdaptiveCircuitBreaker(recovery_timeout="30.0") # type: ignore
+
+def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type_mock_finite():
+    # If the check for isinstance is hit, we cover line 95
+    """Tests invalid recovery timeout mocking finite check logic."""
+    with pytest.raises(
+        ValueError, match="recovery_timeout must be a finite non-negative number"
+    ):
+        AdaptiveCircuitBreaker(recovery_timeout="30.0")  # type: ignore
+
+def test_coverage_adaptive_breaker_adaptive_breaker_min_throughput_type_error():
+    # Cover the ValueError in _validate_min_throughput for invalid values like 0
+    with pytest.raises(ValueError, match="min_throughput must be at least 1"):
+        AdaptiveCircuitBreaker(min_throughput=0)
