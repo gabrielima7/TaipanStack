@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_9654db7cff7d4490_context_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-07-24 20:57 +0000
+            created at 2026-07-24 21:01 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -180,7 +180,7 @@
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">        <span class="key">finally</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">            <span class="nam">async_semaphore</span><span class="op">.</span><span class="nam">release</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">    <span class="key">return</span> <span class="nam">async_wrapper</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">    <span class="key">return</span> <span class="nam">async_wrapper</span>  <span class="com"># type: ignore[misc]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="key">def</span> <span class="nam">_acquire_sync_semaphore</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -280,7 +280,7 @@
     <p class="run run2"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">    <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">        <span class="key">if</span> <span class="nam">inspect</span><span class="op">.</span><span class="nam">iscoroutinefunction</span><span class="op">(</span><span class="nam">func</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">            <span class="key">return</span> <span class="nam">_handle_async_concurrency</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">                <span class="nam">func</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">                <span class="nam">func</span><span class="op">,</span>  <span class="com"># type: ignore[misc]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">                <span class="nam">max_tasks</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t">                <span class="nam">timeout</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -301,7 +301,7 @@
             <a class="nav" href="z_9654db7cff7d4490_context_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-07-24 20:57 +0000
+            created at 2026-07-24 21:01 +0000
         </p>
     </div>
 </footer>
