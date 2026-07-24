@@ -2732,16 +2732,18 @@
 </span><span id="__span-4-11">
 </span><span id="__span-4-12">    <span class="c1"># 1. guard_env_variable checks bounds to prevent DoS attacks</span>
 </span><span id="__span-4-13">    <span class="c1"># (e.g. extremely long strings) and validates allowed names.</span>
-</span><span id="__span-4-14">    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-4-15">        <span class="n">safe_key</span> <span class="o">=</span> <span class="n">guard_env_variable</span><span class="p">(</span>
-</span><span id="__span-4-16">            <span class="n">env_key</span><span class="p">,</span>
-</span><span id="__span-4-17">            <span class="n">allowed_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;ENVIRONMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;LOG_LEVEL&quot;</span><span class="p">]</span>
-</span><span id="__span-4-18">        <span class="p">)</span>
-</span><span id="__span-4-19">    <span class="k">except</span> <span class="n">SecurityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span id="__span-4-20">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-</span><span id="__span-4-21">
-</span><span id="__span-4-22">    <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">safe_key</span><span class="p">,</span> <span class="s2">&quot;not set&quot;</span><span class="p">)</span>
-</span><span id="__span-4-23">    <span class="k">return</span> <span class="p">{</span><span class="n">safe_key</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+</span><span id="__span-4-14">    <span class="c1"># You can also use `denied_names` to block specific variables.</span>
+</span><span id="__span-4-15">    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-4-16">        <span class="n">safe_key</span> <span class="o">=</span> <span class="n">guard_env_variable</span><span class="p">(</span>
+</span><span id="__span-4-17">            <span class="n">env_key</span><span class="p">,</span>
+</span><span id="__span-4-18">            <span class="n">allowed_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;ENVIRONMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;LOG_LEVEL&quot;</span><span class="p">],</span>
+</span><span id="__span-4-19">            <span class="n">denied_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;AWS_SECRET_ACCESS_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;DATABASE_URL&quot;</span><span class="p">]</span>
+</span><span id="__span-4-20">        <span class="p">)</span>
+</span><span id="__span-4-21">    <span class="k">except</span> <span class="n">SecurityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-4-22">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</span><span id="__span-4-23">
+</span><span id="__span-4-24">    <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">safe_key</span><span class="p">,</span> <span class="s2">&quot;not set&quot;</span><span class="p">)</span>
+</span><span id="__span-4-25">    <span class="k">return</span> <span class="p">{</span><span class="n">safe_key</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
 </span></code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">DoS Protection &amp; Bounds Checking</p>
