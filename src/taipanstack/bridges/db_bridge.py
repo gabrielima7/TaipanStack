@@ -184,7 +184,10 @@ class ResilientDatabase:
 
         for attempt in range(1, max_attempts + 1):
             outcome = await self._process_attempt(  # type: ignore[misc]
-                statement, attempt, max_attempts, **kwargs  # type: ignore[misc]
+                statement,  # type: ignore[misc]
+                attempt,
+                max_attempts,
+                **kwargs,  # type: ignore[misc]
             )
             if not isinstance(outcome, tuple):  # type: ignore[misc]
                 return outcome  # type: ignore[misc]
