@@ -41,9 +41,9 @@ class RateLimiter:
 
     def _validate_finite(self, max_calls: int, time_window: float) -> None:
         """Check if parameters are finite numbers."""
-        if not math.isfinite(max_calls):
+        if not isinstance(max_calls, (int, float)) or not math.isfinite(max_calls):
             raise ValueError("max_calls and time_window must be finite numbers")
-        if not math.isfinite(time_window):
+        if not isinstance(time_window, (int, float)) or not math.isfinite(time_window):
             raise ValueError("max_calls and time_window must be finite numbers")
 
     def _validate_positive(self, max_calls: int, time_window: float) -> None:
