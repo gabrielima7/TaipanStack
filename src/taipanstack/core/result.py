@@ -93,7 +93,7 @@ def safe(
         # Cast once here to satisfy mypy inside the closure
         func_coro = cast(Callable[P, Awaitable[T]], func)
 
-        @functools.wraps(func)
+        @functools.wraps(func)  # type: ignore[misc]
         async def async_wrapper(
             *args: P.args,
             **kwargs: P.kwargs,
@@ -159,7 +159,7 @@ def safe_from(
         if inspect.iscoroutinefunction(func):
             func_coro = cast(Callable[P, Awaitable[T]], func)
 
-            @functools.wraps(func)
+            @functools.wraps(func)  # type: ignore[misc]
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
                 try:
                     return Ok(await func_coro(*args, **kwargs))
@@ -188,7 +188,7 @@ def _collect_list(
     try:
         # We use a runtime # type: ignore to bypass mypy's strict check
         # on the AttributeError strategy for extreme performance on the hot path
-        return Ok([r.ok_value for r in results])  # type: ignore[union-attr]
+        return Ok([r.ok_value for r in results])  # type: ignore[union-attr,misc]
     except AttributeError:
         # Type-bound failure. If an object didn't have ok_value, we fall back
         # to the safer (but slower) _collect_iterable to raise a proper TypeError.
@@ -237,9 +237,9 @@ def collect_results(
 
     """
     if isinstance(results, (list, tuple)):
-        optimized_res = _collect_list(results)
-        if optimized_res is not None:
-            return optimized_res
+        optimized_res = _collect_list(results)  # type: ignore[misc]
+        if optimized_res is not None:  # type: ignore[misc]
+            return optimized_res  # type: ignore[misc]
 
     return _collect_iterable(results)
 

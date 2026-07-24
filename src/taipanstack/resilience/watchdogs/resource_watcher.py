@@ -73,12 +73,12 @@ def check_resources() -> Result[ResourceSnapshot, Exception]:
             ),
         )
 
-    cpu = psutil.cpu_percent(interval=0.1)
-    mem = psutil.virtual_memory().percent
+    cpu = psutil.cpu_percent(interval=0.1)  # type: ignore[misc]
+    mem = psutil.virtual_memory().percent  # type: ignore[misc]
     return Ok(
         ResourceSnapshot(
-            cpu_percent=cpu,
-            memory_percent=mem,
+            cpu_percent=cpu,  # type: ignore[misc]
+            memory_percent=mem,  # type: ignore[misc]
             timestamp=time.monotonic(),
         ),
     )

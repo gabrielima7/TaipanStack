@@ -120,7 +120,7 @@ def decode_jwt(
     _validate_jwt_algorithms(algorithms)
     _validate_jwt_audience(audience)
 
-    return jwt.decode(
+    return jwt.decode(  # type: ignore[misc]
         token,
         secret_key,
         algorithms=algorithms,

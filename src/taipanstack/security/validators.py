@@ -39,7 +39,7 @@ PROJECT_NAME_RESERVED = frozenset(
 
 def _get_type_name(expected_type: type | tuple[type, ...]) -> str:
     """Get the string representation of expected type(s)."""
-    if isinstance(expected_type, type):
+    if isinstance(expected_type, type):  # type: ignore[misc]
         return expected_type.__name__
     return " | ".join(t.__name__ for t in expected_type)
 

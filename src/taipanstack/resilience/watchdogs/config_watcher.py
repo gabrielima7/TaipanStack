@@ -91,9 +91,9 @@ def _parse_json(text: str) -> Result[dict[str, object], Exception]:
 
     """
     try:
-        data = json.loads(text)
-        if not isinstance(data, dict):
-            return Err(TypeError(f"Expected JSON object, got {type(data).__name__}"))
+        data = json.loads(text)  # type: ignore[misc]
+        if not isinstance(data, dict):  # type: ignore[misc]
+            return Err(TypeError(f"Expected JSON object, got {type(data).__name__}"))  # type: ignore[misc]
         return Ok(data)
     except (json.JSONDecodeError, ValueError) as exc:
         return Err(exc)

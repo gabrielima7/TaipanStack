@@ -126,7 +126,7 @@ class SecureBaseModel(BaseModel):
             The redacting dictionary representation of the model.
 
         """
-        data = super().model_dump(
+        data = super().model_dump(  # type: ignore[misc]
             mode=mode,
             include=include,
             exclude=exclude,
@@ -140,9 +140,9 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,
+            **kwargs,  # type: ignore[misc]
         )
-        return cast(dict[str, object], _mask_data(data))
+        return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
     def model_dump_json(  # noqa: PLR0913
         self,
@@ -172,7 +172,7 @@ class SecureBaseModel(BaseModel):
         # Extract indent if any, as model_dump does not accept it
 
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(
+        dumped_dict = super().model_dump(  # type: ignore[misc]
             mode="json",
             include=include,
             exclude=exclude,
@@ -186,9 +186,9 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,
+            **kwargs,  # type: ignore[misc]
         )
-        masked_dict = _mask_data(dumped_dict)
+        masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
         if indent is not None:

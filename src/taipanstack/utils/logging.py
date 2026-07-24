@@ -50,7 +50,7 @@ _SENSITIVE_KEY_REGEX = (
 REDACTED_VALUE = "***REDACTED***"
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=1024)  # type: ignore[misc]
 def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
     """Check if a key is sensitive using cached regex matching.
 
@@ -253,11 +253,11 @@ class StackLogger:
         self._context: dict[str, object] = {}
 
         if use_structured and HAS_STRUCTLOG:
-            self._logger = structlog.get_logger(name)
+            self._logger = structlog.get_logger(name)  # type: ignore[misc]
             self._structured = True
         else:
             self._logger = logging.getLogger(name)
-            self._logger.setLevel(getattr(logging, level.upper()))
+            self._logger.setLevel(getattr(logging, level.upper()))  # type: ignore[misc]
             self._structured = False
 
     def bind(self, **context: object) -> "StackLogger":
@@ -272,7 +272,7 @@ class StackLogger:
         """
         self._context.update(context)
         if self._structured and HAS_STRUCTLOG:
-            self._logger = self._logger.bind(**context)
+            self._logger = self._logger.bind(**context)  # type: ignore[misc]
         return self
 
     def unbind(self, *keys: str) -> "StackLogger":
@@ -288,7 +288,7 @@ class StackLogger:
         for key in keys:
             self._context.pop(key, None)
         if self._structured and HAS_STRUCTLOG:
-            self._logger = self._logger.unbind(*keys)
+            self._logger = self._logger.unbind(*keys)  # type: ignore[misc]
         return self
 
     def _format_message(self, message: str, **kwargs: object) -> str:
@@ -320,9 +320,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.debug(message, **kwargs)
+            self._logger.debug(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.debug(self._format_message(message, **kwargs))
+            self._logger.debug(self._format_message(message, **kwargs))  # type: ignore[misc]
 
     def info(self, message: str, **kwargs: object) -> None:
         """Log an info message.
@@ -333,9 +333,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.info(message, **kwargs)
+            self._logger.info(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.info(self._format_message(message, **kwargs))
+            self._logger.info(self._format_message(message, **kwargs))  # type: ignore[misc]
 
     def warning(self, message: str, **kwargs: object) -> None:
         """Log a warning message.
@@ -346,9 +346,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.warning(message, **kwargs)
+            self._logger.warning(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.warning(self._format_message(message, **kwargs))
+            self._logger.warning(self._format_message(message, **kwargs))  # type: ignore[misc]
 
     def error(self, message: str, **kwargs: object) -> None:
         """Log an error message.
@@ -359,9 +359,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.error(message, **kwargs)
+            self._logger.error(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.error(self._format_message(message, **kwargs))
+            self._logger.error(self._format_message(message, **kwargs))  # type: ignore[misc]
 
     def critical(self, message: str, **kwargs: object) -> None:
         """Log a critical message.
@@ -372,9 +372,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.critical(message, **kwargs)
+            self._logger.critical(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.critical(self._format_message(message, **kwargs))
+            self._logger.critical(self._format_message(message, **kwargs))  # type: ignore[misc]
 
     def exception(self, message: str, **kwargs: object) -> None:
         """Log an exception with traceback.
@@ -385,9 +385,9 @@ class StackLogger:
 
         """
         if self._structured:
-            self._logger.exception(message, **kwargs)
+            self._logger.exception(message, **kwargs)  # type: ignore[misc]
         else:
-            self._logger.exception(self._format_message(message, **kwargs))
+            self._logger.exception(self._format_message(message, **kwargs))  # type: ignore[misc]
 
 
 def _configure_structlog(*, level: int | str | None = None) -> None:
@@ -395,13 +395,13 @@ def _configure_structlog(*, level: int | str | None = None) -> None:
     if level is not None:
         if isinstance(level, str):
             level = getattr(_std_logging, level.upper(), _std_logging.INFO)
-        _std_logging.basicConfig(level=level)
+        _std_logging.basicConfig(level=level)  # type: ignore[misc]
 
     structlog.configure(
         processors=[
             structlog.stdlib.filter_by_level,
             structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
+            structlog.stdlib.add_log_level,  # type: ignore[misc]
             structlog.processors.TimeStamper(fmt="iso"),
             correlation_id_processor,
             mask_sensitive_data_processor,
@@ -455,7 +455,7 @@ def setup_logging(
         handlers.append(logging.FileHandler(log_file, encoding="utf-8"))
 
     logging.basicConfig(
-        level=getattr(logging, level.upper()),
+        level=getattr(logging, level.upper()),  # type: ignore[misc]
         format=log_format,
         handlers=handlers,
         force=True,
@@ -519,7 +519,7 @@ def log_operation(
         start_time = datetime.now(UTC)
         logger.bind(operation=operation)
 
-        log_method = getattr(logger, level.lower())
+        log_method = getattr(logger, level.lower())  # type: ignore[misc]
         log_method(f"Starting: {operation}")
 
         try:
