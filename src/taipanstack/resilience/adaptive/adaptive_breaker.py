@@ -95,7 +95,7 @@ class AdaptiveCircuitBreaker:
     @staticmethod
     def _validate_recovery_timeout(recovery_timeout: float) -> float:
         if not isinstance(recovery_timeout, (int, float)):
-            raise ValueError("recovery_timeout must be a finite non-negative number")
+            raise TypeError("recovery_timeout must be a finite non-negative number")
         if not math.isfinite(recovery_timeout):
             raise ValueError("recovery_timeout must be a finite non-negative number")
         if recovery_timeout < 0:
