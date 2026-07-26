@@ -28,6 +28,7 @@ def test_circuit_breaker_lock_deadlock() -> None:
     except Exception as e:
         pytest.fail(f"Failed with unexpected error: {e}")
 
+
 def test_rate_limit_lock_deadlock() -> None:
     limiter = RateLimiter(max_calls=10, time_window=1.0)
 
@@ -37,6 +38,7 @@ def test_rate_limit_lock_deadlock() -> None:
     # We expect this to return False quickly instead of deadlocking
     res = limiter.consume(1)
     assert res is False
+
 
 def test_circuit_breaker_lock_timeout_branches() -> None:
     # We need to trigger the `return` lines when lock acquisition fails (timeout=0.1)
