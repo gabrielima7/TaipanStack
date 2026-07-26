@@ -42,7 +42,6 @@ def test_circuit_breaker_lock_timeout_branches() -> None:
     # We need to trigger the `return` lines when lock acquisition fails (timeout=0.1)
     # The branches are in `_record_success`, `_record_failure`, `reset`, and `_decrement_half_open`
     # We can mock the lock's acquire method to always return False for this test.
-    from unittest.mock import patch
 
     cb = CircuitBreaker(failure_threshold=1)
 

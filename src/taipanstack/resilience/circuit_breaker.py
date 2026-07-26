@@ -385,7 +385,7 @@ class CircuitBreaker:
         """Check if a call should be attempted."""
         try:
             if not self._state.lock.acquire(timeout=0.1):
-                return False  # type: ignore[unreachable]
+                return False
             try:
                 should_attempt, state_change = self._evaluate_state_for_attempt()
             finally:
@@ -438,7 +438,7 @@ class CircuitBreaker:
         """Record a successful call."""
         try:
             if not self._state.lock.acquire(timeout=0.1):
-                return  # type: ignore[unreachable]
+                return
             try:
                 state_change = self._get_success_state_change()
             finally:
@@ -530,7 +530,7 @@ class CircuitBreaker:
 
         try:
             if not self._state.lock.acquire(timeout=0.1):
-                return  # type: ignore[unreachable]
+                return
             try:
                 self._update_failure_metrics()
                 state_change = self._get_failure_state_change()
@@ -546,7 +546,7 @@ class CircuitBreaker:
         """Reset circuit breaker to closed state."""
         try:
             if not self._state.lock.acquire(timeout=0.1):
-                return  # type: ignore[unreachable]
+                return
             try:
                 self._state.state = CircuitState.CLOSED
                 self._state.failure_count = 0
