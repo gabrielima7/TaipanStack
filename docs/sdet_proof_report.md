@@ -9,7 +9,7 @@ The core of TaipanStack's formal verification lies in the `Result` monad (`src/t
 **Theorem:** For any arbitrary operation $f(x)$ executed within TaipanStack's core domain, the output $O$ is strictly bounded to the set $\{Ok(V), Err(E)\}$, such that no unhandled exception leak $L$ occurs at the application boundary.
 
 **Proof (Empirical & Structural):**
-During our mass concurrency chaos simulation (`tests/test_chaos_engineering_mathematical_proof_standard_expected.py`), 1000 concurrent tasks subjected an endpoint to flaky logic, deadlocks, and SSRF injections simultaneously.
+During our mass concurrency chaos simulation (`tests/test_chaos_engineering_mathematical_proof.py`), 1000 concurrent tasks subjected an endpoint to flaky logic, deadlocks, and SSRF injections simultaneously.
 * The orchestrator's `_execute_inner` loop explicitly wraps all executions in a `try...except Exception as exc:` block, immediately binding exceptions to `Err(exc)`.
 * `mypy --strict` guarantees that all functions annotated to return `Result[T, E]` cannot implicitly return raw exceptions or `None`.
 * Total simulation failures: 100% captured within `Result` state. Zero base exceptions leaked.
