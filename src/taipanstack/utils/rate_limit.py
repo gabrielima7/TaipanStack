@@ -212,8 +212,12 @@ class RateLimiter:
             return True
 
         try:
-            with self._lock:
+            if not self._lock.acquire(timeout=0.1):
+                return False  # type: ignore[unreachable]
+            try:
                 return self._process_consumption(tokens)
+            finally:
+                self._lock.release()
         except Exception:
             return False
 
