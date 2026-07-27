@@ -148,43 +148,6 @@ class TestResilientDatabase:
         finally:
             _teardown_sqlalchemy_mock()
 
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_no_sqlalchemy(self) -> None:
-        """Health check returns Err without SQLAlchemy."""
-        db = ResilientDatabase(engine=MagicMock())
-        with patch.object(db_mod, "_HAS_SQLALCHEMY", False):
-            result = await db.health_check()
-        assert isinstance(result, Err)
-
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_ok(self) -> None:
-        """Health check returns Ok when DB is reachable."""
-        _setup_sqlalchemy_mock()
-        try:
-            with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-                db = ResilientDatabase(engine=MagicMock())
-                result = await db.health_check()
-
-            assert isinstance(result, Ok)
-            assert result.ok_value is True
-        finally:
-            _teardown_sqlalchemy_mock()
-
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_fails(self) -> None:
-        """Health check returns Err on DB failure."""
-        mock_session = _setup_sqlalchemy_mock()
-        mock_session.execute = AsyncMock(side_effect=ConnectionError("db down"))
-        try:
-            with patch.object(db_mod, "_HAS_SQLALCHEMY", True):
-                db = ResilientDatabase(engine=MagicMock())
-                result = await db.health_check()
-
-            assert isinstance(result, Err)
-        finally:
-            _teardown_sqlalchemy_mock()
-
-
 # --- ResilientRedis -----------------------------------------------------------
 
 
@@ -254,40 +217,6 @@ class TestResilientRedis:
             result = await r.execute("GET", "key")
 
         assert isinstance(result, Err)
-
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_no_redis(self) -> None:
-        """Health check returns Err without redis."""
-        r = ResilientRedis(client=MagicMock())
-        with patch.object(db_mod, "_HAS_REDIS", False):
-            result = await r.health_check()
-        assert isinstance(result, Err)
-
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_ok(self) -> None:
-        """Health check returns Ok on PONG."""
-        mock_client = AsyncMock()
-        mock_client.ping = AsyncMock(return_value=True)
-
-        with patch.object(db_mod, "_HAS_REDIS", True):
-            r = ResilientRedis(client=mock_client)
-            result = await r.health_check()
-
-        assert isinstance(result, Ok)
-        assert result.ok_value is True
-
-    @pytest.mark.asyncio
-    async def test_bridge_db_health_check_fails(self) -> None:
-        """Health check returns Err when Redis is down."""
-        mock_client = AsyncMock()
-        mock_client.ping = AsyncMock(side_effect=ConnectionError("redis down"))
-
-        with patch.object(db_mod, "_HAS_REDIS", True):
-            r = ResilientRedis(client=mock_client)
-            result = await r.health_check()
-
-        assert isinstance(result, Err)
-
 
 def test_bridge_db_db_bridge_import_error_coverage() -> None:
     """Test db_bridge import error fallback branches."""

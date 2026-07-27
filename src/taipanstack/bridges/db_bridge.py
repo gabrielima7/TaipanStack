@@ -31,7 +31,6 @@ logger = logging.getLogger("taipanstack.bridges.db")
 
 try:
     import sqlalchemy  # noqa: F401
-    from sqlalchemy import text as sa_text
     from sqlalchemy.ext.asyncio import AsyncSession
 
     _HAS_SQLALCHEMY = True
@@ -227,25 +226,6 @@ class ResilientDatabase:
 
         return await self._execute_loop(statement, max_attempts, **kwargs)  # type: ignore[misc]
 
-    async def health_check(self) -> Result[bool, Exception]:
-        """Check database connectivity.
-
-        Executes ``SELECT 1`` to verify the connection is alive.
-
-        Returns:
-            ``Ok(True)`` if healthy, ``Err`` on failure.
-
-        """
-        if not _HAS_SQLALCHEMY:
-            return Err(ImportError("sqlalchemy is required for health check"))
-
-        try:
-            async with AsyncSession(self._engine) as session:  # type: ignore[misc]
-                await session.execute(sa_text("SELECT 1"))  # type: ignore[misc]
-                return Ok(True)
-        except Exception as exc:
-            return Err(exc)
-
 
 class ResilientRedis:
     """Wraps a Redis async client with resilience patterns.
@@ -332,19 +312,3 @@ class ResilientRedis:
             return cb_result
 
         return await self._execute_command(command, *args)
-
-    async def health_check(self) -> Result[bool, Exception]:
-        """Check Redis connectivity via PING.
-
-        Returns:
-            ``Ok(True)`` if healthy, ``Err`` on failure.
-
-        """
-        if not _HAS_REDIS:
-            return Err(ImportError("redis is required for health check"))
-
-        try:
-            pong = await self._client.ping()  # type: ignore[misc]
-            return Ok(bool(pong))  # type: ignore[misc]
-        except Exception as exc:
-            return Err(exc)
