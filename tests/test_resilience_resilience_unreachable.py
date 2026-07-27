@@ -3,7 +3,7 @@ import pytest
 from taipanstack.resilience.resilience import fallback
 
 
-def test_resilience_resilience_unreachable_resilience_fallback_unreachable_sync():
+def test_resilience_resilience_unreachable_resilience_fallback_unreachable_sync_expected():
     """Test unreachable condition in sync fallback wrapper."""
 
     @fallback("fallback_val", exceptions=(ValueError,))

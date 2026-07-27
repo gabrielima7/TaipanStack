@@ -8,7 +8,7 @@ import pytest
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition() -> None:
+def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition_expected() -> None:
     """Simulate a severe race condition in RateLimiter.consume.
 
     Multiple threads attempt to consume a token simultaneously. By adding
@@ -68,7 +68,7 @@ def test_utils_rate_limit_chaos_rate_limiter_chaos_race_condition() -> None:
     assert limiter.tokens == 0.0, f"Expected 0.0 tokens left, got {limiter.tokens}"
 
 
-def test_utils_rate_limit_chaos_rate_limiter_chaos_backward_clock_jump(
+def test_utils_rate_limit_chaos_rate_limiter_chaos_backward_clock_jump_expected(
     monkeypatch: "pytest.MonkeyPatch",
 ) -> None:
     """Simulate a severe NTP anomaly/backward clock jump in RateLimiter.

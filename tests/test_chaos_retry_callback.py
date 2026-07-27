@@ -5,7 +5,7 @@ import pytest
 from taipanstack.resilience.retry import retry
 
 
-def test_chaos_retry_callback_retry_chaos_faulty_callback():
+def test_chaos_retry_callback_retry_chaos_faulty_callback_expected():
     def faulty_callback(attempt, max_attempts, exc, delay):
         raise ValueError("Simulated callback failure")
 
@@ -28,7 +28,7 @@ def test_chaos_retry_callback_retry_chaos_faulty_callback():
     assert recovering_service() == "success"
 
 
-def test_chaos_retry_callback_retry_chaos_faulty_callback_without_structlog(
+def test_chaos_retry_callback_retry_chaos_faulty_callback_without_structlog_expected(
     monkeypatch,
 ):
     monkeypatch.setattr(

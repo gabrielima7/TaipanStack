@@ -14,7 +14,7 @@ def test_taipanstack_script_extra_handle_error(capsys):
     assert "Error: Test error\n" in captured.err
 
 
-def test_taipanstack_script_extra_run_command_file_not_found():
+def test_taipanstack_script_extra_run_command_file_not_found_expected():
     args = argparse.Namespace(dry_run=False, verbose=False)
     with (
         patch("subprocess.run", side_effect=FileNotFoundError),
@@ -63,7 +63,7 @@ def test_taipanstack_script_extra_safe_write_write_error(tmp_path):
         assert "Could not write to file" in mock_error.call_args[0][0]
 
 
-def test_taipanstack_script_extra_generate_pyproject_config_dry_run_with_config(
+def test_taipanstack_script_extra_generate_pyproject_config_dry_run_with_config_expected(
     tmp_path, monkeypatch
 ):
     args = argparse.Namespace(dry_run=True, verbose=True, force=False)

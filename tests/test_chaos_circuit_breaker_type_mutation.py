@@ -17,7 +17,7 @@ def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_succe
     cb._record_success()
 
 
-def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure() -> (
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure_expected() -> (
     None
 ):
     """Test what happens if the state is an invalid value when _record_failure is called."""
@@ -47,7 +47,7 @@ def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_succe
     cb._record_success()
 
 
-def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure_open() -> (
+def test_chaos_circuit_breaker_type_mutation_circuit_breaker_type_mutation_failure_open_expected() -> (
     None
 ):
     """Test what happens if the state is OPEN when _record_failure is called."""

@@ -1,7 +1,7 @@
 from taipanstack.utils.rate_limit import RateLimiter
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_last_update():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_last_update_expected():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate last_update to string
@@ -11,7 +11,7 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_last_u
     assert limiter.consume() is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_capacity():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_capacity_expected():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate capacity to string
@@ -31,7 +31,7 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_tokens
     assert limiter.consume() is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_time_window():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_time_window_expected():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate time_window to string
@@ -41,7 +41,7 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_time_w
     assert limiter.consume() is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_consume():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_consume_expected():
     limiter = RateLimiter(10, 10.0)
 
     # Mutate last_update to dict to hit TypeError in math.isfinite(now)
@@ -63,14 +63,14 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_add_to
     assert limiter._add_tokens(10.0) is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now_expected():
     limiter = RateLimiter(10, 10.0)
     object.__setattr__(limiter, "tokens", "string")
     # consume tries tokens >= tokens
     assert limiter.consume() is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now_not_finite():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_consume_now_not_finite_expected():
     import math
 
     limiter = RateLimiter(10, 10.0)
@@ -88,7 +88,7 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_new_to
     assert limiter._apply_new_tokens("string") is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_exception():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_exception_expected():
     import unittest.mock
 
     limiter = RateLimiter(10, 10.0)
@@ -96,7 +96,7 @@ def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_ex
         assert limiter.consume() is False
 
 
-def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_not_float():
+def test_chaos_rate_limit_type_mutation_rate_limit_survives_type_mutation_now_not_float_expected():
     import unittest.mock
 
     limiter = RateLimiter(10, 10.0)

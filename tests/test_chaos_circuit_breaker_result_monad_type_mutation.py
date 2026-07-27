@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_process_result_corrupted_result() -> (
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_process_result_corrupted_result_expected() -> (
     None
 ):
     """Test _process_result when result is an invalid state."""
@@ -49,7 +49,7 @@ def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_
     assert cb._process_result(res) == res
 
 
-def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_state_fallthrough() -> (
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_state_fallthrough_expected() -> (
     None
 ):
     """Test corrupted state handling across multiple methods."""
@@ -61,7 +61,7 @@ def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_
     cb._safe_decrement_half_open_attempts()
 
 
-def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_half_open_attempts_negative() -> (
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_half_open_attempts_negative_expected() -> (
     None
 ):
     """Test half open attempts becoming negative."""
@@ -72,7 +72,7 @@ def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_
     assert cb._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_half_open_attempts() -> (
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_corrupted_half_open_attempts_expected() -> (
     None
 ):
     """Test half open attempts corrupted to a string."""
@@ -87,7 +87,7 @@ def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_
     assert cb._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count() -> (
+def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_handle_failure_closed_corrupted_failure_count_expected() -> (
     None
 ):
     """Test handle_failure_closed when failure count is corrupted."""

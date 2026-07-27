@@ -11,7 +11,7 @@ class DummyConfig(BaseModel):
     foo: str
 
 
-def test_chaos_config_watcher_extreme_callback_failure() -> None:
+def test_chaos_config_watcher_extreme_callback_failure_expected() -> None:
     """Chaos test: Ensure ConfigWatcher handles extreme callback failures gracefully."""
 
     def exploding_callback(model: BaseModel) -> None:
@@ -38,7 +38,7 @@ def test_chaos_config_watcher_extreme_callback_failure() -> None:
         watcher._handle_validation_failure(Path("dummy.json"), ValueError("test"))
 
 
-def test_chaos_config_watcher_corrupted_file_type(
+def test_chaos_config_watcher_corrupted_file_type_expected(
     tmp_path: Path, caplog: pytest.LogCaptureFixture
 ) -> None:
     """Chaos test: Ensure ConfigWatcher handles reading a directory as a file."""
@@ -54,7 +54,7 @@ def test_chaos_config_watcher_corrupted_file_type(
     assert "Cannot hash" in caplog.text
 
 
-def test_chaos_config_watcher_parse_env_empty_values() -> None:
+def test_chaos_config_watcher_parse_env_empty_values_expected() -> None:
     """Test _parse_env with empty values and weird quoting."""
     from taipanstack.resilience.watchdogs.config_watcher import _parse_env
 
@@ -73,7 +73,7 @@ def test_chaos_config_watcher_parse_env_empty_values() -> None:
     assert result["E"] == "   "
 
 
-def test_chaos_config_watcher_parse_content_unsupported_ext(
+def test_chaos_config_watcher_parse_content_unsupported_ext_expected(
     tmp_path: Path,
 ) -> None:
     """Test _parse_content_by_extension with an unsupported extension."""

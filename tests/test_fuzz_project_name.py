@@ -15,7 +15,7 @@ from taipanstack.security.validators import validate_project_name
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_project_name_malformed_max_length(
+def test_fuzz_project_name_malformed_max_length_expected(
     max_length,
 ) -> None:
     """Bombard validate_project_name with extreme, malformed max_length types."""
@@ -33,7 +33,7 @@ def test_fuzz_project_name_malformed_max_length(
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_project_name_malformed_allow_hyphen(
+def test_fuzz_project_name_malformed_allow_hyphen_expected(
     allow_hyphen,
 ) -> None:
     """Bombard validate_project_name with extreme, malformed allow_hyphen types."""
@@ -51,7 +51,7 @@ def test_fuzz_project_name_malformed_allow_hyphen(
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_project_name_malformed_allow_underscore(
+def test_fuzz_project_name_malformed_allow_underscore_expected(
     allow_underscore,
 ) -> None:
     """Bombard validate_project_name with extreme, malformed allow_underscore types."""

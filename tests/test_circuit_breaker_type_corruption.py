@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_circuit_breaker_type_corruption_half_open_attempts() -> None:
+def test_circuit_breaker_type_corruption_half_open_attempts_expected() -> None:
     breaker = CircuitBreaker(
         name="test_half_open", failure_threshold=3, success_threshold=2
     )
@@ -25,7 +25,7 @@ def test_circuit_breaker_type_corruption_success_count() -> None:
     assert breaker._state.state == CircuitState.HALF_OPEN
 
 
-def test_circuit_breaker_type_corruption_failure_count_in_update() -> None:
+def test_circuit_breaker_type_corruption_failure_count_in_update_expected() -> None:
     breaker = CircuitBreaker(
         name="test_failure_update", failure_threshold=3, success_threshold=2
     )
@@ -38,7 +38,7 @@ def test_circuit_breaker_type_corruption_failure_count_in_update() -> None:
     assert breaker._state.failure_count == 3
 
 
-def test_circuit_breaker_type_corruption_handle_failure_closed_direct() -> None:
+def test_circuit_breaker_type_corruption_handle_failure_closed_direct_expected() -> None:
     breaker = CircuitBreaker(
         name="test_failure_closed", failure_threshold=3, success_threshold=2
     )

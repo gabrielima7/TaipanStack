@@ -7,7 +7,7 @@ from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBrea
 from taipanstack.resilience.circuit_breaker import CircuitState
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_result():
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_result_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.5)
 
     # Test evaluate_result with Ok
@@ -25,7 +25,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_result():
     assert breaker.state.name == "OPEN"
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_reset_and_should_allow():
+def test_coverage_adaptive_breaker_adaptive_breaker_reset_and_should_allow_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.0)
     assert breaker.should_allow() is True
 
@@ -37,7 +37,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_reset_and_should_allow():
     assert breaker.metrics.total_calls == 0
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout():
+def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_expected():
     with pytest.raises(
         ValueError, match="recovery_timeout must be a finite non-negative number"
     ):
@@ -97,7 +97,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failur
     assert breaker._state == CircuitState.OPEN
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open(
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open_expected(
     monkeypatch,
 ):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=0.0)
@@ -117,7 +117,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_half_open(
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_half_open_expected(
     monkeypatch,
 ):
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
@@ -133,7 +133,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_h
     assert breaker.state == CircuitState.OPEN
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput():
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput_expected():
     breaker = AdaptiveCircuitBreaker(min_throughput=2, target_error_rate=0.5)
 
     # 1 error, less than min_throughput (2)
@@ -145,7 +145,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throu
     assert breaker.state == CircuitState.OPEN
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput_and_target_rate():
+def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput_and_target_rate_expected():
     # specifically test when target_rate is negative for coverage line 161
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=-1.0)
 
@@ -155,14 +155,14 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throu
     assert breaker.state == CircuitState.OPEN
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type():
+def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type_expected():
     with pytest.raises(
         TypeError, match="recovery_timeout must be a finite non-negative number"
     ):
         AdaptiveCircuitBreaker(recovery_timeout="30.0")  # type: ignore
 
 
-def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type_mock_finite():
+def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type_mock_finite_expected():
     # If the check for isinstance is hit, we cover line 95
     """Tests invalid recovery timeout mocking finite check logic."""
     with pytest.raises(

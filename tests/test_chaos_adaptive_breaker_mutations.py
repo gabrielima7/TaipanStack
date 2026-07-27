@@ -24,7 +24,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_target_error_rate_nan
     assert breaker.state == CircuitState.OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_mutation():
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_mutation_expected():
     """Chaos test: Mutate last_opened_at to a string."""
     breaker = AdaptiveCircuitBreaker()
     breaker._state = CircuitState.OPEN
@@ -34,7 +34,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_mutati
     assert breaker.state == CircuitState.HALF_OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_nan():
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_nan_expected():
     """Chaos test: Mutate last_opened_at to NaN."""
     breaker = AdaptiveCircuitBreaker()
     breaker._state = CircuitState.OPEN
@@ -44,7 +44,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_nan():
     assert breaker.state == CircuitState.HALF_OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward():
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward_expected():
     """Chaos test: Time jumps backward, so elapsed time is negative."""
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.OPEN
@@ -54,7 +54,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward()
     assert breaker.state == CircuitState.HALF_OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan_expected(
     monkeypatch,
 ):
     """Chaos test: time.monotonic() returns NaN."""
@@ -68,7 +68,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(
     assert breaker.state == CircuitState.OPEN
 
 
-def test_chaos_adaptive_breaker_mutations_adaptive_breaker_min_throughput_invalid():
+def test_chaos_adaptive_breaker_mutations_adaptive_breaker_min_throughput_invalid_expected():
     """Test that min_throughput < 1 raises ValueError."""
     import pytest
 

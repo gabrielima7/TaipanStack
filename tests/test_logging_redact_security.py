@@ -1,7 +1,7 @@
 from taipanstack.utils.logging import REDACTED_VALUE, _redact
 
 
-def test_logging_redact_security_utils_logging_redact_circular_reference_redacted():
+def test_logging_redact_security_utils_logging_redact_circular_reference_redacted_expected():
     d = {"name": "test"}
     d["self"] = d
     redacted = _redact(d)
@@ -9,21 +9,21 @@ def test_logging_redact_security_utils_logging_redact_circular_reference_redacte
     assert redacted["self"] == REDACTED_VALUE
 
 
-def test_logging_redact_security_utils_logging_redact_list_redacted():
+def test_logging_redact_security_utils_logging_redact_list_redacted_expected():
     test_list = [{"password": "123"}, "safe"]
     redacted = _redact(test_list)
     assert redacted[0]["password"] == REDACTED_VALUE
     assert redacted[1] == "safe"
 
 
-def test_logging_redact_security_utils_logging_redact_tuple_redacted():
+def test_logging_redact_security_utils_logging_redact_tuple_redacted_expected():
     test_tuple = ({"secret": "abc"}, 42)
     redacted = _redact(test_tuple)
     assert redacted[0]["secret"] == REDACTED_VALUE
     assert redacted[1] == 42
 
 
-def test_logging_redact_security_utils_logging_redact_no_regex_unmodified(
+def test_logging_redact_security_utils_logging_redact_no_regex_unmodified_expected(
     monkeypatch,
 ):
     monkeypatch.setattr("taipanstack.utils.logging._SENSITIVE_KEY_REGEX", None)

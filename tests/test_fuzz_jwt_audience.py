@@ -16,7 +16,7 @@ from taipanstack.security.jwt import decode_jwt
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_jwt_audience_decode_jwt_malformed_audience(
+def test_fuzz_jwt_audience_decode_jwt_malformed_audience_expected(
     audience,
 ) -> None:
     """Bombard decode_jwt with extreme, malformed audience types."""

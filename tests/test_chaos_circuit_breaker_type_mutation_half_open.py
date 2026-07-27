@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_negative() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_negative_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -14,7 +14,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_zero() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_zero_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -26,7 +26,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_corrupted() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_corrupted_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -38,7 +38,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_decrement() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_decrement_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -50,7 +50,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_decrement_closed() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corruption_half_open_attempts_decrement_closed_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -61,7 +61,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_type_corr
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement_half_open_false() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement_half_open_false_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -73,7 +73,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement
     assert breaker._state.half_open_attempts == 1
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement_half_open_true() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement_half_open_true_expected() -> (
     None
 ):
     breaker = CircuitBreaker(
@@ -85,7 +85,7 @@ def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_decrement
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_safe_decrement_attempts_zero() -> (
+def test_chaos_circuit_breaker_type_mutation_half_open_circuit_breaker_safe_decrement_attempts_zero_expected() -> (
     None
 ):
     breaker = CircuitBreaker(

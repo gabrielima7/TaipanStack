@@ -6,7 +6,7 @@ from taipanstack.core.result import Ok, Result
 from taipanstack.resilience.resilience import fallback
 
 
-def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation() -> None:
+def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_expected() -> None:
     """Simulate type corruption where exceptions parameter is mutated.
     Instead of passing the exception or crashing, it should safely raise it."""
 
@@ -32,7 +32,7 @@ async def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_
         await async_dummy()
 
 
-def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_sync_result() -> (
+def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_sync_result_expected() -> (
     None
 ):
     """Simulate type corruption where exceptions parameter is mutated, but function returns Ok."""

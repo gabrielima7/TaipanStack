@@ -14,7 +14,7 @@ from taipanstack.utils.subprocess import _filter_environment, run_safe_command
     allowed=st.lists(st.text(min_size=1, max_size=1000), max_size=10),
 )
 @settings(max_examples=100, deadline=None)
-def test_chaos_subprocess_robustness_chaos_subprocess_filter_environment_fuzzing(
+def test_chaos_subprocess_robustness_chaos_subprocess_filter_environment_fuzzing_expected(
     env: dict[str, str], allowed: list[str]
 ) -> None:
     """Fuzz _filter_environment with extreme strings."""
@@ -49,7 +49,7 @@ def test_chaos_subprocess_robustness_chaos_subprocess_filter_environment_fuzzing
     ),
 )
 @settings(max_examples=50, deadline=None)
-def test_chaos_subprocess_robustness_chaos_subprocess_run_safe_command_env_fuzzing(
+def test_chaos_subprocess_robustness_chaos_subprocess_run_safe_command_env_fuzzing_expected(
     env: dict[str, str], allowed: list[str]
 ) -> None:
     """Fuzz run_safe_command environment filtering."""

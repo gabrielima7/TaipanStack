@@ -5,7 +5,7 @@ import pytest
 from taipanstack.utils.cache import cached
 
 
-def test_utils_cache_chaos_nan_cache_ttl_nan_mutation_graceful_degradation():
+def test_utils_cache_chaos_nan_cache_ttl_nan_mutation_graceful_degradation_expected():
     """
     Simulate a rare production failure where the `ttl` state of the cached decorator
     gets corrupted/mutated to NaN (math.nan).
@@ -19,7 +19,7 @@ def test_utils_cache_chaos_nan_cache_ttl_nan_mutation_graceful_degradation():
             return "ok"
 
 
-def test_utils_cache_chaos_nan_cache_ttl_inf_mutation_graceful_degradation():
+def test_utils_cache_chaos_nan_cache_ttl_inf_mutation_graceful_degradation_expected():
     """
     Simulate corruption of `ttl` to math.inf.
     """
@@ -30,7 +30,7 @@ def test_utils_cache_chaos_nan_cache_ttl_inf_mutation_graceful_degradation():
             return "ok"
 
 
-def test_utils_cache_chaos_nan_cache_ttl_negative_mutation_graceful_degradation():
+def test_utils_cache_chaos_nan_cache_ttl_negative_mutation_graceful_degradation_expected():
     """
     Simulate corruption of `ttl` to a negative number.
     """
@@ -41,7 +41,7 @@ def test_utils_cache_chaos_nan_cache_ttl_negative_mutation_graceful_degradation(
             return "ok"
 
 
-def test_utils_cache_chaos_nan_cache_ttl_type_mutation_graceful_degradation():
+def test_utils_cache_chaos_nan_cache_ttl_type_mutation_graceful_degradation_expected():
     """
     Simulate corruption of `ttl` to a non-numeric type.
     """

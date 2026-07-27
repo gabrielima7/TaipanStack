@@ -10,21 +10,21 @@ class DummyWatcher(BaseWatcher):
         """Mocked method implementation."""
 
 
-def test_watchdog_base_validation_negative_interval():
+def test_watchdog_base_validation_negative_interval_expected():
     with pytest.raises(ValueError, match="interval must be a finite positive number"):
         DummyWatcher(interval=-1.0)
 
 
-def test_watchdog_base_validation_zero_interval():
+def test_watchdog_base_validation_zero_interval_expected():
     with pytest.raises(ValueError, match="interval must be a finite positive number"):
         DummyWatcher(interval=0.0)
 
 
-def test_watchdog_base_validation_nan_interval():
+def test_watchdog_base_validation_nan_interval_expected():
     with pytest.raises(ValueError, match="interval must be a finite positive number"):
         DummyWatcher(interval=math.nan)
 
 
-def test_watchdog_base_validation_inf_interval():
+def test_watchdog_base_validation_inf_interval_expected():
     with pytest.raises(ValueError, match="interval must be a finite positive number"):
         DummyWatcher(interval=math.inf)

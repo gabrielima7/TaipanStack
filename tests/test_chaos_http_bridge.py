@@ -78,7 +78,7 @@ async def test_chaos_http_bridge_request_extreme_delay() -> None:
         ]
     ),
 )
-def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs(
+def test_chaos_http_bridge_fuzz_http_bridge_malformed_inputs_expected(
     url: str, method: str
 ) -> None:
     """Fuzz HTTP bridge with massive strings for URL and methods to ensure no crashes."""

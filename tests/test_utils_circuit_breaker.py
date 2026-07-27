@@ -15,13 +15,13 @@ from taipanstack.resilience.circuit_breaker import (
 class TestCircuitBreakerState:
     """Tests for CircuitState enum."""
 
-    def test_utils_circuit_breaker_states_exist(self) -> None:
+    def test_utils_circuit_breaker_states_exist_expected(self) -> None:
         """Test that all states are defined."""
         assert CircuitState.CLOSED.value == "closed"
         assert CircuitState.OPEN.value == "open"
         assert CircuitState.HALF_OPEN.value == "half_open"
 
-    def test_utils_circuit_breaker_circuit_breaker_no_structlog(
+    def test_utils_circuit_breaker_circuit_breaker_no_structlog_expected(
         self,
     ) -> None:
         """Test fallback when structlog is not installed."""
@@ -36,7 +36,7 @@ class TestCircuitBreakerState:
             spec.loader.exec_module(module)  # type: ignore
             assert module._HAS_STRUCTLOG is False
 
-    def test_utils_circuit_breaker_circuit_breaker_unreachable_state(
+    def test_utils_circuit_breaker_circuit_breaker_unreachable_state_expected(
         self,
     ) -> None:
         """Test unreachable state block."""
@@ -54,7 +54,7 @@ class TestCircuitBreakerState:
 class TestCircuitBreaker:
     """Tests for CircuitBreaker class."""
 
-    def test_utils_circuit_breaker_starts_closed(self) -> None:
+    def test_utils_circuit_breaker_starts_closed_expected(self) -> None:
         """Test that circuit starts in closed state."""
         breaker = CircuitBreaker()
         assert breaker.state == CircuitState.CLOSED
@@ -72,7 +72,7 @@ class TestCircuitBreaker:
 
         assert breaker.state == CircuitState.CLOSED
 
-    def test_utils_circuit_breaker_failures_open_circuit(
+    def test_utils_circuit_breaker_failures_open_circuit_expected(
         self,
     ) -> None:
         """Test that failures open the circuit."""
@@ -88,7 +88,7 @@ class TestCircuitBreaker:
 
         assert breaker.state == CircuitState.OPEN
 
-    def test_utils_circuit_breaker_open_circuit_blocks_calls(
+    def test_utils_circuit_breaker_open_circuit_blocks_calls_expected(
         self,
     ) -> None:
         """Test that open circuit blocks calls."""
@@ -107,7 +107,7 @@ class TestCircuitBreaker:
         with pytest.raises(CircuitBreakerError):
             failing_func()
 
-    def test_utils_circuit_breaker_timeout_moves_to_half_open(
+    def test_utils_circuit_breaker_timeout_moves_to_half_open_expected(
         self,
     ) -> None:
         """Test that timeout moves circuit to half-open."""
@@ -133,7 +133,7 @@ class TestCircuitBreaker:
         # Should be back to open after failure in half-open
         assert breaker.state == CircuitState.OPEN
 
-    def test_utils_circuit_breaker_half_open_thundering_herd_chaos(
+    def test_utils_circuit_breaker_half_open_thundering_herd_chaos_expected(
         self,
     ) -> None:
         """Test that half-open state prevents thundering herd attacks.
@@ -299,7 +299,7 @@ class TestCircuitBreaker:
         assert flaky_func() == "ok"
         assert breaker.state == CircuitState.CLOSED
 
-    def test_utils_circuit_breaker_reset_closes_circuit(self) -> None:
+    def test_utils_circuit_breaker_reset_closes_circuit_expected(self) -> None:
         """Test that reset closes the circuit."""
         breaker = CircuitBreaker(failure_threshold=1)
 
@@ -316,7 +316,7 @@ class TestCircuitBreaker:
         breaker.reset()
         assert breaker.state == CircuitState.CLOSED
 
-    def test_utils_circuit_breaker_excluded_exceptions_dont_trip(
+    def test_utils_circuit_breaker_excluded_exceptions_dont_trip_expected(
         self,
     ) -> None:
         """Test that excluded exceptions don't trip circuit."""
@@ -340,7 +340,7 @@ class TestCircuitBreaker:
 class TestCircuitBreakerDecorator:
     """Tests for @circuit_breaker decorator."""
 
-    def test_utils_circuit_breaker_decorator_creates_breaker(
+    def test_utils_circuit_breaker_decorator_creates_breaker_expected(
         self,
     ) -> None:
         """Test that decorator creates a working circuit breaker."""
@@ -351,7 +351,7 @@ class TestCircuitBreakerDecorator:
 
         assert my_func() == "ok"
 
-    def test_utils_circuit_breaker_decorator_with_name(self) -> None:
+    def test_utils_circuit_breaker_decorator_with_name_expected(self) -> None:
         """Test that decorator accepts custom name."""
 
         @circuit_breaker(failure_threshold=2, name="custom_breaker")
@@ -395,7 +395,7 @@ class TestCircuitBreakerDecorator:
 class TestCircuitBreakerError:
     """Tests for CircuitBreakerError."""
 
-    def test_utils_circuit_breaker_has_state(self) -> None:
+    def test_utils_circuit_breaker_has_state_expected(self) -> None:
         """Test that error has state attribute."""
         error = CircuitBreakerError("test", CircuitState.OPEN)
         assert error.state == CircuitState.OPEN

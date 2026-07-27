@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_security_decorators_additional_security_decorators_validate_inputs_return_value():
+def test_security_decorators_additional_security_decorators_validate_inputs_return_value_expected():
     from taipanstack.security.decorators import validate_inputs
 
     def my_validator(x):
@@ -28,7 +28,7 @@ def test_security_decorators_additional_security_decorators_guard_exceptions_log
         mock_get_logger.return_value.warning.assert_called()
 
 
-def test_security_decorators_additional_security_decorators_require_type_missing_param():
+def test_security_decorators_additional_security_decorators_require_type_missing_param_expected():
     from taipanstack.security.decorators import require_type
 
     @require_type(x=int)
@@ -38,7 +38,7 @@ def test_security_decorators_additional_security_decorators_require_type_missing
     assert my_func(y=1) == 1
 
 
-def test_security_decorators_additional_security_decorators_require_type_exception():
+def test_security_decorators_additional_security_decorators_require_type_exception_expected():
     from taipanstack.security.decorators import require_type
 
     @require_type(x=int)
@@ -49,7 +49,7 @@ def test_security_decorators_additional_security_decorators_require_type_excepti
         my_func(x="string")
 
 
-def test_security_decorators_additional_security_decorators_validate_inputs_missing_param():
+def test_security_decorators_additional_security_decorators_validate_inputs_missing_param_expected():
     from taipanstack.security.decorators import validate_inputs
 
     def my_validator(x):
@@ -62,7 +62,7 @@ def test_security_decorators_additional_security_decorators_validate_inputs_miss
     assert my_func(y=5) == 5
 
 
-def test_security_decorators_additional_security_decorators_validate_inputs_no_return():
+def test_security_decorators_additional_security_decorators_validate_inputs_no_return_expected():
     from taipanstack.security.decorators import validate_inputs
 
     def my_validator(x):
@@ -85,7 +85,7 @@ def test_security_decorators_additional_security_decorators_guard_exceptions_log
     assert my_func() == 0
 
 
-def test_security_decorators_additional_security_decorators_timeout_exception():
+def test_security_decorators_additional_security_decorators_timeout_exception_expected():
     from taipanstack.security.decorators import timeout
 
     @timeout(0.01, use_signal=False)
@@ -96,7 +96,7 @@ def test_security_decorators_additional_security_decorators_timeout_exception():
         my_func()
 
 
-def test_security_decorators_additional_security_decorators_guard_exceptions_reraise():
+def test_security_decorators_additional_security_decorators_guard_exceptions_reraise_expected():
     from taipanstack.security.decorators import guard_exceptions
     from taipanstack.security.guards import SecurityError
 
@@ -139,7 +139,7 @@ def test_security_decorators_additional_security_decorators_timeout_thread_succe
     assert my_func() == 42
 
 
-def test_security_decorators_additional_security_decorators_timeout_thread_exception():
+def test_security_decorators_additional_security_decorators_timeout_thread_exception_expected():
     from taipanstack.security.decorators import timeout
 
     @timeout(1.0, use_signal=False)
@@ -160,7 +160,7 @@ def test_security_decorators_additional_security_decorators_timeout_signal_succe
     assert my_func() == 42
 
 
-def test_security_decorators_additional_security_decorators_timeout_signal_timeout():
+def test_security_decorators_additional_security_decorators_timeout_signal_timeout_expected():
     import time
 
     from taipanstack.security.decorators import OperationTimeoutError, timeout
@@ -174,7 +174,7 @@ def test_security_decorators_additional_security_decorators_timeout_signal_timeo
         my_func()
 
 
-def test_security_decorators_additional_security_decorators_deprecated():
+def test_security_decorators_additional_security_decorators_deprecated_expected():
     from taipanstack.security.decorators import deprecated
 
     @deprecated(removal_version="2.0", message="Use new_func instead")
@@ -188,7 +188,7 @@ def test_security_decorators_additional_security_decorators_deprecated():
         assert my_func() == 42
 
 
-def test_security_decorators_additional_security_decorators_timeout_invalid_timeout():
+def test_security_decorators_additional_security_decorators_timeout_invalid_timeout_expected():
     from taipanstack.security.decorators import timeout
 
     with pytest.raises(ValueError, match="timeout must be a finite"):
@@ -198,7 +198,7 @@ def test_security_decorators_additional_security_decorators_timeout_invalid_time
             return 0
 
 
-def test_security_decorators_additional_security_decorators_deprecated_no_version_no_message():
+def test_security_decorators_additional_security_decorators_deprecated_no_version_no_message_expected():
     from taipanstack.security.decorators import deprecated
 
     @deprecated()
@@ -209,7 +209,7 @@ def test_security_decorators_additional_security_decorators_deprecated_no_versio
         assert my_func() == 42
 
 
-def test_security_decorators_additional_security_decorators_require_type_correct_type():
+def test_security_decorators_additional_security_decorators_require_type_correct_type_expected():
     from taipanstack.security.decorators import require_type
 
     @require_type(x=int)
@@ -219,7 +219,7 @@ def test_security_decorators_additional_security_decorators_require_type_correct
     assert my_func(x=42) == 42
 
 
-def test_security_decorators_additional_security_decorators_timeout_thread_timeout():
+def test_security_decorators_additional_security_decorators_timeout_thread_timeout_expected():
     import time
 
     from taipanstack.security.decorators import OperationTimeoutError, timeout

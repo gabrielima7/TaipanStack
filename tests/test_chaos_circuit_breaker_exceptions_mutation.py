@@ -4,7 +4,7 @@ from taipanstack.core.result import Err
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
-def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_expected():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
     # Should not crash with TypeError
@@ -12,14 +12,14 @@ def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mu
     assert isinstance(res, Err)
 
 
-def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_excluded_exceptions():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_excluded_exceptions_expected():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "excluded_exceptions", "corrupted")
     # Should not crash with TypeError
     cb._record_failure(ValueError("test"))
 
 
-def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_expected():
     cb = CircuitBreaker()
     object.__setattr__(cb.config, "failure_exceptions", "corrupted")
 
@@ -44,7 +44,7 @@ async def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_t
         await failing_func()
 
 
-def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure():
+def test_chaos_circuit_breaker_exceptions_mutation_chaos_circuit_breaker_type_mutation_failure_exceptions_sync_raise_not_failure_expected():
     cb = CircuitBreaker(failure_exceptions=(TypeError,))
 
     @cb

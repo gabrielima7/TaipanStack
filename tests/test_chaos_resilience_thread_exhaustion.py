@@ -4,7 +4,7 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.resilience import timeout
 
 
-def test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion():
+def test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion_expected():
     @timeout(1.0)
     def my_func():
         return Ok("done")
@@ -18,4 +18,4 @@ def test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion():
 
 
 if __name__ == "__main__":
-    test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion()
+    test_chaos_resilience_thread_exhaustion_timeout_thread_exhaustion_expected()

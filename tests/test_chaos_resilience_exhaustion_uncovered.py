@@ -7,7 +7,7 @@ from taipanstack.resilience.resilience import timeout
 from taipanstack.resilience.retry import Retrier
 
 
-def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_keyboard_interrupt():
+def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_keyboard_interrupt_expected():
     retrier = Retrier(max_attempts=3, on=(ValueError,))
     with patch("time.sleep", side_effect=KeyboardInterrupt()):
         with pytest.raises(KeyboardInterrupt):
@@ -15,7 +15,7 @@ def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_keyboard
                 raise ValueError("Oops")
 
 
-def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_generic():
+def test_chaos_resilience_exhaustion_uncovered_retrier_sleep_exhaustion_generic_expected():
     retrier = Retrier(max_attempts=3, on=(ValueError,))
     with patch("time.sleep", side_effect=Exception("mock sleep error")):
         with pytest.raises(ValueError):

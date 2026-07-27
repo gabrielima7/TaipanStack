@@ -5,7 +5,7 @@ import pytest
 from taipanstack.resilience.retry import RetryConfig, calculate_delay
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan(
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_expected(
     monkeypatch,
 ) -> None:
 
@@ -14,7 +14,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan(
         RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception(
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(
     monkeypatch,
 ) -> None:
     # Test lines 136-137 exception logging
@@ -31,7 +31,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception(
     assert delay == 1.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_delay_negative() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_expected() -> None:
     # Test line 140 (delay < 0 -> return 0.0)
     config = RetryConfig(initial_delay=1.0, jitter=False)
     object.__setattr__(config, "initial_delay", -10.0)
@@ -39,7 +39,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_delay_negative() -> None:
     assert delay == 0.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_2(
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan_2_expected(
     monkeypatch,
 ) -> None:
     # Test line 134 -> 140 where math.isfinite(jitter_amount) is False

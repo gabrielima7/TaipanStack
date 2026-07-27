@@ -28,7 +28,7 @@ def test_fuzz_url_security_fuzz_url_massive_strings_dos(
         max_size=100,
     ).filter(lambda s: "\x00" in s)
 )
-def test_fuzz_url_security_fuzz_url_null_bytes(url: str) -> None:
+def test_fuzz_url_security_fuzz_url_null_bytes_expected(url: str) -> None:
     """Fuzz validate_url with strings containing null bytes."""
     with pytest.raises(ValueError, match="URL contains invalid characters"):
         validate_url(url)
@@ -44,7 +44,7 @@ def test_fuzz_url_security_fuzz_url_null_bytes(url: str) -> None:
         max_size=10,
     )
 )
-def test_fuzz_url_security_fuzz_url_unprintable_chars(
+def test_fuzz_url_security_fuzz_url_unprintable_chars_expected(
     chars: str,
 ) -> None:
     """Fuzz validate_url with zero-width characters and unprintable unicode."""
@@ -60,14 +60,14 @@ def test_fuzz_url_security_url_port_integer_conversion_dos() -> None:
         validate_url(url)
 
 
-def test_fuzz_url_security_url_tld_ipv6_handling() -> None:
+def test_fuzz_url_security_url_tld_ipv6_handling_expected() -> None:
     """Ensure validate_url uses parsed.hostname for localhost checks on IPv6."""
     url = "http://[::1]"
     # Should not raise
     assert validate_url(url) == url
 
 
-def test_fuzz_url_security_url_credentials_bypassing_tld_check() -> None:
+def test_fuzz_url_security_url_credentials_bypassing_tld_check_expected() -> None:
     """Ensure credentials don't mess up the TLD checks because of manual splits on netloc."""
     url = "http://user:pass@notlocalhost"
     # missing TLD, and not localhost, so should raise

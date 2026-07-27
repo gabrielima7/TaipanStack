@@ -1,7 +1,7 @@
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_nan_closed():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_nan_closed_expected():
     # Setup
     breaker = CircuitBreaker(failure_threshold=5)
     breaker._state.state = CircuitState.CLOSED
@@ -15,7 +15,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_string_closed():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_string_closed_expected():
     # Setup
     breaker = CircuitBreaker(failure_threshold=5)
     breaker._state.state = CircuitState.CLOSED
@@ -29,7 +29,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_nan_update():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_nan_update_expected():
     # Setup
     breaker = CircuitBreaker(failure_threshold=5)
     breaker._state.state = CircuitState.CLOSED
@@ -43,7 +43,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     assert breaker._state.failure_count == breaker.config.failure_threshold
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_string_update():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_count_to_string_update_expected():
     # Setup
     breaker = CircuitBreaker(failure_threshold=5)
     breaker._state.state = CircuitState.CLOSED
@@ -57,7 +57,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     assert breaker._state.failure_count == breaker.config.failure_threshold
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_half_open_attempts_to_nan():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_half_open_attempts_to_nan_expected():
     # Setup
     breaker = CircuitBreaker(success_threshold=2)
     breaker._state.state = CircuitState.HALF_OPEN
@@ -69,7 +69,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_half_open_
     assert can_attempt is False
 
 
-def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_half_open_attempts_to_string():
+def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_half_open_attempts_to_string_expected():
     # Setup
     breaker = CircuitBreaker(success_threshold=2)
     breaker._state.state = CircuitState.HALF_OPEN

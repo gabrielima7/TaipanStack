@@ -16,7 +16,7 @@ from taipanstack.security.sanitizers import sanitize_path
     )
 )
 @settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_sanitize_path_malformed_input(path):
+def test_fuzz_sanitize_path_malformed_input_expected(path):
     with pytest.raises(
         TypeError, match="path must be a string or PathLike object, got"
     ):

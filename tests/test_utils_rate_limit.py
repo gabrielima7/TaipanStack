@@ -6,27 +6,27 @@ from taipanstack.utils.rate_limit import RateLimiter, RateLimitError, rate_limit
 
 
 class TestRateLimiter:
-    def test_utils_rate_limit_chaos_inf_time_window_return(
+    def test_utils_rate_limit_chaos_inf_time_window_return_expected(
         self,
     ) -> None:
         with pytest.raises(ValueError):
             RateLimiter(10, float("inf"))
 
-    def test_utils_rate_limit_chaos_negative_time_window_return(
+    def test_utils_rate_limit_chaos_negative_time_window_return_expected(
         self,
     ) -> None:
         with pytest.raises(ValueError):
             RateLimiter(10, -1.0)
 
-    def test_utils_rate_limit_chaos_inf_capacity_return(self) -> None:
+    def test_utils_rate_limit_chaos_inf_capacity_return_expected(self) -> None:
         with pytest.raises(ValueError):
             RateLimiter(float("inf"), 1.0)
 
-    def test_utils_rate_limit_chaos_nan_capacity_return(self) -> None:
+    def test_utils_rate_limit_chaos_nan_capacity_return_expected(self) -> None:
         with pytest.raises(ValueError):
             RateLimiter(float("nan"), 1.0)
 
-    def test_utils_rate_limit_chaos_corrupted_bucket(self) -> None:
+    def test_utils_rate_limit_chaos_corrupted_bucket_expected(self) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.time_window = 0.0
         assert not limiter.consume()
@@ -41,14 +41,14 @@ class TestRateLimiter:
         limiter.capacity = float("nan")
         assert not limiter.consume()
 
-    def test_utils_rate_limit_chaos_nan_inf_time(self) -> None:
+    def test_utils_rate_limit_chaos_nan_inf_time_expected(self) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.tokens = 0
         assert not limiter._add_tokens(float("nan"))
         limiter2 = RateLimiter(10, 1.0)
         assert not limiter2._add_tokens(limiter2.last_update + float("inf"))
 
-    def test_utils_rate_limit_chaos_consume_nan_now(self) -> None:
+    def test_utils_rate_limit_chaos_consume_nan_now_expected(self) -> None:
         import time
 
         limiter = RateLimiter(10, 1.0)
@@ -86,7 +86,7 @@ class TestRateLimiter:
 
     """Tests for the RateLimiter token bucket."""
 
-    def test_utils_rate_limit_invalid_initialization(self) -> None:
+    def test_utils_rate_limit_invalid_initialization_expected(self) -> None:
         """Test invalid args to RateLimiter."""
         with pytest.raises(ValueError, match="must be > 0"):
             RateLimiter(0, 1.0)
@@ -100,7 +100,7 @@ class TestRateLimiter:
         assert limiter.consume() is True
         assert limiter.consume() is False
 
-    def test_utils_rate_limit_consume_refill(
+    def test_utils_rate_limit_consume_refill_expected(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test token refill logic."""
@@ -131,7 +131,7 @@ class TestRateLimiter:
 class TestRateLimitDecorator:
     """Tests for the @rate_limit decorator."""
 
-    def test_utils_rate_limit_sync_rate_limit(self) -> None:
+    def test_utils_rate_limit_sync_rate_limit_expected(self) -> None:
         """Test rate limit applied to sync function."""
 
         @rate_limit(max_calls=2, time_window=10.0)
@@ -166,12 +166,12 @@ class TestRateLimitDecorator:
         assert res2.is_err()
         assert isinstance(res2.err_value, RateLimitError)
 
-    def test_utils_rate_limit_unreachable_time_window(self) -> None:
+    def test_utils_rate_limit_unreachable_time_window_expected(self) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.time_window = "not a number"  # type: ignore
         assert limiter._is_valid_time_window() is False
 
-    def test_utils_rate_limit_unreachable_capacity(self) -> None:
+    def test_utils_rate_limit_unreachable_capacity_expected(self) -> None:
         limiter = RateLimiter(10, 1.0)
         limiter.capacity = "not a number"  # type: ignore
         assert limiter._is_valid_capacity() is False
@@ -189,7 +189,7 @@ class TestRateLimitDecorator:
         limiter = RateLimiter(10, 1.0)
         assert limiter._apply_new_tokens("not a number") is False  # type: ignore
 
-    def test_utils_rate_limit_unreachable_last_update(self) -> None:
+    def test_utils_rate_limit_unreachable_last_update_expected(self) -> None:
         limiter = RateLimiter(10, 1.0)
         import time
 
@@ -202,7 +202,7 @@ class TestRateLimitDecorator:
         assert limiter._try_consume(1.0) is False
         assert limiter.tokens == limiter.capacity
 
-    def test_utils_rate_limit_get_current_time_exception(self) -> None:
+    def test_utils_rate_limit_get_current_time_exception_expected(self) -> None:
         from unittest.mock import patch
 
         limiter = RateLimiter(10, 1.0)
@@ -221,7 +221,7 @@ class TestRateLimitDecorator:
         limiter = RateLimiter(10, 1.0)
         assert limiter._is_valid_token_amount("not a number") is False  # type: ignore
 
-    def test_utils_rate_limit_consume_exception(self) -> None:
+    def test_utils_rate_limit_consume_exception_expected(self) -> None:
         from unittest.mock import patch
 
         limiter = RateLimiter(10, 1.0)
@@ -230,7 +230,7 @@ class TestRateLimitDecorator:
         ):
             assert limiter.consume(1.0) is False
 
-    def test_utils_rate_limit_decorator_sync_exception(self) -> None:
+    def test_utils_rate_limit_decorator_sync_exception_expected(self) -> None:
         from unittest.mock import patch
 
         @rate_limit(max_calls=10, time_window=1.0)
