@@ -137,7 +137,9 @@ class TestGuardsRemainingBranches:
 class TestFilesystemRemainingBranches:
     """Tests for remaining filesystem module branches."""
 
-    def test_structlog_branches_safe_write_create_parents_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_safe_write_create_parents_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write with create_parents=True."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 
@@ -169,7 +171,9 @@ class TestFilesystemRemainingBranches:
 class TestSanitizersRemainingBranches:
     """Tests for remaining sanitizers module branches."""
 
-    def test_structlog_branches_sanitize_path_absolute_expected(self, tmp_path: Path) -> None:
+    def test_structlog_branches_sanitize_path_absolute_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test sanitize_path with absolute path."""
         from taipanstack.security.sanitizers import sanitize_path
 

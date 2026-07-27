@@ -67,7 +67,9 @@ class TestVersionTier:
 class TestExperimentalFeatures:
     """Test experimental feature detection."""
 
-    def test_compat_standard_compat_experimental_disabled_by_default_expected(self) -> None:
+    def test_compat_standard_compat_experimental_disabled_by_default_expected(
+        self,
+    ) -> None:
         """Test experimental features disabled by default."""
         with patch.dict(os.environ, {}, clear=True):
             assert not is_experimental_enabled(force_refresh=True)
@@ -77,12 +79,16 @@ class TestExperimentalFeatures:
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "1"}):
             assert is_experimental_enabled(force_refresh=True)
 
-    def test_compat_standard_compat_experimental_enabled_with_true_expected(self) -> None:
+    def test_compat_standard_compat_experimental_enabled_with_true_expected(
+        self,
+    ) -> None:
         """Test experimental enabled with value 'true'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "true"}):
             assert is_experimental_enabled(force_refresh=True)
 
-    def test_compat_standard_compat_experimental_enabled_with_yes_expected(self) -> None:
+    def test_compat_standard_compat_experimental_enabled_with_yes_expected(
+        self,
+    ) -> None:
         """Test experimental enabled with value 'yes'."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "yes"}):
             assert is_experimental_enabled(force_refresh=True)
@@ -97,7 +103,9 @@ class TestExperimentalFeatures:
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "0"}):
             assert not is_experimental_enabled(force_refresh=True)
 
-    def test_compat_standard_compat_experimental_case_insensitive_expected(self) -> None:
+    def test_compat_standard_compat_experimental_case_insensitive_expected(
+        self,
+    ) -> None:
         """Test experimental check is case-insensitive."""
         with patch.dict(os.environ, {"STACK_ENABLE_EXPERIMENTAL": "TRUE"}):
             assert is_experimental_enabled(force_refresh=True)
@@ -121,12 +129,16 @@ class TestOptimizationLevel:
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "2"}):
             assert get_optimization_level(force_refresh=True) == 2
 
-    def test_compat_standard_compat_optimization_level_clamped_low_expected(self) -> None:
+    def test_compat_standard_compat_optimization_level_clamped_low_expected(
+        self,
+    ) -> None:
         """Test optimization level is clamped to minimum 0."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "-5"}):
             assert get_optimization_level(force_refresh=True) == 0
 
-    def test_compat_standard_compat_optimization_level_clamped_high_expected(self) -> None:
+    def test_compat_standard_compat_optimization_level_clamped_high_expected(
+        self,
+    ) -> None:
         """Test optimization level is clamped to maximum 2."""
         with patch.dict(os.environ, {"STACK_OPTIMIZATION_LEVEL": "99"}):
             assert get_optimization_level(force_refresh=True) == 2
@@ -231,7 +243,9 @@ class TestPythonFeatures:
         if PY314:
             assert features.has_deferred_annotations
 
-    def test_compat_standard_compat_features_experimental_disabled_expected(self) -> None:
+    def test_compat_standard_compat_features_experimental_disabled_expected(
+        self,
+    ) -> None:
         """Test build features disabled when experimental is off."""
         with patch.dict(os.environ, {}, clear=True):
             features = get_features(force_refresh=True)

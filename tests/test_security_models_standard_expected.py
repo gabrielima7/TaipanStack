@@ -145,7 +145,9 @@ class TestSecureBaseModel:
         _mask_tuple(data_tuple, 0)
         _mask_set(data_set, 0)
 
-    def test_security_models_collection_types_with_sensitive_keys_expected(self) -> None:
+    def test_security_models_collection_types_with_sensitive_keys_expected(
+        self,
+    ) -> None:
         from taipanstack.security.models import _mask_data
 
         # Test tuple with dict inside that has sensitive keys

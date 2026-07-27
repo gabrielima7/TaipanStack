@@ -21,7 +21,9 @@ def test_chaos_adaptive_limits_retry_overflow_expected():
         st.integers(max_value=-1), st.floats(), st.text(), st.booleans()
     ),
 )
-def test_chaos_adaptive_limits_bulkhead_invalid_params_expected(max_concurrent, max_queue):
+def test_chaos_adaptive_limits_bulkhead_invalid_params_expected(
+    max_concurrent, max_queue
+):
     with pytest.raises((ValueError, TypeError)):
         Bulkhead(max_concurrent=max_concurrent)
 

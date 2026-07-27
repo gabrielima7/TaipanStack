@@ -12,7 +12,9 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
     base_dir=st.one_of(st.none(), st.text(), st.binary()),
     allow_symlinks=st.booleans(),
 )
-def test_fuzz_path_traversal_fuzz_guard_path_traversal_expected(path, base_dir, allow_symlinks):
+def test_fuzz_path_traversal_fuzz_guard_path_traversal_expected(
+    path, base_dir, allow_symlinks
+):
     # Fuzzing produces both valid and invalid inputs.
     # When input is invalid, it must raise SecurityError or TypeError.
     # When input is valid, it must return a Path.

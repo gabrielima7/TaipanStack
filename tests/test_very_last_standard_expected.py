@@ -172,7 +172,9 @@ class TestSanitizersResolveError:
 class TestFilesystemWriteError:
     """Test for filesystem.py coverage gaps."""
 
-    def test_very_last_safe_write_existing_permissions_expected(self, tmp_path: Path) -> None:
+    def test_very_last_safe_write_existing_permissions_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Test safe_write preserves permissions on existing file."""
         from taipanstack.utils.filesystem import WriteOptions, safe_write
 

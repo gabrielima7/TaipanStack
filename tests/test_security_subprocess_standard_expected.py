@@ -5,7 +5,9 @@ import os
 from taipanstack.utils.subprocess import run_safe_command
 
 
-def test_security_subprocess_run_safe_command_filters_sensitive_env_vars_expected() -> None:
+def test_security_subprocess_run_safe_command_filters_sensitive_env_vars_expected() -> (
+    None
+):
     """Test that run_safe_command uses a whitelist approach to filter env vars."""
     env = os.environ.copy()
     env["AWS_SECRET_ACCESS_KEY"] = "my-secret"

@@ -91,7 +91,9 @@ class TestStackLogger:
             logger.debug("debug message")
         assert "debug message" in caplog.text
 
-    def test_utils_logging_info_logging_expected(self, caplog: pytest.LogCaptureFixture) -> None:
+    def test_utils_logging_info_logging_expected(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Test info logging."""
         with caplog.at_level(logging.INFO):
             logger = StackLogger(level="INFO")

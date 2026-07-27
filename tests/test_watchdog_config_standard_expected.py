@@ -113,7 +113,9 @@ class TestLoadFileData:
         assert isinstance(result, Ok)
         assert result.ok_value["HOST"] == "db"
 
-    def test_watchdog_config_unsupported_extension_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_unsupported_extension_expected(
+        self, tmp_path: Path
+    ) -> None:
         """Returns Err for unsupported file extensions."""
         f = tmp_path / "config.xml"
         f.write_text("<config/>")
@@ -242,7 +244,9 @@ class TestConfigWatcher:
         await asyncio.sleep(0.15)
         await watcher.stop()
 
-    def test_watchdog_config_detect_changes_no_change_expected(self, tmp_path: Path) -> None:
+    def test_watchdog_config_detect_changes_no_change_expected(
+        self, tmp_path: Path
+    ) -> None:
         """No changed paths when files haven't been modified."""
         f = tmp_path / "config.json"
         f.write_text(json.dumps({"host": "a", "port": 1}))

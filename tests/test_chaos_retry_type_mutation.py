@@ -45,7 +45,9 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_expected() -> N
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_max_delay_expected() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_max_delay_expected() -> (
+    None
+):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "max_delay", "string_mutation")
     delay = calculate_delay(1, config)
