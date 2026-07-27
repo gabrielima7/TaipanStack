@@ -1,9 +1,7 @@
-import pytest
-import threading
 import time
 
-from taipanstack.core.result import Ok
-from taipanstack.resilience.circuit_breaker import CircuitBreaker, circuit_breaker, CircuitBreakerError
+from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
 
 def test_chaos_circuit_breaker_lock_deadlock():
     breaker = CircuitBreaker(failure_threshold=2)

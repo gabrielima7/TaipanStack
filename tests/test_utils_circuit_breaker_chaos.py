@@ -29,7 +29,7 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
     @breaker
     def slow_service():
         nonlocal success_call_count
-        time.sleep(0.05)
+        time.sleep(0.2)
         success_call_count += 1
         return "success"
 
