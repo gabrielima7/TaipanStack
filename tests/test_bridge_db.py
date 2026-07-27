@@ -148,6 +148,7 @@ class TestResilientDatabase:
         finally:
             _teardown_sqlalchemy_mock()
 
+
 # --- ResilientRedis -----------------------------------------------------------
 
 
@@ -217,6 +218,7 @@ class TestResilientRedis:
             result = await r.execute("GET", "key")
 
         assert isinstance(result, Err)
+
 
 def test_bridge_db_db_bridge_import_error_coverage() -> None:
     """Test db_bridge import error fallback branches."""
