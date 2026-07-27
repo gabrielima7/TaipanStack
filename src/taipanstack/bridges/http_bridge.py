@@ -211,6 +211,21 @@ async def _execute_single_attempt(
         return Err(exc)
 
 
+def _process_attempt_outcome(
+    outcome: Result[httpx.Response, Exception] | Exception | bool,
+    last_error: Exception,
+) -> tuple[bool, Exception, Result[httpx.Response, Exception] | None]:
+    if isinstance(outcome, (Ok, Err)):
+        return True, last_error, outcome
+    if isinstance(outcome, Exception):
+        return False, outcome, None
+    return False, last_error, None
+
+
+def _get_max_attempts(retry_config: RetryConfig | None) -> int:
+    return retry_config.max_attempts if retry_config is not None else 1
+
+
 async def _execute_with_retries(
     request_func: Callable[[], Awaitable[httpx.Response]],
     retry_config: RetryConfig | None,
@@ -229,7 +244,7 @@ async def _execute_with_retries(
         ``Ok(Response)`` on success, ``Err`` on failure.
 
     """
-    max_attempts = retry_config.max_attempts if retry_config is not None else 1
+    max_attempts = _get_max_attempts(retry_config)
     last_error: Exception = RuntimeError("Request failed")
 
     for attempt in range(1, max_attempts + 1):
@@ -241,10 +256,9 @@ async def _execute_with_retries(
             attempt,
             max_attempts,
         )
-        if isinstance(outcome, (Ok, Err)):
-            return outcome
-        if isinstance(outcome, Exception):
-            last_error = outcome
+        is_finished, last_error, result = _process_attempt_outcome(outcome, last_error)
+        if is_finished and result is not None:
+            return result
 
     return Err(last_error)
 
