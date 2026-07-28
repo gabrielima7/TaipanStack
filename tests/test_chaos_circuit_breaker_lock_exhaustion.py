@@ -1,5 +1,5 @@
+
 import pytest
-import threading
 
 from taipanstack.core.result import Ok
 from taipanstack.resilience.circuit_breaker import (
@@ -7,6 +7,7 @@ from taipanstack.resilience.circuit_breaker import (
     CircuitBreakerError,
     circuit_breaker,
 )
+
 
 def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquire_exception_sync():
     breaker = CircuitBreaker(failure_threshold=2)

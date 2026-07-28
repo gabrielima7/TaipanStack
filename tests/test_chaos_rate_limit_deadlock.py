@@ -1,6 +1,6 @@
 import pytest
 
-from taipanstack.core.result import Err, Ok
+from taipanstack.core.result import Err
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
 
 
