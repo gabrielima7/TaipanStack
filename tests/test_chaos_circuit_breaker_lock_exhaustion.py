@@ -1,4 +1,3 @@
-
 import pytest
 
 from taipanstack.core.result import Ok
@@ -30,7 +29,9 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
     class ExceptionalLock:
         def acquire(self, timeout=-1):
             raise MemoryError("Out of memory")
-        def release(self): pass
+
+        def release(self):
+            pass
 
     breaker._state.lock = ExceptionalLock()
     assert breaker._should_attempt() is False
@@ -58,7 +59,9 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
     class BrokenLock:
         def acquire(self, timeout=-1):
             raise MemoryError("Out of memory")
-        def release(self): pass
+
+        def release(self):
+            pass
 
     breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):
@@ -82,7 +85,9 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
     class BrokenLock:
         def acquire(self, timeout=-1):
             raise MemoryError("Out of memory")
-        def release(self): pass
+
+        def release(self):
+            pass
 
     breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):

@@ -17,6 +17,7 @@ def test_rate_limit_deadlock_chaos_returns_false():
     # Clean up so test doesn't hang if it failed
     limiter._lock.release()
 
+
 @pytest.mark.asyncio
 async def test_rate_limit_deadlock_chaos_async_decorator():
     @rate_limit(10, 1.0)
@@ -38,6 +39,7 @@ async def test_rate_limit_deadlock_chaos_async_decorator():
     assert "Rate limit exceeded" in str(result.unwrap_err())
 
     limiter._lock.release()
+
 
 def test_rate_limit_deadlock_chaos_sync_decorator():
     @rate_limit(10, 1.0)
