@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -118,7 +118,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        **kwargs: Any,
+        polymorphic_serialization: bool | None = None,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -140,7 +140,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,  # type: ignore[misc]
+            polymorphic_serialization=polymorphic_serialization,
         )
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
@@ -161,7 +161,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        **kwargs: Any,
+        polymorphic_serialization: bool | None = None,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -186,7 +186,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            **kwargs,  # type: ignore[misc]
+            polymorphic_serialization=polymorphic_serialization,
         )
         masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
         # We need to respect Pydantic's indent/separators if possible,
