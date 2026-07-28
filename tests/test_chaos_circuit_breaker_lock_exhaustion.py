@@ -1,4 +1,5 @@
 import pytest
+import threading
 
 from taipanstack.core.result import Ok
 from taipanstack.resilience.circuit_breaker import (
@@ -7,18 +8,30 @@ from taipanstack.resilience.circuit_breaker import (
     circuit_breaker,
 )
 
-
 def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquire_exception_sync():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class BrokenLock:
-        def __enter__(self):
-            raise MemoryError("Out of memory")
-
-        def __exit__(self, _exc_type, _exc_val, _exc_tb):
+        def acquire(self, timeout=-1):
             return False
 
+        def release(self):
+            pass
+
     breaker._state.lock = BrokenLock()
+    assert breaker._should_attempt() is False
+    breaker._record_success()
+    breaker._record_failure(ValueError("test error"))
+    breaker.reset()
+    breaker._decrement_half_open(True)
+
+    # Coverage for the Exception fallback path in acquire:
+    class ExceptionalLock:
+        def acquire(self, timeout=-1):
+            raise MemoryError("Out of memory")
+        def release(self): pass
+
+    breaker._state.lock = ExceptionalLock()
     assert breaker._should_attempt() is False
     breaker._record_success()
     breaker._record_failure(ValueError("test error"))
@@ -32,16 +45,21 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
     async def my_func():
         return Ok("success")
 
-    breaker_instance = my_func.__closure__[1].cell_contents
+    breaker = None
+    if hasattr(my_func, "__closure__") and my_func.__closure__:
+        for cell in my_func.__closure__:
+            if isinstance(cell.cell_contents, CircuitBreaker):
+                breaker = cell.cell_contents
+                break
+
+    assert breaker is not None
 
     class BrokenLock:
-        def __enter__(self):
+        def acquire(self, timeout=-1):
             raise MemoryError("Out of memory")
+        def release(self): pass
 
-        def __exit__(self, _exc_type, _exc_val, _exc_tb):
-            return False
-
-    breaker_instance._state.lock = BrokenLock()
+    breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):
         await my_func()
 
@@ -51,15 +69,20 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
     def my_func():
         return Ok("success")
 
-    breaker_instance = my_func.__closure__[1].cell_contents
+    breaker = None
+    if hasattr(my_func, "__closure__") and my_func.__closure__:
+        for cell in my_func.__closure__:
+            if isinstance(cell.cell_contents, CircuitBreaker):
+                breaker = cell.cell_contents
+                break
+
+    assert breaker is not None
 
     class BrokenLock:
-        def __enter__(self):
+        def acquire(self, timeout=-1):
             raise MemoryError("Out of memory")
+        def release(self): pass
 
-        def __exit__(self, _exc_type, _exc_val, _exc_tb):
-            return False
-
-    breaker_instance._state.lock = BrokenLock()
+    breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):
         my_func()
