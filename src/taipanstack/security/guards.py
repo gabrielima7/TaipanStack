@@ -362,15 +362,19 @@ def _check_filename_null_bytes(filename_str: str) -> None:
         )
 
 
+def _is_invalid_filename_end_char(char: str) -> bool:
+    if char == ".":
+        return True
+    if char == "\xad":
+        return True
+    return unicodedata.category(char).startswith(("Z", "C"))
+
+
 def _clean_filename_end(clean_name: str) -> str:
     end_idx = len(clean_name)
     while end_idx > 0:
         char = clean_name[end_idx - 1]
-        if (
-            char == "."
-            or unicodedata.category(char).startswith(("Z", "C"))
-            or char == "\xad"
-        ):
+        if _is_invalid_filename_end_char(char):
             end_idx -= 1
         else:
             break
@@ -473,20 +477,31 @@ def _check_env_denied(
         )
 
 
+def _is_env_sensitive_match(name_upper: str) -> bool:
+    return bool(_SENSITIVE_ENV_VAR_PATTERN.search(name_upper))
+
+
+def _is_env_explicitly_allowed(
+    name_upper: str,
+    allowed_names: Sequence[str] | None,
+) -> bool:
+    if allowed_names is None:
+        return False
+    allowed = {n.upper() for n in allowed_names}
+    return name_upper in allowed
+
+
 def _check_env_sensitive(
     name_upper: str,
     name: str,
     allowed_names: Sequence[str] | None,
 ) -> None:
     """Check if the environment variable matches sensitive patterns."""
-    if not _SENSITIVE_ENV_VAR_PATTERN.search(name_upper):
+    if not _is_env_sensitive_match(name_upper):
         return
 
-    # Only block if not explicitly allowed
-    if allowed_names is not None:
-        allowed = {n.upper() for n in allowed_names}
-        if name_upper in allowed:
-            return
+    if _is_env_explicitly_allowed(name_upper, allowed_names):
+        return
 
     raise SecurityError(
         f"Access to potentially sensitive variable '{name}' is denied",
@@ -626,6 +641,37 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
     return _check_ssrf_url_characters(url)
 
 
+def _validate_ssrf_scheme(
+    scheme: str,
+    url: str,
+    allowed_schemes: frozenset[str],
+) -> Result[None, SecurityError]:
+    if not scheme or scheme.lower() not in allowed_schemes:
+        return Err(
+            SecurityError(
+                f"URL scheme '{scheme}' is not allowed",
+                guard_name="ssrf",
+                value=url[:80],
+            ),
+        )
+    return Ok(None)
+
+
+def _validate_ssrf_hostname(
+    hostname: str | None,
+    url: str,
+) -> Result[str, SecurityError]:
+    if not hostname:
+        return Err(
+            SecurityError(
+                "URL has no resolvable hostname",
+                guard_name="ssrf",
+                value=url[:80],
+            ),
+        )
+    return Ok(hostname)
+
+
 def _validate_ssrf_url_parse(
     url: str,
     allowed_schemes: frozenset[str],
@@ -641,26 +687,11 @@ def _validate_ssrf_url_parse(
             ),
         )
 
-    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
-        return Err(
-            SecurityError(
-                f"URL scheme '{parsed.scheme}' is not allowed",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
+    scheme_res = _validate_ssrf_scheme(parsed.scheme, url, allowed_schemes)
+    if isinstance(scheme_res, Err):
+        return scheme_res
 
-    hostname = parsed.hostname
-    if not hostname:
-        return Err(
-            SecurityError(
-                "URL has no resolvable hostname",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
-
-    return Ok(hostname)
+    return _validate_ssrf_hostname(parsed.hostname, url)
 
 
 def _validate_ssrf_url(
