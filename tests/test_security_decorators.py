@@ -154,7 +154,6 @@ class TestGuardExceptions:
         class CustomError(Exception):
             _ = None
 
-
         @guard_exceptions(catch=(ValueError,), reraise_as=CustomError)
         def failing_func() -> str:
             raise ValueError("original")

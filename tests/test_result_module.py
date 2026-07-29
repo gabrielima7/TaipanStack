@@ -148,7 +148,6 @@ class TestSafeFromDecorator:
         class SubValueError(ValueError):
             _ = None
 
-
         @safe_from(ValueError)
         def fail() -> None:
             raise SubValueError("subclass error")

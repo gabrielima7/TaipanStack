@@ -52,7 +52,6 @@ class TestDefaultEncoder:
         class CustomObj:
             _ = None
 
-
         with pytest.raises(
             orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"
         ):

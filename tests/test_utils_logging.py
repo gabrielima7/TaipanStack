@@ -289,10 +289,8 @@ class TestLogOperation:
         class ExpectedError(Exception):
             _ = None
 
-
         class UnexpectedError(Exception):
             _ = None
-
 
         # 1. Expected exception should be caught, logged as failure, and re-raised
         with caplog.at_level(logging.ERROR):
