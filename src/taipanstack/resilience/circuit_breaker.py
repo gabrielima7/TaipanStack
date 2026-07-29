@@ -47,6 +47,7 @@ class CircuitBreakerDecorator(Protocol):
 logger = logging.getLogger("taipanstack.resilience.circuit_breaker")
 
 if TYPE_CHECKING:
+
     class StructlogProtocol(Protocol):
         """Protocol for structural logging to appease static checkers."""
 
