@@ -286,9 +286,13 @@ class TestLogOperation:
     ) -> None:
         """Test that only expected_exceptions are caught and logged as failures."""
 
-        class ExpectedError(Exception): ...
+        class ExpectedError(Exception):
+            _ = None
 
-        class UnexpectedError(Exception): ...
+
+        class UnexpectedError(Exception):
+            _ = None
+
 
         # 1. Expected exception should be caught, logged as failure, and re-raised
         with caplog.at_level(logging.ERROR):

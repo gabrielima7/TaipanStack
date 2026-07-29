@@ -145,7 +145,9 @@ class TestSafeFromDecorator:
     def test_result_module_safe_from_inheritance(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
-        class SubValueError(ValueError): ...
+        class SubValueError(ValueError):
+            _ = None
+
 
         @safe_from(ValueError)
         def fail() -> None:
