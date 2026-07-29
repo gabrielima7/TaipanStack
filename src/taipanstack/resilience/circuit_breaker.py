@@ -15,7 +15,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
+from typing import TYPE_CHECKING, ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
 
 from taipanstack.core.result import Err
 
@@ -38,10 +38,17 @@ class CircuitBreakerDecorator(Protocol):
 
 logger = logging.getLogger("taipanstack.resilience.circuit_breaker")
 
+if TYPE_CHECKING:
+    class StructlogProtocol(Protocol):
+        def error(self, event: str, **kwargs: object) -> None: ...
+        def warning(self, event: str, **kwargs: object) -> None: ...
+else:
+    StructlogProtocol = object
+
 try:
     import structlog as _structlog
 
-    _structlog_logger = _structlog.get_logger("taipanstack.resilience.circuit_breaker")  # type: ignore[misc]
+    _structlog_logger: StructlogProtocol | None = cast(StructlogProtocol, _structlog.get_logger("taipanstack.resilience.circuit_breaker"))
     _HAS_STRUCTLOG = True
 except ImportError:
     _structlog_logger = None
@@ -232,8 +239,8 @@ class CircuitBreaker:
         new_state: CircuitState,
         e: Exception,
     ) -> None:
-        if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
-            _structlog_logger.error(  # type: ignore[misc]
+        if _HAS_STRUCTLOG and _structlog_logger is not None:
+            _structlog_logger.error(
                 "circuit_state_change_callback_failed",
                 circuit=self.name,
                 old_state=old_state.value,
@@ -252,8 +259,8 @@ class CircuitBreaker:
         old_state: CircuitState,
         new_state: CircuitState,
     ) -> None:
-        if _HAS_STRUCTLOG and _structlog_logger is not None:  # type: ignore[misc]
-            _structlog_logger.warning(  # type: ignore[misc]
+        if _HAS_STRUCTLOG and _structlog_logger is not None:
+            _structlog_logger.warning(
                 "circuit_state_changed",
                 circuit=self.name,
                 old_state=old_state.value,
