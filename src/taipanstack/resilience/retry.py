@@ -401,7 +401,10 @@ def _validate_retry_exceptions(
     return on_tuple
 
 
-def _check_result_for_retry(result: object, valid_on: tuple[type[Exception], ...]) -> None:
+def _check_result_for_retry(
+    result: object,
+    valid_on: tuple[type[Exception], ...],
+) -> None:
     if isinstance(result, Err):
         err_val = result.unwrap_err()
         if isinstance(err_val, valid_on):
@@ -410,7 +413,7 @@ def _check_result_for_retry(result: object, valid_on: tuple[type[Exception], ...
 
 def _handle_sleep_exception(sleep_e: BaseException) -> None:
     if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-        raise
+        raise sleep_e
 
 
 def _get_async_wrapper(
