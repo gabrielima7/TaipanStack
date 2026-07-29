@@ -15,7 +15,15 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    ParamSpec,
+    Protocol,
+    TypeGuard,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from taipanstack.core.result import Err
 
@@ -40,15 +48,25 @@ logger = logging.getLogger("taipanstack.resilience.circuit_breaker")
 
 if TYPE_CHECKING:
     class StructlogProtocol(Protocol):
-        def error(self, event: str, **kwargs: object) -> None: ...
-        def warning(self, event: str, **kwargs: object) -> None: ...
+        """Protocol for structural logging to appease static checkers."""
+
+        def error(self, event: str, **kwargs: object) -> None:
+            """Log an error event."""
+            ...
+
+        def warning(self, event: str, **kwargs: object) -> None:
+            """Log a warning event."""
+            ...
 else:
     StructlogProtocol = object
 
 try:
     import structlog as _structlog
 
-    _structlog_logger: StructlogProtocol | None = cast(StructlogProtocol, _structlog.get_logger("taipanstack.resilience.circuit_breaker"))
+    _structlog_logger: StructlogProtocol | None = cast(
+        StructlogProtocol,
+        _structlog.get_logger("taipanstack.resilience.circuit_breaker"),
+    )
     _HAS_STRUCTLOG = True
 except ImportError:
     _structlog_logger = None
