@@ -51,11 +51,11 @@ if TYPE_CHECKING:
     class StructlogProtocol(Protocol):
         """Protocol for structural logging to appease static checkers."""
 
-        def error(self, event: str, **kwargs: object) -> None:
+        def error(self, _event: str, **kwargs: object) -> None:
             """Log an error event."""
             ...
 
-        def warning(self, event: str, **kwargs: object) -> None:
+        def warning(self, _event: str, **kwargs: object) -> None:
             """Log a warning event."""
             ...
 else:
