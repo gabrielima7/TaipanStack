@@ -66,7 +66,7 @@ def hash_password(password: str | SecretStr) -> str:
 def _verify_legacy_pbkdf2(password_str: str, password_hash: str) -> bool:
     try:
         parts = password_hash.split("$")
-        if len(parts) != 4:
+        if len(parts) != 4:  # noqa: PLR2004
             return False
 
         _algorithm, iterations_str, salt_hex, hash_hex = parts

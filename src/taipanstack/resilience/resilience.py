@@ -168,8 +168,8 @@ def _get_async_timeout_wrapper(
             )
         except TimeoutError:
             return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
-        except asyncio.CancelledError as ce:
-            raise ce
+        except asyncio.CancelledError:
+            raise
         except BaseException as e:
             err: Result[Any, RuntimeError] = _handle_timeout_exception(e, "Task")
             return cast(Result[T, TimeoutError | E], err)
