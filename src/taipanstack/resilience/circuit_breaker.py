@@ -15,7 +15,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
+from typing import Any, NoReturn, ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
 
 from taipanstack.core.result import Err
 
@@ -603,6 +603,25 @@ class CircuitBreaker:
             except Exception:
                 return
 
+    def _check_and_raise_open(self) -> None:
+        """Check if circuit is open and raise CircuitBreakerError if so."""
+        if not self._should_attempt():
+            raise CircuitBreakerError(
+                f"Circuit {self.name} is open",
+                state=self._state.state,
+            )
+
+    def _handle_call_exception(self, e: Exception) -> NoReturn:
+        """Handle an exception raised during a protected call."""
+        try:
+            is_failure = isinstance(e, self.config.failure_exceptions)
+        except TypeError:
+            is_failure = True
+        if is_failure:
+            self._record_failure(e)
+            raise
+        raise
+
     def __call__(
         self,
         func: Callable[P, R] | Callable[P, Awaitable[R]],
@@ -613,26 +632,13 @@ class CircuitBreaker:
 
             @functools.wraps(func_coro)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                if not self._should_attempt():
-                    raise CircuitBreakerError(
-                        f"Circuit {self.name} is open",
-                        state=self._state.state,
-                    )
-
+                self._check_and_raise_open()
                 is_half_open = self._state.state == CircuitState.HALF_OPEN
-
                 try:
                     result = await func_coro(*args, **kwargs)
                     return self._process_result(result)
                 except Exception as e:
-                    try:
-                        is_failure = isinstance(e, self.config.failure_exceptions)
-                    except TypeError:
-                        is_failure = True
-                    if is_failure:
-                        self._record_failure(e)
-                        raise
-                    raise
+                    self._handle_call_exception(e)
                 finally:
                     self._decrement_half_open(is_half_open)
 
@@ -642,26 +648,13 @@ class CircuitBreaker:
 
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            if not self._should_attempt():
-                raise CircuitBreakerError(
-                    f"Circuit {self.name} is open",
-                    state=self._state.state,
-                )
-
+            self._check_and_raise_open()
             is_half_open = self._state.state == CircuitState.HALF_OPEN
-
             try:
                 result = func_sync(*args, **kwargs)
                 return self._process_result(result)
             except Exception as e:
-                try:
-                    is_failure = isinstance(e, self.config.failure_exceptions)
-                except TypeError:
-                    is_failure = True
-                if is_failure:
-                    self._record_failure(e)
-                    raise
-                raise
+                self._handle_call_exception(e)
             finally:
                 self._decrement_half_open(is_half_open)
 
