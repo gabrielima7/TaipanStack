@@ -33,4 +33,6 @@ def test_chaos_rate_limit_lock_contention_timeout():
         t.join()
         pytest.fail("RateLimiter.consume() hung indefinitely on lock acquisition")
 
-    assert success[0] is False, "Expected consume to return False when lock acquisition times out"
+    assert success[0] is False, (
+        "Expected consume to return False when lock acquisition times out"
+    )
