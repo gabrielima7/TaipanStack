@@ -174,7 +174,7 @@ def is_experimental_enabled(*, force_refresh: bool = False) -> bool:
         True if STACK_ENABLE_EXPERIMENTAL=1 is set.
 
     """
-    global _cached_experimental_enabled  # noqa: PLW0603
+    global _cached_experimental_enabled
 
     if _cached_experimental_enabled is not None and not force_refresh:
         return _cached_experimental_enabled
@@ -201,7 +201,7 @@ def get_optimization_level(*, force_refresh: bool = False) -> int:
         2 = Aggressive optimizations (requires experimental)
 
     """
-    global _cached_optimization_level  # noqa: PLW0603
+    global _cached_optimization_level
 
     if _cached_optimization_level is not None and not force_refresh:
         return _cached_optimization_level
@@ -326,7 +326,7 @@ def get_features(*, force_refresh: bool = False) -> PythonFeatures:
         PythonFeatures dataclass with all detected features.
 
     """
-    global _cached_features  # noqa: PLW0603 - intentional cache pattern
+    global _cached_features
 
     if _cached_features is not None and not force_refresh:
         return _cached_features

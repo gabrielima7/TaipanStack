@@ -15,7 +15,15 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, NoReturn, ParamSpec, Protocol, TypeGuard, TypeVar, cast, overload
+from typing import (
+    NoReturn,
+    ParamSpec,
+    Protocol,
+    TypeGuard,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from taipanstack.core.result import Err
 
@@ -619,8 +627,8 @@ class CircuitBreaker:
             is_failure = True
         if is_failure:
             self._record_failure(e)
-            raise
-        raise
+            raise e
+        raise e
 
     def __call__(
         self,

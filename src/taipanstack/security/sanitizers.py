@@ -332,7 +332,7 @@ def _get_stem(part: str) -> str:
 def _is_safe_path_part(part: str, stem: str) -> bool:
     """Check if a path part is safe."""
     return (
-        len(part) <= 255  # noqa: PLR2004
+        len(part) <= 255
         and part.isascii()
         and part.replace(".", "").replace("-", "").replace("_", "").isalnum()
         and stem.upper() not in _WINDOWS_RESERVED_NAMES

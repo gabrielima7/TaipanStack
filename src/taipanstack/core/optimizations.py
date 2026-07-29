@@ -239,7 +239,7 @@ def get_optimization_profile(*, force_refresh: bool = False) -> OptimizationProf
         OptimizationProfile suitable for the runtime environment.
 
     """
-    global _cached_optimization_profile  # noqa: PLW0603
+    global _cached_optimization_profile
 
     if _cached_optimization_profile is not None and not force_refresh:
         return _cached_optimization_profile

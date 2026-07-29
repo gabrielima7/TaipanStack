@@ -16,7 +16,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from types import TracebackType
-from typing import Any, NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
+from typing import NoReturn, ParamSpec, Protocol, TypeVar, cast, overload
 
 from taipanstack.core.result import Err
 
@@ -401,11 +401,11 @@ def _validate_retry_exceptions(
     return on_tuple
 
 
-def _check_result_for_retry(result: Any, valid_on: tuple[type[Exception], ...]) -> None:
+def _check_result_for_retry(result: object, valid_on: tuple[type[Exception], ...]) -> None:
     if isinstance(result, Err):
         err_val = result.unwrap_err()
         if isinstance(err_val, valid_on):
-            raise err_val  # noqa: TRY301
+            raise err_val
 
 
 def _handle_sleep_exception(sleep_e: BaseException) -> None:
@@ -458,7 +458,7 @@ def _get_async_wrapper(
             last_exception,
         )
 
-    return async_wrapper
+    return cast(Callable[P, Awaitable[R]], async_wrapper)
 
 
 def _get_sync_wrapper(
@@ -586,10 +586,10 @@ def retry(
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
             func_coro = cast(Callable[P, Awaitable[R]], func)
-            return _get_async_wrapper(func_coro, config, valid_on, reraise)  # type: ignore[return-value]
+            return _get_async_wrapper(func_coro, config, valid_on, reraise)
 
         func_sync = cast(Callable[P, R], func)
-        return _get_sync_wrapper(func_sync, config, valid_on, reraise)  # type: ignore[return-value]
+        return _get_sync_wrapper(func_sync, config, valid_on, reraise)
 
     return cast(RetryDecorator, decorator)
 
