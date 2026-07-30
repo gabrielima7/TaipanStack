@@ -3,7 +3,8 @@ import pytest
 from taipanstack.security.decorators import timeout
 
 
-class CustomBaseException(BaseException): ...
+class CustomBaseException(BaseException):
+    """Custom uncatchable exception for testing."""
 
 
 @pytest.mark.parametrize(

@@ -70,7 +70,7 @@ def fallback(
                         if isinstance(e, exceptions):
                             return Ok(fallback_value)
                     except TypeError:
-                        pass
+                        _ = None
                     raise
                 return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
 
@@ -91,7 +91,7 @@ def fallback(
                     if isinstance(e, exceptions):
                         return Ok(fallback_value)
                 except TypeError:
-                    pass
+                    _ = None
                 raise
             return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
 
