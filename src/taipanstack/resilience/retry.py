@@ -163,13 +163,13 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     safe_attempt = max(1, attempt)
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
-        if not math.isfinite(delay):
+        if not isinstance(delay, (int, float)) or not math.isfinite(delay):
             delay = config.max_delay
     except (OverflowError, TypeError):
         delay = config.max_delay
 
     try:
-        if not math.isfinite(delay):
+        if not isinstance(delay, (int, float)) or not math.isfinite(delay):
             delay = 0.0
         return min(delay, config.max_delay)
     except TypeError:
@@ -180,7 +180,7 @@ def _compute_jitter_amount(delay: float, factor: float) -> float | None:
     """Compute jitter amount safely."""
     try:
         amount = delay * factor
-        if math.isfinite(amount):
+        if isinstance(amount, (int, float)) and math.isfinite(amount):
             return amount
     except (TypeError, OverflowError, ValueError, Exception) as e:
         logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
@@ -189,7 +189,11 @@ def _compute_jitter_amount(delay: float, factor: float) -> float | None:
 
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
-    if not config.jitter or not math.isfinite(delay):
+    if (
+        not config.jitter
+        or not isinstance(delay, (int, float))
+        or not math.isfinite(delay)
+    ):
         return delay
 
     jitter_amount = _compute_jitter_amount(delay, config.jitter_factor)
@@ -219,7 +223,7 @@ def calculate_delay(
     delay = _calculate_base_delay(attempt, config)
     delay = _apply_jitter(delay, config)
 
-    if not math.isfinite(delay) or delay < 0:
+    if not isinstance(delay, (int, float)) or not math.isfinite(delay) or delay < 0:
         return 0.0
 
     return delay
