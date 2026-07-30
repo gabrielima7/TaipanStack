@@ -2884,7 +2884,7 @@
 </span><span id="__span-5-17">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payment failed safely: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="combining-result-retry-with-monitoring">🔗 Combining Result + Retry with Monitoring<a class="headerlink" href="#combining-result-retry-with-monitoring" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">unwrap_or</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span>
 </span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
 </span><span id="__span-6-3">
 </span><span id="__span-6-4"><span class="nd">@retry</span><span class="p">(</span>
@@ -2899,7 +2899,7 @@
 </span><span id="__span-6-13">    <span class="k">return</span> <span class="n">api_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span><span id="__span-6-14">
 </span><span id="__span-6-15"><span class="c1"># Retry handles transient failures, Result handles business errors</span>
-</span><span id="__span-6-16"><span class="n">profile</span> <span class="o">=</span> <span class="n">unwrap_or</span><span class="p">(</span><span class="n">fetch_user_profile</span><span class="p">(</span><span class="s2">&quot;usr_456&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">})</span>
+</span><span id="__span-6-16"><span class="n">profile</span> <span class="o">=</span> <span class="n">fetch_user_profile</span><span class="p">(</span><span class="s2">&quot;usr_456&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">unwrap_or</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">})</span>
 </span></code></pre></div>
 <h3 id="adaptive-resilience-pipeline">🔗 Adaptive Resilience Pipeline<a class="headerlink" href="#adaptive-resilience-pipeline" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
