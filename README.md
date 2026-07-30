@@ -289,7 +289,7 @@ match result:
 ### 🔗 Combining Result + Retry with Monitoring
 
 ```python
-from taipanstack.core.result import safe, unwrap_or
+from taipanstack.core.result import safe
 from taipanstack.resilience.retry import retry
 
 @retry(
@@ -304,7 +304,7 @@ def fetch_user_profile(user_id: str) -> dict:
     return api_client.get(f"/users/{user_id}")
 
 # Retry handles transient failures, Result handles business errors
-profile = unwrap_or(fetch_user_profile("usr_456"), {"name": "Unknown"})
+profile = fetch_user_profile("usr_456").unwrap_or({"name": "Unknown"})
 ```
 
 ### 🔗 Adaptive Resilience Pipeline
