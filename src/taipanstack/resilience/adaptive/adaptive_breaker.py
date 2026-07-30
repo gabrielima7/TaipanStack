@@ -17,7 +17,6 @@ from collections import deque
 from dataclasses import dataclass
 from typing import TypeVar
 
-from taipanstack.core.result import Ok, Result
 from taipanstack.resilience.circuit_breaker import CircuitState
 
 logger = logging.getLogger("taipanstack.resilience.adaptive.breaker")
@@ -207,22 +206,6 @@ class AdaptiveCircuitBreaker:
 
             self._window.append(False)
             self._evaluate_trip()
-
-    def evaluate_result(self, result: Result[T, Exception]) -> Result[T, Exception]:
-        """Evaluate a Result and record success or failure.
-
-        Args:
-            result: A ``Result`` to evaluate.
-
-        Returns:
-            The original Result.
-
-        """
-        if isinstance(result, Ok):
-            self.record_success()
-        else:
-            self.record_failure(result.err_value)
-        return result
 
     def should_allow(self) -> bool:
         """Check if a call should be attempted.
