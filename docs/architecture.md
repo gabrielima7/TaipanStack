@@ -73,7 +73,7 @@ TaipanStack/
 │       │   ├── generators.py #    Project scaffolding templates
 │       │   └── version_config.py # Version-aware recommendations
 │       ├── core/             # 🎯 Result types, compat, optimizations
-│       │   ├── result.py     #    Ok / Err / safe / unwrap_or
+│       │   ├── result.py     #    Ok / Err / safe
 │       │   ├── compat.py     #    Python version feature flags
 │       │   └── optimizations.py # uvloop / orjson bootstrap
 │       ├── resilience/       # 🌊 Reliability patterns
