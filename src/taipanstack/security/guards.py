@@ -14,7 +14,7 @@ import socket
 import unicodedata
 from collections.abc import Sequence
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import SplitResult, unquote, urlsplit
 
 from result import Err, Ok, Result
 
@@ -362,18 +362,18 @@ def _check_filename_null_bytes(filename_str: str) -> None:
         )
 
 
+def _is_invalid_filename_end_char(char: str) -> bool:
+    return (
+        char == "."
+        or unicodedata.category(char).startswith(("Z", "C"))
+        or char == "\xad"
+    )
+
+
 def _clean_filename_end(clean_name: str) -> str:
     end_idx = len(clean_name)
-    while end_idx > 0:
-        char = clean_name[end_idx - 1]
-        if (
-            char == "."
-            or unicodedata.category(char).startswith(("Z", "C"))
-            or char == "\xad"
-        ):
-            end_idx -= 1
-        else:
-            break
+    while end_idx > 0 and _is_invalid_filename_end_char(clean_name[end_idx - 1]):
+        end_idx -= 1
     return clean_name[:end_idx]
 
 
@@ -626,6 +626,30 @@ def _validate_ssrf_url_type_and_length(url: str) -> Result[str, SecurityError]:
     return _check_ssrf_url_characters(url)
 
 
+def _create_ssrf_error(msg: str, url: str) -> Err[SecurityError]:
+    return Err(
+        SecurityError(
+            msg,
+            guard_name="ssrf",
+            value=url[:80],
+        ),
+    )
+
+
+def _validate_parsed_ssrf_url(
+    url: str,
+    parsed: SplitResult,
+    allowed_schemes: frozenset[str],
+) -> Result[str, SecurityError]:
+    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
+        return _create_ssrf_error(f"URL scheme '{parsed.scheme}' is not allowed", url)
+
+    if not parsed.hostname:
+        return _create_ssrf_error("URL has no resolvable hostname", url)
+
+    return Ok(parsed.hostname)
+
+
 def _validate_ssrf_url_parse(
     url: str,
     allowed_schemes: frozenset[str],
@@ -633,34 +657,9 @@ def _validate_ssrf_url_parse(
     try:
         parsed = urlsplit(url)
     except ValueError as exc:
-        return Err(
-            SecurityError(
-                f"Malformed URL: {exc}",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
+        return _create_ssrf_error(f"Malformed URL: {exc}", url)
 
-    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
-        return Err(
-            SecurityError(
-                f"URL scheme '{parsed.scheme}' is not allowed",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
-
-    hostname = parsed.hostname
-    if not hostname:
-        return Err(
-            SecurityError(
-                "URL has no resolvable hostname",
-                guard_name="ssrf",
-                value=url[:80],
-            ),
-        )
-
-    return Ok(hostname)
+    return _validate_parsed_ssrf_url(url, parsed, allowed_schemes)
 
 
 def _validate_ssrf_url(
