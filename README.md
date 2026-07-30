@@ -209,6 +209,13 @@ Taipan Stack integrates security and quality at every level:
 ```
 
 ---
+## ⚙️ Environment Variables
+
+TaipanStack supports the following environment variables for configuration:
+
+- `STACK_ENABLE_EXPERIMENTAL`: Set to `1`, `true`, `yes`, or `on` to enable experimental features such as the JIT compiler and free-threading optimizations.
+- `STACK_OPTIMIZATION_LEVEL`: Set the optimization level (default `1`). Use `0` for none, `1` for safe, and `2` for aggressive optimizations (requires experimental features).
+
 
 ## 📚 API Highlights
 
