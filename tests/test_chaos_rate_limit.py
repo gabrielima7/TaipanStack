@@ -1,6 +1,7 @@
-import pytest
 import threading
+
 from taipanstack.utils.rate_limit import RateLimiter
+
 
 def test_rate_limiter_lock_contention_chaos():
     limiter = RateLimiter(max_calls=10, time_window=1.0)
