@@ -118,6 +118,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
         **kwargs: Any,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
@@ -140,6 +141,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
+            polymorphic_serialization=polymorphic_serialization,
             **kwargs,  # type: ignore[misc]
         )
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
@@ -161,6 +163,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
         **kwargs: Any,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
@@ -186,6 +189,7 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
+            polymorphic_serialization=polymorphic_serialization,
             **kwargs,  # type: ignore[misc]
         )
         masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
