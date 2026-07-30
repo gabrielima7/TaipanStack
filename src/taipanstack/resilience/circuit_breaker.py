@@ -293,7 +293,9 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if not math.isfinite(self._state.last_failure_time):
+        if not isinstance(
+            self._state.last_failure_time, (int, float)
+        ) or not math.isfinite(self._state.last_failure_time):
             return safe_timeout
 
         elapsed = now - float(self._state.last_failure_time)
@@ -341,7 +343,7 @@ class CircuitBreaker:
             now = time.monotonic()
         except Exception:
             return None
-        if not math.isfinite(now):
+        if not isinstance(now, (int, float)) or not math.isfinite(now):
             return None
         return self._calculate_elapsed_time(now)
 
@@ -496,7 +498,7 @@ class CircuitBreaker:
         except Exception:
             now = float("nan")
 
-        if math.isfinite(now):
+        if isinstance(now, (int, float)) and math.isfinite(now):
             self._state.last_failure_time = now
 
     def _get_failure_state_change(self) -> tuple[CircuitState, CircuitState] | None:
