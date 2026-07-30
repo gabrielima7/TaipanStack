@@ -212,8 +212,13 @@ class RateLimiter:
             return True
 
         try:
-            with self._lock:
+            acquired = self._lock.acquire(timeout=0.1)
+            if not acquired:
+                return False
+            try:
                 return self._process_consumption(tokens)
+            finally:
+                self._lock.release()
         except Exception:
             return False
 
