@@ -416,7 +416,8 @@ async def test_watchdog_config_config_watcher_change_detection_error_coverage_ex
 
     from taipanstack.resilience.watchdogs.config_watcher import ConfigWatcher
 
-    class MockConfig(BaseModel): ...
+    class MockConfig(BaseModel):
+        _ = None
 
     watcher = ConfigWatcher(config_paths=["foo.json"], config_model=MockConfig)
     watcher._detect_changes = MagicMock(return_value=Err(RuntimeError("mock error")))

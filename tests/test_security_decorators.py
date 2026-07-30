@@ -151,7 +151,8 @@ class TestGuardExceptions:
     ) -> None:
         """Test reraising as custom exception type."""
 
-        class CustomError(Exception): ...
+        class CustomError(Exception):
+            _ = None
 
         @guard_exceptions(catch=(ValueError,), reraise_as=CustomError)
         def failing_func() -> str:

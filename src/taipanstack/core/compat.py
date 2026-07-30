@@ -106,7 +106,7 @@ def _check_nogil_flag() -> bool | None:
         if hasattr(sys.flags, "nogil"):
             return bool(sys.flags.nogil)  # type: ignore[misc]
     except (AttributeError, TypeError):
-        pass
+        _ = None
     return None
 
 

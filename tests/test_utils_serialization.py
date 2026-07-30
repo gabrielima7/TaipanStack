@@ -49,7 +49,8 @@ class TestDefaultEncoder:
     ) -> None:
         """Test encoding an unsupported type."""
 
-        class CustomObj: ...
+        class CustomObj:
+            _ = None
 
         with pytest.raises(
             orjson.JSONEncodeError, match="Type is not JSON serializable: CustomObj"
