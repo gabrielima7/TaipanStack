@@ -293,10 +293,9 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if (
-            not isinstance(self._state.last_failure_time, (int, float))
-            or not math.isfinite(self._state.last_failure_time)
-        ):
+        if not isinstance(
+            self._state.last_failure_time, (int, float)
+        ) or not math.isfinite(self._state.last_failure_time):
             return safe_timeout
 
         elapsed = now - float(self._state.last_failure_time)
