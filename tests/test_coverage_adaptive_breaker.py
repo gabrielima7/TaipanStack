@@ -2,34 +2,15 @@ import math
 
 import pytest
 
-from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
 from taipanstack.resilience.circuit_breaker import CircuitState
-
-
-def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_result():
-    breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.5)
-
-    # Test evaluate_result with Ok
-    result_ok = Ok("success")
-    assert breaker.evaluate_result(result_ok) == result_ok
-    assert breaker.metrics.success_rate == 1.0
-
-    # Test evaluate_result with Err
-    result_err = Err(ValueError("failure"))
-    assert breaker.evaluate_result(result_err) == result_err
-    assert breaker.metrics.error_rate == 0.5
-
-    # Trigger transition to open
-    breaker.evaluate_result(result_err)
-    assert breaker.state.name == "OPEN"
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_reset_and_should_allow():
     breaker = AdaptiveCircuitBreaker(min_throughput=1, target_error_rate=0.0)
     assert breaker.should_allow() is True
 
-    breaker.evaluate_result(Err(ValueError("fail")))
+    breaker.record_failure(ValueError("fail"))
     assert breaker.should_allow() is False
 
     breaker.reset()

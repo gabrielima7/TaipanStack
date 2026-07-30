@@ -2,7 +2,6 @@
 
 from unittest.mock import patch
 
-from taipanstack.core.result import Err, Ok
 from taipanstack.resilience.adaptive.adaptive_breaker import (
     AdaptiveCircuitBreaker,
     AdaptiveMetrics,
@@ -151,24 +150,6 @@ class TestAdaptiveCircuitBreaker:
         assert abs(m.error_rate - 1 / 3) < 1e-9
         assert abs(m.success_rate - 2 / 3) < 1e-9
 
-    def test_adaptive_breaker_evaluate_result_ok(self) -> None:
-        """Evaluating an Ok result records success."""
-        ab = AdaptiveCircuitBreaker("test")
-        res = Ok(42)
-        ret = ab.evaluate_result(res)
-        assert ret is res
-        assert ab.metrics.total_calls == 1
-        assert ab.metrics.error_count == 0
-
-    def test_adaptive_breaker_evaluate_result_err(self) -> None:
-        """Evaluating an Err result records failure."""
-        ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.5)
-        res = Err(ValueError("bad"))
-        ret = ab.evaluate_result(res)
-        assert ret is res
-        assert ab.metrics.error_count == 1
-        assert ab.metrics.total_calls == 1
-
     def test_adaptive_breaker_empty_metrics(self) -> None:
         """Empty metrics return safe defaults."""
         ab = AdaptiveCircuitBreaker("test")
@@ -201,8 +182,7 @@ class TestAdaptiveCircuitBreaker:
 
 
 def test_adaptive_breaker_err_branch() -> None:
-    from taipanstack.core.result import Err
     from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
 
     breaker = AdaptiveCircuitBreaker(name="test_err")
-    breaker.evaluate_result(Err(ValueError("err")))
+    breaker.record_failure(ValueError("err"))
