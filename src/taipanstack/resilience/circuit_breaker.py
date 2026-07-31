@@ -656,6 +656,14 @@ class CircuitBreaker:
             except Exception:
                 return
 
+    def _handle_exception_in_call(self, e: Exception) -> None:
+        try:
+            is_failure = isinstance(e, self.config.failure_exceptions)
+        except TypeError:
+            is_failure = True
+        if is_failure:
+            self._record_failure(e)
+
     def __call__(
         self,
         func: Callable[P, R] | Callable[P, Awaitable[R]],
@@ -678,13 +686,7 @@ class CircuitBreaker:
                     result = await func_coro(*args, **kwargs)
                     return self._process_result(result)
                 except Exception as e:
-                    try:
-                        is_failure = isinstance(e, self.config.failure_exceptions)
-                    except TypeError:
-                        is_failure = True
-                    if is_failure:
-                        self._record_failure(e)
-                        raise
+                    self._handle_exception_in_call(e)
                     raise
                 finally:
                     self._decrement_half_open(is_half_open)
@@ -707,13 +709,7 @@ class CircuitBreaker:
                 result = func_sync(*args, **kwargs)
                 return self._process_result(result)
             except Exception as e:
-                try:
-                    is_failure = isinstance(e, self.config.failure_exceptions)
-                except TypeError:
-                    is_failure = True
-                if is_failure:
-                    self._record_failure(e)
-                    raise
+                self._handle_exception_in_call(e)
                 raise
             finally:
                 self._decrement_half_open(is_half_open)
