@@ -45,7 +45,7 @@ def _validate_interval(interval: float) -> None:
     """Validate interval parameter."""
     if (
         not isinstance(interval, (int, float))
-        or not math.isfinite(interval)
+        or not (isinstance(interval, (int, float)) and math.isfinite(interval))
         or interval <= 0
     ):
         raise ValueError("interval must be a finite positive number")

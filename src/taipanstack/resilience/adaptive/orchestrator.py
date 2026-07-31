@@ -89,7 +89,7 @@ class ResilienceOrchestrator(Generic[T]):
         """
         if (
             not isinstance(timeout, (int, float))
-            or not math.isfinite(timeout)
+            or not (isinstance(timeout, (int, float)) and math.isfinite(timeout))
             or timeout < 0
         ):
             raise ValueError("timeout must be a finite non-negative number")
@@ -153,7 +153,7 @@ class ResilienceOrchestrator(Generic[T]):
         """
         if (
             not isinstance(seconds, (int, float))
-            or not math.isfinite(seconds)
+            or not (isinstance(seconds, (int, float)) and math.isfinite(seconds))
             or seconds < 0
         ):
             raise ValueError("timeout must be a finite non-negative number")

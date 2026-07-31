@@ -97,7 +97,7 @@ def _validate_ttl(ttl: float) -> None:
     if (
         not isinstance(ttl, (int, float))
         or isinstance(ttl, bool)
-        or not math.isfinite(ttl)
+        or not (isinstance(ttl, (int, float)) and math.isfinite(ttl))
         or ttl < 0
     ):
         raise ValueError("ttl must be a finite non-negative number")

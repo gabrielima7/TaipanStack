@@ -159,7 +159,7 @@ class CircuitBreaker:
         """Check if metric is a valid finite number >= min_val."""
         return (
             isinstance(value, (int, float))
-            and math.isfinite(value)
+            and (isinstance(value, (int, float)) and math.isfinite(value))
             and value >= min_val
         )
 
@@ -174,7 +174,7 @@ class CircuitBreaker:
     def _check_finite_val(value: float, min_val: float, err_msg: str) -> None:
         if (
             not isinstance(value, (int, float))
-            or not math.isfinite(value)
+            or not (isinstance(value, (int, float)) and math.isfinite(value))
             or value < min_val
         ):
             raise ValueError(err_msg)
@@ -319,9 +319,10 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if not isinstance(
-            self._state.last_failure_time, (int, float)
-        ) or not math.isfinite(self._state.last_failure_time):
+        if not isinstance(self._state.last_failure_time, (int, float)) or not (
+            isinstance(self._state.last_failure_time, (int, float))
+            and math.isfinite(self._state.last_failure_time)
+        ):
             return safe_timeout
 
         elapsed = now - float(self._state.last_failure_time)
@@ -620,7 +621,10 @@ class CircuitBreaker:
         """Validate half-open attempts value against corruption."""
         return (
             isinstance(self._state.half_open_attempts, (int, float))
-            and math.isfinite(self._state.half_open_attempts)
+            and (
+                isinstance(self._state.half_open_attempts, (int, float))
+                and math.isfinite(self._state.half_open_attempts)
+            )
             and self._state.half_open_attempts >= 0
         )
 

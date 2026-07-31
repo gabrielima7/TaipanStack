@@ -144,7 +144,9 @@ def timeout(seconds: float) -> TimeoutDecorator:
             ) -> Result[T, TimeoutError | E]:
                 if (
                     not isinstance(seconds, (int, float))
-                    or not math.isfinite(seconds)
+                    or not (
+                        isinstance(seconds, (int, float)) and math.isfinite(seconds)
+                    )
                     or seconds < 0
                 ):
                     return Err(
@@ -187,7 +189,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
         ) -> Result[T, TimeoutError | E]:
             if (
                 not isinstance(seconds, (int, float))
-                or not math.isfinite(seconds)
+                or not (isinstance(seconds, (int, float)) and math.isfinite(seconds))
                 or seconds < 0
             ):
                 return Err(

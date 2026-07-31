@@ -98,7 +98,7 @@ def _validate_finite_or_default(
     if not isinstance(val, (int, float)):  # type: ignore[misc]
         object.__setattr__(obj, attr_name, default_val)
         return
-    if not math.isfinite(val) or val < 0:
+    if not (isinstance(val, (int, float)) and math.isfinite(val)) or val < 0:
         raise ValueError(f"{attr_name} must be a finite non-negative number")
 
 
@@ -162,6 +162,8 @@ def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     """Calculate base delay with exponential backoff."""
     safe_attempt = max(1, attempt)
     try:
+        if safe_attempt > 100:  # noqa: PLR2004
+            raise OverflowError("Attempt too high")  # noqa: TRY301
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
         if not isinstance(delay, (int, float)) or not math.isfinite(delay):
             delay = config.max_delay
@@ -192,7 +194,7 @@ def _apply_jitter(delay: float, config: RetryConfig) -> float:
     if (
         not config.jitter
         or not isinstance(delay, (int, float))
-        or not math.isfinite(delay)
+        or not (isinstance(delay, (int, float)) and math.isfinite(delay))
     ):
         return delay
 
@@ -644,7 +646,9 @@ class Retrier:
         """Increment attempt counter safely."""
         if (
             not isinstance(self.attempt, (int, float))
-            or not math.isfinite(self.attempt)
+            or not (
+                isinstance(self.attempt, (int, float)) and math.isfinite(self.attempt)
+            )
             or self.attempt < 0
         ):
             return False
