@@ -32,6 +32,65 @@ class FallbackDecorator(Protocol):
     def __call__(self, func: AsyncResultFunc[P, T, E]) -> AsyncResultFunc[P, T, E]: ...
 
 
+def _handle_fallback_exception(
+    e: Exception,
+    exceptions: tuple[type[Exception], ...],
+    fallback_value: T,
+) -> Result[T, E] | None:
+    try:
+        if isinstance(e, exceptions):
+            return Ok(fallback_value)
+    except TypeError:
+        pass
+    return None
+
+def _process_fallback_result(result: Result[T, E], fallback_value: T) -> Result[T, E] | None:
+    if isinstance(result, Err):
+        return Ok(fallback_value)
+    if isinstance(result, Ok):
+        return result
+    return None
+
+def _execute_fallback_async_wrapper(
+    func_coro: AsyncResultFunc[P, T, E],
+    fallback_value: T,
+    exceptions: tuple[type[Exception], ...]
+) -> AsyncResultFunc[P, T, E]:
+    @functools.wraps(func_coro)
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        try:
+            result = await func_coro(*args, **kwargs)
+            processed_res = _process_fallback_result(result, fallback_value)
+            if processed_res is not None:
+                return processed_res
+        except Exception as e:
+            fallback_res = _handle_fallback_exception(e, exceptions, fallback_value)
+            if fallback_res is not None:
+                return fallback_res
+            raise
+        return Err(cast(E, RuntimeError("Unreachable")))
+    return async_wrapper
+
+def _execute_fallback_sync_wrapper(
+    func_sync: ResultFunc[P, T, E],
+    fallback_value: T,
+    exceptions: tuple[type[Exception], ...]
+) -> ResultFunc[P, T, E]:
+    @functools.wraps(func_sync)
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        try:
+            result = func_sync(*args, **kwargs)
+            processed_res = _process_fallback_result(result, fallback_value)
+            if processed_res is not None:
+                return processed_res
+        except Exception as e:
+            fallback_res = _handle_fallback_exception(e, exceptions, fallback_value)
+            if fallback_res is not None:
+                return fallback_res
+            raise
+        return Err(cast(E, RuntimeError("Unreachable")))
+    return sync_wrapper
+
 def fallback(
     fallback_value: T,
     exceptions: tuple[type[Exception], ...] = (Exception,),
@@ -54,48 +113,11 @@ def fallback(
         func: ResultFunc[P, T, E] | AsyncResultFunc[P, T, E],
     ) -> ResultFunc[P, T, E] | AsyncResultFunc[P, T, E]:
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(AsyncResultFunc[P, T, E], func)
+            return _execute_fallback_async_wrapper(func_coro, fallback_value, exceptions)  # type: ignore[misc]
 
-            @functools.wraps(func)  # type: ignore[misc]
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-                try:
-                    # func is a coroutine function here
-                    func_coro = cast(AsyncResultFunc[P, T, E], func)
-                    result = await func_coro(*args, **kwargs)
-                    if isinstance(result, Err):
-                        return Ok(fallback_value)
-                    elif isinstance(result, Ok):
-                        return result
-                except Exception as e:
-                    try:
-                        if isinstance(e, exceptions):
-                            return Ok(fallback_value)
-                    except TypeError:
-                        _ = None
-                    raise
-                return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
-
-            return async_wrapper  # type: ignore[misc]
-
-        @functools.wraps(func)
-        def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            try:
-                # func is a normal function here
-                func_sync = cast(ResultFunc[P, T, E], func)
-                result = func_sync(*args, **kwargs)
-                if isinstance(result, Err):
-                    return Ok(fallback_value)
-                elif isinstance(result, Ok):
-                    return result
-            except Exception as e:
-                try:
-                    if isinstance(e, exceptions):
-                        return Ok(fallback_value)
-                except TypeError:
-                    _ = None
-                raise
-            return Err(cast(E, RuntimeError("Unreachable")))  # type: ignore[unreachable]
-
-        return sync_wrapper
+        func_sync = cast(ResultFunc[P, T, E], func)
+        return _execute_fallback_sync_wrapper(func_sync, fallback_value, exceptions)
 
     return cast(FallbackDecorator, decorator)
 
@@ -115,6 +137,93 @@ class TimeoutDecorator(Protocol):
         func: AsyncResultFunc[P, T, E],
     ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...
 
+
+def _handle_timeout_exception(e: BaseException, context: str) -> Result[T, TimeoutError | E]:
+    if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+        raise
+    if isinstance(e, MemoryError):
+        return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
+    if isinstance(e, (OSError, OverflowError)):
+        return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
+    return Err(cast(E, RuntimeError(f"{context} exhaustion: {e!s}")))
+
+
+def _validate_timeout(seconds: float) -> Result[None, E] | None:
+    if (
+        not isinstance(seconds, (int, float))
+        or not math.isfinite(seconds)
+        or seconds < 0
+    ):
+        return Err(
+            cast(
+                E,
+                ValueError("Timeout must be a finite non-negative number"),
+            ),
+        )
+    return None
+
+def _execute_timeout_async_wrapper(
+    func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
+    seconds: float,
+) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]:
+    @functools.wraps(func_coro)
+    async def async_wrapper(
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, TimeoutError | E]:
+        val_err = _validate_timeout(seconds)
+        if val_err is not None:
+            return cast(Result[T, TimeoutError | E], val_err)
+        try:
+            return await asyncio.wait_for(
+                func_coro(*args, **kwargs),
+                timeout=seconds,
+            )
+        except TimeoutError:
+            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+        except asyncio.CancelledError:
+            raise
+        except BaseException as e:
+            return _handle_timeout_exception(e, "Task")
+    return async_wrapper
+
+def _execute_timeout_sync_wrapper(
+    func_sync: Callable[P, Result[T, TimeoutError | E]],
+    seconds: float,
+) -> Callable[P, Result[T, TimeoutError | E]]:
+    @functools.wraps(func_sync)
+    def sync_wrapper(
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, TimeoutError | E]:
+        val_err = _validate_timeout(seconds)
+        if val_err is not None:
+            return cast(Result[T, TimeoutError | E], val_err)
+
+        result: list[Result[T, TimeoutError | E]] = []
+        exception: list[BaseException] = []
+
+        def worker() -> None:
+            try:
+                result.append(func_sync(*args, **kwargs))
+            except BaseException as e:
+                exception.append(e)
+
+        thread = threading.Thread(target=worker, daemon=True)
+        try:
+            thread.start()
+            thread.join(timeout=seconds)
+        except BaseException as e:
+            return _handle_timeout_exception(e, "Thread")
+
+        if thread.is_alive():
+            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+
+        if exception:
+            raise exception[0]
+
+        return result[0]
+    return sync_wrapper
 
 def timeout(seconds: float) -> TimeoutDecorator:
     """Enforce a maximum execution time.
@@ -136,100 +245,10 @@ def timeout(seconds: float) -> TimeoutDecorator:
         | Callable[P, Awaitable[Result[T, TimeoutError | E]]]
     ):
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Awaitable[Result[T, TimeoutError | E]]], func)
+            return _execute_timeout_async_wrapper(func_coro, seconds)  # type: ignore[misc]
 
-            @functools.wraps(func)  # type: ignore[misc]
-            async def async_wrapper(
-                *args: P.args,
-                **kwargs: P.kwargs,
-            ) -> Result[T, TimeoutError | E]:
-                if (
-                    not isinstance(seconds, (int, float))
-                    or not math.isfinite(seconds)
-                    or seconds < 0
-                ):
-                    return Err(
-                        cast(
-                            E,
-                            ValueError("Timeout must be a finite non-negative number"),
-                        ),
-                    )
-
-                try:
-                    func_coro = cast(
-                        Callable[P, Awaitable[Result[T, TimeoutError | E]]],
-                        func,
-                    )
-                    return await asyncio.wait_for(
-                        func_coro(*args, **kwargs),
-                        timeout=seconds,
-                    )
-                except TimeoutError:
-                    return Err(
-                        TimeoutError(f"Execution timed out after {seconds} seconds."),
-                    )
-                except asyncio.CancelledError:
-                    raise
-                except BaseException as e:
-                    if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-                        raise
-                    if isinstance(e, MemoryError):
-                        return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
-                    if isinstance(e, (OSError, OverflowError)):
-                        return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
-                    return Err(cast(E, RuntimeError(f"Task exhaustion: {e!s}")))
-
-            return async_wrapper  # type: ignore[misc]
-
-        @functools.wraps(func)
-        def sync_wrapper(
-            *args: P.args,
-            **kwargs: P.kwargs,
-        ) -> Result[T, TimeoutError | E]:
-            if (
-                not isinstance(seconds, (int, float))
-                or not math.isfinite(seconds)
-                or seconds < 0
-            ):
-                return Err(
-                    cast(
-                        E,
-                        ValueError("Timeout must be a finite non-negative number"),
-                    ),
-                )
-
-            result: list[Result[T, TimeoutError | E]] = []
-            exception: list[BaseException] = []
-
-            def worker() -> None:
-                try:
-                    func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
-                    result.append(func_sync(*args, **kwargs))
-                except BaseException as e:
-                    exception.append(e)
-
-            thread = threading.Thread(target=worker, daemon=True)
-            try:
-                thread.start()
-                thread.join(timeout=seconds)
-            except BaseException as e:
-                if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-                    raise
-                if isinstance(e, MemoryError):
-                    return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
-                if isinstance(e, (OSError, OverflowError)):
-                    return Err(cast(E, RuntimeError(f"Resource exhaustion: {e!s}")))
-                return Err(cast(E, RuntimeError(f"Thread exhaustion: {e!s}")))
-
-            if thread.is_alive():
-                return Err(
-                    TimeoutError(f"Execution timed out after {seconds} seconds."),
-                )
-
-            if exception:
-                raise exception[0]
-
-            return result[0]
-
-        return sync_wrapper
+        func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
+        return _execute_timeout_sync_wrapper(func_sync, seconds)
 
     return cast(TimeoutDecorator, decorator)
