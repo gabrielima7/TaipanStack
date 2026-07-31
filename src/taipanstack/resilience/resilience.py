@@ -44,6 +44,7 @@ def _handle_fallback_exception(
         pass
     return None
 
+
 def _process_fallback_result(
     result: Result[T, E], fallback_value: T
 ) -> Result[T, E] | None:
@@ -51,12 +52,13 @@ def _process_fallback_result(
         return Ok(fallback_value)
     if isinstance(result, Ok):
         return result
-    return None
+    return None  # type: ignore[unreachable]
+
 
 def _execute_fallback_async_wrapper(
     func_coro: AsyncResultFunc[P, T, E],
     fallback_value: T,
-    exceptions: tuple[type[Exception], ...]
+    exceptions: tuple[type[Exception], ...],
 ) -> AsyncResultFunc[P, T, E]:
     @functools.wraps(func_coro)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
@@ -75,12 +77,14 @@ def _execute_fallback_async_wrapper(
                 return fallback_res
             raise
         return Err(cast(E, RuntimeError("Unreachable")))
+
     return async_wrapper  # type: ignore[misc]
+
 
 def _execute_fallback_sync_wrapper(
     func_sync: ResultFunc[P, T, E],
     fallback_value: T,
-    exceptions: tuple[type[Exception], ...]
+    exceptions: tuple[type[Exception], ...],
 ) -> ResultFunc[P, T, E]:
     @functools.wraps(func_sync)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
@@ -99,7 +103,9 @@ def _execute_fallback_sync_wrapper(
                 return fallback_res
             raise
         return Err(cast(E, RuntimeError("Unreachable")))
+
     return sync_wrapper
+
 
 def fallback(
     fallback_value: T,
@@ -176,6 +182,7 @@ def _validate_timeout(seconds: float) -> Result[None, E] | None:
         )
     return None
 
+
 def _execute_timeout_async_wrapper(
     func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
     seconds: float,
@@ -199,7 +206,9 @@ def _execute_timeout_async_wrapper(
             raise
         except BaseException as e:
             return _handle_timeout_exception(e, "Task")
+
     return async_wrapper  # type: ignore[misc]
+
 
 def _execute_timeout_sync_wrapper(
     func_sync: Callable[P, Result[T, TimeoutError | E]],
@@ -237,7 +246,9 @@ def _execute_timeout_sync_wrapper(
             raise exception[0]
 
         return result[0]
+
     return sync_wrapper
+
 
 def timeout(seconds: float) -> TimeoutDecorator:
     """Enforce a maximum execution time.

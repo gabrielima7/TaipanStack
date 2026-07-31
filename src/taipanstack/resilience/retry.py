@@ -427,6 +427,7 @@ async def _process_retry_attempt_async(
         return sleep_e
     return None
 
+
 def _process_retry_attempt_sync(
     e: Exception,
     attempt: int,
@@ -447,6 +448,7 @@ def _process_retry_attempt_sync(
         return sleep_e
     return None
 
+
 def _check_result_for_retry(
     result: object, valid_on: tuple[type[Exception], ...] | type[Exception]
 ) -> None:
@@ -454,6 +456,7 @@ def _check_result_for_retry(
         err_val = result.unwrap_err()
         if isinstance(err_val, valid_on):
             raise err_val
+
 
 def _execute_async_wrapper(
     func_coro: Callable[P, Awaitable[R]],
@@ -485,11 +488,10 @@ def _execute_async_wrapper(
 
         if last_result is not None and isinstance(last_result, Err):
             return cast(R, last_result)
-        _raise_retry_error(
-            func_name_coro, config.max_attempts, reraise, last_exception
-        )
+        _raise_retry_error(func_name_coro, config.max_attempts, reraise, last_exception)
 
     return async_wrapper  # type: ignore[misc]
+
 
 def _execute_sync_wrapper(
     func_sync: Callable[P, R],
@@ -521,9 +523,7 @@ def _execute_sync_wrapper(
 
         if last_result is not None and isinstance(last_result, Err):
             return cast(R, last_result)
-        _raise_retry_error(
-            func_name_sync, config.max_attempts, reraise, last_exception
-        )
+        _raise_retry_error(func_name_sync, config.max_attempts, reraise, last_exception)
 
     return wrapper
 
