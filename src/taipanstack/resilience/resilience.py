@@ -44,7 +44,9 @@ def _handle_fallback_exception(
         pass
     return None
 
-def _process_fallback_result(result: Result[T, E], fallback_value: T) -> Result[T, E] | None:
+def _process_fallback_result(
+    result: Result[T, E], fallback_value: T
+) -> Result[T, E] | None:
     if isinstance(result, Err):
         return Ok(fallback_value)
     if isinstance(result, Ok):
@@ -60,16 +62,20 @@ def _execute_fallback_async_wrapper(
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             result = await func_coro(*args, **kwargs)
-            processed_res = _process_fallback_result(result, fallback_value)
+            processed_res: Result[T, E] | None = _process_fallback_result(
+                result, fallback_value
+            )
             if processed_res is not None:
                 return processed_res
         except Exception as e:
-            fallback_res = _handle_fallback_exception(e, exceptions, fallback_value)
+            fallback_res: Result[T, E] | None = _handle_fallback_exception(
+                e, exceptions, fallback_value
+            )
             if fallback_res is not None:
                 return fallback_res
             raise
         return Err(cast(E, RuntimeError("Unreachable")))
-    return async_wrapper
+    return async_wrapper  # type: ignore[misc]
 
 def _execute_fallback_sync_wrapper(
     func_sync: ResultFunc[P, T, E],
@@ -80,11 +86,15 @@ def _execute_fallback_sync_wrapper(
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             result = func_sync(*args, **kwargs)
-            processed_res = _process_fallback_result(result, fallback_value)
+            processed_res: Result[T, E] | None = _process_fallback_result(
+                result, fallback_value
+            )
             if processed_res is not None:
                 return processed_res
         except Exception as e:
-            fallback_res = _handle_fallback_exception(e, exceptions, fallback_value)
+            fallback_res: Result[T, E] | None = _handle_fallback_exception(
+                e, exceptions, fallback_value
+            )
             if fallback_res is not None:
                 return fallback_res
             raise
@@ -114,7 +124,9 @@ def fallback(
     ) -> ResultFunc[P, T, E] | AsyncResultFunc[P, T, E]:
         if inspect.iscoroutinefunction(func):
             func_coro = cast(AsyncResultFunc[P, T, E], func)
-            return _execute_fallback_async_wrapper(func_coro, fallback_value, exceptions)  # type: ignore[misc]
+            return _execute_fallback_async_wrapper(
+                func_coro, fallback_value, exceptions
+            )
 
         func_sync = cast(ResultFunc[P, T, E], func)
         return _execute_fallback_sync_wrapper(func_sync, fallback_value, exceptions)
@@ -138,9 +150,11 @@ class TimeoutDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, TimeoutError | E]]]: ...
 
 
-def _handle_timeout_exception(e: BaseException, context: str) -> Result[T, TimeoutError | E]:
+def _handle_timeout_exception(
+    e: BaseException, context: str
+) -> Result[T, TimeoutError | E]:
     if isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-        raise
+        raise e
     if isinstance(e, MemoryError):
         return Err(cast(E, RuntimeError(f"Memory exhaustion: {e!s}")))
     if isinstance(e, (OSError, OverflowError)):
@@ -171,7 +185,7 @@ def _execute_timeout_async_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, TimeoutError | E]:
-        val_err = _validate_timeout(seconds)
+        val_err: Result[None, E] | None = _validate_timeout(seconds)
         if val_err is not None:
             return cast(Result[T, TimeoutError | E], val_err)
         try:
@@ -185,7 +199,7 @@ def _execute_timeout_async_wrapper(
             raise
         except BaseException as e:
             return _handle_timeout_exception(e, "Task")
-    return async_wrapper
+    return async_wrapper  # type: ignore[misc]
 
 def _execute_timeout_sync_wrapper(
     func_sync: Callable[P, Result[T, TimeoutError | E]],
@@ -196,7 +210,7 @@ def _execute_timeout_sync_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, TimeoutError | E]:
-        val_err = _validate_timeout(seconds)
+        val_err: Result[None, E] | None = _validate_timeout(seconds)
         if val_err is not None:
             return cast(Result[T, TimeoutError | E], val_err)
 
@@ -246,7 +260,7 @@ def timeout(seconds: float) -> TimeoutDecorator:
     ):
         if inspect.iscoroutinefunction(func):
             func_coro = cast(Callable[P, Awaitable[Result[T, TimeoutError | E]]], func)
-            return _execute_timeout_async_wrapper(func_coro, seconds)  # type: ignore[misc]
+            return _execute_timeout_async_wrapper(func_coro, seconds)
 
         func_sync = cast(Callable[P, Result[T, TimeoutError | E]], func)
         return _execute_timeout_sync_wrapper(func_sync, seconds)
