@@ -405,6 +405,129 @@ def _validate_retry_exceptions(
     return on_tuple
 
 
+async def _process_retry_attempt_async(
+    e: Exception,
+    attempt: int,
+    func_name: str,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    config: RetryConfig,
+) -> BaseException | None:
+    should_retry, delay = _handle_retry_exception(
+        e, attempt, func_name, valid_on, config
+    )
+    if not should_retry:
+        return e
+    try:
+        await asyncio.sleep(min(delay, 3600.0))
+    except asyncio.CancelledError:
+        raise
+    except BaseException as sleep_e:
+        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+            raise
+        return sleep_e
+    return None
+
+
+def _process_retry_attempt_sync(
+    e: Exception,
+    attempt: int,
+    func_name: str,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    config: RetryConfig,
+) -> BaseException | None:
+    should_retry, delay = _handle_retry_exception(
+        e, attempt, func_name, valid_on, config
+    )
+    if not should_retry:
+        return e
+    try:
+        time.sleep(min(delay, 3600.0))
+    except BaseException as sleep_e:
+        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+            raise
+        return sleep_e
+    return None
+
+
+def _check_result_for_retry(
+    result: object, valid_on: tuple[type[Exception], ...] | type[Exception]
+) -> None:
+    if isinstance(result, Err):
+        err_val = result.unwrap_err()
+        if isinstance(err_val, valid_on):
+            raise err_val
+
+
+def _execute_async_wrapper(
+    func_coro: Callable[P, Awaitable[R]],
+    func_name_coro: str,
+    config: RetryConfig,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    reraise: bool,
+) -> Callable[P, Awaitable[R]]:
+    @functools.wraps(func_coro)
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        last_exception: BaseException | None = None
+        last_result: R | None = None
+
+        for attempt in range(1, config.max_attempts + 1):
+            last_result = None
+            try:
+                last_result = await func_coro(*args, **kwargs)
+                _check_result_for_retry(last_result, valid_on)
+                return last_result
+            except Exception as e:
+                last_exception = e
+                sleep_err = await _process_retry_attempt_async(
+                    e, attempt, func_name_coro, valid_on, config
+                )
+                if sleep_err is not None:
+                    if sleep_err is not e:
+                        last_exception = sleep_err
+                    break
+
+        if last_result is not None and isinstance(last_result, Err):
+            return cast(R, last_result)
+        _raise_retry_error(func_name_coro, config.max_attempts, reraise, last_exception)
+
+    return async_wrapper  # type: ignore[misc]
+
+
+def _execute_sync_wrapper(
+    func_sync: Callable[P, R],
+    func_name_sync: str,
+    config: RetryConfig,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    reraise: bool,
+) -> Callable[P, R]:
+    @functools.wraps(func_sync)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        last_exception: BaseException | None = None
+        last_result: R | None = None
+
+        for attempt in range(1, config.max_attempts + 1):
+            last_result = None
+            try:
+                last_result = func_sync(*args, **kwargs)
+                _check_result_for_retry(last_result, valid_on)
+                return last_result
+            except Exception as e:
+                last_exception = e
+                sleep_err = _process_retry_attempt_sync(
+                    e, attempt, func_name_sync, valid_on, config
+                )
+                if sleep_err is not None:
+                    if sleep_err is not e:
+                        last_exception = sleep_err
+                    break
+
+        if last_result is not None and isinstance(last_result, Err):
+            return cast(R, last_result)
+        _raise_retry_error(func_name_sync, config.max_attempts, reraise, last_exception)
+
+    return wrapper
+
+
 def retry(
     *,
     max_attempts: int = 3,
@@ -467,102 +590,16 @@ def retry(
     ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
         if inspect.iscoroutinefunction(func):
             func_coro = cast(Callable[P, Awaitable[R]], func)
-
-            @functools.wraps(func_coro)
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                last_exception: BaseException | None = None
-                last_result: R | None = None
-
-                for attempt in range(1, config.max_attempts + 1):
-                    last_result = None
-                    try:
-                        last_result = await func_coro(*args, **kwargs)
-                        if isinstance(last_result, Err):
-                            err_val = last_result.unwrap_err()
-                            if isinstance(err_val, valid_on):
-                                raise err_val  # noqa: TRY301
-                        return last_result
-                    except Exception as e:
-                        last_exception = e
-                        should_retry, delay = _handle_retry_exception(
-                            e,
-                            attempt,
-                            cast(str, getattr(func_coro, "__name__", "unknown")),
-                            valid_on,
-                            config,
-                        )
-                        if not should_retry:
-                            break
-                        try:
-                            await asyncio.sleep(min(delay, 3600.0))
-                        except asyncio.CancelledError:
-                            raise
-                        except BaseException as sleep_e:
-                            if isinstance(
-                                sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)
-                            ):
-                                raise
-                            last_exception = sleep_e
-                            break
-
-                if last_result is not None and isinstance(last_result, Err):
-                    return cast(R, last_result)
-                _raise_retry_error(
-                    cast(str, getattr(func_coro, "__name__", "unknown")),
-                    config.max_attempts,
-                    reraise,
-                    last_exception,
-                )
-
-            return async_wrapper  # type: ignore[misc]
-
-        func_sync = cast(Callable[P, R], func)
-
-        @functools.wraps(func_sync)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            last_exception: BaseException | None = None
-            last_result: R | None = None
-
-            for attempt in range(1, config.max_attempts + 1):
-                last_result = None
-                try:
-                    last_result = func_sync(*args, **kwargs)
-                    if isinstance(last_result, Err):
-                        err_val = last_result.unwrap_err()
-                        if isinstance(err_val, valid_on):
-                            raise err_val  # noqa: TRY301
-                    return last_result
-                except Exception as e:
-                    last_exception = e
-                    should_retry, delay = _handle_retry_exception(
-                        e,
-                        attempt,
-                        cast(str, getattr(func_sync, "__name__", "unknown")),
-                        valid_on,
-                        config,
-                    )
-                    if not should_retry:
-                        break
-                    try:
-                        time.sleep(min(delay, 3600.0))
-                    except BaseException as sleep_e:
-                        if isinstance(
-                            sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)
-                        ):
-                            raise
-                        last_exception = sleep_e
-                        break
-
-            if last_result is not None and isinstance(last_result, Err):
-                return cast(R, last_result)
-            _raise_retry_error(
-                cast(str, getattr(func_sync, "__name__", "unknown")),
-                config.max_attempts,
-                reraise,
-                last_exception,
+            func_name_coro = cast(str, getattr(func_coro, "__name__", "unknown"))
+            return _execute_async_wrapper(
+                func_coro, func_name_coro, config, valid_on, reraise
             )
 
-        return wrapper
+        func_sync = cast(Callable[P, R], func)
+        func_name_sync = cast(str, getattr(func_sync, "__name__", "unknown"))
+        return _execute_sync_wrapper(
+            func_sync, func_name_sync, config, valid_on, reraise
+        )
 
     return cast(RetryDecorator, decorator)
 
