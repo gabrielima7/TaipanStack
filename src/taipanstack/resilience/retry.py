@@ -54,7 +54,12 @@ def _handle_retry_exception(
     if not is_match:
         raise e
 
-    max_attempts = int(config.max_attempts) if isinstance(config.max_attempts, (int, float)) and math.isfinite(config.max_attempts) else 3
+    max_attempts = (
+        int(config.max_attempts)
+        if isinstance(config.max_attempts, (int, float))
+        and math.isfinite(config.max_attempts)
+        else 3
+    )
 
     if attempt >= max_attempts:
         _log_all_failed(func_name, e, config)
@@ -472,7 +477,12 @@ def _execute_async_wrapper(
         last_exception: BaseException | None = None
         last_result: R | None = None
 
-        max_attempts = int(config.max_attempts) if isinstance(config.max_attempts, (int, float)) and math.isfinite(config.max_attempts) else 3
+        max_attempts = (
+            int(config.max_attempts)
+            if isinstance(config.max_attempts, (int, float))
+            and math.isfinite(config.max_attempts)
+            else 3
+        )
 
         for attempt in range(1, max_attempts + 1):
             last_result = None
@@ -509,7 +519,12 @@ def _execute_sync_wrapper(
         last_exception: BaseException | None = None
         last_result: R | None = None
 
-        max_attempts = int(config.max_attempts) if isinstance(config.max_attempts, (int, float)) and math.isfinite(config.max_attempts) else 3
+        max_attempts = (
+            int(config.max_attempts)
+            if isinstance(config.max_attempts, (int, float))
+            and math.isfinite(config.max_attempts)
+            else 3
+        )
 
         for attempt in range(1, max_attempts + 1):
             last_result = None
@@ -712,7 +727,12 @@ class Retrier:
         if not self._increment_attempt():
             return False
 
-        max_attempts = int(self.config.max_attempts) if isinstance(self.config.max_attempts, (int, float)) and math.isfinite(self.config.max_attempts) else 3
+        max_attempts = (
+            int(self.config.max_attempts)
+            if isinstance(self.config.max_attempts, (int, float))
+            and math.isfinite(self.config.max_attempts)
+            else 3
+        )
 
         return self.attempt < max_attempts
 
