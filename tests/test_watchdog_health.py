@@ -126,6 +126,7 @@ class TestForceOpenBreaker:
         finally:
             breaker._state.lock.release()
 
+
 # --- HealthPinger -------------------------------------------------------------
 
 
