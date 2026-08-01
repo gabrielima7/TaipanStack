@@ -1,5 +1,5 @@
-import pytest
 from taipanstack.resilience.retry import Retrier
+
 
 def test_chaos_retry_max_attempts_mutation():
     retrier = Retrier(max_attempts=3)

@@ -1,7 +1,10 @@
 import asyncio
+
 import pytest
-from taipanstack.resilience.retry import retry, RetryError
-from taipanstack.resilience.circuit_breaker import circuit_breaker, CircuitBreakerError
+
+from taipanstack.resilience.circuit_breaker import CircuitBreakerError, circuit_breaker
+from taipanstack.resilience.retry import RetryError, retry
+
 
 @pytest.mark.asyncio
 async def test_chaos_extreme_latency():
@@ -16,9 +19,11 @@ async def test_chaos_extreme_latency():
     with pytest.raises(RetryError):
         await hung_function()
 
+
 @pytest.mark.asyncio
 async def test_chaos_intermittent_connection_drops():
     attempts = 0
+
     @retry(max_attempts=3, on=ConnectionError, initial_delay=0.01)
     async def flaky_connection():
         nonlocal attempts
@@ -30,6 +35,7 @@ async def test_chaos_intermittent_connection_drops():
     result = await flaky_connection()
     assert result == "success"
     assert attempts == 3
+
 
 def test_chaos_resource_exhaustion_circuit_breaker():
     @circuit_breaker(failure_threshold=2)
