@@ -664,37 +664,35 @@ class CircuitBreaker:
         if is_failure:
             self._record_failure(e)
 
-    def __call__(
+    def _execute_async_wrapper(
         self,
-        func: Callable[P, R] | Callable[P, Awaitable[R]],
-    ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
-        """Decorate a sync or async function with circuit breaker protection."""
-        if inspect.iscoroutinefunction(func):
-            func_coro = cast(Callable[P, Awaitable[R]], func)
+        func_coro: Callable[P, Awaitable[R]],
+    ) -> Callable[P, Awaitable[R]]:
+        @functools.wraps(func_coro)
+        async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            if not self._should_attempt():
+                raise CircuitBreakerError(
+                    f"Circuit {self.name} is open",
+                    state=self._state.state,
+                )
 
-            @functools.wraps(func_coro)
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                if not self._should_attempt():
-                    raise CircuitBreakerError(
-                        f"Circuit {self.name} is open",
-                        state=self._state.state,
-                    )
+            is_half_open = self._state.state == CircuitState.HALF_OPEN
 
-                is_half_open = self._state.state == CircuitState.HALF_OPEN
+            try:
+                result = await func_coro(*args, **kwargs)
+                return self._process_result(result)
+            except Exception as e:
+                self._handle_exception_in_call(e)
+                raise
+            finally:
+                self._decrement_half_open(is_half_open)
 
-                try:
-                    result = await func_coro(*args, **kwargs)
-                    return self._process_result(result)
-                except Exception as e:
-                    self._handle_exception_in_call(e)
-                    raise
-                finally:
-                    self._decrement_half_open(is_half_open)
+        return async_wrapper  # type: ignore[misc]
 
-            return async_wrapper  # type: ignore[misc]
-
-        func_sync = cast(Callable[P, R], func)
-
+    def _execute_sync_wrapper(
+        self,
+        func_sync: Callable[P, R],
+    ) -> Callable[P, R]:
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             if not self._should_attempt():
@@ -715,6 +713,18 @@ class CircuitBreaker:
                 self._decrement_half_open(is_half_open)
 
         return wrapper
+
+    def __call__(
+        self,
+        func: Callable[P, R] | Callable[P, Awaitable[R]],
+    ) -> Callable[P, R] | Callable[P, Awaitable[R]]:
+        """Decorate a sync or async function with circuit breaker protection."""
+        if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Awaitable[R]], func)
+            return self._execute_async_wrapper(func_coro)
+
+        func_sync = cast(Callable[P, R], func)
+        return self._execute_sync_wrapper(func_sync)
 
 
 def circuit_breaker(
