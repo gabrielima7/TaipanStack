@@ -26,7 +26,7 @@ def test_fuzz_email_massive_strings_dos(email: str) -> None:
         max_size=100,
     ).filter(lambda s: "\x00" in s)
 )
-def test_fuzz_email_null_bytes_expected(email: str) -> None:
+def test_fuzz_email_null_bytes(email: str) -> None:
     """Fuzz validate_email with strings containing null bytes."""
     with pytest.raises(ValueError, match="Email contains invalid characters"):
         validate_email(email)
@@ -42,7 +42,7 @@ def test_fuzz_email_null_bytes_expected(email: str) -> None:
         max_size=10,
     )
 )
-def test_fuzz_email_unprintable_chars_expected(chars: str) -> None:
+def test_fuzz_email_unprintable_chars(chars: str) -> None:
     """Fuzz validate_email with zero-width characters and unprintable unicode."""
     email = f"user@{chars}.com"
     with pytest.raises(ValueError, match="Email contains invalid characters"):

@@ -1,4 +1,4 @@
-def test_core_optimizations_additional_core_optimizations_apply_gc_threshold_exception_expected():
+def test_core_optimizations_additional_core_optimizations_apply_gc_threshold_exception():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_tuning
@@ -17,7 +17,7 @@ def test_core_optimizations_additional_core_optimizations_apply_gc_threshold_exc
     assert "gc_threshold: mocked error" in errors[0]
 
 
-def test_core_optimizations_additional_core_optimizations_apply_gc_freeze_exception_expected():
+def test_core_optimizations_additional_core_optimizations_apply_gc_freeze_exception():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_gc_freeze
@@ -38,7 +38,7 @@ def test_core_optimizations_additional_core_optimizations_apply_gc_freeze_except
     assert "gc_freeze: mocked error" in errors[0]
 
 
-def test_core_optimizations_additional_core_optimizations_apply_experimental_flags_expected():
+def test_core_optimizations_additional_core_optimizations_apply_experimental_flags():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -60,7 +60,7 @@ def test_core_optimizations_additional_core_optimizations_apply_experimental_fla
     assert "free_threading: available" in applied
 
 
-def test_core_optimizations_additional_core_optimizations_apply_experimental_flags_false_expected():
+def test_core_optimizations_additional_core_optimizations_apply_experimental_flags_false():
     from unittest.mock import MagicMock, patch
 
     from taipanstack.core.optimizations import OptimizationProfile, _apply_experimental
@@ -82,7 +82,7 @@ def test_core_optimizations_additional_core_optimizations_apply_experimental_fla
     assert "free_threading: available" not in applied
 
 
-def test_core_optimizations_additional_core_optimizations_logging_branches_expected():
+def test_core_optimizations_additional_core_optimizations_logging_branches():
     from unittest.mock import patch
 
     from taipanstack.core.optimizations import _log_optimization_summary

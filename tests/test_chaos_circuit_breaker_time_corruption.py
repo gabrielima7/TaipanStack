@@ -32,7 +32,7 @@ def test_chaos_circuit_breaker_time_corruption_circuit_breaker_chaos_time_corrup
     assert breaker._state.state == CircuitState.OPEN
 
 
-def test_chaos_circuit_breaker_time_corruption_circuit_breaker_chaos_time_corruption_record_failure_expected(
+def test_chaos_circuit_breaker_time_corruption_circuit_breaker_chaos_time_corruption_record_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     breaker = CircuitBreaker(failure_threshold=2, timeout=10.0)

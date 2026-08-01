@@ -25,7 +25,7 @@ def test_security_sanitizers_additional_security_sanitizers_handle_normal_part()
     assert parts == []
 
 
-def test_security_sanitizers_additional_security_sanitizers_process_path_part_empty_or_dot_dot_expected():
+def test_security_sanitizers_additional_security_sanitizers_process_path_part_empty_or_dot_dot():
     from taipanstack.security.sanitizers import sanitize_path
 
     res = sanitize_path("a/./b")

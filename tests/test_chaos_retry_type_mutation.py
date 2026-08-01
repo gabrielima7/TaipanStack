@@ -5,7 +5,7 @@ import pytest
 from taipanstack.resilience.retry import Retrier, RetryConfig, calculate_delay
 
 
-def test_chaos_retry_type_mutation_retrier_attempt_type_mutation_graceful_degradation_expected():
+def test_chaos_retry_type_mutation_retrier_attempt_type_mutation_graceful_degradation():
     """
     Simulate a rare production failure where the `attempt` state of the Retrier
     gets corrupted/mutated to a non-numeric type (e.g. a string).
@@ -22,7 +22,7 @@ def test_chaos_retry_type_mutation_retrier_attempt_type_mutation_graceful_degrad
             raise ValueError("Expected failure")
 
 
-def test_chaos_retry_type_mutation_retrier_attempt_nan_mutation_graceful_degradation_expected():
+def test_chaos_retry_type_mutation_retrier_attempt_nan_mutation_graceful_degradation():
     """
     Simulate a rare production failure where the `attempt` state of the Retrier
     gets corrupted/mutated to NaN (math.nan).
@@ -45,14 +45,14 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation() -> None:
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_max_delay_expected() -> None:
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_max_delay() -> None:
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "max_delay", "string_mutation")
     delay = calculate_delay(1, config)
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_exponential_base_expected() -> (
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_exponential_base() -> (
     None
 ):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
@@ -61,7 +61,7 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_exponential_bas
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_jitter_factor_expected() -> (
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_jitter_factor() -> (
     None
 ):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
@@ -70,7 +70,7 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_jitter_factor_e
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_initial_delay_expected() -> (
+def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_initial_delay() -> (
     None
 ):
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
@@ -131,7 +131,7 @@ def test_chaos_retry_type_mutation_calculate_delay_type_mutation_delay_all_fails
     assert math.isfinite(delay)
 
 
-def test_chaos_retry_type_mutation_apply_jitter_mutation_delay2_expected() -> None:
+def test_chaos_retry_type_mutation_apply_jitter_mutation_delay2() -> None:
     config = RetryConfig(initial_delay=1.0, max_attempts=3, max_delay=60.0)
     object.__setattr__(config, "jitter_factor", 1.0)
     object.__setattr__(config, "jitter", "string_mutation")
@@ -172,18 +172,18 @@ def test_chaos_retry_type_mutation_retry_config_init_type_mutation() -> None:
     assert config.jitter_factor == 0.1
 
 
-def test_chaos_retry_type_mutation_chaos_retry_on_exception_expected() -> None:
+def test_chaos_retry_type_mutation_chaos_retry_on_exception() -> None:
     from taipanstack.resilience.retry import RetryError, retry_on_exception
 
     @retry_on_exception((ValueError,), max_attempts=2)
-    def test_chaos_retry_type_mutation_func_standard_expected():
+    def test_chaos_retry_type_mutation_func_standard():
         raise ValueError("test")
 
     with pytest.raises(RetryError):
         test_chaos_retry_type_mutation_func_standard()
 
 
-def test_chaos_retry_type_mutation_chaos_retry_exit_should_retry_false_due_to_none_exc_val_expected() -> (
+def test_chaos_retry_type_mutation_chaos_retry_exit_should_retry_false_due_to_none_exc_val() -> (
     None
 ):
     # Coverage for `self.last_exception = exc_val if isinstance(exc_val, Exception) else None`
@@ -204,7 +204,7 @@ def test_chaos_retry_type_mutation_chaos_retry_exit_success() -> None:
     r.__exit__(None, None, None)
 
 
-def test_chaos_retry_type_mutation_chaos_retry_should_retry_type_error_for_issubclass_expected() -> (
+def test_chaos_retry_type_mutation_chaos_retry_should_retry_type_error_for_issubclass() -> (
     None
 ):
     """

@@ -54,7 +54,7 @@ def test_chaos_config_watcher_corrupted_file_type(
     assert "Cannot hash" in caplog.text
 
 
-def test_chaos_config_watcher_parse_env_empty_values_expected() -> None:
+def test_chaos_config_watcher_parse_env_empty_values() -> None:
     """Test _parse_env with empty values and weird quoting."""
     from taipanstack.resilience.watchdogs.config_watcher import _parse_env
 
@@ -73,7 +73,7 @@ def test_chaos_config_watcher_parse_env_empty_values_expected() -> None:
     assert result["E"] == "   "
 
 
-def test_chaos_config_watcher_parse_content_unsupported_ext_expected(
+def test_chaos_config_watcher_parse_content_unsupported_ext(
     tmp_path: Path,
 ) -> None:
     """Test _parse_content_by_extension with an unsupported extension."""

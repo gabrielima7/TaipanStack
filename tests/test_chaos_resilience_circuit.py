@@ -9,7 +9,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_expected():
+def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos():
     """Simulate a chaos scenario where the user-provided callback fails.
 
     If a user provides an `on_state_change` callback that raises an unhandled
@@ -61,7 +61,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_expected
     assert breaker.state == CircuitState.CLOSED
 
 
-def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog_expected(
+def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog(
     monkeypatch,
 ):
     """Test the failure branch when structlog is missing."""
@@ -93,7 +93,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_
     assert breaker.state == CircuitState.OPEN
 
 
-def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations_expected():
+def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations():
     """Test chaos: Invalid configuration values cause fast failure.
 
     If instantiated with NaN timeout, negative timeout, or 0 thresholds,
@@ -147,7 +147,7 @@ def test_chaos_resilience_circuit_structlog_warning_without_callback(
     assert logger.calls == 1
 
 
-def test_chaos_resilience_circuit_structlog_fallback_noop_when_unavailable_expected(
+def test_chaos_resilience_circuit_structlog_fallback_noop_when_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """No structlog call occurs when fallback logger is unavailable."""
