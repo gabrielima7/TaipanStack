@@ -1,9 +1,10 @@
 <div align="center">
 
 # 🐍 Taipan Stack
+
 [![CI](https://img.shields.io/github/actions/workflow/status/gabrielima7/TaipanStack/ci-push-validate.yml?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml)
 
-### **The Modern Python Foundation**
+## **The Modern Python Foundation**
 
 *Launch secure, high-performance Python applications in seconds.*
 
@@ -32,6 +33,7 @@
 Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
 ### ✨ What's New in v0.6.1
+
 - **Security & Hardening**: Hardened RateLimiter against infinite tokens mutations, key decoding in JWT, and validate_project_name argument parsing. Fixed large password payload crashes and removed unused constants (PR #966, #967, #968, #973, #989).
 - **Concurrency & Resilience**: Fixed a bulkhead acquisition memory leak in ResilienceOrchestrator and documented AdaptiveRetry features (PR #974, #980).
 - **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity across compatibility shims, validators, filesystems, and token buckets. Enforced strict web bridge type hints and clean keyword parameters (PR #971, #976, #979, #984, #988, #993, #997, #1002, #1003).
@@ -42,6 +44,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 <td width="50%">
 
 ### 🛡️ Security First
+
 - Path traversal protection
 - Command injection guards
 - Input sanitizers & validators
@@ -52,6 +55,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 <td width="50%">
 
 ### ⚡ High Performance
+
 - `uvloop` async event loop
 - `orjson` fast JSON serialization
 - `Pydantic v2` validation
@@ -62,6 +66,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 <td width="50%">
 
 ### 🎯 Rust-Style Error Handling
+
 - `Ok`/`Err` Result types
 - Explicit error propagation
 - Pattern matching support
@@ -71,6 +76,7 @@ Taipan Stack is a battle-tested foundation for production-grade Python projects 
 <td width="50%">
 
 ### 🔧 Developer Experience
+
 - Pre-configured quality tools
 - **100% code coverage** (comprehensive test suite)
 - Architecture enforcement
@@ -134,7 +140,7 @@ make property-test
 
 Taipan Stack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
-```
+```text
                     ┌────────────────────────────────────────────────────────┐
                     │                      Application                       │
                     │                   (src/app/main.py)                    │
@@ -183,7 +189,7 @@ TaipanStack/
 Taipan Stack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
-|----------|-------|---------|
+| ---------- | ------- | --------- |
 | **SAST** | Bandit, Semgrep + custom rules | Static Application Security Testing |
 | **SCA** | pip-audit | Dependency vulnerability scanning |
 | **SBOM** | Syft (CycloneDX) | Software Bill of Materials |
@@ -209,13 +215,13 @@ Taipan Stack integrates security and quality at every level:
 ```
 
 ---
+
 ## ⚙️ Environment Variables
 
 TaipanStack supports the following environment variables for configuration:
 
 - `STACK_ENABLE_EXPERIMENTAL`: Set to `1`, `true`, `yes`, or `on` to enable experimental features such as the JIT compiler and free-threading optimizations.
 - `STACK_OPTIMIZATION_LEVEL`: Set the optimization level (default `1`). Use `0` for none, `1` for safe, and `2` for aggressive optimizations (requires experimental features).
-
 
 ## 📚 API Highlights
 
@@ -435,7 +441,7 @@ This project is open-sourced under the [MIT License](LICENSE).
 
 <div align="center">
 
-**Made with ❤️ for the Python community**
+Made with ❤️ for the Python community
 
 [⬆ Back to Top](#-taipan-stack)
 
