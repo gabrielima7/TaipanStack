@@ -91,7 +91,9 @@ def test_utils_subprocess_additional_extract_timeout_stdout_not_str():
     assert _extract_timeout_stdout(err) == "some bytes"
 
 
-def test_utils_subprocess_additional_utils_subprocess_validate_timeout_type_error() -> None:
+def test_utils_subprocess_additional_utils_subprocess_validate_timeout_type_error() -> (
+    None
+):
     """Test _validate_timeout with invalid types."""
     from taipanstack.utils.subprocess import _validate_timeout
 

@@ -147,6 +147,7 @@ class TestSafeFromDecorator:
 
         class SubValueError(ValueError):
             """Expected error block."""
+
             def __str__(self):
                 return "subclass error"
 
