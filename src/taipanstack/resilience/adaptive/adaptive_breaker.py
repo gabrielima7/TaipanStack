@@ -163,7 +163,11 @@ class AdaptiveCircuitBreaker:
             return
 
         total = len(self._window)
-        if total < self._min_throughput:
+        min_throughput = self._min_throughput
+        if not isinstance(min_throughput, (int, float)) or not math.isfinite(min_throughput):
+            min_throughput = 1
+
+        if total < min_throughput:
             return
 
         error_rate = self._calculate_error_rate(total)
