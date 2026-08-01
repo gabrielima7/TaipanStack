@@ -288,11 +288,13 @@ class TestLogOperation:
 
         class ExpectedError(Exception):
             """Expected error block."""
+
             def __str__(self):
                 return "expected"
 
         class UnexpectedError(Exception):
             """Expected error block."""
+
             def __str__(self):
                 return "expected"
 

@@ -51,6 +51,7 @@ class TestDefaultEncoder:
 
         class CustomObj:
             """Expected error block."""
+
             def __str__(self):
                 return "expected"
 

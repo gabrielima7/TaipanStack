@@ -153,6 +153,7 @@ class TestGuardExceptions:
 
         class CustomError(Exception):
             """Expected error block."""
+
             def __str__(self):
                 return "expected"
 
