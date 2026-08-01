@@ -89,7 +89,7 @@ class TestSafeUrl:
         with pytest.raises(ValidationError):
             UrlModel(url="http://169.254.0.1/data")
 
-    def test_security_types_safe_url_returns_guarded_value(
+    def test_security_types_safe_url_returns_guarded_value_expected(
         self,
     ) -> None:
         """The SSRF validator returns the Ok value from the guard."""

@@ -21,7 +21,7 @@ def test_chaos_resilience_exhaustion_sync_timeout_thread_start_generic_exhaustio
         )
 
 
-def test_chaos_resilience_exhaustion_sync_timeout_thread_start_system_exit():
+def test_chaos_resilience_exhaustion_sync_timeout_thread_start_system_exit_expected():
     @timeout(1.0)
     def my_func():
         return Ok("success")
@@ -77,7 +77,7 @@ def test_chaos_resilience_exhaustion_sync_retry_sleep_generic_exhaustion():
         assert "mocked sleep failure" in str(exc_info.value.last_exception)
 
 
-def test_chaos_resilience_exhaustion_sync_retry_sleep_system_exit():
+def test_chaos_resilience_exhaustion_sync_retry_sleep_system_exit_expected():
     @retry(max_attempts=3, initial_delay=0.1)
     def my_func():
         raise ValueError("initial fail")

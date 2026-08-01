@@ -11,23 +11,23 @@ from taipanstack.security.guards import SecurityError, guard_ssrf
 class TestGuardSsrfTypeContract:
     """Test TypeError enforcement for non-string inputs."""
 
-    def test_security_ssrf_raises_err_for_int(self) -> None:
+    def test_security_ssrf_raises_err_for_int_expected(self) -> None:
         """Return Err when URL is an integer."""
         result = guard_ssrf(cast(Any, 123))
         assert result.is_err()
 
-    def test_security_ssrf_raises_err_for_none(self) -> None:
+    def test_security_ssrf_raises_err_for_none_expected(self) -> None:
         """Return Err when URL is None."""
         result = guard_ssrf(cast(Any, None))
         assert result.is_err()
 
-    def test_security_ssrf_raises_err_for_bytes(self) -> None:
+    def test_security_ssrf_raises_err_for_bytes_expected(self) -> None:
         """Return Err when URL is bytes."""
         result = guard_ssrf(cast(Any, b"http://example.com"))
         assert result.is_err()
 
     @patch("taipanstack.security.guards.urlsplit")
-    def test_security_ssrf_raises_value_error_from_urlparse(
+    def test_security_ssrf_raises_value_error_from_urlparse_expected(
         self, mock_urlparse: Any
     ) -> None:
         """Return Err when urlparse raises ValueError."""
@@ -105,7 +105,7 @@ class TestGuardSsrfPrivateIpv4:
         """Return a fake getaddrinfo response for the given IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
-    def test_security_ssrf_loopback_127_0_0_1_blocked(self) -> None:
+    def test_security_ssrf_loopback_127_0_0_1_blocked_expected(self) -> None:
         """127.0.0.1 (loopback) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -115,7 +115,7 @@ class TestGuardSsrfPrivateIpv4:
         assert result.is_err()
         assert "SSRF" in str(cast(Err, result).err_value)
 
-    def test_security_ssrf_private_10_network_blocked(self) -> None:
+    def test_security_ssrf_private_10_network_blocked_expected(self) -> None:
         """10.0.0.1 (RFC-1918 class A) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -124,7 +124,7 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
-    def test_security_ssrf_private_172_16_network_blocked(
+    def test_security_ssrf_private_172_16_network_blocked_expected(
         self,
     ) -> None:
         """172.16.0.1 (RFC-1918 class B) must be blocked."""
@@ -135,7 +135,7 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("http://internal.svc/api")
         assert result.is_err()
 
-    def test_security_ssrf_private_192_168_network_blocked(
+    def test_security_ssrf_private_192_168_network_blocked_expected(
         self,
     ) -> None:
         """192.168.1.1 (RFC-1918 class C) must be blocked."""
@@ -146,7 +146,7 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("https://my-service.local/")
         assert result.is_err()
 
-    def test_security_ssrf_aws_metadata_endpoint_blocked(
+    def test_security_ssrf_aws_metadata_endpoint_blocked_expected(
         self,
     ) -> None:
         """169.254.169.254 (AWS EC2 metadata) must be blocked."""
@@ -160,7 +160,7 @@ class TestGuardSsrfPrivateIpv4:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
-    def test_security_ssrf_link_local_169_254_blocked(self) -> None:
+    def test_security_ssrf_link_local_169_254_blocked_expected(self) -> None:
         """169.254.0.1 (link-local range) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -169,7 +169,7 @@ class TestGuardSsrfPrivateIpv4:
             result = guard_ssrf("http://host.local/")
         assert result.is_err()
 
-    def test_security_ssrf_localhost_string_blocked(self) -> None:
+    def test_security_ssrf_localhost_string_blocked_expected(self) -> None:
         """'localhost' resolving to 127.0.0.1 must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -188,7 +188,7 @@ class TestGuardSsrfPrivateIpv6:
         """Return a fake getaddrinfo response for an IPv6 address."""
         return [(socket.AF_INET6, socket.SOCK_STREAM, 0, "", (ip, 0, 0, 0))]
 
-    def test_security_ssrf_ipv6_loopback_blocked(self) -> None:
+    def test_security_ssrf_ipv6_loopback_blocked_expected(self) -> None:
         """::1 (IPv6 loopback) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -197,7 +197,7 @@ class TestGuardSsrfPrivateIpv6:
             result = guard_ssrf("http://[::1]/path")
         assert result.is_err()
 
-    def test_security_ssrf_ipv6_unique_local_blocked(self) -> None:
+    def test_security_ssrf_ipv6_unique_local_blocked_expected(self) -> None:
         """fc00:: unique local (ULA) must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -206,7 +206,7 @@ class TestGuardSsrfPrivateIpv6:
             result = guard_ssrf("https://host.example.com/")
         assert result.is_err()
 
-    def test_security_ssrf_ipv6_link_local_blocked(self) -> None:
+    def test_security_ssrf_ipv6_link_local_blocked_expected(self) -> None:
         """fe80:: link-local must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -223,7 +223,7 @@ class TestGuardSsrfSafeUrls:
         """Return a fake getaddrinfo with a public routable IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", ("93.184.216.34", 0))]
 
-    def test_security_ssrf_public_http_url_accepted(self) -> None:
+    def test_security_ssrf_public_http_url_accepted_expected(self) -> None:
         """A URL resolving to a public IP returns Ok."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -233,7 +233,7 @@ class TestGuardSsrfSafeUrls:
         assert result.is_ok()
         assert result.unwrap() == "http://example.com/api"
 
-    def test_security_ssrf_public_https_url_accepted(self) -> None:
+    def test_security_ssrf_public_https_url_accepted_expected(self) -> None:
         """A HTTPS URL resolving to a public IP returns Ok."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -242,7 +242,7 @@ class TestGuardSsrfSafeUrls:
             result = guard_ssrf("https://example.com/api")
         assert result.is_ok()
 
-    def test_security_ssrf_custom_allowed_schemes_accepted(
+    def test_security_ssrf_custom_allowed_schemes_accepted_expected(
         self,
     ) -> None:
         """A URL with a custom-allowed scheme passes when explicitly permitted."""
@@ -256,7 +256,7 @@ class TestGuardSsrfSafeUrls:
             )
         assert result.is_ok()
 
-    def test_security_ssrf_invalid_ip_in_addr_info_skipped(
+    def test_security_ssrf_invalid_ip_in_addr_info_skipped_expected(
         self,
     ) -> None:
         """Invalid IP strings inside addr_info are skipped gracefully."""
@@ -277,7 +277,7 @@ class TestGuardSsrfErrorAttrs:
     def _mock_loopback(self) -> list[tuple[int, int, int, str, tuple[str, int]]]:
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", ("127.0.0.1", 0))]
 
-    def test_security_ssrf_security_error_guard_name_is_ssrf(
+    def test_security_ssrf_security_error_guard_name_is_ssrf_expected(
         self,
     ) -> None:
         """SecurityError.guard_name must equal 'ssrf'."""
@@ -290,7 +290,7 @@ class TestGuardSsrfErrorAttrs:
         assert isinstance(err, SecurityError)
         assert err.guard_name == "ssrf"
 
-    def test_security_ssrf_security_error_value_is_ip_string(
+    def test_security_ssrf_security_error_value_is_ip_string_expected(
         self,
     ) -> None:
         """SecurityError.value must not expose the offending IP address anymore."""
@@ -313,7 +313,7 @@ class TestGuardSsrfCatchAllReserved:
         """Return a fake getaddrinfo response for the given IP."""
         return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
-    def test_security_ssrf_zero_address_blocked_by_catchall(
+    def test_security_ssrf_zero_address_blocked_by_catchall_expected(
         self,
     ) -> None:
         """0.0.0.0 is is_private but not in explicit network list — hits catch-all."""
@@ -328,7 +328,7 @@ class TestGuardSsrfCatchAllReserved:
         assert "reserved" in str(err).lower() or "SSRF" in str(err)
         assert err.guard_name == "ssrf"
 
-    def test_security_ssrf_multicast_address_blocked(self) -> None:
+    def test_security_ssrf_multicast_address_blocked_expected(self) -> None:
         """Multicast address like 224.0.0.1 must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -339,7 +339,7 @@ class TestGuardSsrfCatchAllReserved:
         err = cast(Err, result).err_value
         assert isinstance(err, SecurityError)
 
-    def test_security_ssrf_unspecified_address_blocked(self) -> None:
+    def test_security_ssrf_unspecified_address_blocked_expected(self) -> None:
         """Unspecified address like :: must be blocked."""
         with patch(
             "taipanstack.security.guards.socket.getaddrinfo",
@@ -351,7 +351,7 @@ class TestGuardSsrfCatchAllReserved:
         assert isinstance(err, SecurityError)
 
 
-def test_security_ssrf_guard_ssrf_invalid_control_characters() -> None:
+def test_security_ssrf_guard_ssrf_invalid_control_characters_expected() -> None:
     """Test that URLs with control characters and spaces are rejected."""
     # Test cases that should fail validation
     invalid_cases = [

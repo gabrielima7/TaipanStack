@@ -33,7 +33,7 @@ class TestResourceSnapshot:
 class TestCheckResources:
     """Tests for the one-shot check_resources function."""
 
-    def test_watchdog_resource_ok_with_psutil(self) -> None:
+    def test_watchdog_resource_ok_with_psutil_expected(self) -> None:
         """Returns Ok(ResourceSnapshot) when psutil is available."""
         mock_vm = MagicMock()
         mock_vm.percent = 42.5
@@ -55,7 +55,7 @@ class TestCheckResources:
         assert snap.memory_percent == 42.5
         assert snap.timestamp > 0
 
-    def test_watchdog_resource_err_without_psutil(self) -> None:
+    def test_watchdog_resource_err_without_psutil_expected(self) -> None:
         """Returns Err(ImportError) when psutil is not installed."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False

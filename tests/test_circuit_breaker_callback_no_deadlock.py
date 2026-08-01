@@ -5,7 +5,7 @@ import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
 
 
-def test_circuit_breaker_callback_no_deadlock_circuit_breaker_callback_deadlock_prevented() -> (
+def test_circuit_breaker_callback_no_deadlock_circuit_breaker_callback_deadlock_prevented_expected() -> (
     None
 ):
     in_callback = threading.Event()

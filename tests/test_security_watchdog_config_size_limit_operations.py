@@ -4,7 +4,7 @@ from taipanstack.core.result import Err
 from taipanstack.resilience.watchdogs.config_watcher import _hash_file, _load_file_data
 
 
-def test_security_watchdog_config_size_limit_operations_config_watcher_hash_file_size_limit(
+def test_security_watchdog_config_size_limit_operations_config_watcher_hash_file_size_limit_expected(
     tmp_path: Path,
 ) -> None:
     """Test that _hash_file respects MAX_CONFIG_FILE_SIZE."""
@@ -25,7 +25,7 @@ def test_security_watchdog_config_size_limit_operations_config_watcher_hash_file
         cw.MAX_CONFIG_FILE_SIZE = original_size
 
 
-def test_security_watchdog_config_size_limit_operations_config_watcher_load_file_data_size_limit(
+def test_security_watchdog_config_size_limit_operations_config_watcher_load_file_data_size_limit_expected(
     tmp_path: Path,
 ) -> None:
     """Test that _load_file_data respects MAX_CONFIG_FILE_SIZE."""

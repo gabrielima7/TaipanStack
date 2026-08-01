@@ -40,7 +40,7 @@ def test_security_models_fuzz_masking_expected(payload: object) -> None:
     assert "secret_password" not in dump_str, f"Leak detected: {dump_str}"
 
 
-def test_security_models_fuzz_security_models_max_depth() -> None:
+def test_security_models_fuzz_security_models_max_depth_expected() -> None:
     class Container(SecureBaseModel):
         payload: object
 
@@ -54,7 +54,7 @@ def test_security_models_fuzz_security_models_max_depth() -> None:
     assert "MAX_DEPTH_REACHED" in dump_str
 
 
-def test_security_models_fuzz_security_models_max_depth_collections() -> None:
+def test_security_models_fuzz_security_models_max_depth_collections_expected() -> None:
     class Container(SecureBaseModel):
         payload: object
 

@@ -7,7 +7,7 @@ from taipanstack.security.guards import SecurityError, guard_file_extension
 
 @settings(max_examples=200)
 @given(st.text())
-def test_fuzz_guard_file_extension_null_bytes(filename: str) -> None:
+def test_fuzz_guard_file_extension_null_bytes_expected(filename: str) -> None:
     """Ensure filenames with null bytes are rejected."""
     if len(filename) > 4096:
         with pytest.raises(SecurityError, match="Filename length exceeds"):
@@ -29,7 +29,7 @@ def test_fuzz_guard_file_extension_null_bytes(filename: str) -> None:
         max_size=10,
     )
 )
-def test_fuzz_guard_file_extension_whitespace_and_dots(
+def test_fuzz_guard_file_extension_whitespace_and_dots_expected(
     padding: str,
 ) -> None:
     """Ensure trailing spaces, dots, and control characters don't bypass the extension check."""
@@ -47,13 +47,13 @@ def test_fuzz_guard_file_extension_whitespace_and_dots(
             guard_file_extension(filename, denied_extensions=["exe"])
 
 
-def test_fuzz_guard_file_extension_empty_after_strip() -> None:
+def test_fuzz_guard_file_extension_empty_after_strip_expected() -> None:
     """Ensure that filenames that become empty after stripping are handled correctly."""
     with pytest.raises(SecurityError, match="not in allowed list"):
         guard_file_extension("   \\xad", allowed_extensions=["txt"])
 
 
-def test_fuzz_guard_file_extension_empty_name() -> None:
+def test_fuzz_guard_file_extension_empty_name_expected() -> None:
     """Ensure that filenames with no name component are handled."""
     with pytest.raises(SecurityError, match="not in allowed list"):
         guard_file_extension("/", allowed_extensions=["txt"])
