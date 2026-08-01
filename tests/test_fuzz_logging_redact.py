@@ -29,7 +29,7 @@ from taipanstack.utils.logging import _redact, _redact_dict, _redact_set
     )
 )
 @settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys_expected(value):
+def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys(value):
     """Bombard _redact_dict with extreme, non-string keys to test resilience.
 
     Keys generated include None, integers, floats, booleans, dates, and datetimes.
@@ -62,7 +62,7 @@ def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys_expected(value):
         max_leaves=10,
     )
 )
-def test_fuzz_logging_redact_does_not_crash_expected(data: object) -> None:
+def test_fuzz_logging_redact_does_not_crash(data: object) -> None:
     """Fuzz test to ensure _redact never crashes on arbitrary nested structures."""
     try:
         _redact(data)
@@ -72,7 +72,7 @@ def test_fuzz_logging_redact_does_not_crash_expected(data: object) -> None:
 
 @settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
 @given(st.dictionaries(st.text(), st.text(), min_size=1))
-def test_fuzz_logging_redact_dict_does_not_crash_expected(
+def test_fuzz_logging_redact_dict_does_not_crash(
     data: MutableMapping[str, object],
 ) -> None:
     """Fuzz test to ensure _redact_dict never crashes on arbitrary dicts."""
@@ -84,14 +84,14 @@ def test_fuzz_logging_redact_dict_does_not_crash_expected(
         ) from e
 
 
-def test_fuzz_logging_redact_redact_set_standard_expected():
+def test_fuzz_logging_redact_redact_set_standard():
     seen = set()
     s = {"secret_val", 123}
     redacted = _redact_set(s, seen)
     assert redacted == {"secret_val", 123}
 
 
-def test_fuzz_logging_redact_redact_set_recursive_expected():
+def test_fuzz_logging_redact_redact_set_recursive():
     from taipanstack.utils.logging import _redact
 
     s = {"secret_val"}
@@ -116,7 +116,7 @@ class UnhashableMock:
         return f"UnhashableMock({self.val})"
 
 
-def test_fuzz_logging_redact_redact_set_unhashable_expected():
+def test_fuzz_logging_redact_redact_set_unhashable():
     from taipanstack.utils.logging import _redact_set
 
     seen = set()
@@ -133,7 +133,7 @@ class StringMock:
         self.val = val
 
 
-def test_fuzz_logging_redact_redact_string_standard_expected():
+def test_fuzz_logging_redact_redact_string_standard():
     from taipanstack.utils.logging import _is_sensitive
 
     assert not _is_sensitive(StringMock("test"), None)
@@ -155,7 +155,7 @@ class UnhashableMockStr:
         return "unhashable_str"
 
 
-def test_fuzz_logging_redact_redact_set_unhashable_branch_expected():
+def test_fuzz_logging_redact_redact_set_unhashable_branch():
     from taipanstack.utils.logging import _redact_set
 
     seen = set()
@@ -167,7 +167,7 @@ def test_fuzz_logging_redact_redact_set_unhashable_branch_expected():
     assert "unhashable_str" in redacted
 
 
-def test_fuzz_logging_redact_is_sensitive_non_string_expected():
+def test_fuzz_logging_redact_is_sensitive_non_string():
     import re
 
     from taipanstack.utils.logging import _is_sensitive

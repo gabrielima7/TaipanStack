@@ -14,13 +14,13 @@ def test_utils_subprocess_additional_utils_subprocess_raise_on_error():
         res.raise_on_error()
 
 
-def test_utils_subprocess_additional_allowed_keys_custom_expected():
+def test_utils_subprocess_additional_allowed_keys_custom():
     from taipanstack.utils.subprocess import _get_allowed_keys
 
     assert _get_allowed_keys(["TEST_VAR"]) == {"TEST_VAR"}
 
 
-def test_utils_subprocess_additional_filter_environment_empty_expected():
+def test_utils_subprocess_additional_filter_environment_empty():
     from taipanstack.utils.subprocess import _filter_environment
 
     assert _filter_environment(None, []) == {}
@@ -37,13 +37,13 @@ def test_utils_subprocess_additional_run_safe_command_check_true():
         run_safe_command(["false"], check=True, allowed_commands=["false"])
 
 
-def test_utils_subprocess_additional_filter_environment_empty_allowed_expected():
+def test_utils_subprocess_additional_filter_environment_empty_allowed():
     from taipanstack.utils.subprocess import _filter_environment
 
     assert _filter_environment({"PATH": "/bin"}, []) == {}
 
 
-def test_utils_subprocess_additional_filter_environment_none_allowed_expected():
+def test_utils_subprocess_additional_filter_environment_none_allowed():
     from taipanstack.utils.subprocess import _filter_environment
 
     assert _filter_environment({"PATH": "/bin", "OTHER": "val"}, None) == {
@@ -51,7 +51,7 @@ def test_utils_subprocess_additional_filter_environment_none_allowed_expected():
     }
 
 
-def test_utils_subprocess_additional_run_safe_command_timeout_expected():
+def test_utils_subprocess_additional_run_safe_command_timeout():
     import pytest
 
     from taipanstack.utils.subprocess import run_safe_command
@@ -75,13 +75,13 @@ def test_utils_subprocess_additional_execute_command_capture_false():
         assert result.stderr == ""
 
 
-def test_utils_subprocess_additional_get_allowed_keys_none_expected():
+def test_utils_subprocess_additional_get_allowed_keys_none():
     from taipanstack.utils.subprocess import _get_allowed_keys
 
     assert _get_allowed_keys(None) == {"PATH"}
 
 
-def test_utils_subprocess_additional_extract_timeout_stdout_not_str_expected():
+def test_utils_subprocess_additional_extract_timeout_stdout_not_str():
     import subprocess
 
     from taipanstack.utils.subprocess import _extract_timeout_stdout
@@ -99,7 +99,7 @@ def test_utils_subprocess_additional_utils_subprocess_validate_timeout_type_erro
         _validate_timeout("10")  # type: ignore
 
 
-def test_utils_subprocess_additional_utils_subprocess_validate_timeout_none_expected() -> None:
+def test_utils_subprocess_additional_utils_subprocess_validate_timeout_none() -> None:
     """Test _validate_timeout with None."""
     from taipanstack.utils.subprocess import _validate_timeout
 

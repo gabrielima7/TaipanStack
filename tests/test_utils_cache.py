@@ -131,7 +131,7 @@ async def test_utils_cache_async_cache_stampede_prevention_expected() -> None:
     assert call_count == 1
 
 
-def test_utils_cache_cached_sync_lru_eviction_expected() -> None:
+def test_utils_cache_cached_sync_lru_eviction() -> None:
     """Test LRU eviction for sync cache."""
     call_count = 0
 
@@ -190,7 +190,7 @@ async def test_utils_cache_cached_async_lru_eviction_expected() -> None:
     assert call_count == 4
 
 
-def test_utils_cache_invalid_max_size_expected() -> None:
+def test_utils_cache_invalid_max_size() -> None:
     """Test invalid max_size raises ValueError."""
     with pytest.raises(ValueError, match="max_size must be a positive integer"):
 

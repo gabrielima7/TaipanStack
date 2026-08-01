@@ -4,7 +4,7 @@ from taipanstack.core.result import Ok
 from taipanstack.utils.cache import cached
 
 
-def test_security_cache_unbounded_security_cache_bounded_expected():
+def test_security_cache_unbounded_security_cache_bounded():
     """Verify that the cache size is strictly bounded by max_size."""
     max_size = 10
 

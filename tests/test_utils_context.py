@@ -11,7 +11,7 @@ from taipanstack.utils.context import (
 )
 
 
-def test_utils_context_get_set_correlation_id_expected() -> None:
+def test_utils_context_get_set_correlation_id() -> None:
     """Test standard get and set."""
     assert get_correlation_id() is None
     set_correlation_id("test-id-123")
@@ -20,7 +20,7 @@ def test_utils_context_get_set_correlation_id_expected() -> None:
     assert get_correlation_id() is None
 
 
-def test_utils_context_correlation_scope_expected() -> None:
+def test_utils_context_correlation_scope() -> None:
     """Test correlation scope context manager."""
     set_correlation_id("outer-id")
 

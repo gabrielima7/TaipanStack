@@ -6,7 +6,7 @@ from taipanstack.core.result import Err, Ok
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
 
 
-def test_chaos_rate_limit_lock_exhaustion_chaos_rate_limit_lock_acquire_exception_expected():
+def test_chaos_rate_limit_lock_exhaustion_chaos_rate_limit_lock_acquire_exception():
     limiter = RateLimiter(10, 1.0)
 
     class BrokenLock:

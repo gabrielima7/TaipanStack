@@ -36,7 +36,7 @@ def test_fuzz_python_version_fuzz_version_massive_strings_dos(
         max_size=15,
     ).filter(lambda s: "\x00" in s)
 )
-def test_fuzz_python_version_fuzz_version_null_bytes_expected(
+def test_fuzz_python_version_fuzz_version_null_bytes(
     version: str,
 ) -> None:
     """Fuzz validate_python_version with strings containing null bytes."""
@@ -54,7 +54,7 @@ def test_fuzz_python_version_fuzz_version_null_bytes_expected(
         max_size=10,
     )
 )
-def test_fuzz_python_version_fuzz_version_unprintable_chars_expected(
+def test_fuzz_python_version_fuzz_version_unprintable_chars(
     chars: str,
 ) -> None:
     """Fuzz validate_python_version with zero-width characters and unprintable unicode."""
@@ -63,7 +63,7 @@ def test_fuzz_python_version_fuzz_version_unprintable_chars_expected(
         validate_python_version(version)
 
 
-def test_fuzz_python_version_version_unicode_digits_expected() -> None:
+def test_fuzz_python_version_version_unicode_digits() -> None:
     """Ensure validate_python_version does not accept unicode digits like arabic numerals."""
     version = "٣.١٢"
     with pytest.raises(ValueError, match="Invalid version format"):

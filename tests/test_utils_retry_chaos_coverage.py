@@ -14,7 +14,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_nan(
         RetryConfig(initial_delay=1.0, jitter=True, jitter_factor=float("inf"))
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(
+def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception(
     monkeypatch,
 ) -> None:
     # Test lines 136-137 exception logging
@@ -31,7 +31,7 @@ def test_utils_retry_chaos_coverage_retry_chaos_jitter_exception_expected(
     assert delay == 1.0
 
 
-def test_utils_retry_chaos_coverage_retry_chaos_delay_negative_expected() -> None:
+def test_utils_retry_chaos_coverage_retry_chaos_delay_negative() -> None:
     # Test line 140 (delay < 0 -> return 0.0)
     config = RetryConfig(initial_delay=1.0, jitter=False)
     object.__setattr__(config, "initial_delay", -10.0)

@@ -58,7 +58,7 @@ def test_result_fuzz_result_collect_results_with_err_fuzz(
 
 
 @given(st.lists(st.one_of(st.text(), st.integers())))
-def test_result_fuzz_result_safe_fuzz_expected(values: list[object]) -> None:
+def test_result_fuzz_result_safe_fuzz(values: list[object]) -> None:
     @safe
     def maybe_fail(v: object) -> str:
         if isinstance(v, int):
@@ -75,7 +75,7 @@ def test_result_fuzz_result_safe_fuzz_expected(values: list[object]) -> None:
 
 
 @given(st.lists(st.one_of(st.text(), st.integers())))
-def test_result_fuzz_result_safe_from_fuzz_expected(values: list[object]) -> None:
+def test_result_fuzz_result_safe_from_fuzz(values: list[object]) -> None:
     @safe_from(TypeError)
     def maybe_fail(v: object) -> str:
         if isinstance(v, int):

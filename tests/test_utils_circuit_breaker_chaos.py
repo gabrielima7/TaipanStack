@@ -11,7 +11,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos_expected():
+def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
     """Simulate a thundering herd chaos scenario in the HALF_OPEN state.
 
     If multiple threads hit the HALF_OPEN state simultaneously, they might all
@@ -55,7 +55,7 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos_expected():
     assert success_call_count <= breaker.config.success_threshold
 
 
-def test_utils_circuit_breaker_chaos_half_open_exhaustion_with_system_exit_expected():
+def test_utils_circuit_breaker_chaos_half_open_exhaustion_with_system_exit():
     """Simulate uncatchable exception bypassing normal state updates in HALF_OPEN.
 
     If a thread dies via SystemExit or similar BaseException, the circuit breaker

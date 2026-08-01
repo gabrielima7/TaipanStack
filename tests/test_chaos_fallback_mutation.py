@@ -6,7 +6,7 @@ from taipanstack.core.result import Ok, Result
 from taipanstack.resilience.resilience import fallback
 
 
-def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation_expected() -> None:
+def test_chaos_fallback_mutation_chaos_fallback_exceptions_tuple_mutation() -> None:
     """Simulate type corruption where exceptions parameter is mutated.
     Instead of passing the exception or crashing, it should safely raise it."""
 
