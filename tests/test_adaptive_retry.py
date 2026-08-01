@@ -99,3 +99,35 @@ class TestAdaptiveRetry:
         ar = AdaptiveRetry(min_delay=1.0, max_delay=5.0)
         delay = ar.get_delay(10)
         assert delay <= 5.0
+
+    def test_adaptive_retry_record_outcome_timeout(self) -> None:
+        """Tests that record_outcome returns early if lock acquisition times out."""
+        ar = AdaptiveRetry()
+        ar._lock.acquire()
+        try:
+            ar.record_outcome(attempt=1, success=True, elapsed=1.0)
+            assert len(ar._outcomes) == 0
+        finally:
+            ar._lock.release()
+
+    def test_adaptive_retry_get_delay_timeout(self) -> None:
+        """Tests that get_delay returns fallback delay if lock acquisition times out."""
+        ar = AdaptiveRetry(min_delay=0.1, max_delay=10.0)
+        ar._lock.acquire()
+        try:
+            delay = ar.get_delay(1)
+            assert delay == 0.1
+        finally:
+            ar._lock.release()
+
+    def test_adaptive_retry_metrics_timeout(self) -> None:
+        """Tests that metrics returns default if lock acquisition times out."""
+        ar = AdaptiveRetry()
+        ar._lock.acquire()
+        try:
+            m = ar.metrics
+            assert m.total_outcomes == 0
+            assert m.success_rate == 1.0
+            assert m.avg_delay == 0.0
+        finally:
+            ar._lock.release()

@@ -210,8 +210,13 @@ def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
     if breaker.state != CircuitState.OPEN:
         # Force open if it didn't open normally
         old_state = breaker.state
-        with breaker._state.lock:
+        acquired = breaker._state.lock.acquire(timeout=0.1)
+        if not acquired:
+            return
+        try:
             breaker._state.state = CircuitState.OPEN
+        finally:
+            breaker._state.lock.release()
         breaker._notify_state_change(old_state, CircuitState.OPEN)
 
     logger.warning(
