@@ -152,7 +152,7 @@ class TestGuardExceptions:
         """Test reraising as custom exception type."""
 
         class CustomError(Exception):
-            _ = None
+            """Minimal implementation."""
 
         @guard_exceptions(catch=(ValueError,), reraise_as=CustomError)
         def failing_func() -> str:
