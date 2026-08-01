@@ -3,7 +3,7 @@ from unittest import mock
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
 
 
-def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_callback_exception_logging():
+def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_callback_exception_logging_expected():
     def exploding_callback(_old, _new):
         raise ValueError("Boom!")
 
@@ -16,14 +16,14 @@ def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_callback_exce
     assert cb.state == CircuitState.OPEN
 
 
-def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_failure_count_property():
+def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_failure_count_property_expected():
     cb = CircuitBreaker()
     cb._state.failure_count = 42
     assert cb.failure_count == 42
 
 
 @mock.patch("taipanstack.resilience.circuit_breaker._HAS_STRUCTLOG", False)
-def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_notify_state_change_no_callback_no_structlog():
+def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_notify_state_change_no_callback_no_structlog_expected():
     cb = CircuitBreaker()
 
     cb._state.failure_count = cb.config.failure_threshold

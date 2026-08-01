@@ -50,7 +50,7 @@ def test_core_compat_additional_core_compat_check_free_threading_available_confi
             assert _check_free_threading_available() is False
 
 
-def test_core_compat_additional_core_compat_check_nogil_flag_true():
+def test_core_compat_additional_core_compat_check_nogil_flag_true_expected():
     from taipanstack.core.compat import _check_nogil_flag
 
     class MockSysTrue:
@@ -63,7 +63,7 @@ def test_core_compat_additional_core_compat_check_nogil_flag_true():
         assert _check_nogil_flag() is True
 
 
-def test_core_compat_additional_core_compat_check_nogil_flag_false():
+def test_core_compat_additional_core_compat_check_nogil_flag_false_expected():
     from taipanstack.core.compat import _check_nogil_flag
 
     class MockSysFalse:
@@ -76,7 +76,7 @@ def test_core_compat_additional_core_compat_check_nogil_flag_false():
         assert _check_nogil_flag() is False
 
 
-def test_core_compat_additional_core_compat_check_nogil_flag_none():
+def test_core_compat_additional_core_compat_check_nogil_flag_none_expected():
     from taipanstack.core.compat import _check_nogil_flag
 
     class MockSysNone:
@@ -89,7 +89,7 @@ def test_core_compat_additional_core_compat_check_nogil_flag_none():
         assert _check_nogil_flag() is None
 
 
-def test_core_compat_additional_core_compat_check_free_threading_available_true():
+def test_core_compat_additional_core_compat_check_free_threading_available_true_expected():
     from taipanstack.core.compat import _check_free_threading_available
 
     with patch("taipanstack.core.compat.PY313", True):
@@ -97,7 +97,7 @@ def test_core_compat_additional_core_compat_check_free_threading_available_true(
             assert _check_free_threading_available() is True
 
 
-def test_core_compat_additional_core_compat_check_free_threading_available_false_when_nogil_false():
+def test_core_compat_additional_core_compat_check_free_threading_available_false_when_nogil_false_expected():
     from taipanstack.core.compat import _check_free_threading_available
 
     with patch("taipanstack.core.compat.PY313", True):

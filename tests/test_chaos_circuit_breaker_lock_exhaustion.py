@@ -16,6 +16,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
             return False
 
         def release(self):
+            """dummy."""
             return None
 
     breaker._state.lock = BrokenLock()
@@ -31,6 +32,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
             raise MemoryError("Out of memory")
 
         def release(self):
+            """dummy."""
             return None
 
     breaker._state.lock = ExceptionalLock()
@@ -61,6 +63,7 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
             raise MemoryError("Out of memory")
 
         def release(self):
+            """dummy."""
             return None
 
     breaker._state.lock = BrokenLock()
@@ -87,6 +90,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
             raise MemoryError("Out of memory")
 
         def release(self):
+            """dummy."""
             return None
 
     breaker._state.lock = BrokenLock()

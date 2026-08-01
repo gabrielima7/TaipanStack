@@ -103,7 +103,7 @@ class TestResultToResponse:
         assert resp["status"] == 500
         assert "bad" in resp["error"]
 
-    def test_bridge_web_custom_status_codes(self) -> None:
+    def test_bridge_web_custom_status_codes_expected(self) -> None:
         """Custom status codes are respected."""
         resp = result_to_response(Ok("yes"), status_ok=201)
         assert resp["status"] == 201
@@ -118,7 +118,7 @@ class TestResultToResponse:
 class TestSecurityHeadersConfig:
     """Tests for SecurityHeadersConfig."""
 
-    def test_bridge_web_default_headers(self) -> None:
+    def test_bridge_web_default_headers_expected(self) -> None:
         """Default config produces all 6 security headers."""
         config = SecurityHeadersConfig()
         headers = config.to_headers()
@@ -127,7 +127,7 @@ class TestSecurityHeadersConfig:
         assert b"x-content-type-options" in names
         assert b"x-frame-options" in names
 
-    def test_bridge_web_custom_values(self) -> None:
+    def test_bridge_web_custom_values_expected(self) -> None:
         """Custom values are reflected in output."""
         config = SecurityHeadersConfig(x_frame_options="SAMEORIGIN")
         headers = dict(config.to_headers())

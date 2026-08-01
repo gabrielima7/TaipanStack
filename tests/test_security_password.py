@@ -13,7 +13,7 @@ def test_security_password_hash_password() -> None:
     assert pwd_hash.startswith("$argon2")
 
 
-def test_security_password_hash_password_secret_str() -> None:
+def test_security_password_hash_password_secret_str_expected() -> None:
     """Test that hashing a SecretStr works correctly."""
     password = SecretStr("secure_password")
     pwd_hash = hash_password(password)
@@ -39,7 +39,7 @@ def test_security_password_verify_password_failure() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_password_invalid_hash() -> None:
+def test_security_password_verify_password_invalid_hash_expected() -> None:
     """Test that invalid hash formats are handled gracefully."""
     password = "my_password"
 
@@ -83,7 +83,7 @@ def test_security_password_verify_legacy_password() -> None:
     assert verify_password("wrong_password", pwd_hash) is False
 
 
-def test_security_password_verify_legacy_password_too_many_iterations() -> None:
+def test_security_password_verify_legacy_password_too_many_iterations_expected() -> None:
     """Test that legacy PBKDF2 hashes with too many iterations are rejected."""
     password = "my_password"
     salt = b"1234567890123456"
@@ -94,7 +94,7 @@ def test_security_password_verify_legacy_password_too_many_iterations() -> None:
     assert verify_password(password, pwd_hash) is False
 
 
-def test_security_password_hash_password_is_random() -> None:
+def test_security_password_hash_password_is_random_expected() -> None:
     """Test that hashing the same password twice produces different hashes due to salt."""
     password = "my_password"
     hash1 = hash_password(password)
@@ -129,7 +129,7 @@ def test_security_password_verify_password_empty() -> None:
     assert verify_password(SecretStr(""), "hash") is False
 
 
-def test_security_password_verify_password_too_long() -> None:
+def test_security_password_verify_password_too_long_expected() -> None:
     """Test that verifying a too long password returns False."""
     assert verify_password("a" * 1025, "hash") is False
     assert verify_password(SecretStr("a" * 1025), "hash") is False
@@ -143,7 +143,7 @@ def test_security_password_hash_password_empty() -> None:
         hash_password("")
 
 
-def test_security_password_hash_password_too_long() -> None:
+def test_security_password_hash_password_too_long_expected() -> None:
     """Test that hashing a too long password raises ValueError."""
     import pytest
 

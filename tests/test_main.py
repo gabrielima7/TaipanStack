@@ -7,12 +7,12 @@ import pytest
 from app.main import greet, main
 
 
-def test_main_greet_returns_hello_string() -> None:
+def test_main_greet_returns_hello_string_expected() -> None:
     """Test greet function returns expected format."""
     assert greet("Alice") == "Hello, Alice!"
 
 
-def test_main_function_logs(caplog: pytest.LogCaptureFixture) -> None:
+def test_main_function_logs_expected(caplog: pytest.LogCaptureFixture) -> None:
     """Test that main function logs the greeting."""
     with caplog.at_level(logging.INFO):
         main()

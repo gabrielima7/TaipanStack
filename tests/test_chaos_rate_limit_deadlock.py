@@ -4,7 +4,7 @@ from taipanstack.core.result import Err
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
 
 
-def test_rate_limit_deadlock_chaos_returns_false():
+def test_chaos_rate_limit_deadlock_rate_limit_deadlock_chaos_returns_false():
     limiter = RateLimiter(10, 1.0)
 
     # Simulate contention/deadlock
@@ -41,7 +41,7 @@ async def test_rate_limit_deadlock_chaos_async_decorator():
     limiter._lock.release()
 
 
-def test_rate_limit_deadlock_chaos_sync_decorator():
+def test_chaos_rate_limit_deadlock_rate_limit_deadlock_chaos_sync_decorator():
     @rate_limit(10, 1.0)
     def my_func():
         return "success"

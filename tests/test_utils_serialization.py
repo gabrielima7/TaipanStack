@@ -10,7 +10,7 @@ from taipanstack.utils.serialization import default_encoder
 class TestDefaultEncoder:
     """Tests for the default_encoder with orjson."""
 
-    def test_utils_serialization_encode_ok_with_dict(self) -> None:
+    def test_utils_serialization_encode_ok_with_dict_expected(self) -> None:
         """Test encoding Ok containing a dict."""
         res = Ok({"data": 1})
         encoded = orjson.dumps(res, default=default_encoder)
@@ -20,7 +20,7 @@ class TestDefaultEncoder:
         encoded2 = orjson.dumps(res2, default=default_encoder)
         assert encoded2 == b'{"status":"success","user":"test","id":42}'
 
-    def test_utils_serialization_encode_ok_with_scalar(self) -> None:
+    def test_utils_serialization_encode_ok_with_scalar_expected(self) -> None:
         """Test encoding Ok containing a scalar or list."""
         res = Ok(42)
         encoded = orjson.dumps(res, default=default_encoder)
@@ -50,6 +50,7 @@ class TestDefaultEncoder:
         """Test encoding an unsupported type."""
 
         class CustomObj:
+            """Expected error block."""
             def __str__(self):
                 return "expected"
 

@@ -61,7 +61,7 @@ async def test_chaos_engineering_mathematical_proof_extreme_concurrent_microserv
 
 @given(st.text(min_size=1))
 @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
-def test_chaos_engineering_mathematical_proof_fuzz_guard_ssrf_extreme(
+def test_chaos_engineering_mathematical_proof_fuzz_guard_ssrf_extreme_expected(
     url_input: str,
 ) -> None:
     """Fuzzing the SSRF guard with random text properties."""
@@ -71,7 +71,7 @@ def test_chaos_engineering_mathematical_proof_fuzz_guard_ssrf_extreme(
 
 @given(st.text(min_size=1))
 @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
-def test_chaos_engineering_mathematical_proof_fuzz_guard_path_traversal_extreme(
+def test_chaos_engineering_mathematical_proof_fuzz_guard_path_traversal_extreme_expected(
     path_input: str,
 ) -> None:
     """Fuzzing path traversal guard with completely randomized strings."""
@@ -84,7 +84,7 @@ def test_chaos_engineering_mathematical_proof_fuzz_guard_path_traversal_extreme(
 
 @given(st.text(min_size=1))
 @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
-def test_chaos_engineering_mathematical_proof_fuzz_guard_command_injection_extreme(
+def test_chaos_engineering_mathematical_proof_fuzz_guard_command_injection_extreme_expected(
     cmd_input: str,
 ) -> None:
     """Fuzzing command injection guard with random property strings."""

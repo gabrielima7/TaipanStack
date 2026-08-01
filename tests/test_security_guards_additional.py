@@ -13,7 +13,7 @@ def test_security_guards_additional_security_guards_path_traversal_os_error_syml
             guard_path_traversal("some/path", Path("/safe_tmp"))
 
 
-def test_security_guards_additional_security_guards_file_extension_none_allowed():
+def test_security_guards_additional_security_guards_file_extension_none_allowed_expected():
     from taipanstack.security.guards import guard_file_extension
 
     result = guard_file_extension("file.txt", allowed_extensions=None)

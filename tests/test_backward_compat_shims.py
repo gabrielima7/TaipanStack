@@ -35,7 +35,7 @@ from taipanstack.utils.retry import (
 class TestBackwardCompatShims:
     """Verify backward-compat shims re-export correctly."""
 
-    def test_backward_compat_shims_circuit_breaker_shim_exports(
+    def test_backward_compat_shims_circuit_breaker_shim_exports_expected(
         self,
     ) -> None:
         """Old utils.circuit_breaker path re-exports all symbols."""
@@ -47,7 +47,7 @@ class TestBackwardCompatShims:
         assert CircuitState is not None
         assert circuit_breaker is not None
 
-    def test_backward_compat_shims_circuit_breaker_shim_matches_canonical(
+    def test_backward_compat_shims_circuit_breaker_shim_matches_canonical_expected(
         self,
     ) -> None:
         """Shim symbols are identical to the canonical resilience module."""
@@ -61,7 +61,7 @@ class TestBackwardCompatShims:
         assert CircuitBreaker is CanonicalCB
         assert CircuitState is CanonicalCS
 
-    def test_backward_compat_shims_retry_shim_exports(self) -> None:
+    def test_backward_compat_shims_retry_shim_exports_expected(self) -> None:
         """Old utils.retry path re-exports all public retry symbols."""
         assert Retrier is not None
         assert RetryConfig is not None
@@ -71,7 +71,7 @@ class TestBackwardCompatShims:
         assert retry is not None
         assert retry_on_exception is not None
 
-    def test_backward_compat_shims_retry_shim_matches_canonical(
+    def test_backward_compat_shims_retry_shim_matches_canonical_expected(
         self,
     ) -> None:
         """Retry shim symbols are identical to the canonical module."""
@@ -105,7 +105,7 @@ class TestBackwardCompatShims:
         assert retry is canonical_retry
         assert retry_on_exception is canonical_retry_on_exception
 
-    def test_backward_compat_shims_resilience_shim_exports(
+    def test_backward_compat_shims_resilience_shim_exports_expected(
         self,
     ) -> None:
         """Old utils.resilience path re-exports all public decorator symbols."""
@@ -116,7 +116,7 @@ class TestBackwardCompatShims:
         assert fallback is not None
         assert timeout is not None
 
-    def test_backward_compat_shims_resilience_shim_matches_canonical(
+    def test_backward_compat_shims_resilience_shim_matches_canonical_expected(
         self,
     ) -> None:
         """Resilience shim symbols are identical to the canonical module."""

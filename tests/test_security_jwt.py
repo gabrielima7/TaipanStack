@@ -21,7 +21,7 @@ class TestEncodeJWT:
         assert isinstance(token, str)
         assert len(token) > 0
 
-    def test_security_jwt_encode_rejects_none_algorithm(self) -> None:
+    def test_security_jwt_encode_rejects_none_algorithm_expected(self) -> None:
         """Test that encoding explicitly rejects the 'none' algorithm."""
         payload = {"sub": "user_123"}
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
@@ -55,7 +55,7 @@ class TestDecodeJWT:
         assert decoded["sub"] == "user_123"
         assert decoded["aud"] == "my_app"
 
-    def test_security_jwt_decode_rejects_none_algorithm(self) -> None:
+    def test_security_jwt_decode_rejects_none_algorithm_expected(self) -> None:
         """Test that mapping 'none' algorithm to decode is blocked."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         result = decode_jwt(
@@ -65,7 +65,7 @@ class TestDecodeJWT:
         assert isinstance(result.err_value, ValueError)
         assert "explicitly disallowed" in str(result.err_value)
 
-    def test_security_jwt_decode_requires_exp(self) -> None:
+    def test_security_jwt_decode_requires_exp_expected(self) -> None:
         """Test that decoding strictly requires an 'exp' claim."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         # Omit 'exp'
@@ -76,7 +76,7 @@ class TestDecodeJWT:
         assert result.is_err()
         assert isinstance(result.err_value, jwt.exceptions.MissingRequiredClaimError)
 
-    def test_security_jwt_decode_requires_aud(self) -> None:
+    def test_security_jwt_decode_requires_aud_expected(self) -> None:
         """Test that decoding strictly requires an 'aud' claim."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
@@ -88,7 +88,7 @@ class TestDecodeJWT:
         assert result.is_err()
         assert isinstance(result.err_value, jwt.exceptions.MissingRequiredClaimError)
 
-    def test_security_jwt_decode_invalid_signature(self) -> None:
+    def test_security_jwt_decode_invalid_signature_expected(self) -> None:
         """Test that decoding fails with wrong secret."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
@@ -116,7 +116,7 @@ class TestDecodeJWT:
         assert result.is_err()
         assert isinstance(result.err_value, jwt.exceptions.ExpiredSignatureError)
 
-    def test_security_jwt_decode_wrong_audience(self) -> None:
+    def test_security_jwt_decode_wrong_audience_expected(self) -> None:
         """Test that decoding fails if audience doesn't match."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)

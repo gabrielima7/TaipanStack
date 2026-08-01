@@ -8,7 +8,7 @@ from src.app.secure_system import (
 from taipanstack.core.result import Err
 
 
-def test_secure_system_creation_error():
+def test_secure_system_creation_error_behavior():
     repo = InMemoryUserRepository()
     service = UserService(repo)
     user_data = UserCreate(

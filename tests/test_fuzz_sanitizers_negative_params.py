@@ -9,7 +9,7 @@ from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
 
 @settings(max_examples=100)
 @given(st.text(), st.integers(min_value=-1000, max_value=-1), st.text(), st.booleans())
-def test_fuzz_sanitizers_negative_params_fuzz_sanitize_filename_negative_max_length(
+def test_fuzz_sanitizers_negative_params_fuzz_sanitize_filename_negative_max_length_expected(
     filename: str, max_len: int, replacement: str, preserve: bool
 ) -> None:
     with pytest.raises((ValueError, TypeError)) as exc_info:
@@ -37,7 +37,7 @@ def test_fuzz_sanitizers_negative_params_fuzz_sanitize_filename_negative_max_len
     st.integers(min_value=-1000, max_value=-1),
     st.booleans(),
 )
-def test_fuzz_sanitizers_negative_params_fuzz_sanitize_path_negative_max_depth(
+def test_fuzz_sanitizers_negative_params_fuzz_sanitize_path_negative_max_depth_expected(
     path: str | Path, base_dir: Path | None, max_depth: int, resolve: bool
 ) -> None:
     with pytest.raises((ValueError, TypeError)) as exc_info:

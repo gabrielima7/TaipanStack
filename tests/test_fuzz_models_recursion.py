@@ -23,14 +23,14 @@ def recursive_json(depth=0):
 
 @given(data=recursive_json())
 @settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
-def test_fuzz_models_recursion_fuzz_mask_data_recursion(data):
+def test_fuzz_models_recursion_fuzz_mask_data_recursion_expected(data):
     try:
         _mask_data(data)
     except RecursionError:
         pytest.fail("RecursionError raised!")
 
 
-def test_fuzz_models_recursion_deep_recursion_dict():
+def test_fuzz_models_recursion_deep_recursion_dict_expected():
     data = {}
     current = data
     for _ in range(2000):
@@ -47,7 +47,7 @@ def test_fuzz_models_recursion_deep_recursion_dict():
         pytest.fail("RecursionError raised!")
 
 
-def test_fuzz_models_recursion_deep_recursion_list():
+def test_fuzz_models_recursion_deep_recursion_list_expected():
     data = []
     current = data
     for _ in range(2000):

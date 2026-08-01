@@ -47,7 +47,7 @@ class TestSafeDecorator:
         assert result.is_ok()
         assert result.ok_value == 5
 
-    def test_result_module_safe_exception(self) -> None:
+    def test_result_module_safe_exception_expected(self) -> None:
         """Test safe decorator returns Err on exception."""
 
         @safe
@@ -58,7 +58,7 @@ class TestSafeDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ZeroDivisionError)
 
-    def test_result_module_safe_basic_exception(self) -> None:
+    def test_result_module_safe_basic_exception_expected(self) -> None:
         """Test safe decorator returns Err on base Exception."""
 
         @safe
@@ -71,7 +71,7 @@ class TestSafeDecorator:
         assert type(err) is Exception
         assert str(err) == "Basic exception occurred"
 
-    def test_result_module_safe_preserves_function_metadata(
+    def test_result_module_safe_preserves_function_metadata_expected(
         self,
     ) -> None:
         """Test safe decorator preserves function name and docstring."""
@@ -88,7 +88,7 @@ class TestSafeDecorator:
 class TestSafeFromDecorator:
     """Tests for the @safe_from decorator."""
 
-    def test_result_module_safe_from_catches_specified_exception(
+    def test_result_module_safe_from_catches_specified_exception_expected(
         self,
     ) -> None:
         """Test safe_from catches specified exception types."""
@@ -101,7 +101,7 @@ class TestSafeFromDecorator:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
 
-    def test_result_module_safe_from_propagates_unspecified_exception(
+    def test_result_module_safe_from_propagates_unspecified_exception_expected(
         self,
     ) -> None:
         """Test safe_from propagates unspecified exception types."""
@@ -130,7 +130,7 @@ class TestSafeFromDecorator:
         assert result2.is_err()
         assert isinstance(result2.err_value, TypeError)
 
-    def test_result_module_safe_from_explicit_raise(self) -> None:
+    def test_result_module_safe_from_explicit_raise_expected(self) -> None:
         """Test safe_from decorator catching explicitly raised exception."""
 
         @safe_from(ValueError)
@@ -142,10 +142,11 @@ class TestSafeFromDecorator:
         assert isinstance(result.err_value, ValueError)
         assert str(result.err_value) == "explicitly raised"
 
-    def test_result_module_safe_from_inheritance(self) -> None:
+    def test_result_module_safe_from_inheritance_expected(self) -> None:
         """Test safe_from catches subclasses of specified exceptions."""
 
         class SubValueError(ValueError):
+            """Expected error block."""
             def __str__(self):
                 return "subclass error"
 
@@ -181,7 +182,7 @@ class TestCollectResults:
         assert isinstance(collected.err_value, ValueError)
         assert str(collected.err_value) == "error"
 
-    def test_result_module_collect_empty(self) -> None:
+    def test_result_module_collect_empty_expected(self) -> None:
         """Test collect_results with empty list."""
         results: list[Result[int, ValueError]] = []
         collected = collect_results(results)
@@ -228,7 +229,7 @@ class TestUnwrapOrElse:
         result: Result[int, ValueError] = Err(ValueError("error"))
         assert result.unwrap_or_else(lambda e: len(str(e))) == 5
 
-    def test_result_module_unwrap_or_else_with_exception(
+    def test_result_module_unwrap_or_else_with_exception_expected(
         self,
     ) -> None:
         """Test unwrap_or_else with exception error type."""
@@ -457,7 +458,7 @@ class TestUnwrapOrErrFallback:
 class TestResultStructuralCompatibility:
     """Tests for structural compatibility fallback branches in collect_results, map_async and and_then_async."""
 
-    def test_result_module_collect_results_structural_compatibility(
+    def test_result_module_collect_results_structural_compatibility_expected(
         self,
     ) -> None:
         """Test fallback structural compatibility branch in collect_results raises TypeError."""
@@ -544,7 +545,7 @@ class TestResultStructuralCompatibility:
         res = await and_then_async(custom_res, process)  # type: ignore
         assert res is custom_res
 
-    def test_result_module_collect_results_empty_iterable(
+    def test_result_module_collect_results_empty_iterable_expected(
         self,
     ) -> None:
         """Test fallback empty iterable branch in collect_results."""

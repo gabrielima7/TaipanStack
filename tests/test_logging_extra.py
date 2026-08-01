@@ -23,7 +23,7 @@ def test_logging_extra_format_message_none_regex():
         assert "password=secret" in msg
 
 
-def test_logging_extra_format_message_masking():
+def test_logging_extra_format_message_masking_expected():
     """Test _format_message masking logic."""
     logger = StackLogger()
     msg = logger._format_message("test", password="secret")
@@ -31,7 +31,7 @@ def test_logging_extra_format_message_masking():
     assert "password=secret" not in msg
 
 
-def test_logging_extra_format_message_no_kwargs_with_context():
+def test_logging_extra_format_message_no_kwargs_with_context_expected():
     """Test _format_message when kwargs are empty but _context is populated."""
     logger = StackLogger()
     logger.bind(context_key="context_value")

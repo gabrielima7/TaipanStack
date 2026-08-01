@@ -9,7 +9,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_circuit_breaker_clock_jump_circuit_breaker_backward_clock_jump_chaos(
+def test_chaos_circuit_breaker_clock_jump_circuit_breaker_backward_clock_jump_chaos_expected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Simulate a backward clock jump (NTP anomaly) keeping circuit OPEN forever."""
