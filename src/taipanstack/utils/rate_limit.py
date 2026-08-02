@@ -243,7 +243,7 @@ def _rate_limit_async_wrapper(
     func: Callable[P, Awaitable[T]],
     limiter: RateLimiter,
 ) -> Callable[P, Awaitable[Result[T, RateLimitError]]]:
-    @functools.wraps(func)  # type: ignore[misc]
+    @functools.wraps(func)
     async def async_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
@@ -253,7 +253,7 @@ def _rate_limit_async_wrapper(
                 return Err(RateLimitError())
         except Exception:
             return Err(RateLimitError())
-        return Ok(await func(*args, **kwargs))  # type: ignore[misc]
+        return Ok(await func(*args, **kwargs))
 
     return async_wrapper  # type: ignore[misc]
 
