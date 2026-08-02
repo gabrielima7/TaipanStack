@@ -110,10 +110,16 @@ class AdaptiveRetry:
 
         """
         outcome = _Outcome(attempt=attempt, success=success, elapsed=elapsed)
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return
+
+        try:
             self._outcomes.append(outcome)
             if success:
                 self._success_delays[attempt].append(elapsed)
+        finally:
+            self._lock.release()
 
     def get_delay(self, attempt: int) -> float:
         """Get the learned optimal delay for this attempt level.
@@ -129,8 +135,14 @@ class AdaptiveRetry:
             Delay in seconds.
 
         """
-        with self._lock:
-            delays = list(self._success_delays.get(attempt, []))
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            delays = []
+        else:
+            try:
+                delays = list(self._success_delays.get(attempt, []))
+            finally:
+                self._lock.release()
 
         if delays:
             # Use median of successful delays as the optimal delay
@@ -173,11 +185,16 @@ class AdaptiveRetry:
         return avg_delay, p95_delay
 
     def _get_outcome_stats(self) -> tuple[int, int, list[float]]:
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return 0, 0, []
+        try:
             total = len(self._outcomes)
             successes = sum(1 for o in self._outcomes if o.success)
             all_delays = [o.elapsed for o in self._outcomes]
-        return total, successes, all_delays
+            return total, successes, all_delays
+        finally:
+            self._lock.release()
 
     @property
     def metrics(self) -> RetryMetrics:

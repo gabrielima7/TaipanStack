@@ -122,10 +122,15 @@ class AdaptiveCircuitBreaker:
     @property
     def state(self) -> CircuitState:
         """Current circuit state. May evaluate timeouts and switch to HALF_OPEN."""
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return self._state
+        try:
             if self._state == CircuitState.OPEN:
                 self._check_half_open_transition()
             return self._state
+        finally:
+            self._lock.release()
 
     def _calculate_error_rate(self, total: int) -> float:
         """Calculate the current error rate in the window."""
@@ -180,7 +185,10 @@ class AdaptiveCircuitBreaker:
 
     def record_success(self) -> None:
         """Record a successful call."""
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return
+        try:
             if self._state == CircuitState.HALF_OPEN:
                 # Full recovery on success
                 self._state = CircuitState.CLOSED
@@ -192,6 +200,8 @@ class AdaptiveCircuitBreaker:
 
             self._window.append(True)
             self._evaluate_trip()
+        finally:
+            self._lock.release()
 
     def record_failure(self, _exc: Exception) -> None:
         """Record a failed call.
@@ -200,7 +210,10 @@ class AdaptiveCircuitBreaker:
             _exc: The exception that occurred.
 
         """
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return
+        try:
             if self._state == CircuitState.HALF_OPEN:
                 # Return to open immediately on failure
                 self._state = CircuitState.OPEN
@@ -212,6 +225,8 @@ class AdaptiveCircuitBreaker:
 
             self._window.append(False)
             self._evaluate_trip()
+        finally:
+            self._lock.release()
 
     def should_allow(self) -> bool:
         """Check if a call should be attempted.
@@ -224,25 +239,41 @@ class AdaptiveCircuitBreaker:
 
     def reset(self) -> None:
         """Reset the breaker and window."""
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return
+        try:
             self._window.clear()
             self._state = CircuitState.CLOSED
             self._last_opened_at = 0.0
+        finally:
+            self._lock.release()
 
     @property
     def metrics(self) -> AdaptiveMetrics:
         """Snapshot of current adaptive metrics."""
-        with self._lock:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return AdaptiveMetrics(
+                success_rate=1.0,
+                error_rate=0.0,
+                total_calls=0,
+                error_count=0,
+                state=self._state,
+            )
+        try:
             total = len(self._window)
             errors = sum(1 for ok in self._window if not ok)
             error_rate = errors / total if total > 0 else 0.0
             success_rate = 1.0 - error_rate
             state_val = self._state
 
-        return AdaptiveMetrics(
-            success_rate=success_rate,
-            error_rate=error_rate,
-            total_calls=total,
-            error_count=errors,
-            state=state_val,
-        )
+            return AdaptiveMetrics(
+                success_rate=success_rate,
+                error_rate=error_rate,
+                total_calls=total,
+                error_count=errors,
+                state=state_val,
+            )
+        finally:
+            self._lock.release()
