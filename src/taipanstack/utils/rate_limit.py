@@ -239,6 +239,41 @@ class RateLimitDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, RateLimitError]]]: ...
 
 
+def _async_rate_limit_wrapper(
+    func_coro: Callable[P, Awaitable[T]],
+    limiter: RateLimiter,
+) -> Callable[P, Awaitable[Result[T, RateLimitError]]]:
+    @functools.wraps(func_coro)
+    async def async_wrapper(
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, RateLimitError]:
+        try:
+            if not limiter.consume():
+                return Err(RateLimitError())
+        except Exception:
+            return Err(RateLimitError())
+        return Ok(await func_coro(*args, **kwargs))
+
+    return async_wrapper  # type: ignore[misc]
+
+
+def _sync_rate_limit_wrapper(
+    func_sync: Callable[P, T],
+    limiter: RateLimiter,
+) -> Callable[P, Result[T, RateLimitError]]:
+    @functools.wraps(func_sync)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
+        try:
+            if not limiter.consume():
+                return Err(RateLimitError())
+        except Exception:
+            return Err(RateLimitError())
+        return Ok(func_sync(*args, **kwargs))
+
+    return wrapper
+
+
 def rate_limit(
     max_calls: int,
     time_window: float,
@@ -277,31 +312,10 @@ def rate_limit(
         limiter = RateLimiter(max_calls, time_window)
 
         if inspect.iscoroutinefunction(func):
+            func_coro = cast(Callable[P, Awaitable[T]], func)
+            return _async_rate_limit_wrapper(func_coro, limiter)
 
-            @functools.wraps(func)  # type: ignore[misc]
-            async def async_wrapper(
-                *args: P.args,
-                **kwargs: P.kwargs,
-            ) -> Result[T, RateLimitError]:
-                try:
-                    if not limiter.consume():
-                        return Err(RateLimitError())
-                except Exception:
-                    return Err(RateLimitError())
-                return Ok(await func(*args, **kwargs))  # type: ignore[misc]
-
-            return async_wrapper  # type: ignore[misc]
-
-        @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
-            try:
-                if not limiter.consume():
-                    return Err(RateLimitError())
-            except Exception:
-                return Err(RateLimitError())
-            func_sync = cast(Callable[P, T], func)
-            return Ok(func_sync(*args, **kwargs))
-
-        return wrapper
+        func_sync = cast(Callable[P, T], func)
+        return _sync_rate_limit_wrapper(func_sync, limiter)
 
     return cast(RateLimitDecorator, decorator)
