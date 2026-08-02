@@ -54,7 +54,14 @@ def _handle_retry_exception(
     if not is_match:
         raise e
 
-    if attempt == config.max_attempts:
+    max_attempts = (
+        int(config.max_attempts)
+        if isinstance(config.max_attempts, (int, float))
+        and math.isfinite(config.max_attempts)
+        else 3
+    )
+
+    if attempt >= max_attempts:
         _log_all_failed(func_name, e, config)
         return False, 0.0
 
@@ -470,7 +477,14 @@ def _execute_async_wrapper(
         last_exception: BaseException | None = None
         last_result: R | None = None
 
-        for attempt in range(1, config.max_attempts + 1):
+        max_attempts = (
+            int(config.max_attempts)
+            if isinstance(config.max_attempts, (int, float))
+            and math.isfinite(config.max_attempts)
+            else 3
+        )
+
+        for attempt in range(1, max_attempts + 1):
             last_result = None
             try:
                 last_result = await func_coro(*args, **kwargs)
@@ -505,7 +519,14 @@ def _execute_sync_wrapper(
         last_exception: BaseException | None = None
         last_result: R | None = None
 
-        for attempt in range(1, config.max_attempts + 1):
+        max_attempts = (
+            int(config.max_attempts)
+            if isinstance(config.max_attempts, (int, float))
+            and math.isfinite(config.max_attempts)
+            else 3
+        )
+
+        for attempt in range(1, max_attempts + 1):
             last_result = None
             try:
                 last_result = func_sync(*args, **kwargs)
@@ -706,7 +727,14 @@ class Retrier:
         if not self._increment_attempt():
             return False
 
-        return self.attempt < self.config.max_attempts
+        max_attempts = (
+            int(self.config.max_attempts)
+            if isinstance(self.config.max_attempts, (int, float))
+            and math.isfinite(self.config.max_attempts)
+            else 3
+        )
+
+        return self.attempt < max_attempts
 
     def _handle_exception(self, exc_val: BaseException | None) -> None:
         """Store the exception safely."""
