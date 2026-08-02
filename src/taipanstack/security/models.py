@@ -70,8 +70,6 @@ def _mask_collection(data: object, depth: int) -> object:
         return _mask_tuple(cast(tuple[object, ...], data), depth)
     if isinstance(data, set):
         return _mask_set(cast(set[object], data), depth)
-    if isinstance(data, BaseModel):
-        return _mask_data(data.model_dump(), depth)
     return data
 
 
