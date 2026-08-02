@@ -420,6 +420,7 @@ async def test_watchdog_config_config_watcher_change_detection_error_coverage_ex
         """Expected dummy block."""
 
         dummy: str = "dummy"
+
         def __str__(self):
             return "expected"
 
