@@ -102,7 +102,7 @@ class SecureBaseModel(BaseModel):
             else:
                 yield k, v
 
-    def model_dump(  # noqa: PLR0913
+    def model_dump(  # type: ignore[override]  # noqa: PLR0913
         self,
         *,
         mode: Literal["json", "python"] | str = "python",
@@ -142,7 +142,7 @@ class SecureBaseModel(BaseModel):
         )
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
-    def model_dump_json(  # noqa: PLR0913
+    def model_dump_json(  # type: ignore[override]  # noqa: PLR0913
         self,
         *,
         indent: int | None = None,
