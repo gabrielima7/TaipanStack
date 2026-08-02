@@ -2457,9 +2457,11 @@
 <h2 id="1-scenario-simulation">1. Scenario Simulation<a class="headerlink" href="#1-scenario-simulation" title="Permanent link">&para;</a></h2>
 <p>Simulated a high-traffic microservice architecture using <code>ResilienceOrchestrator</code> combining Bulkhead, Circuit Breaker, Retry, and Timeout layers, alongside <code>guard_ssrf</code> security guards.</p>
 <h2 id="2-chaos-injection-findings-the-audit">2. Chaos Injection Findings (The Audit)<a class="headerlink" href="#2-chaos-injection-findings-the-audit" title="Permanent link">&para;</a></h2>
-<p>During chaos engineering (resource exhaustion, memory constraints, unexpected cancellations), an architectural flaw was identified:
-- <strong>Flaw:</strong> The <code>ResilienceOrchestrator</code> bypassed the proper <code>Bulkhead</code> internal safeguards. It directly called <code>bh._semaphore.acquire()</code> inside its own <code>_acquire_bulkhead</code> method.
-- <strong>Impact:</strong> If <code>asyncio.wait_for()</code> threw a <code>MemoryError</code> (resource exhaustion) or if the task was cancelled mid-acquisition, the background semaphore acquisition task would silently complete later, permanently leaking a concurrency permit. Over time, the microservice would deadlock entirely (Bulkhead Full) without recovering.</p>
+<p>During chaos engineering (resource exhaustion, memory constraints, unexpected cancellations), an architectural flaw was identified:</p>
+<ul>
+<li><strong>Flaw:</strong> The <code>ResilienceOrchestrator</code> bypassed the proper <code>Bulkhead</code> internal safeguards. It directly called <code>bh._semaphore.acquire()</code> inside its own <code>_acquire_bulkhead</code> method.</li>
+<li><strong>Impact:</strong> If <code>asyncio.wait_for()</code> threw a <code>MemoryError</code> (resource exhaustion) or if the task was cancelled mid-acquisition, the background semaphore acquisition task would silently complete later, permanently leaking a concurrency permit. Over time, the microservice would deadlock entirely (Bulkhead Full) without recovering.</li>
+</ul>
 <h2 id="3-universal-self-healing-action">3. Universal Self-Healing Action<a class="headerlink" href="#3-universal-self-healing-action" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Fix:</strong> Refactored <code>ResilienceOrchestrator._acquire_bulkhead</code> to entirely drop its own duplicate semaphore handling logic. It now delegates directly to <code>bh._acquire_permit()</code>, which properly shields, tracks, and cleans up <code>asyncio.Task</code> instances upon cancellation or timeout.</li>

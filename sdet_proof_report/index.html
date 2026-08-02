@@ -2458,17 +2458,23 @@
 <p>The core of TaipanStack's formal verification lies in the <code>Result</code> monad (<code>src/taipanstack/core/result.py</code>).</p>
 <p><strong>Theorem:</strong> For any arbitrary operation $f(x)$ executed within TaipanStack's core domain, the output $O$ is strictly bounded to the set ${Ok(V), Err(E)}$, such that no unhandled exception leak $L$ occurs at the application boundary.</p>
 <p><strong>Proof (Empirical &amp; Structural):</strong>
-During our mass concurrency chaos simulation (<code>tests/test_chaos_engineering_mathematical_proof.py</code>), 1000 concurrent tasks subjected an endpoint to flaky logic, deadlocks, and SSRF injections simultaneously.
-* The orchestrator's <code>_execute_inner</code> loop explicitly wraps all executions in a <code>try...except Exception as exc:</code> block, immediately binding exceptions to <code>Err(exc)</code>.
-* <code>mypy --strict</code> guarantees that all functions annotated to return <code>Result[T, E]</code> cannot implicitly return raw exceptions or <code>None</code>.
-* Total simulation failures: 100% captured within <code>Result</code> state. Zero base exceptions leaked.</p>
+During our mass concurrency chaos simulation (<code>tests/test_chaos_engineering_mathematical_proof.py</code>), 1000 concurrent tasks subjected an endpoint to flaky logic, deadlocks, and SSRF injections simultaneously.</p>
+<ul>
+<li>The orchestrator's <code>_execute_inner</code> loop explicitly wraps all executions in a <code>try...except Exception as exc:</code> block, immediately binding exceptions to <code>Err(exc)</code>.</li>
+<li><code>mypy --strict</code> guarantees that all functions annotated to return <code>Result[T, E]</code> cannot implicitly return raw exceptions or <code>None</code>.</li>
+<li>Total simulation failures: 100% captured within <code>Result</code> state. Zero base exceptions leaked.</li>
+</ul>
 <h2 id="2-resilience-and-chaos-survival-state-transition-limits">2. Resilience and Chaos Survival (State Transition Limits)<a class="headerlink" href="#2-resilience-and-chaos-survival-state-transition-limits" title="Permanent link">&para;</a></h2>
-<p><strong>Bulkhead Capacity Limits:</strong>
-* Configuration: <code>max_concurrent=50, max_queue=100</code>.
-* Observation: When load $N &gt; 150$, the state immediately transitions to <code>Err(BulkheadFullError)</code>. No threads block indefinitely; memory consumption per request is strictly O(1) bounded overhead. Time complexity to deny service is O(1).</p>
-<p><strong>Adaptive Circuit Breaker Guarantee:</strong>
-* Observation: Successive <code>Err</code> responses (or captured <code>RuntimeError</code> objects) increment a failure counter. Upon hitting the threshold, state transitions $Closed \rightarrow Open$.
-* <strong>Mathematical Consequence:</strong> System failure rate drops to $0$ as fast-fail rejection time approaches $O(1)$. No cascading deadlock occurs. Subsequent healing transitions strictly rely on a singular <code>Half-Open</code> probe.</p>
+<p><strong>Bulkhead Capacity Limits:</strong></p>
+<ul>
+<li>Configuration: <code>max_concurrent=50, max_queue=100</code>.</li>
+<li>Observation: When load $N &gt; 150$, the state immediately transitions to <code>Err(BulkheadFullError)</code>. No threads block indefinitely; memory consumption per request is strictly O(1) bounded overhead. Time complexity to deny service is O(1).</li>
+</ul>
+<p><strong>Adaptive Circuit Breaker Guarantee:</strong></p>
+<ul>
+<li>Observation: Successive <code>Err</code> responses (or captured <code>RuntimeError</code> objects) increment a failure counter. Upon hitting the threshold, state transitions $Closed \rightarrow Open$.</li>
+<li><strong>Mathematical Consequence:</strong> System failure rate drops to $0$ as fast-fail rejection time approaches $O(1)$. No cascading deadlock occurs. Subsequent healing transitions strictly rely on a singular <code>Half-Open</code> probe.</li>
+</ul>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
 <p>The system supports the simulated heavy load and continuous chaos without corrupting concurrent states, exhausting hardware resources, or leaking underlying faults. The mathematical and empirical proofs hold: TaipanStack is resilient.</p>
 
