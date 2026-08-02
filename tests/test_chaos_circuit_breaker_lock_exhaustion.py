@@ -16,7 +16,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
             return False
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BrokenLock()
     assert breaker._should_attempt() is False
@@ -31,7 +31,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
             raise MemoryError("Out of memory")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ExceptionalLock()
     assert breaker._should_attempt() is False
@@ -61,7 +61,7 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
             raise MemoryError("Out of memory")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):
@@ -87,7 +87,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
             raise MemoryError("Out of memory")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BrokenLock()
     with pytest.raises(CircuitBreakerError, match="is open"):

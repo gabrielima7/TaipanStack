@@ -146,7 +146,7 @@ class TestSafeFromDecorator:
         """Test safe_from catches subclasses of specified exceptions."""
 
         class SubValueError(ValueError):
-            _ = None
+            def __str__(self): return "subclass error"
 
         @safe_from(ValueError)
         def fail() -> None:
