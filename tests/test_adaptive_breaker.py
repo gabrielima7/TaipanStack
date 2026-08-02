@@ -186,3 +186,45 @@ def test_adaptive_breaker_err_branch() -> None:
 
     breaker = AdaptiveCircuitBreaker(name="test_err")
     breaker.record_failure(ValueError("err"))
+
+    # Test lock timeout for state property
+    breaker._lock.acquire()
+    try:
+        assert breaker.state == CircuitState.CLOSED
+    finally:
+        breaker._lock.release()
+
+    # Test lock timeout for record_success
+    breaker._lock.acquire()
+    try:
+        breaker.record_success()
+        assert len(breaker._window) == 1
+    finally:
+        breaker._lock.release()
+
+    # Test lock timeout for record_failure
+    breaker._lock.acquire()
+    try:
+        breaker.record_failure(ValueError("err"))
+        assert len(breaker._window) == 1
+    finally:
+        breaker._lock.release()
+
+    # Test lock timeout for reset
+    breaker._window.append(True)
+    breaker._lock.acquire()
+    try:
+        breaker.reset()
+        assert len(breaker._window) == 2
+    finally:
+        breaker._lock.release()
+
+    # Test lock timeout for metrics
+    breaker._lock.acquire()
+    try:
+        m = breaker.metrics
+        assert m.total_calls == 0
+        assert m.success_rate == 1.0
+        assert m.error_rate == 0.0
+    finally:
+        breaker._lock.release()

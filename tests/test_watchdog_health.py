@@ -114,6 +114,18 @@ class TestForceOpenBreaker:
         _force_open_breaker(breaker, "db")
         assert breaker.state.value == CircuitState.OPEN.value
 
+    def test_watchdog_health_opens_closed_breaker_timeout(self) -> None:
+        """Tests that _force_open_breaker returns early if lock acquisition times out."""
+        breaker = CircuitBreaker(name="test_timeout", failure_threshold=3)
+        assert breaker.state == CircuitState.CLOSED
+
+        breaker._state.lock.acquire()
+        try:
+            _force_open_breaker(breaker, "db")
+            assert breaker._state.state == CircuitState.CLOSED
+        finally:
+            breaker._state.lock.release()
+
 
 # --- HealthPinger -------------------------------------------------------------
 
