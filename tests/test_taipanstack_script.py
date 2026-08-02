@@ -26,6 +26,7 @@ def setup_teardown(tmp_path, monkeypatch):
     with (
         patch("subprocess.run", mock_run),
         patch("taipanstack_bootstrapper._check_connectivity", return_value=None),
+        patch("shutil.which", return_value="/usr/local/bin/poetry"),
     ):
         yield mock_run
 

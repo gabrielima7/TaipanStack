@@ -70,6 +70,8 @@ def _mask_collection(data: object, depth: int) -> object:
         return _mask_tuple(cast(tuple[object, ...], data), depth)
     if isinstance(data, set):
         return _mask_set(cast(set[object], data), depth)
+    if isinstance(data, BaseModel):
+        return _mask_data(data.model_dump(), depth)
     return data
 
 
@@ -140,7 +142,6 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
         )
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
@@ -186,7 +187,6 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
         )
         masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
         # We need to respect Pydantic's indent/separators if possible,
