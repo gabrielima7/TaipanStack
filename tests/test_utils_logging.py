@@ -287,10 +287,12 @@ class TestLogOperation:
         """Test that only expected_exceptions are caught and logged as failures."""
 
         class ExpectedError(Exception):
-            def __str__(self): return "expected"
+            def __str__(self):
+                return "expected"
 
         class UnexpectedError(Exception):
-            def __str__(self): return "expected"
+            def __str__(self):
+                return "expected"
 
         # 1. Expected exception should be caught, logged as failure, and re-raised
         with caplog.at_level(logging.ERROR):
