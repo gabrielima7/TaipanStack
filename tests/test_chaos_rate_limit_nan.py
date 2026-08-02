@@ -3,7 +3,7 @@ import pytest
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
 
 
-def test_chaos_rate_limit_nan():
+def test_chaos_rate_limit_nan_chaos_rate_limit_nan():
     # Micro-chaos on rate_limit.
     # What happens when RateLimiter gets nan max_calls?
 

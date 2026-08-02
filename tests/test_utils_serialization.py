@@ -50,6 +50,8 @@ class TestDefaultEncoder:
         """Test encoding an unsupported type."""
 
         class CustomObj:
+            """Expected error block."""
+
             def __str__(self):
                 return "expected"
 

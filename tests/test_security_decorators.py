@@ -152,6 +152,8 @@ class TestGuardExceptions:
         """Test reraising as custom exception type."""
 
         class CustomError(Exception):
+            """Expected error block."""
+
             def __str__(self):
                 return "expected"
 

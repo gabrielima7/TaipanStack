@@ -114,3 +114,4 @@ logs/
 
 site/
 benchmark-result.json
+tests/__pycache__/

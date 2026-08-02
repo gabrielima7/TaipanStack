@@ -38,7 +38,7 @@ def test_chaos_retry_on_mutation_chaos_retry_single_exception_type_not_tuple():
     assert call_count == 2
 
 
-def test_chaos_retry_on_mutation():
+def test_chaos_retry_on_mutation_chaos_retry_on_mutation():
     corrupted_on = "NotAnException"
 
     with pytest.raises(
