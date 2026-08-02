@@ -118,7 +118,6 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        polymorphic_serialization: bool | None = None,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -160,7 +159,6 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
-        polymorphic_serialization: bool | None = None,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
