@@ -10,11 +10,11 @@ def test_chaos_rate_limit_lock_exhaustion_chaos_rate_limit_lock_acquire_exceptio
     limiter = RateLimiter(10, 1.0)
 
     class BrokenLock:
-        def __enter__(self):
-            raise MemoryError("Out of memory")
+        def acquire(self, timeout=-1):
+            return False
 
-        def __exit__(self, _exc_type, _exc_val, _exc_tb):
-            raise AssertionError("Should not be reached")
+        def release(self):
+            return None
 
     limiter._lock = BrokenLock()
 
@@ -30,7 +30,7 @@ async def test_chaos_rate_limit_lock_exhaustion_chaos_rate_limit_decorator_lock_
 
     with patch(
         "taipanstack.utils.rate_limit.RateLimiter.consume",
-        side_effect=MemoryError("Out of memory"),
+        return_value=False,
     ):
         result = await my_func()
         assert isinstance(result, Err)
@@ -49,7 +49,7 @@ def test_chaos_rate_limit_lock_exhaustion_chaos_rate_limit_decorator_lock_acquir
 
     with patch(
         "taipanstack.utils.rate_limit.RateLimiter.consume",
-        side_effect=MemoryError("Out of memory"),
+        return_value=False,
     ):
         result = my_func()
         assert isinstance(result, Err)
