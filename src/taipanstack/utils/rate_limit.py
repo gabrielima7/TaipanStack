@@ -211,16 +211,13 @@ class RateLimiter:
         if tokens <= 0:
             return True
 
-        try:
-            acquired = self._lock.acquire(timeout=0.1)
-            if not acquired:
-                return False
-            try:
-                return self._process_consumption(tokens)
-            finally:
-                self._lock.release()
-        except Exception:
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
             return False
+        try:
+            return self._process_consumption(tokens)
+        finally:
+            self._lock.release()
 
 
 class RateLimitDecorator(Protocol):

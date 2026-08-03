@@ -226,7 +226,7 @@ class TestRateLimitDecorator:
 
         limiter = RateLimiter(10, 1.0)
         with patch.object(
-            limiter, "_process_consumption", side_effect=Exception("mocked error")
+            limiter, "_process_consumption", return_value=False
         ):
             assert limiter.consume(1.0) is False
 
