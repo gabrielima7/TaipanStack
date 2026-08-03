@@ -144,7 +144,6 @@ class TestDecodeJWT:
 
     def test_security_jwt_decode_rejects_non_string(self) -> None:
         """Test decode explicitly checks non string algorithms properly."""
-        payload = {"sub": "user_123"}
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
 
         # Not string algorithms list
@@ -155,18 +154,13 @@ class TestDecodeJWT:
         # Non string algorithm in list
         result = decode_jwt("some.token", secret, algorithms=[123], audience="my_app")
         assert result.is_err()
-        # It passes TypeError checking now because we just check if isinstance(alg, str) and ignore if not for none check,
-        # but PyJWT or other things might fail it, wait let's check what decode_jwt does if there is a non-string algorithm in list.
-        # we modified it to `if isinstance(alg, str): alg_lower = ...` which is fine.
 
     def test_security_jwt_decode_rejects_non_ascii_algorithm(self) -> None:
         """Test decode with non-ascii algorithm handles it gracefully."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         # We pass a non-ascii algorithm "none😊"
         result = decode_jwt("some.token", secret, algorithms=["HS256", "none😊"], audience="my_app")
-        # should fail PyJWT check, but not our None check
         assert result.is_err()
-        # InvalidAudience or PyJWTError depending on what fails first in pyjwt, we just assert it returns err
 
     def test_security_jwt_encode_rejects_non_ascii_algorithm(self) -> None:
         """Test encode with non-ascii algorithm handles it gracefully."""
@@ -176,7 +170,6 @@ class TestDecodeJWT:
         # It shouldn't crash with TypeError from compare_digest
         result = encode_jwt(payload, secret, algorithm="none😊")
         assert result.is_err()
-        # Likely raises PyJWTError from pyjwt not knowing the algorithm, or we raise something
 
     def test_security_jwt_decode_algorithms_not_list(self) -> None:
         """Test decode rejects algorithms that are not a list."""
@@ -201,8 +194,6 @@ class TestDecodeJWT:
         """Test decode algorithms checks."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
 
-        # What if PyJWT passes but we ignore non string?
-        # Actually our check ignores non string, but pyjwt fails it. Let's just pass to it
         result = decode_jwt("some.token", secret, algorithms=["HS256", 123], audience="my_app")
         assert result.is_err()
 

@@ -75,7 +75,8 @@ def _validate_jwt_algorithms(algorithms: list[str]) -> None:
         if isinstance(alg, str):
             alg_lower = alg.strip().lower()
             if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
-                raise ValueError('Algorithm "none" is explicitly disallowed for decoding.')
+                msg = 'Algorithm "none" is explicitly disallowed for decoding.'
+                raise ValueError(msg)
 
 
 def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
