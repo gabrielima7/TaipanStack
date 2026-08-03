@@ -83,7 +83,10 @@ class TestDecodeJWT:
         """Test that mapping a non-ASCII algorithm does not crash."""
         secret = "super_secret_key_that_is_at_least_32_bytes_long"
         result = decode_jwt(
-            "some.token.str", secret, algorithms=["HS256", "noneñ", 123], audience="my_app"
+            "some.token.str",
+            secret,
+            algorithms=["HS256", "noneñ", 123],
+            audience="my_app",
         )
         assert result.is_err()
         # Should not be TypeError from compare_digest
