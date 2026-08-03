@@ -126,3 +126,86 @@ class TestDecodeJWT:
         result = decode_jwt(token, secret, algorithms=["HS256"], audience="my_app")
         assert result.is_err()
         assert isinstance(result.err_value, jwt.exceptions.InvalidAudienceError)
+
+    def test_security_jwt_encode_rejects_non_string(self) -> None:
+        """Test encoding rejects non-string inputs."""
+        payload = {"sub": "user_123"}
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        # Not string secret
+        result = encode_jwt(payload, 123)
+        assert result.is_err()
+        assert isinstance(result.err_value, TypeError)
+
+        # Not string algorithm
+        result2 = encode_jwt(payload, secret, algorithm=123)
+        assert result2.is_err()
+        assert isinstance(result2.err_value, TypeError)
+
+    def test_security_jwt_decode_rejects_non_string(self) -> None:
+        """Test decode explicitly checks non string algorithms properly."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        # Not string algorithms list
+        result = decode_jwt("some.token", secret, algorithms="HS256", audience="my_app")
+        assert result.is_err()
+        assert isinstance(result.err_value, TypeError)
+
+        # Non string algorithm in list
+        result = decode_jwt("some.token", secret, algorithms=[123], audience="my_app")
+        assert result.is_err()
+
+    def test_security_jwt_decode_rejects_non_ascii_algorithm(self) -> None:
+        """Test decode with non-ascii algorithm handles it gracefully."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+        # We pass a non-ascii algorithm "none😊"
+        result = decode_jwt(
+            "some.token", secret, algorithms=["HS256", "none😊"], audience="my_app"
+        )
+        assert result.is_err()
+
+    def test_security_jwt_encode_rejects_non_ascii_algorithm(self) -> None:
+        """Test encode with non-ascii algorithm handles it gracefully."""
+        payload = {"sub": "user_123"}
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        # It shouldn't crash with TypeError from compare_digest
+        result = encode_jwt(payload, secret, algorithm="none😊")
+        assert result.is_err()
+
+    def test_security_jwt_decode_algorithms_not_list(self) -> None:
+        """Test decode rejects algorithms that are not a list."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+        result = decode_jwt("some.token", secret, algorithms="HS256", audience="my_app")
+        assert result.is_err()
+        assert isinstance(result.err_value, TypeError)
+
+    def test_security_jwt_decode_audience_invalid_type(self) -> None:
+        """Test decode rejects audience that is not string or iterable."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+        result = decode_jwt("some.token", secret, algorithms=["HS256"], audience=123)
+        assert result.is_err()
+        assert isinstance(result.err_value, TypeError)
+
+    def test_security_jwt_decode_secret_not_string(self) -> None:
+        """Test decode explicitly checks non string secret."""
+        result = decode_jwt("some.token", 123, algorithms=["HS256"], audience="my_app")
+        assert result.is_err()
+        assert isinstance(result.err_value, TypeError)
+
+    def test_security_jwt_decode_algorithms_contains_non_string(self) -> None:
+        """Test decode algorithms checks."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        result = decode_jwt(
+            "some.token", secret, algorithms=["HS256", 123], audience="my_app"
+        )
+        assert result.is_err()
+
+    def test_security_jwt_decode_with_none_alg(self) -> None:
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+        result = decode_jwt(
+            "some.token", secret, algorithms=["none"], audience="my_app"
+        )
+        assert result.is_err()
+        assert isinstance(result.err_value, ValueError)

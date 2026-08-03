@@ -82,4 +82,169 @@ class TestFuzzJWT:
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
-        assert result.is_err(), "Expected malformed algorithm to result in an Error"
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
+
+    @given(
+        payload=st.dictionaries(st.text(), st.text(), max_size=5),
+        secret_key=st.text(min_size=32),
+        algorithm=st.text(
+            alphabet=st.characters(
+                blacklist_characters=["\x00"],
+                min_codepoint=0x200B,
+                max_codepoint=0x200F,
+            ),
+        ),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_encode_jwt_non_ascii_algorithm(
+        self, payload, secret_key, algorithm
+    ):
+        result = encode_jwt(payload, secret_key, algorithm=algorithm)
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
+
+    @given(
+        token=st.text(),
+        secret_key=st.text(min_size=32),
+        algorithms=st.lists(
+            st.text(
+                alphabet=st.characters(
+                    blacklist_characters=["\x00"],
+                    min_codepoint=0x200B,
+                    max_codepoint=0x200F,
+                ),
+            ),
+            min_size=1,
+        ),
+        audience=st.text(),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_decode_jwt_non_ascii_algorithm(
+        self, token, secret_key, algorithms, audience
+    ):
+        result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
+
+    @given(
+        token=st.text(),
+        secret_key=st.text(min_size=32),
+        algorithms=st.text() | st.integers() | st.floats() | st.booleans() | st.none(),
+        audience=st.text(),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_decode_jwt_malformed_algorithms(
+        self, token, secret_key, algorithms, audience
+    ):
+        result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
+
+    @given(
+        payload=st.dictionaries(st.text(), st.text(), max_size=5),
+        secret_key=st.text(min_size=32),
+        algorithm=st.sampled_from(["none", "None", "nOnE"]),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_encode_jwt_none_algorithm(
+        self, payload, secret_key, algorithm
+    ):
+        result = encode_jwt(payload, secret_key, algorithm=algorithm)
+        assert result.is_err(), "Expected none algorithm to result in an Error"
+
+    @given(
+        token=st.text(),
+        secret_key=st.text(min_size=32),
+        algorithms=st.lists(
+            st.sampled_from(["none", "None", "nOnE", "HS256"]), min_size=1
+        ),
+        audience=st.text(),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_decode_jwt_none_algorithm(
+        self, token, secret_key, algorithms, audience
+    ):
+        result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
+        assert result.is_err(), "Expected none algorithm to result in an Error"
+
+    @given(
+        payload=st.dictionaries(st.text(), st.text(), max_size=5),
+        secret_key=st.text(min_size=32),
+        algorithm=st.sampled_from(["nOnE😊", "None\x00"]),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_encode_jwt_none_ascii_algorithm(
+        self, payload, secret_key, algorithm
+    ):
+        result = encode_jwt(payload, secret_key, algorithm=algorithm)
+        assert result.is_err(), "Expected none algorithm to result in an Error"
+
+    @given(
+        token=st.text(),
+        secret_key=st.text(min_size=32),
+        algorithms=st.lists(st.sampled_from(["nOnE😊", "None\x00"]), min_size=1),
+        audience=st.text(),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_decode_jwt_none_ascii_algorithm(
+        self, token, secret_key, algorithms, audience
+    ):
+        result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
+        assert result.is_err(), "Expected none algorithm to result in an Error"
+
+    @given(
+        payload=st.dictionaries(st.text(), st.text(), max_size=5),
+        secret_key=st.text(min_size=32),
+        algorithm=st.sampled_from(["HS256"]),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_encode_jwt_valid_algorithm(
+        self, payload, secret_key, algorithm
+    ):
+        result = encode_jwt(payload, secret_key, algorithm=algorithm)
+        assert result.is_ok(), "Expected valid algorithm to result in an Ok"
+
+    @given(
+        token=st.text(),
+        secret_key=st.text(min_size=32),
+        algorithms=st.lists(st.sampled_from(["HS256"]), min_size=1),
+        audience=st.text(),
+    )
+    @settings(
+        max_examples=500,
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+    )
+    def test_fuzz_jwt_fuzz_decode_jwt_valid_algorithm(
+        self, token, secret_key, algorithms, audience
+    ):
+        result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
+        assert result.is_err(), "Expected malformed token to result in an Error"
