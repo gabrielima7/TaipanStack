@@ -28,17 +28,17 @@ def _validate_bound_arguments(
     validators: dict[str, Callable[[object], object]],
 ) -> None:
     for param_name, validator in validators.items():
-        if param_name in bound.arguments:
-            value = bound.arguments[param_name]
+        if param_name in bound.arguments:  # type: ignore[misc]
+            value = bound.arguments[param_name]  # type: ignore[misc]
             try:
-                validated = validator(value)
+                validated = validator(value)  # type: ignore[misc]
                 if validated is not None:
-                    bound.arguments[param_name] = validated
+                    bound.arguments[param_name] = validated  # type: ignore[misc]
             except (ValueError, TypeError) as e:
                 raise ValidationError(
                     str(e),
                     param_name=param_name,
-                    value=repr(value)[:100],
+                    value=repr(value)[:100],  # type: ignore[misc]
                 ) from e
 
 
@@ -71,12 +71,12 @@ def _check_bound_types(
     type_hints: dict[str, type],
 ) -> None:
     for param_name, expected_type in type_hints.items():
-        if param_name in bound.arguments:
-            value = bound.arguments[param_name]
-            if not isinstance(value, expected_type):
+        if param_name in bound.arguments:  # type: ignore[misc]
+            value = bound.arguments[param_name]  # type: ignore[misc]
+            if not isinstance(value, expected_type):  # type: ignore[misc]
                 raise TypeError(
                     f"Parameter '{param_name}' expected "
-                    f"{expected_type.__name__}, got {type(value).__name__}",
+                    f"{expected_type.__name__}, got {type(value).__name__}",  # type: ignore[misc]
                 )
 
 

@@ -145,10 +145,10 @@ def _execute_cached_async_wrapper(
     max_size: int,
     ttl: float,
 ) -> Callable[P, Awaitable[Result[T, E]]]:
-    @functools.wraps(func)  # type: ignore[misc]
+    @functools.wraps(func)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         cache_key = _get_cache_key(
-            cast(str, getattr(func, "__name__", "unknown")),  # type: ignore[misc]
+            cast(str, getattr(func, "__name__", "unknown")),
             cast(tuple[object, ...], args),
             cast(dict[str, object], kwargs),
         )
