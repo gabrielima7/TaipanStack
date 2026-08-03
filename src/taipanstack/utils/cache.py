@@ -137,6 +137,75 @@ def _release_lock(
         lock_waiters.pop(cache_key, None)
 
 
+def _execute_cached_async_wrapper(
+    func: Callable[P, Awaitable[Result[T, E]]],
+    cache: CacheDict,
+    locks: dict[CacheKey, asyncio.Lock],
+    lock_waiters: dict[CacheKey, int],
+    max_size: int,
+    ttl: float,
+) -> Callable[P, Awaitable[Result[T, E]]]:
+    @functools.wraps(func)  # type: ignore[misc]
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        cache_key = _get_cache_key(
+            cast(str, getattr(func, "__name__", "unknown")),  # type: ignore[misc]
+            cast(tuple[object, ...], args),
+            cast(dict[str, object], kwargs),
+        )
+
+        # Check cache before acquiring lock
+        now = time.monotonic()
+        hit, value = _check_cache(cache_key, cache, now)
+        if hit:
+            return Ok(cast(T, value))
+
+        lock = _get_or_create_lock(cache_key, locks, lock_waiters)
+
+        try:
+            async with lock:
+                # Double-check cache after acquiring lock
+                now = time.monotonic()
+                hit, value = _check_cache(cache_key, cache, now)
+                if hit:
+                    return Ok(cast(T, value))
+
+                result = await func(*args, **kwargs)
+
+                _update_cache(cache_key, result, cache, max_size, now, ttl)
+                return result
+        finally:
+            _release_lock(cache_key, locks, lock_waiters)
+
+    return async_wrapper  # type: ignore[misc]
+
+
+def _execute_cached_sync_wrapper(
+    func: Callable[P, Result[T, E]],
+    cache: CacheDict,
+    max_size: int,
+    ttl: float,
+) -> Callable[P, Result[T, E]]:
+    @functools.wraps(func)
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        cache_key = _get_cache_key(
+            cast(str, getattr(func, "__name__", "unknown")),
+            cast(tuple[object, ...], args),
+            cast(dict[str, object], kwargs),
+        )
+        now = time.monotonic()
+
+        hit, value = _check_cache(cache_key, cache, now)
+        if hit:
+            return Ok(cast(T, value))
+
+        result = func(*args, **kwargs)
+
+        _update_cache(cache_key, result, cache, max_size, now, ttl)
+        return result
+
+    return sync_wrapper
+
+
 class CacheDecorator(Protocol):
     """Protocol for the cache decorator."""
 
@@ -177,60 +246,12 @@ def cached(ttl: float, max_size: int = 1024) -> CacheDecorator:
         func: Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
-
-            @functools.wraps(func)  # type: ignore[misc]
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-                cache_key = _get_cache_key(
-                    cast(str, getattr(func, "__name__", "unknown")),  # type: ignore[misc]
-                    cast(tuple[object, ...], args),
-                    cast(dict[str, object], kwargs),
-                )
-
-                # Check cache before acquiring lock
-                now = time.monotonic()
-                hit, value = _check_cache(cache_key, _cache, now)
-                if hit:
-                    return Ok(cast(T, value))
-
-                lock = _get_or_create_lock(cache_key, _locks, _lock_waiters)
-
-                try:
-                    async with lock:
-                        # Double-check cache after acquiring lock
-                        now = time.monotonic()
-                        hit, value = _check_cache(cache_key, _cache, now)
-                        if hit:
-                            return Ok(cast(T, value))
-
-                        func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
-                        result = await func_coro(*args, **kwargs)
-
-                        _update_cache(cache_key, result, _cache, max_size, now, ttl)
-                        return result
-                finally:
-                    _release_lock(cache_key, _locks, _lock_waiters)
-
-            return async_wrapper  # type: ignore[misc]
-
-        @functools.wraps(func)
-        def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            cache_key = _get_cache_key(
-                cast(str, getattr(func, "__name__", "unknown")),
-                cast(tuple[object, ...], args),
-                cast(dict[str, object], kwargs),
+            func_coro = cast(Callable[P, Awaitable[Result[T, E]]], func)
+            return _execute_cached_async_wrapper(
+                func_coro, _cache, _locks, _lock_waiters, max_size, ttl
             )
-            now = time.monotonic()
 
-            hit, value = _check_cache(cache_key, _cache, now)
-            if hit:
-                return Ok(cast(T, value))
-
-            func_sync = cast(Callable[P, Result[T, E]], func)
-            result = func_sync(*args, **kwargs)
-
-            _update_cache(cache_key, result, _cache, max_size, now, ttl)
-            return result
-
-        return sync_wrapper
+        func_sync = cast(Callable[P, Result[T, E]], func)
+        return _execute_cached_sync_wrapper(func_sync, _cache, max_size, ttl)
 
     return cast(CacheDecorator, decorator)

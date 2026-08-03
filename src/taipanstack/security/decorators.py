@@ -23,6 +23,63 @@ R = TypeVar("R")
 T = TypeVar("T")
 
 
+def _validate_bound_arguments(
+    bound: inspect.BoundArguments,
+    validators: dict[str, Callable[[object], object]],
+) -> None:
+    for param_name, validator in validators.items():
+        if param_name in bound.arguments:
+            value = bound.arguments[param_name]
+            try:
+                validated = validator(value)
+                if validated is not None:
+                    bound.arguments[param_name] = validated
+            except (ValueError, TypeError) as e:
+                raise ValidationError(
+                    str(e),
+                    param_name=param_name,
+                    value=repr(value)[:100],
+                ) from e
+
+
+def _handle_guarded_exception(
+    e: Exception,
+    func_name: str,
+    reraise_as: type[Exception] | None,
+    log_errors: bool,
+) -> None:
+    if log_errors:
+        import logging
+
+        logging.getLogger("taipanstack.security").warning(
+            "Exception caught in %s: %s",
+            func_name,
+            str(e),
+        )
+
+    if reraise_as is not None:
+        if reraise_as == SecurityError:
+            raise SecurityError(
+                str(e),
+                guard_name="guard_exceptions",
+            ) from e
+        raise reraise_as(str(e)) from e
+
+
+def _check_bound_types(
+    bound: inspect.BoundArguments,
+    type_hints: dict[str, type],
+) -> None:
+    for param_name, expected_type in type_hints.items():
+        if param_name in bound.arguments:
+            value = bound.arguments[param_name]
+            if not isinstance(value, expected_type):
+                raise TypeError(
+                    f"Parameter '{param_name}' expected "
+                    f"{expected_type.__name__}, got {type(value).__name__}",
+                )
+
+
 class OperationTimeoutError(Exception):
     """Raised when a function exceeds its timeout limit."""
 
@@ -95,21 +152,7 @@ def validate_inputs(
             bound.apply_defaults()
 
             # Validate each parameter that has a validator
-            for param_name, validator in validators.items():
-                if param_name in bound.arguments:  # type: ignore[misc]
-                    value = bound.arguments[param_name]  # type: ignore[misc]
-                    try:
-                        # Call validator - it should raise on invalid input
-                        validated = validator(value)  # type: ignore[misc]
-                        # Update to validated value if returned
-                        if validated is not None:
-                            bound.arguments[param_name] = validated  # type: ignore[misc]
-                    except (ValueError, TypeError) as e:
-                        raise ValidationError(
-                            str(e),
-                            param_name=param_name,
-                            value=repr(value)[:100],  # type: ignore[misc]
-                        ) from e
+            _validate_bound_arguments(bound, validators)
 
             # Call original function with validated arguments
             return func(*bound.args, **bound.kwargs)  # type: ignore[misc]
@@ -155,23 +198,7 @@ def guard_exceptions(
             try:
                 return func(*args, **kwargs)
             except catch as e:
-                if log_errors:
-                    import logging
-
-                    logging.getLogger("taipanstack.security").warning(
-                        "Exception caught in %s: %s",
-                        func.__name__,
-                        str(e),
-                    )
-
-                if reraise_as is not None:
-                    if reraise_as == SecurityError:
-                        raise SecurityError(
-                            str(e),
-                            guard_name="guard_exceptions",
-                        ) from e
-                    raise reraise_as(str(e)) from e
-
+                _handle_guarded_exception(e, func.__name__, reraise_as, log_errors)
                 return default
 
         return wrapper
@@ -372,14 +399,7 @@ def require_type(
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
-            for param_name, expected_type in type_hints.items():
-                if param_name in bound.arguments:  # type: ignore[misc]
-                    value = bound.arguments[param_name]  # type: ignore[misc]
-                    if not isinstance(value, expected_type):  # type: ignore[misc]
-                        raise TypeError(
-                            f"Parameter '{param_name}' expected "
-                            f"{expected_type.__name__}, got {type(value).__name__}",  # type: ignore[misc]
-                        )
+            _check_bound_types(bound, type_hints)
 
             return func(*bound.args, **bound.kwargs)  # type: ignore[misc]
 
