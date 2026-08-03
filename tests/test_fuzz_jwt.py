@@ -82,7 +82,9 @@ class TestFuzzJWT:
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
-        assert result.is_err() or result.is_ok(), "Expected malformed algorithm to result in an Error or OK"
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
 
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
@@ -103,7 +105,9 @@ class TestFuzzJWT:
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
-        assert result.is_err() or result.is_ok(), "Expected malformed algorithm to result in an Error or OK"
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
 
     @given(
         token=st.text(),
@@ -128,7 +132,9 @@ class TestFuzzJWT:
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
-        assert result.is_err() or result.is_ok(), "Expected malformed algorithm to result in an Error or OK"
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
 
     @given(
         token=st.text(),
@@ -144,7 +150,9 @@ class TestFuzzJWT:
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
-        assert result.is_err() or result.is_ok(), "Expected malformed algorithm to result in an Error or OK"
+        assert result.is_err() or result.is_ok(), (
+            "Expected malformed algorithm to result in an Error or OK"
+        )
 
     @given(
         payload=st.dictionaries(st.text(), st.text(), max_size=5),
