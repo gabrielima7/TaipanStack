@@ -35,6 +35,20 @@ class TestEncodeJWT:
         assert result2.is_err()
         assert isinstance(result2.err_value, ValueError)
 
+    def test_security_jwt_encode_non_ascii_algorithm_does_not_crash(self) -> None:
+        """Test that encoding with a non-ASCII algorithm string does not crash."""
+        payload = {"sub": "user_123"}
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+
+        # It should pass our isascii() check and be rejected by PyJWT or another ValueError
+        result = encode_jwt(payload, secret, algorithm="noneñ")
+        assert result.is_err()
+        # Should not be TypeError from compare_digest
+        assert not (
+            isinstance(result.err_value, TypeError)
+            and "non-ASCII" in str(result.err_value)
+        )
+
 
 class TestDecodeJWT:
     """Tests for decode_jwt."""
@@ -64,6 +78,19 @@ class TestDecodeJWT:
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
         assert "explicitly disallowed" in str(result.err_value)
+
+    def test_security_jwt_decode_non_ascii_algorithm_does_not_crash(self) -> None:
+        """Test that mapping a non-ASCII algorithm does not crash."""
+        secret = "super_secret_key_that_is_at_least_32_bytes_long"
+        result = decode_jwt(
+            "some.token.str", secret, algorithms=["HS256", "noneñ", 123], audience="my_app"
+        )
+        assert result.is_err()
+        # Should not be TypeError from compare_digest
+        assert not (
+            isinstance(result.err_value, TypeError)
+            and "non-ASCII" in str(result.err_value)
+        )
 
     def test_security_jwt_decode_requires_exp(self) -> None:
         """Test that decoding strictly requires an 'exp' claim."""
