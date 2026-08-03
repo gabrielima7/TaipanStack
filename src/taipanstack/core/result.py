@@ -195,7 +195,7 @@ def _collect_list(
     # Fast path: homogeneous exact types
     if type(first) is Ok:
         try:
-            return Ok([r.ok_value for r in results])  # type: ignore
+            return Ok([r.ok_value for r in results])  # type: ignore[union-attr,misc]
         except AttributeError:
             pass
 
