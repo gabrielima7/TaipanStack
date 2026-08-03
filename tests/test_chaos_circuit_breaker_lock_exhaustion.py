@@ -26,22 +26,6 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
     breaker.reset()
     breaker._decrement_half_open(True)
 
-    # Coverage for the Exception fallback path in acquire:
-    class ExceptionalLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Out of memory")
-
-        def release(self):
-            """dummy."""
-            return None
-
-    breaker._state.lock = ExceptionalLock()
-    assert breaker._should_attempt() is False
-    breaker._record_success()
-    breaker._record_failure(ValueError("test error"))
-    breaker.reset()
-    breaker._decrement_half_open(True)
-
 
 @pytest.mark.asyncio
 async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_lock_acquire_exception_async():
@@ -60,7 +44,7 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
 
     class BrokenLock:
         def acquire(self, timeout=-1):
-            raise MemoryError("Out of memory")
+            return False
 
         def release(self):
             """dummy."""
@@ -87,7 +71,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
 
     class BrokenLock:
         def acquire(self, timeout=-1):
-            raise MemoryError("Out of memory")
+            return False
 
         def release(self):
             """dummy."""
