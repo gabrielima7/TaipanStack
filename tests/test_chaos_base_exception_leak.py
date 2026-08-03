@@ -15,6 +15,7 @@ async def test_chaos_circuit_breaker_base_exception_leak():
     with pytest.raises(asyncio.CancelledError):
         await cb_func()
 
+
 @pytest.mark.asyncio
 async def test_chaos_retry_base_exception_leak():
     @retry(max_attempts=2)

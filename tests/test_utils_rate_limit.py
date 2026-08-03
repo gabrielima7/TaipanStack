@@ -225,9 +225,7 @@ class TestRateLimitDecorator:
         from unittest.mock import patch
 
         limiter = RateLimiter(10, 1.0)
-        with patch.object(
-            limiter, "_process_consumption", return_value=False
-        ):
+        with patch.object(limiter, "_process_consumption", return_value=False):
             assert limiter.consume(1.0) is False
 
     def test_utils_rate_limit_decorator_sync_exception(self) -> None:
