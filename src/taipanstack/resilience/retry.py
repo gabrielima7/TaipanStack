@@ -465,6 +465,59 @@ def _check_result_for_retry(
             raise err_val
 
 
+def _get_max_attempts(config: RetryConfig) -> int:
+    return (
+        int(config.max_attempts)
+        if isinstance(config.max_attempts, (int, float))
+        and math.isfinite(config.max_attempts)
+        else 3
+    )
+
+
+def _handle_retry_failure_result(
+    last_result: R | None,
+    func_name: str,
+    config: RetryConfig,
+    reraise: bool,
+    last_exception: BaseException | None,
+) -> R:
+    if last_result is not None and isinstance(last_result, Err):
+        return cast(R, last_result)
+    _raise_retry_error(func_name, config.max_attempts, reraise, last_exception)
+
+
+def _handle_retry_exception_sync(
+    e: Exception,
+    attempt: int,
+    func_name: str,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    config: RetryConfig,
+) -> tuple[BaseException, bool]:
+    sleep_err = _process_retry_attempt_sync(e, attempt, func_name, valid_on, config)
+    if sleep_err is not None:
+        if sleep_err is not e:
+            return sleep_err, True
+        return e, True
+    return e, False
+
+
+async def _handle_retry_exception_async(
+    e: Exception,
+    attempt: int,
+    func_name: str,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    config: RetryConfig,
+) -> tuple[BaseException, bool]:
+    sleep_err = await _process_retry_attempt_async(
+        e, attempt, func_name, valid_on, config
+    )
+    if sleep_err is not None:
+        if sleep_err is not e:
+            return sleep_err, True
+        return e, True
+    return e, False
+
+
 def _execute_async_wrapper(
     func_coro: Callable[P, Awaitable[R]],
     func_name_coro: str,
@@ -476,13 +529,7 @@ def _execute_async_wrapper(
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         last_exception: BaseException | None = None
         last_result: R | None = None
-
-        max_attempts = (
-            int(config.max_attempts)
-            if isinstance(config.max_attempts, (int, float))
-            and math.isfinite(config.max_attempts)
-            else 3
-        )
+        max_attempts = _get_max_attempts(config)
 
         for attempt in range(1, max_attempts + 1):
             last_result = None
@@ -491,18 +538,15 @@ def _execute_async_wrapper(
                 _check_result_for_retry(last_result, valid_on)
                 return last_result
             except Exception as e:
-                last_exception = e
-                sleep_err = await _process_retry_attempt_async(
+                last_exception, should_break = await _handle_retry_exception_async(
                     e, attempt, func_name_coro, valid_on, config
                 )
-                if sleep_err is not None:
-                    if sleep_err is not e:
-                        last_exception = sleep_err
+                if should_break:
                     break
 
-        if last_result is not None and isinstance(last_result, Err):
-            return cast(R, last_result)
-        _raise_retry_error(func_name_coro, config.max_attempts, reraise, last_exception)
+        return _handle_retry_failure_result(
+            last_result, func_name_coro, config, reraise, last_exception
+        )
 
     return async_wrapper  # type: ignore[misc]
 
@@ -518,13 +562,7 @@ def _execute_sync_wrapper(
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         last_exception: BaseException | None = None
         last_result: R | None = None
-
-        max_attempts = (
-            int(config.max_attempts)
-            if isinstance(config.max_attempts, (int, float))
-            and math.isfinite(config.max_attempts)
-            else 3
-        )
+        max_attempts = _get_max_attempts(config)
 
         for attempt in range(1, max_attempts + 1):
             last_result = None
@@ -533,18 +571,15 @@ def _execute_sync_wrapper(
                 _check_result_for_retry(last_result, valid_on)
                 return last_result
             except Exception as e:
-                last_exception = e
-                sleep_err = _process_retry_attempt_sync(
+                last_exception, should_break = _handle_retry_exception_sync(
                     e, attempt, func_name_sync, valid_on, config
                 )
-                if sleep_err is not None:
-                    if sleep_err is not e:
-                        last_exception = sleep_err
+                if should_break:
                     break
 
-        if last_result is not None and isinstance(last_result, Err):
-            return cast(R, last_result)
-        _raise_retry_error(func_name_sync, config.max_attempts, reraise, last_exception)
+        return _handle_retry_failure_result(
+            last_result, func_name_sync, config, reraise, last_exception
+        )
 
     return wrapper
 
