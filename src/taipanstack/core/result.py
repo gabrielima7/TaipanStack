@@ -185,14 +185,21 @@ def safe_from(
 def _collect_list(
     results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
-    try:
-        # We use a runtime # type: ignore to bypass mypy's strict check
-        # on the AttributeError strategy for extreme performance on the hot path
-        return Ok([r.ok_value for r in results])  # type: ignore[union-attr,misc]
-    except AttributeError:
-        # Type-bound failure. If an object didn't have ok_value, we fall back
-        # to the safer (but slower) _collect_iterable to raise a proper TypeError.
-        return None
+    # Explicitly verify types to avoid bypassing formal proof
+    # We fall back to the slow path if we aren't absolutely certain
+    # it's a structural match, to handle edge cases properly.
+    if not results:
+        return Ok([])
+
+    first = results[0]
+    # Fast path: homogeneous exact types
+    if type(first) is Ok:
+        try:
+            return Ok([r.ok_value for r in results])  # type: ignore
+        except AttributeError:
+            pass
+
+    return None
 
 
 def _collect_iterable(
