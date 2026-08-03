@@ -411,17 +411,13 @@ class CircuitBreaker:
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-            if not acquired:
-                return False
-            try:
-                should_attempt, state_change = self._evaluate_state_for_attempt()
-            finally:
-                self._state.lock.release()
-        except Exception:
-            # If lock acquisition fails, fail-safe by preventing the call.
+        acquired = self._state.lock.acquire(timeout=0.1)
+        if not acquired:
             return False
+        try:
+            should_attempt, state_change = self._evaluate_state_for_attempt()
+        finally:
+            self._state.lock.release()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -465,16 +461,13 @@ class CircuitBreaker:
 
     def _record_success(self) -> None:
         """Record a successful call."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-            if not acquired:
-                return
-            try:
-                state_change = self._get_success_state_change()
-            finally:
-                self._state.lock.release()
-        except Exception:
+        acquired = self._state.lock.acquire(timeout=0.1)
+        if not acquired:
             return
+        try:
+            state_change = self._get_success_state_change()
+        finally:
+            self._state.lock.release()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -558,37 +551,31 @@ class CircuitBreaker:
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-            if not acquired:
-                return
-            try:
-                self._update_failure_metrics()
-                state_change = self._get_failure_state_change()
-            finally:
-                self._state.lock.release()
-        except Exception:
+        acquired = self._state.lock.acquire(timeout=0.1)
+        if not acquired:
             return
+        try:
+            self._update_failure_metrics()
+            state_change = self._get_failure_state_change()
+        finally:
+            self._state.lock.release()
 
         if state_change:
             self._notify_state_change(*state_change)
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-            if not acquired:
-                return
-            try:
-                self._state.state = CircuitState.CLOSED
-                self._state.failure_count = 0
-                self._state.success_count = 0
-                self._state.half_open_attempts = 0
-                logger.info("Circuit %s manually reset", self.name)
-            finally:
-                self._state.lock.release()
-        except Exception:
+        acquired = self._state.lock.acquire(timeout=0.1)
+        if not acquired:
             return
+        try:
+            self._state.state = CircuitState.CLOSED
+            self._state.failure_count = 0
+            self._state.success_count = 0
+            self._state.half_open_attempts = 0
+            logger.info("Circuit %s manually reset", self.name)
+        finally:
+            self._state.lock.release()
 
     def _is_failure_exception(self, exc: Exception) -> bool:
         try:
@@ -645,16 +632,13 @@ class CircuitBreaker:
 
         """
         if is_half_open:
-            try:
-                acquired = self._state.lock.acquire(timeout=0.1)
-                if not acquired:
-                    return
-                try:
-                    self._safe_decrement_half_open_attempts()
-                finally:
-                    self._state.lock.release()
-            except Exception:
+            acquired = self._state.lock.acquire(timeout=0.1)
+            if not acquired:
                 return
+            try:
+                self._safe_decrement_half_open_attempts()
+            finally:
+                self._state.lock.release()
 
     def _handle_exception_in_call(self, e: Exception) -> None:
         try:
