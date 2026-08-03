@@ -16,6 +16,15 @@ hide:
 
 ---
 
+### ✨ What's New in v0.6.1
+
+- **Security & Hardening**: Hardened RateLimiter against infinite tokens mutations, key decoding in JWT, and validate_project_name argument parsing. Fixed large password payload crashes and removed unused constants (PR #966, #967, #968, #973, #989).
+- **Concurrency & Resilience**: Fixed a bulkhead acquisition memory leak in ResilienceOrchestrator and documented AdaptiveRetry features (PR #974, #980).
+- **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity across compatibility shims, validators, filesystems, and token buckets. Enforced strict web bridge type hints and clean keyword parameters (PR #971, #976, #979, #984, #988, #993, #997, #1002, #1003).
+- **QA and Standardized Testing**: Fully standardized test file nomenclature, verified **comprehensive test suite**, and added rigorous microservice chaos engineering simulations (PR #972, #975, #981, #986, #990, #992, #994, #999, #1004).
+
+---
+
 ## ✨ Why TaipanStack?
 
 > **"Write less, build better."**
