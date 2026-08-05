@@ -211,7 +211,11 @@ class RateLimiter:
         if tokens <= 0:
             return True
 
-        acquired = self._lock.acquire(timeout=0.1)
+        try:
+            acquired = self._lock.acquire(timeout=0.1)
+        except Exception:
+            acquired = False
+
         if not acquired:
             return False
         try:
