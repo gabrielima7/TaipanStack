@@ -46,6 +46,41 @@ E_co = TypeVar("E_co", bound=Exception, covariant=True)
 U = TypeVar("U")
 
 
+def _safe_async_wrapper(
+    func: Callable[P, Awaitable[T]],
+) -> Callable[P, Awaitable[Result[T, Exception]]]:
+    ok_cls = Ok
+    err_cls = Err
+
+    @functools.wraps(func)
+    async def async_wrapper(
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        try:
+            return ok_cls(await func(*args, **kwargs))
+        except Exception as e:
+            return err_cls(e)
+
+    return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
+
+
+def _safe_sync_wrapper(
+    func: Callable[P, T],
+) -> Callable[P, Result[T, Exception]]:
+    ok_cls = Ok
+    err_cls = Err
+
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
+        try:
+            return ok_cls(func(*args, **kwargs))
+        except Exception as e:
+            return err_cls(e)
+
+    return cast(Callable[P, Result[T, Exception]], wrapper)
+
+
 @overload
 def safe(
     func: Callable[P, T],
@@ -84,38 +119,9 @@ def safe(
         Err(ValueError("invalid literal for int()..."))
 
     """
-    # Pre-cache constructors for minor speedup in tight loops
-    # (LOAD_DEREF is faster than LOAD_GLOBAL)
-    ok_cls = Ok
-    err_cls = Err
-
     if inspect.iscoroutinefunction(func):
-        # Cast once here to satisfy mypy inside the closure
-        func_coro = cast(Callable[P, Awaitable[T]], func)
-
-        @functools.wraps(func)  # type: ignore[misc]
-        async def async_wrapper(
-            *args: P.args,
-            **kwargs: P.kwargs,
-        ) -> Result[T, Exception]:
-            try:
-                return ok_cls(await func_coro(*args, **kwargs))
-            except Exception as e:
-                return err_cls(e)
-
-        return cast(Callable[P, Awaitable[Result[T, Exception]]], async_wrapper)
-
-    # Cast once here to satisfy mypy inside the closure
-    func_sync = cast(Callable[P, T], func)
-
-    @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, Exception]:
-        try:
-            return ok_cls(func_sync(*args, **kwargs))
-        except Exception as e:
-            return err_cls(e)
-
-    return cast(Callable[P, Result[T, Exception]], wrapper)
+        return _safe_async_wrapper(cast(Callable[P, Awaitable[T]], func))
+    return _safe_sync_wrapper(cast(Callable[P, T], func))
 
 
 class SafeFromDecorator(Protocol[E_co]):
@@ -129,6 +135,36 @@ class SafeFromDecorator(Protocol[E_co]):
         self,
         func: Callable[P, Awaitable[T]],
     ) -> Callable[P, Awaitable[Result[T, E_co]]]: ...
+
+
+def _safe_from_async_wrapper(
+    func: Callable[P, Awaitable[T]],
+    exception_types: tuple[type[E], ...],
+) -> Callable[P, Awaitable[Result[T, E]]]:
+
+    @functools.wraps(func)
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        try:
+            return Ok(await func(*args, **kwargs))
+        except exception_types as e:
+            return Err(e)
+
+    return cast(Callable[P, Awaitable[Result[T, E]]], async_wrapper)
+
+
+def _safe_from_sync_wrapper(
+    func: Callable[P, T],
+    exception_types: tuple[type[E], ...],
+) -> Callable[P, Result[T, E]]:
+
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+        try:
+            return Ok(func(*args, **kwargs))
+        except exception_types as e:
+            return Err(e)
+
+    return cast(Callable[P, Result[T, E]], wrapper)
 
 
 def safe_from(
@@ -157,27 +193,10 @@ def safe_from(
         func: Callable[P, T] | Callable[P, Awaitable[T]],
     ) -> Callable[P, Result[T, E]] | Callable[P, Awaitable[Result[T, E]]]:
         if inspect.iscoroutinefunction(func):
-            func_coro = cast(Callable[P, Awaitable[T]], func)
-
-            @functools.wraps(func)  # type: ignore[misc]
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-                try:
-                    return Ok(await func_coro(*args, **kwargs))
-                except exception_types as e:
-                    return Err(e)
-
-            return cast(Callable[P, Awaitable[Result[T, E]]], async_wrapper)
-
-        func_sync = cast(Callable[P, T], func)
-
-        @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-            try:
-                return Ok(func_sync(*args, **kwargs))
-            except exception_types as e:
-                return Err(e)
-
-        return cast(Callable[P, Result[T, E]], wrapper)
+            return _safe_from_async_wrapper(
+                cast(Callable[P, Awaitable[T]], func), exception_types
+            )
+        return _safe_from_sync_wrapper(cast(Callable[P, T], func), exception_types)
 
     return cast(SafeFromDecorator[E], decorator)
 
