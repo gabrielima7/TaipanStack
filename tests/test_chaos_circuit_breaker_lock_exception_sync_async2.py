@@ -1,12 +1,12 @@
-import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker
+
 
 def test_circuit_breaker_lock_acquire_exception_record_success():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class BadLock:
         def acquire(self, timeout=-1):
-            raise Exception("Chaos lock acquire error")
+            raise RuntimeError("Chaos lock acquire error")
         def release(self):
             pass
 
@@ -20,7 +20,7 @@ def test_circuit_breaker_lock_acquire_exception_record_failure():
 
     class BadLock:
         def acquire(self, timeout=-1):
-            raise Exception("Chaos lock acquire error")
+            raise RuntimeError("Chaos lock acquire error")
         def release(self):
             pass
 
@@ -34,7 +34,7 @@ def test_circuit_breaker_lock_acquire_exception_reset():
 
     class BadLock:
         def acquire(self, timeout=-1):
-            raise Exception("Chaos lock acquire error")
+            raise RuntimeError("Chaos lock acquire error")
         def release(self):
             pass
 
@@ -47,7 +47,7 @@ def test_circuit_breaker_lock_acquire_exception_decrement_half_open():
 
     class BadLock:
         def acquire(self, timeout=-1):
-            raise Exception("Chaos lock acquire error")
+            raise RuntimeError("Chaos lock acquire error")
         def release(self):
             pass
 

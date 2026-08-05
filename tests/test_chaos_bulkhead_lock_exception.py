@@ -1,6 +1,8 @@
+
 import pytest
-import asyncio
-from taipanstack.resilience.adaptive.bulkhead import Bulkhead, BulkheadFullError
+
+from taipanstack.resilience.adaptive.bulkhead import Bulkhead
+
 
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_lock_acquire_exception():
@@ -8,7 +10,7 @@ async def test_chaos_bulkhead_lock_acquire_exception():
 
     class BadSemaphore:
         async def acquire(self):
-            raise Exception("Chaos lock acquire error")
+            raise RuntimeError("Chaos lock acquire error")
         def release(self):
             pass
 
