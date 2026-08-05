@@ -183,6 +183,28 @@ def _validate_timeout(seconds: float) -> Result[None, E] | None:
     return None
 
 
+async def _execute_timeout_async_inner(
+    func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
+    seconds: float,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, TimeoutError | E]:
+    val_err: Result[None, E] | None = _validate_timeout(seconds)
+    if val_err is not None:
+        return cast(Result[T, TimeoutError | E], val_err)
+    try:
+        return await asyncio.wait_for(
+            func_coro(*args, **kwargs),
+            timeout=seconds,
+        )
+    except TimeoutError:
+        return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+    except asyncio.CancelledError:
+        raise
+    except BaseException as e:
+        return _handle_timeout_exception(e, "Task")
+
+
 def _execute_timeout_async_wrapper(
     func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
     seconds: float,
@@ -192,22 +214,55 @@ def _execute_timeout_async_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, TimeoutError | E]:
-        val_err: Result[None, E] | None = _validate_timeout(seconds)
-        if val_err is not None:
-            return cast(Result[T, TimeoutError | E], val_err)
-        try:
-            return await asyncio.wait_for(
-                func_coro(*args, **kwargs),
-                timeout=seconds,
-            )
-        except TimeoutError:
-            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
-        except asyncio.CancelledError:
-            raise
-        except BaseException as e:
-            return _handle_timeout_exception(e, "Task")
+        return await _execute_timeout_async_inner(
+            func_coro, seconds, *args, **kwargs
+        )
 
     return async_wrapper  # type: ignore[misc]
+
+
+def _check_timeout_thread_result(
+    thread: threading.Thread,
+    seconds: float,
+    exception: list[BaseException],
+    result: list[Result[T, TimeoutError | E]],
+) -> Result[T, TimeoutError | E]:
+    if thread.is_alive():
+        return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+
+    if exception:
+        raise exception[0]
+
+    return result[0]
+
+
+def _execute_timeout_sync_inner(
+    func_sync: Callable[P, Result[T, TimeoutError | E]],
+    seconds: float,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, TimeoutError | E]:
+    val_err: Result[None, E] | None = _validate_timeout(seconds)
+    if val_err is not None:
+        return cast(Result[T, TimeoutError | E], val_err)
+
+    result: list[Result[T, TimeoutError | E]] = []
+    exception: list[BaseException] = []
+
+    def worker() -> None:
+        try:
+            result.append(func_sync(*args, **kwargs))
+        except BaseException as e:
+            exception.append(e)
+
+    thread = threading.Thread(target=worker, daemon=True)
+    try:
+        thread.start()
+        thread.join(timeout=seconds)
+    except BaseException as e:
+        return _handle_timeout_exception(e, "Thread")
+
+    return _check_timeout_thread_result(thread, seconds, exception, result)
 
 
 def _execute_timeout_sync_wrapper(
@@ -219,33 +274,7 @@ def _execute_timeout_sync_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, TimeoutError | E]:
-        val_err: Result[None, E] | None = _validate_timeout(seconds)
-        if val_err is not None:
-            return cast(Result[T, TimeoutError | E], val_err)
-
-        result: list[Result[T, TimeoutError | E]] = []
-        exception: list[BaseException] = []
-
-        def worker() -> None:
-            try:
-                result.append(func_sync(*args, **kwargs))
-            except BaseException as e:
-                exception.append(e)
-
-        thread = threading.Thread(target=worker, daemon=True)
-        try:
-            thread.start()
-            thread.join(timeout=seconds)
-        except BaseException as e:
-            return _handle_timeout_exception(e, "Thread")
-
-        if thread.is_alive():
-            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
-
-        if exception:
-            raise exception[0]
-
-        return result[0]
+        return _execute_timeout_sync_inner(func_sync, seconds, *args, **kwargs)
 
     return sync_wrapper
 
