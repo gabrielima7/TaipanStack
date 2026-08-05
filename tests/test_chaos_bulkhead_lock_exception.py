@@ -1,4 +1,3 @@
-
 import pytest
 
 from taipanstack.resilience.adaptive.bulkhead import Bulkhead
@@ -11,6 +10,7 @@ async def test_chaos_bulkhead_lock_acquire_exception():
     class BadSemaphore:
         async def acquire(self):
             raise RuntimeError("Chaos lock acquire error")
+
         def release(self):
             pass
 

@@ -16,7 +16,9 @@ async def test_chaos_bulkhead_create_task_exception_uncovered_branch():
     class UnrelatedError(Exception):
         pass
 
-    with patch("asyncio.create_task", side_effect=UnrelatedError("Chaos create_task error")):
+    with patch(
+        "asyncio.create_task", side_effect=UnrelatedError("Chaos create_task error")
+    ):
         result = await bulkhead.execute(dummy)
         assert result.is_err()
         assert "Resource exhaustion" in str(result.unwrap_err())

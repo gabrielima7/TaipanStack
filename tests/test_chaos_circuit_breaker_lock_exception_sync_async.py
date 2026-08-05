@@ -1,4 +1,3 @@
-
 import pytest
 
 from taipanstack.resilience.circuit_breaker import (
@@ -13,6 +12,7 @@ def test_circuit_breaker_lock_acquire_exception_decorator_sync():
     class BadLock:
         def acquire(self, timeout=-1):
             raise RuntimeError("Chaos lock acquire error")
+
         def release(self):
             pass
 
@@ -26,6 +26,7 @@ def test_circuit_breaker_lock_acquire_exception_decorator_sync():
     with pytest.raises(CircuitBreakerError, match="is open"):
         sync_func()
 
+
 @pytest.mark.asyncio
 async def test_circuit_breaker_lock_acquire_exception_decorator_async():
     breaker = CircuitBreaker(failure_threshold=2)
@@ -33,6 +34,7 @@ async def test_circuit_breaker_lock_acquire_exception_decorator_async():
     class BadLock:
         def acquire(self, timeout=-1):
             raise RuntimeError("Chaos lock acquire error")
+
         def release(self):
             pass
 

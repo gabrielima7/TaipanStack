@@ -13,7 +13,9 @@ async def test_chaos_bulkhead_create_task_exception():
     async def dummy():
         pass
 
-    with patch("asyncio.create_task", side_effect=RuntimeError("Chaos create_task error")):
+    with patch(
+        "asyncio.create_task", side_effect=RuntimeError("Chaos create_task error")
+    ):
         result = await bulkhead.execute(dummy)
         assert result.is_err()
         assert "Resource exhaustion" in str(result.unwrap_err())

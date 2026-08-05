@@ -7,6 +7,7 @@ def test_rate_limit_lock_acquire_exception():
     class BadLock:
         def acquire(self, timeout=-1):
             raise RuntimeError("Chaos lock error")
+
         def release(self):
             pass
 
