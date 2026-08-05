@@ -57,7 +57,9 @@ jobs:
         run: poetry install --with docs --sync
 
       - name: "[Build] Build documentation"
-        run: poetry run mkdocs build
+        env:
+          NO_MKDOCS_2_WARNING: "1"
+        run: poetry run mkdocs build --strict
 
       - name: "[Setup] Download coverage HTML report from latest CI"
         uses: dawidd6/action-download-artifact@v21
