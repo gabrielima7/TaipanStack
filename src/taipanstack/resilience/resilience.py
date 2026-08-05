@@ -183,6 +183,25 @@ def _validate_timeout(seconds: float) -> Result[None, E] | None:
     return None
 
 
+async def _run_async_with_timeout(
+    func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
+    seconds: float,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, TimeoutError | E]:
+    try:
+        return await asyncio.wait_for(
+            func_coro(*args, **kwargs),
+            timeout=seconds,
+        )
+    except TimeoutError:
+        return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+    except asyncio.CancelledError:
+        raise
+    except BaseException as e:
+        return _handle_timeout_exception(e, "Task")
+
+
 def _execute_timeout_async_wrapper(
     func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
     seconds: float,
@@ -195,19 +214,49 @@ def _execute_timeout_async_wrapper(
         val_err: Result[None, E] | None = _validate_timeout(seconds)
         if val_err is not None:
             return cast(Result[T, TimeoutError | E], val_err)
-        try:
-            return await asyncio.wait_for(
-                func_coro(*args, **kwargs),
-                timeout=seconds,
-            )
-        except TimeoutError:
-            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
-        except asyncio.CancelledError:
-            raise
-        except BaseException as e:
-            return _handle_timeout_exception(e, "Task")
+        return await _run_async_with_timeout(func_coro, seconds, *args, **kwargs)
 
     return async_wrapper  # type: ignore[misc]
+
+
+def _process_sync_timeout_result(
+    seconds: float,
+    thread: threading.Thread,
+    result: list[Result[T, TimeoutError | E]],
+    exception: list[BaseException],
+) -> Result[T, TimeoutError | E]:
+    if thread.is_alive():
+        return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
+
+    if exception:
+        raise exception[0]
+
+    return result[0]
+
+
+def _run_sync_with_timeout(
+    func_sync: Callable[P, Result[T, TimeoutError | E]],
+    seconds: float,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, TimeoutError | E]:
+    result: list[Result[T, TimeoutError | E]] = []
+    exception: list[BaseException] = []
+
+    def worker() -> None:
+        try:
+            result.append(func_sync(*args, **kwargs))
+        except BaseException as e:
+            exception.append(e)
+
+    thread = threading.Thread(target=worker, daemon=True)
+    try:
+        thread.start()
+        thread.join(timeout=seconds)
+    except BaseException as e:
+        return _handle_timeout_exception(e, "Thread")
+
+    return _process_sync_timeout_result(seconds, thread, result, exception)
 
 
 def _execute_timeout_sync_wrapper(
@@ -222,30 +271,7 @@ def _execute_timeout_sync_wrapper(
         val_err: Result[None, E] | None = _validate_timeout(seconds)
         if val_err is not None:
             return cast(Result[T, TimeoutError | E], val_err)
-
-        result: list[Result[T, TimeoutError | E]] = []
-        exception: list[BaseException] = []
-
-        def worker() -> None:
-            try:
-                result.append(func_sync(*args, **kwargs))
-            except BaseException as e:
-                exception.append(e)
-
-        thread = threading.Thread(target=worker, daemon=True)
-        try:
-            thread.start()
-            thread.join(timeout=seconds)
-        except BaseException as e:
-            return _handle_timeout_exception(e, "Thread")
-
-        if thread.is_alive():
-            return Err(TimeoutError(f"Execution timed out after {seconds} seconds."))
-
-        if exception:
-            raise exception[0]
-
-        return result[0]
+        return _run_sync_with_timeout(func_sync, seconds, *args, **kwargs)
 
     return sync_wrapper
 
