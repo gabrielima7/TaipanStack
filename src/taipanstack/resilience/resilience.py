@@ -214,9 +214,7 @@ def _execute_timeout_async_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, TimeoutError | E]:
-        return await _execute_timeout_async_inner(
-            func_coro, seconds, *args, **kwargs
-        )
+        return await _execute_timeout_async_inner(func_coro, seconds, *args, **kwargs)
 
     return async_wrapper  # type: ignore[misc]
 
