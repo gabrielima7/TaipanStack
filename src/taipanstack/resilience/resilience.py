@@ -186,12 +186,12 @@ def _validate_timeout(seconds: float) -> Result[None, E] | None:
 async def _run_async_with_timeout(
     func_coro: Callable[..., Awaitable[Result[T, TimeoutError | E]]],
     seconds: float,
-    args: tuple,
-    kwargs: dict,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
 ) -> Result[T, TimeoutError | E]:
     try:
         return await asyncio.wait_for(
-            func_coro(*args, **kwargs),  # type: ignore[misc]
+            func_coro(*args, **kwargs),
             timeout=seconds,
         )
     except TimeoutError:
@@ -214,9 +214,7 @@ def _execute_timeout_async_wrapper(
         val_err: Result[None, E] | None = _validate_timeout(seconds)
         if val_err is not None:
             return cast(Result[T, TimeoutError | E], val_err)
-        return await _run_async_with_timeout(
-            func_coro, seconds, args, kwargs  # type: ignore[arg-type]
-        )
+        return await _run_async_with_timeout(func_coro, seconds, args, kwargs)
 
     return async_wrapper  # type: ignore[misc]
 
@@ -267,8 +265,8 @@ def _execute_timeout_sync_wrapper(
 
         thread = threading.Thread(
             target=_run_thread_worker,  # type: ignore[misc]
-            args=(func_sync, args, kwargs, result, exception),  # type: ignore[misc, arg-type]
-            daemon=True
+            args=(func_sync, args, kwargs, result, exception),
+            daemon=True,
         )
         try:
             thread.start()

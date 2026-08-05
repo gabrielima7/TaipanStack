@@ -99,7 +99,7 @@ def _safe_async_wrapper(
     ok_cls = Ok
     err_cls = Err
 
-    @functools.wraps(func)  # type: ignore[misc]
+    @functools.wraps(func)
     async def async_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
@@ -147,7 +147,7 @@ def _safe_from_async_wrapper(
     func: Callable[P, T] | Callable[P, Awaitable[T]],
     exception_types: tuple[type[E], ...],
 ) -> Callable[P, Awaitable[Result[T, E]]]:
-    @functools.wraps(func)  # type: ignore[misc]
+    @functools.wraps(func)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             return Ok(await func_coro(*args, **kwargs))
