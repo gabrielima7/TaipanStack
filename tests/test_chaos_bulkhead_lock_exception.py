@@ -1,0 +1,22 @@
+import pytest
+import asyncio
+from taipanstack.resilience.adaptive.bulkhead import Bulkhead, BulkheadFullError
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_lock_acquire_exception():
+    bulkhead = Bulkhead(max_concurrent=1, max_queue=1)
+
+    class BadSemaphore:
+        async def acquire(self):
+            raise Exception("Chaos lock acquire error")
+        def release(self):
+            pass
+
+    bulkhead._semaphore = BadSemaphore()
+
+    async def dummy():
+        pass
+
+    result = await bulkhead.execute(dummy)
+    assert result.is_err()
+    assert "Resource exhaustion" in str(result.unwrap_err())

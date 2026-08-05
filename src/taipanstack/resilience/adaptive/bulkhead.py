@@ -153,6 +153,9 @@ class Bulkhead:
                 raise
         except (RuntimeError, OSError, MemoryError) as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+        except Exception as e:
+            # Fallback for unexpected failures in asyncio.create_task or semaphore.acquire
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
     async def execute(
         self,

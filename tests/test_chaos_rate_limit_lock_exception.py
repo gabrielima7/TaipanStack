@@ -1,0 +1,16 @@
+import pytest
+from taipanstack.utils.rate_limit import RateLimiter
+
+def test_rate_limit_lock_acquire_exception():
+    limiter = RateLimiter(10, 1.0)
+
+    class BadLock:
+        def acquire(self, timeout=-1):
+            raise Exception("Chaos lock error")
+        def release(self):
+            pass
+
+    limiter._lock = BadLock()
+
+    # Should not crash but return False
+    limiter.consume()

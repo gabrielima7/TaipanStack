@@ -411,7 +411,11 @@ class CircuitBreaker:
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
-        acquired = self._state.lock.acquire(timeout=0.1)
+        try:
+            acquired = self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            acquired = False
+
         if not acquired:
             return False
         try:
@@ -461,7 +465,11 @@ class CircuitBreaker:
 
     def _record_success(self) -> None:
         """Record a successful call."""
-        acquired = self._state.lock.acquire(timeout=0.1)
+        try:
+            acquired = self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            acquired = False
+
         if not acquired:
             return
         try:
@@ -551,7 +559,11 @@ class CircuitBreaker:
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        acquired = self._state.lock.acquire(timeout=0.1)
+        try:
+            acquired = self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            acquired = False
+
         if not acquired:
             return
         try:
@@ -565,7 +577,11 @@ class CircuitBreaker:
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
-        acquired = self._state.lock.acquire(timeout=0.1)
+        try:
+            acquired = self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            acquired = False
+
         if not acquired:
             return
         try:
@@ -632,7 +648,11 @@ class CircuitBreaker:
 
         """
         if is_half_open:
-            acquired = self._state.lock.acquire(timeout=0.1)
+            try:
+                acquired = self._state.lock.acquire(timeout=0.1)
+            except Exception:
+                acquired = False
+
             if not acquired:
                 return
             try:
