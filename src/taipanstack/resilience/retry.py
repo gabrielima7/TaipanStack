@@ -48,9 +48,11 @@ def _handle_retry_exception(
 
     """
     try:
-        if not isinstance(e, valid_on):
-            raise e
+        is_match = isinstance(e, valid_on)
     except TypeError:
+        is_match = False
+
+    if not is_match:
         raise e
 
     max_attempts = (
