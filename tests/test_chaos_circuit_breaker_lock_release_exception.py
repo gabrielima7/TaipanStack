@@ -7,6 +7,7 @@ def test_chaos_circuit_breaker_lock_release_raises():
     class BadLock:
         def acquire(self, timeout=-1):
             return True
+
         def release(self):
             raise RuntimeError("Chaos lock release error")
 
