@@ -17,6 +17,7 @@ def test_security_validators_url_smuggling_dos() -> None:
 
     assert validate_url(url) == url
 
+
 def test_security_validators_url_smuggling_invalid() -> None:
     # Needs to be invalid after at least 1 unquote
     # %00 -> \x00
@@ -24,9 +25,10 @@ def test_security_validators_url_smuggling_invalid() -> None:
     with pytest.raises(ValueError, match="URL contains invalid characters"):
         validate_url(url)
 
-    url2 = "http://example.com/?q=" + quote("%00") # %2500 -> %00 -> \x00
+    url2 = "http://example.com/?q=" + quote("%00")  # %2500 -> %00 -> \x00
     with pytest.raises(ValueError, match="URL contains invalid characters"):
         validate_url(url2)
+
 
 def test_security_validators_url_smuggling_same_string() -> None:
     # To hit line 361 (break when unquoted == current_url):
