@@ -48,17 +48,13 @@ def _handle_retry_exception(
 
     """
     try:
-        is_match = isinstance(e, valid_on)
+        if not isinstance(e, valid_on):
+            raise e
     except TypeError:
-        is_match = False
-    if not is_match:
         raise e
 
     max_attempts = (
-        int(config.max_attempts)
-        if isinstance(config.max_attempts, (int, float))
-        and math.isfinite(config.max_attempts)
-        else 3
+        int(config.max_attempts) if _is_valid_number(config.max_attempts) else 3
     )
 
     if attempt >= max_attempts:
@@ -165,18 +161,23 @@ class RetryError(Exception):
         super().__init__(message)
 
 
+def _is_valid_number(val: object) -> bool:
+    """Check if the value is a valid finite number."""
+    return isinstance(val, (int, float)) and math.isfinite(val)
+
+
 def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     """Calculate base delay with exponential backoff."""
     safe_attempt = max(1, attempt)
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
-        if not isinstance(delay, (int, float)) or not math.isfinite(delay):
+        if not _is_valid_number(delay):
             delay = config.max_delay
     except (OverflowError, TypeError):
         delay = config.max_delay
 
     try:
-        if not isinstance(delay, (int, float)) or not math.isfinite(delay):
+        if not _is_valid_number(delay):
             delay = 0.0
         return min(delay, config.max_delay)
     except TypeError:
@@ -196,11 +197,7 @@ def _compute_jitter_amount(delay: float, factor: float) -> float | None:
 
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
-    if (
-        not config.jitter
-        or not isinstance(delay, (int, float))
-        or not math.isfinite(delay)
-    ):
+    if not config.jitter or not _is_valid_number(delay):
         return delay
 
     jitter_amount = _compute_jitter_amount(delay, config.jitter_factor)
