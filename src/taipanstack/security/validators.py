@@ -348,12 +348,24 @@ def _check_url_length(url: str) -> None:
 
 
 def _has_invalid_url_chars(url: str) -> bool:
-    return _has_invalid_chars(url)
+    """Check if URL contains invalid characters, including recursively encoded ones."""
+    if _has_invalid_chars(url):
+        return True
+
+    current_url = url
+    for _ in range(10):  # Limit recursion depth to prevent DoS
+        unquoted = unquote(current_url)
+        if _has_invalid_chars(unquoted):
+            return True
+        if unquoted == current_url:
+            break
+        current_url = unquoted
+    return False
 
 
 def _check_url_characters(url: str) -> None:
     """Check URL character constraints."""
-    if _has_invalid_url_chars(url) or _has_invalid_url_chars(unquote(url)):
+    if _has_invalid_url_chars(url):
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 
