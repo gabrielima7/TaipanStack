@@ -14,7 +14,9 @@ from taipanstack.security.validators import validate_url
         alphabet=st.characters(
             max_codepoint=32,
             categories=["Cc", "Cf", "Cs", "Co", "Cn"],
-            exclude_characters=set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"),
+            exclude_characters=set(
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+            ),
         ),
         min_size=1,
         max_size=5,
@@ -37,7 +39,9 @@ def test_taipanstack_validators_url_recursive_unquote(payload, depth):
         alphabet=st.characters(
             max_codepoint=32,
             categories=["Cc", "Cf", "Cs", "Co", "Cn"],
-            exclude_characters=set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"),
+            exclude_characters=set(
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+            ),
         ),
         min_size=1,
         max_size=5,
