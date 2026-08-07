@@ -115,3 +115,9 @@
 **Learning:** In Python, `secrets.compare_digest` raises an unhandled `TypeError` ("comparing strings with non-ASCII characters is not supported") if passed a string containing non-ASCII characters. Malicious inputs could intentionally send non-ASCII algorithm strings (like "noneñ") to cause unhandled `TypeError` crashes (DoS) instead of returning a controlled error response.
 **Prevention:** Always validate that untrusted input is an ASCII string using `.isascii()` before passing it into `secrets.compare_digest()`, especially when comparing against known ASCII strings.
 
+
+### URL Parsing and Decoding Vulnerabilities
+
+When performing URL string validation to prevent SSRF or invalid characters from passing through, calling `urllib.parse.unquote(url)` once is insufficient against an attacker who submits deeply URL-encoded payloads (e.g., doubly or triply encoded `%252500` null bytes). To prevent validation bypasses, the URL must be fully unquoted recursively until `unquote(current) == current`.
+
+**Critical Defense Mechanism:** Unbounded `while` loops for recursive unquoting are a Denial of Service (DoS) vulnerability risk. The recursive loop MUST be bounded to a strict maximum iteration limit (e.g., `range(10)`) to ensure the application fails safely when encountering extremely deep/malicious recursive payloads.

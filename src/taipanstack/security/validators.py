@@ -351,9 +351,20 @@ def _has_invalid_url_chars(url: str) -> bool:
     return _has_invalid_chars(url)
 
 
+def _fully_unquote_url(url: str) -> str:
+    """Recursively unquote URL to catch nested invalid characters."""
+    current = url
+    for _ in range(10):  # limit to prevent DoS
+        unquoted = unquote(current)
+        if unquoted == current:
+            break
+        current = unquoted
+    return current
+
+
 def _check_url_characters(url: str) -> None:
     """Check URL character constraints."""
-    if _has_invalid_url_chars(url) or _has_invalid_url_chars(unquote(url)):
+    if _has_invalid_url_chars(url) or _has_invalid_url_chars(_fully_unquote_url(url)):
         msg = "URL contains invalid characters"
         raise ValueError(msg)
 

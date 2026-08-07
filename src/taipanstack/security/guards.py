@@ -606,8 +606,18 @@ def _has_invalid_url_chars(url: str) -> bool:
     return bool("\x00" in url or not url.isprintable())
 
 
+def _fully_unquote_url(url: str) -> str:
+    current = url
+    for _ in range(10):  # limit to prevent DoS
+        unquoted = unquote(current)
+        if unquoted == current:
+            break
+        current = unquoted
+    return current
+
+
 def _check_ssrf_url_characters(url: str) -> Result[str, SecurityError]:
-    if _has_invalid_url_chars(url) or _has_invalid_url_chars(unquote(url)):
+    if _has_invalid_url_chars(url) or _has_invalid_url_chars(_fully_unquote_url(url)):
         return Err(
             SecurityError(
                 "URL contains invalid characters",
