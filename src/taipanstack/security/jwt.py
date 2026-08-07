@@ -74,6 +74,7 @@ def _check_disallowed_algorithm(alg: str) -> None:
             msg = 'Algorithm "none" is explicitly disallowed for decoding.'
             raise ValueError(msg)
 
+
 def _validate_jwt_algorithms(algorithms: list[str]) -> None:
     if not isinstance(algorithms, list):
         raise TypeError("Algorithms must be a list of strings")
