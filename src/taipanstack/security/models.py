@@ -102,7 +102,7 @@ class SecureBaseModel(BaseModel):
             else:
                 yield k, v
 
-    def model_dump(  # type: ignore[override]  # noqa: PLR0913
+    def model_dump(  # noqa: PLR0913
         self,
         *,
         mode: Literal["json", "python"] | str = "python",
@@ -118,6 +118,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
     ) -> dict[str, object]:
         """Dump the model to a dictionary, redacting sensitive fields.
 
@@ -125,7 +126,7 @@ class SecureBaseModel(BaseModel):
             The redacting dictionary representation of the model.
 
         """
-        data = super().model_dump(  # type: ignore[misc]
+        data = super().model_dump(
             mode=mode,
             include=include,
             exclude=exclude,
@@ -139,10 +140,11 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-        )
+            polymorphic_serialization=polymorphic_serialization,
+        )  # type: ignore[misc]
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
-    def model_dump_json(  # type: ignore[override]  # noqa: PLR0913
+    def model_dump_json(  # noqa: PLR0913
         self,
         *,
         indent: int | None = None,
@@ -159,6 +161,7 @@ class SecureBaseModel(BaseModel):
         warnings: bool | Literal["none", "warn", "error"] = True,
         fallback: Callable[[object], object] | None = None,
         serialize_as_any: bool = False,
+        polymorphic_serialization: bool | None = None,
     ) -> str:
         """Dump the model to a JSON string, redacting sensitive fields.
 
@@ -169,7 +172,7 @@ class SecureBaseModel(BaseModel):
         # Extract indent if any, as model_dump does not accept it
 
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(  # type: ignore[misc]
+        dumped_dict = super().model_dump(
             mode="json",
             include=include,
             exclude=exclude,
@@ -183,7 +186,8 @@ class SecureBaseModel(BaseModel):
             warnings=warnings,
             fallback=fallback,
             serialize_as_any=serialize_as_any,
-        )
+            polymorphic_serialization=polymorphic_serialization,
+        )  # type: ignore[misc]
         masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
