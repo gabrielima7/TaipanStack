@@ -622,13 +622,11 @@ class CircuitBreaker:
 
     def _is_valid_half_open_attempts(self) -> bool:
         """Validate half-open attempts value against corruption."""
-        if not isinstance(self._state.half_open_attempts, (int, float)):
-            return False
+        val = self._state.half_open_attempts
+        if not isinstance(val, (int, float)):
+            return False  # type: ignore[unreachable]
         try:
-            return (
-                math.isfinite(self._state.half_open_attempts)
-                and self._state.half_open_attempts >= 0
-            )
+            return math.isfinite(val) and val >= 0
         except Exception:
             return False
 

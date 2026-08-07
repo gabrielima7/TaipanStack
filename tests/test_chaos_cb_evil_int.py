@@ -1,6 +1,5 @@
-import math
-import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
 
 class EvilInt(int):
     def __ge__(self, other):
@@ -32,7 +31,6 @@ def test_chaos_cb_evil_int_failure_count():
     assert breaker._state.failure_count == breaker.config.failure_threshold
 
 def test_chaos_cb_evil_int_is_valid_metric():
-    breaker = CircuitBreaker(failure_threshold=1)
     # The check involves >= which is __ge__ in python 3
     # If it crashes, the function isn't safe. The hardened code should return False
     assert CircuitBreaker._is_valid_metric(EvilInt(0)) is False
