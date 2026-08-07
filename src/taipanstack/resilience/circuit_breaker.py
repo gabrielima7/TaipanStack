@@ -157,11 +157,12 @@ class CircuitBreaker:
     @staticmethod
     def _is_valid_metric(value: object, min_val: float = 0) -> TypeGuard[int | float]:
         """Check if metric is a valid finite number >= min_val."""
-        return (
-            isinstance(value, (int, float))
-            and math.isfinite(value)
-            and value >= min_val
-        )
+        if not isinstance(value, (int, float)):
+            return False
+        try:
+            return math.isfinite(value) and value >= min_val
+        except Exception:
+            return False
 
     @staticmethod
     def _get_safe_threshold(value: object, min_val: float, default: float) -> float:
@@ -621,11 +622,15 @@ class CircuitBreaker:
 
     def _is_valid_half_open_attempts(self) -> bool:
         """Validate half-open attempts value against corruption."""
-        return (
-            isinstance(self._state.half_open_attempts, (int, float))
-            and math.isfinite(self._state.half_open_attempts)
-            and self._state.half_open_attempts >= 0
-        )
+        if not isinstance(self._state.half_open_attempts, (int, float)):
+            return False
+        try:
+            return (
+                math.isfinite(self._state.half_open_attempts)
+                and self._state.half_open_attempts >= 0
+            )
+        except Exception:
+            return False
 
     def _safe_decrement_half_open_attempts(self) -> None:
         """Safely decrement half-open attempts."""
