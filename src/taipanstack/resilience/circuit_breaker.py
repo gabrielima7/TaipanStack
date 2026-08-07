@@ -6,6 +6,7 @@ blocking calls to a failing service. Compatible with any
 Python framework (sync and async).
 """
 
+import contextlib
 import functools
 import inspect
 import logging
@@ -397,6 +398,10 @@ class CircuitBreaker:
             return True
         return False
 
+    def _safe_release(self) -> None:
+        with contextlib.suppress(RuntimeError):
+            self._state.lock.release()
+
     def _evaluate_state_for_attempt(
         self,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
@@ -421,7 +426,7 @@ class CircuitBreaker:
         try:
             should_attempt, state_change = self._evaluate_state_for_attempt()
         finally:
-            self._state.lock.release()
+            self._safe_release()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -475,7 +480,7 @@ class CircuitBreaker:
         try:
             state_change = self._get_success_state_change()
         finally:
-            self._state.lock.release()
+            self._safe_release()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -570,7 +575,7 @@ class CircuitBreaker:
             self._update_failure_metrics()
             state_change = self._get_failure_state_change()
         finally:
-            self._state.lock.release()
+            self._safe_release()
 
         if state_change:
             self._notify_state_change(*state_change)
@@ -591,7 +596,7 @@ class CircuitBreaker:
             self._state.half_open_attempts = 0
             logger.info("Circuit %s manually reset", self.name)
         finally:
-            self._state.lock.release()
+            self._safe_release()
 
     def _is_failure_exception(self, exc: Exception) -> bool:
         try:
@@ -658,7 +663,7 @@ class CircuitBreaker:
             try:
                 self._safe_decrement_half_open_attempts()
             finally:
-                self._state.lock.release()
+                self._safe_release()
 
     def _handle_exception_in_call(self, e: Exception) -> None:
         try:
