@@ -159,6 +159,15 @@ class AdaptiveCircuitBreaker:
             log_target,
         )
 
+    def _get_safe_min_throughput(self) -> int:
+        """Safely retrieve the minimum throughput."""
+        min_throughput = self._min_throughput
+        if not isinstance(min_throughput, (int, float)) or not math.isfinite(
+            min_throughput
+        ):
+            return 1
+        return int(min_throughput)
+
     def _evaluate_trip(self) -> None:
         """Evaluate if the circuit should trip open.
 
@@ -168,11 +177,7 @@ class AdaptiveCircuitBreaker:
             return
 
         total = len(self._window)
-        min_throughput = self._min_throughput
-        if not isinstance(min_throughput, (int, float)) or not math.isfinite(
-            min_throughput
-        ):
-            min_throughput = 1
+        min_throughput = self._get_safe_min_throughput()
 
         if total < min_throughput:
             return
