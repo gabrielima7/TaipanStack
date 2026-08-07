@@ -67,16 +67,19 @@ def encode_jwt(
     return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
 
 
+def _check_disallowed_algorithm(alg: str) -> None:
+    if isinstance(alg, str):
+        alg_lower = alg.strip().lower()
+        if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
+            msg = 'Algorithm "none" is explicitly disallowed for decoding.'
+            raise ValueError(msg)
+
 def _validate_jwt_algorithms(algorithms: list[str]) -> None:
     if not isinstance(algorithms, list):
         raise TypeError("Algorithms must be a list of strings")
 
     for alg in algorithms:
-        if isinstance(alg, str):
-            alg_lower = alg.strip().lower()
-            if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
-                msg = 'Algorithm "none" is explicitly disallowed for decoding.'
-                raise ValueError(msg)
+        _check_disallowed_algorithm(alg)
 
 
 def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
