@@ -103,9 +103,11 @@ async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
 async def test_chaos_bulkhead_acquire_permit_timeout():
     bulkhead = Bulkhead("test_timeout", max_concurrent=1, max_queue=1, timeout=0.01)
 
-    # Acquire the only permit
-    permit = await bulkhead._acquire_permit()
-    assert permit.is_ok()
+    # Force _active to 1 so available_permits becomes 0.
+    # _acquire_permit does NOT increment _active.
+    # We must actually hold the semaphore.
+    await bulkhead._semaphore.acquire()
+    bulkhead._active = 1
 
     # Create a dummy task
     async def dummy():
@@ -124,9 +126,9 @@ async def test_chaos_bulkhead_acquire_permit_timeout():
 async def test_chaos_bulkhead_acquire_permit_cancelled():
     bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
 
-    # Acquire the only permit
-    permit = await bulkhead._acquire_permit()
-    assert permit.is_ok()
+    # Force _active to 1 so available_permits becomes 0.
+    await bulkhead._semaphore.acquire()
+    bulkhead._active = 1
 
     async def dummy():
         pass
@@ -176,9 +178,9 @@ async def test_chaos_bulkhead_execute_success():
 async def test_chaos_bulkhead_full_queue_error():
     bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=0)
 
-    # Acquire the permit so active = 1
-    permit = await bulkhead._acquire_permit()
-    assert permit.is_ok()
+    # Force _active to 1 so available_permits becomes 0.
+    await bulkhead._semaphore.acquire()
+    bulkhead._active = 1
 
     async def dummy():
         return 42
@@ -271,9 +273,8 @@ async def test_chaos_bulkhead_cleanup_acquire_task_actually_acquires():
     await bulkhead._cleanup_acquire_task(acquire_task)
 
     # It should have released the semaphore
-    # For compatibility with older Python versions where _value might be higher initially
-    # we just check that acquiring it does not block (i.e. it is not 0 when we expect 1)
-    assert not bulkhead._semaphore.locked()
+    # We can test this by successfully acquiring it without timeout, which would hang if it was 0
+    await asyncio.wait_for(bulkhead._semaphore.acquire(), timeout=0.1)
 
 
 @pytest.mark.asyncio
