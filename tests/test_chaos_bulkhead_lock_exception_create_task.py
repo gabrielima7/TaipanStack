@@ -97,3 +97,220 @@ async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
     result = await bulkhead.execute(dummy)
     assert result.is_err()
     assert "Fallback coverage" in str(result.unwrap_err())
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_acquire_permit_timeout():
+    bulkhead = Bulkhead("test_timeout", max_concurrent=1, max_queue=1, timeout=0.01)
+
+    # Acquire the only permit
+    permit = await bulkhead._acquire_permit()
+    assert permit.is_ok()
+
+    # Create a dummy task
+    async def dummy():
+        pass
+
+    # Execute another dummy task which should wait and eventually timeout
+    result = await bulkhead.execute(dummy)
+    assert result.is_err()
+    assert isinstance(result.unwrap_err(), TimeoutError)
+
+    # Release the permit to cleanup
+    bulkhead._semaphore.release()
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_acquire_permit_cancelled():
+    bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
+
+    # Acquire the only permit
+    permit = await bulkhead._acquire_permit()
+    assert permit.is_ok()
+
+    async def dummy():
+        pass
+
+    # Create a task that will wait for the permit
+    task = asyncio.create_task(bulkhead.execute(dummy))
+
+    # Wait a bit for the task to start waiting for the permit
+    await asyncio.sleep(0.01)
+
+    # Cancel the task
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    # Release the permit to cleanup
+    bulkhead._semaphore.release()
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_execute_exception_logged():
+    bulkhead = Bulkhead("test_exception", max_concurrent=1, max_queue=1)
+
+    async def dummy_raises():
+        raise ValueError("Simulated task error")
+
+    result = await bulkhead.execute(dummy_raises)
+    assert result.is_err()
+    assert isinstance(result.unwrap_err(), ValueError)
+    assert str(result.unwrap_err()) == "Simulated task error"
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_execute_success():
+    bulkhead = Bulkhead("test_success", max_concurrent=1, max_queue=1)
+
+    async def dummy_success():
+        return 42
+
+    result = await bulkhead.execute(dummy_success)
+    assert result.is_ok()
+    assert result.unwrap() == 42
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_full_queue_error():
+    bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=0)
+
+    # Acquire the permit so active = 1
+    permit = await bulkhead._acquire_permit()
+    assert permit.is_ok()
+
+    async def dummy():
+        return 42
+
+    result = await bulkhead.execute(dummy)
+    assert result.is_err()
+    assert "is full" in str(result.unwrap_err())
+    assert isinstance(result.unwrap_err(), Exception)
+
+    bulkhead._semaphore.release()
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_properties_and_validation():
+    bulkhead = Bulkhead("test_props", max_concurrent=2, max_queue=3, timeout=1.5)
+
+    assert bulkhead.available_permits == 2
+    assert bulkhead.queued == 0
+    assert bulkhead.active == 0
+
+    with pytest.raises(ValueError, match="max_concurrent"):
+        Bulkhead(max_concurrent=0)
+    with pytest.raises(ValueError, match="max_concurrent"):
+        Bulkhead(max_concurrent=True)
+
+    with pytest.raises(ValueError, match="max_queue"):
+        Bulkhead(max_queue=-1)
+    with pytest.raises(ValueError, match="max_queue"):
+        Bulkhead(max_queue=False)
+
+    with pytest.raises(ValueError, match="timeout"):
+        Bulkhead(timeout=-1.0)
+    with pytest.raises(ValueError, match="timeout"):
+        Bulkhead(timeout=float("inf"))
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_cleanup_task_suppress_release():
+    bulkhead = Bulkhead("test_cleanup", max_concurrent=1, max_queue=1)
+
+    async def dummy():
+        pass
+
+    task = asyncio.create_task(dummy())
+    # Cancel it immediately
+    task.cancel()
+
+    # This should internally attempt to await it and suppress CancelledError,
+    # then call _semaphore.release()
+    await bulkhead._cleanup_acquire_task(task)
+
+    assert bulkhead.available_permits == 1  # semaphore is released
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_acquire_permit_cancelled_suppress():
+    bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
+
+    async def dummy():
+        pass
+
+    with patch("asyncio.wait_for", side_effect=asyncio.CancelledError):
+        # We need it to run the acquire_task inside _acquire_permit,
+        # wait_for gets cancelled, it calls _cleanup_acquire_task and re-raises CancelledError
+        with pytest.raises(asyncio.CancelledError):
+            await bulkhead._acquire_permit()
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_cleanup_acquire_task_actually_acquires():
+    bulkhead = Bulkhead("test_cleanup", max_concurrent=1, max_queue=1)
+
+    # We patch acquire to immediately return True to mock successfully acquiring the lock
+    # but the task gets cancelled, so the cleanup has to release it
+    # We will do this by simply letting the acquire_task run and finish but simulating CancelledError from the wait_for
+    async def fast_acquire():
+        await asyncio.sleep(0.001)
+        return True
+
+    coro = fast_acquire()
+    acquire_task = asyncio.create_task(coro)
+    await asyncio.sleep(0.005)  # let it finish and "acquire"
+
+    # The lock was not really acquired since we replaced the task, but wait,
+    # _cleanup_acquire_task does `await acquire_task` which will finish now
+    # and then calls `self._semaphore.release()`
+    # First acquire the real semaphore so it goes to 0
+    await bulkhead._semaphore.acquire()
+
+    await bulkhead._cleanup_acquire_task(acquire_task)
+
+    # It should have released the semaphore
+    assert bulkhead._semaphore._value == 1
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_coroutine_close_coverage():
+    bulkhead = Bulkhead("test_close", max_concurrent=1, max_queue=1)
+
+    async def dummy():
+        pass
+
+    with patch("asyncio.create_task", side_effect=RuntimeError("foo")):
+        res = await bulkhead.execute(dummy)
+        assert res.is_err()
+        assert "Resource exhaustion" in str(res.unwrap_err())
+
+    with patch("asyncio.create_task", side_effect=Exception("foo")):
+        res = await bulkhead.execute(dummy)
+        assert res.is_err()
+        assert "Resource exhaustion" in str(res.unwrap_err())
+
+
+@pytest.mark.asyncio
+async def test_chaos_bulkhead_coroutine_close_coverage_not_coro():
+    bulkhead = Bulkhead("test_close_not_coro", max_concurrent=1, max_queue=1)
+
+    class BadSemaphoreNotCoro:
+        def acquire(self):
+            return "not a coroutine"
+
+    bulkhead._semaphore = BadSemaphoreNotCoro()
+
+    async def dummy():
+        pass
+
+    with patch("asyncio.create_task", side_effect=RuntimeError("foo")):
+        res = await bulkhead.execute(dummy)
+        assert res.is_err()
+        assert "Resource exhaustion" in str(res.unwrap_err())
+
+    with patch("asyncio.create_task", side_effect=Exception("foo")):
+        res = await bulkhead.execute(dummy)
+        assert res.is_err()
+        assert "Resource exhaustion" in str(res.unwrap_err())
