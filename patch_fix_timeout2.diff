@@ -1,0 +1,29 @@
+<<<<<<< SEARCH
+    # Force _active to 1 so available_permits becomes 0.
+    # _acquire_permit does NOT increment _active.
+    # We must actually hold the semaphore.
+    await bulkhead._semaphore.acquire()
+    bulkhead._active = 1
+
+    # Create a dummy task
+    async def dummy():
+        pass
+=======
+    # Actually trigger the full queue and concurrency to test timeout
+    # First, occupy the concurrent slot
+    async def dummy_blocker():
+        await asyncio.sleep(0.5)
+
+    # We use a timeout of 0.01 for the bulkhead limit
+    # The first one takes the permit and blocks
+    blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+
+    # Wait for blocker to start
+    await asyncio.sleep(0.05)
+
+    # Now the semaphore is empty and the queue has room (max_queue=1).
+    # The second execution will wait for a permit in _acquire_permit,
+    # but the timeout is 0.01 and blocker takes 0.5s.
+    async def dummy_waiter():
+        pass
+>>>>>>> REPLACE

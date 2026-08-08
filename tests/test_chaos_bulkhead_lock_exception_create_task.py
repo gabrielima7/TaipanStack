@@ -103,38 +103,51 @@ async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
 async def test_chaos_bulkhead_acquire_permit_timeout():
     bulkhead = Bulkhead("test_timeout", max_concurrent=1, max_queue=1, timeout=0.01)
 
-    # Force _active to 1 so available_permits becomes 0.
-    # _acquire_permit does NOT increment _active.
-    # We must actually hold the semaphore.
-    await bulkhead._semaphore.acquire()
-    bulkhead._active = 1
+    # Actually trigger the full queue and concurrency to test timeout
+    # First, occupy the concurrent slot
+    async def dummy_blocker():
+        await asyncio.sleep(0.5)
 
-    # Create a dummy task
-    async def dummy():
+    # We use a timeout of 0.01 for the bulkhead limit
+    # The first one takes the permit and blocks
+    blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+
+    # Wait for blocker to start
+    await asyncio.sleep(0.05)
+
+    # Now the semaphore is empty and the queue has room (max_queue=1).
+    # The second execution will wait for a permit in _acquire_permit,
+    # but the timeout is 0.01 and blocker takes 0.5s.
+    async def dummy_waiter():
         pass
 
     # Execute another dummy task which should wait and eventually timeout
-    result = await bulkhead.execute(dummy)
+    result = await bulkhead.execute(dummy_waiter)
     assert result.is_err()
     assert isinstance(result.unwrap_err(), TimeoutError)
 
-    # Release the permit to cleanup
-    bulkhead._semaphore.release()
+    # Wait for blocker to finish so it cleans up
+    await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_acquire_permit_cancelled():
     bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
 
-    # Force _active to 1 so available_permits becomes 0.
-    await bulkhead._semaphore.acquire()
-    bulkhead._active = 1
+    async def dummy_blocker():
+        await asyncio.sleep(0.5)
 
-    async def dummy():
+    # Occupy the permit
+    blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+
+    # Wait for blocker to start
+    await asyncio.sleep(0.05)
+
+    async def dummy_waiter():
         pass
 
     # Create a task that will wait for the permit
-    task = asyncio.create_task(bulkhead.execute(dummy))
+    task = asyncio.create_task(bulkhead.execute(dummy_waiter))
 
     # Wait a bit for the task to start waiting for the permit
     await asyncio.sleep(0.01)
@@ -145,8 +158,8 @@ async def test_chaos_bulkhead_acquire_permit_cancelled():
     with pytest.raises(asyncio.CancelledError):
         await task
 
-    # Release the permit to cleanup
-    bulkhead._semaphore.release()
+    # Cleanup the blocker
+    await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
 @pytest.mark.asyncio
@@ -178,9 +191,14 @@ async def test_chaos_bulkhead_execute_success():
 async def test_chaos_bulkhead_full_queue_error():
     bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=0)
 
-    # Force _active to 1 so available_permits becomes 0.
-    await bulkhead._semaphore.acquire()
-    bulkhead._active = 1
+    async def dummy_blocker():
+        await asyncio.sleep(0.5)
+
+    # Occupy the permit
+    blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+
+    # Wait for blocker to start
+    await asyncio.sleep(0.05)
 
     async def dummy():
         return 42
@@ -190,7 +208,8 @@ async def test_chaos_bulkhead_full_queue_error():
     assert "is full" in str(result.unwrap_err())
     assert isinstance(result.unwrap_err(), Exception)
 
-    bulkhead._semaphore.release()
+    # Cleanup the blocker
+    await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
 @pytest.mark.asyncio
@@ -273,8 +292,8 @@ async def test_chaos_bulkhead_cleanup_acquire_task_actually_acquires():
     await bulkhead._cleanup_acquire_task(acquire_task)
 
     # It should have released the semaphore
-    # We can test this by successfully acquiring it without timeout, which would hang if it was 0
-    await asyncio.wait_for(bulkhead._semaphore.acquire(), timeout=0.1)
+    # We can safely test this by calling `locked()` which is standard across Python versions
+    assert not bulkhead._semaphore.locked()
 
 
 @pytest.mark.asyncio

@@ -1,0 +1,35 @@
+<<<<<<< SEARCH
+    # Force _active to 1 so available_permits becomes 0.
+    await bulkhead._semaphore.acquire()
+    bulkhead._active = 1
+
+    async def dummy():
+        return 42
+
+    result = await bulkhead.execute(dummy)
+    assert result.is_err()
+    assert "is full" in str(result.unwrap_err())
+    assert isinstance(result.unwrap_err(), Exception)
+
+    bulkhead._semaphore.release()
+=======
+    async def dummy_blocker():
+        await asyncio.sleep(0.5)
+
+    # Occupy the permit
+    blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+
+    # Wait for blocker to start
+    await asyncio.sleep(0.05)
+
+    async def dummy():
+        return 42
+
+    result = await bulkhead.execute(dummy)
+    assert result.is_err()
+    assert "is full" in str(result.unwrap_err())
+    assert isinstance(result.unwrap_err(), Exception)
+
+    # Cleanup the blocker
+    await asyncio.wait_for(blocker_task, timeout=1.0)
+>>>>>>> REPLACE
