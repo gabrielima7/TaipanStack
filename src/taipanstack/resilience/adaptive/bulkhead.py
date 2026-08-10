@@ -133,8 +133,15 @@ class Bulkhead:
     async def _acquire_permit(self) -> Result[None, Exception]:
         """Wait for and acquire a concurrency permit."""
         try:
+            coro = self._semaphore.acquire()
+        except (RuntimeError, OSError, MemoryError) as e:
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+        except Exception as e:
+            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+
+        try:
             # We explicitly check for exception during the coroutine creation or wait
-            acquire_task = asyncio.create_task(self._semaphore.acquire())
+            acquire_task = asyncio.create_task(coro)
             try:
                 await asyncio.wait_for(
                     asyncio.shield(acquire_task),
@@ -153,10 +160,14 @@ class Bulkhead:
                 await self._cleanup_acquire_task(acquire_task)
                 raise
         except (RuntimeError, OSError, MemoryError) as e:
+            if asyncio.iscoroutine(coro):
+                coro.close()  # type: ignore[misc]
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         except Exception as e:
             # Fallback for unexpected failures in asyncio.create_task
             # or semaphore.acquire
+            if asyncio.iscoroutine(coro):
+                coro.close()  # type: ignore[misc]
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
     async def execute(
