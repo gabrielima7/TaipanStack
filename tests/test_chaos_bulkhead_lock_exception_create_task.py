@@ -208,7 +208,6 @@ async def test_chaos_bulkhead_full_queue_error():
     await asyncio.wait_for(waiter_task, timeout=1.0)
 
 
-
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_properties_and_validation():
     bulkhead = Bulkhead("test_props", max_concurrent=2, max_queue=3, timeout=1.5)
