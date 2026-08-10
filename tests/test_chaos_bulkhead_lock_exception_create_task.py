@@ -178,7 +178,7 @@ async def test_chaos_bulkhead_execute_success():
 
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_full_queue_error():
-    bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=0)
+    bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=1)
     started_event = asyncio.Event()
     release_event = asyncio.Event()
 
@@ -188,6 +188,12 @@ async def test_chaos_bulkhead_full_queue_error():
 
     blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
     await started_event.wait()
+
+    async def dummy_waiter():
+        await release_event.wait()
+
+    waiter_task = asyncio.create_task(bulkhead.execute(dummy_waiter))
+    await asyncio.sleep(0.01)
 
     async def dummy():
         return 42
@@ -199,6 +205,8 @@ async def test_chaos_bulkhead_full_queue_error():
 
     release_event.set()
     await asyncio.wait_for(blocker_task, timeout=1.0)
+    await asyncio.wait_for(waiter_task, timeout=1.0)
+
 
 
 @pytest.mark.asyncio
