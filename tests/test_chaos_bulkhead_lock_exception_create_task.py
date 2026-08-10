@@ -101,64 +101,53 @@ async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
 
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_acquire_permit_timeout():
-    bulkhead = Bulkhead("test_timeout", max_concurrent=1, max_queue=1, timeout=0.01)
+    bulkhead = Bulkhead("test_timeout", max_concurrent=1, max_queue=1, timeout=0.05)
+    started_event = asyncio.Event()
+    release_event = asyncio.Event()
 
-    # Actually trigger the full queue and concurrency to test timeout
-    # First, occupy the concurrent slot
     async def dummy_blocker():
-        await asyncio.sleep(0.5)
+        started_event.set()
+        await release_event.wait()
 
-    # We use a timeout of 0.01 for the bulkhead limit
-    # The first one takes the permit and blocks
     blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
+    await started_event.wait()
 
-    # Wait for blocker to start
-    await asyncio.sleep(0.05)
-
-    # Now the semaphore is empty and the queue has room (max_queue=1).
-    # The second execution will wait for a permit in _acquire_permit,
-    # but the timeout is 0.01 and blocker takes 0.5s.
     async def dummy_waiter():
         pass
 
-    # Execute another dummy task which should wait and eventually timeout
     result = await bulkhead.execute(dummy_waiter)
     assert result.is_err()
     assert isinstance(result.unwrap_err(), TimeoutError)
 
-    # Wait for blocker to finish so it cleans up
+    release_event.set()
     await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_acquire_permit_cancelled():
     bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
+    started_event = asyncio.Event()
+    release_event = asyncio.Event()
 
     async def dummy_blocker():
-        await asyncio.sleep(0.5)
+        started_event.set()
+        await release_event.wait()
 
-    # Occupy the permit
     blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
-
-    # Wait for blocker to start
-    await asyncio.sleep(0.05)
+    await started_event.wait()
 
     async def dummy_waiter():
         pass
 
-    # Create a task that will wait for the permit
     task = asyncio.create_task(bulkhead.execute(dummy_waiter))
-
-    # Wait a bit for the task to start waiting for the permit
     await asyncio.sleep(0.01)
 
-    # Cancel the task
     task.cancel()
 
     with pytest.raises(asyncio.CancelledError):
         await task
 
-    # Cleanup the blocker
+    release_event.set()
     await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
@@ -190,15 +179,15 @@ async def test_chaos_bulkhead_execute_success():
 @pytest.mark.asyncio
 async def test_chaos_bulkhead_full_queue_error():
     bulkhead = Bulkhead("test_full_queue", max_concurrent=1, max_queue=0)
+    started_event = asyncio.Event()
+    release_event = asyncio.Event()
 
     async def dummy_blocker():
-        await asyncio.sleep(0.5)
+        started_event.set()
+        await release_event.wait()
 
-    # Occupy the permit
     blocker_task = asyncio.create_task(bulkhead.execute(dummy_blocker))
-
-    # Wait for blocker to start
-    await asyncio.sleep(0.05)
+    await started_event.wait()
 
     async def dummy():
         return 42
@@ -208,7 +197,7 @@ async def test_chaos_bulkhead_full_queue_error():
     assert "is full" in str(result.unwrap_err())
     assert isinstance(result.unwrap_err(), Exception)
 
-    # Cleanup the blocker
+    release_event.set()
     await asyncio.wait_for(blocker_task, timeout=1.0)
 
 
@@ -244,14 +233,11 @@ async def test_chaos_bulkhead_cleanup_task_suppress_release():
         pass
 
     task = asyncio.create_task(dummy())
-    # Cancel it immediately
     task.cancel()
 
-    # This should internally attempt to await it and suppress CancelledError,
-    # then call _semaphore.release()
     await bulkhead._cleanup_acquire_task(task)
 
-    assert bulkhead.available_permits == 1  # semaphore is released
+    assert bulkhead.available_permits == 1
 
 
 @pytest.mark.asyncio
@@ -262,8 +248,6 @@ async def test_chaos_bulkhead_acquire_permit_cancelled_suppress():
         pass
 
     with patch("asyncio.wait_for", side_effect=asyncio.CancelledError):
-        # We need it to run the acquire_task inside _acquire_permit,
-        # wait_for gets cancelled, it calls _cleanup_acquire_task and re-raises CancelledError
         with pytest.raises(asyncio.CancelledError):
             await bulkhead._acquire_permit()
 
@@ -272,27 +256,19 @@ async def test_chaos_bulkhead_acquire_permit_cancelled_suppress():
 async def test_chaos_bulkhead_cleanup_acquire_task_actually_acquires():
     bulkhead = Bulkhead("test_cleanup", max_concurrent=1, max_queue=1)
 
-    # We patch acquire to immediately return True to mock successfully acquiring the lock
-    # but the task gets cancelled, so the cleanup has to release it
-    # We will do this by simply letting the acquire_task run and finish but simulating CancelledError from the wait_for
+    finish_event = asyncio.Event()
+
     async def fast_acquire():
-        await asyncio.sleep(0.001)
+        finish_event.set()
         return True
 
     coro = fast_acquire()
     acquire_task = asyncio.create_task(coro)
-    await asyncio.sleep(0.005)  # let it finish and "acquire"
+    await finish_event.wait()
 
-    # The lock was not really acquired since we replaced the task, but wait,
-    # _cleanup_acquire_task does `await acquire_task` which will finish now
-    # and then calls `self._semaphore.release()`
-    # First acquire the real semaphore so it goes to 0
     await bulkhead._semaphore.acquire()
-
     await bulkhead._cleanup_acquire_task(acquire_task)
 
-    # It should have released the semaphore
-    # We can safely test this by calling `locked()` which is standard across Python versions
     assert not bulkhead._semaphore.locked()
 
 
