@@ -228,8 +228,7 @@ async def _wait_for_permit_task(
         await cleanup_func(acquire_task)
         return Err(
             TimeoutError(
-                f"Bulkhead '{name}' timed out "
-                f"after {timeout}s waiting for permit",
+                f"Bulkhead '{name}' timed out after {timeout}s waiting for permit",
             ),
         )
     except asyncio.CancelledError:
