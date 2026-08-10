@@ -1,4 +1,4 @@
-.PHONY: help install test lint format typecheck security clean lint-imports mutate context property-test all
+.PHONY: help install test lint format typecheck security clean lint-imports mutate context property-test docs all
 
 help:
 	@echo "TaipanStack - Development Commands"
@@ -78,6 +78,10 @@ clean:
 property-test:
 	@echo "Running property-based fuzz tests..."
 	poetry run pytest tests/test_property_sanitizers.py -v
+
+docs:
+	@echo "Building documentation..."
+	NO_MKDOCS_2_WARNING=1 poetry run mkdocs build --strict
 
 all: lint typecheck dead-code security lint-imports test
 	@echo ""
