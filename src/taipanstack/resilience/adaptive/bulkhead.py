@@ -130,42 +130,40 @@ class Bulkhead:
             await acquire_task
             self._semaphore.release()
 
+    async def _wait_for_permit_task(
+        self,
+        coro: Awaitable[bool],  # type: ignore[misc]
+    ) -> Result[None, Exception]:
+        """Helper to create and wait for the acquisition task."""
+        acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)  # type: ignore[arg-type, misc, assignment]
+        try:
+            await asyncio.wait_for(
+                asyncio.shield(acquire_task),  # type: ignore[misc]
+                timeout=self._timeout,
+            )
+            return Ok(None)
+        except TimeoutError:
+            await self._cleanup_acquire_task(acquire_task)  # type: ignore[misc]
+            return Err(
+                TimeoutError(
+                    f"Bulkhead '{self.name}' timed out "
+                    f"after {self._timeout}s waiting for permit",
+                ),
+            )
+        except asyncio.CancelledError:
+            await self._cleanup_acquire_task(acquire_task)  # type: ignore[misc]
+            raise
+
     async def _acquire_permit(self) -> Result[None, Exception]:
         """Wait for and acquire a concurrency permit."""
         try:
             coro = self._semaphore.acquire()
-        except (RuntimeError, OSError, MemoryError) as e:
-            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         except Exception as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
         try:
-            # We explicitly check for exception during the coroutine creation or wait
-            acquire_task = asyncio.create_task(coro)
-            try:
-                await asyncio.wait_for(
-                    asyncio.shield(acquire_task),
-                    timeout=self._timeout,
-                )
-                return Ok(None)
-            except TimeoutError:
-                await self._cleanup_acquire_task(acquire_task)
-                return Err(
-                    TimeoutError(
-                        f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit",
-                    ),
-                )
-            except asyncio.CancelledError:
-                await self._cleanup_acquire_task(acquire_task)
-                raise
-        except (RuntimeError, OSError, MemoryError) as e:
-            if asyncio.iscoroutine(coro):
-                coro.close()  # type: ignore[misc]
-            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+            return await self._wait_for_permit_task(coro)
         except Exception as e:
-            # Fallback for unexpected failures in asyncio.create_task
-            # or semaphore.acquire
             if asyncio.iscoroutine(coro):
                 coro.close()  # type: ignore[misc]
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
