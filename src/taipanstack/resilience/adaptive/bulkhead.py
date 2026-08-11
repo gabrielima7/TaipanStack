@@ -142,23 +142,12 @@ class Bulkhead:
         try:
             # We explicitly check for exception during the coroutine creation or wait
             acquire_task = asyncio.create_task(coro)
-            try:
-                await asyncio.wait_for(
-                    asyncio.shield(acquire_task),
-                    timeout=self._timeout,
-                )
-                return Ok(None)
-            except TimeoutError:
-                await self._cleanup_acquire_task(acquire_task)
-                return Err(
-                    TimeoutError(
-                        f"Bulkhead '{self.name}' timed out "
-                        f"after {self._timeout}s waiting for permit",
-                    ),
-                )
-            except asyncio.CancelledError:
-                await self._cleanup_acquire_task(acquire_task)
-                raise
+            return await _wait_for_permit_task(
+                acquire_task,
+                self._timeout,
+                self.name,
+                self._cleanup_acquire_task,
+            )
         except (RuntimeError, OSError, MemoryError) as e:
             if asyncio.iscoroutine(coro):
                 coro.close()  # type: ignore[misc]
@@ -220,3 +209,28 @@ class Bulkhead:
         finally:
             self._active -= 1
             self._semaphore.release()
+
+
+async def _wait_for_permit_task(
+    acquire_task: asyncio.Task[bool],
+    timeout: float,
+    name: str,
+    cleanup_func: Callable[[asyncio.Task[bool]], Awaitable[None]],
+) -> Result[None, Exception]:
+    """Helper to wait for a permit task with timeout and cancellation."""
+    try:
+        await asyncio.wait_for(
+            asyncio.shield(acquire_task),
+            timeout=timeout,
+        )
+        return Ok(None)
+    except TimeoutError:
+        await cleanup_func(acquire_task)
+        return Err(
+            TimeoutError(
+                f"Bulkhead '{name}' timed out after {timeout}s waiting for permit",
+            ),
+        )
+    except asyncio.CancelledError:
+        await cleanup_func(acquire_task)
+        raise
