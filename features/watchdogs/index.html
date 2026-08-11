@@ -2480,7 +2480,7 @@
 </span></code></pre></div>
 <hr />
 <h2 id="config-watcher">Config Watcher<a class="headerlink" href="#config-watcher" title="Permanent link">&para;</a></h2>
-<p>Environment drift and configuration file tampering are common deployment blindspots. Use the <code>ConfigWatcher</code> to watch a <code>.env</code> or <code>.toml</code> file and trigger application reloads or alerts.</p>
+<p>Environment drift and configuration file tampering are common deployment blindspots. Use the <code>ConfigWatcher</code> to watch a <code>.env</code> or <code>.json</code> file and trigger application reloads or alerts.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span id="__span-2-2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span id="__span-2-3"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.watchdogs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigWatcher</span>
