@@ -62,7 +62,7 @@ background_task = asyncio.create_task(watcher.start())
 
 ## Config Watcher
 
-Environment drift and configuration file tampering are common deployment blindspots. Use the `ConfigWatcher` to watch a `.env` or `.toml` file and trigger application reloads or alerts.
+Environment drift and configuration file tampering are common deployment blindspots. Use the `ConfigWatcher` to watch a `.env` or `.json` file and trigger application reloads or alerts.
 
 
 ```python
