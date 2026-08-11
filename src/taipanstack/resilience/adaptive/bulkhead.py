@@ -11,6 +11,7 @@ import asyncio
 import contextlib
 import logging
 import math
+import typing
 from collections.abc import Awaitable, Callable
 from typing import ParamSpec, TypeVar
 
@@ -132,18 +133,18 @@ class Bulkhead:
 
     async def _wait_for_permit_task(
         self,
-        coro: Awaitable[bool],  # type: ignore[misc]
+        coro: typing.Any,
     ) -> Result[None, Exception]:
         """Helper to create and wait for the acquisition task."""
-        acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)  # type: ignore[arg-type, misc, assignment]
+        acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)  # type: ignore[misc]
         try:
             await asyncio.wait_for(
-                asyncio.shield(acquire_task),  # type: ignore[misc]
+                asyncio.shield(acquire_task),
                 timeout=self._timeout,
             )
             return Ok(None)
         except TimeoutError:
-            await self._cleanup_acquire_task(acquire_task)  # type: ignore[misc]
+            await self._cleanup_acquire_task(acquire_task)
             return Err(
                 TimeoutError(
                     f"Bulkhead '{self.name}' timed out "
@@ -151,7 +152,7 @@ class Bulkhead:
                 ),
             )
         except asyncio.CancelledError:
-            await self._cleanup_acquire_task(acquire_task)  # type: ignore[misc]
+            await self._cleanup_acquire_task(acquire_task)
             raise
 
     async def _acquire_permit(self) -> Result[None, Exception]:
