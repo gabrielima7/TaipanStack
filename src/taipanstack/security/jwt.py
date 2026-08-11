@@ -54,6 +54,9 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
+    if not isinstance(payload, dict):
+        raise TypeError("Payload must be a dictionary")
+
     if not isinstance(secret_key, str):
         raise TypeError("Secret must be a string")
 
@@ -122,6 +125,9 @@ def decode_jwt(
         PyJWTError: If the token is invalid, expired, or has incorrect claims.
 
     """
+    if not isinstance(token, str):
+        raise TypeError("Token must be a string")
+
     if not isinstance(secret_key, str):
         raise TypeError("Secret must be a string")
 
