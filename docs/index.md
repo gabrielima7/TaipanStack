@@ -221,7 +221,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
 │    Security     │       │     Config      │       │     Utils       │
 │ guards, saniti- │       │    models,      │       │  logging, retry │
-│ zers, validators│       │   generators    │       │ metrics, fs     │
+│ zers, validators│       │   generators    │       │ rate_limit, fs  │
 └────────┬────────┘       └────────┬────────┘       └────────┬────────┘
          │                         │                         │
          └─────────────────────────┼─────────────────────────┘
