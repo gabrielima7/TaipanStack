@@ -30,7 +30,10 @@ def test_taipanstack_validators_url_recursive_unquote(payload, depth):
 
     url = f"https://example.com/page?q={payload}"
 
-    with pytest.raises(ValueError, match="URL contains invalid characters|URL exceeds maximum nested encoding limit"):
+    with pytest.raises(
+        ValueError,
+        match="URL contains invalid characters|URL exceeds maximum nested encoding limit",
+    ):
         validate_url(url)
 
 
@@ -56,4 +59,6 @@ def test_taipanstack_guards_url_recursive_unquote(payload, depth):
 
     result = guard_ssrf(url)
     assert isinstance(result, Err)
-    assert "URL contains invalid characters" in str(result.err()) or "URL exceeds maximum nested encoding limit" in str(result.err())
+    assert "URL contains invalid characters" in str(
+        result.err()
+    ) or "URL exceeds maximum nested encoding limit" in str(result.err())
