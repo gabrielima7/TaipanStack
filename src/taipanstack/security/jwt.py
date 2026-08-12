@@ -23,6 +23,25 @@ __all__ = ["decode_jwt", "encode_jwt"]
 JWTPayload: TypeAlias = dict[str, object]
 
 
+def _validate_encode_payload(payload: object) -> None:
+    if not isinstance(payload, dict):
+        raise TypeError("Payload must be a dictionary")
+
+
+def _validate_encode_secret(secret_key: object) -> None:
+    if not isinstance(secret_key, str):
+        raise TypeError("Secret must be a string")
+
+
+def _validate_encode_algorithm(algorithm: object) -> None:
+    if not isinstance(algorithm, str):
+        raise TypeError("Algorithm must be a string")
+
+    alg_lower = algorithm.strip().lower()
+    if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
+        raise ValueError('Algorithm "none" is explicitly disallowed.')
+
+
 @safe_from(
     PyJWTError,
     ValueError,
@@ -54,18 +73,9 @@ def encode_jwt(
         PyJWTError: If encoding fails.
 
     """
-    if not isinstance(payload, dict):
-        raise TypeError("Payload must be a dictionary")
-
-    if not isinstance(secret_key, str):
-        raise TypeError("Secret must be a string")
-
-    if not isinstance(algorithm, str):
-        raise TypeError("Algorithm must be a string")
-
-    alg_lower = algorithm.strip().lower()
-    if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
-        raise ValueError('Algorithm "none" is explicitly disallowed.')
+    _validate_encode_payload(payload)
+    _validate_encode_secret(secret_key)
+    _validate_encode_algorithm(algorithm)
 
     return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
 
