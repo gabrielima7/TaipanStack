@@ -201,9 +201,7 @@ async def test_chaos_rate_limit_async_wrapper_limit_exceeded():
     async def my_func():
         return "success"
 
-    with patch(
-        "taipanstack.utils.rate_limit.RateLimiter.consume", return_value=False
-    ):
+    with patch("taipanstack.utils.rate_limit.RateLimiter.consume", return_value=False):
         res = await my_func()
 
     assert isinstance(res, Err)
@@ -217,9 +215,7 @@ def test_chaos_rate_limit_sync_wrapper_limit_exceeded():
     def my_func():
         return "success"
 
-    with patch(
-        "taipanstack.utils.rate_limit.RateLimiter.consume", return_value=False
-    ):
+    with patch("taipanstack.utils.rate_limit.RateLimiter.consume", return_value=False):
         res = my_func()
 
     assert isinstance(res, Err)

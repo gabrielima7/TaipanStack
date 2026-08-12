@@ -1,4 +1,3 @@
-
 from taipanstack.utils.rate_limit import RateLimiter, rate_limit
 
 
@@ -10,6 +9,7 @@ def test_chaos_rate_limit_lock_mutation():
     class BadLock:
         def acquire(self, timeout=-1):
             raise RuntimeError("Corrupted lock state")
+
         def release(self):
             pass
 
@@ -18,8 +18,10 @@ def test_chaos_rate_limit_lock_mutation():
     # Should safely return False instead of crashing
     assert limiter.consume() is False
 
+
 def test_chaos_rate_limit_lock_decorator_mutation():
     """Chaos test: Check the decorator behavior when lock is corrupted."""
+
     @rate_limit(max_calls=10, time_window=1.0)
     def my_func() -> str:
         return "success"
