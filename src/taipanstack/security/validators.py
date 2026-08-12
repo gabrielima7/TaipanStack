@@ -357,9 +357,10 @@ def _fully_unquote_url(url: str) -> str:
     for _ in range(10):  # limit to prevent DoS
         unquoted = unquote(current)
         if unquoted == current:
-            break
+            return current
         current = unquoted
-    return current
+    msg = "URL exceeds maximum nested encoding limit"
+    raise ValueError(msg)
 
 
 def _check_url_characters(url: str) -> None:
