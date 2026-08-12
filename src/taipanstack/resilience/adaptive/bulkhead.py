@@ -130,18 +130,20 @@ class Bulkhead:
             await acquire_task
             self._semaphore.release()
 
-    async def _acquire_permit(self) -> Result[None, Exception]:
-        """Wait for and acquire a concurrency permit."""
+    def _get_acquire_coro(self) -> Result[Awaitable[bool], Exception]:
+        """Attempt to get the semaphore acquire coroutine."""
         try:
-            coro = self._semaphore.acquire()
+            return Ok(self._semaphore.acquire())
         except (RuntimeError, OSError, MemoryError) as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         except Exception as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
+    async def _wait_for_coro(self, coro: Awaitable[bool]) -> Result[None, Exception]:
+        """Wait for the acquire task to complete, handling errors and cleanup."""
         try:
             # We explicitly check for exception during the coroutine creation or wait
-            acquire_task = asyncio.create_task(coro)
+            acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)  # type: ignore[arg-type]
             return await _wait_for_permit_task(
                 acquire_task,
                 self._timeout,
@@ -158,6 +160,14 @@ class Bulkhead:
             if asyncio.iscoroutine(coro):
                 coro.close()  # type: ignore[misc]
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
+
+    async def _acquire_permit(self) -> Result[None, Exception]:
+        """Wait for and acquire a concurrency permit."""
+        coro_result = self._get_acquire_coro()
+        if isinstance(coro_result, Err):
+            return coro_result
+
+        return await self._wait_for_coro(coro_result.unwrap())
 
     async def execute(
         self,
