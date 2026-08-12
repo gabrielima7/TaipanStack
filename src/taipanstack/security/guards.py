@@ -606,18 +606,36 @@ def _has_invalid_url_chars(url: str) -> bool:
     return bool("\x00" in url or not url.isprintable())
 
 
-def _fully_unquote_url(url: str) -> str:
+def _fully_unquote_url(url: str) -> Result[str, SecurityError]:
     current = url
     for _ in range(10):  # limit to prevent DoS
         unquoted = unquote(current)
         if unquoted == current:
-            break
+            return Ok(current)
         current = unquoted
-    return current
+    return Err(
+        SecurityError(
+            "URL exceeds maximum nested encoding limit",
+            guard_name="ssrf",
+        ),
+    )
 
 
 def _check_ssrf_url_characters(url: str) -> Result[str, SecurityError]:
-    if _has_invalid_url_chars(url) or _has_invalid_url_chars(_fully_unquote_url(url)):
+    if _has_invalid_url_chars(url):
+        return Err(
+            SecurityError(
+                "URL contains invalid characters",
+                guard_name="ssrf",
+                value=url[:80],
+            ),
+        )
+
+    unquoted_res = _fully_unquote_url(url)
+    if not isinstance(unquoted_res, Ok):
+        return unquoted_res
+
+    if _has_invalid_url_chars(unquoted_res.ok_value):
         return Err(
             SecurityError(
                 "URL contains invalid characters",
