@@ -91,8 +91,11 @@ class RateLimiter:
 
     def _calculate_new_tokens(self, elapsed: float) -> float | None:
         """Calculate new tokens based on elapsed time."""
-        new_tokens = elapsed * (self.capacity / self.time_window)
-        return new_tokens if math.isfinite(new_tokens) else None
+        try:
+            new_tokens = elapsed * (self.capacity / self.time_window)
+            return new_tokens if math.isfinite(new_tokens) else None
+        except Exception:
+            return None
 
     def _apply_new_tokens(self, new_tokens: float) -> bool:
         """Apply new tokens to the bucket."""
@@ -101,13 +104,17 @@ class RateLimiter:
             return False
         if not isinstance(new_tokens, (int, float)):
             return False  # type: ignore[unreachable]
-        self.tokens += new_tokens
-        if not math.isfinite(self.tokens):
-            # Reset to previous state or capacity if corrupted
+        try:
+            self.tokens += new_tokens
+            if not math.isfinite(self.tokens):
+                # Reset to previous state or capacity if corrupted
+                self.tokens = self.capacity
+                return False
+            self.tokens = min(self.tokens, self.capacity)
+            return True
+        except Exception:
             self.tokens = self.capacity
             return False
-        self.tokens = min(self.tokens, self.capacity)
-        return True
 
     def _calculate_elapsed(self, now: float) -> float | None:
         """Calculate the elapsed time since the last update."""
@@ -152,10 +159,14 @@ class RateLimiter:
             # Reset to capacity if state is corrupted to inf/nan
             self.tokens = self.capacity
             return False
-        if self.tokens >= tokens:
-            self.tokens -= tokens
-            return True
-        return False
+        try:
+            if self.tokens >= tokens:
+                self.tokens -= tokens
+                return True
+            return False
+        except Exception:
+            self.tokens = self.capacity
+            return False
 
     def _get_current_time(self) -> float | None:
         """Get current monotonic time safely."""
