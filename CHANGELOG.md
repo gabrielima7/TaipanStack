@@ -835,6 +835,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **URL Smuggling Fix**: Hardened SSRF guard `_fully_unquote_url` to prevent bypass via deep nested encoding, fixing a potential Server-Side Request Forgery vulnerability. Restricted unbounded recursive unquoting with a strict loop iteration limit to prevent Denial of Service (DoS) (PR #1115).
+
 ### Added
 - MIT License for legal clarity
 - Comprehensive CONTRIBUTING.md guide
