@@ -14,7 +14,11 @@ async def test_math_chaos():
     orchestrator = (
         ResilienceOrchestrator("math_chaos")
         .with_bulkhead(max_concurrent=10, max_queue=20, timeout=1.0)
-        .with_circuit_breaker(AdaptiveCircuitBreaker("math_cb", target_error_rate=0.4, recovery_timeout=0.1))
+        .with_circuit_breaker(
+            AdaptiveCircuitBreaker(
+                "math_cb", target_error_rate=0.4, recovery_timeout=0.1
+            )
+        )
         .with_retry(AdaptiveRetry(max_attempts=1))
         .with_timeout(1.0)
     )

@@ -15,13 +15,19 @@ async def test_heavy_chaos():
     orchestrator = (
         ResilienceOrchestrator("billing_service")
         .with_bulkhead(max_concurrent=10, max_queue=20, timeout=1.0)
-        .with_circuit_breaker(AdaptiveCircuitBreaker("billing_cb", target_error_rate=0.1, recovery_timeout=0.1))
+        .with_circuit_breaker(
+            AdaptiveCircuitBreaker(
+                "billing_cb", target_error_rate=0.1, recovery_timeout=0.1
+            )
+        )
         .with_retry(AdaptiveRetry(max_attempts=3))
         .with_timeout(1.0)
     )
 
     @rate_limit(max_calls=500, time_window=1.0)
-    async def process_payment(url: str, amount: float, path: str) -> Result[str, Exception]:
+    async def process_payment(
+        url: str, amount: float, path: str
+    ) -> Result[str, Exception]:
         res_url = guard_ssrf(url)
         if isinstance(res_url, Err):
             return res_url
@@ -43,7 +49,11 @@ async def test_heavy_chaos():
         return Ok(f"Processed {amount} for {url} via {res_path}")
 
     async def worker(i: int):
-        url = "https://api.stripe.com/charge" if i % 2 == 0 else "http://169.254.169.254/meta"
+        url = (
+            "https://api.stripe.com/charge"
+            if i % 2 == 0
+            else "http://169.254.169.254/meta"
+        )
         path = f"/data/user_{i}.txt" if i % 3 != 0 else "../../../etc/passwd"
         amount = 50.0 if i % 4 != 0 else 1500.0
 
