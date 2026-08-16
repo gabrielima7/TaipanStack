@@ -761,14 +761,7 @@ class Retrier:
         if not self._increment_attempt():
             return False
 
-        max_attempts = (
-            int(self.config.max_attempts)
-            if isinstance(self.config.max_attempts, (int, float))
-            and math.isfinite(self.config.max_attempts)
-            else 3
-        )
-
-        return self.attempt < max_attempts
+        return self.attempt < _get_max_attempts(self.config)
 
     def _handle_exception(self, exc_val: BaseException | None) -> None:
         """Store the exception safely."""

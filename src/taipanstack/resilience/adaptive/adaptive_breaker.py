@@ -24,6 +24,21 @@ logger = logging.getLogger("taipanstack.resilience.adaptive.breaker")
 T = TypeVar("T")
 
 
+def _build_adaptive_metrics(
+    window: deque[bool], state: CircuitState
+) -> AdaptiveMetrics:
+    total = len(window)
+    errors = sum(1 for ok in window if not ok)
+    error_rate = errors / total if total > 0 else 0.0
+    return AdaptiveMetrics(
+        success_rate=1.0 - error_rate,
+        error_rate=error_rate,
+        total_calls=total,
+        error_count=errors,
+        state=state,
+    )
+
+
 @dataclass(frozen=True)
 class AdaptiveMetrics:
     """Snapshot of adaptive circuit breaker metrics.
@@ -267,18 +282,6 @@ class AdaptiveCircuitBreaker:
                 state=self._state,
             )
         try:
-            total = len(self._window)
-            errors = sum(1 for ok in self._window if not ok)
-            error_rate = errors / total if total > 0 else 0.0
-            success_rate = 1.0 - error_rate
-            state_val = self._state
-
-            return AdaptiveMetrics(
-                success_rate=success_rate,
-                error_rate=error_rate,
-                total_calls=total,
-                error_count=errors,
-                state=state_val,
-            )
+            return _build_adaptive_metrics(self._window, self._state)
         finally:
             self._lock.release()
