@@ -664,23 +664,43 @@ def _create_ssrf_error(msg: str, url: str) -> Err[SecurityError]:
     )
 
 
+def _validate_ssrf_scheme(
+    url: str,
+    parsed: SplitResult,
+    allowed_schemes: frozenset[str],
+) -> Err[SecurityError] | None:
+    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
+        return _create_ssrf_error(f"URL scheme '{parsed.scheme}' is not allowed", url)
+    return None
+
+
+def _validate_ssrf_hostname(
+    url: str,
+    parsed: SplitResult,
+) -> Err[SecurityError] | None:
+    if not parsed.hostname:
+        return _create_ssrf_error("URL has no resolvable hostname", url)
+    if "\\" in parsed.netloc or "@" in parsed.hostname:
+        return _create_ssrf_error(
+            "URL contains obfuscated characters in the hostname", url
+        )
+    return None
+
+
 def _validate_parsed_ssrf_url(
     url: str,
     parsed: SplitResult,
     allowed_schemes: frozenset[str],
 ) -> Result[str, SecurityError]:
-    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
-        return _create_ssrf_error(f"URL scheme '{parsed.scheme}' is not allowed", url)
+    scheme_err = _validate_ssrf_scheme(url, parsed, allowed_schemes)
+    if scheme_err:
+        return scheme_err
 
-    if not parsed.hostname:
-        return _create_ssrf_error("URL has no resolvable hostname", url)
+    hostname_err = _validate_ssrf_hostname(url, parsed)
+    if hostname_err:
+        return hostname_err
 
-    if "\\" in parsed.netloc or "@" in parsed.hostname:
-        return _create_ssrf_error(
-            "URL contains obfuscated characters in the hostname", url
-        )
-
-    return Ok(parsed.hostname)
+    return Ok(str(parsed.hostname))
 
 
 def _validate_ssrf_url_parse(
