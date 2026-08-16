@@ -7,6 +7,7 @@ returns a ``Result`` type encapsulating the original return value
 or a ``RateLimitError`` error.
 """
 
+import contextlib
 import functools
 import inspect
 import math
@@ -224,7 +225,8 @@ class RateLimiter:
         try:
             return self._process_consumption(tokens)
         finally:
-            self._lock.release()
+            with contextlib.suppress(RuntimeError):
+                self._lock.release()
 
 
 class RateLimitDecorator(Protocol):

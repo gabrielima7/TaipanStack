@@ -675,6 +675,11 @@ def _validate_parsed_ssrf_url(
     if not parsed.hostname:
         return _create_ssrf_error("URL has no resolvable hostname", url)
 
+    if "\\" in parsed.netloc or "@" in parsed.hostname:
+        return _create_ssrf_error(
+            "URL contains obfuscated characters in the hostname", url
+        )
+
     return Ok(parsed.hostname)
 
 
