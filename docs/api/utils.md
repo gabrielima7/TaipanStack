@@ -17,6 +17,33 @@ TaipanStack provides observability utilities for production applications.
 
 ---
 
+## Retry (Legacy Shim)
+
+::: taipanstack.utils.retry
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Circuit Breaker (Legacy Shim)
+
+::: taipanstack.utils.circuit_breaker
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Resilience (Legacy Shim)
+
+::: taipanstack.utils.resilience
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
 ## Context
 
 ::: taipanstack.utils.context
