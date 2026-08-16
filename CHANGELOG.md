@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactoring & Typing
 - **Complexity Reductions**: Refactored `AdaptiveCircuitBreaker._evaluate_trip` and `_validate_jwt_algorithms` to reduce cyclomatic complexity by extracting helpers (PR #1104).
+- **Complexity Reductions**: Extracted metrics building in `AdaptiveCircuitBreaker`, reused retry attempt logic in `Retrier`, and simplified finite number validation in `RateLimiter` (PR #1124).
 - **Complexity Reductions**: Proactively refactored and extracted nested structures into dedicated private helpers across core compatibility (PR #979), version config validation (PR #976), retry and rate limiting (PR #984), filesystem directory traversal (PR #993), environment file lines and password logic (PR #988), token bucket rate limiting (PR #1002), and model validator mapping (PR #997).
 - **Type Hint Enhancements**: Enforced strict type annotations on web bridge header configurations (PR #971) and refactored signature arguments in Pydantic models to eliminate type ignores (PR #1003).
 - **Dead Code Elimination**: Purged unused variables and dead components from test suites and main modules (PR #1000).
