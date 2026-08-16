@@ -40,11 +40,14 @@ class RateLimitError(Exception):
 class RateLimiter:
     """Token bucket rate limiter logic."""
 
+    def _is_finite_number(self, val: float | int) -> bool:
+        return isinstance(val, (int, float)) and math.isfinite(val)
+
     def _validate_finite(self, max_calls: int, time_window: float) -> None:
         """Check if parameters are finite numbers."""
-        if not isinstance(max_calls, (int, float)) or not math.isfinite(max_calls):
-            raise ValueError("max_calls and time_window must be finite numbers")
-        if not isinstance(time_window, (int, float)) or not math.isfinite(time_window):
+        if not self._is_finite_number(max_calls) or not self._is_finite_number(
+            time_window
+        ):
             raise ValueError("max_calls and time_window must be finite numbers")
 
     def _validate_positive(self, max_calls: int, time_window: float) -> None:
