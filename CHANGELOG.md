@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-08-17
+
+### Clean Code, Refactoring & Typing
+- **Cyclomatic Complexity Reductions**: Refactored resilience and rate limiting components to reduce cyclomatic complexity (PR #1124).
+  - Extracted inline metrics building in `AdaptiveCircuitBreaker.metrics` to `_build_adaptive_metrics` module-level helper.
+  - Reused existing `_get_max_attempts` helper in `Retrier._should_retry` to eliminate duplicate attempt calculation logic.
+  - Extracted finite number validation in `RateLimiter._validate_finite` to `_is_finite_number` helper to reduce conditional nesting.
+
 ## [0.6.1] - 2026-07-14
 
 ### Security
