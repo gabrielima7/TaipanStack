@@ -1,4 +1,4 @@
-
+report = """
 # Task Summary
 
 ## Insights gathered from `agents.md`
@@ -22,3 +22,6 @@
 
 ## Validation
 - The final, strictly validated test suite executes fully with 100% coverage via `make all`, achieving a clean pipeline with no bypassed or skipped execution paths. All `pass` block workarounds have been replaced with proper execution or structured returns.
+"""
+with open("REPORT.md", "w") as f:
+    f.write(report)
