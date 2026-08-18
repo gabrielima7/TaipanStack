@@ -41,7 +41,7 @@ class RateLimiter:
     """Token bucket rate limiter logic."""
 
     def _is_finite_number(self, val: float | int) -> bool:
-        return type(val) in (int, float) and math.isfinite(val)
+        return isinstance(val, (int, float)) and math.isfinite(val)
 
     def _validate_finite(self, max_calls: int, time_window: float) -> None:
         """Check if parameters are finite numbers."""
@@ -79,14 +79,14 @@ class RateLimiter:
 
     def _is_valid_time_window(self) -> bool:
         """Check if time window is valid."""
-        if type(self.time_window) not in (int, float):
-            return False
+        if not isinstance(self.time_window, (int, float)):
+            return False  # type: ignore[unreachable]
         return math.isfinite(self.time_window) and self.time_window > 0.0
 
     def _is_valid_capacity(self) -> bool:
         """Check if capacity is valid."""
-        if type(self.capacity) not in (int, float):
-            return False
+        if not isinstance(self.capacity, (int, float)):
+            return False  # type: ignore[unreachable]
         return math.isfinite(self.capacity) and self.capacity > 0.0
 
     def _is_valid_bucket_state(self) -> bool:
@@ -95,32 +95,42 @@ class RateLimiter:
 
     def _calculate_new_tokens(self, elapsed: float) -> float | None:
         """Calculate new tokens based on elapsed time."""
-        new_tokens = elapsed * (self.capacity / self.time_window)
-        return new_tokens if math.isfinite(new_tokens) else None
+        try:
+            new_tokens = elapsed * (self.capacity / self.time_window)
+            return new_tokens if math.isfinite(new_tokens) else None
+        except Exception:
+            return None
 
     def _apply_new_tokens(self, new_tokens: float) -> bool:
         """Apply new tokens to the bucket."""
-        if type(self.tokens) not in (int, float):
+        if not isinstance(self.tokens, (int, float)):
+            self.tokens = self.capacity  # type: ignore[unreachable]
+            return False
+        if not isinstance(new_tokens, (int, float)):
+            return False  # type: ignore[unreachable]
+        try:
+            self.tokens += new_tokens
+            if not math.isfinite(self.tokens):
+                # Reset to previous state or capacity if corrupted
+                self.tokens = self.capacity
+                return False
+            self.tokens = min(self.tokens, self.capacity)
+            return True
+        except Exception:
             self.tokens = self.capacity
             return False
-        if type(new_tokens) not in (int, float):
-            return False
-        self.tokens += new_tokens
-        if not math.isfinite(self.tokens):
-            # Reset to previous state or capacity if corrupted
-            self.tokens = self.capacity
-            return False
-        self.tokens = min(self.tokens, self.capacity)
-        return True
 
     def _calculate_elapsed(self, now: float) -> float | None:
         """Calculate the elapsed time since the last update."""
-        if type(self.last_update) not in (int, float):
+        if not isinstance(self.last_update, (int, float)):
+            return None  # type: ignore[unreachable]
+        try:
+            raw_elapsed = now - self.last_update
+            if not math.isfinite(raw_elapsed):
+                return None
+            return max(0.0, raw_elapsed)
+        except Exception:
             return None
-        raw_elapsed = now - self.last_update
-        if not math.isfinite(raw_elapsed):
-            return None
-        return max(0.0, raw_elapsed)
 
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
@@ -150,16 +160,20 @@ class RateLimiter:
 
     def _try_consume(self, tokens: float) -> bool:
         """Attempt to consume the tokens from the bucket if available."""
-        if type(self.tokens) not in (int, float):
+        if not isinstance(self.tokens, (int, float)):
+            return False  # type: ignore[unreachable]
+        try:
+            if not math.isfinite(self.tokens):
+                # Reset to capacity if state is corrupted to inf/nan
+                self.tokens = self.capacity
+                return False
+            if self.tokens >= tokens:
+                self.tokens -= tokens
+                return True
             return False
-        if not math.isfinite(self.tokens):
-            # Reset to capacity if state is corrupted to inf/nan
+        except Exception:
             self.tokens = self.capacity
             return False
-        if self.tokens >= tokens:
-            self.tokens -= tokens
-            return True
-        return False
 
     def _get_current_time(self) -> float | None:
         """Get current monotonic time safely."""
@@ -175,8 +189,8 @@ class RateLimiter:
         """
         if now is None:
             return False
-        if type(now) not in (int, float):
-            return False
+        if not isinstance(now, (int, float)):
+            return False  # type: ignore[unreachable]
         if not math.isfinite(now):
             # If not finite, we can't add tokens, but we shouldn't fail
             # the consumption if there are already tokens.
@@ -196,8 +210,8 @@ class RateLimiter:
 
     def _is_valid_token_amount(self, tokens: float) -> bool:
         """Check if requested token amount is valid."""
-        if type(tokens) not in (int, float):
-            return False
+        if not isinstance(tokens, (int, float)):
+            return False  # type: ignore[unreachable]
         return math.isfinite(tokens)
 
     def consume(self, tokens: float = 1.0) -> bool:
