@@ -664,18 +664,26 @@ def _create_ssrf_error(msg: str, url: str) -> Err[SecurityError]:
     )
 
 
+def _is_scheme_allowed(scheme: str, allowed_schemes: frozenset[str]) -> bool:
+    return bool(scheme and scheme.lower() in allowed_schemes)
+
+
+def _has_obfuscated_hostname(netloc: str, hostname: str) -> bool:
+    return "\\" in netloc or "@" in hostname
+
+
 def _validate_parsed_ssrf_url(
     url: str,
     parsed: SplitResult,
     allowed_schemes: frozenset[str],
 ) -> Result[str, SecurityError]:
-    if not parsed.scheme or parsed.scheme.lower() not in allowed_schemes:
+    if not _is_scheme_allowed(parsed.scheme, allowed_schemes):
         return _create_ssrf_error(f"URL scheme '{parsed.scheme}' is not allowed", url)
 
     if not parsed.hostname:
         return _create_ssrf_error("URL has no resolvable hostname", url)
 
-    if "\\" in parsed.netloc or "@" in parsed.hostname:
+    if _has_obfuscated_hostname(parsed.netloc, parsed.hostname):
         return _create_ssrf_error(
             "URL contains obfuscated characters in the hostname", url
         )
