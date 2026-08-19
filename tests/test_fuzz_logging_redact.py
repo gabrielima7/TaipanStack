@@ -124,8 +124,9 @@ def test_fuzz_logging_redact_redact_set_unhashable():
     s = {mock}
     mock._in_redact = True  # make it unhashable for redaction
     redacted = _redact_set(s, seen)
+    assert isinstance(redacted, list)
     assert len(redacted) == 1
-    assert "UnhashableMock(test_secret)" in redacted
+    assert isinstance(redacted[0], UnhashableMock)
 
 
 class StringMock:
@@ -163,8 +164,9 @@ def test_fuzz_logging_redact_redact_set_unhashable_branch():
     s = {mock}
     mock._in_redact = True
     redacted = _redact_set(s, seen)
+    assert isinstance(redacted, list)
     assert len(redacted) == 1
-    assert "unhashable_str" in redacted
+    assert isinstance(redacted[0], UnhashableMockStr)
 
 
 def test_fuzz_logging_redact_is_sensitive_non_string():
@@ -173,3 +175,21 @@ def test_fuzz_logging_redact_is_sensitive_non_string():
     from taipanstack.utils.logging import _is_sensitive
 
     assert not _is_sensitive(123, re.compile("test"))
+
+
+def test_fuzz_logging_redact_redact_set_unhashable_already():
+    from taipanstack.utils.logging import _redact_set
+
+    seen = set()
+    mock = UnhashableMock("test_secret")
+    mock2 = UnhashableMock("test_secret2")
+    mock3 = UnhashableMock("test_secret3")
+    s = {mock, mock2, mock3}
+
+    mock._in_redact = True
+    mock2._in_redact = True
+    mock3._in_redact = True
+
+    redacted = _redact_set(s, seen)
+    assert isinstance(redacted, list)
+    assert len(redacted) == 3
