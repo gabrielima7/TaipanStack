@@ -55,9 +55,22 @@ def _mask_tuple(data: tuple[object, ...], depth: int) -> tuple[object, ...]:
     return tuple(_mask_data(item, depth) for item in data)
 
 
-def _mask_set(data: set[object], depth: int) -> set[object]:
+def _mask_set(data: set[object], depth: int) -> set[object] | list[object]:
     """Mask sensitive keys in a set."""
-    return {_mask_data(item, depth) for item in data}
+    masked: list[object] = []
+    is_hashable = True
+    for item in data:
+        transformed = _mask_data(item, depth)
+        if is_hashable:
+            try:
+                hash(transformed)
+            except TypeError:
+                is_hashable = False
+        masked.append(transformed)
+
+    if is_hashable:
+        return set(masked)
+    return masked
 
 
 def _mask_collection(data: object, depth: int) -> object:
@@ -126,22 +139,41 @@ class SecureBaseModel(BaseModel):
             The redacting dictionary representation of the model.
 
         """
-        data = super().model_dump(
-            mode=mode,
-            include=include,
-            exclude=exclude,
-            context=context,
-            by_alias=by_alias,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-            exclude_computed_fields=exclude_computed_fields,
-            round_trip=round_trip,
-            warnings=warnings,
-            fallback=fallback,
-            serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
-        )  # type: ignore[misc]
+        try:
+            data = super().model_dump(
+                mode=mode,
+                include=include,
+                exclude=exclude,
+                context=context,
+                by_alias=by_alias,
+                exclude_unset=exclude_unset,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_computed_fields=exclude_computed_fields,
+                round_trip=round_trip,
+                warnings=warnings,
+                fallback=fallback,
+                serialize_as_any=serialize_as_any,
+                polymorphic_serialization=polymorphic_serialization,
+            )  # type: ignore[misc]
+        except TypeError:
+            # Fallback for models with unhashable types in sets that Pydantic rejects
+            data = super().model_dump(
+                mode="json",
+                include=include,
+                exclude=exclude,
+                context=context,
+                by_alias=by_alias,
+                exclude_unset=exclude_unset,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_computed_fields=exclude_computed_fields,
+                round_trip=round_trip,
+                warnings=warnings,
+                fallback=fallback,
+                serialize_as_any=serialize_as_any,
+                polymorphic_serialization=polymorphic_serialization,
+            )  # type: ignore[misc]
         return cast(dict[str, object], _mask_data(data))  # type: ignore[misc]
 
     def model_dump_json(  # noqa: PLR0913
@@ -172,22 +204,41 @@ class SecureBaseModel(BaseModel):
         # Extract indent if any, as model_dump does not accept it
 
         # Dump to JSON-compatible dict, mask, then serialize
-        dumped_dict = super().model_dump(
-            mode="json",
-            include=include,
-            exclude=exclude,
-            context=context,
-            by_alias=by_alias,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-            exclude_computed_fields=exclude_computed_fields,
-            round_trip=round_trip,
-            warnings=warnings,
-            fallback=fallback,
-            serialize_as_any=serialize_as_any,
-            polymorphic_serialization=polymorphic_serialization,
-        )  # type: ignore[misc]
+        try:
+            dumped_dict = super().model_dump(
+                mode="json",
+                include=include,
+                exclude=exclude,
+                context=context,
+                by_alias=by_alias,
+                exclude_unset=exclude_unset,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_computed_fields=exclude_computed_fields,
+                round_trip=round_trip,
+                warnings=warnings,
+                fallback=fallback,
+                serialize_as_any=serialize_as_any,
+                polymorphic_serialization=polymorphic_serialization,
+            )  # type: ignore[misc]
+        except TypeError:
+            # Fallback for models with unhashable types in sets that Pydantic rejects.
+            # For JSON, use Python mode first, which has our fallback, then JSON encode.
+            dumped_dict = self.model_dump(
+                include=include,
+                exclude=exclude,
+                context=context,
+                by_alias=by_alias,
+                exclude_unset=exclude_unset,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_computed_fields=exclude_computed_fields,
+                round_trip=round_trip,
+                warnings=warnings,
+                fallback=fallback,
+                serialize_as_any=serialize_as_any,
+                polymorphic_serialization=polymorphic_serialization,
+            )
         masked_dict = _mask_data(dumped_dict)  # type: ignore[misc]
         # We need to respect Pydantic's indent/separators if possible,
         # but json.dumps is the safest standard way.
