@@ -11,7 +11,7 @@ async def test_chaos_bulkhead_create_task_exception():
     bulkhead = Bulkhead(max_concurrent=1, max_queue=1)
 
     async def dummy():
-        pass
+        return True
 
     with patch(
         "asyncio.create_task", side_effect=RuntimeError("Chaos create_task error")
@@ -29,7 +29,7 @@ async def test_chaos_bulkhead_create_task_exception():
             pass
 
     class CustomGenericError(Exception):
-        pass
+        ...
 
     with patch(
         "asyncio.create_task",
@@ -58,7 +58,7 @@ async def test_chaos_bulkhead_semaphore_acquire_not_awaited():
         def acquire(self):
             # Act like an un-awaited coroutine to trigger the warning
             async def never_await_me():
-                pass
+                return True
 
             nonlocal coro_to_close
             coro_to_close = never_await_me()
@@ -67,7 +67,7 @@ async def test_chaos_bulkhead_semaphore_acquire_not_awaited():
     bulkhead._semaphore = BadSemaphore()
 
     async def dummy():
-        pass
+        return True
 
     # We patch asyncio.create_task to fail immediately so that the
     # mock unawaited coro is never awaited by asyncio
@@ -92,7 +92,7 @@ async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
     bulkhead._semaphore = BadSemaphore()
 
     async def dummy():
-        pass
+        return True
 
     result = await bulkhead.execute(dummy)
     assert result.is_err()
@@ -113,7 +113,7 @@ async def test_chaos_bulkhead_acquire_permit_timeout():
     await started_event.wait()
 
     async def dummy_waiter():
-        pass
+        return True
 
     result = await bulkhead.execute(dummy_waiter)
     assert result.is_err()
@@ -137,7 +137,7 @@ async def test_chaos_bulkhead_acquire_permit_cancelled():
     await started_event.wait()
 
     async def dummy_waiter():
-        pass
+        return True
 
     task = asyncio.create_task(bulkhead.execute(dummy_waiter))
     await asyncio.sleep(0.01)
@@ -237,7 +237,7 @@ async def test_chaos_bulkhead_cleanup_task_suppress_release():
     bulkhead = Bulkhead("test_cleanup", max_concurrent=1, max_queue=1)
 
     async def dummy():
-        pass
+        return True
 
     task = asyncio.create_task(dummy())
     task.cancel()
@@ -252,7 +252,7 @@ async def test_chaos_bulkhead_acquire_permit_cancelled_suppress():
     bulkhead = Bulkhead("test_cancelled", max_concurrent=1, max_queue=1)
 
     async def dummy():
-        pass
+        return True
 
     with patch("asyncio.wait_for", side_effect=asyncio.CancelledError):
         with pytest.raises(asyncio.CancelledError):
@@ -284,7 +284,7 @@ async def test_chaos_bulkhead_coroutine_close_coverage():
     bulkhead = Bulkhead("test_close", max_concurrent=1, max_queue=1)
 
     async def dummy():
-        pass
+        return True
 
     with patch("asyncio.create_task", side_effect=RuntimeError("foo")):
         res = await bulkhead.execute(dummy)
@@ -308,7 +308,7 @@ async def test_chaos_bulkhead_coroutine_close_coverage_not_coro():
     bulkhead._semaphore = BadSemaphoreNotCoro()
 
     async def dummy():
-        pass
+        return True
 
     with patch("asyncio.create_task", side_effect=RuntimeError("foo")):
         res = await bulkhead.execute(dummy)

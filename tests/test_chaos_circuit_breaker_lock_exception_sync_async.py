@@ -14,7 +14,7 @@ def test_circuit_breaker_lock_acquire_exception_decorator_sync():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
@@ -36,7 +36,7 @@ async def test_circuit_breaker_lock_acquire_exception_decorator_async():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
