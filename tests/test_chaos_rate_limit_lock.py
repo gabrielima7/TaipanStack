@@ -11,7 +11,7 @@ def test_chaos_rate_limit_lock_mutation():
             raise RuntimeError("Corrupted lock state")
 
         def release(self):
-            pass
+            return None
 
     limiter._lock = BadLock()
 

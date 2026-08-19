@@ -12,12 +12,12 @@ async def test_chaos_bulkhead_lock_acquire_exception():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     bulkhead._semaphore = BadSemaphore()
 
     async def dummy():
-        pass
+        return True
 
     result = await bulkhead.execute(dummy)
     assert result.is_err()

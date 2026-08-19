@@ -9,7 +9,7 @@ def test_chaos_circuit_breaker_lock_acquire_raises():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
