@@ -176,6 +176,7 @@ def test_fuzz_logging_redact_is_sensitive_non_string():
 
     assert not _is_sensitive(123, re.compile("test"))
 
+
 def test_fuzz_logging_redact_redact_set_unhashable_already():
     from taipanstack.utils.logging import _redact_set
 
