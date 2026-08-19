@@ -55,9 +55,21 @@ def _mask_tuple(data: tuple[object, ...], depth: int) -> tuple[object, ...]:
     return tuple(_mask_data(item, depth) for item in data)
 
 
-def _mask_set(data: set[object], depth: int) -> set[object]:
+def _mask_set(data: set[object], depth: int) -> set[object] | list[object]:
     """Mask sensitive keys in a set."""
-    return {_mask_data(item, depth) for item in data}
+    masked_items: list[object] = []
+    has_unhashable = False
+    for item in data:
+        masked = _mask_data(item, depth)
+        try:
+            hash(masked)
+        except TypeError:
+            has_unhashable = True
+        masked_items.append(masked)
+
+    if has_unhashable:
+        return masked_items
+    return set(masked_items)
 
 
 def _mask_collection(data: object, depth: int) -> object:
