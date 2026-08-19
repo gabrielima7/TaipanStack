@@ -13,8 +13,7 @@ async def test_chaos_bulkhead_create_task_exception_uncovered_branch():
     async def dummy():
         return True
 
-    class UnrelatedError(Exception):
-        ...
+    class UnrelatedError(Exception): ...
 
     with patch(
         "asyncio.create_task", side_effect=UnrelatedError("Chaos create_task error")

@@ -28,8 +28,7 @@ async def test_chaos_bulkhead_create_task_exception():
         except RuntimeError:
             pass
 
-    class CustomGenericError(Exception):
-        ...
+    class CustomGenericError(Exception): ...
 
     with patch(
         "asyncio.create_task",
