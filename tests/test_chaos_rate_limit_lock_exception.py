@@ -9,7 +9,7 @@ def test_rate_limit_lock_acquire_exception():
             raise RuntimeError("Chaos lock error")
 
         def release(self):
-            pass
+            return None
 
     limiter._lock = BadLock()
 

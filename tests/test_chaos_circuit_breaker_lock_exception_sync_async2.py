@@ -9,7 +9,7 @@ def test_circuit_breaker_lock_acquire_exception_record_success():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
@@ -25,7 +25,7 @@ def test_circuit_breaker_lock_acquire_exception_record_failure():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
@@ -41,7 +41,7 @@ def test_circuit_breaker_lock_acquire_exception_reset():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
@@ -56,7 +56,7 @@ def test_circuit_breaker_lock_acquire_exception_decrement_half_open():
             raise RuntimeError("Chaos lock acquire error")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = BadLock()
 
