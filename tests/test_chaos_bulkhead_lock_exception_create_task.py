@@ -7,7 +7,7 @@ from taipanstack.resilience.adaptive.bulkhead import Bulkhead
 
 
 @pytest.mark.asyncio
-async def test_chaos_bulkhead_create_task_exception():
+async def test_resilience_adaptive_bulkhead_create_task_resource_exhaustion():
     bulkhead = Bulkhead(max_concurrent=1, max_queue=1)
 
     async def dummy():
@@ -21,12 +21,12 @@ async def test_chaos_bulkhead_create_task_exception():
         assert "Resource exhaustion" in str(result.unwrap_err())
 
         # Clean up the dangling coroutine explicitly
-        try:
+        import contextlib
+
+        with contextlib.suppress(RuntimeError):
             coro = bulkhead._semaphore.acquire()
             if asyncio.iscoroutine(coro):
                 coro.close()
-        except RuntimeError:
-            pass
 
     class CustomGenericError(Exception): ...
 
@@ -39,16 +39,14 @@ async def test_chaos_bulkhead_create_task_exception():
         assert "Resource exhaustion" in str(result.unwrap_err())
 
         # Clean up the dangling coroutine explicitly
-        try:
+        with contextlib.suppress(RuntimeError):
             coro = bulkhead._semaphore.acquire()
             if asyncio.iscoroutine(coro):
                 coro.close()
-        except RuntimeError:
-            pass
 
 
 @pytest.mark.asyncio
-async def test_chaos_bulkhead_semaphore_acquire_not_awaited():
+async def test_resilience_adaptive_bulkhead_acquire_not_awaited_warning():
     bulkhead = Bulkhead(max_concurrent=1, max_queue=1)
 
     coro_to_close = None
@@ -81,7 +79,7 @@ async def test_chaos_bulkhead_semaphore_acquire_not_awaited():
 
 
 @pytest.mark.asyncio
-async def test_chaos_bulkhead_semaphore_acquire_coverage_fallback():
+async def test_resilience_adaptive_bulkhead_acquire_fallback_coverage():
     bulkhead = Bulkhead(max_concurrent=1, max_queue=1)
 
     class BadSemaphore:
@@ -318,3 +316,18 @@ async def test_chaos_bulkhead_coroutine_close_coverage_not_coro():
         res = await bulkhead.execute(dummy)
         assert res.is_err()
         assert "Resource exhaustion" in str(res.unwrap_err())
+
+
+@pytest.mark.asyncio
+async def test_resilience_adaptive_bulkhead_acquire_permit_unexpected_exception():
+    bulkhead = Bulkhead("test_exception", max_concurrent=1, max_queue=1)
+
+    class BadSemaphore:
+        def acquire(self):
+            raise RuntimeError("foo")
+
+    bulkhead._semaphore = BadSemaphore()
+
+    res = await bulkhead.execute(lambda: True)
+    assert res.is_err()
+    assert "Resource exhaustion: foo" in str(res.unwrap_err())
