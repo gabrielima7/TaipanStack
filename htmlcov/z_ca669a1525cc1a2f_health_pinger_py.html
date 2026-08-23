@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_ca669a1525cc1a2f_resource_watcher_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-08-19 21:55 +0000
+            created at 2026-08-23 19:02 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -237,7 +237,7 @@
     <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">        <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">            <span class="key">not</span> <span class="nam">is_healthy</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">            <span class="key">and</span> <span class="nam">target</span><span class="op">.</span><span class="nam">circuit_breaker</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="key">and</span> <span class="nam">target</span><span class="op">.</span><span class="nam">circuit_breaker</span><span class="op">.</span><span class="nam">state</span> <span class="op">!=</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="key">and</span> <span class="nam">target</span><span class="op">.</span><span class="nam">circuit_breaker</span><span class="op">.</span><span class="nam">state</span> <span class="key">is</span> <span class="key">not</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">        <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">_force_open_breaker</span><span class="op">(</span><span class="nam">target</span><span class="op">.</span><span class="nam">circuit_breaker</span><span class="op">,</span> <span class="nam">target</span><span class="op">.</span><span class="nam">name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -287,11 +287,11 @@
     <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">    <span class="nam">max_attempts</span> <span class="op">=</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">config</span><span class="op">.</span><span class="nam">failure_threshold</span> <span class="op">+</span> <span class="num">5</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t">    <span class="nam">attempts</span> <span class="op">=</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">    <span class="key">while</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">state</span> <span class="op">!=</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span> <span class="key">and</span> <span class="nam">attempts</span> <span class="op">&lt;</span> <span class="nam">max_attempts</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">    <span class="key">while</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">state</span> <span class="key">is</span> <span class="key">not</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span> <span class="key">and</span> <span class="nam">attempts</span> <span class="op">&lt;</span> <span class="nam">max_attempts</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">        <span class="nam">breaker</span><span class="op">.</span><span class="nam">_record_failure</span><span class="op">(</span><span class="nam">synthetic</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t">        <span class="nam">attempts</span> <span class="op">+=</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">    <span class="key">if</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">state</span> <span class="op">!=</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">    <span class="key">if</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">state</span> <span class="key">is</span> <span class="key">not</span> <span class="nam">CircuitState</span><span class="op">.</span><span class="nam">OPEN</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t">        <span class="com"># Force open if it didn't open normally</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">        <span class="nam">old_state</span> <span class="op">=</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">state</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">        <span class="nam">acquired</span> <span class="op">=</span> <span class="nam">breaker</span><span class="op">.</span><span class="nam">_state</span><span class="op">.</span><span class="nam">lock</span><span class="op">.</span><span class="nam">acquire</span><span class="op">(</span><span class="nam">timeout</span><span class="op">=</span><span class="num">0.1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -317,7 +317,7 @@
             <a class="nav" href="z_ca669a1525cc1a2f_resource_watcher_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.15.1">coverage.py v7.15.1</a>,
-            created at 2026-08-19 21:55 +0000
+            created at 2026-08-23 19:02 +0000
         </p>
     </div>
 </footer>

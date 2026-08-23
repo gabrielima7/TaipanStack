@@ -348,7 +348,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="releases/v0.6.2/" class="md-tabs__link">
+        <a href="releases/v0.6.3/" class="md-tabs__link">
           
   
   
@@ -492,6 +492,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#whats-new-in-v063" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ What's New in v0.6.3
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#whats-new-in-v061" class="md-nav__link">
@@ -1292,6 +1303,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="releases/v0.6.3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v0.6.3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -2594,6 +2633,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#whats-new-in-v063" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ What's New in v0.6.3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#whats-new-in-v061" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2844,6 +2894,11 @@
 <a href="https://pypi.org/project/taipanstack/" title="PyPI"><img alt="PyPI" src="https://img.shields.io/pypi/v/taipanstack?style=flat&amp;logo=pypi&amp;logoColor=white" /></a>
 <a href="https://github.com/gabrielima7/TaipanStack/blob/main/LICENSE" title="License"><img alt="License" src="https://img.shields.io/badge/License-MIT-green?style=flat" /></a></p>
 <hr />
+<h3 id="whats-new-in-v063">✨ What's New in v0.6.3<a class="headerlink" href="#whats-new-in-v063" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Security &amp; Resilience</strong>: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via <code>try...except Exception</code> blocks, falling back to safe defaults or returning appropriate <code>Err</code> states (PR #1139).</li>
+<li><strong>Clean Code &amp; Refactoring (v0.6.2)</strong>: Proactively refactored and extracted nested structures into dedicated helpers across resilience and rate limiting components to reduce cyclomatic complexity (PR #1124).</li>
+</ul>
 <h3 id="whats-new-in-v061">✨ What's New in v0.6.1<a class="headerlink" href="#whats-new-in-v061" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Security &amp; Hardening</strong>: Hardened RateLimiter against infinite tokens mutations, key decoding in JWT, and validate_project_name argument parsing. Fixed large password payload crashes and removed unused constants (PR #966, #967, #968, #973, #989).</li>
