@@ -153,7 +153,7 @@ class HealthPinger(BaseWatcher):
         if (
             not is_healthy
             and target.circuit_breaker is not None
-            and target.circuit_breaker.state != CircuitState.OPEN
+            and target.circuit_breaker.state is not CircuitState.OPEN
         ):
             _force_open_breaker(target.circuit_breaker, target.name)
 
@@ -203,11 +203,11 @@ def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
     max_attempts = breaker.config.failure_threshold + 5
     attempts = 0
 
-    while breaker.state != CircuitState.OPEN and attempts < max_attempts:
+    while breaker.state is not CircuitState.OPEN and attempts < max_attempts:
         breaker._record_failure(synthetic)
         attempts += 1
 
-    if breaker.state != CircuitState.OPEN:
+    if breaker.state is not CircuitState.OPEN:
         # Force open if it didn't open normally
         old_state = breaker.state
         acquired = breaker._state.lock.acquire(timeout=0.1)
