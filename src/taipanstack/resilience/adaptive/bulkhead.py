@@ -11,7 +11,7 @@ import asyncio
 import contextlib
 import logging
 import math
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Coroutine
 from typing import ParamSpec, TypeVar
 
 from taipanstack.core.result import Err, Ok, Result
@@ -130,7 +130,7 @@ class Bulkhead:
             await acquire_task
             self._semaphore.release()
 
-    def _get_acquire_coro(self) -> Result[Awaitable[bool], Exception]:
+    def _get_acquire_coro(self) -> Result[Coroutine[object, object, bool], Exception]:
         """Attempt to get the semaphore acquire coroutine."""
         try:
             return Ok(self._semaphore.acquire())
@@ -139,11 +139,13 @@ class Bulkhead:
         except Exception as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
-    async def _wait_for_coro(self, coro: Awaitable[bool]) -> Result[None, Exception]:
+    async def _wait_for_coro(
+        self, coro: Coroutine[object, object, bool]
+    ) -> Result[None, Exception]:
         """Wait for the acquire task to complete, handling errors and cleanup."""
         try:
             # We explicitly check for exception during the coroutine creation or wait
-            acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)  # type: ignore[arg-type]
+            acquire_task: asyncio.Task[bool] = asyncio.create_task(coro)
             return await _wait_for_permit_task(
                 acquire_task,
                 self._timeout,
@@ -152,13 +154,13 @@ class Bulkhead:
             )
         except (RuntimeError, OSError, MemoryError) as e:
             if asyncio.iscoroutine(coro):
-                coro.close()  # type: ignore[misc]
+                coro.close()
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         except Exception as e:
             # Fallback for unexpected failures in asyncio.create_task
             # or semaphore.acquire
             if asyncio.iscoroutine(coro):
-                coro.close()  # type: ignore[misc]
+                coro.close()
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
     async def _acquire_permit(self) -> Result[None, Exception]:
