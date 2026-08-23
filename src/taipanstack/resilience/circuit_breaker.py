@@ -316,17 +316,16 @@ class CircuitBreaker:
 
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
-        if not isinstance(self._state.last_failure_time, (int, float)):
+        last_failure = self._state.last_failure_time
+        if not isinstance(last_failure, (int, float)):
             return None  # type: ignore[unreachable]
 
         safe_timeout = self._get_safe_timeout()
 
-        if not isinstance(
-            self._state.last_failure_time, (int, float)
-        ) or not math.isfinite(self._state.last_failure_time):
+        if not math.isfinite(last_failure):
             return safe_timeout
 
-        elapsed = now - float(self._state.last_failure_time)
+        elapsed = now - float(last_failure)
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
@@ -399,6 +398,13 @@ class CircuitBreaker:
             return True
         return False
 
+    def _acquire_lock(self) -> bool:
+        """Safely attempt to acquire the lock."""
+        try:
+            return self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            return False
+
     def _safe_release(self) -> None:
         with contextlib.suppress(RuntimeError):
             self._state.lock.release()
@@ -417,12 +423,7 @@ class CircuitBreaker:
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-        except Exception:
-            acquired = False
-
-        if not acquired:
+        if not self._acquire_lock():
             return False
         try:
             should_attempt, state_change = self._evaluate_state_for_attempt()
@@ -471,12 +472,7 @@ class CircuitBreaker:
 
     def _record_success(self) -> None:
         """Record a successful call."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-        except Exception:
-            acquired = False
-
-        if not acquired:
+        if not self._acquire_lock():
             return
         try:
             state_change = self._get_success_state_change()
@@ -565,12 +561,7 @@ class CircuitBreaker:
 
         state_change: tuple[CircuitState, CircuitState] | None = None
 
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-        except Exception:
-            acquired = False
-
-        if not acquired:
+        if not self._acquire_lock():
             return
         try:
             self._update_failure_metrics()
@@ -583,12 +574,7 @@ class CircuitBreaker:
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
-        try:
-            acquired = self._state.lock.acquire(timeout=0.1)
-        except Exception:
-            acquired = False
-
-        if not acquired:
+        if not self._acquire_lock():
             return
         try:
             self._state.state = CircuitState.CLOSED
