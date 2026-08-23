@@ -55,7 +55,7 @@ def _breaker_is_open(cb: CircuitBreaker) -> CircuitBreakerError | None:
         Error if open, ``None`` otherwise.
 
     """
-    if cb.state == CircuitState.OPEN:
+    if cb.state is CircuitState.OPEN:
         return CircuitBreakerError(
             f"Circuit breaker '{cb.name}' is OPEN",
             state=cb.state,
