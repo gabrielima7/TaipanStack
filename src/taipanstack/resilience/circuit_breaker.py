@@ -407,11 +407,11 @@ class CircuitBreaker:
         self,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         state = self._state.state
-        if state == CircuitState.CLOSED:
+        if state is CircuitState.CLOSED:
             return True, None
-        if state == CircuitState.OPEN:
+        if state is CircuitState.OPEN:
             return self._handle_open_state()
-        if state == CircuitState.HALF_OPEN:
+        if state is CircuitState.HALF_OPEN:
             return self._handle_attempt_half_open(), None
         return False, None  # type: ignore[unreachable]
 
@@ -461,9 +461,9 @@ class CircuitBreaker:
 
     def _get_success_state_change(self) -> tuple[CircuitState, CircuitState] | None:
         state = self._state.state
-        if state == CircuitState.HALF_OPEN:
+        if state is CircuitState.HALF_OPEN:
             return self._handle_success_half_open()
-        if state == CircuitState.CLOSED:
+        if state is CircuitState.CLOSED:
             # Reset failure count on success
             self._state.failure_count = 0
             return None
@@ -546,9 +546,9 @@ class CircuitBreaker:
 
     def _get_failure_state_change(self) -> tuple[CircuitState, CircuitState] | None:
         """Get state change for a failure."""
-        if self._state.state == CircuitState.HALF_OPEN:
+        if self._state.state is CircuitState.HALF_OPEN:
             return self._handle_failure_half_open()
-        if self._state.state == CircuitState.CLOSED:
+        if self._state.state is CircuitState.CLOSED:
             return self._handle_failure_closed()
         return None
 
@@ -637,7 +637,7 @@ class CircuitBreaker:
 
     def _safe_decrement_half_open_attempts(self) -> None:
         """Safely decrement half-open attempts."""
-        if self._state.state != CircuitState.HALF_OPEN:
+        if self._state.state is not CircuitState.HALF_OPEN:
             return
 
         if not self._is_valid_half_open_attempts():
@@ -688,7 +688,7 @@ class CircuitBreaker:
                     state=self._state.state,
                 )
 
-            is_half_open = self._state.state == CircuitState.HALF_OPEN
+            is_half_open = self._state.state is CircuitState.HALF_OPEN
 
             try:
                 result = await func_coro(*args, **kwargs)
@@ -713,7 +713,7 @@ class CircuitBreaker:
                     state=self._state.state,
                 )
 
-            is_half_open = self._state.state == CircuitState.HALF_OPEN
+            is_half_open = self._state.state is CircuitState.HALF_OPEN
 
             try:
                 result = func_sync(*args, **kwargs)
