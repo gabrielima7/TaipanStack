@@ -141,7 +141,7 @@ class AdaptiveCircuitBreaker:
         if not acquired:
             return self._state
         try:
-            if self._state == CircuitState.OPEN:
+            if self._state is CircuitState.OPEN:
                 self._check_half_open_transition()
             return self._state
         finally:
@@ -188,7 +188,7 @@ class AdaptiveCircuitBreaker:
 
         MUST BE CALLED UNDER LOCK.
         """
-        if self._state != CircuitState.CLOSED:
+        if self._state is not CircuitState.CLOSED:
             return
 
         total = len(self._window)
@@ -209,7 +209,7 @@ class AdaptiveCircuitBreaker:
         if not acquired:
             return
         try:
-            if self._state == CircuitState.HALF_OPEN:
+            if self._state is CircuitState.HALF_OPEN:
                 # Full recovery on success
                 self._state = CircuitState.CLOSED
                 self._window.clear()
@@ -234,7 +234,7 @@ class AdaptiveCircuitBreaker:
         if not acquired:
             return
         try:
-            if self._state == CircuitState.HALF_OPEN:
+            if self._state is CircuitState.HALF_OPEN:
                 # Return to open immediately on failure
                 self._state = CircuitState.OPEN
                 self._last_opened_at = time.monotonic()
