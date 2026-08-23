@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] - 2026-08-19
+
+### Security & Resilience
+- **Rate Limiter Type Mutation Resilience**: Hardened `RateLimiter` against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers or anomalous float operations) that could crash the service. Operations are now gracefully handled, falling back to safe defaults or returning appropriate `Err` states instead of raising uncaught exceptions (PR #1139).
+- **Anomalous Math Operations**: Implemented safeguards in `RateLimiter` to gracefully absorb anomalous mathematical operations caused by invalid types or state corruption, ensuring the system degrades safely without crashing (PR #1139).
+
 ## [0.6.2] - 2026-08-17
 
 ### Clean Code, Refactoring & Typing
