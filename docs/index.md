@@ -118,10 +118,15 @@ match divide(10, 0):
 ### Security Guards
 
 ```python
-from taipanstack.security.guards import guard_path_traversal, guard_command_injection
+from taipanstack.security.guards import (
+    guard_command_injection,
+    guard_env_variable,
+    guard_path_traversal,
+)
 
 safe_path = guard_path_traversal(user_input, base_dir="/app/data")
 safe_cmd = guard_command_injection(["git", "clone", repo_url], allowed_commands=["git"])
+safe_key = guard_env_variable("API_KEY", allowed_names=["API_KEY"])
 ```
 
 ### 🔗 Combining Result + Circuit Breaker
