@@ -1,12 +1,18 @@
 import pytest
-from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitBreakerError, CircuitState
+
+from taipanstack.resilience.circuit_breaker import (
+    CircuitBreaker,
+    CircuitBreakerError,
+    CircuitState,
+)
+
 
 def test_chaos_circuit_breaker_malicious_lock_acquire_exception():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Extreme acquire failure")
+            raise MemoryError("Extreme acquire failure")
         def release(self):
             pass
 
@@ -41,7 +47,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception_in_reset():
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Extreme acquire failure")
+            raise MemoryError("Extreme acquire failure")
         def release(self):
             pass
 
@@ -55,7 +61,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open():
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Extreme acquire failure in decrement")
+            raise MemoryError("Extreme acquire failure in decrement")
         def release(self):
             pass
 
@@ -69,7 +75,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_success():
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Extreme acquire failure in record_success")
+            raise MemoryError("Extreme acquire failure in record_success")
         def release(self):
             pass
 
@@ -83,13 +89,13 @@ def test_chaos_circuit_breaker_malicious_lock_record_failure():
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Extreme acquire failure in record_failure")
+            raise MemoryError("Extreme acquire failure in record_failure")
         def release(self):
             pass
 
     breaker._state.lock = ThrowingLock()
 
-    breaker._record_failure(Exception("dummy"))
+    breaker._record_failure(RuntimeError("dummy"))
     assert breaker._state.failure_count == 0
 
 def test_chaos_circuit_breaker_malicious_lock_decrement_half_open_suppress():
@@ -97,7 +103,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open_suppress():
 
     class ThrowingLock:
         def acquire(self, timeout=-1):
-            raise Exception("Normal acquire failure in decrement")
+            raise RuntimeError("Normal acquire failure in decrement")
         def release(self):
             pass
 
