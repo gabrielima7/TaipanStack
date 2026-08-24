@@ -742,13 +742,12 @@ def test_very_last_type_check_exception_returns_err():
 
 
 def test_very_last_check_allowed_extension_none_returns_true():
-    _check_allowed_extension(".txt", "file.txt", None)
-    assert True
+    assert _check_allowed_extension(".txt", "file.txt", None) is None
 
 
 def test_very_last_guard_file_extension_none_returns_ok():
-    guard_file_extension("file.txt", allowed_extensions=None)
-    assert True
+    from pathlib import Path
+    assert guard_file_extension("file.txt", allowed_extensions=None) == Path("file.txt")
 
 
 def test_very_last_guard_file_extension_exception_returns_err():
