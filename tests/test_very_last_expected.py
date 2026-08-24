@@ -747,6 +747,7 @@ def test_very_last_check_allowed_extension_none_returns_true():
 
 def test_very_last_guard_file_extension_none_returns_ok():
     from pathlib import Path
+
     assert guard_file_extension("file.txt", allowed_extensions=None) == Path("file.txt")
 
 
