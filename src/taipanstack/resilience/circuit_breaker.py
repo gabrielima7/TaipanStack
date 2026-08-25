@@ -322,17 +322,20 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if not math.isfinite(last_failure):
-            return safe_timeout
+        try:
+            if not math.isfinite(last_failure):
+                return safe_timeout
 
-        elapsed = now - float(last_failure)
+            elapsed = now - float(last_failure)
 
-        # Safe check against NaN and Inf time corruption
-        # If elapsed < 0, a backward clock jump occurred. We should
-        # allow a transition to prevent permanent lockout.
-        if elapsed < 0:
+            # Safe check against NaN and Inf time corruption
+            # If elapsed < 0, a backward clock jump occurred. We should
+            # allow a transition to prevent permanent lockout.
+            if elapsed < 0:
+                return safe_timeout
+            return elapsed
+        except Exception:
             return safe_timeout
-        return elapsed
 
     def _transition_to_half_open(
         self,
@@ -370,9 +373,12 @@ class CircuitBreaker:
             now = time.monotonic()
         except Exception:
             return None
-        if not isinstance(now, (int, float)) or not math.isfinite(now):
+        try:
+            if not isinstance(now, (int, float)) or not math.isfinite(now):
+                return None
+            return self._calculate_elapsed_time(now)
+        except Exception:
             return None
-        return self._calculate_elapsed_time(now)
 
     def _handle_open_state(
         self,
