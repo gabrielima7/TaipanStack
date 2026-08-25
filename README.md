@@ -230,6 +230,17 @@ TaipanStack supports the following environment variables for configuration:
 
 ## 📚 API Highlights
 
+### Rate Limiting
+
+```python
+from taipanstack.utils.rate_limit import rate_limit
+from taipanstack.core.result import Ok, Result
+
+@rate_limit(max_calls=10, time_window=1.0)
+def process_request(req_id: str) -> Result[str, Exception]:
+    return Ok(f"Processed {req_id}")
+```
+
 ### Result Types (Rust-Style Error Handling)
 
 ```python
