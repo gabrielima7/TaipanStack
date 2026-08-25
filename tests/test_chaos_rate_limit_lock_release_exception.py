@@ -15,6 +15,6 @@ def test_rate_limit_lock_release_exception() -> None:
 
     # Should safely degrade and not crash
     try:
-        limiter.consume()
+        limiter.consume("test")
     except Exception as e:
         raise AssertionError(f"consume() crashed with {e}") from e

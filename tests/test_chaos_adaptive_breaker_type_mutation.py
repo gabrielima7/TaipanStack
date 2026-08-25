@@ -8,7 +8,8 @@ def test_chaos_adaptive_breaker_min_throughput_mutation():
     breaker._min_throughput = "5"
 
     # Should safely fail or recover without crashing with TypeError
-    breaker.record_failure(ValueError("test"))
+    result = breaker.record_failure(ValueError("test"))
+    assert result is None
 
 
 def test_chaos_adaptive_breaker_min_throughput_nan_mutation():
@@ -18,7 +19,8 @@ def test_chaos_adaptive_breaker_min_throughput_nan_mutation():
     breaker._min_throughput = float("nan")
 
     # Should safely fail or recover without crashing
-    breaker.record_failure(ValueError("test"))
+    result = breaker.record_failure(ValueError("test"))
+    assert result is None
 
 
 def test_chaos_adaptive_breaker_min_throughput_type_error_mutation():
@@ -30,4 +32,5 @@ def test_chaos_adaptive_breaker_min_throughput_type_error_mutation():
             raise TypeError("test")
 
     breaker._min_throughput = BadInt()
-    breaker.record_failure(ValueError("test"))
+    result = breaker.record_failure(ValueError("test"))
+    assert result is None

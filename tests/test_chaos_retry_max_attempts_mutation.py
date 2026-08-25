@@ -7,4 +7,4 @@ def test_chaos_retry_max_attempts_mutation():
     object.__setattr__(retrier.config, "max_attempts", "3")
 
     # This should not raise TypeError
-    retrier._should_retry(ValueError)
+    assert retrier._should_retry(ValueError) is True
