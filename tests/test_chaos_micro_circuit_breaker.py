@@ -1,6 +1,9 @@
-import pytest
 import time
+
+import pytest
+
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
 
 def test_chaos_circuit_breaker_calculate_elapsed_time_type_mutation():
     """Simulate state corruption where last_failure_time is mutated to a malicious type."""
@@ -55,7 +58,7 @@ def test_chaos_circuit_breaker_get_valid_elapsed_type_mutation_not_isfinite(monk
     try:
         # math.isfinite inside _get_valid_elapsed or > / < might fail
         elapsed = breaker._get_valid_elapsed()
-        assert elapsed is None or elapsed == 0.1 or elapsed == 30.0
+        assert elapsed is None or elapsed in {0.1, 30.0}
     except Exception as e:
         pytest.fail(f"CircuitBreaker crashed with exception: {e}")
 
