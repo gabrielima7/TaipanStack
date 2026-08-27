@@ -139,6 +139,10 @@ class Bulkhead:
         except Exception as e:
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
+    def _close_coro_if_needed(self, coro: Coroutine[object, object, bool]) -> None:
+        if asyncio.iscoroutine(coro):
+            coro.close()
+
     async def _wait_for_coro(
         self, coro: Coroutine[object, object, bool]
     ) -> Result[None, Exception]:
@@ -152,15 +156,8 @@ class Bulkhead:
                 self.name,
                 self._cleanup_acquire_task,
             )
-        except (RuntimeError, OSError, MemoryError) as e:
-            if asyncio.iscoroutine(coro):
-                coro.close()
-            return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
         except Exception as e:
-            # Fallback for unexpected failures in asyncio.create_task
-            # or semaphore.acquire
-            if asyncio.iscoroutine(coro):
-                coro.close()
+            self._close_coro_if_needed(coro)
             return Err(RuntimeError(f"Resource exhaustion: {e!s}"))
 
     async def _acquire_permit(self) -> Result[None, Exception]:
