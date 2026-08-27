@@ -1,5 +1,6 @@
 import contextlib
 import time
+from typing import Any
 
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
@@ -45,9 +46,6 @@ def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption
     # elapsed (30.0) >= timeout (30.0) -> transitions to HALF_OPEN
     assert breaker._should_attempt() is True
     assert breaker.state == CircuitState.HALF_OPEN
-
-
-from typing import Any
 
 
 class MaliciousFloat(float):
