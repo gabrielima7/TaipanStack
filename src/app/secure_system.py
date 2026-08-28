@@ -144,10 +144,19 @@ class InMemoryUserRepository(UserRepository):
             existing_user = self._storage.get(user.id)
             if existing_user is not None:
                 # If updating, check if new username/email conflicts with others
-                if user.username != existing_user.username and user.username in self._usernames:
-                    return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
+                if (
+                    user.username != existing_user.username
+                    and user.username in self._usernames
+                ):
+                    return Err(
+                        UserAlreadyExistsError(f"User {user.username} already exists.")
+                    )
                 if user.email != existing_user.email and user.email in self._emails:
-                    return Err(UserAlreadyExistsError(f"User with email {user.email} already exists."))
+                    return Err(
+                        UserAlreadyExistsError(
+                            f"User with email {user.email} already exists."
+                        )
+                    )
 
                 # Remove old indices
                 self._usernames.discard(existing_user.username)
@@ -155,9 +164,15 @@ class InMemoryUserRepository(UserRepository):
             else:
                 # New user, check existence
                 if user.username in self._usernames:
-                    return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
+                    return Err(
+                        UserAlreadyExistsError(f"User {user.username} already exists.")
+                    )
                 if user.email in self._emails:
-                    return Err(UserAlreadyExistsError(f"User with email {user.email} already exists."))
+                    return Err(
+                        UserAlreadyExistsError(
+                            f"User with email {user.email} already exists."
+                        )
+                    )
 
             # Add new user and indices
             self._storage[user.id] = user
