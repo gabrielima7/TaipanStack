@@ -11,7 +11,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     state_change = breaker._handle_failure_closed()
 
     # Assert
-    assert breaker._state.state == CircuitState.OPEN
+    assert breaker._state.state is CircuitState.OPEN
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
 
 
@@ -25,7 +25,7 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_corrupt_failure_co
     state_change = breaker._handle_failure_closed()
 
     # Assert
-    assert breaker._state.state == CircuitState.OPEN
+    assert breaker._state.state is CircuitState.OPEN
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
 
 
@@ -90,4 +90,4 @@ def test_chaos_circuit_breaker_nan_corruption_circuit_breaker_record_success_ope
     breaker._record_success()
 
     # Assert
-    assert breaker._state.state == CircuitState.OPEN
+    assert breaker._state.state is CircuitState.OPEN

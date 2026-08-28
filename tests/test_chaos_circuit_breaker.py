@@ -18,7 +18,7 @@ def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption
     with contextlib.suppress(ValueError):
         failing_func()
 
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
     # Chaos 1: Corrupt last_failure_time to NaN and timeout to a string
     breaker._state.last_failure_time = float("nan")
@@ -28,13 +28,13 @@ def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption
     # The elapsed time of 30.0 will be compared against timeout (which will also be safely parsed as 30.0 or default).
     # _should_attempt() will trigger a transition to HALF_OPEN.
     assert breaker._should_attempt() is True
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
     # Reset
     breaker.reset()
     with contextlib.suppress(ValueError):
         failing_func()
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
     # Chaos 2: Backward clock jump and invalid type for timeout (a tuple)
     breaker._state.last_failure_time = time.monotonic() + 10000.0  # Future time
@@ -44,4 +44,4 @@ def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption
     # _handle_open_state defaults config.timeout to 30.0 because it's a tuple.
     # elapsed (30.0) >= timeout (30.0) -> transitions to HALF_OPEN
     assert breaker._should_attempt() is True
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN

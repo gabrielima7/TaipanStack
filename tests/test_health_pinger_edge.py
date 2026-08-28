@@ -11,7 +11,7 @@ def test_health_pinger_edge_health_pinger_force_open_cap():
     # Should cap the attempts and force open
     _force_open_breaker(b, "test_target")
 
-    assert b.state == CircuitState.OPEN
+    assert b.state is CircuitState.OPEN
 
 
 def test_health_pinger_edge_health_pinger_force_open_normal():
@@ -20,7 +20,7 @@ def test_health_pinger_edge_health_pinger_force_open_normal():
 
     _force_open_breaker(b, "test_target")
 
-    assert b.state == CircuitState.OPEN
+    assert b.state is CircuitState.OPEN
 
 
 def test_health_pinger_edge_health_pinger_force_open_triggers_callback():
@@ -35,5 +35,5 @@ def test_health_pinger_edge_health_pinger_force_open_triggers_callback():
     b._is_valid_metric = lambda _x: True
 
     _force_open_breaker(b, "test_target")
-    assert b.state == CircuitState.OPEN
+    assert b.state is CircuitState.OPEN
     assert called == [(CircuitState.CLOSED, CircuitState.OPEN)]

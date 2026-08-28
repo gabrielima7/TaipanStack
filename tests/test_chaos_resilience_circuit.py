@@ -46,7 +46,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos():
         failing_service()
 
     # Verify state transitioned successfully despite the callback exception
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
     # Wait for timeout to expire so we can transition to HALF_OPEN
     time.sleep(0.05)
@@ -58,7 +58,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos():
     result = successful_service()
 
     assert result == "success"
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
 
 
 def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_structlog(
@@ -90,7 +90,7 @@ def test_chaos_resilience_circuit_circuit_breaker_on_state_change_chaos_without_
     with pytest.raises(RuntimeError, match="Service failure"):
         failing_service()
 
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_chaos_resilience_circuit_circuit_breaker_chaos_config_mutations():

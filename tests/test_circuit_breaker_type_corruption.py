@@ -22,7 +22,7 @@ def test_circuit_breaker_type_corruption_success_count() -> None:
     # It catches TypeError, resets to 1, and stays HALF_OPEN because 1 < 2
     breaker._handle_success_half_open()
     assert breaker._state.success_count == 1
-    assert breaker._state.state == CircuitState.HALF_OPEN
+    assert breaker._state.state is CircuitState.HALF_OPEN
 
 
 def test_circuit_breaker_type_corruption_failure_count_in_update() -> None:
@@ -46,4 +46,4 @@ def test_circuit_breaker_type_corruption_handle_failure_closed_direct() -> None:
     # Set to type mutation
     breaker._state.failure_count = "corrupted"  # type: ignore[assignment]
     breaker._handle_failure_closed()
-    assert breaker._state.state == CircuitState.OPEN
+    assert breaker._state.state is CircuitState.OPEN

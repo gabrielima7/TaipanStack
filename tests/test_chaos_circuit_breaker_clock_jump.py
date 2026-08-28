@@ -25,7 +25,7 @@ def test_chaos_circuit_breaker_clock_jump_circuit_breaker_backward_clock_jump_ch
     with pytest.raises(ValueError):
         failing_func()
 
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
     # Clock jumps backward by 1 day!
     time_val = 1000.0 - 86400.0
@@ -42,4 +42,4 @@ def test_chaos_circuit_breaker_clock_jump_circuit_breaker_backward_clock_jump_ch
     except ValueError:
         assert True
 
-    assert breaker.state == CircuitState.OPEN  # Reopened after failure
+    assert breaker.state is CircuitState.OPEN  # Reopened after failure

@@ -96,10 +96,10 @@ def test_chaos_circuit_breaker_result_monad_type_mutation_chaos_circuit_breaker_
     cb._state.failure_count = "corrupted"  # type: ignore[assignment]
     state_change = cb._handle_failure_closed()
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
-    assert cb._state.state == CircuitState.OPEN
+    assert cb._state.state is CircuitState.OPEN
 
     cb._state.state = CircuitState.CLOSED
     cb._state.failure_count = float("nan")
     state_change = cb._handle_failure_closed()
     assert state_change == (CircuitState.CLOSED, CircuitState.OPEN)
-    assert cb._state.state == CircuitState.OPEN
+    assert cb._state.state is CircuitState.OPEN

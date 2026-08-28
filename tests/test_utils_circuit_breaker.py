@@ -57,7 +57,7 @@ class TestCircuitBreaker:
     def test_utils_circuit_breaker_starts_closed(self) -> None:
         """Test that circuit starts in closed state."""
         breaker = CircuitBreaker()
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     def test_utils_circuit_breaker_success_keeps_closed(self) -> None:
         """Test that successful calls keep circuit closed."""
@@ -70,7 +70,7 @@ class TestCircuitBreaker:
         for _ in range(10):
             assert success_func() == "ok"
 
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     def test_utils_circuit_breaker_failures_open_circuit(
         self,
@@ -86,7 +86,7 @@ class TestCircuitBreaker:
             with pytest.raises(ValueError):
                 failing_func()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
     def test_utils_circuit_breaker_open_circuit_blocks_calls(
         self,
@@ -121,7 +121,7 @@ class TestCircuitBreaker:
         with pytest.raises(ValueError):
             failing_func()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         # Wait for timeout
         time.sleep(0.15)
@@ -131,7 +131,7 @@ class TestCircuitBreaker:
             failing_func()
 
         # Should be back to open after failure in half-open
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
     def test_utils_circuit_breaker_half_open_thundering_herd_chaos(
         self,
@@ -191,7 +191,7 @@ class TestCircuitBreaker:
         with pytest.raises(ValueError):
             api_call()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         # 2. Wait for timeout to allow half-open
         time.sleep(0.1)
@@ -267,7 +267,7 @@ class TestCircuitBreaker:
         assert max_active_calls <= max_acceptable_successes
 
         # Finally, circuit should be fully closed again
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     def test_utils_circuit_breaker_success_in_half_open_closes(
         self,
@@ -297,7 +297,7 @@ class TestCircuitBreaker:
 
         # Should succeed and close circuit
         assert flaky_func() == "ok"
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     def test_utils_circuit_breaker_reset_closes_circuit(self) -> None:
         """Test that reset closes the circuit."""
@@ -311,10 +311,10 @@ class TestCircuitBreaker:
         with pytest.raises(ValueError):
             failing_func()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         breaker.reset()
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     def test_utils_circuit_breaker_excluded_exceptions_dont_trip(
         self,
@@ -334,7 +334,7 @@ class TestCircuitBreaker:
             with pytest.raises(ValueError):
                 failing_func()
 
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
 
 class TestCircuitBreakerDecorator:
@@ -389,7 +389,7 @@ class TestCircuitBreakerDecorator:
         with pytest.raises(CircuitBreakerError) as exc_info:
             await my_async_func()
 
-        assert exc_info.value.state == CircuitState.OPEN
+        assert exc_info.value.state is CircuitState.OPEN
 
 
 class TestCircuitBreakerError:
@@ -398,7 +398,7 @@ class TestCircuitBreakerError:
     def test_utils_circuit_breaker_has_state(self) -> None:
         """Test that error has state attribute."""
         error = CircuitBreakerError("test", CircuitState.OPEN)
-        assert error.state == CircuitState.OPEN
+        assert error.state is CircuitState.OPEN
 
     def test_utils_circuit_breaker_message_expected(self) -> None:
         """Test error message."""

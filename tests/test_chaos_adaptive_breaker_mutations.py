@@ -11,7 +11,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_target_error_rate_mut
 
     # Should safely fail closed (open the circuit) rather than crashing
     breaker.record_failure(ValueError("test"))
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_target_error_rate_nan():
@@ -21,7 +21,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_target_error_rate_nan
 
     # Should safely fail closed (open the circuit) rather than crashing
     breaker.record_failure(ValueError("test"))
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_mutation():
@@ -31,7 +31,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_mutati
     object.__setattr__(breaker, "_last_opened_at", "corrupted")
 
     # Should safely recover to HALF_OPEN to not lock out forever
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_nan():
@@ -41,7 +41,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_last_opened_at_nan():
     object.__setattr__(breaker, "_last_opened_at", float("nan"))
 
     # Should safely recover to HALF_OPEN to not lock out forever
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward():
@@ -51,7 +51,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_clock_jump_backward()
     breaker._last_opened_at = time.monotonic() + 1000.0  # Time in future
 
     # Should safely handle elapsed < 0 and allow recovery to prevent lockout
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(
@@ -65,7 +65,7 @@ def test_chaos_adaptive_breaker_mutations_adaptive_breaker_time_corruption_nan(
     monkeypatch.setattr(time, "monotonic", lambda: float("nan"))
 
     # Should safely stay OPEN and not crash
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_chaos_adaptive_breaker_mutations_adaptive_breaker_min_throughput_invalid():

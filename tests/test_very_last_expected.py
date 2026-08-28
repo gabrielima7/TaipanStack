@@ -682,10 +682,10 @@ def test_very_last_circuit_breaker_open_handling_remains_open():
     cb = CircuitBreaker()
     cb._state.state = CircuitState.OPEN
     cb._record_success()
-    assert cb._state.state == CircuitState.OPEN
+    assert cb._state.state is CircuitState.OPEN
 
     cb._record_failure(Exception("test"))
-    assert cb._state.state == CircuitState.OPEN
+    assert cb._state.state is CircuitState.OPEN
 
 
 def test_very_last_validate_args_param_missing_returns_value():

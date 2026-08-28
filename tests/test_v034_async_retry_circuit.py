@@ -234,7 +234,7 @@ class TestCircuitBreakerAsyncSupport:
         for _ in range(5):
             assert await succeed() == "ok"
 
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     async def test_v034_async_retry_circuit_async_failures_open_circuit(
         self,
@@ -250,7 +250,7 @@ class TestCircuitBreakerAsyncSupport:
             with pytest.raises(ValueError):
                 await always_fail()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
     async def test_v034_async_retry_circuit_async_open_circuit_raises_circuit_breaker_error(
         self,
@@ -267,12 +267,12 @@ class TestCircuitBreakerAsyncSupport:
         with pytest.raises(RuntimeError):
             await always_fail()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         with pytest.raises(CircuitBreakerError) as exc_info:
             await always_fail()
 
-        assert exc_info.value.state == CircuitState.OPEN
+        assert exc_info.value.state is CircuitState.OPEN
 
     async def test_v034_async_retry_circuit_async_half_open_success_closes_circuit(
         self,
@@ -297,13 +297,13 @@ class TestCircuitBreakerAsyncSupport:
         with pytest.raises(RuntimeError):
             await flaky()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         await asyncio.sleep(0.1)
 
         result = await flaky()
         assert result == "recovered"
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     async def test_v034_async_retry_circuit_async_half_open_failure_reopens_circuit(
         self,
@@ -322,7 +322,7 @@ class TestCircuitBreakerAsyncSupport:
         with pytest.raises(RuntimeError):
             await always_fail()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
         await asyncio.sleep(0.1)
 
@@ -330,7 +330,7 @@ class TestCircuitBreakerAsyncSupport:
         with pytest.raises(RuntimeError):
             await always_fail()
 
-        assert breaker.state == CircuitState.OPEN
+        assert breaker.state is CircuitState.OPEN
 
     async def test_v034_async_retry_circuit_circuit_breaker_decorator_async(
         self,
@@ -365,7 +365,7 @@ class TestCircuitBreakerAsyncSupport:
             with pytest.raises(ValueError):
                 await raises_excluded()
 
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
 
     async def test_v034_async_retry_circuit_async_on_state_change_callback_called(
         self,

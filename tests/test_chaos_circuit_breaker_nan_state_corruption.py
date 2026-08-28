@@ -22,7 +22,7 @@ def test_chaos_circuit_breaker_nan_state_corruption_chaos_circuit_breaker_nan_st
     breaker._record_failure(ValueError("test"))
 
     # If failure_count is corrupted, it should be treated as max failures to open the circuit safely
-    assert breaker._state.state == CircuitState.OPEN
+    assert breaker._state.state is CircuitState.OPEN
 
     # Chaos: Corrupt success_count to NaN in HALF_OPEN state
     breaker = CircuitBreaker(failure_threshold=2, success_threshold=2, timeout=0.01)
@@ -37,7 +37,7 @@ def test_chaos_circuit_breaker_nan_state_corruption_chaos_circuit_breaker_nan_st
 
     # Because it was NaN, it shouldn't meet the threshold immediately without actual successes,
     # but the logic resets it to 0, and then three successes will close the circuit
-    assert breaker._state.state == CircuitState.CLOSED
+    assert breaker._state.state is CircuitState.CLOSED
     assert math.isfinite(breaker._state.success_count)
 
     # Chaos: Corrupt half_open_attempts to Inf in HALF_OPEN state

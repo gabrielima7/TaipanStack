@@ -39,12 +39,12 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_returns_early(
 
     breaker._last_opened_at = time.monotonic()  # avoid timeout to half open
     breaker._evaluate_trip()
-    assert breaker._state == CircuitState.OPEN  # No change
+    assert breaker._state is CircuitState.OPEN  # No change
 
     breaker._state = CircuitState.CLOSED
     # Less than min_throughput (bypassing record_failure which calls it)
     breaker._evaluate_trip()
-    assert breaker._state == CircuitState.CLOSED
+    assert breaker._state is CircuitState.CLOSED
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failure(
@@ -55,27 +55,27 @@ def test_coverage_adaptive_breaker_adaptive_breaker_half_open_success_and_failur
     breaker._last_opened_at = 0.0  # Force immediate recovery
 
     # Transition to half open
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
     # Success in half open
     import time
 
     monkeypatch.setattr(time, "monotonic", lambda: 100.0)
     breaker.record_success()
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
     assert len(breaker._window) == 1
 
     # Force open again
     breaker._state = CircuitState.OPEN
     breaker._last_opened_at = 0.0
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
     # Failure in half open
     monkeypatch.setattr(time, "monotonic", lambda: 100.0)
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.HALF_OPEN
     breaker.record_failure(ValueError("fail"))
-    assert breaker._state == CircuitState.OPEN
+    assert breaker._state is CircuitState.OPEN
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open(
@@ -86,7 +86,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open
     breaker._last_opened_at = 0.0
 
     # State is now HALF_OPEN due to property
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
     # Test record_success from HALF_OPEN to cover lines 169-171
     # We monkeypatch time.monotonic to ensure no weird state changes
@@ -95,7 +95,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_half_open
     monkeypatch.setattr(time, "monotonic", lambda: 100.0)
 
     breaker.record_success()
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_half_open(
@@ -104,14 +104,14 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_failure_with_h
     breaker = AdaptiveCircuitBreaker(recovery_timeout=30.0)
     breaker._state = CircuitState.HALF_OPEN
 
-    assert breaker.state == CircuitState.HALF_OPEN
+    assert breaker.state is CircuitState.HALF_OPEN
 
     # Test record_failure from HALF_OPEN to cover lines 189-191
     import time
 
     monkeypatch.setattr(time, "monotonic", lambda: 100.0)
     breaker.record_failure(ValueError("test"))
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput():
@@ -119,11 +119,11 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throu
 
     # 1 error, less than min_throughput (2)
     breaker.record_failure(ValueError("test"))
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
 
     # 2 errors, now hits min_throughput and error_rate > target (2/2 = 1.0 > 0.5)
     breaker.record_failure(ValueError("test2"))
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throughput_and_target_rate():
@@ -133,7 +133,7 @@ def test_coverage_adaptive_breaker_adaptive_breaker_evaluate_trip_with_min_throu
     # Negative target rate means it fails closed immediately upon error
     # (since error_rate 1.0 > target -1.0)
     breaker.record_failure(ValueError("test"))
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 def test_coverage_adaptive_breaker_adaptive_breaker_invalid_recovery_timeout_type():

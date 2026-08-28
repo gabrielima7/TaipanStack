@@ -302,7 +302,7 @@ async def test_coverage_orchestrator_orchestrator_classic_circuit_breaker_record
         return "success"
 
     await orch.execute(fn)
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
 
 
 @pytest.mark.asyncio
@@ -314,7 +314,7 @@ async def test_coverage_orchestrator_orchestrator_classic_circuit_breaker_record
         raise ValueError("fail")
 
     await orch.execute(failing_fn)
-    assert breaker.state == CircuitState.OPEN
+    assert breaker.state is CircuitState.OPEN
 
 
 @pytest.mark.asyncio

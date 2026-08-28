@@ -13,7 +13,7 @@ def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_callback_exce
     cb._should_attempt()
     cb._record_failure(Exception("test"))
 
-    assert cb.state == CircuitState.OPEN
+    assert cb.state is CircuitState.OPEN
 
 
 def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_failure_count_property():
@@ -30,4 +30,4 @@ def test_chaos_circuit_breaker_callback_exceptions_circuit_breaker_notify_state_
     cb._should_attempt()
     cb._record_failure(Exception("test"))
 
-    assert cb.state == CircuitState.OPEN
+    assert cb.state is CircuitState.OPEN

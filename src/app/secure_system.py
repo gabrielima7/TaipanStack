@@ -128,6 +128,8 @@ class InMemoryUserRepository(UserRepository):
     def __init__(self) -> None:
         """Initialize the in-memory repository."""
         self._storage: dict[UUID, UserInDB] = {}
+        self._usernames: set[str] = set()
+        self._emails: set[str] = set()
         self._lock = threading.Lock()
 
     def save(self, user: UserInDB) -> Result[None, UserAlreadyExistsError]:
@@ -139,15 +141,28 @@ class InMemoryUserRepository(UserRepository):
 
         """
         with self._lock:
-            if any(
-                (u.username == user.username or u.email == user.email)
-                and u.id != user.id
-                for u in self._storage.values()
-            ):
-                return Err(
-                    UserAlreadyExistsError(f"User {user.username} already exists.")
-                )
+            existing_user = self._storage.get(user.id)
+            if existing_user is not None:
+                # If updating, check if new username/email conflicts with others
+                if user.username != existing_user.username and user.username in self._usernames:
+                    return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
+                if user.email != existing_user.email and user.email in self._emails:
+                    return Err(UserAlreadyExistsError(f"User with email {user.email} already exists."))
+
+                # Remove old indices
+                self._usernames.discard(existing_user.username)
+                self._emails.discard(existing_user.email)
+            else:
+                # New user, check existence
+                if user.username in self._usernames:
+                    return Err(UserAlreadyExistsError(f"User {user.username} already exists."))
+                if user.email in self._emails:
+                    return Err(UserAlreadyExistsError(f"User with email {user.email} already exists."))
+
+            # Add new user and indices
             self._storage[user.id] = user
+            self._usernames.add(user.username)
+            self._emails.add(user.email)
             return Ok(None)
 
     def get_by_id(self, user_id: UUID) -> UserInDB | None:

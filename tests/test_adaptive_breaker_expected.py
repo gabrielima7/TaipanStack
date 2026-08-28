@@ -190,7 +190,7 @@ def test_adaptive_breaker_err_branch() -> None:
     # Test lock timeout for state property
     breaker._lock.acquire()
     try:
-        assert breaker.state == CircuitState.CLOSED
+        assert breaker.state is CircuitState.CLOSED
     finally:
         breaker._lock.release()
 

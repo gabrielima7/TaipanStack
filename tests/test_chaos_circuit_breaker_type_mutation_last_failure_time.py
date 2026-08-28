@@ -17,4 +17,4 @@ def test_chaos_circuit_breaker_type_mutation_last_failure_time_chaos_circuit_bre
 
     # Should gracefully allow recovery/attempt after timeout instead of permanent lockout
     assert breaker._should_attempt()
-    assert breaker._state.state == CircuitState.HALF_OPEN
+    assert breaker._state.state is CircuitState.HALF_OPEN

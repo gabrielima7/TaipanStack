@@ -51,7 +51,7 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
     for t in threads:
         t.join()
 
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
     assert success_call_count <= breaker.config.success_threshold
 
 
@@ -93,7 +93,7 @@ def test_utils_circuit_breaker_chaos_half_open_exhaustion_with_system_exit():
         assert successful_service() == "success"
 
     # The circuit should now be closed.
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
 
 
 @pytest.mark.asyncio
@@ -118,4 +118,4 @@ async def test_utils_circuit_breaker_chaos_async_half_open_exhaustion_with_cance
     for _ in range(3):
         assert await successful_service() == "success"
 
-    assert breaker.state == CircuitState.CLOSED
+    assert breaker.state is CircuitState.CLOSED
