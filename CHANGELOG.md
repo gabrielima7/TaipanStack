@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Rate Limiter Type Mutation Resilience**: Hardened `RateLimiter` against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers or anomalous float operations) that could crash the service. Operations are now gracefully handled, falling back to safe defaults or returning appropriate `Err` states instead of raising uncaught exceptions (PR #1139).
 - **Anomalous Math Operations**: Implemented safeguards in `RateLimiter` to gracefully absorb anomalous mathematical operations caused by invalid types or state corruption, ensuring the system degrades safely without crashing (PR #1139).
 
+### Clean Code, Refactoring & Typing
+- **Circuit Breaker Cyclomatic Complexity**: Reduced cyclomatic complexity in `CircuitBreaker` by refactoring lock acquisition and state checks into unified helper methods (PR #1154).
+- **Resilience Enum Identity Checks**: Updated `CircuitState` enum comparisons across the resilience module (Circuit Breaker, Health Pinger) to use identity checks (`is`, `is not`) instead of equality checks to prevent exceptions from `__eq__` overrides (PR #1155).
+- **Adaptive Bulkhead Typing**: Enhanced typing for `Adaptive Bulkhead` by explicitly using `Coroutine` instead of `Awaitable` for internal async tasks to resolve strict mypy typing errors (PR #1158).
+
 ## [0.6.2] - 2026-08-17
 
 ### Clean Code, Refactoring & Typing
