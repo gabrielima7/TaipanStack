@@ -12,13 +12,13 @@ from taipanstack.resilience.circuit_breaker import CircuitState
 class TestAdaptiveCircuitBreaker:
     """Tests for the adaptive circuit breaker."""
 
-    def test_adaptive_breaker_initial_state_closed(self) -> None:
+    def test_adaptive_breaker_initial_state_closed_closed_state(self) -> None:
         """Starts in CLOSED state."""
         ab = AdaptiveCircuitBreaker("test")
         assert ab.state.value == CircuitState.CLOSED.value
         assert ab.should_allow()
 
-    def test_adaptive_breaker_record_success(self) -> None:
+    def test_adaptive_breaker_record_success_state_closed(self) -> None:
         """Success updates window and keeps state closed."""
         ab = AdaptiveCircuitBreaker("test")
         ab.record_success()
@@ -27,7 +27,7 @@ class TestAdaptiveCircuitBreaker:
         assert m.success_rate == 1.0
         assert m.state.value == CircuitState.CLOSED.value
 
-    def test_adaptive_breaker_record_failure_below_throughput(
+    def test_adaptive_breaker_record_failure_below_throughput_min_throughput(
         self,
     ) -> None:
         """Failures update window, but don't trip if below min throughput."""
@@ -41,7 +41,7 @@ class TestAdaptiveCircuitBreaker:
         assert m.error_count == 4
         assert m.state.value == CircuitState.CLOSED.value
 
-    def test_adaptive_breaker_trips_open_on_enough_failures(
+    def test_adaptive_breaker_trips_open_on_enough_failures_failures_burst(
         self,
     ) -> None:
         """Breaker opens after enough cumulative failures (burst)."""
@@ -54,7 +54,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.OPEN.value
         assert not ab.should_allow()
 
-    def test_adaptive_breaker_stays_closed_if_under_target_rate(
+    def test_adaptive_breaker_stays_closed_if_under_target_rate_high_throughput(
         self,
     ) -> None:
         """If error rate is below target, it stays closed even at high throughput."""
@@ -70,7 +70,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.CLOSED.value
         assert ab.should_allow()
 
-    def test_adaptive_breaker_half_open_recovery(self) -> None:
+    def test_adaptive_breaker_half_open_recovery_on_success(self) -> None:
         """Breaker transitions to HALF_OPEN after timeout, then CLOSED on success."""
         with patch(
             "taipanstack.resilience.adaptive.adaptive_breaker.time.monotonic"
@@ -96,7 +96,7 @@ class TestAdaptiveCircuitBreaker:
             assert ab.state.value == CircuitState.CLOSED.value
             assert ab.metrics.total_calls == 1  # Just the success
 
-    def test_adaptive_breaker_half_open_failure_returns_to_open(
+    def test_adaptive_breaker_half_open_failure_returns_to_open_on_failure(
         self,
     ) -> None:
         """Breaker transitions to HALF_OPEN after timeout, then back OPEN on failure."""
@@ -125,7 +125,7 @@ class TestAdaptiveCircuitBreaker:
             mock_time.return_value = 15.0
             assert ab.state.value == CircuitState.OPEN.value
 
-    def test_adaptive_breaker_reset_clears_window(self) -> None:
+    def test_adaptive_breaker_reset_clears_window_closes_breaker(self) -> None:
         """Reset clears window and closes breaker."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=2, target_error_rate=0.1)
         ab.record_failure(RuntimeError("fail"))
@@ -136,7 +136,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.CLOSED.value
         assert ab.metrics.total_calls == 0
 
-    def test_adaptive_breaker_metrics_snapshot(self) -> None:
+    def test_adaptive_breaker_metrics_snapshot_correct_snapshot(self) -> None:
         """Metrics returns correct snapshot."""
         ab = AdaptiveCircuitBreaker("test", min_throughput=10, target_error_rate=0.9)
         ab.record_success()
@@ -150,7 +150,7 @@ class TestAdaptiveCircuitBreaker:
         assert abs(m.error_rate - 1 / 3) < 1e-9
         assert abs(m.success_rate - 2 / 3) < 1e-9
 
-    def test_adaptive_breaker_empty_metrics(self) -> None:
+    def test_adaptive_breaker_empty_metrics_safe_defaults(self) -> None:
         """Empty metrics return safe defaults."""
         ab = AdaptiveCircuitBreaker("test")
         m = ab.metrics
@@ -159,7 +159,7 @@ class TestAdaptiveCircuitBreaker:
         assert m.error_rate == 0.0
         assert m.success_rate == 1.0
 
-    def test_adaptive_breaker_burst_scenario(self) -> None:
+    def test_adaptive_breaker_burst_scenario_sliding_window(self) -> None:
         """Testing a burst scenario where error rates shift over a sliding window."""
         # Window size 10, min throughput 5, trip at 50% failures
         ab = AdaptiveCircuitBreaker(
@@ -181,7 +181,7 @@ class TestAdaptiveCircuitBreaker:
         assert ab.state.value == CircuitState.OPEN.value
 
 
-def test_adaptive_breaker_err_branch() -> None:
+def test_adaptive_breaker_err_branch_expected() -> None:
     from taipanstack.resilience.adaptive.adaptive_breaker import AdaptiveCircuitBreaker
 
     breaker = AdaptiveCircuitBreaker(name="test_err")

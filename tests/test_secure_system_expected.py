@@ -21,7 +21,7 @@ from taipanstack.core.result import Err, Ok, Result
 from taipanstack.security import verify_password
 
 
-def test_secure_system_create_user_success_expected(
+def test_secure_system_create_user_success_valid_data(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test creating a user with valid data."""
@@ -59,7 +59,7 @@ def test_secure_system_create_user_success_expected(
     assert f"user_id={user.id}" in caplog.text
 
 
-def test_secure_system_create_user_failure_expected(
+def test_secure_system_create_user_failure_handled_gracefully(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test user creation failure handled gracefully."""
@@ -88,7 +88,7 @@ def test_secure_system_create_user_failure_expected(
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_create_user_already_exists(
+def test_secure_system_create_user_already_exists_raises_useralreadyexistserror(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test creating a user that already exists raises UserAlreadyExistsError."""
@@ -120,7 +120,7 @@ def test_secure_system_create_user_already_exists(
     assert "Failed to create user" in caplog.text
 
 
-def test_secure_system_create_user_invalid_email() -> None:
+def test_secure_system_create_user_invalid_email_raises_validationerror() -> None:
     """Test creating a user with an invalid email raises ValidationError."""
     with pytest.raises(ValidationError):
         UserCreate(
@@ -130,7 +130,7 @@ def test_secure_system_create_user_invalid_email() -> None:
         )
 
 
-def test_secure_system_create_user_invalid_username() -> None:
+def test_secure_system_create_user_invalid_username_raises_validationerror() -> None:
     """Test creating a user with an invalid username raises ValidationError."""
     with pytest.raises(ValidationError):
         UserCreate(
@@ -140,7 +140,7 @@ def test_secure_system_create_user_invalid_username() -> None:
         )
 
 
-def test_secure_system_get_non_existent_user(
+def test_secure_system_get_non_existent_user_with_usernotfounderror(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test retrieving a non-existent user returns Err with UserNotFoundError."""
@@ -164,7 +164,7 @@ def test_secure_system_get_non_existent_user(
     assert f"user_id={user_id}" in caplog.text
 
 
-def test_secure_system_models_redaction() -> None:
+def test_secure_system_models_redaction_sensitive_fields() -> None:
     """Test that UserCreate and UserInDB models redact sensitive fields."""
     user_create = UserCreate(
         username="testuser",
@@ -196,7 +196,7 @@ def test_secure_system_models_redaction() -> None:
     assert "some_hashed_value" not in json_user
 
 
-def test_secure_system_create_user_already_exists_same_email(
+def test_secure_system_create_user_already_exists_same_email_raises_useralreadyexistserror(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test creating a user that already exists due to same email raises UserAlreadyExistsError."""
@@ -225,7 +225,7 @@ def test_secure_system_create_user_already_exists_same_email(
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_create_user_unhandled_err(
+def test_secure_system_create_user_unhandled_err_from_repositorysave(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test unhandled error type from repository.save"""
@@ -253,7 +253,7 @@ def test_secure_system_create_user_unhandled_err(
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_create_user_unhandled_match(
+def test_secure_system_create_user_unhandled_match_match_fallthrough(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test match fallthrough."""
@@ -281,7 +281,7 @@ def test_secure_system_create_user_unhandled_match(
             pytest.fail("Expected Err(UserCreationError)")
 
 
-def test_secure_system_concurrent_chaos_expected() -> None:
+def test_secure_system_concurrent_chaos_raise_runtimeerror() -> None:
     """Test that concurrent creates do not raise RuntimeError."""
     repository = InMemoryUserRepository()
     service = UserService(repository)

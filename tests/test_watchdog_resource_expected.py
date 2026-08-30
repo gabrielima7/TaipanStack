@@ -16,14 +16,14 @@ from taipanstack.resilience.watchdogs.resource_watcher import (
 class TestResourceSnapshot:
     """Tests for the ResourceSnapshot dataclass."""
 
-    def test_watchdog_resource_creation_expected(self) -> None:
+    def test_watchdog_resource_creation_and_timestamp(self) -> None:
         """Snapshot stores cpu, memory, and timestamp."""
         snap = ResourceSnapshot(cpu_percent=50.0, memory_percent=60.0, timestamp=1.0)
         assert snap.cpu_percent == 50.0
         assert snap.memory_percent == 60.0
         assert snap.timestamp == 1.0
 
-    def test_watchdog_resource_frozen_expected(self) -> None:
+    def test_watchdog_resource_frozen_is_immutable(self) -> None:
         """Snapshot is immutable."""
         snap = ResourceSnapshot(cpu_percent=1.0, memory_percent=2.0, timestamp=0.0)
         with pytest.raises(AttributeError):
@@ -33,7 +33,7 @@ class TestResourceSnapshot:
 class TestCheckResources:
     """Tests for the one-shot check_resources function."""
 
-    def test_watchdog_resource_ok_with_psutil(self) -> None:
+    def test_watchdog_resource_ok_with_psutil_is_available(self) -> None:
         """Returns Ok(ResourceSnapshot) when psutil is available."""
         mock_vm = MagicMock()
         mock_vm.percent = 42.5
@@ -55,7 +55,7 @@ class TestCheckResources:
         assert snap.memory_percent == 42.5
         assert snap.timestamp > 0
 
-    def test_watchdog_resource_err_without_psutil(self) -> None:
+    def test_watchdog_resource_err_without_psutil_not_installed(self) -> None:
         """Returns Err(ImportError) when psutil is not installed."""
         with patch(
             "taipanstack.resilience.watchdogs.resource_watcher._HAS_PSUTIL", False
@@ -70,7 +70,7 @@ class TestResourceWatcher:
     """Tests for the ResourceWatcher background task."""
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_start_without_psutil_returns_err(
+    async def test_watchdog_resource_start_without_psutil_returns_err_is_unavailable(
         self,
     ) -> None:
         """Start returns Err when psutil is unavailable."""
@@ -83,7 +83,7 @@ class TestResourceWatcher:
         assert isinstance(result.err_value, ImportError)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_start_stop_lifecycle(
+    async def test_watchdog_resource_start_stop_lifecycle_and_stopped(
         self,
     ) -> None:
         """Watcher can be started and stopped."""
@@ -110,7 +110,7 @@ class TestResourceWatcher:
             assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_double_start_returns_err(
+    async def test_watchdog_resource_double_start_returns_err_returns_err(
         self,
     ) -> None:
         """Starting an already-running watcher returns Err."""
@@ -136,7 +136,7 @@ class TestResourceWatcher:
                 await watcher.stop()
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_threshold_breach_callback(
+    async def test_watchdog_resource_threshold_breach_callback_are_breached(
         self,
     ) -> None:
         """Callback fires when thresholds are breached."""
@@ -169,7 +169,7 @@ class TestResourceWatcher:
         assert any(r == "memory" for r, _ in breaches)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_no_breach_below_threshold(
+    async def test_watchdog_resource_no_breach_below_threshold_below_thresholds(
         self,
     ) -> None:
         """No callback when values are below thresholds."""
@@ -199,7 +199,7 @@ class TestResourceWatcher:
         assert len(breaches) == 0
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_run_handles_check_error(
+    async def test_watchdog_resource_run_handles_check_error_not_raised(
         self,
     ) -> None:
         """Error from check_resources is logged, not raised."""
@@ -223,21 +223,21 @@ class TestResourceWatcher:
 class TestBaseWatcher:
     """Tests for BaseWatcher ABC."""
 
-    def test_watchdog_resource_repr_expected(self) -> None:
+    def test_watchdog_resource_repr_and_interval(self) -> None:
         """Repr includes class name and interval."""
         watcher = ResourceWatcher(interval=3.0)
         assert "ResourceWatcher" in repr(watcher)
         assert "3.0" in repr(watcher)
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_stop_without_start(self) -> None:
+    async def test_watchdog_resource_stop_without_start_is_safe(self) -> None:
         """Stopping a watcher that was never started is safe."""
         watcher = ResourceWatcher(interval=1.0)
         await watcher.stop()
         assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_stop_timeout_cancels_task(
+    async def test_watchdog_resource_stop_timeout_cancels_task_gets_cancelled(
         self,
     ) -> None:
         """When the task doesn't stop in time, it gets cancelled."""
@@ -273,7 +273,7 @@ class TestBaseWatcher:
             assert not watcher.is_running
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_run_err_branch_logged(
+    async def test_watchdog_resource_run_err_branch_logged_handled_gracefully(
         self,
     ) -> None:
         """Err from check_resources in _run is handled gracefully."""
@@ -287,7 +287,7 @@ class TestBaseWatcher:
             await watcher._run()
 
     @pytest.mark.asyncio
-    async def test_watchdog_resource_threshold_breach_without_callback(
+    async def test_watchdog_resource_threshold_breach_without_callback_is_none(
         self,
     ) -> None:
         """Breach is logged but no crash when on_threshold_breach is None."""
@@ -332,7 +332,7 @@ async def test_watchdog_resource_resource_watcher_run_err_branch_expected() -> N
         await watcher._run()
 
 
-def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
+def test_watchdog_resource_resource_watcher_import_error_coverage_fallback_branches() -> None:
     """Test resource_watcher import error fallback branches."""
     import asyncio
     import importlib
@@ -351,7 +351,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
         # Test the start error branch where psutil is not available
         watcher = res_mod.ResourceWatcher()
 
-        async def test_watchdog_resource_run_ok():
+        async def test_watchdog_resource_run_ok_expected():
             result = await watcher.start()
             assert isinstance(result, Err)
             # To test the unhandled _run case, we manually toggle _is_running
@@ -362,7 +362,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
             res = res_mod.check_resources()
             assert isinstance(res, Err)
 
-        asyncio.run(test_watchdog_resource_run_ok())
+        asyncio.run(test_watchdog_resource_run_ok_expected())
     finally:
         if original_psutil is not None:
             sys.modules["psutil"] = original_psutil
@@ -371,7 +371,7 @@ def test_watchdog_resource_resource_watcher_import_error_coverage() -> None:
         importlib.reload(res_mod)
 
 
-def test_watchdog_resource_resource_watcher_import_success_coverage() -> None:
+def test_watchdog_resource_resource_watcher_import_success_coverage_success_branch() -> None:
     """Test resource_watcher import success branch."""
     import importlib
     import sys
