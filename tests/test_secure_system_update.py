@@ -14,7 +14,7 @@ def test_secure_system_update_user():
         email="test@example.com",
         password_hash="hash",
         is_active=True,
-        is_superuser=False
+        is_superuser=False,
     )
     repo.save(user1)
 
@@ -25,7 +25,7 @@ def test_secure_system_update_user():
         email="test2@example.com",
         password_hash="hash",
         is_active=True,
-        is_superuser=False
+        is_superuser=False,
     )
     repo.save(user2)
 
@@ -36,7 +36,7 @@ def test_secure_system_update_user():
         email="test_updated@example.com",
         password_hash="hash",
         is_active=True,
-        is_superuser=False
+        is_superuser=False,
     )
     res = repo.save(user1_updated)
     assert isinstance(res, Ok)
@@ -48,7 +48,7 @@ def test_secure_system_update_user():
         email="test2@example.com",
         password_hash="hash",
         is_active=True,
-        is_superuser=False
+        is_superuser=False,
     )
     res = repo.save(user1_conflict)
     assert isinstance(res, Err)
@@ -60,7 +60,7 @@ def test_secure_system_update_user():
         email="test_free@example.com",
         password_hash="hash",
         is_active=True,
-        is_superuser=False
+        is_superuser=False,
     )
     res = repo.save(user1_conflict2)
     assert isinstance(res, Err)
