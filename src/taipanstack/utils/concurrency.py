@@ -52,6 +52,27 @@ class ConcurrencyLimitDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, OverloadError]]]: ...
 
 
+async def _acquire_with_timeout(
+    async_semaphore: asyncio.Semaphore,
+    timeout: float,
+) -> Result[None, OverloadError]:
+    try:
+        async with asyncio.timeout(timeout):
+            await async_semaphore.acquire()
+            return Ok(None)
+    except TimeoutError:
+        return Err(OverloadError())
+
+
+async def _acquire_no_timeout(
+    async_semaphore: asyncio.Semaphore,
+) -> Result[None, OverloadError]:
+    if async_semaphore.locked():
+        return Err(OverloadError())
+    await async_semaphore.acquire()
+    return Ok(None)
+
+
 async def _acquire_async_semaphore(
     async_semaphore: asyncio.Semaphore,
     timeout: float,
@@ -59,17 +80,8 @@ async def _acquire_async_semaphore(
     """Acquire async semaphore with optional timeout."""
     try:
         if timeout <= 0.0:
-            if async_semaphore.locked():
-                return Err(OverloadError())
-            await async_semaphore.acquire()
-            return Ok(None)
-
-        try:
-            async with asyncio.timeout(timeout):
-                await async_semaphore.acquire()
-                return Ok(None)
-        except TimeoutError:
-            return Err(OverloadError())
+            return await _acquire_no_timeout(async_semaphore)
+        return await _acquire_with_timeout(async_semaphore, timeout)
     except Exception as e:
         return Err(OverloadError(f"Resource exhaustion: {e!s}"))
 
