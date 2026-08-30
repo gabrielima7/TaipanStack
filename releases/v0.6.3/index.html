@@ -1105,6 +1105,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#clean-code-refactoring-typing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧹 Clean Code, Refactoring &amp; Typing
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2423,6 +2434,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#clean-code-refactoring-typing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧹 Clean Code, Refactoring &amp; Typing
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2451,6 +2473,12 @@
 <ul>
 <li><strong>Rate Limiter Type Mutation Resilience</strong>: Hardened <code>RateLimiter</code> against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers or anomalous float operations) that could crash the service. Operations are now gracefully handled via <code>try...except Exception</code> blocks, falling back to safe defaults or returning appropriate <code>Err</code> states instead of raising uncaught exceptions (PR #1139).</li>
 <li><strong>Anomalous Math Operations</strong>: Implemented safeguards in <code>RateLimiter</code> to gracefully absorb anomalous mathematical operations caused by invalid types or state corruption, ensuring the system degrades safely without crashing (PR #1139).</li>
+</ul>
+<h2 id="clean-code-refactoring-typing">🧹 Clean Code, Refactoring &amp; Typing<a class="headerlink" href="#clean-code-refactoring-typing" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Circuit Breaker Cyclomatic Complexity</strong>: Reduced cyclomatic complexity in <code>CircuitBreaker</code> by refactoring lock acquisition and state checks into unified helper methods (PR #1154).</li>
+<li><strong>Resilience Enum Identity Checks</strong>: Updated <code>CircuitState</code> enum comparisons across the resilience module (Circuit Breaker, Health Pinger) to use identity checks (<code>is</code>, <code>is not</code>) instead of equality checks to prevent exceptions from <code>__eq__</code> overrides (PR #1155).</li>
+<li><strong>Adaptive Bulkhead Typing</strong>: Enhanced typing for <code>Adaptive Bulkhead</code> by explicitly using <code>Coroutine</code> instead of <code>Awaitable</code> for internal async tasks to resolve strict mypy typing errors (PR #1158).</li>
 </ul>
 <p><strong>Full Changelog:</strong> <a href="https://github.com/gabrielima7/TaipanStack/compare/v0.6.2...v0.6.3">v0.6.2...v0.6.3</a></p>
 
