@@ -161,6 +161,20 @@ def _get_allowed_keys(allowed_env_vars: Sequence[str] | None) -> set[str]:
     return {k.upper() for k in allowed_env_vars}
 
 
+def _get_env_to_filter(env: dict[str, str] | None) -> dict[str, str]:
+    """Get the environment to filter."""
+    return env if env is not None else dict(os.environ)
+
+
+def _build_filtered_env(
+    env_to_filter: dict[str, str], allowed_keys: set[str]
+) -> dict[str, str]:
+    """Build the filtered environment dictionary."""
+    if not allowed_keys:
+        return {}
+    return {k: str(v) for k, v in env_to_filter.items() if k.upper() in allowed_keys}
+
+
 def _filter_environment(
     env: dict[str, str] | None,
     allowed_env_vars: Sequence[str] | None = None,
@@ -177,13 +191,9 @@ def _filter_environment(
         Filtered environment variables containing only allowed keys.
 
     """
-    env_to_filter = env if env is not None else dict(os.environ)
+    env_to_filter = _get_env_to_filter(env)
     allowed_keys = _get_allowed_keys(allowed_env_vars)
-
-    if not allowed_keys:
-        return {}
-
-    return {k: str(v) for k, v in env_to_filter.items() if k.upper() in allowed_keys}
+    return _build_filtered_env(env_to_filter, allowed_keys)
 
 
 def _extract_timeout_stdout(e: subprocess.TimeoutExpired) -> str:
@@ -281,6 +291,18 @@ def _handle_dry_run(validated_cmd: list[str]) -> SafeCommandResult:
     )
 
 
+def _check_timeout_type(timeout: float) -> None:
+    """Check if timeout is a number."""
+    if not isinstance(timeout, (int, float)):
+        raise TypeError("timeout must be a finite non-negative number")
+
+
+def _check_timeout_value(timeout: float) -> None:
+    """Check if timeout is finite and non-negative."""
+    if not math.isfinite(timeout) or timeout < 0:
+        raise ValueError("timeout must be a finite non-negative number")
+
+
 def _validate_timeout(timeout: float) -> None:
     """Validate that the timeout is a finite, non-negative number.
 
@@ -294,14 +316,8 @@ def _validate_timeout(timeout: float) -> None:
     if timeout is None:
         return  # type: ignore[unreachable]
 
-    if not isinstance(timeout, (int, float)):
-        raise TypeError("timeout must be a finite non-negative number")
-
-    if not math.isfinite(timeout):
-        raise ValueError("timeout must be a finite non-negative number")
-
-    if timeout < 0:
-        raise ValueError("timeout must be a finite non-negative number")
+    _check_timeout_type(timeout)
+    _check_timeout_value(timeout)
 
 
 def run_safe_command(
