@@ -322,10 +322,12 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if not math.isfinite(last_failure):
+        try:
+            if not math.isfinite(last_failure):
+                return safe_timeout
+            elapsed = now - float(last_failure)
+        except Exception:
             return safe_timeout
-
-        elapsed = now - float(last_failure)
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
