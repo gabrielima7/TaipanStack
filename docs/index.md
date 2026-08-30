@@ -19,7 +19,10 @@ hide:
 ### ✨ What's New in v0.6.3
 
 - **Security & Resilience**: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via `try...except Exception` blocks, falling back to safe defaults or returning appropriate `Err` states (PR #1139).
-- **Clean Code & Refactoring (v0.6.2)**: Proactively refactored and extracted nested structures into dedicated helpers across resilience and rate limiting components to reduce cyclomatic complexity (PR #1124).
+
+### ✨ What's New in v0.6.2
+
+- **Clean Code & Refactoring**: Proactively refactored and extracted nested structures into dedicated helpers across resilience and rate limiting components to reduce cyclomatic complexity (PR #1124).
 
 ### ✨ What's New in v0.6.1
 
