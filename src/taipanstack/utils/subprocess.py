@@ -174,7 +174,6 @@ def _build_filtered_env(
         return {}
     return {k: str(v) for k, v in env_to_filter.items() if k.upper() in allowed_keys}
 
-
 def _filter_environment(
     env: dict[str, str] | None,
     allowed_env_vars: Sequence[str] | None = None,
@@ -301,6 +300,7 @@ def _check_timeout_value(timeout: float) -> None:
     """Check if timeout is finite and non-negative."""
     if not math.isfinite(timeout) or timeout < 0:
         raise ValueError("timeout must be a finite non-negative number")
+
 
 
 def _validate_timeout(timeout: float) -> None:
