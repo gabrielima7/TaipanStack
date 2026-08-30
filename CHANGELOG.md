@@ -899,7 +899,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test suite
 - Documentation in README
 
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.2...v0.6.3
+[0.6.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.5.2...v0.5.3
