@@ -6,7 +6,7 @@ from src.taipanstack.security.validators import _fully_unquote_url
 
 @settings(max_examples=100)
 @given(st.text())
-def test_security_validators_fully_unquote_url_fuzz_expected(url):
+def test_security_validators_fully_unquote_url_fuzz(url):
     try:
         res = _fully_unquote_url(url)
         assert isinstance(res, str)
@@ -19,7 +19,7 @@ def test_security_validators_fully_unquote_url_fuzz_expected(url):
 
 @settings(max_examples=100)
 @given(st.text())
-def test_security_sanitizers_sanitize_string_fuzz_expected(s):
+def test_security_sanitizers_sanitize_string_fuzz(s):
     try:
         res = sanitize_string(s, max_length=100)
         assert len(res) <= 100
@@ -29,7 +29,7 @@ def test_security_sanitizers_sanitize_string_fuzz_expected(s):
 
 @settings(max_examples=100)
 @given(st.text())
-def test_security_sanitizers_sanitize_filename_fuzz_expected(f):
+def test_security_sanitizers_sanitize_filename_fuzz(f):
     try:
         res = sanitize_filename(f, max_length=100)
         assert len(res) <= 100

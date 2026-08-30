@@ -37,7 +37,7 @@ def run_main_with_args(args):
         taipanstack.main()
 
 
-def test_taipanstack_script_dry_run_does_not_create_files_configuration_files(tmp_path):
+def test_taipanstack_script_dry_run_does_not_create_files(tmp_path):
     """
     Verifies that running with --dry-run does not create any configuration files.
     """
@@ -50,7 +50,7 @@ def test_taipanstack_script_dry_run_does_not_create_files_configuration_files(tm
     assert not (tmp_path / ".github" / "dependabot.yml").exists()
 
 
-def test_taipanstack_script_safe_write_creates_backup_already_exists(tmp_path):
+def test_taipanstack_script_safe_write_creates_backup(tmp_path):
     """
     Verifies that a backup (.bak) is created when a configuration file already exists.
     """
@@ -70,7 +70,7 @@ def test_taipanstack_script_safe_write_creates_backup_already_exists(tmp_path):
     assert "pre-commit-hooks" in dummy_file.read_text()  # Checks new file content
 
 
-def test_taipanstack_script_force_mode_overwrites_without_backup_a_backup(
+def test_taipanstack_script_force_mode_overwrites_without_backup(
     tmp_path,
 ):
     """
@@ -90,7 +90,7 @@ def test_taipanstack_script_force_mode_overwrites_without_backup_a_backup(
     assert "pre-commit-hooks" in dummy_file.read_text()
 
 
-def test_taipanstack_script_idempotency_for_pyproject_toml_in_pyprojecttoml(tmp_path):
+def test_taipanstack_script_idempotency_for_pyproject_toml(tmp_path):
     """
     Verifies that running the script twice does not duplicate sections in pyproject.toml.
     """
@@ -116,7 +116,7 @@ def test_taipanstack_script_idempotency_for_pyproject_toml_in_pyprojecttoml(tmp_
     assert content_after_second_run.count("[tool.ruff]") == 1
 
 
-def test_taipanstack_script_git_initialization_not_exist(tmp_path):
+def test_taipanstack_script_git_initialization(tmp_path):
     """
     Verifies that Git is initialized automatically when it does not exist.
     """
@@ -129,7 +129,7 @@ def test_taipanstack_script_git_initialization_not_exist(tmp_path):
     # Note: may not exist if git is not installed on the test system
 
 
-def test_taipanstack_script_project_structure_creation_created_correctly(tmp_path):
+def test_taipanstack_script_project_structure_creation(tmp_path):
     """
     Verifies that the project folder structure is created correctly.
     """
@@ -153,7 +153,7 @@ def test_taipanstack_script_project_structure_creation_created_correctly(tmp_pat
     assert (tmp_path / "tests" / "test_example.py").exists()
 
 
-def test_taipanstack_script_optional_dependencies_flag_dependency_installation(tmp_path, monkeypatch):
+def test_taipanstack_script_optional_dependencies_flag(tmp_path, monkeypatch):
     """
     Verifies that the --install-runtime-deps flag controls dependency installation.
     """
@@ -174,7 +174,7 @@ def test_taipanstack_script_optional_dependencies_flag_dependency_installation(t
         assert len(poetry_add_calls) == 0
 
 
-def test_taipanstack_script_install_runtime_deps_flag_production_dependencies(tmp_path, monkeypatch):
+def test_taipanstack_script_install_runtime_deps_flag(tmp_path, monkeypatch):
     """
     Verifies that --install-runtime-deps installs the production dependencies.
     """
@@ -202,7 +202,7 @@ def test_taipanstack_script_install_runtime_deps_flag_production_dependencies(tm
             )
 
 
-def test_taipanstack_script_python_version_detection_dynamically_detected(tmp_path):
+def test_taipanstack_script_python_version_detection(tmp_path):
     """
     Verifies that the Python version is dynamically detected.
     """
@@ -220,7 +220,7 @@ def test_taipanstack_script_python_version_detection_dynamically_detected(tmp_pa
     assert f'python_version = "{expected_version}"' in content
 
 
-def test_taipanstack_script_setup_pre_commit_correct_content():
+def test_taipanstack_script_setup_pre_commit():
     """
     Verifies that the pre-commit configuration file is generated with correct content.
     """
@@ -244,7 +244,7 @@ def test_taipanstack_script_setup_pre_commit_correct_content():
         assert "detect-secrets" in content
 
 
-def test_taipanstack_script_setup_pre_commit_dry_run_for_dryrun():
+def test_taipanstack_script_setup_pre_commit_dry_run():
     """
     Verifies that _setup_pre_commit handles the args correctly for dry-run.
     """

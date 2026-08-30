@@ -34,7 +34,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256", "HS384", "HS512"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_payload_payload_types(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_payload(
         self, payload, secret, algorithm
     ) -> None:
         """Bombard encode_jwt with extreme, malformed payload types."""
@@ -49,7 +49,7 @@ class TestFuzzJWT:
         audience=st.one_of(st.text(), st.lists(st.text())),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_decode_jwt_malformed_token_token_types(
+    def test_fuzz_jwt_fuzz_decode_jwt_malformed_token(
         self, token, secret, algorithms, audience
     ) -> None:
         """Bombard decode_jwt with extreme, malformed token types."""
@@ -63,7 +63,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256"]),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_secret_secret_types(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_secret(
         self, payload, secret, algorithm
     ) -> None:
         """Bombard encode_jwt with extreme, malformed secret types."""
@@ -78,7 +78,7 @@ class TestFuzzJWT:
         ),
     )
     @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
-    def test_fuzz_jwt_fuzz_encode_jwt_malformed_algorithm_expected(
+    def test_fuzz_jwt_fuzz_encode_jwt_malformed_algorithm(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
@@ -101,7 +101,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_encode_jwt_non_ascii_algorithm_expected(
+    def test_fuzz_jwt_fuzz_encode_jwt_non_ascii_algorithm(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
@@ -128,7 +128,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_decode_jwt_non_ascii_algorithm_expected(
+    def test_fuzz_jwt_fuzz_decode_jwt_non_ascii_algorithm(
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
@@ -146,7 +146,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_decode_jwt_malformed_algorithms_expected(
+    def test_fuzz_jwt_fuzz_decode_jwt_malformed_algorithms(
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
@@ -163,7 +163,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_encode_jwt_none_algorithm_expected(
+    def test_fuzz_jwt_fuzz_encode_jwt_none_algorithm(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
@@ -181,7 +181,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_decode_jwt_none_algorithm_expected(
+    def test_fuzz_jwt_fuzz_decode_jwt_none_algorithm(
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
@@ -196,7 +196,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_encode_jwt_none_ascii_algorithm_expected(
+    def test_fuzz_jwt_fuzz_encode_jwt_none_ascii_algorithm(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
@@ -212,7 +212,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_decode_jwt_none_ascii_algorithm_expected(
+    def test_fuzz_jwt_fuzz_decode_jwt_none_ascii_algorithm(
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
@@ -227,7 +227,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_encode_jwt_valid_algorithm_expected(
+    def test_fuzz_jwt_fuzz_encode_jwt_valid_algorithm(
         self, payload, secret_key, algorithm
     ):
         result = encode_jwt(payload, secret_key, algorithm=algorithm)
@@ -243,7 +243,7 @@ class TestFuzzJWT:
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
-    def test_fuzz_jwt_fuzz_decode_jwt_valid_algorithm_expected(
+    def test_fuzz_jwt_fuzz_decode_jwt_valid_algorithm(
         self, token, secret_key, algorithms, audience
     ):
         result = decode_jwt(token, secret_key, algorithms=algorithms, audience=audience)
