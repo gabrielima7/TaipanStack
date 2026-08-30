@@ -322,10 +322,12 @@ class CircuitBreaker:
 
         safe_timeout = self._get_safe_timeout()
 
-        if not math.isfinite(last_failure):
+        try:
+            if not math.isfinite(last_failure):
+                return safe_timeout
+            elapsed = now - float(last_failure)
+        except Exception:
             return safe_timeout
-
-        elapsed = now - float(last_failure)
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
@@ -402,11 +404,11 @@ class CircuitBreaker:
         """Safely attempt to acquire the lock."""
         try:
             return self._state.lock.acquire(timeout=0.1)
-        except Exception:
+        except BaseException:
             return False
 
     def _safe_release(self) -> None:
-        with contextlib.suppress(RuntimeError):
+        with contextlib.suppress(BaseException):
             self._state.lock.release()
 
     def _evaluate_state_for_attempt(
@@ -644,7 +646,7 @@ class CircuitBreaker:
         if is_half_open:
             try:
                 acquired = self._state.lock.acquire(timeout=0.1)
-            except Exception:
+            except BaseException:
                 acquired = False
 
             if not acquired:

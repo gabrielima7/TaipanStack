@@ -1,5 +1,6 @@
 import contextlib
 import time
+from typing import Any
 
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
@@ -45,3 +46,36 @@ def test_chaos_circuit_breaker_circuit_breaker_chaos_time_and_timeout_corruption
     # elapsed (30.0) >= timeout (30.0) -> transitions to HALF_OPEN
     assert breaker._should_attempt() is True
     assert breaker.state == CircuitState.HALF_OPEN
+
+
+class MaliciousFloat(float):
+    def __ge__(self, other: Any) -> bool:
+        raise RuntimeError("State corrupted")
+
+    def __lt__(self, other: Any) -> bool:
+        raise RuntimeError("State corrupted")
+
+    def __sub__(self, other: Any) -> float:
+        raise RuntimeError("State corrupted")
+
+    def __float__(self) -> float:
+        raise RuntimeError("State corrupted")
+
+    def __hash__(self) -> int:
+        return 1
+
+
+def test_circuit_breaker_state_corruption_resilience():
+    cb = CircuitBreaker(failure_threshold=1, success_threshold=1, timeout=1.0)
+
+    # Force state to open
+    cb._state.state = CircuitState.OPEN
+    cb._state.last_failure_time = MaliciousFloat(1.0)
+
+    # Try to execute something; it shouldn't crash with RuntimeError
+    @cb
+    def dummy():
+        return True
+
+    # The breaker should degrade gracefully instead of crashing
+    dummy()
