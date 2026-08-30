@@ -185,6 +185,31 @@ class HealthPinger(BaseWatcher):
         await asyncio.gather(*(self._process_target(t) for t in self._targets))
 
 
+def _simulate_failures_to_open(breaker: CircuitBreaker, synthetic: Exception) -> None:
+    max_attempts = breaker.config.failure_threshold + 5
+    attempts = 0
+
+    while breaker.state is not CircuitState.OPEN and attempts < max_attempts:
+        breaker._record_failure(synthetic)
+        attempts += 1
+
+
+def _force_state_to_open(breaker: CircuitBreaker) -> bool:
+    if breaker.state is CircuitState.OPEN:
+        return True
+
+    old_state = breaker.state
+    acquired = breaker._state.lock.acquire(timeout=0.1)
+    if not acquired:
+        return False
+    try:
+        breaker._state.state = CircuitState.OPEN
+    finally:
+        breaker._state.lock.release()
+    breaker._notify_state_change(old_state, CircuitState.OPEN)
+    return True
+
+
 def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
     """Force a circuit breaker into OPEN state.
 
@@ -198,26 +223,9 @@ def _force_open_breaker(breaker: CircuitBreaker, target_name: str) -> None:
     """
     synthetic = ConnectionError(f"Health ping failed for '{target_name}'")
 
-    # Record failures until the breaker opens, but cap it to avoid infinite loops
-    # if the circuit breaker's state is corrupted or mutated.
-    max_attempts = breaker.config.failure_threshold + 5
-    attempts = 0
-
-    while breaker.state is not CircuitState.OPEN and attempts < max_attempts:
-        breaker._record_failure(synthetic)
-        attempts += 1
-
-    if breaker.state is not CircuitState.OPEN:
-        # Force open if it didn't open normally
-        old_state = breaker.state
-        acquired = breaker._state.lock.acquire(timeout=0.1)
-        if not acquired:
-            return
-        try:
-            breaker._state.state = CircuitState.OPEN
-        finally:
-            breaker._state.lock.release()
-        breaker._notify_state_change(old_state, CircuitState.OPEN)
+    _simulate_failures_to_open(breaker, synthetic)
+    if not _force_state_to_open(breaker):
+        return
 
     logger.warning(
         "Circuit breaker '%s' opened preventively for target '%s'",
