@@ -101,17 +101,18 @@ class RateLimiter:
         except Exception:
             return None
 
-    def _apply_new_tokens(self, new_tokens: float) -> bool:
-        """Apply new tokens to the bucket."""
+    def _validate_token_types(self, new_tokens: float) -> bool:
+        """Validate the types of tokens."""
         if not isinstance(self.tokens, (int, float)):
             self.tokens = self.capacity  # type: ignore[unreachable]
             return False
-        if not isinstance(new_tokens, (int, float)):
-            return False  # type: ignore[unreachable]
+        return isinstance(new_tokens, (int, float))
+
+    def _update_tokens_value(self, new_tokens: float) -> bool:
+        """Update tokens value safely."""
         try:
             self.tokens += new_tokens
             if not math.isfinite(self.tokens):
-                # Reset to previous state or capacity if corrupted
                 self.tokens = self.capacity
                 return False
             self.tokens = min(self.tokens, self.capacity)
@@ -119,6 +120,12 @@ class RateLimiter:
         except Exception:
             self.tokens = self.capacity
             return False
+
+    def _apply_new_tokens(self, new_tokens: float) -> bool:
+        """Apply new tokens to the bucket."""
+        if not self._validate_token_types(new_tokens):
+            return False
+        return self._update_tokens_value(new_tokens)
 
     def _calculate_elapsed(self, now: float) -> float | None:
         """Calculate the elapsed time since the last update."""
@@ -158,14 +165,19 @@ class RateLimiter:
 
         return self._apply_new_tokens(new_tokens)
 
-    def _try_consume(self, tokens: float) -> bool:
-        """Attempt to consume the tokens from the bucket if available."""
+    def _check_tokens_validity(self) -> bool:
+        """Check tokens validity."""
         if not isinstance(self.tokens, (int, float)):
             return False  # type: ignore[unreachable]
+        if not math.isfinite(self.tokens):
+            self.tokens = self.capacity
+            return False
+        return True
+
+    def _try_consume(self, tokens: float) -> bool:
+        """Attempt to consume the tokens from the bucket if available."""
         try:
-            if not math.isfinite(self.tokens):
-                # Reset to capacity if state is corrupted to inf/nan
-                self.tokens = self.capacity
+            if not self._check_tokens_validity():
                 return False
             if self.tokens >= tokens:
                 self.tokens -= tokens
@@ -214,6 +226,13 @@ class RateLimiter:
             return False  # type: ignore[unreachable]
         return math.isfinite(tokens)
 
+    def _acquire_lock_safe(self) -> bool:
+        """Safely acquire lock."""
+        try:
+            return self._lock.acquire(timeout=0.1)
+        except Exception:
+            return False
+
     def consume(self, tokens: float = 1.0) -> bool:
         """Try to consume tokens.
 
@@ -229,12 +248,7 @@ class RateLimiter:
         if tokens <= 0:
             return True
 
-        try:
-            acquired = self._lock.acquire(timeout=0.1)
-        except Exception:
-            acquired = False
-
-        if not acquired:
+        if not self._acquire_lock_safe():
             return False
         try:
             return self._process_consumption(tokens)
