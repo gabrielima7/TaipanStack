@@ -127,6 +127,24 @@ safe_path = guard_path_traversal(user_input, base_dir="/app/data")
 safe_cmd = guard_command_injection(["git", "clone", repo_url], allowed_commands=["git"])
 ```
 
+### Rate Limiting
+
+```python
+from taipanstack.utils.rate_limit import rate_limit
+from taipanstack.core.result import Result, Ok, Err
+
+@rate_limit(max_calls=5, time_window=10.0)
+def fetch_data() -> str:
+    return "data"
+
+# Returns an Ok('data') or Err(RateLimitError('Rate limit exceeded'))
+match fetch_data():
+    case Ok(value):
+        print(f"Data: {value}")
+    case Err(error):
+        print(f"Rate limited: {error}")
+```
+
 ### 🔗 Combining Result + Circuit Breaker
 
 ```python
