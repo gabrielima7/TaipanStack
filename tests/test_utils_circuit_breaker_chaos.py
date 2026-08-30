@@ -26,10 +26,16 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
 
     success_call_count = 0
 
+    # We use a Barrier to ensure all 5 threads hit the circuit breaker at the same time.
+    start_barrier = threading.Barrier(5)
+    # We use an Event to hold the allowed threads inside the service so they don't complete
+    # and free up their slots before the other threads are evaluated.
+    release_event = threading.Event()
+
     @breaker
     def slow_service():
         nonlocal success_call_count
-        time.sleep(0.05)
+        release_event.wait(timeout=2.0)
         success_call_count += 1
         return "success"
 
@@ -37,6 +43,7 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
     exceptions = []
 
     def worker():
+        start_barrier.wait(timeout=2.0)
         try:
             results.append(slow_service())
         except CircuitBreakerError as e:
@@ -48,6 +55,12 @@ def test_utils_circuit_breaker_chaos_half_open_thundering_herd_chaos():
     threads = [threading.Thread(target=worker) for _ in range(5)]
     for t in threads:
         t.start()
+
+    # Give threads a tiny bit of time to hit the breaker and get blocked/rejected
+    time.sleep(0.1)
+    # Release the allowed threads to complete their execution
+    release_event.set()
+
     for t in threads:
         t.join()
 
