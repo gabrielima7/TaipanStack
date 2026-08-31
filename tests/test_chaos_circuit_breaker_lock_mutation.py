@@ -15,7 +15,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception():
             raise MemoryError("Extreme acquire failure")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
 
@@ -54,7 +54,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception_in_reset():
             raise MemoryError("Extreme acquire failure")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
 
@@ -70,7 +70,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open():
             raise MemoryError("Extreme acquire failure in decrement")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
 
@@ -86,7 +86,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_success():
             raise MemoryError("Extreme acquire failure in record_success")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
 
@@ -102,7 +102,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_failure():
             raise MemoryError("Extreme acquire failure in record_failure")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
 
@@ -118,7 +118,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open_suppress():
             raise RuntimeError("Normal acquire failure in decrement")
 
         def release(self):
-            pass
+            return
 
     breaker._state.lock = ThrowingLock()
     breaker._state.state = CircuitState.HALF_OPEN
