@@ -32,6 +32,7 @@ def _is_retryable_exception(
     except TypeError:
         return False
 
+
 def _handle_retry_exception(
     e: Exception,
     attempt: int,
@@ -177,6 +178,7 @@ def _compute_exponential_delay(attempt: int, config: RetryConfig) -> float:
     except (OverflowError, TypeError):
         return config.max_delay
 
+
 def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
     """Calculate base delay with exponential backoff."""
     delay = _compute_exponential_delay(attempt, config)
@@ -208,6 +210,7 @@ def _add_jitter_to_delay(delay: float, jitter_amount: float) -> float:
     except Exception as e:
         logger.warning("Failed to add jitter to delay: %s", str(e))
         return delay
+
 
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
@@ -423,6 +426,7 @@ def _validate_retry_exceptions(
 def _is_critical_sleep_exception(e: BaseException) -> bool:
     return isinstance(e, (SystemExit, KeyboardInterrupt, GeneratorExit))
 
+
 async def _sleep_for_retry_async(delay: float) -> BaseException | None:
     try:
         await asyncio.sleep(min(delay, 3600.0))
@@ -434,6 +438,7 @@ async def _sleep_for_retry_async(delay: float) -> BaseException | None:
         return sleep_e
     return None
 
+
 def _sleep_for_retry_sync(delay: float) -> BaseException | None:
     try:
         time.sleep(min(delay, 3600.0))
@@ -442,6 +447,7 @@ def _sleep_for_retry_sync(delay: float) -> BaseException | None:
             raise
         return sleep_e
     return None
+
 
 async def _process_retry_attempt_async(
     e: Exception,
