@@ -104,6 +104,7 @@ def _is_unhashable(item: object) -> bool:
     except TypeError:
         return True
 
+
 def _redact_set(obj: set[object], seen: set[int]) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
