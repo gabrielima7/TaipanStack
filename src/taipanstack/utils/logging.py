@@ -97,24 +97,21 @@ def _redact_tuple(obj: tuple[object, ...], seen: set[int]) -> tuple[object, ...]
     return tuple(_redact(item, seen) for item in obj)
 
 
+def _is_unhashable(item: object) -> bool:
+    try:
+        hash(item)
+        return False
+    except TypeError:
+        return True
+
 def _redact_set(obj: set[object], seen: set[int]) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
-    redacted_list: list[object] = []
-    is_unhashable = False
-
-    for item in obj:
-        redacted_item = _redact(item, seen)
-        if not is_unhashable:
-            try:
-                hash(redacted_item)
-            except TypeError:
-                is_unhashable = True
-        redacted_list.append(redacted_item)
-
-    if is_unhashable:
-        return redacted_list
-    return set(redacted_list)
+    redacted_items = [_redact(item, seen) for item in obj]
+    for item in redacted_items:
+        if _is_unhashable(item):
+            return redacted_items
+    return set(redacted_items)
 
 
 def _redact_iterable(obj: object, seen: set[int]) -> object:

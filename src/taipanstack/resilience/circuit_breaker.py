@@ -314,6 +314,16 @@ class CircuitBreaker:
         except (TypeError, ValueError):
             return 30.0
 
+    def _compute_time_delta(
+        self, now: float, last_failure: float, safe_timeout: float
+    ) -> float:
+        try:
+            if not math.isfinite(last_failure):
+                return safe_timeout
+            return now - float(last_failure)
+        except Exception:
+            return safe_timeout
+
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
         last_failure = self._state.last_failure_time
@@ -321,13 +331,7 @@ class CircuitBreaker:
             return None  # type: ignore[unreachable]
 
         safe_timeout = self._get_safe_timeout()
-
-        try:
-            if not math.isfinite(last_failure):
-                return safe_timeout
-            elapsed = now - float(last_failure)
-        except Exception:
-            return safe_timeout
+        elapsed = self._compute_time_delta(now, last_failure, safe_timeout)
 
         # Safe check against NaN and Inf time corruption
         # If elapsed < 0, a backward clock jump occurred. We should
