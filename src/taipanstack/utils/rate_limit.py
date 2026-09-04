@@ -287,7 +287,10 @@ def _async_rate_limit_wrapper(
                 return Err(RateLimitError())
         except Exception:
             return Err(RateLimitError())
-        return Ok(await func_coro(*args, **kwargs))
+        result = await func_coro(*args, **kwargs)
+        if isinstance(result, (Ok, Err)):
+            return result
+        return Ok(result)
 
     return async_wrapper  # type: ignore[misc]
 
@@ -303,7 +306,10 @@ def _sync_rate_limit_wrapper(
                 return Err(RateLimitError())
         except Exception:
             return Err(RateLimitError())
-        return Ok(func_sync(*args, **kwargs))
+        result = func_sync(*args, **kwargs)
+        if isinstance(result, (Ok, Err)):
+            return result
+        return Ok(result)
 
     return wrapper
 
