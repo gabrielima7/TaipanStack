@@ -21,6 +21,7 @@ def test_rate_limit_sync_nested_result():
     assert isinstance(res2, Ok)
     assert res2.ok_value == "Some business ok"
 
+
 @pytest.mark.asyncio
 async def test_rate_limit_async_nested_result():
     @rate_limit(max_calls=10, time_window=1.0)
