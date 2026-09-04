@@ -7,7 +7,7 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_circuit_breaker_malicious_lock_acquire_exception():
+def test_chaos_circuit_breaker_lock_acquire_exception_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -15,7 +15,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception():
             raise MemoryError("Extreme acquire failure")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
 
@@ -27,7 +27,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception():
         dummy_call()
 
 
-def test_chaos_circuit_breaker_malicious_lock_release_suppressed():
+def test_chaos_circuit_breaker_lock_release_suppressed_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class AcquireOnlyLock:
@@ -46,7 +46,7 @@ def test_chaos_circuit_breaker_malicious_lock_release_suppressed():
     assert dummy_call() == "success"
 
 
-def test_chaos_circuit_breaker_malicious_lock_acquire_exception_in_reset():
+def test_chaos_circuit_breaker_lock_acquire_exception_in_reset_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -54,7 +54,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception_in_reset():
             raise MemoryError("Extreme acquire failure")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
 
@@ -62,7 +62,7 @@ def test_chaos_circuit_breaker_malicious_lock_acquire_exception_in_reset():
     assert breaker._state.state == CircuitState.CLOSED
 
 
-def test_chaos_circuit_breaker_malicious_lock_decrement_half_open():
+def test_chaos_circuit_breaker_lock_decrement_half_open_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -70,7 +70,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open():
             raise MemoryError("Extreme acquire failure in decrement")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
 
@@ -78,7 +78,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open():
     assert breaker._state.half_open_attempts == 0
 
 
-def test_chaos_circuit_breaker_malicious_lock_record_success():
+def test_chaos_circuit_breaker_lock_record_success_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -86,7 +86,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_success():
             raise MemoryError("Extreme acquire failure in record_success")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
 
@@ -94,7 +94,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_success():
     assert breaker._state.success_count == 0
 
 
-def test_chaos_circuit_breaker_malicious_lock_record_failure():
+def test_chaos_circuit_breaker_lock_record_failure_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -102,7 +102,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_failure():
             raise MemoryError("Extreme acquire failure in record_failure")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
 
@@ -110,7 +110,7 @@ def test_chaos_circuit_breaker_malicious_lock_record_failure():
     assert breaker._state.failure_count == 0
 
 
-def test_chaos_circuit_breaker_malicious_lock_decrement_half_open_suppress():
+def test_chaos_circuit_breaker_lock_decrement_half_open_suppress_expected():
     breaker = CircuitBreaker(failure_threshold=2)
 
     class ThrowingLock:
@@ -118,7 +118,7 @@ def test_chaos_circuit_breaker_malicious_lock_decrement_half_open_suppress():
             raise RuntimeError("Normal acquire failure in decrement")
 
         def release(self):
-            pass
+            return None
 
     breaker._state.lock = ThrowingLock()
     breaker._state.state = CircuitState.HALF_OPEN
