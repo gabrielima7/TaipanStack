@@ -113,6 +113,16 @@ ReadFileError: TypeAlias = (
 )
 
 
+def _check_file_size(
+    path: Path, file_size: int, max_size_bytes: int | None
+) -> Result[None, ReadFileError]:
+    if max_size_bytes is not None and file_size > max_size_bytes:
+        return Err(
+            FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
+        )
+    return Ok(None)
+
+
 def _check_read_path_and_size(
     path: Path,
     max_size_bytes: int | None,
@@ -125,13 +135,7 @@ def _check_read_path_and_size(
     if not stat.S_ISREG(st.st_mode):
         return Err(NotAFileErr(path=path))
 
-    if max_size_bytes is not None:
-        file_size = st.st_size
-        if file_size > max_size_bytes:
-            return Err(
-                FileTooLargeErr(path=path, size=file_size, max_size=max_size_bytes),
-            )
-    return Ok(None)
+    return _check_file_size(path, st.st_size, max_size_bytes)
 
 
 def safe_read(
