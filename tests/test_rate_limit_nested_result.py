@@ -1,6 +1,8 @@
 import pytest
-from taipanstack.core.result import Ok, Err
+
+from taipanstack.core.result import Err, Ok
 from taipanstack.utils.rate_limit import rate_limit
+
 
 def test_rate_limit_sync_nested_result():
     @rate_limit(max_calls=10, time_window=1.0)
