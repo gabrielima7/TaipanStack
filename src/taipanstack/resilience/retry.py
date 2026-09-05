@@ -24,6 +24,16 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
+def _is_retryable_exception(
+    e: Exception,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+) -> bool:
+    try:
+        return isinstance(e, valid_on)
+    except TypeError:
+        return False
+
+
 def _handle_retry_exception(
     e: Exception,
     attempt: int,
@@ -47,12 +57,7 @@ def _handle_retry_exception(
         Exception: If the exception is not matched and should not be retried.
 
     """
-    try:
-        is_match = isinstance(e, valid_on)
-    except TypeError:
-        is_match = False
-
-    if not is_match:
+    if not _is_retryable_exception(e, valid_on):
         raise e
 
     max_attempts = (
@@ -168,16 +173,20 @@ def _is_valid_number(val: object) -> bool:
     return isinstance(val, (int, float)) and math.isfinite(val)
 
 
-def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
-    """Calculate base delay with exponential backoff."""
+def _compute_raw_delay(attempt: int, config: RetryConfig) -> float:
     safe_attempt = max(1, attempt)
     try:
         delay = config.initial_delay * (config.exponential_base ** (safe_attempt - 1))
         if not _is_valid_number(delay):
-            delay = config.max_delay
+            return config.max_delay
+        return delay
     except (OverflowError, TypeError):
-        delay = config.max_delay
+        return config.max_delay
 
+
+def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
+    """Calculate base delay with exponential backoff."""
+    delay = _compute_raw_delay(attempt, config)
     try:
         if not _is_valid_number(delay):
             delay = 0.0
@@ -197,6 +206,14 @@ def _compute_jitter_amount(delay: float, factor: float) -> float | None:
     return None
 
 
+def _add_random_jitter(delay: float, jitter_amount: float) -> float:
+    try:
+        return delay + secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
+    except Exception as e:
+        logger.warning("Failed to add jitter to delay: %s", str(e))
+        return delay
+
+
 def _apply_jitter(delay: float, config: RetryConfig) -> float:
     """Apply jitter to delay."""
     if not config.jitter or not _is_valid_number(delay):
@@ -204,10 +221,7 @@ def _apply_jitter(delay: float, config: RetryConfig) -> float:
 
     jitter_amount = _compute_jitter_amount(delay, config.jitter_factor)
     if jitter_amount is not None:
-        try:
-            delay += secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
-        except Exception as e:
-            logger.warning("Failed to add jitter to delay: %s", str(e))
+        return _add_random_jitter(delay, jitter_amount)
 
     return delay
 
@@ -411,6 +425,18 @@ def _validate_retry_exceptions(
     return on_tuple
 
 
+async def _safe_async_sleep(delay: float) -> BaseException | None:
+    try:
+        await asyncio.sleep(min(delay, 3600.0))
+    except asyncio.CancelledError:
+        raise
+    except BaseException as sleep_e:
+        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
+            raise
+        return sleep_e
+    return None
+
+
 async def _process_retry_attempt_async(
     e: Exception,
     attempt: int,
@@ -423,15 +449,7 @@ async def _process_retry_attempt_async(
     )
     if not should_retry:
         return e
-    try:
-        await asyncio.sleep(min(delay, 3600.0))
-    except asyncio.CancelledError:
-        raise
-    except BaseException as sleep_e:
-        if isinstance(sleep_e, (SystemExit, KeyboardInterrupt, GeneratorExit)):
-            raise
-        return sleep_e
-    return None
+    return await _safe_async_sleep(delay)
 
 
 def _process_retry_attempt_sync(

@@ -314,27 +314,27 @@ class CircuitBreaker:
         except (TypeError, ValueError):
             return 30.0
 
+    def _compute_safe_elapsed(self, now: float, last_failure: object) -> float:
+        safe_timeout = self._get_safe_timeout()
+        try:
+            f_last = float(last_failure)  # type: ignore[arg-type]
+            if not math.isfinite(f_last):
+                return safe_timeout
+            elapsed = now - f_last
+        except Exception:
+            return safe_timeout
+
+        if elapsed < 0:
+            return safe_timeout
+        return elapsed
+
     def _calculate_elapsed_time(self, now: float) -> float | None:
         """Calculate time elapsed since last failure."""
         last_failure = self._state.last_failure_time
         if not isinstance(last_failure, (int, float)):
             return None  # type: ignore[unreachable]
 
-        safe_timeout = self._get_safe_timeout()
-
-        try:
-            if not math.isfinite(last_failure):
-                return safe_timeout
-            elapsed = now - float(last_failure)
-        except Exception:
-            return safe_timeout
-
-        # Safe check against NaN and Inf time corruption
-        # If elapsed < 0, a backward clock jump occurred. We should
-        # allow a transition to prevent permanent lockout.
-        if elapsed < 0:
-            return safe_timeout
-        return elapsed
+        return self._compute_safe_elapsed(now, last_failure)
 
     def _transition_to_half_open(
         self,
