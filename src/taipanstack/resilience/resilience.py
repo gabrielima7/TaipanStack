@@ -171,7 +171,8 @@ def _handle_timeout_exception(
 def _validate_timeout(seconds: float) -> Result[None, E] | None:
     try:
         if (
-            not isinstance(seconds, (int, float))
+            type(seconds) not in (int, float)
+            or isinstance(seconds, bool)
             or not math.isfinite(seconds)
             or seconds < 0
         ):

@@ -1,29 +1,24 @@
-import pytest
-
 from taipanstack.resilience.resilience import timeout
 
 
-def test_timeout_corrupt_float():
+def test_resilience_chaos_timeout_corrupt_float_expected() -> None:
     class CorruptFloat(float):
-        def __ge__(self, other):
+        def __ge__(self, other: object) -> bool:
             raise RuntimeError("Chaos __ge__")
 
-        def __add__(self, other):
+        def __add__(self, other: object) -> float:
             raise RuntimeError("Chaos __add__")
 
-        def __mul__(self, other):
+        def __mul__(self, other: object) -> float:
             raise RuntimeError("Chaos __mul__")
 
-        def __lt__(self, other):
+        def __lt__(self, other: object) -> bool:
             raise RuntimeError("Chaos __lt__")
 
     @timeout(CorruptFloat(1.0))
-    def my_func():
+    def my_func() -> int:
         return 1
 
-    try:
-        result = my_func()
-        # Verify it returns an Err because validation failed
-        assert result.is_err()
-    except Exception as e:
-        pytest.fail(f"Timeout crashed with exception: {e}")
+    result = my_func()
+    # Verify it returns an Err because validation failed
+    assert result.is_err()
