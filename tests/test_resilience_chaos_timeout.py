@@ -1,5 +1,7 @@
 import pytest
+
 from taipanstack.resilience.resilience import timeout
+
 
 def test_timeout_corrupt_float():
     class CorruptFloat(float):
