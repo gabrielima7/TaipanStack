@@ -93,13 +93,16 @@ def _get_cache_key(
     return (func_name, hashable_args, hashable_kwargs)
 
 
+def _is_valid_ttl_type(ttl: float) -> bool:
+    return isinstance(ttl, (int, float)) and not isinstance(ttl, bool)
+
+
+def _is_valid_ttl_value(ttl: float) -> bool:
+    return math.isfinite(ttl) and ttl >= 0
+
+
 def _validate_ttl(ttl: float) -> None:
-    if (
-        not isinstance(ttl, (int, float))
-        or isinstance(ttl, bool)
-        or not math.isfinite(ttl)
-        or ttl < 0
-    ):
+    if not _is_valid_ttl_type(ttl) or not _is_valid_ttl_value(ttl):
         raise ValueError("ttl must be a finite non-negative number")
 
 
