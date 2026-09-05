@@ -169,18 +169,27 @@ def _handle_timeout_exception(
 
 
 def _validate_timeout(seconds: float) -> Result[None, E] | None:
-    if (
-        not isinstance(seconds, (int, float))
-        or not math.isfinite(seconds)
-        or seconds < 0
-    ):
+    try:
+        if (
+            type(seconds) not in (int, float)
+            or isinstance(seconds, bool)
+            or not math.isfinite(seconds)
+            or seconds < 0
+        ):
+            return Err(
+                cast(
+                    E,
+                    ValueError("Timeout must be a finite non-negative number"),
+                ),
+            )
+        return None
+    except Exception:
         return Err(
             cast(
                 E,
                 ValueError("Timeout must be a finite non-negative number"),
             ),
         )
-    return None
 
 
 async def _run_async_with_timeout(
