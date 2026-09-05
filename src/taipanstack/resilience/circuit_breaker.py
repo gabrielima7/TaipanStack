@@ -404,11 +404,11 @@ class CircuitBreaker:
         """Safely attempt to acquire the lock."""
         try:
             return self._state.lock.acquire(timeout=0.1)
-        except BaseException:
+        except Exception:
             return False
 
     def _safe_release(self) -> None:
-        with contextlib.suppress(BaseException):
+        with contextlib.suppress(Exception):
             self._state.lock.release()
 
     def _evaluate_state_for_attempt(
@@ -646,7 +646,7 @@ class CircuitBreaker:
         if is_half_open:
             try:
                 acquired = self._state.lock.acquire(timeout=0.1)
-            except BaseException:
+            except Exception:
                 acquired = False
 
             if not acquired:
