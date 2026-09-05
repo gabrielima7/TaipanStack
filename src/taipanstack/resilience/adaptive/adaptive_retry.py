@@ -184,15 +184,17 @@ class AdaptiveRetry:
         p95_delay = sorted_delays[min(idx, len(sorted_delays) - 1)]
         return avg_delay, p95_delay
 
+    def _compute_outcome_stats(self) -> tuple[int, int, list[float]]:
+        total = len(self._outcomes)
+        successes = sum(1 for o in self._outcomes if o.success)
+        return total, successes, [o.elapsed for o in self._outcomes]
+
     def _get_outcome_stats(self) -> tuple[int, int, list[float]]:
         acquired = self._lock.acquire(timeout=0.1)
         if not acquired:
             return 0, 0, []
         try:
-            total = len(self._outcomes)
-            successes = sum(1 for o in self._outcomes if o.success)
-            all_delays = [o.elapsed for o in self._outcomes]
-            return total, successes, all_delays
+            return self._compute_outcome_stats()
         finally:
             self._lock.release()
 
