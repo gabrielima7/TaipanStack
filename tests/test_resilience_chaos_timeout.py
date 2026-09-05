@@ -7,10 +7,13 @@ def test_timeout_corrupt_float():
     class CorruptFloat(float):
         def __ge__(self, other):
             raise RuntimeError("Chaos __ge__")
+
         def __add__(self, other):
             raise RuntimeError("Chaos __add__")
+
         def __mul__(self, other):
             raise RuntimeError("Chaos __mul__")
+
         def __lt__(self, other):
             raise RuntimeError("Chaos __lt__")
 
