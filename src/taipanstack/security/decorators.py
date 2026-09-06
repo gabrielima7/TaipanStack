@@ -23,23 +23,32 @@ R = TypeVar("R")
 T = TypeVar("T")
 
 
+def _apply_single_validator(
+    param_name: str,
+    value: object,
+    validator: Callable[[object], object],
+) -> object | None:
+    try:
+        return validator(value)
+    except (ValueError, TypeError) as e:
+        raise ValidationError(
+            str(e),
+            param_name=param_name,
+            value=repr(value)[:100],
+        ) from e
+
+
 def _validate_bound_arguments(
     bound: inspect.BoundArguments,
     validators: dict[str, Callable[[object], object]],
 ) -> None:
     for param_name, validator in validators.items():
-        if param_name in bound.arguments:  # type: ignore[misc]
-            value = bound.arguments[param_name]  # type: ignore[misc]
-            try:
-                validated = validator(value)  # type: ignore[misc]
-                if validated is not None:
-                    bound.arguments[param_name] = validated  # type: ignore[misc]
-            except (ValueError, TypeError) as e:
-                raise ValidationError(
-                    str(e),
-                    param_name=param_name,
-                    value=repr(value)[:100],  # type: ignore[misc]
-                ) from e
+        if param_name not in bound.arguments:  # type: ignore[misc]
+            continue
+        value = bound.arguments[param_name]  # type: ignore[misc]
+        validated = _apply_single_validator(param_name, value, validator)  # type: ignore[misc]
+        if validated is not None:
+            bound.arguments[param_name] = validated  # type: ignore[misc]
 
 
 def _handle_guarded_exception(

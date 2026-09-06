@@ -473,6 +473,13 @@ def _check_env_denied(
         )
 
 
+def _is_env_allowed(name_upper: str, allowed_names: Sequence[str] | None) -> bool:
+    if allowed_names is None:
+        return False
+    allowed = {n.upper() for n in allowed_names}
+    return name_upper in allowed
+
+
 def _check_env_sensitive(
     name_upper: str,
     name: str,
@@ -482,11 +489,8 @@ def _check_env_sensitive(
     if not _SENSITIVE_ENV_VAR_PATTERN.search(name_upper):
         return
 
-    # Only block if not explicitly allowed
-    if allowed_names is not None:
-        allowed = {n.upper() for n in allowed_names}
-        if name_upper in allowed:
-            return
+    if _is_env_allowed(name_upper, allowed_names):
+        return
 
     raise SecurityError(
         f"Access to potentially sensitive variable '{name}' is denied",
