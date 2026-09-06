@@ -13,7 +13,7 @@ The core of TaipanStack's formal verification lies in the `Result` monad (`src/t
 **Proof (Empirical & Structural):**
 During our mass concurrency chaos simulation (`tests/test_chaos_engineering_mathematical_proof.py`), 1000 concurrent tasks subjected an endpoint to flaky logic, deadlocks, and SSRF injections simultaneously.
 
-* The orchestrator's `_execute_inner` loop explicitly wraps all executions in a `try...except Exception as exc:` block, immediately binding exceptions to `Err(exc)`.
+* The orchestrator's execution flow strictly uses Look Before You Leap (LBYL) type validation to immediately bind invalid state transitions to `Err(exc)`.
 * `mypy --strict` guarantees that all functions annotated to return `Result[T, E]` cannot implicitly return raw exceptions or `None`.
 * Total simulation failures: 100% captured within `Result` state. Zero base exceptions leaked.
 

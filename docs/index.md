@@ -18,7 +18,7 @@ hide:
 
 ### ✨ What's New in v0.6.3
 
-- **Security & Resilience**: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via `try...except Exception` blocks, falling back to safe defaults or returning appropriate `Err` states (PR #1139).
+- **Security & Resilience**: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via strict LBYL type validation in `_validate_timeout` without `try/except` blocks, returning appropriate `Err` states (PR #1139).
 
 ### ✨ What's New in v0.6.2
 
