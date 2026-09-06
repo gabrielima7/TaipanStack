@@ -29,7 +29,7 @@ def _apply_single_validator(
     validator: Callable[[object], object],
 ) -> object | None:
     try:
-        return validator(value)  # type: ignore[misc]
+        return validator(value)
     except (ValueError, TypeError) as e:
         raise ValidationError(
             str(e),
@@ -46,7 +46,7 @@ def _validate_bound_arguments(
         if param_name not in bound.arguments:  # type: ignore[misc]
             continue
         value = bound.arguments[param_name]  # type: ignore[misc]
-        validated = _apply_single_validator(param_name, value, validator)
+        validated = _apply_single_validator(param_name, value, validator)  # type: ignore[misc]
         if validated is not None:
             bound.arguments[param_name] = validated  # type: ignore[misc]
 
