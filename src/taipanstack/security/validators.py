@@ -260,9 +260,12 @@ def validate_python_version(version: str) -> str:
     return version
 
 
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x20\x7f]")
+
+
 def _has_control_chars(text: str) -> bool:
     """Check if string contains control characters."""
-    return any(c <= "\x20" or c == "\x7f" for c in text)
+    return bool(_CONTROL_CHARS_RE.search(text))
 
 
 def _has_invalid_chars(text: str) -> bool:
