@@ -168,13 +168,15 @@ def _handle_timeout_exception(
     return Err(cast(E, RuntimeError(f"{context} exhaustion: {e!s}")))
 
 
+def _is_valid_timeout_value(seconds: float) -> bool:
+    """Check if timeout is a valid finite non-negative number."""
+    if type(seconds) not in (int, float) or isinstance(seconds, bool):
+        return False
+    return bool(math.isfinite(seconds) and seconds >= 0)
+
+
 def _validate_timeout(seconds: float) -> Result[None, E] | None:
-    if (
-        type(seconds) not in (int, float)
-        or isinstance(seconds, bool)
-        or not math.isfinite(seconds)
-        or seconds < 0
-    ):
+    if not _is_valid_timeout_value(seconds):
         return Err(
             cast(
                 E,

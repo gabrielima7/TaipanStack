@@ -48,3 +48,53 @@ def test_security_sanitizers_additional_security_sanitizers_path_absolute_return
 
     res = sanitize_path("/a/b")
     assert "a" in str(res) and "b" in str(res)
+
+
+def test_is_valid_length_and_not_dot():
+    from taipanstack.security.sanitizers import _is_valid_length_and_not_dot
+
+    assert _is_valid_length_and_not_dot("a" * 255, 255) is True
+    assert _is_valid_length_and_not_dot("a" * 256, 255) is False
+    assert _is_valid_length_and_not_dot(".", 255) is False
+    assert _is_valid_length_and_not_dot("..", 255) is False
+
+
+def test_has_safe_characters():
+    from taipanstack.security.sanitizers import _has_safe_characters
+
+    assert _has_safe_characters("abc", "abc") is True
+    assert _has_safe_characters("con.txt", "con") is False
+    assert _has_safe_characters("lpt1.txt", "lpt1") is False
+    assert _has_safe_characters("valid-name_123.txt", "valid-name_123") is True
+    assert _has_safe_characters("invalid/name", "invalid/name") is False
+    assert _has_safe_characters("invalid\x00name", "invalid\x00name") is False
+
+
+def test_resolve_sanitized_path_error():
+    import unittest.mock
+    from pathlib import Path
+
+    import pytest
+
+    from taipanstack.security.sanitizers import _resolve_sanitized_path
+
+    path = Path("/safe_path")
+    with unittest.mock.patch.object(Path, "resolve", side_effect=OSError("Mock error")):
+        with pytest.raises(ValueError, match="Cannot resolve path: Mock error"):
+            _resolve_sanitized_path(path)
+
+
+def test_resolve_sanitized_path_runtime_error():
+    import unittest.mock
+    from pathlib import Path
+
+    import pytest
+
+    from taipanstack.security.sanitizers import _resolve_sanitized_path
+
+    path = Path("/safe_path")
+    with unittest.mock.patch.object(
+        Path, "resolve", side_effect=RuntimeError("Mock runtime error")
+    ):
+        with pytest.raises(ValueError, match="Cannot resolve path: Mock runtime error"):
+            _resolve_sanitized_path(path)

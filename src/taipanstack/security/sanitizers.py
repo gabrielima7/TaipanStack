@@ -75,14 +75,19 @@ def _check_max_length_param(max_length: int | None) -> None:
         raise ValueError("max_length cannot be negative")
 
 
+def _is_valid_max_length_type(max_length: int | None) -> bool:
+    """Check if max_length is of valid integer type."""
+    if max_length is None:
+        return True
+    return isinstance(max_length, int) and not isinstance(max_length, bool)
+
+
 def _validate_string_params(value: str, max_length: int | None) -> None:
     """Validate parameters for sanitize_string."""
     if not isinstance(value, str):
         raise TypeError(f"value must be str, got {type(value).__name__}")
 
-    if max_length is not None and (
-        not isinstance(max_length, int) or isinstance(max_length, bool)
-    ):
+    if not _is_valid_max_length_type(max_length):
         raise TypeError(f"max_length must be int, got {type(max_length).__name__}")
 
     _check_string_length(value)
@@ -208,15 +213,34 @@ def _truncate_filename(safe_stem: str, suffix: str, max_length: int) -> str:
     return result
 
 
+def _is_valid_length_and_not_dot(filename: str, max_length: int) -> bool:
+    """Check if filename length is valid and not a dot directory."""
+    if len(filename) > max_length:
+        return False
+    return filename not in {"..", "."}
+
+
+def _has_safe_characters(filename: str, stem: str) -> bool:
+    """Check if filename has safe characters and is not a reserved name."""
+    if stem.upper() in _WINDOWS_RESERVED_NAMES:
+        return False
+    if not filename.isascii():
+        return False
+    return filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
+
+
 def _is_filename_safe(filename: str, max_length: int, stem: str) -> bool:
     """Check if a filename is already safe without any modifications."""
-    return (
-        len(filename) <= max_length
-        and filename not in {"..", "."}
-        and stem.upper() not in _WINDOWS_RESERVED_NAMES
-        and filename.isascii()
-        and filename.replace(".", "").replace("-", "").replace("_", "").isalnum()
-    )
+    if not _is_valid_length_and_not_dot(filename, max_length):
+        return False
+    return _has_safe_characters(filename, stem)
+
+
+def _handle_reserved_names(safe_stem: str, replacement: str) -> str:
+    """Handle Windows reserved names by prepending the replacement character."""
+    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
+        return f"{replacement}{safe_stem}"
+    return safe_stem
 
 
 def _finalize_filename(
@@ -226,9 +250,7 @@ def _finalize_filename(
     max_length: int,
 ) -> str:
     """Finalize the sanitized filename by handling reserved names and empty results."""
-    # Handle reserved names (Windows)
-    if safe_stem.upper() in _WINDOWS_RESERVED_NAMES:
-        safe_stem = f"{replacement}{safe_stem}"
+    safe_stem = _handle_reserved_names(safe_stem, replacement)
 
     # Handle empty result
     if not safe_stem:
@@ -373,6 +395,15 @@ def _clean_path_parts(path: Path) -> list[str]:
     return parts
 
 
+def _resolve_sanitized_path(sanitized: Path) -> Path:
+    """Resolve a sanitized path."""
+    try:
+        return sanitized.resolve()
+    except (OSError, RuntimeError) as e:
+        msg = f"Cannot resolve path: {e}"
+        raise ValueError(msg) from e
+
+
 def _apply_base_dir_constraint(
     sanitized: Path,
     base_dir: Path | str | None,
@@ -384,11 +415,7 @@ def _apply_base_dir_constraint(
 
     base = Path(base_dir).resolve()
     if resolve:
-        try:
-            return sanitized.resolve()
-        except (OSError, RuntimeError) as e:
-            msg = f"Cannot resolve path: {e}"
-            raise ValueError(msg) from e
+        return _resolve_sanitized_path(sanitized)
 
     # Make absolute relative to base
     if not sanitized.is_absolute():

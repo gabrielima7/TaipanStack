@@ -286,6 +286,17 @@ def _apply_gc_tuning(
         errors.append(f"gc_threshold: {e}")
 
 
+def _should_skip_gc_freeze(
+    profile: OptimizationProfile, freeze_after: bool, skipped: list[str]
+) -> bool:
+    if not profile.gc_freeze_enabled:
+        return True
+    if not PY312:
+        skipped.append("gc_freeze: requires Python 3.12+")
+        return True
+    return bool(not freeze_after)
+
+
 def _apply_gc_freeze(
     profile: OptimizationProfile,
     freeze_after: bool,
@@ -294,12 +305,7 @@ def _apply_gc_freeze(
     errors: list[str],
 ) -> None:
     """Apply GC freeze if supported."""
-    if not profile.gc_freeze_enabled:
-        return
-    if not PY312:
-        skipped.append("gc_freeze: requires Python 3.12+")
-        return
-    if not freeze_after:
+    if _should_skip_gc_freeze(profile, freeze_after, skipped):
         return
 
     try:
