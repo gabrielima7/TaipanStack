@@ -205,7 +205,7 @@ def _extract_ok_values(
     results: list[Result[T, E]] | tuple[Result[T, E], ...],
 ) -> Result[list[T], E] | None:
     try:
-        return Ok([r.ok_value for r in results])  # type: ignore[union-attr,misc]
+        return Ok([cast(Ok[T], r).ok_value for r in results])
     except AttributeError:
         return None
 
@@ -269,9 +269,10 @@ def collect_results(
 
     """
     if isinstance(results, (list, tuple)):
-        optimized_res = _collect_list(results)  # type: ignore[misc]
-        if optimized_res is not None:  # type: ignore[misc]
-            return optimized_res  # type: ignore[misc]
+        res_seq = cast(list[Result[T, E]] | tuple[Result[T, E], ...], results)
+        optimized_res = _collect_list(res_seq)
+        if optimized_res is not None:
+            return optimized_res
 
     return _collect_iterable(results)
 
