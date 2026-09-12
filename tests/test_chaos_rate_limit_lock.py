@@ -1,5 +1,5 @@
-import pytest
 from taipanstack.utils.rate_limit import RateLimiter
+
 
 class ChaosLock:
     def acquire(self, timeout=-1):
