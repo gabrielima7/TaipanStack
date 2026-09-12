@@ -253,7 +253,7 @@ class RateLimiter:
         try:
             return self._process_consumption(tokens)
         finally:
-            with contextlib.suppress(RuntimeError):
+            with contextlib.suppress(Exception):
                 self._lock.release()
 
 

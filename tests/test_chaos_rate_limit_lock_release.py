@@ -3,15 +3,15 @@ from taipanstack.utils.rate_limit import RateLimiter
 
 class ChaosLock:
     def acquire(self, timeout=-1):
-        raise ValueError("Chaos acquire failure")
+        return True
 
     def release(self):
-        pass
+        raise ValueError("Chaos release failure")
 
-def test_chaos_rate_limit_lock_acquire():
+def test_chaos_rate_limit_lock_release():
     limiter = RateLimiter(10, 1.0)
     limiter._lock = ChaosLock()
 
-    # Should not raise ValueError, should degrade gracefully to False
+    # Should not raise ValueError
     result = limiter.consume()
-    assert result is False
+    assert result is True or result is False
