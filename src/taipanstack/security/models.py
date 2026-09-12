@@ -72,17 +72,21 @@ def _mask_set(data: set[object], depth: int) -> set[object] | list[object]:
     return set(masked_items)
 
 
+def _mask_tuple_or_set(data: object, depth: int) -> object:
+    if isinstance(data, tuple):
+        return _mask_tuple(cast(tuple[object, ...], data), depth)
+    if isinstance(data, set):
+        return _mask_set(cast(set[object], data), depth)
+    return data
+
+
 def _mask_collection(data: object, depth: int) -> object:
     """Dispatch masking based on collection type."""
     if isinstance(data, dict):
         return _mask_dict(cast(dict[str, object], data), depth)
     if isinstance(data, list):
         return _mask_list(cast(list[object], data), depth)
-    if isinstance(data, tuple):
-        return _mask_tuple(cast(tuple[object, ...], data), depth)
-    if isinstance(data, set):
-        return _mask_set(cast(set[object], data), depth)
-    return data
+    return _mask_tuple_or_set(data, depth)
 
 
 def _mask_data(data: object, _depth: int = 0) -> object:
