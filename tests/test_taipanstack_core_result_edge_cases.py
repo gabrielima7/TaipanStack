@@ -8,6 +8,7 @@ def test_ok_value_equality_edge_cases() -> None:
     assert ok1 != Ok(1)
     assert ok1 != Err(None)
 
+
 def test_err_value_equality_edge_cases() -> None:
     err1 = Err("error")
     err2 = Err("error")
