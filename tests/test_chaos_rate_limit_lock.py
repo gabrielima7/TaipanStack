@@ -8,6 +8,7 @@ class ChaosLock:
     def release(self):
         pass
 
+
 def test_chaos_rate_limit_lock_acquire():
     limiter = RateLimiter(10, 1.0)
     limiter._lock = ChaosLock()

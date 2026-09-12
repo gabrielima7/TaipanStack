@@ -8,6 +8,7 @@ class ChaosLock:
     def release(self):
         raise ValueError("Chaos release failure")
 
+
 def test_chaos_rate_limit_lock_release():
     limiter = RateLimiter(10, 1.0)
     limiter._lock = ChaosLock()
