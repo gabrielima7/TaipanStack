@@ -108,7 +108,7 @@ def _validate_finite_or_default(
         object.__setattr__(obj, attr_name, default_val)
         return
     if not math.isfinite(val) or val < 0:
-        raise ValueError(f"{attr_name} must be a finite non-negative number")
+        object.__setattr__(obj, attr_name, default_val)
 
 
 @dataclass(frozen=True)
