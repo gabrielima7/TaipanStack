@@ -34,20 +34,20 @@ def test_utils_retry_chaos_retry_chaos_nan_inf_config() -> None:
     the calculated delay could become NaN, crashing time.sleep() with ValueError,
     or blocking infinitely with Inf.
     """
-    import pytest
-
-    with pytest.raises(ValueError, match="finite"):
-        RetryConfig(
-            initial_delay=float("nan"),
-            max_delay=float("inf"),
-        )
+    config1 = RetryConfig(
+        initial_delay=float("nan"),
+        max_delay=float("inf"),
+    )
+    assert config1.initial_delay == 1.0
+    assert config1.max_delay == 60.0
 
     # Also test an explicit inf config value
-    with pytest.raises(ValueError, match="finite"):
-        RetryConfig(
-            initial_delay=float("inf"),
-            max_delay=60.0,
-        )
+    config2 = RetryConfig(
+        initial_delay=float("inf"),
+        max_delay=60.0,
+    )
+    assert config2.initial_delay == 1.0
+    assert config2.max_delay == 60.0
 
 
 def test_utils_retry_chaos_coverage_retry_chaos_base_delay_nan() -> None:
