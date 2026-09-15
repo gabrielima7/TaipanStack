@@ -23,7 +23,7 @@ The layered structure is heavily enforced via **Import Linter**. Respect the fol
 2. **`src/taipanstack/security/`**: Guards, sanitizers, validators, and authentication.
 3. **`src/taipanstack/config/`**: Configuration models and generators.
 4. **`src/taipanstack/bridges/`**: External communication integrations (http, db).
-5. **`src/taipanstack/resilience/`**: Reliability patterns (circuit breakers, retries, watchdogs).
+5. **`src/taipanstack/resilience/`**: Reliability patterns (circuit breakers, retries, watchdogs). *Note: The taipanstack.utils resilience modules are deprecated backward-compatibility shims. New code should import resilience modules directly from taipanstack.resilience.*
 6. **`src/taipanstack/utils/`**: Cross-cutting utilities (logs, filesystem, context).
 7. **`src/taipanstack/core/`**: The absolute core (`Result` types, optimizations). **Must never import from upper layers**.
 
@@ -37,8 +37,10 @@ The layered structure is heavily enforced via **Import Linter**. Respect the fol
 - **Coverage Goal:** The project mandates an absolute 100% test coverage (`fail_under = 100`).
 - **NO CHEATING/BYPASSING (CRITICAL):** You are strictly forbidden from manipulating CI/CD pipelines or coverage reports. **Do not use** `# pragma: no cover`, `@pytest.mark.skip`, `pass`, or any other methods to bypass real testing.
 - **Accuracy:** All tests must be 100% real, functional, and precise. Use `pytest` for standard tests and `hypothesis` for property-based mathematical/logical validations.
+- **Coverage Command:** To perform test coverage analysis and identify missing lines or branches in the main source code, use the command `poetry run pytest --cov=src/taipanstack --cov-report=term-missing`.
 
 ## 7. Continuous Validation Workflow (CRITICAL)
 - **Always Validate Changes:** Before considering any implementation, refactor, or code change complete, you must validate the entire project suite.
 - **Validation Command:** Always run the command `make all` in the terminal to verify that your changes do not break existing tests, lower the coverage, violate typing rules, or breach architectural contracts.
 - **Fix Errors Immediately:** If `make all` (or specific targets like `make test`, `make lint-imports`, `make security`) returns any error, you must fix the underlying code immediately. Do not proceed or submit the code until the pipeline is completely green.
+- **Documentation Validation:** Before submitting any Pull Request related to documentation changes (including MkDocs site and repository .md files), you must execute `poetry run mkdocs build --strict` and ensure it passes successfully with no errors or warnings.
