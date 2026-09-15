@@ -196,6 +196,9 @@ TaipanStack/
 └── pyproject.toml        # 📋 Modern dependency management
 ```
 
+### Migration Notice
+The `taipanstack.utils` resilience modules (`circuit_breaker`, `retry`, `resilience`) are deprecated backward-compatibility shims. New code should import resilience modules directly from `taipanstack.resilience`.
+
 ---
 
 ## 🔐 DevSecOps
