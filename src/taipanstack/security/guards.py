@@ -604,10 +604,12 @@ def _check_ssrf_url_length(url: str) -> Result[str, SecurityError]:
     return Ok(url)
 
 
+def _is_invalid_url_char(c: str) -> bool:
+    return c <= "\x20" or c in {"\x7f", "\x00"} or not c.isprintable()
+
+
 def _has_invalid_url_chars(url: str) -> bool:
-    if any(c <= "\x20" or c == "\x7f" for c in url):
-        return True
-    return bool("\x00" in url or not url.isprintable())
+    return any(_is_invalid_url_char(c) for c in url)
 
 
 def _fully_unquote_url(url: str) -> Result[str, SecurityError]:
