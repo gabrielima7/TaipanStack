@@ -168,6 +168,39 @@ class Bulkhead:
 
         return await self._wait_for_coro(coro_result.unwrap())
 
+    async def _attempt_acquire(self) -> Result[None, Exception]:
+        """Attempt to queue and acquire a permit."""
+        self._queued += 1
+        try:
+            permit_result = await self._acquire_permit()
+            if isinstance(permit_result, Err):
+                return permit_result
+            return Ok(None)
+        finally:
+            self._queued -= 1
+
+    async def _execute_with_permit(
+        self,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        """Execute the function within the acquired permit."""
+        self._active += 1
+        try:
+            result = await fn(*args, **kwargs)
+            return Ok(result)
+        except Exception as exc:
+            logger.warning(
+                "Bulkhead '%s' execution failed: %s",
+                self.name,
+                exc,
+            )
+            return Err(exc)
+        finally:
+            self._active -= 1
+            self._semaphore.release()
+
     async def execute(
         self,
         fn: Callable[P, Awaitable[T]],
@@ -195,29 +228,11 @@ class Bulkhead:
                 ),
             )
 
-        self._queued += 1
-        try:
-            permit_result = await self._acquire_permit()
-            if isinstance(permit_result, Err):
-                return permit_result
-        finally:
-            self._queued -= 1
+        acquire_result = await self._attempt_acquire()
+        if isinstance(acquire_result, Err):
+            return acquire_result
 
-        # Execute within the permit
-        self._active += 1
-        try:
-            result = await fn(*args, **kwargs)
-            return Ok(result)
-        except Exception as exc:
-            logger.warning(
-                "Bulkhead '%s' execution failed: %s",
-                self.name,
-                exc,
-            )
-            return Err(exc)
-        finally:
-            self._active -= 1
-            self._semaphore.release()
+        return await self._execute_with_permit(fn, *args, **kwargs)
 
 
 async def _wait_for_permit_task(

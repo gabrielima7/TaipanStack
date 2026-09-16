@@ -121,6 +121,24 @@ class AdaptiveRetry:
         finally:
             self._lock.release()
 
+    def _get_historical_delays(self, attempt: int) -> list[float]:
+        """Safely fetch historical delays for a given attempt."""
+        acquired = self._lock.acquire(timeout=0.1)
+        if not acquired:
+            return []
+        try:
+            return list(self._success_delays.get(attempt, []))
+        finally:
+            self._lock.release()
+
+    def _calculate_fallback_delay(self, attempt: int) -> float:
+        """Calculate exponential backoff fallback delay."""
+        try:
+            fallback_delay = self._min_delay * (2.0 ** (attempt - 1))
+        except OverflowError:
+            fallback_delay = self._max_delay
+        return max(self._min_delay, min(fallback_delay, self._max_delay))
+
     def get_delay(self, attempt: int) -> float:
         """Get the learned optimal delay for this attempt level.
 
@@ -135,26 +153,14 @@ class AdaptiveRetry:
             Delay in seconds.
 
         """
-        acquired = self._lock.acquire(timeout=0.1)
-        if not acquired:
-            delays = []
-        else:
-            try:
-                delays = list(self._success_delays.get(attempt, []))
-            finally:
-                self._lock.release()
+        delays = self._get_historical_delays(attempt)
 
         if delays:
             # Use median of successful delays as the optimal delay
             learned = statistics.median(delays)
             return max(self._min_delay, min(learned, self._max_delay))
 
-        # Fallback: exponential backoff
-        try:
-            fallback_delay = self._min_delay * (2.0 ** (attempt - 1))
-        except OverflowError:
-            fallback_delay = self._max_delay
-        return max(self._min_delay, min(fallback_delay, self._max_delay))
+        return self._calculate_fallback_delay(attempt)
 
     def to_retry_config(self) -> RetryConfig:
         """Export current state as a standard ``RetryConfig``.
