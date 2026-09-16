@@ -418,7 +418,7 @@ class ResilienceOrchestrator(Generic[T]):
                     timeout=self._timeout,
                 )
             return await result
-        return cast("T | Result[T, Exception]", result)
+        return cast("T | Result[T, Exception]", result)  # type: ignore[unreachable]
 
     async def _execute_with_timeout(
         self,

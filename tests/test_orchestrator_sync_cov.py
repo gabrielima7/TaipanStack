@@ -1,6 +1,8 @@
 import pytest
-from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+
 from taipanstack.core.result import Ok
+from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+
 
 @pytest.mark.asyncio
 async def test_orchestrator_sync_fn_timeout():
@@ -11,6 +13,7 @@ async def test_orchestrator_sync_fn_timeout():
 
     res = await orch.execute(sync_fn)
     assert res == Ok("sync_success")
+
 
 @pytest.mark.asyncio
 async def test_orchestrator_sync_fn_timeout_none():
