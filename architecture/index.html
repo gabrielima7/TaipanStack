@@ -2620,6 +2620,9 @@
 
 <h1 id="taipanstack-architecture">TaipanStack Architecture<a class="headerlink" href="#taipanstack-architecture" title="Permanent link">&para;</a></h1>
 <p>TaipanStack is built on the philosophy of <strong>maximum safety by default</strong>, combined with blazing-fast asynchronous programming. The internal architecture enforces a strict layered dependency map, statically verified on every commit.</p>
+<blockquote>
+<p><strong>🤖 AI Agents Note</strong>: AI assistants modifying architectural components must abide by the rules detailed in the <a href="../agents/">AI Agents Guidelines</a>.</p>
+</blockquote>
 <h2 id="layered-dependency-model">Layered Dependency Model<a class="headerlink" href="#layered-dependency-model" title="Permanent link">&para;</a></h2>
 <p>The architecture enforces unidirectional data flow. Upper layers may import from lower layers; lower layers may <strong>never</strong> import upward.</p>
 <pre class="mermaid"><code>graph TD

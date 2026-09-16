@@ -2654,7 +2654,7 @@
 2. <strong><code>src/taipanstack/security/</code></strong>: Guards, sanitizers, validators, and authentication.
 3. <strong><code>src/taipanstack/config/</code></strong>: Configuration models and generators.
 4. <strong><code>src/taipanstack/bridges/</code></strong>: External communication integrations (http, db).
-5. <strong><code>src/taipanstack/resilience/</code></strong>: Reliability patterns (circuit breakers, retries, watchdogs).
+5. <strong><code>src/taipanstack/resilience/</code></strong>: Reliability patterns (circuit breakers, retries, watchdogs). <em>Note: The taipanstack.utils resilience modules are deprecated backward-compatibility shims. New code should import resilience modules directly from taipanstack.resilience.</em>
 6. <strong><code>src/taipanstack/utils/</code></strong>: Cross-cutting utilities (logs, filesystem, context).
 7. <strong><code>src/taipanstack/core/</code></strong>: The absolute core (<code>Result</code> types, optimizations). <strong>Must never import from upper layers</strong>.</p>
 <h2 id="5-security-devsecops-secure-by-design">5. Security &amp; DevSecOps (Secure-by-Design)<a class="headerlink" href="#5-security-devsecops-secure-by-design" title="Permanent link">&para;</a></h2>
@@ -2669,12 +2669,14 @@
 <li><strong>Coverage Goal:</strong> The project mandates an absolute 100% test coverage (<code>fail_under = 100</code>).</li>
 <li><strong>NO CHEATING/BYPASSING (CRITICAL):</strong> You are strictly forbidden from manipulating CI/CD pipelines or coverage reports. <strong>Do not use</strong> <code># pragma: no cover</code>, <code>@pytest.mark.skip</code>, <code>pass</code>, or any other methods to bypass real testing.</li>
 <li><strong>Accuracy:</strong> All tests must be 100% real, functional, and precise. Use <code>pytest</code> for standard tests and <code>hypothesis</code> for property-based mathematical/logical validations.</li>
+<li><strong>Coverage Command:</strong> To perform test coverage analysis and identify missing lines or branches in the main source code, use the command <code>poetry run pytest --cov=src/taipanstack --cov-report=term-missing</code>.</li>
 </ul>
 <h2 id="7-continuous-validation-workflow-critical">7. Continuous Validation Workflow (CRITICAL)<a class="headerlink" href="#7-continuous-validation-workflow-critical" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Always Validate Changes:</strong> Before considering any implementation, refactor, or code change complete, you must validate the entire project suite.</li>
 <li><strong>Validation Command:</strong> Always run the command <code>make all</code> in the terminal to verify that your changes do not break existing tests, lower the coverage, violate typing rules, or breach architectural contracts.</li>
 <li><strong>Fix Errors Immediately:</strong> If <code>make all</code> (or specific targets like <code>make test</code>, <code>make lint-imports</code>, <code>make security</code>) returns any error, you must fix the underlying code immediately. Do not proceed or submit the code until the pipeline is completely green.</li>
+<li><strong>Documentation Validation:</strong> Before submitting any Pull Request related to documentation changes (including MkDocs site and repository .md files), you must execute <code>poetry run mkdocs build --strict</code> and ensure it passes successfully with no errors or warnings.</li>
 </ul>
 
 
