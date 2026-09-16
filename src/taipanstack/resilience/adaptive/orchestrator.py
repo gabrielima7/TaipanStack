@@ -177,6 +177,37 @@ class ResilienceOrchestrator(Generic[T]):
         """Attempt to acquire a bulkhead permit, handling timeouts and errors."""
         return await bh._acquire_permit()
 
+    async def _attempt_bulkhead_acquire(
+        self,
+        bh: Bulkhead,
+    ) -> Result[None, Exception]:
+        """Attempt to queue and acquire a bulkhead permit."""
+        bh._queued += 1
+        try:
+            acquire_result = await self._acquire_bulkhead(bh)
+            if isinstance(acquire_result, Err):
+                return Err(acquire_result.unwrap_err())
+            return Ok(None)
+        finally:
+            bh._queued -= 1
+
+    async def _execute_bulkhead_inner(
+        self,
+        bh: Bulkhead,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Result[T, Exception]:
+        """Execute the inner function while holding the bulkhead permit."""
+        bh._active += 1
+        try:
+            return await self._execute_inner(fn, *args, **kwargs)
+        except Exception as exc:
+            return self._apply_fallback(Err(exc))
+        finally:
+            bh._active -= 1
+            bh._semaphore.release()
+
     async def _execute_with_bulkhead(
         self,
         bh: Bulkhead,
@@ -191,23 +222,11 @@ class ResilienceOrchestrator(Generic[T]):
             )
             return self._apply_fallback(result)
 
-        bh._queued += 1
-        try:
-            acquire_result = await self._acquire_bulkhead(bh)
-            if isinstance(acquire_result, Err):
-                return self._apply_fallback(cast(Result[T, Exception], acquire_result))
-        finally:
-            bh._queued -= 1
+        acquire_result = await self._attempt_bulkhead_acquire(bh)
+        if isinstance(acquire_result, Err):
+            return self._apply_fallback(cast(Result[T, Exception], acquire_result))
 
-        bh._active += 1
-        try:
-            try:
-                return await self._execute_inner(fn, *args, **kwargs)
-            except Exception as exc:
-                return self._apply_fallback(Err(exc))
-        finally:
-            bh._active -= 1
-            bh._semaphore.release()
+        return await self._execute_bulkhead_inner(bh, fn, *args, **kwargs)
 
     async def execute(
         self,
