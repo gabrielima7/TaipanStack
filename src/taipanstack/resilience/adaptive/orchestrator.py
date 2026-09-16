@@ -10,6 +10,7 @@ Execution order: bulkhead → circuit breaker → retry → timeout → fn → f
 from __future__ import annotations
 
 import asyncio
+import inspect
 import logging
 import math
 from collections.abc import Awaitable, Callable
@@ -409,12 +410,15 @@ class ResilienceOrchestrator(Generic[T]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> T | Result[T, Exception]:
-        if self._timeout is not None:
-            return await asyncio.wait_for(
-                fn(*args, **kwargs),
-                timeout=self._timeout,
-            )
-        return await fn(*args, **kwargs)
+        result = fn(*args, **kwargs)
+        if inspect.isawaitable(result):
+            if self._timeout is not None:
+                return await asyncio.wait_for(
+                    result,
+                    timeout=self._timeout,
+                )
+            return await result
+        return cast("T | Result[T, Exception]", result)
 
     async def _execute_with_timeout(
         self,
