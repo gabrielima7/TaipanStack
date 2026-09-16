@@ -572,3 +572,21 @@ class TestResultStructuralCompatibility:
 
         res = collect_results(iter_ok())
         assert res.unwrap() == [1, 2]
+
+    def test_result_module_collect_results_mixed_iterable(
+        self,
+    ) -> None:
+        """Test fallback branch where an iterable of mixed Ok and Err returns the first Err."""
+        from result import Err, Ok
+
+        from taipanstack.core.result import collect_results
+
+        def iter_mixed():
+            yield Ok(1)
+            yield Err(ValueError("mixed error"))
+            yield Ok(2)
+
+        res = collect_results(iter_mixed())
+        assert res.is_err()
+        assert isinstance(res.unwrap_err(), ValueError)
+        assert str(res.unwrap_err()) == "mixed error"
