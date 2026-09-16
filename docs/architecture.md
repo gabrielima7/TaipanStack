@@ -6,6 +6,8 @@ description: "TaipanStack layered architecture: dependency contracts, concurrenc
 
 TaipanStack is built on the philosophy of **maximum safety by default**, combined with blazing-fast asynchronous programming. The internal architecture enforces a strict layered dependency map, statically verified on every commit.
 
+> **🤖 AI Agents Note**: AI assistants modifying architectural components must abide by the rules detailed in the [AI Agents Guidelines](agents.md).
+
 ## Layered Dependency Model
 
 The architecture enforces unidirectional data flow. Upper layers may import from lower layers; lower layers may **never** import upward.

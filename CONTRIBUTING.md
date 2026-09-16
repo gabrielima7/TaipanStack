@@ -2,6 +2,8 @@
 
 First off, thank you for considering contributing to TaipanStack! It's people like you that make this tool better for everyone.
 
+> **🤖 Note for AI Assistants & Agents**: If you are an AI assistant contributing to this repository, you **MUST** strictly adhere to the [AI Agents Guidelines](docs/agents.md).
+
 ## Code of Conduct
 
 This project and everyone participating in it is expected to uphold professional and respectful behavior. Please be kind and courteous.

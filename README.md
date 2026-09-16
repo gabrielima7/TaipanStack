@@ -474,6 +474,8 @@ Contributions are welcome! Please check our [Contributing Guide](CONTRIBUTING.md
 - 📝 Documentation improvements
 - 🔧 Pull requests
 
+> **🤖 Note for AI Assistants & Agents**: If you are an AI assistant contributing to this repository, you **MUST** strictly adhere to the [AI Agents Guidelines](docs/agents.md).
+
 ---
 
 ## 📝 License
