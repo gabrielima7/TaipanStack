@@ -207,14 +207,27 @@ class UserService:
 
         """
         # Hash the password securely using the security module
-        try:
-            pwd_hash = hash_password(user_create.password)
-        except ValueError as e:
+        pwd_str = user_create.password.get_secret_value()
+        if not pwd_str:
             logger.warning(
                 "Failed to create user (invalid password)",
                 username=user_create.username,
             )
-            return Err(UserCreationError(message=str(e)))
+            return Err(UserCreationError(message="password cannot be empty"))
+
+        max_pwd_len = 1024
+        if len(pwd_str) > max_pwd_len:
+            logger.warning(
+                "Failed to create user (invalid password)",
+                username=user_create.username,
+            )
+            return Err(
+                UserCreationError(
+                    message=f"password length exceeds {max_pwd_len} characters"
+                )
+            )
+
+        pwd_hash = hash_password(user_create.password)
 
         user_id = uuid4()
         user_in_db = UserInDB(
