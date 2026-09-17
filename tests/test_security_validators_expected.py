@@ -1,4 +1,4 @@
-"""Tests for stack.security.validators module."""
+"""Tests for taipanstack.security.validators module."""
 
 import pytest
 from hypothesis import HealthCheck, given, settings

@@ -5,7 +5,7 @@ This module provides configuration templates optimized for different
 Python versions, helping users get the best performance while
 maintaining stability.
 
-Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
+Following TaipanStack:: Security, Stability, Simplicity, Scalability, Compatibility.
 """
 
 import logging
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 class VersionRecommendations:
     """Configuration recommendations for a Python version.
 
-    These recommendations help users configure their Stack-based
+    These recommendations help users configure their TaipanStack-based
     applications for optimal performance on their Python version.
     """
 

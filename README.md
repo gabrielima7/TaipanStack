@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🐍 Taipan Stack
+# 🐍 TaipanStack
 
 [![CI](https://img.shields.io/github/actions/workflow/status/gabrielima7/TaipanStack/ci-push-validate.yml?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml)
 
@@ -26,11 +26,11 @@
 
 ---
 
-## ✨ Why Taipan Stack?
+## ✨ Why TaipanStack?
 
 > **"Write less, build better."**
 
-Taipan Stack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
+TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
 ### ✨ What's New in v0.6.1
 
@@ -139,7 +139,7 @@ make property-test
 
 ## 📐 Architecture
 
-Taipan Stack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
+TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
 ```text
                     ┌────────────────────────────────────────────────────────┐
@@ -190,7 +190,7 @@ The `taipanstack.utils` resilience modules (`circuit_breaker`, `retry`, `resilie
 
 ## 🔐 DevSecOps
 
-Taipan Stack integrates security and quality at every level:
+TaipanStack integrates security and quality at every level:
 
 | Category | Tools | Purpose |
 | ---------- | ------- | --------- |

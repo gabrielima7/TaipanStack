@@ -4,7 +4,7 @@ Python Version-Specific Optimization Profiles.
 This module provides optimization strategies tailored to different Python
 versions, enabling performance improvements while maintaining stability.
 
-Following Stack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
+Following TaipanStack:: Security, Stability, Simplicity, Scalability, Compatibility.
 """
 
 import gc

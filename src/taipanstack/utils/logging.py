@@ -237,7 +237,7 @@ class StackLogger:
 
     def __init__(
         self,
-        name: str = "stack",
+        name: str = "taipanstack",
         level: str = "INFO",
         *,
         use_structured: bool = False,
@@ -465,7 +465,7 @@ def setup_logging(
 
 
 def get_logger(
-    name: str = "stack",
+    name: str = "taipanstack",
     *,
     level: str = "INFO",
     use_structured: bool = False,
