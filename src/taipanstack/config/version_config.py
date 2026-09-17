@@ -5,7 +5,8 @@ This module provides configuration templates optimized for different
 Python versions, helping users get the best performance while
 maintaining stability.
 
-Following TaipanStack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
+Following TaipanStack pillars: Security, Stability, Simplicity,
+Scalability, Compatibility.
 """
 
 import logging

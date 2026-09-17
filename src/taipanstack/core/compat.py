@@ -5,7 +5,8 @@ This module provides runtime detection of Python version and available
 performance features, enabling version-specific optimizations while
 maintaining compatibility with Python 3.11+.
 
-Following TaipanStack pillars: Security, Stability, Simplicity, Scalability, Compatibility.
+Following TaipanStack pillars: Security, Stability, Simplicity,
+Scalability, Compatibility.
 """
 
 import logging
