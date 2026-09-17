@@ -36,3 +36,16 @@ def test_security_guards_ssrf_obfuscated_hostname_at():
     result = guard_ssrf(url2)
     assert isinstance(result, Err)
     assert isinstance(result.unwrap_err(), SecurityError)
+
+def test_security_guards_command_injection_non_string():
+    from taipanstack.security.guards import guard_command_injection
+    with pytest.raises(TypeError):
+        guard_command_injection(["ls", 123])
+
+def test_security_guards_ssrf_malformed_url():
+    from taipanstack.security.guards import guard_ssrf
+    # Using a malformed port representation which causes ValueError in urlsplit
+    result = guard_ssrf("http://]")
+    assert isinstance(result, Err)
+    assert isinstance(result.unwrap_err(), SecurityError)
+    assert "Malformed URL:" in result.unwrap_err().args[0]
