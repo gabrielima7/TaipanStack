@@ -133,7 +133,7 @@ def generate_pyproject_config(config: StackConfig) -> str:
     """Generate Ruff, Mypy, and Pytest configuration for pyproject.toml.
 
     Args:
-        config: The Stack configuration.
+        config: The TaipanStack configuration.
 
     Returns:
         Configuration string to append to pyproject.toml.
@@ -143,7 +143,7 @@ def generate_pyproject_config(config: StackConfig) -> str:
     python_version = config.python_version
 
     return f"""
-# --- Stack v2.0 Quality Configuration ---
+# --- TaipanStack v2.0 Quality Configuration ---
 {_generate_ruff_config(target_version)}
 {_generate_mypy_config(python_version)}
 {_generate_pytest_config()}
@@ -246,7 +246,7 @@ def _collect_standard_security_hooks(config: StackConfig, hooks: list[str]) -> N
     """Collect standard security hooks.
 
     Args:
-        config: The Stack configuration.
+        config: The TaipanStack configuration.
         hooks: The list to append hooks to.
 
     """
@@ -264,7 +264,7 @@ def _collect_additional_security_hooks(config: StackConfig, hooks: list[str]) ->
     """Collect additional security hooks based on configuration level.
 
     Args:
-        config: The Stack configuration.
+        config: The TaipanStack configuration.
         hooks: The list to append hooks to.
 
     """
@@ -280,7 +280,7 @@ def _collect_security_hooks(config: StackConfig) -> list[str]:
     """Collect security hooks based on configuration.
 
     Args:
-        config: The Stack configuration.
+        config: The TaipanStack configuration.
 
     Returns:
         A list of security hook YAML strings.
@@ -298,7 +298,7 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     """Generate .pre-commit-config.yaml content.
 
     Args:
-        config: The Stack configuration.
+        config: The TaipanStack configuration.
 
     Returns:
         Pre-commit configuration YAML string.
@@ -306,7 +306,7 @@ def generate_pre_commit_config(config: StackConfig) -> str:
     """
     security_hooks = _collect_security_hooks(config)
 
-    return f"""# Stack v2.0 Pre-commit Configuration
+    return f"""# TaipanStack v2.0 Pre-commit Configuration
 # Security Level: {config.security.level}
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

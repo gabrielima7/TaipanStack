@@ -144,9 +144,9 @@ class LoggingConfig(BaseModel):
 
 
 class StackConfig(BaseModel):
-    """Main Stack configuration with full validation.
+    """Main TaipanStack configuration with full validation.
 
-    This is the primary configuration model that validates all Stack
+    This is the primary configuration model that validates all TaipanStack
     settings at runtime, preventing configuration errors and catching
     AI hallucinations early.
 

@@ -1,4 +1,4 @@
-"""Utility modules for Stack."""
+"""Utility modules for TaipanStack."""
 
 from .cache import cached
 from .concurrency import OverloadError, limit_concurrency

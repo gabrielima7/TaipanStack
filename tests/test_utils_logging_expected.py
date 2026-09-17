@@ -37,7 +37,7 @@ class TestStackLogger:
     def test_utils_logging_init_with_defaults(self) -> None:
         """Test logger initialization with defaults."""
         logger = StackLogger()
-        assert logger.name == "stack"
+        assert logger.name == "taipanstack"
         assert logger.level == "INFO"
 
     def test_utils_logging_init_with_custom_name(self) -> None:

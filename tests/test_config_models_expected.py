@@ -94,7 +94,7 @@ class TestStackConfig:
     """Tests for StackConfig model."""
 
     def test_config_models_default_values(self) -> None:
-        """Test default stack configuration."""
+        """Test default taipanstack configuration."""
         config = StackConfig()
 
         assert config.project_name == "my_project"

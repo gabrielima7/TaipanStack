@@ -1,4 +1,4 @@
-"""Tests for stack.security.guards module."""
+"""Tests for taipanstack.security.guards module."""
 
 from pathlib import Path
 
