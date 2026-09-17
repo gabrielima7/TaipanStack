@@ -315,10 +315,10 @@ class CircuitBreaker:
             return 30.0
 
     def _calculate_safe_elapsed(
-        self, parsed_failure: object, safe_timeout: float, now: float
+        self, parsed_failure: float | int, safe_timeout: float, now: float
     ) -> float:
         try:
-            val = float(parsed_failure)  # type: ignore[arg-type]
+            val = float(parsed_failure)
             if not math.isfinite(val):
                 return safe_timeout
             elapsed = now - val
