@@ -65,7 +65,9 @@ def test_chaos_resilience_fallback_type_mutation_not_isinstance_expected() -> No
 
 
 @pytest.mark.asyncio
-async def test_chaos_resilience_fallback_type_mutation_async_not_isinstance_expected() -> None:
+async def test_chaos_resilience_fallback_type_mutation_async_not_isinstance_expected() -> (
+    None
+):
     """Coverage: valid type but not matching."""
 
     @fallback("fallback_val", exceptions=(ValueError,))

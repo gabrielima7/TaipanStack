@@ -53,7 +53,9 @@ async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_evaluate_adaptiv
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_bulkhead_edge_expected() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_bulkhead_edge_expected() -> (
+    None
+):
     from taipanstack.resilience.adaptive.bulkhead import BulkheadFullError
 
     orchestrator = ResilienceOrchestrator().with_bulkhead(
@@ -93,7 +95,9 @@ async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_resource_exhaust
 
 
 @pytest.mark.asyncio
-async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_cancellation_expected() -> None:
+async def test_chaos_orchestrator_edge_cases_chaos_orchestrator_cancellation_expected() -> (
+    None
+):
     orchestrator = ResilienceOrchestrator().with_bulkhead(max_concurrent=5)
 
     active_calls = 0

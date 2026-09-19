@@ -14,7 +14,9 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
     ],
 )
 @given(path=st.text(min_size=4097, max_size=5000))
-def test_fuzz_guard_path_dos_fuzz_guard_path_traversal_exceeds_max_path_length_expected(path):
+def test_fuzz_guard_path_dos_fuzz_guard_path_traversal_exceeds_max_path_length_expected(
+    path,
+):
     with pytest.raises(SecurityError):
         guard_path_traversal(path)
 

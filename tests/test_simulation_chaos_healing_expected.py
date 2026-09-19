@@ -11,7 +11,9 @@ from taipanstack.utils.rate_limit import rate_limit
 
 
 @pytest.mark.asyncio
-async def test_simulation_chaos_healing_complex_microservice_simulation_chaos_expected() -> None:
+async def test_simulation_chaos_healing_complex_microservice_simulation_chaos_expected() -> (
+    None
+):
     """Simulates a highly concurrent microservice handling malicious payloads."""
     # 1. Setup Architecture
     orchestrator = (

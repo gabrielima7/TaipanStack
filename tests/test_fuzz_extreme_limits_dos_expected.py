@@ -35,7 +35,9 @@ def test_fuzz_extreme_limits_dos_fuzz_email_massive_dos_expected() -> None:
     max_examples=5,
 )
 @given(name=st.text(min_size=10**3, max_size=10**3 + 10))
-def test_fuzz_extreme_limits_dos_fuzz_project_name_hypothesis_dos_expected(name: str) -> None:
+def test_fuzz_extreme_limits_dos_fuzz_project_name_hypothesis_dos_expected(
+    name: str,
+) -> None:
     """Fuzz validate_project_name with massive strings."""
     with pytest.raises(ValueError):
         validate_project_name(name, max_length=100)  # Force length fail

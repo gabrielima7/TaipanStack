@@ -101,7 +101,9 @@ def test_utils_subprocess_additional_utils_subprocess_validate_timeout_type_erro
         _validate_timeout("10")  # type: ignore
 
 
-def test_utils_subprocess_additional_utils_subprocess_validate_timeout_none_expected() -> None:
+def test_utils_subprocess_additional_utils_subprocess_validate_timeout_none_expected() -> (
+    None
+):
     """Test _validate_timeout with None."""
     from taipanstack.utils.subprocess import _validate_timeout
 

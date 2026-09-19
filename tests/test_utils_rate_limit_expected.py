@@ -209,7 +209,9 @@ class TestRateLimitDecorator:
         with patch("time.monotonic", side_effect=Exception("mocked error")):
             assert limiter._get_current_time() is None
 
-    def test_utils_rate_limit_validate_and_add_tokens_unreachable_now_expected(self) -> None:
+    def test_utils_rate_limit_validate_and_add_tokens_unreachable_now_expected(
+        self,
+    ) -> None:
         limiter = RateLimiter(10, 1.0)
         assert limiter._validate_and_add_tokens("not a number") is False  # type: ignore
 

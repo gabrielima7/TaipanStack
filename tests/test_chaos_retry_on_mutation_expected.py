@@ -14,7 +14,9 @@ def test_chaos_retry_on_mutation_chaos_retry_not_instance_exception_expected() -
         faulty_func_not_isinstance()
 
 
-def test_chaos_retry_on_mutation_chaos_retry_async_not_instance_exception_expected() -> None:
+def test_chaos_retry_on_mutation_chaos_retry_async_not_instance_exception_expected() -> (
+    None
+):
     @retry(max_attempts=2, on=(ValueError,))
     async def faulty_func_async_not_isinstance():
         raise KeyError("Key async")
@@ -77,7 +79,9 @@ def test_chaos_retry_on_mutation_chaos_retry_err_val_type_error_expected() -> No
             raise ValueError("Should not run")
 
 
-def test_chaos_retry_on_mutation_chaos_retry_async_err_val_type_error_expected() -> None:
+def test_chaos_retry_on_mutation_chaos_retry_async_err_val_type_error_expected() -> (
+    None
+):
     corrupted_on = "NotAnException"
 
     with pytest.raises(
@@ -90,7 +94,9 @@ def test_chaos_retry_on_mutation_chaos_retry_async_err_val_type_error_expected()
             raise ValueError("Should not run")
 
 
-def test_chaos_retry_on_mutation_chaos_retry_non_exception_class_in_tuple_expected() -> None:
+def test_chaos_retry_on_mutation_chaos_retry_non_exception_class_in_tuple_expected() -> (
+    None
+):
     corrupted_on = (ValueError, "NotAnException")
 
     with pytest.raises(

@@ -40,7 +40,9 @@ def test_fuzz_sanitizers_types_fuzz_sanitize_path_hypothesis_expected(
         sanitize_path(path)
 
 
-def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object_expected() -> None:
+def test_fuzz_sanitizers_types_fuzz_sanitize_path_massive_path_object_expected() -> (
+    None
+):
     """Ensure DoS protection limits are active when passing massive Path objects."""
     massive_path_str = "a" * 5000
     massive_path_obj = Path(massive_path_str)
