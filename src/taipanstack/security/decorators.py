@@ -265,7 +265,7 @@ def timeout(
         # Handle functions that throw exceptions on __name__ access
         # which breaks functools.wraps
         try:
-            getattr(func, "__name__", "unknown")  # type: ignore[misc]
+            getattr(func, "__name__", "unknown")
             wrapper_func: Callable[
                 [Callable[P, R]], Callable[P, R]
             ] = functools.wraps(func)
