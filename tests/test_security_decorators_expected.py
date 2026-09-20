@@ -204,6 +204,26 @@ class TestTimeout:
         assert exc_info.value.seconds == 0.1
         assert exc_info.value.func_name == "named_func"
 
+    def test_security_decorators_timeout_unknown_func_name(self) -> None:
+        """Test timeout handles exceptions getting function name gracefully."""
+
+        class BadNameFunc:
+            def __call__(self) -> str:
+                time.sleep(0.5)
+                return "too slow"
+
+            @property
+            def __name__(self) -> str:
+                raise RuntimeError("Name error")
+
+        bad_func = BadNameFunc()
+        wrapped_func = timeout(0.1, use_signal=False)(bad_func) # type: ignore
+
+        with pytest.raises(OperationTimeoutError) as exc_info:
+            wrapped_func()
+
+        assert exc_info.value.func_name == "unknown"
+
     def test_security_decorators_timeout_negative_value(self) -> None:
         """Test timeout with negative seconds."""
         with pytest.raises(

@@ -262,7 +262,21 @@ def timeout(
     _check_timeout_bounds(seconds)
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
-        @functools.wraps(func)
+        # Handle functions that throw exceptions on __name__ access
+        # which breaks functools.wraps
+        try:
+            getattr(func, "__name__", "unknown")  # type: ignore[misc]
+            wrapper_func: Callable[
+                [Callable[P, R]], Callable[P, R]
+            ] = functools.wraps(func)
+        except Exception:
+            def _basic_wrapper(f: Callable[P, R]) -> Callable[P, R]:
+                def inner(*args: P.args, **kwargs: P.kwargs) -> R:
+                    return f(*args, **kwargs)
+                return inner
+            wrapper_func = _basic_wrapper
+
+        @wrapper_func
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             if _can_use_signal(use_signal):
                 return _timeout_with_signal(
@@ -343,8 +357,16 @@ def _timeout_with_thread(
     thread.start()
     thread.join(timeout=seconds)
 
+    func_name: str = "unknown"
+    try:
+        # Avoid type complaints on getattr by strictly catching all
+        name_attr = getattr(func, "__name__", "unknown")  # type: ignore[misc]
+        func_name = str(name_attr)  # type: ignore[misc]
+    except Exception:
+        func_name = "unknown"
+
     return _process_thread_timeout_result(
-        thread, seconds, func.__name__, result, exception
+        thread, seconds, func_name, result, exception
     )
 
 

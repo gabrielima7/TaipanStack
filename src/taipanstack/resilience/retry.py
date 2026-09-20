@@ -542,12 +542,12 @@ async def _handle_retry_exception_async(
 
 
 async def _attempt_async_retry(
-    func_coro: Callable[P, Awaitable[R]],
+    func_coro: Callable[..., Awaitable[R]],
     func_name_coro: str,
     config: RetryConfig,
     valid_on: tuple[type[Exception], ...] | type[Exception],
-    args: P.args,
-    kwargs: P.kwargs,
+    *args: object,
+    **kwargs: object,
 ) -> tuple[R | None, BaseException | None, bool]:
     last_exception: BaseException | None = None
     last_result: R | None = None
@@ -578,7 +578,7 @@ def _execute_async_wrapper(
     @functools.wraps(func_coro)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         last_result, last_exception, success = await _attempt_async_retry(
-            func_coro, func_name_coro, config, valid_on, args, kwargs
+            func_coro, func_name_coro, config, valid_on, *args, **kwargs
         )
         if success and last_result is not None:
             return last_result
@@ -590,12 +590,12 @@ def _execute_async_wrapper(
 
 
 def _attempt_sync_retry(
-    func_sync: Callable[P, R],
+    func_sync: Callable[..., R],
     func_name_sync: str,
     config: RetryConfig,
     valid_on: tuple[type[Exception], ...] | type[Exception],
-    args: P.args,
-    kwargs: P.kwargs,
+    *args: object,
+    **kwargs: object,
 ) -> tuple[R | None, BaseException | None, bool]:
     last_exception: BaseException | None = None
     last_result: R | None = None
@@ -626,7 +626,7 @@ def _execute_sync_wrapper(
     @functools.wraps(func_sync)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         last_result, last_exception, success = _attempt_sync_retry(
-            func_sync, func_name_sync, config, valid_on, args, kwargs
+            func_sync, func_name_sync, config, valid_on, *args, **kwargs
         )
         if success and last_result is not None:
             return last_result
