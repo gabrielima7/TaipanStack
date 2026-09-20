@@ -215,6 +215,23 @@ def guard_exceptions(
     return decorator
 
 
+def _check_timeout_bounds(seconds: float) -> None:
+    if (
+        not isinstance(seconds, (int, float))
+        or not math.isfinite(seconds)
+        or seconds < 0
+    ):
+        raise ValueError("timeout must be a finite non-negative number")
+
+
+def _can_use_signal(use_signal: bool) -> bool:
+    return (
+        use_signal
+        and sys.platform != "win32"
+        and threading.current_thread() is threading.main_thread()
+    )
+
+
 def timeout(
     seconds: float,
     *,
@@ -242,28 +259,12 @@ def timeout(
         TimeoutError: slow_operation timed out after 5.0 seconds
 
     """
-    # Security Enhancement: explicitly validate bounds using math.isfinite()
-    # and check for non-negative limits to prevent silent NaN propagation,
-    # unhandled ValueError exceptions from threading/asyncio primitives,
-    # or unexpected infinite blocking behaviors.
-    if (
-        not isinstance(seconds, (int, float))
-        or not math.isfinite(seconds)
-        or seconds < 0
-    ):
-        raise ValueError("timeout must be a finite non-negative number")
+    _check_timeout_bounds(seconds)
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            # Determine if we can use signals
-            can_use_signal = (
-                use_signal
-                and sys.platform != "win32"
-                and threading.current_thread() is threading.main_thread()
-            )
-
-            if can_use_signal:
+            if _can_use_signal(use_signal):
                 return _timeout_with_signal(
                     func,
                     seconds,
@@ -305,6 +306,22 @@ def _timeout_with_signal(
         signal.signal(signal.SIGALRM, old_handler)
 
 
+def _process_thread_timeout_result(
+    thread: threading.Thread,
+    seconds: float,
+    func_name: str,
+    result: list[R],
+    exception: list[BaseException],
+) -> R:
+    if thread.is_alive():
+        raise OperationTimeoutError(seconds, func_name)
+
+    if exception:
+        raise exception[0]
+
+    return result[0]
+
+
 def _timeout_with_thread(
     func: Callable[..., R],
     seconds: float,
@@ -326,14 +343,20 @@ def _timeout_with_thread(
     thread.start()
     thread.join(timeout=seconds)
 
-    if thread.is_alive():
-        # Thread still running - timeout occurred
-        raise OperationTimeoutError(seconds, func.__name__)  # type: ignore[misc]
+    return _process_thread_timeout_result(
+        thread, seconds, func.__name__, result, exception
+    )
 
-    if exception:
-        raise exception[0]
 
-    return result[0]
+def _build_deprecation_message(
+    func_name: str, message: str, removal_version: str | None
+) -> str:
+    msg = f"{func_name} is deprecated."
+    if removal_version:
+        msg += f" Will be removed in version {removal_version}."
+    if message:
+        msg += f" {message}"
+    return msg
 
 
 def deprecated(
@@ -364,12 +387,7 @@ def deprecated(
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             import warnings
 
-            msg = f"{func.__name__} is deprecated."
-            if removal_version:
-                msg += f" Will be removed in version {removal_version}."
-            if message:
-                msg += f" {message}"
-
+            msg = _build_deprecation_message(func.__name__, message, removal_version)
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             return func(*args, **kwargs)
 
