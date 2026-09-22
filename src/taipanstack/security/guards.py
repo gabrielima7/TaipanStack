@@ -387,7 +387,9 @@ def _check_denied_extension(
     denied_extensions: Sequence[str] | None,
 ) -> None:
     if denied_extensions is not None:
-        denied = frozenset(_normalize_ext(e) for e in denied_extensions)
+        denied = frozenset(
+            _normalize_ext(e) for e in denied_extensions if str(e).strip()
+        )
     else:
         denied = _DEFAULT_DENIED_EXTENSIONS
 
@@ -405,7 +407,7 @@ def _check_allowed_extension(
     allowed_extensions: Sequence[str] | None,
 ) -> None:
     if allowed_extensions is not None:
-        allowed = {_normalize_ext(e) for e in allowed_extensions}
+        allowed = {_normalize_ext(e) for e in allowed_extensions if str(e).strip()}
         if ext not in allowed:
             raise SecurityError(
                 f"File extension '{ext}' is not in allowed list",
@@ -432,8 +434,20 @@ def guard_file_extension(
 
     Raises:
         SecurityError: If extension is not allowed or is denied.
+        TypeError: If extensions parameters are of invalid type.
 
     """
+    if allowed_extensions is not None and not isinstance(
+        allowed_extensions, (list, tuple, set, frozenset)
+    ):
+        msg = "allowed_extensions must be a Sequence (list, tuple, set)"
+        raise TypeError(msg)
+    if denied_extensions is not None and not isinstance(
+        denied_extensions, (list, tuple, set, frozenset)
+    ):
+        msg = "denied_extensions must be a Sequence (list, tuple, set)"
+        raise TypeError(msg)
+
     filename_str = str(filename)
     if len(filename_str) > MAX_URL_LENGTH:  # Reuse constant to avoid PLR2004
         raise SecurityError(
