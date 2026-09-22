@@ -70,6 +70,16 @@ class ResilienceOrchestrator(Generic[T]):
         self._timeout: float | None = None
         self._fallback_value: T | object = _SENTINEL
 
+    @staticmethod
+    def _validate_timeout_param(timeout: float) -> None:
+        """Validate timeout parameter."""
+        if (
+            not isinstance(timeout, (int, float))
+            or not math.isfinite(timeout)
+            or timeout < 0
+        ):
+            raise ValueError("timeout must be a finite non-negative number")
+
     def with_bulkhead(
         self,
         max_concurrent: int = 10,
@@ -87,12 +97,7 @@ class ResilienceOrchestrator(Generic[T]):
             self for chaining.
 
         """
-        if (
-            not isinstance(timeout, (int, float))
-            or not math.isfinite(timeout)
-            or timeout < 0
-        ):
-            raise ValueError("timeout must be a finite non-negative number")
+        self._validate_timeout_param(timeout)
         self._bulkhead = Bulkhead(
             f"{self.name}-bulkhead",
             max_concurrent=max_concurrent,
@@ -151,12 +156,7 @@ class ResilienceOrchestrator(Generic[T]):
             self for chaining.
 
         """
-        if (
-            not isinstance(seconds, (int, float))
-            or not math.isfinite(seconds)
-            or seconds < 0
-        ):
-            raise ValueError("timeout must be a finite non-negative number")
+        self._validate_timeout_param(seconds)
         self._timeout = seconds
         return self
 
@@ -435,6 +435,15 @@ class ResilienceOrchestrator(Generic[T]):
             )
         return await fn(*args, **kwargs)
 
+    def _process_timeout_success_result(
+        self,
+        result: T | Result[T, Exception],
+    ) -> Result[T, Exception]:
+        """Process successful results from timeout execution."""
+        if isinstance(result, (Ok, Err)):
+            return cast(Result[T, Exception], result)
+        return Ok(result)
+
     async def _execute_with_timeout(
         self,
         fn: Callable[P, Awaitable[T]],
@@ -454,10 +463,7 @@ class ResilienceOrchestrator(Generic[T]):
         """
         try:
             result = await self._run_fn_with_timeout(fn, *args, **kwargs)
-
-            if isinstance(result, (Ok, Err)):
-                return cast(Result[T, Exception], result)
-            return Ok(result)
+            return self._process_timeout_success_result(result)
         except TimeoutError:
             return Err(
                 TimeoutError(
