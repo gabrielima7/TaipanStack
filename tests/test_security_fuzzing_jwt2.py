@@ -23,6 +23,7 @@ def test_fuzz_jwt_encode_malformed_payload(payload, secret, alg):
     with contextlib.suppress(TypeError, ValueError):
         encode_jwt(payload, secret, algorithm=alg)
 
+
 @settings(max_examples=200)
 @given(
     st.text(),
@@ -39,6 +40,7 @@ def test_fuzz_jwt_encode_malformed_payload(payload, secret, alg):
 def test_fuzz_jwt_encode_malformed_secret(payload, secret, alg):
     with contextlib.suppress(TypeError, ValueError):
         encode_jwt({"test": "data"}, secret, algorithm=alg)
+
 
 @settings(max_examples=200)
 @given(

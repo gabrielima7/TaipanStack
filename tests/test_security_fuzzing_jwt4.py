@@ -1,4 +1,3 @@
-
 import contextlib
 
 import hypothesis.strategies as st

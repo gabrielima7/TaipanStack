@@ -12,10 +12,15 @@ from taipanstack.security.guards import SecurityError, guard_file_extension
 )
 def test_fuzz_guard_file_extension_comprehensive(filename, allowed, denied):
     try:
-        guard_file_extension(filename, allowed_extensions=allowed, denied_extensions=denied)
+        guard_file_extension(
+            filename, allowed_extensions=allowed, denied_extensions=denied
+        )
     except (TypeError, ValueError, SecurityError):
         pass
     except Exception as e:
         # If it's a completely unexpected exception, bubble it up
-        if "maximum recursion depth" not in str(e).lower() and "memory" not in str(e).lower():
+        if (
+            "maximum recursion depth" not in str(e).lower()
+            and "memory" not in str(e).lower()
+        ):
             raise

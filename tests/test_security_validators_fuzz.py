@@ -17,17 +17,20 @@ def test_fuzz_validate_email(s):
     with contextlib.suppress(ValueError):
         validate_email(s)
 
+
 @settings(max_examples=500)
 @given(st.text())
 def test_fuzz_validate_url(s):
     with contextlib.suppress(ValueError):
         validate_url(s)
 
+
 @settings(max_examples=500)
 @given(st.text())
 def test_fuzz_validate_project_name(s):
     with contextlib.suppress(ValueError):
         validate_project_name(s)
+
 
 @settings(max_examples=500)
 @given(st.text())

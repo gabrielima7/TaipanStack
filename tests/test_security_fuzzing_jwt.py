@@ -1,4 +1,3 @@
-
 import hypothesis.strategies as st
 from hypothesis import given, settings
 
@@ -13,6 +12,7 @@ def test_fuzz_jwt_encode(payload, secret, alg):
         assert isinstance(result.err_value, (ValueError, TypeError, Exception))
     else:
         assert isinstance(result.unwrap(), str)
+
 
 @settings(max_examples=100)
 @given(st.text(), st.text(), st.lists(st.text()), st.text())
