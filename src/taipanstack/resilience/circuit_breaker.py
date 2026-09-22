@@ -581,9 +581,14 @@ class CircuitBreaker:
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
+        state_change: tuple[CircuitState, CircuitState] | None = None
         if not self._acquire_lock():
             return
         try:
+            old_state = self._state.state
+            if old_state is not CircuitState.CLOSED:
+                state_change = (old_state, CircuitState.CLOSED)
+
             self._state.state = CircuitState.CLOSED
             self._state.failure_count = 0
             self._state.success_count = 0
@@ -591,6 +596,9 @@ class CircuitBreaker:
             logger.info("Circuit %s manually reset", self.name)
         finally:
             self._safe_release()
+
+        if state_change:
+            self._notify_state_change(*state_change)
 
     def _is_failure_exception(self, exc: Exception) -> bool:
         try:
