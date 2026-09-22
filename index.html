@@ -3022,7 +3022,7 @@
 </ul>
 <h3 id="whats-new-in-v063">✨ What's New in v0.6.3<a class="headerlink" href="#whats-new-in-v063" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Security &amp; Resilience</strong>: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via <code>try...except Exception</code> blocks, falling back to safe defaults or returning appropriate <code>Err</code> states (PR #1139).</li>
+<li><strong>Security &amp; Resilience</strong>: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via strict Look-Before-You-Leap (LBYL) checks, falling back to safe defaults or returning appropriate <code>Err</code> states (PR #1139).</li>
 </ul>
 <h3 id="whats-new-in-v062">✨ What's New in v0.6.2<a class="headerlink" href="#whats-new-in-v062" title="Permanent link">&para;</a></h3>
 <ul>

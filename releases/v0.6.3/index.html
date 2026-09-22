@@ -2527,7 +2527,7 @@
 <hr />
 <h2 id="security-resilience">🛡️ Security &amp; Resilience<a class="headerlink" href="#security-resilience" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Rate Limiter Type Mutation Resilience</strong>: Hardened <code>RateLimiter</code> against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers or anomalous float operations) that could crash the service. Operations are now gracefully handled via <code>try...except Exception</code> blocks, falling back to safe defaults or returning appropriate <code>Err</code> states instead of raising uncaught exceptions (PR #1139).</li>
+<li><strong>Rate Limiter Type Mutation Resilience</strong>: Hardened <code>RateLimiter</code> against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers or anomalous float operations) that could crash the service. Operations are now gracefully handled via strict Look-Before-You-Leap (LBYL) checks, falling back to safe defaults or returning appropriate <code>Err</code> states instead of raising uncaught exceptions (PR #1139).</li>
 <li><strong>Anomalous Math Operations</strong>: Implemented safeguards in <code>RateLimiter</code> to gracefully absorb anomalous mathematical operations caused by invalid types or state corruption, ensuring the system degrades safely without crashing (PR #1139).</li>
 </ul>
 <h2 id="clean-code-refactoring-typing">🧹 Clean Code, Refactoring &amp; Typing<a class="headerlink" href="#clean-code-refactoring-typing" title="Permanent link">&para;</a></h2>
