@@ -32,12 +32,11 @@
 
 TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.6.1
+### ✨ What's New in v0.6.4
 
-- **Security & Hardening**: Hardened RateLimiter against infinite tokens mutations, key decoding in JWT, and validate_project_name argument parsing. Fixed large password payload crashes and removed unused constants (PR #966, #967, #968, #973, #989).
-- **Concurrency & Resilience**: Fixed a bulkhead acquisition memory leak in ResilienceOrchestrator and documented AdaptiveRetry features (PR #974, #980).
-- **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity across compatibility shims, validators, filesystems, and token buckets. Enforced strict web bridge type hints and clean keyword parameters (PR #971, #976, #979, #984, #988, #993, #997, #1002, #1003).
-- **QA and Standardized Testing**: Fully standardized test file nomenclature, verified **comprehensive test suite** with 100% genuine branch coverage, and added rigorous microservice chaos engineering simulations (PR #972, #975, #981, #986, #990, #992, #994, #999, #1004).
+- **Security & Resilience**: Hardened `RateLimiter` against extreme type mutations and anomalous mathematical operations to gracefully degrade without crashing. Updated enum comparisons to use identity checks (`is`, `is not`) to prevent exceptions from `__eq__` overrides.
+- **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity in `circuit_breaker.py`, `result.py`, and rate limiting components by extracting logic into unified helper methods and applying guard clauses.
+- **Typing**: Enhanced typing for `Adaptive Bulkhead` by explicitly using `Coroutine` for internal async tasks to resolve strict mypy typing errors.
 
 
 <table>
