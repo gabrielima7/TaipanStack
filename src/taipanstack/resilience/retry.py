@@ -104,10 +104,10 @@ def _validate_finite_or_default(
 ) -> None:
     """Validate that an attribute is finite, falling back to a default."""
     val = getattr(obj, attr_name)  # type: ignore[misc]
-    if not isinstance(val, (int, float)):  # type: ignore[misc]
+    if type(val) not in (int, float):  # type: ignore[misc]
         object.__setattr__(obj, attr_name, default_val)
         return
-    if not math.isfinite(val) or val < 0:
+    if not math.isfinite(cast(float, val)) or cast(float, val) < 0:
         raise ValueError(f"{attr_name} must be a finite non-negative number")
 
 
@@ -169,7 +169,7 @@ class RetryError(Exception):
 
 def _is_valid_number(val: object) -> bool:
     """Check if the value is a valid finite number."""
-    return isinstance(val, (int, float)) and math.isfinite(val)
+    return type(val) in (int, float) and math.isfinite(cast(float, val))
 
 
 def _compute_exponential_delay(attempt: int, config: RetryConfig) -> float:
