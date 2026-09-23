@@ -117,8 +117,12 @@ class CircuitBreakerConfig:
     excluded_exceptions: tuple[type[Exception], ...] = ()
     failure_exceptions: tuple[type[Exception], ...] = (Exception,)
 
-    def _check_finite(self, value: float, name: str) -> None:
-        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+    def _check_finite(self, value: object, name: str) -> None:
+        if type(value) not in (int, float):
+            raise TypeError(f"{name} must be of type int or float")
+        # type narrowing for type checker
+        val = float(value)  # type: ignore[arg-type]
+        if not math.isfinite(val) or val < 0:
             raise ValueError(f"{name} must be finite and non-negative")
 
     def __post_init__(self) -> None:
