@@ -68,7 +68,7 @@ jobs:
           path: site/htmlcov/
           workflow: ci-push-validate.yml
           branch: main
-          if_no_artifact_found: fail
+          if_no_artifact_found: warn
 
       - name: "[Deploy] Deploy to GitHub Pages"
         uses: peaceiris/actions-gh-pages@v4
