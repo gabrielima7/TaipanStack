@@ -13,7 +13,12 @@ from taipanstack.resilience.circuit_breaker import CircuitBreakerConfig
     deadline=None,
 )
 @given(
-    st.one_of(st.text(), st.booleans(), st.dictionaries(st.text(), st.text()), st.lists(st.text()))
+    st.one_of(
+        st.text(),
+        st.booleans(),
+        st.dictionaries(st.text(), st.text()),
+        st.lists(st.text()),
+    )
 )
 def test_circuit_breaker_config_extreme_type_mutation_failure_threshold(
     mutated_val: object,
@@ -29,7 +34,12 @@ def test_circuit_breaker_config_extreme_type_mutation_failure_threshold(
     deadline=None,
 )
 @given(
-    st.one_of(st.text(), st.booleans(), st.dictionaries(st.text(), st.text()), st.lists(st.text()))
+    st.one_of(
+        st.text(),
+        st.booleans(),
+        st.dictionaries(st.text(), st.text()),
+        st.lists(st.text()),
+    )
 )
 def test_circuit_breaker_config_extreme_type_mutation_success_threshold(
     mutated_val: object,
@@ -45,7 +55,12 @@ def test_circuit_breaker_config_extreme_type_mutation_success_threshold(
     deadline=None,
 )
 @given(
-    st.one_of(st.text(), st.booleans(), st.dictionaries(st.text(), st.text()), st.lists(st.text()))
+    st.one_of(
+        st.text(),
+        st.booleans(),
+        st.dictionaries(st.text(), st.text()),
+        st.lists(st.text()),
+    )
 )
 def test_circuit_breaker_config_extreme_type_mutation_timeout(
     mutated_val: object,
