@@ -83,6 +83,16 @@ class CircuitState(Enum):
     HALF_OPEN = "half_open"  # Testing if service has recovered
 
 
+def _safe_str(e: Exception) -> str:
+    try:
+        return str(e)
+    except Exception:
+        try:
+            return repr(e)
+        except Exception:
+            return "<unprintable exception>"
+
+
 class CircuitBreakerError(Exception):
     """Raised when circuit breaker is open."""
 
@@ -270,13 +280,13 @@ class CircuitBreaker:
                 circuit=self.name,
                 old_state=old_state.value,
                 new_state=new_state.value,
-                error=str(e),
+                error=_safe_str(e),
             )
         else:
             logger.error(
                 "Circuit %s state change callback failed: %s",
                 self.name,
-                str(e),
+                _safe_str(e),
             )
 
     def _log_structlog_warning(
