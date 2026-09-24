@@ -11,6 +11,7 @@ class ChaosError(Exception):
     def __str__(self):
         raise RuntimeError("Chaos stringification error")
 
+
 def test_retry_chaos_exception_str_crash():
     @retry(max_attempts=2, on=(ChaosError,))
     def flaky_function() -> Result[int, Exception]:
@@ -18,16 +19,18 @@ def test_retry_chaos_exception_str_crash():
 
     try:
         flaky_function()
-        pytest.fail("Retry should raise the exception after max attempts if reraise is True")
+        pytest.fail(
+            "Retry should raise the exception after max attempts if reraise is True"
+        )
     except RuntimeError as e:
         if str(e) == "Chaos stringification error":
             pytest.fail("Retry crashed due to str(exc) in logging")
         else:
             raise
     except RetryError:
-        pass # Expected
+        pass  # Expected
     except ChaosError:
-        pass # Expected
+        pass  # Expected
 
 
 def test_circuit_breaker_chaos_exception_str_crash():
@@ -42,7 +45,9 @@ def test_circuit_breaker_chaos_exception_str_crash():
         failing_function()
     except Exception as e:
         if isinstance(e, RuntimeError) and str(e) == "Chaos stringification error":
-            pytest.fail("Circuit breaker crashed due to str(exc) in callback failure logging")
+            pytest.fail(
+                "Circuit breaker crashed due to str(exc) in callback failure logging"
+            )
 
 
 def test_retry_chaos_exception_str_unprintable():
@@ -51,10 +56,12 @@ def test_retry_chaos_exception_str_unprintable():
         class UnprintableError(ChaosError):
             def __repr__(self):
                 raise RuntimeError("Chaos repr error")
+
         raise UnprintableError("evil")
 
     with contextlib.suppress(RetryError):
         flaky_function()
+
 
 def test_circuit_breaker_chaos_exception_str_unprintable():
     class UnprintableError(ChaosError):
