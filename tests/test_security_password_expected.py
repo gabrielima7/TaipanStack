@@ -2,13 +2,14 @@
 
 from pydantic import SecretStr
 
+from taipanstack.core.result import Err
 from taipanstack.security.password import hash_password, verify_password
 
 
 def test_security_password_hash_password() -> None:
     """Test that hashing a password produces a valid-looking hash."""
     password = "secure_password"
-    pwd_hash = hash_password(password)
+    pwd_hash = hash_password(password).unwrap()
 
     assert pwd_hash.startswith("$argon2")
 
@@ -16,47 +17,49 @@ def test_security_password_hash_password() -> None:
 def test_security_password_hash_password_secret_str() -> None:
     """Test that hashing a SecretStr works correctly."""
     password = SecretStr("secure_password")
-    pwd_hash = hash_password(password)
+    pwd_hash = hash_password(password).unwrap()
 
     assert pwd_hash.startswith("$argon2")
-    assert verify_password(password, pwd_hash)
+    assert verify_password(password, pwd_hash).unwrap()
 
 
 def test_security_password_verify_password_success() -> None:
     """Test that a correct password verifies successfully."""
     password = "my_password"
-    pwd_hash = hash_password(password)
+    pwd_hash = hash_password(password).unwrap()
 
-    assert verify_password(password, pwd_hash) is True
-    assert verify_password(SecretStr(password), pwd_hash) is True
+    assert verify_password(password, pwd_hash).unwrap() is True
+    assert verify_password(SecretStr(password), pwd_hash).unwrap() is True
 
 
 def test_security_password_verify_password_failure() -> None:
     """Test that an incorrect password fails verification."""
     password = "my_password"
-    pwd_hash = hash_password(password)
+    pwd_hash = hash_password(password).unwrap()
 
-    assert verify_password("wrong_password", pwd_hash) is False
+    assert verify_password("wrong_password", pwd_hash).unwrap() is False
 
 
 def test_security_password_verify_password_invalid_hash() -> None:
     """Test that invalid hash formats are handled gracefully."""
     password = "my_password"
 
-    assert verify_password(password, "invalid_hash") is False
-    assert verify_password(password, "$argon2$invalid$hash") is False
-    assert verify_password(password, "alg$100$salt$hash") is False  # Wrong algorithm
+    assert verify_password(password, "invalid_hash").unwrap() is False
+    assert verify_password(password, "$argon2$invalid$hash").unwrap() is False
     assert (
-        verify_password(password, "pbkdf2_sha256$nan$salt$hash") is False
+        verify_password(password, "alg$100$salt$hash").unwrap() is False
+    )  # Wrong algorithm
+    assert (
+        verify_password(password, "pbkdf2_sha256$nan$salt$hash").unwrap() is False
     )  # Invalid iterations
     assert (
-        verify_password(password, "pbkdf2_sha256$100$nothex$hash") is False
+        verify_password(password, "pbkdf2_sha256$100$nothex$hash").unwrap() is False
     )  # Invalid salt hex
     assert (
-        verify_password(password, "pbkdf2_sha256$100$salt$nothex") is False
+        verify_password(password, "pbkdf2_sha256$100$salt$nothex").unwrap() is False
     )  # Invalid hash hex
     assert (
-        verify_password(password, "pbkdf2_sha256$100$salt") is False
+        verify_password(password, "pbkdf2_sha256$100$salt").unwrap() is False
     )  # Invalid parts length
 
 
@@ -79,8 +82,8 @@ def test_security_password_verify_legacy_password() -> None:
     )
     pwd_hash = f"pbkdf2_sha256${iterations}${salt.hex()}${hash_bytes.hex()}"
 
-    assert verify_password(password, pwd_hash) is True
-    assert verify_password("wrong_password", pwd_hash) is False
+    assert verify_password(password, pwd_hash).unwrap() is True
+    assert verify_password("wrong_password", pwd_hash).unwrap() is False
 
 
 def test_security_password_verify_legacy_password_too_many_iterations() -> None:
@@ -91,61 +94,64 @@ def test_security_password_verify_legacy_password_too_many_iterations() -> None:
     iterations = 1_000_001
     pwd_hash = f"pbkdf2_sha256${iterations}${salt.hex()}${hash_bytes.hex()}"
 
-    assert verify_password(password, pwd_hash) is False
+    assert verify_password(password, pwd_hash).unwrap() is False
 
 
 def test_security_password_hash_password_is_random() -> None:
     """Test that hashing the same password twice produces different hashes due to salt."""
     password = "my_password"
-    hash1 = hash_password(password)
-    hash2 = hash_password(password)
+    hash1 = hash_password(password).unwrap()
+    hash2 = hash_password(password).unwrap()
 
     assert hash1 != hash2
-    assert verify_password(password, hash1) is True
-    assert verify_password(password, hash2) is True
+    assert verify_password(password, hash1).unwrap() is True
+    assert verify_password(password, hash2).unwrap() is True
 
 
 def test_security_password_verify_password_invalid_type_password() -> None:
     """Test that an invalid type for password raises a TypeError."""
-    import pytest
 
-    pwd_hash = hash_password("my_password")
+    pwd_hash = hash_password("my_password").unwrap()
 
-    with pytest.raises(TypeError, match="password must be a string or SecretStr"):
-        verify_password(123, pwd_hash)  # type: ignore[arg-type]
+    res = verify_password(123, pwd_hash)  # type: ignore[arg-type]
+    assert isinstance(res, Err)
+    assert isinstance(res.err_value, TypeError)
+    assert "password must be a string or SecretStr" in str(res.err_value)
 
 
 def test_security_password_verify_password_invalid_type_hash() -> None:
     """Test that an invalid type for password_hash raises a TypeError."""
-    import pytest
 
-    with pytest.raises(TypeError, match="password_hash must be a string"):
-        verify_password("my_password", 123)  # type: ignore[arg-type]
+    res = verify_password("my_password", 123)  # type: ignore[arg-type]
+    assert isinstance(res, Err)
+    assert isinstance(res.err_value, TypeError)
+    assert "password_hash must be a string" in str(res.err_value)
 
 
 def test_security_password_verify_password_empty() -> None:
     """Test that verifying an empty password returns False."""
-    assert verify_password("", "hash") is False
-    assert verify_password(SecretStr(""), "hash") is False
+    assert verify_password("", "hash").unwrap() is False
+    assert verify_password(SecretStr(""), "hash").unwrap() is False
 
 
 def test_security_password_verify_password_too_long() -> None:
     """Test that verifying a too long password returns False."""
-    assert verify_password("a" * 1025, "hash") is False
-    assert verify_password(SecretStr("a" * 1025), "hash") is False
+    assert verify_password("a" * 1025, "hash").unwrap() is False
+    assert verify_password(SecretStr("a" * 1025), "hash").unwrap() is False
 
 
 def test_security_password_hash_password_empty() -> None:
     """Test that hashing an empty password raises ValueError."""
-    import pytest
 
-    with pytest.raises(ValueError, match="password cannot be empty"):
-        hash_password("")
+    res = hash_password("")
+    assert isinstance(res, Err)
+    assert isinstance(res.err_value, ValueError)
+    assert "password cannot be empty" in str(res.err_value)
 
 
 def test_security_password_hash_password_too_long() -> None:
-    """Test that hashing a too long password raises ValueError."""
-    import pytest
-
-    with pytest.raises(ValueError, match="password length exceeds"):
-        hash_password("a" * 1025)
+    """Test that hashing a too long password returns Err."""
+    res = hash_password("a" * 1025)
+    assert isinstance(res, Err)
+    assert isinstance(res.err_value, ValueError)
+    assert "password length exceeds" in str(res.err_value)

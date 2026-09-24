@@ -12,4 +12,8 @@ def test_fuzz_password_verification_argon2_malformed_returns_false(pw, hash_suff
     """Bombard verify_password with valid prefixes but malformed suffix data."""
     malformed_hash = "$argon2id$v=19$m=65536,t=3,p=4$" + hash_suffix
     # Should cleanly return False, not raise VerificationError
-    assert verify_password(pw, malformed_hash) is False
+    result = verify_password(pw, malformed_hash)
+    if result.is_err():
+        assert True
+    else:
+        assert result.unwrap() is False

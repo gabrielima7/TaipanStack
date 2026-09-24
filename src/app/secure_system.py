@@ -207,14 +207,14 @@ class UserService:
 
         """
         # Hash the password securely using the security module
-        try:
-            pwd_hash = hash_password(user_create.password)
-        except ValueError as e:
+        hash_res = hash_password(user_create.password)
+        if isinstance(hash_res, Err):
             logger.warning(
                 "Failed to create user (invalid password)",
                 username=user_create.username,
             )
-            return Err(UserCreationError(message=str(e)))
+            return Err(UserCreationError(message=str(hash_res.unwrap_err())))
+        pwd_hash = hash_res.unwrap()
 
         user_id = uuid4()
         user_in_db = UserInDB(

@@ -45,7 +45,7 @@ def test_secure_system_create_user_success_expected(
     # Verify that the password hash is present in the repository's UserInDB model
     user_in_db = repository.get_by_id(user.id)
     assert user_in_db is not None
-    assert verify_password("secure_password", user_in_db.password_hash)
+    assert verify_password("secure_password", user_in_db.password_hash).unwrap()
 
     # Test get_user with Result pattern
     result_get = service.get_user(user.id)

@@ -9,7 +9,8 @@ from taipanstack.security.password import hash_password, verify_password
 @given(st.text(), st.text())
 def test_fuzz_password_fuzz_verify_password_returns_bool_or_raises_error(pw, pw_hash):
     try:
-        result = verify_password(pw, pw_hash)
+        result_res = verify_password(pw, pw_hash)
+        result = False if result_res.is_err() else result_res.unwrap()
         assert isinstance(result, bool)
     except (TypeError, ValueError):
         assert True
@@ -29,7 +30,10 @@ def test_fuzz_password_fuzz_hash_password_returns_str_or_raises_error(
     pw,
 ):
     try:
-        result = hash_password(pw)
+        result_res = hash_password(pw)
+        if result_res.is_err():
+            return
+        result = result_res.unwrap()
         assert isinstance(result, str)
     except (TypeError, ValueError):
         assert True
