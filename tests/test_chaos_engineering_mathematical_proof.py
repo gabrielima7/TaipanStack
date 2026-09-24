@@ -93,3 +93,28 @@ def test_chaos_engineering_mathematical_proof_fuzz_guard_command_injection_extre
         assert isinstance(res, (Ok, Err))
     except Exception as e:
         assert isinstance(e, (SecurityError, ValueError, TypeError, AssertionError))
+
+@pytest.mark.asyncio
+async def test_chaos_engineering_mathematical_proof_orchestrator_extreme_payloads() -> None:
+    """Fuzzing the orchestrator with extreme payloads."""
+    orchestrator = (
+        ResilienceOrchestrator()
+        .with_bulkhead(max_concurrent=10, max_queue=20)
+        .with_timeout(1.0)
+    )
+
+    async def edge_case_endpoint(payload: dict) -> Result[dict, Exception]:
+        return Ok(payload)
+
+    payloads = [
+        {},
+        {"invalid": None},
+        {"nested": {"very": "deep"}},
+        {"array": [1, 2, 3]},
+    ]
+
+    tasks = [orchestrator.execute(edge_case_endpoint, p) for p in payloads]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    for r in results:
+        assert isinstance(r, (Ok, Err)), f"Outcome {r} must be wrapped in Result monad"
