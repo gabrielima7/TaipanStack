@@ -94,8 +94,11 @@ def test_chaos_engineering_mathematical_proof_fuzz_guard_command_injection_extre
     except Exception as e:
         assert isinstance(e, (SecurityError, ValueError, TypeError, AssertionError))
 
+
 @pytest.mark.asyncio
-async def test_chaos_engineering_mathematical_proof_orchestrator_extreme_payloads() -> None:
+async def test_chaos_engineering_mathematical_proof_orchestrator_extreme_payloads() -> (
+    None
+):
     """Fuzzing the orchestrator with extreme payloads."""
     orchestrator = (
         ResilienceOrchestrator()
