@@ -24,6 +24,16 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
+def _safe_str(e: Exception) -> str:
+    try:
+        return str(e)
+    except Exception:
+        try:
+            return repr(e)
+        except Exception:
+            return "<unprintable exception>"
+
+
 def _is_retryable_exception(
     e: Exception, valid_on: tuple[type[Exception], ...] | type[Exception]
 ) -> bool:
@@ -200,7 +210,7 @@ def _compute_jitter_amount(delay: float, factor: float) -> float | None:
         if isinstance(amount, (int, float)) and math.isfinite(amount):
             return amount
     except (TypeError, OverflowError, ValueError, Exception) as e:
-        logger.warning("Failed to add jitter to delay due to mutation: %s", str(e))
+        logger.warning("Jitter mutation failed: %s", _safe_str(e))
     return None
 
 
@@ -208,7 +218,7 @@ def _add_jitter_to_delay(delay: float, jitter_amount: float) -> float:
     try:
         return delay + secrets.SystemRandom().uniform(-jitter_amount, jitter_amount)
     except Exception as e:
-        logger.warning("Failed to add jitter to delay: %s", str(e))
+        logger.warning("Failed to add jitter to delay: %s", _safe_str(e))
         return delay
 
 
@@ -253,13 +263,13 @@ def _log_retry_callback_failure(func_name: str, e: Exception) -> None:
         _structlog_logger.error(  # type: ignore[misc]
             "retry_callback_failed",
             function=func_name,
-            error=str(e),
+            error=_safe_str(e),
         )
     else:
         logger.error(
             "Retry callback failed for %s: %s",
             func_name,
-            str(e),
+            _safe_str(e),
         )
 
 
@@ -277,7 +287,7 @@ def _log_retry_attempt_fallback(
             function=func_name,
             attempt=attempt,
             max_attempts=config.max_attempts,
-            error=str(exc),
+            error=_safe_str(exc),
             delay_seconds=round(delay, 3),
         )
 
@@ -331,7 +341,7 @@ def _log_retry_attempt(
             attempt,
             config.max_attempts,
             func_name,
-            str(exc),
+            _safe_str(exc),
             delay,
         )
 
@@ -356,7 +366,7 @@ def _log_all_failed(
             "All %d attempts failed for %s: %s",
             config.max_attempts,
             func_name,
-            str(exc),
+            _safe_str(exc),
         )
 
 
