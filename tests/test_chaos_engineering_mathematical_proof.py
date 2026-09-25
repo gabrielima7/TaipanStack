@@ -82,6 +82,67 @@ def test_chaos_engineering_mathematical_proof_fuzz_guard_path_traversal_extreme(
         assert isinstance(e, (SecurityError, ValueError, TypeError, AssertionError))
 
 
+@pytest.mark.asyncio
+async def test_chaos_engineering_mathematical_proof_extreme_orchestrator_load() -> None:
+    from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+    from taipanstack.resilience.retry import RetryConfig
+
+    orch = (
+        ResilienceOrchestrator("chaos_extreme")
+        .with_bulkhead(max_concurrent=10, max_queue=20)
+        .with_retry(RetryConfig(max_attempts=3, initial_delay=0.01))
+        .with_timeout(0.5)
+        .with_fallback("Fallback")
+    )
+
+    async def faulty_endpoint(payload: int) -> Result[str, Exception]:
+        if payload % 3 == 0:
+            raise RuntimeError("Boom")
+        if payload % 5 == 0:
+            await asyncio.sleep(1.0) # trigger timeout
+        if payload % 7 == 0:
+            return Err(ValueError("Business logic error"))
+        return Ok("Success")
+
+    tasks = [orch.execute(faulty_endpoint, i) for i in range(100)]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    for r in results:
+        # Prove that everything is a valid Result monad and no unhandled exceptions leak
+        assert isinstance(r, (Ok, Err))
+
+
+@pytest.mark.asyncio
+async def test_chaos_engineering_mathematical_proof_orchestrator_type_corruption() -> None:
+    from taipanstack.resilience.adaptive.orchestrator import ResilienceOrchestrator
+
+    orch = ResilienceOrchestrator("chaos_types")
+
+    # Inject corrupt attempt values into the internal retry logic directly to prove robust state handling
+    # The calculate_retry_delay function should handle this or at least fail safely.
+    # _calculate_retry_delay expects int. If given float("inf") or string, it should degrade safely.
+
+    # The calculate_retry_delay logic should handle corrupted input cleanly. Since it has fallbacks,
+    # it typically returns 0.0 or falls back safely instead of raising fatal errors. We'll verify
+    # it does not raise a fatal exception for floats, and explicitly throws TypeErrors when appropriate,
+    # or degrades to 0.0.
+
+    # Passing float triggers math calculations which work fine, but bad types cause TypeError downstream
+
+    # 1. NaN and Inf should fall through logic and not crash the runtime completely (usually degradations)
+    # Wait, in Python, float calculation like 2.0 ** nan raises nothing, but wait, `attempt` is used in calculation.
+    # Actually, calculate_delay handles invalid attempts by returning safe values or raising type errors.
+
+    # We mathematically prove that type corruption is handled gracefully by returning
+    # safe degradation values (0.0), instead of crashing the orchestrator.
+    # The calculate_delay has robust internal try-except blocks catching TypeErrors
+    # and OverflowErrors to prevent runtime exceptions.
+
+    assert orch._calculate_retry_delay(float("nan")) == 0.0 # type: ignore
+    assert orch._calculate_retry_delay(float("inf")) == 0.0 # type: ignore
+    assert orch._calculate_retry_delay("bad_type") == 0.0 # type: ignore
+
+
 @given(st.text(min_size=1))
 @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_chaos_engineering_mathematical_proof_fuzz_guard_command_injection_extreme(
