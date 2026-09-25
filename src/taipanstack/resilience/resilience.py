@@ -252,8 +252,8 @@ def _run_sync_with_timeout(
         except BaseException as e:
             exception.append(e)
 
-    thread = threading.Thread(target=worker, daemon=True)
     try:
+        thread = threading.Thread(target=worker, daemon=True)
         thread.start()
         thread.join(timeout=seconds)
     except BaseException as e:
