@@ -119,19 +119,8 @@ async def test_chaos_engineering_mathematical_proof_orchestrator_type_corruption
     orch = ResilienceOrchestrator("chaos_types")
 
     # Inject corrupt attempt values into the internal retry logic directly to prove robust state handling
-    # The calculate_retry_delay function should handle this or at least fail safely.
-    # _calculate_retry_delay expects int. If given float("inf") or string, it should degrade safely.
-
-    # The calculate_retry_delay logic should handle corrupted input cleanly. Since it has fallbacks,
-    # it typically returns 0.0 or falls back safely instead of raising fatal errors. We'll verify
-    # it does not raise a fatal exception for floats, and explicitly throws TypeErrors when appropriate,
-    # or degrades to 0.0.
-
-    # Passing float triggers math calculations which work fine, but bad types cause TypeError downstream
-
-    # 1. NaN and Inf should fall through logic and not crash the runtime completely (usually degradations)
-    # Wait, in Python, float calculation like 2.0 ** nan raises nothing, but wait, `attempt` is used in calculation.
-    # Actually, calculate_delay handles invalid attempts by returning safe values or raising type errors.
+    # The calculate_retry_delay function should handle this or fail safely.
+    # _calculate_retry_delay expects int. If given float("inf") or string, it should degrade gracefully.
 
     # We mathematically prove that type corruption is handled gracefully by returning
     # safe degradation values (0.0), instead of crashing the orchestrator.
