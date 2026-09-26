@@ -234,6 +234,10 @@ def _process_sync_timeout_result(
     if exception:
         raise exception[0]
 
+    if not result:
+        err_msg = "Thread died abruptly without a result or exception"
+        return Err(cast(E, RuntimeError(err_msg)))
+
     return result[0]
 
 
