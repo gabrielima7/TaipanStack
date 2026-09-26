@@ -99,4 +99,3 @@ class TestAdaptiveRetry:
         ar = AdaptiveRetry(min_delay=1.0, max_delay=5.0)
         delay = ar.get_delay(10)
         assert delay <= 5.0
-

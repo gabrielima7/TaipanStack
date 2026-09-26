@@ -179,5 +179,3 @@ class TestAdaptiveCircuitBreaker:
         # The window is now: [True, True, True, True, False, False, False, False, False, False]
         # Total: 10, Errors: 6 -> Error rate 60% -> Tripped!
         assert ab.state.value == CircuitState.OPEN.value
-
-
