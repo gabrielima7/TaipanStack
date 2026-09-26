@@ -1,8 +1,8 @@
-import pytest
 from unittest import mock
-import threading
-from taipanstack.resilience.resilience import timeout
+
 from taipanstack.core.result import Ok
+from taipanstack.resilience.resilience import timeout
+
 
 @timeout(1.0)
 def dummy_func() -> Ok[str]:
