@@ -110,26 +110,15 @@ class AdaptiveRetry:
 
         """
         outcome = _Outcome(attempt=attempt, success=success, elapsed=elapsed)
-        acquired = self._lock.acquire(timeout=0.1)
-        if not acquired:
-            return
-
-        try:
+        with self._lock:
             self._outcomes.append(outcome)
             if success:
                 self._success_delays[attempt].append(elapsed)
-        finally:
-            self._lock.release()
 
     def _get_historical_delays(self, attempt: int) -> list[float]:
         """Safely fetch historical delays for a given attempt."""
-        acquired = self._lock.acquire(timeout=0.1)
-        if not acquired:
-            return []
-        try:
+        with self._lock:
             return list(self._success_delays.get(attempt, []))
-        finally:
-            self._lock.release()
 
     def _calculate_fallback_delay(self, attempt: int) -> float:
         """Calculate exponential backoff fallback delay."""
@@ -196,13 +185,8 @@ class AdaptiveRetry:
         return total, successes, [o.elapsed for o in self._outcomes]
 
     def _get_outcome_stats(self) -> tuple[int, int, list[float]]:
-        acquired = self._lock.acquire(timeout=0.1)
-        if not acquired:
-            return 0, 0, []
-        try:
+        with self._lock:
             return self._compute_outcome_stats()
-        finally:
-            self._lock.release()
 
     @property
     def metrics(self) -> RetryMetrics:
