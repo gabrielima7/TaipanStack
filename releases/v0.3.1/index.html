@@ -3090,7 +3090,7 @@
 </tr>
 </tbody>
 </table>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
 </span><span id="__span-2-2">
 </span><span id="__span-2-3"><span class="k">def</span><span class="w"> </span><span class="nf">log_to_datadog</span><span class="p">(</span><span class="n">attempt</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-2-4">    <span class="n">statsd</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="s2">&quot;retry.attempt&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;attempt:</span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
@@ -3122,7 +3122,7 @@
 </tr>
 </tbody>
 </table>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span><span class="p">,</span> <span class="n">CircuitState</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_breaker</span><span class="p">,</span> <span class="n">CircuitState</span>
 </span><span id="__span-3-2">
 </span><span id="__span-3-3"><span class="k">def</span><span class="w"> </span><span class="nf">alert_on_open</span><span class="p">(</span><span class="n">old</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">CircuitState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-3-4">    <span class="k">if</span> <span class="n">new</span> <span class="o">==</span> <span class="n">CircuitState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
@@ -3297,7 +3297,7 @@
 <p>Two practical examples were added showing how to combine TaipanStack primitives:</p>
 <h4 id="result-circuit-breaker">Result + Circuit Breaker<a class="headerlink" href="#result-circuit-breaker" title="Permanent link">&para;</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">Ok</span><span class="p">,</span> <span class="n">Err</span>
-</span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
+</span><span id="__span-6-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircuitBreaker</span>
 </span><span id="__span-6-3">
 </span><span id="__span-6-4"><span class="n">breaker</span> <span class="o">=</span> <span class="n">CircuitBreaker</span><span class="p">(</span><span class="n">failure_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;payments&quot;</span><span class="p">)</span>
 </span><span id="__span-6-5">
@@ -3315,7 +3315,7 @@
 </span></code></pre></div>
 <h4 id="result-retry-with-monitoring">Result + Retry with Monitoring<a class="headerlink" href="#result-retry-with-monitoring" title="Permanent link">&para;</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe</span><span class="p">,</span> <span class="n">unwrap_or</span>
-</span><span id="__span-7-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.utils.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
+</span><span id="__span-7-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry</span>
 </span><span id="__span-7-3">
 </span><span id="__span-7-4"><span class="nd">@retry</span><span class="p">(</span>
 </span><span id="__span-7-5">    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
