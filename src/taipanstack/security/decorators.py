@@ -317,7 +317,7 @@ def _check_thread_timeout(
 ) -> None:
     """Raise OperationTimeoutError if the thread is still running."""
     if thread.is_alive():
-        raise OperationTimeoutError(seconds, func_name)  # type: ignore[misc]
+        raise OperationTimeoutError(seconds, func_name)
 
 
 def _check_thread_exception(exception: list[BaseException]) -> None:
