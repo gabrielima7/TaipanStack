@@ -20,7 +20,7 @@
 
 ---
 
-[**Features**](#-why-taipan-stack) • [**Quick Start**](#-quick-start) • [**Architecture**](#-architecture) • [**DevSecOps**](#-devsecops) • [**API**](#-api-highlights) • [**Contributing**](#-contributing)
+[**Features**](#-why-taipanstack) • [**Quick Start**](#-quick-start) • [**Architecture**](#-architecture) • [**DevSecOps**](#-devsecops) • [**API**](#-api-highlights) • [**Contributing**](#-contributing)
 
 </div>
 
@@ -37,7 +37,6 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 - **Security & Resilience**: Hardened `RateLimiter` against extreme type mutations and anomalous mathematical operations to gracefully degrade without crashing. Updated enum comparisons to use identity checks (`is`, `is not`) to prevent exceptions from `__eq__` overrides.
 - **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity in `circuit_breaker.py`, `result.py`, and rate limiting components by extracting logic into unified helper methods and applying guard clauses.
 - **Typing**: Enhanced typing for `Adaptive Bulkhead` by explicitly using `Coroutine` for internal async tasks to resolve strict mypy typing errors.
-
 
 <table>
 <tr>
@@ -183,6 +182,7 @@ TaipanStack/
 ```
 
 ### Migration Notice
+
 The `taipanstack.utils` resilience modules (`circuit_breaker`, `retry`, `resilience`) are deprecated backward-compatibility shims. New code should import resilience modules directly from `taipanstack.resilience`.
 
 ---
@@ -477,6 +477,6 @@ This project is open-sourced under the [MIT License](LICENSE).
 
 Made with ❤️ for the Python community
 
-[⬆ Back to Top](#-taipan-stack)
+[⬆ Back to Top](#-taipanstack)
 
 </div>

@@ -72,6 +72,7 @@ adaptive_retry.record_outcome(attempt=1, success=True, elapsed=0.5)
 ## The Resilience Orchestrator
 
 The ultimate way to secure a dependency is by composing multiple patterns:
+
 1. Limit concurrency to avoid thread exhaustion (*Bulkhead*).
 2. Block execution if degraded (*Circuit Breaker*).
 3. Retry transient errors with memory (*Adaptive Retry*).
