@@ -22,6 +22,10 @@ __all__ = ["decode_jwt", "encode_jwt"]
 
 JWTPayload: TypeAlias = dict[str, object]
 
+MAX_JWT_ALGORITHMS = 10
+MAX_JWT_AUDIENCES = 10
+MAX_JWT_AUDIENCE_LENGTH = 1024
+
 
 def _validate_encode_payload(payload: object) -> None:
     if not isinstance(payload, dict):
@@ -94,6 +98,9 @@ def _validate_jwt_algorithms(algorithms: list[str]) -> None:
     if not isinstance(algorithms, list):
         raise TypeError("Algorithms must be a list of strings")
 
+    if len(algorithms) > MAX_JWT_ALGORITHMS:
+        raise ValueError("Too many algorithms provided")
+
     for alg in algorithms:
         _check_disallowed_algorithm(alg)
 
@@ -101,6 +108,11 @@ def _validate_jwt_algorithms(algorithms: list[str]) -> None:
 def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
     if not isinstance(audience, (str, list, tuple, set)):
         raise TypeError("Audience must be a string or iterable of strings")
+
+    if isinstance(audience, str) and len(audience) > MAX_JWT_AUDIENCE_LENGTH:
+        raise ValueError("Audience string is too long")
+    if isinstance(audience, (list, tuple, set)) and len(audience) > MAX_JWT_AUDIENCES:
+        raise ValueError("Too many audience items provided")
 
 
 @safe_from(
