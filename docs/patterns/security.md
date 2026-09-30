@@ -13,7 +13,7 @@ description: "Practical guide to combining @safe, guard_ssrf, guard_path_travers
 TaipanStack's security model is **composable by design**. Each guard or decorator handles one orthogonal concern:
 
 | Primitive | Responsibility |
-|---|---|
+| --- | --- |
 | `@safe` | Catches unexpected exceptions → `Result` |
 | `guard_ssrf` | Rejects URLs resolving to private/internal IPs |
 | `guard_path_traversal` | Prevents filesystem escape via `../` patterns |

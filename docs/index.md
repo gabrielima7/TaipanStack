@@ -16,19 +16,19 @@ hide:
 
 ---
 
-### ✨ What's New in v0.6.4
+## ✨ What's New
 
 - **Clean Code & Refactoring**: Extracted validation logic into helpers and applied guard clauses to reduce nesting in `result.py` and `circuit_breaker.py` (PR #1195).
 
-### ✨ What's New in v0.6.3
+### v0.6.3
 
 - **Security & Resilience**: Hardened RateLimiter against extreme type mutations (e.g., custom mutated types like strings masquerading as numbers) and anomalous mathematical operations that could crash the service. Operations are now gracefully handled via strict Look-Before-You-Leap (LBYL) checks, falling back to safe defaults or returning appropriate `Err` states (PR #1139).
 
-### ✨ What's New in v0.6.2
+### v0.6.2
 
 - **Clean Code & Refactoring**: Proactively refactored and extracted nested structures into dedicated helpers across resilience and rate limiting components to reduce cyclomatic complexity (PR #1124).
 
-### ✨ What's New in v0.6.1
+### v0.6.1
 
 - **Security & Hardening**: Hardened RateLimiter against infinite tokens mutations, key decoding in JWT, and validate_project_name argument parsing. Fixed large password payload crashes and removed unused constants (PR #966, #967, #968, #973, #989).
 - **Concurrency & Resilience**: Fixed a bulkhead acquisition memory leak in ResilienceOrchestrator and documented AdaptiveRetry features (PR #974, #980).
@@ -45,25 +45,25 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 <div class="grid cards" markdown>
 
--   :shield: **Security First**
+- :shield: **Security First**
 
     ---
 
     Path traversal protection, command injection guards, subprocess isolation, adaptive limiters, adaptive resilience pipeline, input sanitizers & validators, secret detection, SBOM + SLSA attestation.
 
--   :zap: **High Performance**
+- :zap: **High Performance**
 
     ---
 
     `uvloop` async event loop, `orjson` fast JSON, `Pydantic v2` validation.
 
--   :dart: **Rust-Style Error Handling**
+- :dart: **Rust-Style Error Handling**
 
     ---
 
     `Ok`/`Err` Result types, explicit error propagation, pattern matching, no silent failures.
 
--   :wrench: **Developer Experience**
+- :wrench: **Developer Experience**
 
     ---
 
@@ -79,7 +79,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ```bash
 pip install taipanstack
-```
+```text
 
 ### From Source
 
@@ -87,7 +87,7 @@ pip install taipanstack
 git clone https://github.com/gabrielima7/TaipanStack.git
 cd TaipanStack
 poetry install --with dev
-```
+```text
 
 ### Verify Installation
 
@@ -100,7 +100,7 @@ make lint-imports
 
 # Run security scans
 make security
-```
+```text
 
 ---
 
@@ -120,7 +120,7 @@ match divide(10, 0):
         print(f"Result: {value}")
     case Err(error):
         print(f"Error: {error}")
-```
+```text
 
 ### Security Guards
 
@@ -134,7 +134,7 @@ from taipanstack.security.guards import (
 safe_path = guard_path_traversal(user_input, base_dir="/app/data")
 safe_cmd = guard_command_injection(["git", "clone", repo_url], allowed_commands=["git"])
 safe_key = guard_env_variable("API_KEY", allowed_names=["API_KEY"])
-```
+```text
 
 ### Rate Limiting
 
@@ -152,7 +152,7 @@ match fetch_data():
         print(f"Data: {value}")
     case Err(error):
         print(f"Rate limited: {error}")
-```
+```text
 
 ### 🔗 Combining Result + Circuit Breaker
 
@@ -174,7 +174,7 @@ match result:
         print(f"Payment successful: {receipt}")
     case Err(error):
         print(f"Payment failed safely: {error}")
-```
+```text
 
 ### 🔗 Combining Result + Retry with Monitoring
 
@@ -195,7 +195,7 @@ def fetch_user_profile(user_id: str) -> dict:
 
 # Retry handles transient failures, Result handles business errors
 profile = fetch_user_profile("usr_456").unwrap_or({"name": "Unknown"})
-```
+```text
 
 ### 🔗 Adaptive Resilience Pipeline
 
@@ -217,7 +217,7 @@ orch = (
 async def process_billing() -> Result[dict, Exception]:
     # The orchestrator handles all concurrency, retry, circuit breaking, and fallbacks
     return await orch.execute(stripe_gateway.charge)
-```
+```text
 
 ### Intelligent Caching
 
@@ -228,7 +228,7 @@ from taipanstack.core.result import Result
 @cached(ttl=60)
 async def get_user_data(user_id: int) -> Result[dict, Exception]:
     return await db.fetch(user_id) # Only Ok() results are cached
-```
+```text
 
 ### Fallbacks & Timeouts
 
@@ -240,13 +240,13 @@ from taipanstack.core.result import Result
 @timeout(seconds=5.0)
 async def fetch_remote_status() -> Result[dict, Exception]:
     return await api.get_status()
-```
+```text
 
 ---
 
 ## 📐 Architecture
 
-```
+```text
                     ┌────────────────────────────────────────────────────────┐
                     │                      Application                       │
                     │                   (src/app/main.py)                    │
@@ -266,7 +266,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
                                │              Core              │
                                │  Result types, optimizations   │
                                └────────────────────────────────┘
-```
+```text
 
 [Read the full architecture guide →](architecture.md)
 
@@ -275,7 +275,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
 ## 🔐 DevSecOps
 
 | Category | Tools | Purpose |
-|----------|-------|---------|
+| ---------- | ------- | --------- |
 | **SAST** | Bandit, Semgrep + custom rules | Static Application Security Testing |
 | **SCA** | pip-audit | Dependency vulnerability scanning |
 | **SBOM** | Syft (CycloneDX) | Software Bill of Materials |

@@ -9,6 +9,7 @@ TaipanStack introduces an agnostic, optionally loadable integration layer called
 When making external connections, developers often use raw `httpx`, risking vulnerabilities such as **SSRF** (Server-Side Request Forgery) and lack of circuit breaking for degraded dependencies.
 
 **Taipan Bridges** elegantly intercepts `httpx` and integrates:
+
 1. `guard_ssrf` on every request.
 2. Exponential Retry.
 3. Circuit Breakers.
@@ -38,6 +39,7 @@ async def call_external_api():
 You can protect your **FastAPI** or **Litestar** application simply by mounting `TaipanMiddleware`.
 
 This middleware:
+
 - Unifies unhandled error mapping to strict `{ "status": "error" }` JSON preventing info leaks.
 - Supports Rate Limiting via `RateLimiter`.
 - Injects essential security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Strict-Transport-Security`, `Content-Security-Policy`).

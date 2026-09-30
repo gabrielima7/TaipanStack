@@ -49,7 +49,7 @@ graph TD
 These contracts are **enforced statically in CI** via [Import Linter](https://github.com/seddonym/import-linter). Any violation fails the build immediately.
 
 | Contract | Rule |
-|----------|------|
+| ---------- | ------ |
 | `core` is independent | `taipanstack.core` cannot import from `security`, `utils`, `config`, or `resilience` |
 | `security` is independent | `taipanstack.security` cannot import from `utils`, `config`, or `resilience` |
 | `utils` is independent | `taipanstack.utils` cannot import from `security`, `config`, or `resilience` |
@@ -133,15 +133,16 @@ if PY313:
 Exceptions represent **unrecoverable panics**. For standard, expected failures (network errors, validation failures, missing data), TaipanStack uses the `Result` monad:
 
 !!! success "Rule: Never raise to communicate a business failure"
-    ```python
-    # ❌ DO NOT: leaks exception semantics into caller
-    def find_user(user_id: str) -> User:
-        raise UserNotFoundError(...)
 
-    # ✅ DO: encode failure in the return type
-    def find_user(user_id: str) -> Result[User, UserNotFoundError]:
-        return Err(UserNotFoundError(user_id))
-    ```
+```python
+# ❌ DO NOT: leaks exception semantics into caller
+def find_user(user_id: str) -> User:
+    raise UserNotFoundError(...)
+
+# ✅ DO: encode failure in the return type
+def find_user(user_id: str) -> Result[User, UserNotFoundError]:
+    return Err(UserNotFoundError(user_id))
+```
 
 **Benefits enforced by Mypy strict:**
 
@@ -156,7 +157,7 @@ Exceptions represent **unrecoverable panics**. For standard, expected failures (
 TaipanStack's security layer is **fail-closed by design**:
 
 | Principle | Implementation |
-|-----------|----------------|
+| ----------- | ---------------- |
 | **No silent failures** | Malformed input raises `SecurityError` or `TypeError` immediately |
 | **Boundary validation** | All external data validated at entry via `pydantic` + guards |
 | **Runtime type guards** | Every public security function validates input types at v0.3.1+ |

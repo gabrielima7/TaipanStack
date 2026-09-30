@@ -62,7 +62,7 @@ poetry shell
 
 # Install pre-commit hooks
 pre-commit install
-```
+```text
 
 ### Running Tests
 
@@ -76,7 +76,7 @@ pytest --cov=src --cov-report=html
 # View coverage report
 open htmlcov/index.html  # macOS
 xdg-open htmlcov/index.html  # Linux
-```
+```text
 
 ### Code Quality Checks
 
@@ -95,7 +95,7 @@ bandit -r src/
 
 # Check dependencies for vulnerabilities
 pip-audit
-```
+```text
 
 ### Using Makefile
 
@@ -114,7 +114,7 @@ make clean
 
 # Run all checks
 make all
-```
+```text
 
 ## Coding Standards
 
@@ -146,15 +146,16 @@ make all
 
 Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
 
 <footer>
-```
+```text
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -164,18 +165,19 @@ Types:
 - `chore`: Maintenance tasks
 
 Examples:
-```
+
+```text
 feat(security): add SQL injection guard
 
 Add new guard function to prevent SQL injection attacks
 in database queries.
 
 Closes #42
-```
+```text
 
 ## Project Structure
 
-```
+```text
 TaipanStack/
 ├── taipanstack_bootstrapper.py  # Bootstrapper script
 ├── src/
@@ -195,7 +197,7 @@ TaipanStack/
 ├── CHANGELOG.md
 ├── LICENSE
 └── pyproject.toml
-```
+```text
 
 ## Release Process
 
