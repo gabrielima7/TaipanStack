@@ -2657,23 +2657,19 @@
 <h3 id="core-features-resilience-and-cache">🧩 Core Features (Resilience, and Cache)<a class="headerlink" href="#core-features-resilience-and-cache" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Observability Module (<code>context</code>)</strong>: Added <code>correlation_id</code> tracking via <code>contextvars</code> integrating distributed tracing into <code>structlog</code> with automatic scope limits.</li>
-<li><strong>Resilience Decorators (<code>resilience</code>)</strong>:<ul>
+<li><strong>Resilience Decorators (<code>resilience</code>)</strong>:</li>
 <li><code>@fallback</code>: Intercepts exceptions and business errors, returning safe fallback values.</li>
 <li><code>@timeout</code>: Manages maximum execution time in synchronous and asynchronous functions using <code>ThreadPoolExecutor</code>, preventing eternal locks.</li>
-</ul>
-</li>
 <li><strong>Intelligent Cache (<code>cache</code>)</strong>: New <code>@cached(ttl)</code> decorator that memoizes only successful results (<code>Ok</code>), automatically ignoring and recomputing failures (<code>Err</code>).</li>
 </ul>
 <h3 id="qa-test-stability">🧪 QA &amp; Test Stability<a class="headerlink" href="#qa-test-stability" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Concurrency Test Stabilization</strong>: Resolved intermittent flakiness in synchronous and asynchronous execution limiters using event-based synchronization. (#165)</li>
-<li><strong>Expanded Coverage</strong>:<ul>
+<li><strong>Expanded Coverage</strong>:</li>
 <li>New test cases for path sanitization and directory traversal guards. (#168)</li>
 <li>Specific validation for numeric-only SQL identifiers. (#166)</li>
 <li>Edge-case coverage for excessively long file extensions. (#163)</li>
 <li>Unit test suite for the main entrypoint (<code>app.main</code>). (#159, #171)</li>
-</ul>
-</li>
 </ul>
 <h3 id="performance">⚡ Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
 <ul>

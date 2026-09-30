@@ -1638,10 +1638,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#watchdogs-active-monitoring" class="md-nav__link">
+  <a href="#watchdogs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🐕 Watchdogs (Active Monitoring)
+        🐕 Watchdogs
       
     </span>
   </a>
@@ -1660,10 +1660,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#security-performance-quality-pr-integrations" class="md-nav__link">
+  <a href="#security-performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Security / Performance / Quality (PR Integrations)
+        🛡️ Security / Performance
       
     </span>
   </a>
@@ -1671,10 +1671,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-security-maintenance" class="md-nav__link">
+  <a href="#dependency-security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔐 Dependency Security Maintenance
+        🔐 Dependency Security
       
     </span>
   </a>
@@ -2524,10 +2524,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#watchdogs-active-monitoring" class="md-nav__link">
+  <a href="#watchdogs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🐕 Watchdogs (Active Monitoring)
+        🐕 Watchdogs
       
     </span>
   </a>
@@ -2546,10 +2546,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#security-performance-quality-pr-integrations" class="md-nav__link">
+  <a href="#security-performance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Security / Performance / Quality (PR Integrations)
+        🛡️ Security / Performance
       
     </span>
   </a>
@@ -2557,10 +2557,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependency-security-maintenance" class="md-nav__link">
+  <a href="#dependency-security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔐 Dependency Security Maintenance
+        🔐 Dependency Security
       
     </span>
   </a>
@@ -2592,39 +2592,49 @@
 <p>Version <code>0.4.0</code> consolidates the project by introducing enterprise resilience pillars. It is the largest architectural patch developed by the core team that encapsulates faulty external connections. The package expands the tool's native immunization by adding dynamic Self-learning layers (Machine Learning base parameters) over Circuits.</p>
 <p>See interactive documentation at: <a href="../../features/adaptive-resilience/">Features</a>.</p>
 <hr />
-<h3 id="taipan-bridges">🌉 Taipan Bridges<a class="headerlink" href="#taipan-bridges" title="Permanent link">&para;</a></h3>
-<p>A plug-and-play modular ecosystem that injects resilience by design into the classic tools of the asynchronous ecosystem.
-* <strong>Imports Bridge (<code>_imports.py</code>)</strong>: Lazy initialization returning safe encapsulations based on the <em>Result Monad</em>.
-* <strong>HTTP Bridge (<code>http_bridge.py</code>)</strong>: <code>SafeHttpClient</code> client based on HTTPX. Embedded SSRF protection and natively connected to our retry mechanism and circuit breaker.
-* <strong>DB Bridge (<code>db_bridge.py</code>)</strong>: Protective proxy for SQLAlchemy ACID Sessions and Redis async pools ensuring reconnection without bottlenecking <em>event-loops</em>.
-* <strong>Web Bridge (<code>web_bridge.py</code>)</strong>: Implements the ASGI edge middleware <code>TaipanMiddleware</code> from scratch. Rate limits requests (Rate Limit Token Bucket), exposes native restrictive CSPs (Content Security Policies) headers, and standardizes non-leaking HTTP Error JSON outputs.</p>
-<h3 id="watchdogs-active-monitoring">🐕 Watchdogs (Active Monitoring)<a class="headerlink" href="#watchdogs-active-monitoring" title="Permanent link">&para;</a></h3>
-<p>A parallel network of dedicated proactive auto-observability components.
-* <strong>HealthPinger</strong>: Resides in a cluster and attempts short background pings on infrastructures. If there is no return, it preemptively forces the web routes database circuit breaker to open.
-* <strong>ResourceWatcher</strong>: Monitors <code>psutil</code> defining alert windows or request throttling based on actual RAM and CPU %.
-* <strong>ConfigWatcher</strong>: Extracts encrypted hashes from <code>.env</code> or static files to signal manipulations or force reboots if secrets mutate.</p>
-<h3 id="adaptive-resilience">🌌 Adaptive Resilience<a class="headerlink" href="#adaptive-resilience" title="Permanent link">&para;</a></h3>
-<p>Dynamic structural stabilization components.
-* <strong><code>AdaptiveCircuitBreaker</code></strong>: Replaces static numeric tolerances. This circuit monitors successes and failures in a rolling window and inflates or decreases its punishment threshold depending on how degraded the infrastructure is at the time.
-* <strong><code>AdaptiveRetry</code></strong>: Monitors the effectiveness of exponential backoff to adapt <em>sleep</em> latencies in the <code>asyncio</code> engine.
-* <strong><code>Bulkhead</code></strong>: Creates concurrency limit gates with a defined maximum queue, isolating excessive loads from the HTTP pipeline.
-* <strong><code>ResilienceOrchestrator</code></strong>: The new supreme object designed under the Builder Pattern that attaches Bulkheads -&gt; Adaptive Circuits -&gt; Numeric Retries -&gt; Physical Timeouts -&gt; Fallback Data in <code>__call__</code> methods in a single stroke.</p>
+<h2 id="taipan-bridges">🌉 Taipan Bridges<a class="headerlink" href="#taipan-bridges" title="Permanent link">&para;</a></h2>
+<p>A plug-and-play modular ecosystem that injects resilience by design into the classic tools of the asynchronous ecosystem.</p>
+<ul>
+<li><strong>Imports Bridge (<code>_imports.py</code>)</strong>: Lazy initialization returning safe encapsulations based on the <em>Result Monad</em>.</li>
+<li><strong>HTTP Bridge (<code>http_bridge.py</code>)</strong>: <code>SafeHttpClient</code> client based on HTTPX. Embedded SSRF protection and natively connected to our retry mechanism and circuit breaker.</li>
+<li><strong>DB Bridge (<code>db_bridge.py</code>)</strong>: Protective proxy for SQLAlchemy ACID Sessions and Redis async pools ensuring reconnection without bottlenecking <em>event-loops</em>.</li>
+<li><strong>Web Bridge (<code>web_bridge.py</code>)</strong>: Implements the ASGI edge middleware <code>TaipanMiddleware</code> from scratch. Rate limits requests (Rate Limit Token Bucket), exposes native restrictive CSPs (Content Security Policies) headers, and standardizes non-leaking HTTP Error JSON outputs.</li>
+</ul>
+<h2 id="watchdogs">🐕 Watchdogs<a class="headerlink" href="#watchdogs" title="Permanent link">&para;</a></h2>
+<p>A parallel network of dedicated proactive auto-observability components.</p>
+<ul>
+<li><strong>HealthPinger</strong>: Resides in a cluster and attempts short background pings on infrastructures. If there is no return, it preemptively forces the web routes database circuit breaker to open.</li>
+<li><strong>ResourceWatcher</strong>: Monitors <code>psutil</code> defining alert windows or request throttling based on actual RAM and CPU %.</li>
+<li><strong>ConfigWatcher</strong>: Extracts encrypted hashes from <code>.env</code> or static files to signal manipulations or force reboots if secrets mutate.</li>
+</ul>
+<h2 id="adaptive-resilience">🌌 Adaptive Resilience<a class="headerlink" href="#adaptive-resilience" title="Permanent link">&para;</a></h2>
+<p>Dynamic structural stabilization components.</p>
+<ul>
+<li><strong><code>AdaptiveCircuitBreaker</code></strong>: Replaces static numeric tolerances. This circuit monitors successes and failures in a rolling window and inflates or decreases its punishment threshold depending on how degraded the infrastructure is at the time.</li>
+<li><strong><code>AdaptiveRetry</code></strong>: Monitors the effectiveness of exponential backoff to adapt <em>sleep</em> latencies in the <code>asyncio</code> engine.</li>
+<li><strong><code>Bulkhead</code></strong>: Creates concurrency limit gates with a defined maximum queue, isolating excessive loads from the HTTP pipeline.</li>
+<li><strong><code>ResilienceOrchestrator</code></strong>: The new supreme object designed under the Builder Pattern that attaches Bulkheads -&gt; Adaptive Circuits -&gt; Numeric Retries -&gt; Physical Timeouts -&gt; Fallback Data in <code>__call__</code> methods in a single stroke.</li>
+</ul>
 <hr />
-<h3 id="security-performance-quality-pr-integrations">🛡️ Security / Performance / Quality (PR Integrations)<a class="headerlink" href="#security-performance-quality-pr-integrations" title="Permanent link">&para;</a></h3>
-<p>Version <code>0.4.0</code> also successfully absorbed and integrated over 30 tactical audit contributions, consolidating:
-* <strong>Hash Algorithm Hardening:</strong> Hardened <code>guard_hash_algorithm</code> against potential Enum input bypass mechanisms (PR #318).
-* <strong>SAST Code Auditing:</strong> Injected new custom Semgrep rules (<code>.semgrep/taipanstack-rules.yml</code>) to actively identify Insecure YAML loads and obsolete cryptographic digest algorithms (PR #326).
-* <strong>DoS Mitigation:</strong> Corrected a glaring vulnerability where a massive hash could overflow the Bcrypt library, invoking the fatal <code>OverflowError</code> stack error in password validation (PR #307).
-* <strong>Sanitize Filename:</strong> Execution speed of the <code>sanitize_filename</code> routine was significantly optimized for I/O intensive routines (PR #322).
-* <strong>Strict Type-Hinting:</strong> All utility signatures with native <code>Coroutine</code> / <code>Any</code> classes were standardized to <code>Awaitable</code>, ensuring total Mypy linter silence for devs (PR #323).
-* <strong>Edge Tests:</strong> Created additional test cases predicting contextual <code>@retry</code> Decorator interruption returns, expanding library stability (PR #327).
-* <strong>Massive Closure:</strong> Cleanly closed <code>26</code> obsolete Pull Requests, essentially encompassing transient legacy Circuit Breaker Concurrency bugs that caused Thundering Herd scenarios. The newly introduced <code>v0.4.0</code> architecture natively encapsulated and blocked these structural anomalies.</p>
-<h3 id="dependency-security-maintenance">🔐 Dependency Security Maintenance<a class="headerlink" href="#dependency-security-maintenance" title="Permanent link">&para;</a></h3>
-<p>The <code>v0.4.0</code> release line also includes follow-up maintenance required by GitHub Actions and Dependabot:
-* <strong>Requests advisory remediated:</strong> the lockfile now resolves <code>requests</code> to <code>2.33.0</code>, addressing the insecure temporary file reuse issue in <code>extract_zipped_paths()</code>.
-* <strong>Pygments advisory mitigated:</strong> <code>Pygments</code> remains pinned to <code>2.19.2</code>, which is the newest upstream release currently available. The reported AdILexer ReDoS remains under monitoring until an upstream patched release exists.
-* <strong>Compatibility shims restored:</strong> legacy imports from <code>taipanstack.utils.retry</code> and <code>taipanstack.utils.resilience</code> now re-export the canonical <code>taipanstack.resilience</code> implementations without divergence.
-* <strong>CI hardening:</strong> Linux distro workflows now refresh package metadata more defensively and initialize the Arch keyring before full system upgrades.</p>
+<h2 id="security-performance">🛡️ Security / Performance<a class="headerlink" href="#security-performance" title="Permanent link">&para;</a></h2>
+<p>Version <code>0.4.0</code> also successfully absorbed and integrated over 30 tactical audit contributions, consolidating:</p>
+<ul>
+<li><strong>Hash Algorithm Hardening:</strong> Hardened <code>guard_hash_algorithm</code> against potential Enum input bypass mechanisms (PR #318).</li>
+<li><strong>SAST Code Auditing:</strong> Injected new custom Semgrep rules (<code>.semgrep/taipanstack-rules.yml</code>) to actively identify Insecure YAML loads and obsolete cryptographic digest algorithms (PR #326).</li>
+<li><strong>DoS Mitigation:</strong> Corrected a glaring vulnerability where a massive hash could overflow the Bcrypt library, invoking the fatal <code>OverflowError</code> stack error in password validation (PR #307).</li>
+<li><strong>Sanitize Filename:</strong> Execution speed of the <code>sanitize_filename</code> routine was significantly optimized for I/O intensive routines (PR #322).</li>
+<li><strong>Strict Type-Hinting:</strong> All utility signatures with native <code>Coroutine</code> / <code>Any</code> classes were standardized to <code>Awaitable</code>, ensuring total Mypy linter silence for devs (PR #323).</li>
+<li><strong>Edge Tests:</strong> Created additional test cases predicting contextual <code>@retry</code> Decorator interruption returns, expanding library stability (PR #327).</li>
+<li><strong>Massive Closure:</strong> Cleanly closed <code>26</code> obsolete Pull Requests, essentially encompassing transient legacy Circuit Breaker Concurrency bugs that caused Thundering Herd scenarios. The newly introduced <code>v0.4.0</code> architecture natively encapsulated and blocked these structural anomalies.</li>
+</ul>
+<h2 id="dependency-security">🔐 Dependency Security<a class="headerlink" href="#dependency-security" title="Permanent link">&para;</a></h2>
+<p>The <code>v0.4.0</code> release line also includes follow-up maintenance required by GitHub Actions and Dependabot:</p>
+<ul>
+<li><strong>Requests advisory remediated:</strong> the lockfile now resolves <code>requests</code> to <code>2.33.0</code>, addressing the insecure temporary file reuse issue in <code>extract_zipped_paths()</code>.</li>
+<li><strong>Pygments advisory mitigated:</strong> <code>Pygments</code> remains pinned to <code>2.19.2</code>, which is the newest upstream release currently available. The reported AdILexer ReDoS remains under monitoring until an upstream patched release exists.</li>
+<li><strong>Compatibility shims restored:</strong> legacy imports from <code>taipanstack.utils.retry</code> and <code>taipanstack.utils.resilience</code> now re-export the canonical <code>taipanstack.resilience</code> implementations without divergence.</li>
+<li><strong>CI hardening:</strong> Linux distro workflows now refresh package metadata more defensively and initialize the Arch keyring before full system upgrades.</li>
+</ul>
 <p><strong>Full Changelog:</strong> <a href="https://github.com/gabrielima7/TaipanStack/compare/v0.3.11...v0.4.0">v0.3.11...v0.4.0</a></p>
 
 

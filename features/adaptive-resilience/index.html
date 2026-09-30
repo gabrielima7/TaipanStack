@@ -2619,12 +2619,14 @@
 </span></code></pre></div>
 <hr />
 <h2 id="the-resilience-orchestrator">The Resilience Orchestrator<a class="headerlink" href="#the-resilience-orchestrator" title="Permanent link">&para;</a></h2>
-<p>The ultimate way to secure a dependency is by composing multiple patterns:
-1. Limit concurrency to avoid thread exhaustion (<em>Bulkhead</em>).
-2. Block execution if degraded (<em>Circuit Breaker</em>).
-3. Retry transient errors with memory (<em>Adaptive Retry</em>).
-4. Impose a hard deadline (<em>Timeout</em>).
-5. Default to safe parameters if all fails (<em>Fallback</em>).</p>
+<p>The ultimate way to secure a dependency is by composing multiple patterns:</p>
+<ol>
+<li>Limit concurrency to avoid thread exhaustion (<em>Bulkhead</em>).</li>
+<li>Block execution if degraded (<em>Circuit Breaker</em>).</li>
+<li>Retry transient errors with memory (<em>Adaptive Retry</em>).</li>
+<li>Impose a hard deadline (<em>Timeout</em>).</li>
+<li>Default to safe parameters if all fails (<em>Fallback</em>).</li>
+</ol>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.core.result</span><span class="w"> </span><span class="kn">import</span> <span class="n">Result</span>
 </span><span id="__span-3-2"><span class="kn">from</span><span class="w"> </span><span class="nn">taipanstack.resilience.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResilienceOrchestrator</span>
 </span><span id="__span-3-3">

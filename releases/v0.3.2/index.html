@@ -2750,10 +2750,12 @@
 <p>v0.3.2 is a <strong>patch release</strong> focused heavily on advancing the project's documentation accessibility and presentation. It introduces a brand new <strong>MkDocs Material</strong> documentation portal, fixes crucial accessibility issues.</p>
 <hr />
 <h2 id="1-mkdocs-material-documentation-portal">1. MkDocs Material Documentation Portal<a class="headerlink" href="#1-mkdocs-material-documentation-portal" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>mkdocs.yml</code>
-- <code>docs/architecture.md</code>
-- <code>docs/api/*.md</code></p>
+<p><strong>Files</strong>:</p>
+<ul>
+<li><code>mkdocs.yml</code></li>
+<li><code>docs/architecture.md</code></li>
+<li><code>docs/api/*.md</code></li>
+</ul>
 <p>TaipanStack now utilizes a first-class documentation portal built with MkDocs Material. The portal integrates all system architecture documentation and API references into a highly readable, searchable, and navigable interface.</p>
 <h3 id="what-changed">What Changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2763,8 +2765,10 @@
 </ul>
 <hr />
 <h2 id="2-accessibility-standards-fixes">2. Accessibility &amp; Standards Fixes<a class="headerlink" href="#2-accessibility-standards-fixes" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>docs/*</code> generated outputs and templates</p>
+<p><strong>Files</strong>:</p>
+<ul>
+<li><code>docs/*</code> generated outputs and templates</li>
+</ul>
 <p>We ensured that our newly generated documentation portal meets rigorous web accessibility standards.</p>
 <h3 id="what-changed_1">What Changed<a class="headerlink" href="#what-changed_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2774,8 +2778,10 @@
 </ul>
 <hr />
 <h2 id="3-security-hardening-in-documentation">3. Security Hardening in Documentation<a class="headerlink" href="#3-security-hardening-in-documentation" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- Various docstrings in <code>src/taipanstack/security/*</code></p>
+<p><strong>Files</strong>:</p>
+<ul>
+<li>Various docstrings in <code>src/taipanstack/security/*</code></li>
+</ul>
 <p>Addressed potential vulnerabilities within the generated HTML of the documentation itself.</p>
 <h3 id="what-changed_2">What Changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2784,8 +2790,10 @@
 <hr />
 <hr />
 <h2 id="5-type-annotation-alignments">5. Type Annotation Alignments<a class="headerlink" href="#5-type-annotation-alignments" title="Permanent link">&para;</a></h2>
-<p><strong>Files</strong>:
-- <code>src/taipanstack/security/guards.py</code> (and related pattern definitions)</p>
+<p><strong>Files</strong>:</p>
+<ul>
+<li><code>src/taipanstack/security/guards.py</code> (and related pattern definitions)</li>
+</ul>
 <h3 id="what-changed_3">What Changed<a class="headerlink" href="#what-changed_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed type annotation structures for <code>_TRAVERSAL_PATTERNS</code> to explicitly align with <code>pyright --strict</code> mode definitions, ensuring that the type checker correctly understands the compiled regex sequence tuple.</li>
