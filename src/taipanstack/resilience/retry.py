@@ -551,6 +551,33 @@ async def _handle_retry_exception_async(
     return e, False
 
 
+async def _run_async_attempts(
+    func_coro: Callable[..., Awaitable[R]],
+    func_name_coro: str,
+    config: RetryConfig,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> tuple[R | None, BaseException | None]:
+    last_exception: BaseException | None = None
+    last_result: R | None = None
+    max_attempts = _get_max_attempts(config)
+
+    for attempt in range(1, max_attempts + 1):
+        last_result = None
+        try:
+            last_result = await func_coro(*args, **kwargs)
+            _check_result_for_retry(last_result, valid_on)
+            return last_result, None
+        except Exception as e:
+            last_exception, should_break = await _handle_retry_exception_async(
+                e, attempt, func_name_coro, valid_on, config
+            )
+            if should_break:
+                break
+    return last_result, last_exception
+
+
 def _execute_async_wrapper(
     func_coro: Callable[P, Awaitable[R]],
     func_name_coro: str,
@@ -560,28 +587,44 @@ def _execute_async_wrapper(
 ) -> Callable[P, Awaitable[R]]:
     @functools.wraps(func_coro)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        last_exception: BaseException | None = None
-        last_result: R | None = None
-        max_attempts = _get_max_attempts(config)
-
-        for attempt in range(1, max_attempts + 1):
-            last_result = None
-            try:
-                last_result = await func_coro(*args, **kwargs)
-                _check_result_for_retry(last_result, valid_on)
-                return last_result
-            except Exception as e:
-                last_exception, should_break = await _handle_retry_exception_async(
-                    e, attempt, func_name_coro, valid_on, config
-                )
-                if should_break:
-                    break
+        last_result, last_exception = await _run_async_attempts(
+            func_coro, func_name_coro, config, valid_on, args, kwargs
+        )
+        if last_exception is None and _get_max_attempts(config) > 0:
+            return cast(R, last_result)
 
         return _handle_retry_failure_result(
             last_result, func_name_coro, config, reraise, last_exception
         )
 
     return async_wrapper  # type: ignore[misc]
+
+
+def _run_sync_attempts(
+    func_sync: Callable[..., R],
+    func_name_sync: str,
+    config: RetryConfig,
+    valid_on: tuple[type[Exception], ...] | type[Exception],
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> tuple[R | None, BaseException | None]:
+    last_exception: BaseException | None = None
+    last_result: R | None = None
+    max_attempts = _get_max_attempts(config)
+
+    for attempt in range(1, max_attempts + 1):
+        last_result = None
+        try:
+            last_result = func_sync(*args, **kwargs)
+            _check_result_for_retry(last_result, valid_on)
+            return last_result, None
+        except Exception as e:
+            last_exception, should_break = _handle_retry_exception_sync(
+                e, attempt, func_name_sync, valid_on, config
+            )
+            if should_break:
+                break
+    return last_result, last_exception
 
 
 def _execute_sync_wrapper(
@@ -593,22 +636,11 @@ def _execute_sync_wrapper(
 ) -> Callable[P, R]:
     @functools.wraps(func_sync)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        last_exception: BaseException | None = None
-        last_result: R | None = None
-        max_attempts = _get_max_attempts(config)
-
-        for attempt in range(1, max_attempts + 1):
-            last_result = None
-            try:
-                last_result = func_sync(*args, **kwargs)
-                _check_result_for_retry(last_result, valid_on)
-                return last_result
-            except Exception as e:
-                last_exception, should_break = _handle_retry_exception_sync(
-                    e, attempt, func_name_sync, valid_on, config
-                )
-                if should_break:
-                    break
+        last_result, last_exception = _run_sync_attempts(
+            func_sync, func_name_sync, config, valid_on, args, kwargs
+        )
+        if last_exception is None and _get_max_attempts(config) > 0:
+            return cast(R, last_result)
 
         return _handle_retry_failure_result(
             last_result, func_name_sync, config, reraise, last_exception
