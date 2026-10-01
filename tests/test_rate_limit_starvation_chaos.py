@@ -1,6 +1,7 @@
 """Chaos test for token starvation in RateLimiter."""
 
 import time
+
 import pytest
 
 from taipanstack.utils.rate_limit import RateLimiter
