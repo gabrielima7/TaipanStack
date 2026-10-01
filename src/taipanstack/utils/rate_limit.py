@@ -153,8 +153,6 @@ class RateLimiter:
         if elapsed is None:
             return False
 
-        self.last_update = now
-
         # Prevent state corruption or infinite elapsed time
         if not self._is_valid_bucket_state():
             return False
@@ -163,7 +161,11 @@ class RateLimiter:
         if new_tokens is None:
             return False
 
-        return self._apply_new_tokens(new_tokens)
+        if not self._apply_new_tokens(new_tokens):
+            return False
+
+        self.last_update = now
+        return True
 
     def _check_tokens_validity(self) -> bool:
         """Check tokens validity."""
