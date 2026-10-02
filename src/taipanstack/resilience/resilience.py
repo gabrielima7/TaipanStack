@@ -78,6 +78,7 @@ async def _execute_async_fallback_attempt(
         raise
     return Err(cast(E, RuntimeError("Unreachable")))
 
+
 def _execute_fallback_async_wrapper(
     func_coro: AsyncResultFunc[P, T, E],
     fallback_value: T,
@@ -114,6 +115,7 @@ def _execute_sync_fallback_attempt(
             return fallback_res
         raise
     return Err(cast(E, RuntimeError("Unreachable")))
+
 
 def _execute_fallback_sync_wrapper(
     func_sync: ResultFunc[P, T, E],

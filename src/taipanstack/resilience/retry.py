@@ -571,6 +571,7 @@ async def _execute_async_retry_attempt(
         )
         return last_result, last_exception, should_break, False
 
+
 async def _execute_async_retry_loop(
     func_coro: Callable[P, Awaitable[R]],
     func_name_coro: str,
@@ -596,6 +597,7 @@ async def _execute_async_retry_loop(
     return _handle_retry_failure_result(
         last_result, func_name_coro, config, reraise, last_exception
     )
+
 
 def _execute_async_wrapper(
     func_coro: Callable[P, Awaitable[R]],
@@ -633,6 +635,7 @@ def _execute_sync_retry_attempt(
         )
         return last_result, last_exception, should_break, False
 
+
 def _execute_sync_retry_loop(
     func_sync: Callable[P, R],
     func_name_sync: str,
@@ -658,6 +661,7 @@ def _execute_sync_retry_loop(
     return _handle_retry_failure_result(
         last_result, func_name_sync, config, reraise, last_exception
     )
+
 
 def _execute_sync_wrapper(
     func_sync: Callable[P, R],
