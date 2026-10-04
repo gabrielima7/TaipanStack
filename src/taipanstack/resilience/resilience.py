@@ -55,6 +55,54 @@ def _process_fallback_result(
     return None  # type: ignore[unreachable]
 
 
+async def _run_fallback_attempt_async(
+    func_coro: AsyncResultFunc[P, T, E],
+    fallback_value: T,
+    exceptions: tuple[type[Exception], ...],
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, E]:
+    try:
+        result = await func_coro(*args, **kwargs)
+        processed_res: Result[T, E] | None = _process_fallback_result(
+            result, fallback_value
+        )
+        if processed_res is not None:
+            return processed_res
+    except Exception as e:
+        fallback_res: Result[T, E] | None = _handle_fallback_exception(
+            e, exceptions, fallback_value
+        )
+        if fallback_res is not None:
+            return fallback_res
+        raise
+    return Err(cast(E, RuntimeError("Unreachable")))
+
+
+def _run_fallback_attempt_sync(
+    func_sync: ResultFunc[P, T, E],
+    fallback_value: T,
+    exceptions: tuple[type[Exception], ...],
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Result[T, E]:
+    try:
+        result = func_sync(*args, **kwargs)
+        processed_res: Result[T, E] | None = _process_fallback_result(
+            result, fallback_value
+        )
+        if processed_res is not None:
+            return processed_res
+    except Exception as e:
+        fallback_res: Result[T, E] | None = _handle_fallback_exception(
+            e, exceptions, fallback_value
+        )
+        if fallback_res is not None:
+            return fallback_res
+        raise
+    return Err(cast(E, RuntimeError("Unreachable")))
+
+
 def _execute_fallback_async_wrapper(
     func_coro: AsyncResultFunc[P, T, E],
     fallback_value: T,
@@ -62,21 +110,9 @@ def _execute_fallback_async_wrapper(
 ) -> AsyncResultFunc[P, T, E]:
     @functools.wraps(func_coro)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-        try:
-            result = await func_coro(*args, **kwargs)
-            processed_res: Result[T, E] | None = _process_fallback_result(
-                result, fallback_value
-            )
-            if processed_res is not None:
-                return processed_res
-        except Exception as e:
-            fallback_res: Result[T, E] | None = _handle_fallback_exception(
-                e, exceptions, fallback_value
-            )
-            if fallback_res is not None:
-                return fallback_res
-            raise
-        return Err(cast(E, RuntimeError("Unreachable")))
+        return await _run_fallback_attempt_async(
+            func_coro, fallback_value, exceptions, *args, **kwargs
+        )
 
     return async_wrapper  # type: ignore[misc]
 
@@ -88,21 +124,9 @@ def _execute_fallback_sync_wrapper(
 ) -> ResultFunc[P, T, E]:
     @functools.wraps(func_sync)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
-        try:
-            result = func_sync(*args, **kwargs)
-            processed_res: Result[T, E] | None = _process_fallback_result(
-                result, fallback_value
-            )
-            if processed_res is not None:
-                return processed_res
-        except Exception as e:
-            fallback_res: Result[T, E] | None = _handle_fallback_exception(
-                e, exceptions, fallback_value
-            )
-            if fallback_res is not None:
-                return fallback_res
-            raise
-        return Err(cast(E, RuntimeError("Unreachable")))
+        return _run_fallback_attempt_sync(
+            func_sync, fallback_value, exceptions, *args, **kwargs
+        )
 
     return sync_wrapper
 
