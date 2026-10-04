@@ -611,6 +611,7 @@ async def _process_async_attempt_loop(
         last_result, func_name_coro, config, reraise, last_exception
     )
 
+
 def _process_sync_attempt_loop(
     func_sync: Callable[P, R],
     func_name_sync: str,
@@ -641,6 +642,7 @@ def _process_sync_attempt_loop(
         last_result, func_name_sync, config, reraise, last_exception
     )
 
+
 def _execute_async_wrapper(
     func_coro: Callable[P, Awaitable[R]],
     func_name_coro: str,
@@ -653,7 +655,9 @@ def _execute_async_wrapper(
         return await _process_async_attempt_loop(
             func_coro, func_name_coro, config, valid_on, reraise, *args, **kwargs
         )
+
     return async_wrapper  # type: ignore[misc]
+
 
 def _execute_sync_wrapper(
     func_sync: Callable[P, R],
@@ -667,6 +671,7 @@ def _execute_sync_wrapper(
         return _process_sync_attempt_loop(
             func_sync, func_name_sync, config, valid_on, reraise, *args, **kwargs
         )
+
     return wrapper
 
 
