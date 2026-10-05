@@ -111,8 +111,14 @@ def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
 
     if isinstance(audience, str) and len(audience) > MAX_JWT_AUDIENCE_LENGTH:
         raise ValueError("Audience string is too long")
-    if isinstance(audience, (list, tuple, set)) and len(audience) > MAX_JWT_AUDIENCES:
-        raise ValueError("Too many audience items provided")
+    if isinstance(audience, (list, tuple, set)):
+        if len(audience) > MAX_JWT_AUDIENCES:
+            raise ValueError("Too many audience items provided")
+        for item in audience:
+            if not isinstance(item, str):
+                raise TypeError("Audience items must be strings")
+            if len(item) > MAX_JWT_AUDIENCE_LENGTH:
+                raise ValueError("Audience string is too long")
 
 
 @safe_from(
