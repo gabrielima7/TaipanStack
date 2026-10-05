@@ -5,9 +5,12 @@ from hypothesis import strategies as st
 
 from taipanstack.security.jwt import decode_jwt
 
+
 @given(
     audience=st.lists(
-        st.one_of(st.integers(), st.floats(), st.booleans(), st.none()), min_size=1, max_size=10
+        st.one_of(st.integers(), st.floats(), st.booleans(), st.none()),
+        min_size=1,
+        max_size=10,
     )
 )
 @settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
