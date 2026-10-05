@@ -1,0 +1,297 @@
+C901 `_validate_recovery_timeout` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/adaptive_breaker.py:110:9
+    |
+109 |     @staticmethod
+110 |     def _validate_recovery_timeout(recovery_timeout: float) -> float:
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+111 |         if not isinstance(recovery_timeout, (int, float)):
+112 |             raise TypeError("recovery_timeout must be a finite non-negative number")
+    |
+
+C901 `_evaluate_trip` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/adaptive_breaker.py:181:9
+    |
+179 |         return int(min_throughput)
+180 |
+181 |     def _evaluate_trip(self) -> None:
+    |         ^^^^^^^^^^^^^^
+182 |         """Evaluate if the circuit should trip open.
+    |
+
+C901 `_record_success_outcome` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/orchestrator.py:293:9
+    |
+291 |         return self._evaluate_standard_breaker()
+292 |
+293 |     def _record_success_outcome(self, attempt: int) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+294 |         """Record a successful execution outcome."""
+295 |         if self._adaptive_breaker is not None:
+    |
+
+C901 `_record_failure_outcome` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/orchestrator.py:303:9
+    |
+301 |             self._adaptive_retry.record_outcome(attempt, True, 0.0)
+302 |
+303 |     def _record_failure_outcome(self, error: Exception, attempt: int) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+304 |         """Record a failed execution outcome."""
+305 |         if self._adaptive_breaker is not None:
+    |
+
+C901 `_process_retry_attempt` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/orchestrator.py:379:15
+    |
+377 |         return None
+378 |
+379 |     async def _process_retry_attempt(
+    |               ^^^^^^^^^^^^^^^^^^^^^^
+380 |         self,
+381 |         attempt: int,
+    |
+
+C901 `_execute_with_retries` is too complex (4 > 3)
+   --> src/taipanstack/resilience/adaptive/orchestrator.py:404:15
+    |
+402 |         return should_continue, last_error
+403 |
+404 |     async def _execute_with_retries(
+    |               ^^^^^^^^^^^^^^^^^^^^^
+405 |         self,
+406 |         max_attempts: int,
+    |
+
+C901 `_calculate_safe_elapsed` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:331:9
+    |
+329 |             return 30.0
+330 |
+331 |     def _calculate_safe_elapsed(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+332 |         self, parsed_failure: float | int, safe_timeout: float, now: float
+333 |     ) -> float:
+    |
+
+C901 `_evaluate_state_for_attempt` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:433:9
+    |
+431 |             self._state.lock.release()
+432 |
+433 |     def _evaluate_state_for_attempt(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+434 |         self,
+435 |     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+    |
+
+C901 `_record_failure` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:578:9
+    |
+576 |             return False
+577 |
+578 |     def _record_failure(self, exc: Exception) -> None:
+    |         ^^^^^^^^^^^^^^^
+579 |         """Record a failed call."""
+580 |         if self._is_excluded_exception(exc):
+    |
+
+C901 `reset` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:596:9
+    |
+594 |             self._notify_state_change(*state_change)
+595 |
+596 |     def reset(self) -> None:
+    |         ^^^^^
+597 |         """Reset circuit breaker to closed state."""
+598 |         state_change: tuple[CircuitState, CircuitState] | None = None
+    |
+
+C901 `_safe_decrement_half_open_attempts` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:653:9
+    |
+651 |             return False
+652 |
+653 |     def _safe_decrement_half_open_attempts(self) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+654 |         """Safely decrement half-open attempts."""
+655 |         if self._state.state is not CircuitState.HALF_OPEN:
+    |
+
+C901 `_decrement_half_open` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:666:9
+    |
+664 |             self._state.half_open_attempts -= 1
+665 |
+666 |     def _decrement_half_open(self, is_half_open: bool) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^
+667 |         """Decrement half-open attempt count if applicable.
+    |
+
+C901 `_execute_async_wrapper` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:694:9
+    |
+692 |             self._record_failure(e)
+693 |
+694 |     def _execute_async_wrapper(
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+695 |         self,
+696 |         func_coro: Callable[P, Awaitable[R]],
+    |
+
+C901 `_execute_sync_wrapper` is too complex (4 > 3)
+   --> src/taipanstack/resilience/circuit_breaker.py:719:9
+    |
+717 |         return async_wrapper  # type: ignore[misc]
+718 |
+719 |     def _execute_sync_wrapper(
+    |         ^^^^^^^^^^^^^^^^^^^^^
+720 |         self,
+721 |         func_sync: Callable[P, R],
+    |
+
+C901 `_execute_fallback_async_wrapper` is too complex (5 > 3)
+  --> src/taipanstack/resilience/resilience.py:58:5
+   |
+58 | def _execute_fallback_async_wrapper(
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 |     func_coro: AsyncResultFunc[P, T, E],
+60 |     fallback_value: T,
+   |
+
+C901 `async_wrapper` is too complex (4 > 3)
+  --> src/taipanstack/resilience/resilience.py:64:15
+   |
+62 | ) -> AsyncResultFunc[P, T, E]:
+63 |     @functools.wraps(func_coro)
+64 |     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+   |               ^^^^^^^^^^^^^
+65 |         try:
+66 |             result = await func_coro(*args, **kwargs)
+   |
+
+C901 `_execute_fallback_sync_wrapper` is too complex (5 > 3)
+  --> src/taipanstack/resilience/resilience.py:84:5
+   |
+84 | def _execute_fallback_sync_wrapper(
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+85 |     func_sync: ResultFunc[P, T, E],
+86 |     fallback_value: T,
+   |
+
+C901 `sync_wrapper` is too complex (4 > 3)
+  --> src/taipanstack/resilience/resilience.py:90:9
+   |
+88 | ) -> ResultFunc[P, T, E]:
+89 |     @functools.wraps(func_sync)
+90 |     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
+   |         ^^^^^^^^^^^^
+91 |         try:
+92 |             result = func_sync(*args, **kwargs)
+   |
+
+C901 `_handle_timeout_exception` is too complex (4 > 3)
+   --> src/taipanstack/resilience/resilience.py:159:5
+    |
+159 | def _handle_timeout_exception(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+160 |     e: BaseException, context: str
+161 | ) -> Result[T, TimeoutError | E]:
+    |
+
+C901 `_run_async_with_timeout` is too complex (4 > 3)
+   --> src/taipanstack/resilience/resilience.py:189:11
+    |
+189 | async def _run_async_with_timeout(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^
+190 |     func_coro: Callable[P, Awaitable[Result[T, TimeoutError | E]]],
+191 |     seconds: float,
+    |
+
+C901 `_process_sync_timeout_result` is too complex (4 > 3)
+   --> src/taipanstack/resilience/resilience.py:225:5
+    |
+225 | def _process_sync_timeout_result(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+226 |     seconds: float,
+227 |     thread: threading.Thread,
+    |
+
+C901 `_run_sync_with_timeout` is too complex (4 > 3)
+   --> src/taipanstack/resilience/resilience.py:244:5
+    |
+244 | def _run_sync_with_timeout(
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+245 |     func_sync: Callable[P, Result[T, TimeoutError | E]],
+246 |     seconds: float,
+    |
+
+C901 `_calculate_base_delay` is too complex (4 > 3)
+   --> src/taipanstack/resilience/retry.py:192:5
+    |
+192 | def _calculate_base_delay(attempt: int, config: RetryConfig) -> float:
+    |     ^^^^^^^^^^^^^^^^^^^^^
+193 |     """Calculate base delay with exponential backoff."""
+194 |     delay = _compute_exponential_delay(attempt, config)
+    |
+
+C901 `_sleep_for_retry_async` is too complex (4 > 3)
+   --> src/taipanstack/resilience/retry.py:440:11
+    |
+440 | async def _sleep_for_retry_async(delay: float) -> BaseException | None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^
+441 |     try:
+442 |         await asyncio.sleep(min(delay, 3600.0))
+    |
+
+C901 `_execute_async_wrapper` is too complex (5 > 3)
+   --> src/taipanstack/resilience/retry.py:554:5
+    |
+554 | def _execute_async_wrapper(
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+555 |     func_coro: Callable[P, Awaitable[R]],
+556 |     func_name_coro: str,
+    |
+
+C901 `async_wrapper` is too complex (4 > 3)
+   --> src/taipanstack/resilience/retry.py:562:15
+    |
+560 | ) -> Callable[P, Awaitable[R]]:
+561 |     @functools.wraps(func_coro)
+562 |     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+    |               ^^^^^^^^^^^^^
+563 |         last_exception: BaseException | None = None
+564 |         last_result: R | None = None
+    |
+
+C901 `_execute_sync_wrapper` is too complex (5 > 3)
+   --> src/taipanstack/resilience/retry.py:587:5
+    |
+587 | def _execute_sync_wrapper(
+    |     ^^^^^^^^^^^^^^^^^^^^^
+588 |     func_sync: Callable[P, R],
+589 |     func_name_sync: str,
+    |
+
+C901 `wrapper` is too complex (4 > 3)
+   --> src/taipanstack/resilience/retry.py:595:9
+    |
+593 | ) -> Callable[P, R]:
+594 |     @functools.wraps(func_sync)
+595 |     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+    |         ^^^^^^^
+596 |         last_exception: BaseException | None = None
+597 |         last_result: R | None = None
+    |
+
+C901 `_loop` is too complex (4 > 3)
+  --> src/taipanstack/resilience/watchdogs/_base.py:84:15
+   |
+82 |         logger.info("%s stopped", type(self).__name__)
+83 |
+84 |     async def _loop(self) -> None:
+   |               ^^^^^
+85 |         """Internal loop that calls ``_run`` at each interval."""
+86 |         while not self._stop_event.is_set():
+   |
+
+Found 29 errors.

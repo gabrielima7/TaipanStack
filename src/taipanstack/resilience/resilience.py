@@ -55,6 +55,26 @@ def _process_fallback_result(
     return None  # type: ignore[unreachable]
 
 
+def _get_successful_fallback(result: Result[T, E], fallback_value: T) -> Result[T, E]:
+    processed_res = _process_fallback_result(result, fallback_value)
+    if processed_res is not None:
+        return processed_res
+    return Err(cast(E, RuntimeError("Unreachable")))
+
+
+def _get_exception_fallback(
+    e: Exception,
+    exceptions: tuple[type[Exception], ...],
+    fallback_value: T,
+) -> Result[T, E]:
+    fallback_res: Result[T, E] | None = _handle_fallback_exception(
+        e, exceptions, fallback_value
+    )
+    if fallback_res is not None:
+        return fallback_res
+    raise e
+
+
 def _execute_fallback_async_wrapper(
     func_coro: AsyncResultFunc[P, T, E],
     fallback_value: T,
@@ -64,19 +84,9 @@ def _execute_fallback_async_wrapper(
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             result = await func_coro(*args, **kwargs)
-            processed_res: Result[T, E] | None = _process_fallback_result(
-                result, fallback_value
-            )
-            if processed_res is not None:
-                return processed_res
+            return _get_successful_fallback(result, fallback_value)
         except Exception as e:
-            fallback_res: Result[T, E] | None = _handle_fallback_exception(
-                e, exceptions, fallback_value
-            )
-            if fallback_res is not None:
-                return fallback_res
-            raise
-        return Err(cast(E, RuntimeError("Unreachable")))
+            return _get_exception_fallback(e, exceptions, fallback_value)
 
     return async_wrapper  # type: ignore[misc]
 
@@ -90,19 +100,9 @@ def _execute_fallback_sync_wrapper(
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             result = func_sync(*args, **kwargs)
-            processed_res: Result[T, E] | None = _process_fallback_result(
-                result, fallback_value
-            )
-            if processed_res is not None:
-                return processed_res
+            return _get_successful_fallback(result, fallback_value)
         except Exception as e:
-            fallback_res: Result[T, E] | None = _handle_fallback_exception(
-                e, exceptions, fallback_value
-            )
-            if fallback_res is not None:
-                return fallback_res
-            raise
-        return Err(cast(E, RuntimeError("Unreachable")))
+            return _get_exception_fallback(e, exceptions, fallback_value)
 
     return sync_wrapper
 
