@@ -14,7 +14,7 @@ When making external connections, developers often use raw `httpx`, risking vuln
 2. Exponential Retry.
 3. Circuit Breakers.
 
-### Usage
+### Usage (SafeHTTPClient)
 
 ```python
 from taipanstack.bridges.http_bridge import SafeHttpClient
@@ -83,7 +83,7 @@ async def get_user(user_id: int):
 
 Direct database queries suffer from locking, connection drops, and thundering herd scenarios. `ResilientDatabase` protects SQLAlchemy and Redis instances transparently.
 
-### Usage
+### Usage (DB Bridge)
 
 ```python
 from taipanstack.bridges.db_bridge import ResilientDatabase

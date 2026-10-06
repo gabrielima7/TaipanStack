@@ -8,7 +8,7 @@ TaipanStack's Application entry point.
 
 ---
 
-## App
+## Application Main
 
 ::: app.main
     options:
