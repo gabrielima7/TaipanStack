@@ -23,6 +23,7 @@ __all__ = ["decode_jwt", "encode_jwt"]
 JWTPayload: TypeAlias = dict[str, object]
 
 MAX_JWT_ALGORITHMS = 10
+MAX_JWT_ALGORITHM_LENGTH = 50
 MAX_JWT_AUDIENCES = 10
 MAX_JWT_AUDIENCE_LENGTH = 1024
 
@@ -40,6 +41,9 @@ def _validate_encode_secret(secret_key: object) -> None:
 def _validate_encode_algorithm(algorithm: object) -> None:
     if not isinstance(algorithm, str):
         raise TypeError("Algorithm must be a string")
+
+    if len(algorithm) > MAX_JWT_ALGORITHM_LENGTH:
+        raise ValueError("Algorithm string is too long")
 
     alg_lower = algorithm.strip().lower()
     if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
@@ -88,6 +92,9 @@ def _check_disallowed_algorithm(alg: str) -> None:
     if not isinstance(alg, str):
         raise TypeError("Algorithm must be a string")
 
+    if len(alg) > MAX_JWT_ALGORITHM_LENGTH:
+        raise ValueError("Algorithm string is too long")
+
     alg_lower = alg.strip().lower()
     if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
         msg = 'Algorithm "none" is explicitly disallowed for decoding.'
@@ -111,8 +118,16 @@ def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
 
     if isinstance(audience, str) and len(audience) > MAX_JWT_AUDIENCE_LENGTH:
         raise ValueError("Audience string is too long")
-    if isinstance(audience, (list, tuple, set)) and len(audience) > MAX_JWT_AUDIENCES:
-        raise ValueError("Too many audience items provided")
+
+    if isinstance(audience, (list, tuple, set)):
+        if len(audience) > MAX_JWT_AUDIENCES:
+            raise ValueError("Too many audience items provided")
+
+        for aud in audience:
+            if not isinstance(aud, str):
+                raise TypeError("Audience items must be strings")
+            if len(aud) > MAX_JWT_AUDIENCE_LENGTH:
+                raise ValueError("Audience item string is too long")
 
 
 @safe_from(
