@@ -2536,7 +2536,9 @@
 <li><strong>Resilience Enum Identity Checks</strong>: Updated <code>CircuitState</code> enum comparisons across the resilience module (Circuit Breaker, Health Pinger) to use identity checks (<code>is</code>, <code>is not</code>) instead of equality checks to prevent exceptions from <code>__eq__</code> overrides (PR #1155).</li>
 <li><strong>Adaptive Bulkhead Typing</strong>: Enhanced typing for <code>Adaptive Bulkhead</code> by explicitly using <code>Coroutine</code> instead of <code>Awaitable</code> for internal async tasks to resolve strict mypy typing errors (PR #1158).</li>
 </ul>
+<!-- markdown-link-check-disable -->
 <p><strong>Full Changelog:</strong> <a href="https://github.com/gabrielima7/TaipanStack/compare/v0.6.2...v0.6.3">v0.6.2...v0.6.3</a></p>
+<!-- markdown-link-check-enable -->
 
 
 
