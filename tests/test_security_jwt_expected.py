@@ -209,3 +209,11 @@ class TestDecodeJWT:
         )
         assert result.is_err()
         assert isinstance(result.err_value, ValueError)
+
+
+def test_jwt_decode_audience_type_error():
+    from taipanstack.security.jwt import decode_jwt
+
+    res = decode_jwt("token", "secret", algorithms=["HS256"], audience=[123])
+    assert res.is_err()
+    assert "strings" in str(res.err()).lower()
