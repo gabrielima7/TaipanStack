@@ -120,7 +120,7 @@ def _validate_jwt_audience_item(aud: object) -> None:
 
 
 def _validate_jwt_audience_collection(
-    audience: list[str] | tuple[str, ...] | set[str]
+    audience: list[str] | tuple[str, ...] | set[str],
 ) -> None:
     if len(audience) > MAX_JWT_AUDIENCES:
         raise ValueError("Too many audience items provided")
