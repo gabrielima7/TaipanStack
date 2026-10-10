@@ -72,6 +72,7 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
 KT = TypeVar("KT")
 VT = TypeVar("VT")
 
+
 def _redact_mapping(
     obj: MutableMapping[KT, VT],
     seen: set[int],

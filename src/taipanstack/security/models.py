@@ -36,6 +36,7 @@ def _is_sensitive_key(key: object) -> bool:
 
 VT = TypeVar("VT")
 
+
 def _mask_dict(data: dict[str, VT], depth: int) -> dict[str, object]:
     """Mask sensitive keys in a dictionary."""
     masked: dict[str, object] = {}
