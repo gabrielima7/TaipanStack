@@ -31,7 +31,7 @@ logger = logging.getLogger("taipanstack.bridges.http")
 
 
 # JsonType definition for robust typing
-JsonType: TypeAlias = dict[str, object] | list[object] | str | int | float | bool | None
+JsonType: TypeAlias = Mapping[str, object] | Sequence[object] | str | int | float | bool | None
 
 
 class HttpRequestKwargs(TypedDict, total=False):
@@ -57,19 +57,19 @@ class HttpRequestKwargs(TypedDict, total=False):
         | bytes
         | None
     )
-    headers: dict[str, str]
-    cookies: dict[str, str]
+    headers: Mapping[str, str]
+    cookies: Mapping[str, str]
     auth: tuple[str, str]
     follow_redirects: bool
-    extensions: dict[str, object]
+    extensions: Mapping[str, object]
 
 
 class HttpClientKwargs(TypedDict, total=False):
     """Type definitions for HTTP client kwargs."""
 
     base_url: str
-    headers: dict[str, str]
-    cookies: dict[str, str]
+    headers: Mapping[str, str]
+    cookies: Mapping[str, str]
     verify: bool | str
     cert: str | tuple[str, str] | tuple[str, str, str]
     http1: bool
@@ -78,7 +78,7 @@ class HttpClientKwargs(TypedDict, total=False):
     mounts: Mapping[str, httpx.AsyncBaseTransport | None]
     follow_redirects: bool
     max_redirects: int
-    event_hooks: dict[str, list[Callable[..., Awaitable[object]]]]
+    event_hooks: Mapping[str, list[Callable[..., Awaitable[object]]]]
     trust_env: bool
     default_encoding: str | Callable[[bytes], str]
 
@@ -394,7 +394,7 @@ class SafeHttpClient:
             raise ImportError(msg)
         self._client = httpx.AsyncClient(
             timeout=self._timeout,
-            **self._client_kwargs,  # type: ignore[misc]
+            **self._client_kwargs,  # type: ignore[misc,arg-type]
         )  # nosemgrep
         return self
 

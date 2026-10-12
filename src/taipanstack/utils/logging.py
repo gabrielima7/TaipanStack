@@ -9,7 +9,7 @@ import logging
 import logging as _std_logging
 import re
 import sys
-from collections.abc import Iterator, MutableMapping
+from collections.abc import Iterator, MutableMapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from functools import lru_cache
@@ -85,13 +85,13 @@ def _redact_mapping(
     }
 
 
-def _redact_list(obj: list[object], seen: set[int]) -> list[object]:
-    """Redact a list object."""
+def _redact_list(obj: Sequence[object], seen: set[int]) -> list[object]:
+    """Redact a sequence object."""
     seen.add(id(obj))
     return [_redact(item, seen) for item in obj]
 
 
-def _redact_tuple(obj: tuple[object, ...], seen: set[int]) -> tuple[object, ...]:
+def _redact_tuple(obj: Sequence[object], seen: set[int]) -> tuple[object, ...]:
     """Redact a tuple object."""
     seen.add(id(obj))
     return tuple(_redact(item, seen) for item in obj)

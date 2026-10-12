@@ -2,7 +2,7 @@
 
 import json
 import re
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from typing import TYPE_CHECKING, Literal, TypeAlias, cast
 
 from pydantic import BaseModel, ConfigDict
@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 if TYPE_CHECKING:
     from pydantic.main import IncEx
 else:
-    IncEx: TypeAlias = set[int] | set[str] | dict[int, object] | dict[str, object]
+    IncEx: TypeAlias = set[int] | set[str] | Mapping[int, object] | Mapping[str, object]
 
 from taipanstack.utils.logging import REDACTED_VALUE, SENSITIVE_KEY_PATTERNS
 

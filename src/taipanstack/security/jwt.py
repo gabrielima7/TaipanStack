@@ -7,7 +7,7 @@ All operations return ``Result`` types.
 """
 
 import secrets
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ from taipanstack.core.result import safe_from
 
 __all__ = ["decode_jwt", "encode_jwt"]
 
-JWTPayload: TypeAlias = dict[str, object]
+JWTPayload: TypeAlias = Mapping[str, object]
 
 MAX_JWT_ALGORITHMS = 10
 MAX_JWT_ALGORITHM_LENGTH = 50
@@ -85,7 +85,7 @@ def encode_jwt(
     _validate_encode_secret(secret_key)
     _validate_encode_algorithm(algorithm)
 
-    return jwt.encode(payload, secret_key, algorithm=algorithm)  # nosem
+    return jwt.encode(dict(payload), secret_key, algorithm=algorithm)  # type: ignore[misc]  # nosem
 
 
 def _check_disallowed_algorithm(alg: str) -> None:

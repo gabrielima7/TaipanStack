@@ -10,7 +10,7 @@ import functools
 import inspect
 import math
 import time
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from typing import ParamSpec, Protocol, TypeAlias, TypeVar, cast, overload
 
 from taipanstack.core.result import Ok, Result
@@ -55,11 +55,11 @@ def _update_cache(
         cache[cache_key] = (now + ttl, result.ok_value)
 
 
-def _hash_sequence(val: tuple[object, ...] | list[object]) -> tuple[object, ...]:
+def _hash_sequence(val: Sequence[object]) -> tuple[object, ...]:
     return tuple(_make_hashable(item) for item in val)
 
 
-def _hash_dict(val: dict[object, object]) -> tuple[object, ...]:
+def _hash_dict(val: Mapping[object, object]) -> tuple[object, ...]:
     items = [(_make_hashable(k), _make_hashable(v)) for k, v in val.items()]
     items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))  # type: ignore[misc]
     return tuple(items)
@@ -83,8 +83,8 @@ def _make_hashable(val: object) -> object:
 
 def _get_cache_key(
     func_name: str,
-    args: tuple[object, ...],
-    kwargs: dict[str, object],
+    args: Sequence[object],
+    kwargs: Mapping[str, object],
 ) -> CacheKey:
     hashable_args = tuple(_make_hashable(arg) for arg in args)
     hashable_kwargs = tuple(
