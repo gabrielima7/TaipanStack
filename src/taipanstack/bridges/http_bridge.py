@@ -31,7 +31,9 @@ logger = logging.getLogger("taipanstack.bridges.http")
 
 
 # JsonType definition for robust typing
-JsonType: TypeAlias = Mapping[str, object] | Sequence[object] | str | int | float | bool | None
+JsonType: TypeAlias = (
+    Mapping[str, object] | Sequence[object] | str | int | float | bool | None
+)
 
 
 class HttpRequestKwargs(TypedDict, total=False):
