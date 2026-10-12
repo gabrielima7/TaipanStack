@@ -112,22 +112,30 @@ def _validate_jwt_algorithms(algorithms: list[str]) -> None:
         _check_disallowed_algorithm(alg)
 
 
-def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
-    if not isinstance(audience, (str, list, tuple, set)):
-        raise TypeError("Audience must be a string or iterable of strings")
-
-    if isinstance(audience, str) and len(audience) > MAX_JWT_AUDIENCE_LENGTH:
+def _validate_single_audience(audience: str) -> None:
+    if len(audience) > MAX_JWT_AUDIENCE_LENGTH:
         raise ValueError("Audience string is too long")
 
-    if isinstance(audience, (list, tuple, set)):
-        if len(audience) > MAX_JWT_AUDIENCES:
-            raise ValueError("Too many audience items provided")
 
-        for aud in audience:
-            if not isinstance(aud, str):
-                raise TypeError("Audience items must be strings")
-            if len(aud) > MAX_JWT_AUDIENCE_LENGTH:
-                raise ValueError("Audience item string is too long")
+def _validate_iterable_audience(audience: Iterable[str]) -> None:
+    aud_list = list(audience)
+    if len(aud_list) > MAX_JWT_AUDIENCES:
+        raise ValueError("Too many audience items provided")
+
+    for aud in aud_list:
+        if not isinstance(aud, str):
+            raise TypeError("Audience items must be strings")
+        if len(aud) > MAX_JWT_AUDIENCE_LENGTH:
+            raise ValueError("Audience item string is too long")
+
+
+def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
+    if isinstance(audience, str):
+        _validate_single_audience(audience)
+    elif isinstance(audience, (list, tuple, set)):
+        _validate_iterable_audience(audience)
+    else:
+        raise TypeError("Audience must be a string or iterable of strings")
 
 
 @safe_from(
