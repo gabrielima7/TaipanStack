@@ -13,7 +13,7 @@ from collections.abc import Iterator, MutableMapping
 from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, TypeVar, cast
 
 from taipanstack.utils.context import get_correlation_id
 
@@ -69,10 +69,14 @@ def _is_sensitive(key: object, regex: re.Pattern[str] | None) -> bool:
     return bool(regex.search(key))
 
 
+KT = TypeVar("KT")
+VT = TypeVar("VT")
+
+
 def _redact_mapping(
-    obj: MutableMapping[object, object],
+    obj: MutableMapping[KT, VT],
     seen: set[int],
-) -> dict[object, object]:
+) -> dict[KT, object]:
     """Redact a mapping object."""
     seen.add(id(obj))
     return {
@@ -85,13 +89,13 @@ def _redact_mapping(
     }
 
 
-def _redact_list(obj: list[object], seen: set[int]) -> list[object]:
+def _redact_list(obj: list[VT], seen: set[int]) -> list[object]:
     """Redact a list object."""
     seen.add(id(obj))
     return [_redact(item, seen) for item in obj]
 
 
-def _redact_tuple(obj: tuple[object, ...], seen: set[int]) -> tuple[object, ...]:
+def _redact_tuple(obj: tuple[VT, ...], seen: set[int]) -> tuple[object, ...]:
     """Redact a tuple object."""
     seen.add(id(obj))
     return tuple(_redact(item, seen) for item in obj)
@@ -105,7 +109,7 @@ def _is_unhashable(item: object) -> bool:
         return True
 
 
-def _redact_set(obj: set[object], seen: set[int]) -> set[object] | list[object]:
+def _redact_set(obj: set[VT], seen: set[int]) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
     redacted_items = [_redact(item, seen) for item in obj]
@@ -128,7 +132,7 @@ def _redact_iterable(obj: object, seen: set[int]) -> object:
 def _redact_collection(obj: object, seen: set[int]) -> object:
     """Dispatch redaction based on collection type."""
     if isinstance(obj, (dict, MutableMapping)):
-        return _redact_mapping(obj, seen)
+        return _redact_mapping(cast(MutableMapping[object, object], obj), seen)
 
     return _redact_iterable(obj, seen)
 

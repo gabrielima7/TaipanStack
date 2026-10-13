@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Literal, TypeAlias, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -34,7 +34,10 @@ def _is_sensitive_key(key: object) -> bool:
     )
 
 
-def _mask_dict(data: dict[str, object], depth: int) -> dict[str, object]:
+VT = TypeVar("VT")
+
+
+def _mask_dict(data: dict[str, VT], depth: int) -> dict[str, object]:
     """Mask sensitive keys in a dictionary."""
     masked: dict[str, object] = {}
     for k, v in data.items():
@@ -45,17 +48,17 @@ def _mask_dict(data: dict[str, object], depth: int) -> dict[str, object]:
     return masked
 
 
-def _mask_list(data: list[object], depth: int) -> list[object]:
+def _mask_list(data: list[VT], depth: int) -> list[object]:
     """Mask sensitive keys in a list."""
     return [_mask_data(item, depth) for item in data]
 
 
-def _mask_tuple(data: tuple[object, ...], depth: int) -> tuple[object, ...]:
+def _mask_tuple(data: tuple[VT, ...], depth: int) -> tuple[object, ...]:
     """Mask sensitive keys in a tuple."""
     return tuple(_mask_data(item, depth) for item in data)
 
 
-def _mask_set(data: set[object], depth: int) -> set[object] | list[object]:
+def _mask_set(data: set[VT], depth: int) -> set[object] | list[object]:
     """Mask sensitive keys in a set."""
     masked_items: list[object] = []
     has_unhashable = False
