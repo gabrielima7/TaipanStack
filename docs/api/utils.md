@@ -79,3 +79,30 @@ TaipanStack provides observability utilities for production applications.
       members_order: source
 
 ---
+
+## Circuit Breaker (Shim)
+
+::: taipanstack.utils.circuit_breaker
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Resilience (Shim)
+
+::: taipanstack.utils.resilience
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
+
+## Retry (Shim)
+
+::: taipanstack.utils.retry
+    options:
+      show_root_heading: false
+      members_order: source
+
+---
