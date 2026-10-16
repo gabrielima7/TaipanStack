@@ -131,6 +131,10 @@ class RateLimiter:
         """Calculate the elapsed time since the last update."""
         if not isinstance(self.last_update, (int, float)):
             return None  # type: ignore[unreachable]
+        return self._do_calculate_elapsed(now)
+
+    def _do_calculate_elapsed(self, now: float) -> float | None:
+        """Helper for _calculate_elapsed to reduce complexity."""
         try:
             raw_elapsed = now - self.last_update
             if not math.isfinite(raw_elapsed):
@@ -153,12 +157,12 @@ class RateLimiter:
         if elapsed is None:
             return False
 
-        # Prevent state corruption or infinite elapsed time
-        if not self._is_valid_bucket_state():
-            return False
+        return self._do_add_tokens(elapsed, now)
 
-        new_tokens = self._calculate_new_tokens(elapsed)
-        if new_tokens is None:
+    def _do_add_tokens(self, elapsed: float, now: float) -> bool:
+        """Helper to do add tokens calculation."""
+        # Prevent state corruption or infinite elapsed time
+        if not self._is_valid_bucket_state() or (new_tokens := self._calculate_new_tokens(elapsed)) is None:
             return False
 
         if not self._apply_new_tokens(new_tokens):
@@ -179,15 +183,18 @@ class RateLimiter:
     def _try_consume(self, tokens: float) -> bool:
         """Attempt to consume the tokens from the bucket if available."""
         try:
-            if not self._check_tokens_validity():
-                return False
-            if self.tokens >= tokens:
-                self.tokens -= tokens
-                return True
-            return False
+            return self._do_try_consume(tokens)
         except Exception:
             self.tokens = self.capacity
             return False
+
+    def _do_try_consume(self, tokens: float) -> bool:
+        if not self._check_tokens_validity():
+            return False
+        if self.tokens >= tokens:
+            self.tokens -= tokens
+            return True
+        return False
 
     def _get_current_time(self) -> float | None:
         """Get current monotonic time safely."""
@@ -201,9 +208,7 @@ class RateLimiter:
 
         Returns True if tokens were added successfully, False otherwise.
         """
-        if now is None:
-            return False
-        if not isinstance(now, (int, float)):
+        if now is None or not isinstance(now, (int, float)):
             return False  # type: ignore[unreachable]
         if not math.isfinite(now):
             # If not finite, we can't add tokens, but we shouldn't fail
@@ -249,9 +254,9 @@ class RateLimiter:
             return False
         if tokens <= 0:
             return True
-
         if not self._acquire_lock_safe():
             return False
+
         try:
             return self._process_consumption(tokens)
         finally:
@@ -275,6 +280,15 @@ class RateLimitDecorator(Protocol):
     ) -> Callable[P, Awaitable[Result[T, RateLimitError]]]: ...
 
 
+def _check_rate_limit(limiter: RateLimiter) -> Result[None, RateLimitError]:
+    """Helper to check rate limit safely."""
+    try:
+        if not limiter.consume():
+            return Err(RateLimitError())
+    except Exception:
+        return Err(RateLimitError())
+    return Ok(None)
+
 def _async_rate_limit_wrapper(
     func_coro: Callable[P, Awaitable[T]],
     limiter: RateLimiter,
@@ -284,11 +298,9 @@ def _async_rate_limit_wrapper(
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, RateLimitError]:
-        try:
-            if not limiter.consume():
-                return Err(RateLimitError())
-        except Exception:
-            return Err(RateLimitError())
+        limit_result = _check_rate_limit(limiter)
+        if isinstance(limit_result, Err):
+            return limit_result
         return Ok(await func_coro(*args, **kwargs))
 
     return async_wrapper  # type: ignore[misc]
@@ -300,11 +312,9 @@ def _sync_rate_limit_wrapper(
 ) -> Callable[P, Result[T, RateLimitError]]:
     @functools.wraps(func_sync)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, RateLimitError]:
-        try:
-            if not limiter.consume():
-                return Err(RateLimitError())
-        except Exception:
-            return Err(RateLimitError())
+        limit_result = _check_rate_limit(limiter)
+        if isinstance(limit_result, Err):
+            return limit_result
         return Ok(func_sync(*args, **kwargs))
 
     return wrapper
