@@ -14,8 +14,10 @@
 [![Type Checked](https://img.shields.io/badge/Type%20Checked-Mypy-blue?style=flat)](http://mypy-lang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Bandit%20%7C%20Semgrep-red?style=flat)](SECURITY.md)
+<!-- markdown-link-check-disable -->
 [![SBOM](https://img.shields.io/badge/SBOM-CycloneDX-informational?style=flat&logo=owasp)](https://github.com/gabrielima7/TaipanStack/actions/workflows/sbom-slsa.yml)
 [![SLSA](https://img.shields.io/badge/SLSA-Sigstore-blueviolet?style=flat)](https://github.com/gabrielima7/TaipanStack/actions/workflows/sbom-slsa.yml)
+<!-- markdown-link-check-enable -->
 [![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
 
 ---
