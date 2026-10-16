@@ -1,6 +1,8 @@
 import pytest
+
+from taipanstack.core.result import Result
 from taipanstack.resilience.resilience import fallback
-from taipanstack.core.result import Result, Ok, Err
+
 
 def test_resilience_fallback_type_error_sync() -> None:
     """Test that passing an invalid exceptions type triggers the TypeError catch block."""
