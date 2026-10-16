@@ -41,7 +41,7 @@ def _handle_fallback_exception(
         if isinstance(e, exceptions):
             return Ok(fallback_value)
     except TypeError:
-        pass
+        return None
     return None
 
 
