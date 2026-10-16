@@ -15,6 +15,7 @@ def test_resilience_fallback_type_error_sync() -> None:
     with pytest.raises(ValueError):
         dummy_func()
 
+
 @pytest.mark.asyncio
 async def test_resilience_fallback_type_error_async() -> None:
     """Test that passing an invalid exceptions type triggers the TypeError catch block in async context."""
