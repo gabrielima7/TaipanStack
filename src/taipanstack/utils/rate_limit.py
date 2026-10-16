@@ -139,6 +139,14 @@ class RateLimiter:
         except Exception:
             return None
 
+    def _calculate_tokens_to_add(self, elapsed: float) -> float | None:
+        """Calculate new tokens based on elapsed time and valid state."""
+        # Prevent state corruption or infinite elapsed time
+        if not self._is_valid_bucket_state():
+            return None
+
+        return self._calculate_new_tokens(elapsed)
+
     def _add_tokens(self, now: float) -> bool:
         """Calculate and add new tokens to the bucket based on elapsed time.
 
@@ -153,11 +161,7 @@ class RateLimiter:
         if elapsed is None:
             return False
 
-        # Prevent state corruption or infinite elapsed time
-        if not self._is_valid_bucket_state():
-            return False
-
-        new_tokens = self._calculate_new_tokens(elapsed)
+        new_tokens = self._calculate_tokens_to_add(elapsed)
         if new_tokens is None:
             return False
 

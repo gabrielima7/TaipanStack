@@ -38,15 +38,26 @@ def _validate_encode_secret(secret_key: object) -> None:
         raise TypeError("Secret must be a string")
 
 
-def _validate_encode_algorithm(algorithm: object) -> None:
-    if not isinstance(algorithm, str):
+def _check_string_type_and_length(alg: object) -> str:
+    """Validate that the algorithm is a string of valid length."""
+    if not isinstance(alg, str):
         raise TypeError("Algorithm must be a string")
 
-    if len(algorithm) > MAX_JWT_ALGORITHM_LENGTH:
+    if len(alg) > MAX_JWT_ALGORITHM_LENGTH:
         raise ValueError("Algorithm string is too long")
 
-    alg_lower = algorithm.strip().lower()
-    if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
+    return alg
+
+
+def _is_none_algorithm(alg: str) -> bool:
+    """Check if the algorithm is explicitly disallowed 'none'."""
+    alg_lower = alg.strip().lower()
+    return alg_lower.isascii() and secrets.compare_digest(alg_lower, "none")
+
+
+def _validate_encode_algorithm(algorithm: object) -> None:
+    valid_alg = _check_string_type_and_length(algorithm)
+    if _is_none_algorithm(valid_alg):
         raise ValueError('Algorithm "none" is explicitly disallowed.')
 
 
@@ -89,26 +100,26 @@ def encode_jwt(
 
 
 def _check_disallowed_algorithm(alg: str) -> None:
-    if not isinstance(alg, str):
-        raise TypeError("Algorithm must be a string")
-
-    if len(alg) > MAX_JWT_ALGORITHM_LENGTH:
-        raise ValueError("Algorithm string is too long")
-
-    alg_lower = alg.strip().lower()
-    if alg_lower.isascii() and secrets.compare_digest(alg_lower, "none"):
+    valid_alg = _check_string_type_and_length(alg)
+    if _is_none_algorithm(valid_alg):
         msg = 'Algorithm "none" is explicitly disallowed for decoding.'
         raise ValueError(msg)
 
 
-def _validate_jwt_algorithms(algorithms: list[str]) -> None:
+def _check_jwt_algorithms_type_and_length(algorithms: object) -> list[str]:
+    """Validate that the algorithms are a list of strings of valid length."""
     if not isinstance(algorithms, list):
         raise TypeError("Algorithms must be a list of strings")
 
     if len(algorithms) > MAX_JWT_ALGORITHMS:
         raise ValueError("Too many algorithms provided")
 
-    for alg in algorithms:
+    return algorithms
+
+
+def _validate_jwt_algorithms(algorithms: list[str]) -> None:
+    valid_algs = _check_jwt_algorithms_type_and_length(algorithms)
+    for alg in valid_algs:
         _check_disallowed_algorithm(alg)
 
 
@@ -129,10 +140,15 @@ def _validate_jwt_audience_collection(
         _validate_jwt_audience_item(aud)
 
 
+def _validate_single_audience(audience: str) -> None:
+    """Validate that a single audience string is of valid length."""
+    if len(audience) > MAX_JWT_AUDIENCE_LENGTH:
+        raise ValueError("Audience string is too long")
+
+
 def _validate_jwt_audience(audience: str | Iterable[str]) -> None:
     if isinstance(audience, str):
-        if len(audience) > MAX_JWT_AUDIENCE_LENGTH:
-            raise ValueError("Audience string is too long")
+        _validate_single_audience(audience)
         return
 
     if isinstance(audience, (list, tuple, set)):
