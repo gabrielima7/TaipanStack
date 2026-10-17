@@ -14,6 +14,7 @@ class ExceptionLock:
     def release(self) -> None:
         raise MemoryError("Out of memory!")
 
+
 def test_chaos_circuit_breaker_lock_exception_sync():
     breaker = CircuitBreaker(failure_threshold=1)
     breaker._state.lock = ExceptionLock()
@@ -27,12 +28,14 @@ def test_chaos_circuit_breaker_lock_exception_sync():
 
     assert exc_info.value.state == CircuitState.CLOSED
 
+
 class BaseExceptionLock:
     def acquire(self, timeout: float = -1) -> bool:
         raise BaseException("System level error")
 
     def release(self) -> None:
         raise BaseException("System level error")
+
 
 def test_chaos_circuit_breaker_lock_base_exception_sync():
     breaker = CircuitBreaker(failure_threshold=1)
@@ -46,6 +49,7 @@ def test_chaos_circuit_breaker_lock_base_exception_sync():
     # the wrapper will raise CircuitBreakerError!
     with pytest.raises(CircuitBreakerError):
         ok_func_sync()
+
 
 def test_chaos_circuit_breaker_lock_base_exception_release():
     class BadReleaseLock:
@@ -65,6 +69,7 @@ def test_chaos_circuit_breaker_lock_base_exception_release():
     # The release error is caught and ignored in _safe_release,
     # so the function call should just succeed.
     assert ok_func_sync() is True
+
 
 def test_chaos_circuit_breaker_lock_critical_exceptions():
     class CriticalExceptionLock:
@@ -88,4 +93,3 @@ def test_chaos_circuit_breaker_lock_critical_exceptions():
     breaker._state.lock = CriticalExceptionLock()
     with pytest.raises(SystemExit):
         breaker._safe_release()
-
