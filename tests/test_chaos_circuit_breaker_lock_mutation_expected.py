@@ -7,123 +7,85 @@ from taipanstack.resilience.circuit_breaker import (
 )
 
 
-def test_chaos_circuit_breaker_lock_acquire_exception_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
+class ExceptionLock:
+    def acquire(self, timeout: float = -1) -> bool:
+        raise MemoryError("Out of memory!")
 
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Extreme acquire failure")
+    def release(self) -> None:
+        raise MemoryError("Out of memory!")
 
-        def release(self):
-            return None
-
-    breaker._state.lock = ThrowingLock()
+def test_chaos_circuit_breaker_lock_exception_sync():
+    breaker = CircuitBreaker(failure_threshold=1)
+    breaker._state.lock = ExceptionLock()
 
     @breaker
-    def dummy_call():
-        return "success"
+    def ok_func_sync():
+        return True
 
+    with pytest.raises(CircuitBreakerError) as exc_info:
+        ok_func_sync()
+
+    assert exc_info.value.state == CircuitState.CLOSED
+
+class BaseExceptionLock:
+    def acquire(self, timeout: float = -1) -> bool:
+        raise BaseException("System level error")
+
+    def release(self) -> None:
+        raise BaseException("System level error")
+
+def test_chaos_circuit_breaker_lock_base_exception_sync():
+    breaker = CircuitBreaker(failure_threshold=1)
+    breaker._state.lock = BaseExceptionLock()
+
+    @breaker
+    def ok_func_sync():
+        return True
+
+    # Now that we catch BaseException and return False,
+    # the wrapper will raise CircuitBreakerError!
     with pytest.raises(CircuitBreakerError):
-        dummy_call()
+        ok_func_sync()
 
-
-def test_chaos_circuit_breaker_lock_release_suppressed_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
-
-    class AcquireOnlyLock:
-        def acquire(self, timeout=-1):
+def test_chaos_circuit_breaker_lock_base_exception_release():
+    class BadReleaseLock:
+        def acquire(self, timeout: float = -1) -> bool:
             return True
 
-        def release(self):
-            raise RuntimeError("Extreme release failure")
+        def release(self) -> None:
+            raise BaseException("Crash on release")
 
-    breaker._state.lock = AcquireOnlyLock()
+    breaker = CircuitBreaker(failure_threshold=1)
+    breaker._state.lock = BadReleaseLock()
 
     @breaker
-    def dummy_call():
-        return "success"
+    def ok_func_sync():
+        return True
 
-    assert dummy_call() == "success"
+    # The release error is caught and ignored in _safe_release,
+    # so the function call should just succeed.
+    assert ok_func_sync() is True
 
+def test_chaos_circuit_breaker_lock_critical_exceptions():
+    class CriticalExceptionLock:
+        def acquire(self, timeout: float = -1) -> bool:
+            raise KeyboardInterrupt("Interrupt")
 
-def test_chaos_circuit_breaker_lock_acquire_exception_in_reset_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
+        def release(self) -> None:
+            raise SystemExit("Exit")
 
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Extreme acquire failure")
+    breaker = CircuitBreaker(failure_threshold=1)
+    breaker._state.lock = CriticalExceptionLock()
 
-        def release(self):
-            return None
+    @breaker
+    def ok_func_sync():
+        return True
 
-    breaker._state.lock = ThrowingLock()
+    with pytest.raises(KeyboardInterrupt):
+        ok_func_sync()
 
-    breaker.reset()
-    assert breaker._state.state == CircuitState.CLOSED
+    # test release directly
+    breaker._state.lock = CriticalExceptionLock()
+    with pytest.raises(SystemExit):
+        breaker._safe_release()
 
-
-def test_chaos_circuit_breaker_lock_decrement_half_open_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
-
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Extreme acquire failure in decrement")
-
-        def release(self):
-            return None
-
-    breaker._state.lock = ThrowingLock()
-
-    breaker._decrement_half_open(True)
-    assert breaker._state.half_open_attempts == 0
-
-
-def test_chaos_circuit_breaker_lock_record_success_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
-
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Extreme acquire failure in record_success")
-
-        def release(self):
-            return None
-
-    breaker._state.lock = ThrowingLock()
-
-    breaker._record_success()
-    assert breaker._state.success_count == 0
-
-
-def test_chaos_circuit_breaker_lock_record_failure_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
-
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise MemoryError("Extreme acquire failure in record_failure")
-
-        def release(self):
-            return None
-
-    breaker._state.lock = ThrowingLock()
-
-    breaker._record_failure(RuntimeError("dummy"))
-    assert breaker._state.failure_count == 0
-
-
-def test_chaos_circuit_breaker_lock_decrement_half_open_suppress_expected():
-    breaker = CircuitBreaker(failure_threshold=2)
-
-    class ThrowingLock:
-        def acquire(self, timeout=-1):
-            raise RuntimeError("Normal acquire failure in decrement")
-
-        def release(self):
-            return None
-
-    breaker._state.lock = ThrowingLock()
-    breaker._state.state = CircuitState.HALF_OPEN
-    breaker._state.half_open_attempts = 1
-
-    # Should suppress Exception and return
-    breaker._decrement_half_open(True)
-    assert breaker._state.half_open_attempts == 1

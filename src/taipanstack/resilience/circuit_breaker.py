@@ -6,7 +6,6 @@ blocking calls to a failing service. Compatible with any
 Python framework (sync and async).
 """
 
-import contextlib
 import functools
 import inspect
 import logging
@@ -423,12 +422,18 @@ class CircuitBreaker:
         """Safely attempt to acquire the lock."""
         try:
             return self._state.lock.acquire(timeout=0.1)
-        except Exception:
+        except (SystemExit, KeyboardInterrupt, GeneratorExit):
+            raise
+        except BaseException:
             return False
 
     def _safe_release(self) -> None:
-        with contextlib.suppress(Exception):
+        try:
             self._state.lock.release()
+        except (SystemExit, KeyboardInterrupt, GeneratorExit):
+            raise
+        except BaseException:
+            pass
 
     def _evaluate_state_for_attempt(
         self,
