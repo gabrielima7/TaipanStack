@@ -121,3 +121,10 @@
 When performing URL string validation to prevent SSRF or invalid characters from passing through, calling `urllib.parse.unquote(url)` once is insufficient against an attacker who submits deeply URL-encoded payloads (e.g., doubly or triply encoded `%252500` null bytes). To prevent validation bypasses, the URL must be fully unquoted recursively until `unquote(current) == current`.
 
 **Critical Defense Mechanism:** Unbounded `while` loops for recursive unquoting are a Denial of Service (DoS) vulnerability risk. The recursive loop MUST be bounded to a strict maximum iteration limit (e.g., `range(10)`) to ensure the application fails safely when encountering extremely deep/malicious recursive payloads.
+
+## Security & Chaos Audit
+
+- Performed integration chaos testing combining `taipanstack.security.guards` with `taipanstack.resilience.circuit_breaker` and `taipanstack.resilience.retry`.
+- Found a few edge case type errors when attempting to use the deprecated decorator approach `config=RetryConfig(max_attempts=3)`.
+- Discovered that combining resilience decorators on top of expected security guards creates difficult typing loops due to internal state `cb.state.name != "CLOSED"` handling where internal `.state` variables aren't exposed cleanly if `.state.state` is used.
+- Verified Fuzz testing using hypothesis to bombard `guard_command_injection`, `guard_path_traversal`, and `guard_ssrf` with 100 character strings. They successfully resisted failing with any exceptions besides `SecurityError`, proving their robustness.

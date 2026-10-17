@@ -268,6 +268,21 @@ class CircuitBreaker:
         """Get current failure count."""
         return self._state.failure_count
 
+    @property
+    def is_closed(self) -> bool:
+        """Check if circuit is closed."""
+        return self._state.state == CircuitState.CLOSED
+
+    @property
+    def is_open(self) -> bool:
+        """Check if circuit is open."""
+        return self._state.state == CircuitState.OPEN
+
+    @property
+    def is_half_open(self) -> bool:
+        """Check if circuit is half-open."""
+        return self._state.state == CircuitState.HALF_OPEN
+
     def _log_callback_failure(
         self,
         old_state: CircuitState,
