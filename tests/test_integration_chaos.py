@@ -1,4 +1,3 @@
-
 import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -44,24 +43,32 @@ def test_integration_chaos():
 
 
 @given(st.text(max_size=100))
-@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large])
+@settings(
+    max_examples=50,
+    suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large],
+)
 def test_fuzz_guard_path_traversal(text):
     try:
         guard_path_traversal(text)
     except SecurityError:
-        pass # Expected
+        pass  # Expected
     except Exception as e:
         pytest.fail(f"Unexpected exception type: {type(e)}")
 
+
 @given(st.text(max_size=100))
-@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large])
+@settings(
+    max_examples=50,
+    suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large],
+)
 def test_fuzz_guard_ssrf(text):
     try:
         guard_ssrf(text)
     except SecurityError:
-        pass # Expected
+        pass  # Expected
     except Exception as e:
         pytest.fail(f"Unexpected exception type: {type(e)}")
+
 
 def test_circuit_breaker_properties():
     cb = CircuitBreaker(failure_threshold=2)
