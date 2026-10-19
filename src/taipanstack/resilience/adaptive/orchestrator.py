@@ -414,8 +414,7 @@ class ResilienceOrchestrator(Generic[T]):
         return should_continue, last_error
 
     def _evaluate_retry_outcome(
-        self,
-        outcome: Result[T, Exception] | tuple[bool, Exception]
+        self, outcome: Result[T, Exception] | tuple[bool, Exception]
     ) -> tuple[bool, Exception, Result[T, Exception] | None]:
         if not isinstance(outcome, tuple):
             return True, RuntimeError("Success"), outcome
