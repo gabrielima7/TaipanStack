@@ -380,7 +380,9 @@ class ResilienceOrchestrator(Generic[T]):
             return self._handle_circuit_breaker_open(cb_err, attempt)
         return None
 
-    def _check_cb_res(self, cb_res: Result[T, Exception] | None) -> tuple[bool, Exception] | Result[T, Exception] | None:
+    def _check_cb_res(
+        self, cb_res: Result[T, Exception] | None
+    ) -> tuple[bool, Exception] | Result[T, Exception] | None:
         if cb_res is not None:
             if isinstance(cb_res, Err):
                 return False, cb_res.err_value
@@ -466,7 +468,9 @@ class ResilienceOrchestrator(Generic[T]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
-        result, last_error = await self._execute_retry_loop(max_attempts, fn, *args, **kwargs)
+        result, last_error = await self._execute_retry_loop(
+            max_attempts, fn, *args, **kwargs
+        )
         if result is not None:
             return result
         return self._apply_fallback(Err(last_error))
