@@ -106,7 +106,7 @@ def _check_disallowed_algorithm(alg: str) -> None:
         raise ValueError(msg)
 
 
-def _check_jwt_algorithms_type_and_length(algorithms: object) -> list[str]:
+def _check_jwt_algorithms_type_and_length(algorithms: list[str]) -> list[str]:
     """Validate that the algorithms are a list of strings of valid length."""
     if not isinstance(algorithms, list):
         raise TypeError("Algorithms must be a list of strings")
