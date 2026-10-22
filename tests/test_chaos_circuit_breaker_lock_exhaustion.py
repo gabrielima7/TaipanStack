@@ -3,7 +3,6 @@ import pytest
 from taipanstack.core.result import Ok
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
-    CircuitBreakerError,
     circuit_breaker,
 )
 
@@ -20,7 +19,7 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_lock_acquir
             return None
 
     breaker._state.lock = BrokenLock()
-    assert breaker._should_attempt() is False
+    assert breaker._should_attempt() is True
     breaker._record_success()
     breaker._record_failure(ValueError("test error"))
     breaker.reset()
@@ -51,8 +50,8 @@ async def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decor
             return None
 
     breaker._state.lock = BrokenLock()
-    with pytest.raises(CircuitBreakerError, match="is open"):
-        await my_func()
+    result = await my_func()
+    assert result.unwrap() == "success"
 
 
 def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_lock_acquire_exception_sync():
@@ -78,5 +77,5 @@ def test_chaos_circuit_breaker_lock_exhaustion_chaos_circuit_breaker_decorator_l
             return None
 
     breaker._state.lock = BrokenLock()
-    with pytest.raises(CircuitBreakerError, match="is open"):
-        my_func()
+    result = my_func()
+    assert result.unwrap() == "success"

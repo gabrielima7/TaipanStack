@@ -2,7 +2,6 @@ import pytest
 
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
-    CircuitBreakerError,
 )
 
 
@@ -23,8 +22,7 @@ def test_circuit_breaker_lock_acquire_exception_decorator_sync():
     def sync_func():
         return "success"
 
-    with pytest.raises(CircuitBreakerError, match="is open"):
-        sync_func()
+    assert sync_func() == "success"
 
 
 @pytest.mark.asyncio
@@ -45,5 +43,4 @@ async def test_circuit_breaker_lock_acquire_exception_decorator_async():
     async def async_func():
         return "success"
 
-    with pytest.raises(CircuitBreakerError, match="is open"):
-        await async_func()
+    assert (await async_func()) == "success"

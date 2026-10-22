@@ -1,8 +1,5 @@
-import pytest
-
 from taipanstack.resilience.circuit_breaker import (
     CircuitBreaker,
-    CircuitBreakerError,
     CircuitState,
 )
 
@@ -23,8 +20,7 @@ def test_chaos_circuit_breaker_lock_acquire_exception_expected():
     def dummy_call():
         return "success"
 
-    with pytest.raises(CircuitBreakerError):
-        dummy_call()
+    assert dummy_call() == "success"
 
 
 def test_chaos_circuit_breaker_lock_release_suppressed_expected():

@@ -15,4 +15,4 @@ def test_chaos_circuit_breaker_lock_acquire_raises():
 
     # This shouldn't crash if we are resilient!
     result = breaker._should_attempt()
-    assert result is False
+    assert result is True

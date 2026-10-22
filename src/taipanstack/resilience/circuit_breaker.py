@@ -391,8 +391,11 @@ class CircuitBreaker:
             now = time.monotonic()
         except Exception:
             return None
-        if not isinstance(now, (int, float)) or not math.isfinite(now):
-            return None
+        if not isinstance(now, (int, float)):
+            return None  # type: ignore[unreachable]
+        # Safe degradation: if time is corrupted to infinity, treat as timeout expired
+        if not math.isfinite(now):
+            return self._get_safe_threshold(self.config.timeout, 0, 30.0)
         return self._calculate_elapsed_time(now)
 
     def _handle_open_state(
@@ -445,7 +448,7 @@ class CircuitBreaker:
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
         if not self._acquire_lock():
-            return False
+            return self._state.state is CircuitState.CLOSED
         try:
             should_attempt, state_change = self._evaluate_state_for_attempt()
         finally:
