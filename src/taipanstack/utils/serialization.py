@@ -9,6 +9,18 @@ from taipanstack.core.result import Err, Ok
 __all__ = ["default_encoder"]
 
 
+def _encode_ok(obj: Ok) -> dict[str, object]:
+    """Encode an Ok result."""
+    if isinstance(obj.ok_value, dict):
+        return {"status": "success", **obj.ok_value}
+    return {"status": "success", "data": obj.ok_value}
+
+
+def _encode_err(obj: Err) -> dict[str, object]:
+    """Encode an Err result."""
+    return {"status": "error", "message": str(obj.err_value)}
+
+
 def default_encoder(obj: object) -> dict[str, object]:
     """Default encoder for orjson.dumps handling Result types.
 
@@ -35,9 +47,7 @@ def default_encoder(obj: object) -> dict[str, object]:
 
     """
     if isinstance(obj, Ok):
-        if isinstance(obj.ok_value, dict):
-            return {"status": "success", **obj.ok_value}
-        return {"status": "success", "data": obj.ok_value}
+        return _encode_ok(obj)
     if isinstance(obj, Err):
-        return {"status": "error", "message": str(obj.err_value)}
+        return _encode_err(obj)
     raise TypeError(f"Type {type(obj).__name__} is not JSON serializable")
