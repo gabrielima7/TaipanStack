@@ -9,14 +9,14 @@ from taipanstack.core.result import Err, Ok
 __all__ = ["default_encoder"]
 
 
-def _encode_ok(obj: Ok) -> dict[str, object]:
+def _encode_ok(obj: Ok[object]) -> dict[str, object]:
     """Encode an Ok result."""
     if isinstance(obj.ok_value, dict):
         return {"status": "success", **obj.ok_value}
     return {"status": "success", "data": obj.ok_value}
 
 
-def _encode_err(obj: Err) -> dict[str, object]:
+def _encode_err(obj: Err[object]) -> dict[str, object]:
     """Encode an Err result."""
     return {"status": "error", "message": str(obj.err_value)}
 
