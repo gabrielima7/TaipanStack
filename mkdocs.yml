@@ -160,6 +160,7 @@ nav:
       - Audit Report: sdet_audit_report.md
       - Chaos Report: sdet_chaos_report.md
       - Proof Report: sdet_proof_report.md
+      - Formal Verification: formal_verification.md
 
 # ── Extra ────────────────────────────────────────────────────────────────────
 extra:
