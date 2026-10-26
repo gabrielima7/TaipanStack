@@ -75,10 +75,14 @@ def _hash_set(val: set[object], depth: int) -> frozenset[object]:
     return frozenset(_make_hashable(item, depth) for item in val)
 
 
-def _make_hashable(val: object, depth: int = 0) -> object:
+def _check_cache_key_depth(depth: int) -> None:
     if depth > MAX_CACHE_KEY_DEPTH:
         msg = f"Cache key too deeply nested (max depth {MAX_CACHE_KEY_DEPTH})"
         raise ValueError(msg)
+
+
+def _make_hashable(val: object, depth: int = 0) -> object:
+    _check_cache_key_depth(depth)
 
     if isinstance(val, (tuple, list)):
         return _hash_sequence(val, depth + 1)
