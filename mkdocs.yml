@@ -161,6 +161,8 @@ nav:
       - Chaos Report: sdet_chaos_report.md
       - Proof Report: sdet_proof_report.md
       - Formal Verification: formal_verification.md
+  - Design Documents:
+      - Python 3.15 Compatibility: designs/python_315_compatibility.md
 
 # ── Extra ────────────────────────────────────────────────────────────────────
 extra:

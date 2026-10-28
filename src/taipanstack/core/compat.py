@@ -23,6 +23,7 @@ __all__ = [
     "PY312",
     "PY313",
     "PY314",
+    "PY315",
     "PY_VERSION",
     "PythonFeatures",
     "VersionTier",
@@ -51,6 +52,9 @@ PY313: Final[bool] = PY_VERSION >= (3, 13)
 
 PY314: Final[bool] = PY_VERSION >= (3, 14)
 """True if running Python 3.14 or higher."""
+
+PY315: Final[bool] = PY_VERSION >= (3, 15)
+"""True if running Python 3.15 or higher."""
 
 
 class VersionTier(StrEnum):
