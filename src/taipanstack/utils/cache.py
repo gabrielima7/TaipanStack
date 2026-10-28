@@ -19,6 +19,8 @@ P = ParamSpec("P")
 T = TypeVar("T")
 E = TypeVar("E", bound=Exception)
 
+MAX_CACHE_KEY_DEPTH = 50
+
 CacheKey: TypeAlias = tuple[object, ...]
 CacheValue: TypeAlias = tuple[float, object]
 CacheDict: TypeAlias = dict[CacheKey, CacheValue]
@@ -55,30 +57,41 @@ def _update_cache(
         cache[cache_key] = (now + ttl, result.ok_value)
 
 
-def _hash_sequence(val: tuple[object, ...] | list[object]) -> tuple[object, ...]:
-    return tuple(_make_hashable(item) for item in val)
+def _hash_sequence(
+    val: tuple[object, ...] | list[object], depth: int
+) -> tuple[object, ...]:
+    return tuple(_make_hashable(item, depth) for item in val)
 
 
-def _hash_dict(val: dict[object, object]) -> tuple[object, ...]:
-    items = [(_make_hashable(k), _make_hashable(v)) for k, v in val.items()]
+def _hash_dict(val: dict[object, object], depth: int) -> tuple[object, ...]:
+    items = [
+        (_make_hashable(k, depth), _make_hashable(v, depth)) for k, v in val.items()
+    ]
     items.sort(key=lambda item: (type(item[0]).__name__, repr(item[0])))  # type: ignore[misc]
     return tuple(items)
 
 
-def _hash_set(val: set[object]) -> frozenset[object]:
-    return frozenset(_make_hashable(item) for item in val)
+def _hash_set(val: set[object], depth: int) -> frozenset[object]:
+    return frozenset(_make_hashable(item, depth) for item in val)
 
 
-def _make_hashable(val: object) -> object:
+def _dispatch_hashable(val: object, depth: int) -> object:
     if isinstance(val, (tuple, list)):
-        return _hash_sequence(val)
-    elif isinstance(val, dict):
-        return _hash_dict(val)
-    elif isinstance(val, set):
-        return _hash_set(val)
-    else:
-        hash(val)
-        return val
+        return _hash_sequence(val, depth + 1)
+    if isinstance(val, dict):
+        return _hash_dict(val, depth + 1)
+    if isinstance(val, set):
+        return _hash_set(val, depth + 1)
+    hash(val)
+    return val
+
+
+def _make_hashable(val: object, depth: int = 0) -> object:
+    if depth > MAX_CACHE_KEY_DEPTH:
+        msg = f"Cache key too deeply nested (max depth {MAX_CACHE_KEY_DEPTH})"
+        raise ValueError(msg)
+
+    return _dispatch_hashable(val, depth)
 
 
 def _get_cache_key(

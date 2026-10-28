@@ -290,23 +290,27 @@ class ResilienceOrchestrator(Generic[T]):
             return self._evaluate_adaptive_breaker()
         return self._evaluate_standard_breaker()
 
-    def _record_success_outcome(self, attempt: int) -> None:
-        """Record a successful execution outcome."""
+    def _record_breaker_success(self) -> None:
         if self._adaptive_breaker is not None:
             self._adaptive_breaker.record_success()
         elif self._breaker is not None:
             self._breaker._record_success()
 
+    def _record_success_outcome(self, attempt: int) -> None:
+        """Record a successful execution outcome."""
+        self._record_breaker_success()
         if self._adaptive_retry is not None:
             self._adaptive_retry.record_outcome(attempt, True, 0.0)
 
-    def _record_failure_outcome(self, error: Exception, attempt: int) -> None:
-        """Record a failed execution outcome."""
+    def _record_breaker_failure(self, error: Exception) -> None:
         if self._adaptive_breaker is not None:
             self._adaptive_breaker.record_failure(error)
         elif self._breaker is not None:
             self._breaker._record_failure(error)
 
+    def _record_failure_outcome(self, error: Exception, attempt: int) -> None:
+        """Record a failed execution outcome."""
+        self._record_breaker_failure(error)
         if self._adaptive_retry is not None:
             self._adaptive_retry.record_outcome(attempt, False, 0.0)
 
@@ -376,6 +380,15 @@ class ResilienceOrchestrator(Generic[T]):
             return self._handle_circuit_breaker_open(cb_err, attempt)
         return None
 
+    def _check_cb_res(
+        self, cb_res: Result[T, Exception] | None
+    ) -> tuple[bool, Exception] | Result[T, Exception] | None:
+        if cb_res is not None:
+            if isinstance(cb_res, Err):
+                return False, cb_res.err_value
+            return cb_res
+        return None
+
     async def _process_retry_attempt(
         self,
         attempt: int,
@@ -386,10 +399,9 @@ class ResilienceOrchestrator(Generic[T]):
     ) -> Result[T, Exception] | tuple[bool, Exception]:
         """Process a single retry attempt including circuit breaker check."""
         cb_res = self._check_circuit_breaker_for_attempt(attempt)
-        if cb_res is not None:
-            if isinstance(cb_res, Err):
-                return False, cb_res.err_value
-            return cb_res
+        cb_check = self._check_cb_res(cb_res)
+        if cb_check is not None:
+            return cb_check
 
         result = await self._execute_single_attempt(attempt, fn, *args, **kwargs)
         if isinstance(result, Ok):
@@ -401,6 +413,53 @@ class ResilienceOrchestrator(Generic[T]):
         )
         return should_continue, last_error
 
+    def _evaluate_retry_outcome(
+        self, outcome: Result[T, Exception] | tuple[bool, Exception]
+    ) -> tuple[bool, Exception, Result[T, Exception] | None]:
+        if not isinstance(outcome, tuple):
+            return True, RuntimeError("Success"), outcome
+
+        should_continue, last_error = outcome
+        return not should_continue, last_error, None
+
+    async def _handle_retry_loop_outcome(
+        self,
+        attempt: int,
+        max_attempts: int,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> tuple[bool, Exception, Result[T, Exception] | None]:
+        outcome = await self._process_retry_attempt(
+            attempt, max_attempts, fn, *args, **kwargs
+        )
+        return self._evaluate_retry_outcome(outcome)
+
+    def _check_retry_loop_break(
+        self,
+        is_finished: bool,
+        result: Result[T, Exception] | None,
+    ) -> bool:
+        return result is not None or is_finished
+
+    async def _execute_retry_loop(
+        self,
+        max_attempts: int,
+        fn: Callable[P, Awaitable[T]],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> tuple[Result[T, Exception] | None, Exception]:
+        last_error: Exception = RuntimeError("Execution failed")
+
+        for attempt in range(1, max_attempts + 1):
+            is_finished, last_error, result = await self._handle_retry_loop_outcome(
+                attempt, max_attempts, fn, *args, **kwargs
+            )
+            if self._check_retry_loop_break(is_finished, result):
+                return result, last_error
+
+        return None, last_error
+
     async def _execute_with_retries(
         self,
         max_attempts: int,
@@ -408,18 +467,11 @@ class ResilienceOrchestrator(Generic[T]):
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Result[T, Exception]:
-        last_error: Exception = RuntimeError("Execution failed")
-        for attempt in range(1, max_attempts + 1):
-            outcome = await self._process_retry_attempt(
-                attempt, max_attempts, fn, *args, **kwargs
-            )
-            if not isinstance(outcome, tuple):
-                return outcome
-
-            should_continue, last_error = outcome
-            if not should_continue:
-                break
-
+        result, last_error = await self._execute_retry_loop(
+            max_attempts, fn, *args, **kwargs
+        )
+        if result is not None:
+            return result
         return self._apply_fallback(Err(last_error))
 
     async def _run_fn_with_timeout(
