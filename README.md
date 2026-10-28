@@ -8,7 +8,7 @@
 
 *Launch secure, high-performance Python applications in seconds.*
 
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14%20%7C%203.15-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-D7FF64?style=flat&logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
 [![Type Checked](https://img.shields.io/badge/Type%20Checked-Mypy-blue?style=flat)](http://mypy-lang.org/)

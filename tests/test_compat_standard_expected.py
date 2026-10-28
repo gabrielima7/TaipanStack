@@ -9,6 +9,7 @@ from taipanstack.core.compat import (
     PY312,
     PY313,
     PY314,
+    PY315,
     PY_VERSION,
     PythonFeatures,
     VersionTier,
@@ -46,6 +47,14 @@ class TestVersionConstants:
         """Test PY314 reflects actual Python version."""
         expected = sys.version_info >= (3, 14)
         assert expected == PY314
+
+    def test_compat_standard_compat_py315_constant(self) -> None:
+        """Test PY315 reflects actual Python version and is in __all__."""
+        import taipanstack.core.compat as compat_mod
+
+        expected = sys.version_info >= (3, 15)
+        assert expected == PY315
+        assert "PY315" in compat_mod.__all__
 
 
 class TestVersionTier:
@@ -204,6 +213,32 @@ class TestPythonFeatures:
         with patch("taipanstack.core.compat.PY314", True):
             features = get_features(force_refresh=True)
             assert features.tier == VersionTier.CUTTING_EDGE
+
+    def test_compat_standard_compat_features_mock_315(self) -> None:
+        """Test features reporting when simulated on Python 3.15."""
+        from collections import namedtuple
+
+        version_type = namedtuple("VersionInfo", ["major", "minor", "micro"])
+        mock_version = version_type(3, 15, 0)
+        with (
+            patch("taipanstack.core.compat.PY315", True),
+            patch("taipanstack.core.compat.PY_VERSION", mock_version),
+        ):
+            features = get_features(force_refresh=True)
+            assert features.version == (3, 15, 0)
+            assert features.version_string == "3.15.0"
+            assert features.tier == VersionTier.CUTTING_EDGE
+
+    def test_compat_standard_compat_jit_and_free_threading_pre_313(self) -> None:
+        """Test JIT and free-threading checks when PY313 is False."""
+        from taipanstack.core.compat import (
+            _check_free_threading_available,
+            _check_jit_available,
+        )
+
+        with patch("taipanstack.core.compat.PY313", False):
+            assert _check_jit_available() is False
+            assert _check_free_threading_available() is False
 
     def test_compat_standard_compat_features_language_311(self) -> None:
         """Test language features for Python 3.11."""
