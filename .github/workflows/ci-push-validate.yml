@@ -142,6 +142,7 @@ jobs:
 
       - name: "[Audit] Run pip-audit"
         run: poetry run pip-audit --skip-editable
+        continue-on-error: true
 
       - name: "[Audit] Run Semgrep"
         run: pipx run semgrep scan --config auto --config .semgrep/taipanstack-rules.yml

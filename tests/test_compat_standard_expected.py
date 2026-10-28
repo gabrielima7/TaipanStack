@@ -222,6 +222,7 @@ class TestPythonFeatures:
         mock_version = version_type(3, 15, 0)
         with (
             patch("taipanstack.core.compat.PY315", True),
+            patch("taipanstack.core.compat.PY314", True),
             patch("taipanstack.core.compat.PY_VERSION", mock_version),
         ):
             features = get_features(force_refresh=True)
