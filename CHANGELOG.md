@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Python 3.15 Compatibility**: Added core detection features, matrix testing, and classifier updates for cutting-edge Python 3.15 compatibility.
 - MIT License for legal clarity
 - Comprehensive CONTRIBUTING.md guide
 - CHANGELOG.md following Keep a Changelog format
