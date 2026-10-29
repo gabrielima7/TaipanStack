@@ -10,7 +10,7 @@ hide:
 
 <!-- markdown-link-check-disable -->
 [![CI](https://img.shields.io/github/actions/workflow/status/gabrielima7/TaipanStack/ci-push-validate.yml?branch=main)](https://github.com/gabrielima7/TaipanStack/actions/workflows/ci-push-validate.yml)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14%20%7C%203.15-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=codecov)](https://github.com/gabrielima7/TaipanStack)
 <!-- markdown-link-check-enable -->
 [![PyPI](https://img.shields.io/pypi/v/taipanstack?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/taipanstack/)
