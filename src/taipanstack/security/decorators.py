@@ -38,17 +38,44 @@ def _apply_single_validator(
         ) from e
 
 
+def _process_single_bound_argument(
+    bound: inspect.BoundArguments,
+    param_name: str,
+    validator: Callable[[object], object],
+) -> None:
+    if param_name not in bound.arguments:  # type: ignore[misc]
+        return
+    value = bound.arguments[param_name]  # type: ignore[misc]
+    validated = _apply_single_validator(param_name, value, validator)  # type: ignore[misc]
+    if validated is not None:
+        bound.arguments[param_name] = validated  # type: ignore[misc]
+
+
 def _validate_bound_arguments(
     bound: inspect.BoundArguments,
     validators: dict[str, Callable[[object], object]],
 ) -> None:
     for param_name, validator in validators.items():
-        if param_name not in bound.arguments:  # type: ignore[misc]
-            continue
-        value = bound.arguments[param_name]  # type: ignore[misc]
-        validated = _apply_single_validator(param_name, value, validator)  # type: ignore[misc]
-        if validated is not None:
-            bound.arguments[param_name] = validated  # type: ignore[misc]
+        _process_single_bound_argument(bound, param_name, validator)
+
+
+def _log_guarded_exception(e: Exception, func_name: str) -> None:
+    import logging
+
+    logging.getLogger("taipanstack.security").warning(
+        "Exception caught in %s: %s",
+        func_name,
+        str(e),
+    )
+
+
+def _reraise_guarded_exception(e: Exception, reraise_as: type[Exception]) -> None:
+    if reraise_as == SecurityError:
+        raise SecurityError(
+            str(e),
+            guard_name="guard_exceptions",
+        ) from e
+    raise reraise_as(str(e)) from e
 
 
 def _handle_guarded_exception(
@@ -58,21 +85,10 @@ def _handle_guarded_exception(
     log_errors: bool,
 ) -> None:
     if log_errors:
-        import logging
-
-        logging.getLogger("taipanstack.security").warning(
-            "Exception caught in %s: %s",
-            func_name,
-            str(e),
-        )
+        _log_guarded_exception(e, func_name)
 
     if reraise_as is not None:
-        if reraise_as == SecurityError:
-            raise SecurityError(
-                str(e),
-                guard_name="guard_exceptions",
-            ) from e
-        raise reraise_as(str(e)) from e
+        _reraise_guarded_exception(e, reraise_as)
 
 
 def _check_bound_types(
