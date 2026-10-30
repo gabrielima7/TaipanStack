@@ -343,17 +343,17 @@ class CircuitBreaker:
         except (TypeError, ValueError):
             return 30.0
 
+    def _is_valid_failure_val(self, val: float, now: float) -> bool:
+        return math.isfinite(val) and now - val >= 0
+
     def _calculate_safe_elapsed(
         self, parsed_failure: float | int, safe_timeout: float, now: float
     ) -> float:
         try:
             val = float(parsed_failure)
-            if not math.isfinite(val):
-                return safe_timeout
-            elapsed = now - val
-            if elapsed < 0:
-                return safe_timeout
-            return elapsed
+            if self._is_valid_failure_val(val, now):
+                return now - val
+            return safe_timeout
         except Exception:
             return safe_timeout
 
@@ -401,14 +401,17 @@ class CircuitBreaker:
             return self._transition_to_half_open(elapsed)
         return False, None
 
+    def _is_valid_monotonic_time(self, now: float) -> bool:
+        return isinstance(now, (int, float)) and math.isfinite(now)
+
     def _get_valid_elapsed(self) -> float | None:
         try:
             now = time.monotonic()
+            if self._is_valid_monotonic_time(now):
+                return self._calculate_elapsed_time(now)
+            return None
         except Exception:
             return None
-        if not isinstance(now, (int, float)) or not math.isfinite(now):
-            return None
-        return self._calculate_elapsed_time(now)
 
     def _handle_open_state(
         self,
@@ -445,17 +448,22 @@ class CircuitBreaker:
         with contextlib.suppress(Exception):
             self._state.lock.release()
 
+    def _process_state(
+        self, state: CircuitState
+    ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
+        if state is CircuitState.OPEN:
+            return self._handle_open_state()
+        if state is CircuitState.HALF_OPEN:
+            return self._handle_attempt_half_open(), None
+        return False, None
+
     def _evaluate_state_for_attempt(
         self,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
         state = self._state.state
         if state is CircuitState.CLOSED:
             return True, None
-        if state is CircuitState.OPEN:
-            return self._handle_open_state()
-        if state is CircuitState.HALF_OPEN:
-            return self._handle_attempt_half_open(), None
-        return False, None  # type: ignore[unreachable]
+        return self._process_state(state)
 
     def _should_attempt(self) -> bool:
         """Check if a call should be attempted."""
@@ -565,14 +573,15 @@ class CircuitBreaker:
         else:
             self._state.failure_count += 1
 
+    def _try_get_monotonic(self) -> float:
+        try:
+            return time.monotonic()
+        except Exception:
+            return float("nan")
+
     def _update_failure_metrics(self) -> None:
         self._increment_failure_count()
-
-        try:
-            now = time.monotonic()
-        except Exception:
-            now = float("nan")
-
+        now = self._try_get_monotonic()
         if isinstance(now, (int, float)) and math.isfinite(now):
             self._state.last_failure_time = now
 
@@ -590,23 +599,41 @@ class CircuitBreaker:
         except TypeError:
             return False
 
-    def _record_failure(self, exc: Exception) -> None:
-        """Record a failed call."""
-        if self._is_excluded_exception(exc):
-            return
+    def _process_failure_with_lock(self) -> tuple[CircuitState, CircuitState] | None:
+        self._update_failure_metrics()
+        return self._get_failure_state_change()
 
-        state_change: tuple[CircuitState, CircuitState] | None = None
-
-        if not self._acquire_lock():
-            return
+    def _try_process_failure_change(self) -> tuple[CircuitState, CircuitState] | None:
         try:
-            self._update_failure_metrics()
-            state_change = self._get_failure_state_change()
+            return self._process_failure_with_lock()
         finally:
             self._safe_release()
 
-        if state_change:
-            self._notify_state_change(*state_change)
+    def _execute_failure_record(self) -> None:
+        if self._acquire_lock():
+            state_change = self._try_process_failure_change()
+            if state_change:
+                self._notify_state_change(*state_change)
+
+    def _record_failure(self, exc: Exception) -> None:
+        """Record a failed call."""
+        if not self._is_excluded_exception(exc):
+            self._execute_failure_record()
+
+    def _apply_reset_state(self) -> tuple[CircuitState, CircuitState] | None:
+        old_state = self._state.state
+        state_change = (
+            (old_state, CircuitState.CLOSED)
+            if old_state is not CircuitState.CLOSED
+            else None
+        )
+
+        self._state.state = CircuitState.CLOSED
+        self._state.failure_count = 0
+        self._state.success_count = 0
+        self._state.half_open_attempts = 0
+        logger.info("Circuit %s manually reset", self.name)
+        return state_change
 
     def reset(self) -> None:
         """Reset circuit breaker to closed state."""
@@ -614,15 +641,7 @@ class CircuitBreaker:
         if not self._acquire_lock():
             return
         try:
-            old_state = self._state.state
-            if old_state is not CircuitState.CLOSED:
-                state_change = (old_state, CircuitState.CLOSED)
-
-            self._state.state = CircuitState.CLOSED
-            self._state.failure_count = 0
-            self._state.success_count = 0
-            self._state.half_open_attempts = 0
-            logger.info("Circuit %s manually reset", self.name)
+            state_change = self._apply_reset_state()
         finally:
             self._safe_release()
 
@@ -655,44 +674,40 @@ class CircuitBreaker:
         self._record_success()
         return result
 
-    def _is_valid_half_open_attempts(self) -> bool:
-        """Validate half-open attempts value against corruption."""
-        val = self._state.half_open_attempts
-        if not isinstance(val, (int, float)):
-            return False  # type: ignore[unreachable]
+    def _check_half_open_value(self, val: float | int) -> bool:
         try:
             return math.isfinite(val) and val >= 0
         except Exception:
             return False
 
-    def _safe_decrement_half_open_attempts(self) -> None:
-        """Safely decrement half-open attempts."""
-        if self._state.state is not CircuitState.HALF_OPEN:
-            return
+    def _is_valid_half_open_attempts(self) -> bool:
+        """Validate half-open attempts value against corruption."""
+        val = self._state.half_open_attempts
+        if not isinstance(val, (int, float)):
+            return False  # type: ignore[unreachable]
+        return self._check_half_open_value(val)
 
+    def _apply_half_open_decrement(self) -> None:
         if not self._is_valid_half_open_attempts():
             # Reset if state is corrupted to prevent crash
             self._state.half_open_attempts = 0
-            return
-
-        if self._state.half_open_attempts > 0:
+        elif self._state.half_open_attempts > 0:
             self._state.half_open_attempts -= 1
 
+    def _safe_decrement_half_open_attempts(self) -> None:
+        """Safely decrement half-open attempts."""
+        if self._state.state is CircuitState.HALF_OPEN:
+            self._apply_half_open_decrement()
+
+    def _try_acquire_lock_for_decrement(self) -> bool:
+        try:
+            return self._state.lock.acquire(timeout=0.1)
+        except Exception:
+            return False
+
     def _decrement_half_open(self, is_half_open: bool) -> None:
-        """Decrement half-open attempt count if applicable.
-
-        Args:
-            is_half_open: Whether the circuit was half-open before attempt.
-
-        """
-        if is_half_open:
-            try:
-                acquired = self._state.lock.acquire(timeout=0.1)
-            except Exception:
-                acquired = False
-
-            if not acquired:
-                return
+        """Decrement half-open attempt count if applicable."""
+        if is_half_open and self._try_acquire_lock_for_decrement():
             try:
                 self._safe_decrement_half_open_attempts()
             finally:
@@ -706,30 +721,48 @@ class CircuitBreaker:
         if is_failure:
             self._record_failure(e)
 
+    def _check_should_attempt_or_raise(self) -> None:
+        if not self._should_attempt():
+            raise CircuitBreakerError(
+                f"Circuit {self.name} is open",
+                state=self._state.state,
+            )
+
+    async def _run_coro_and_process(
+        self, func_coro: Callable[..., Awaitable[R]], *args: object, **kwargs: object
+    ) -> R:
+        try:
+            result = await func_coro(*args, **kwargs)
+            return self._process_result(result)
+        except Exception as e:
+            self._handle_exception_in_call(e)
+            raise
+
     def _execute_async_wrapper(
         self,
         func_coro: Callable[P, Awaitable[R]],
     ) -> Callable[P, Awaitable[R]]:
         @functools.wraps(func_coro)
         async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            if not self._should_attempt():
-                raise CircuitBreakerError(
-                    f"Circuit {self.name} is open",
-                    state=self._state.state,
-                )
-
+            self._check_should_attempt_or_raise()
             is_half_open = self._state.state is CircuitState.HALF_OPEN
 
             try:
-                result = await func_coro(*args, **kwargs)
-                return self._process_result(result)
-            except Exception as e:
-                self._handle_exception_in_call(e)
-                raise
+                return await self._run_coro_and_process(func_coro, *args, **kwargs)
             finally:
                 self._decrement_half_open(is_half_open)
 
         return async_wrapper  # type: ignore[misc]
+
+    def _run_sync_and_process(
+        self, func_sync: Callable[..., R], *args: object, **kwargs: object
+    ) -> R:
+        try:
+            result = func_sync(*args, **kwargs)
+            return self._process_result(result)
+        except Exception as e:
+            self._handle_exception_in_call(e)
+            raise
 
     def _execute_sync_wrapper(
         self,
@@ -737,20 +770,11 @@ class CircuitBreaker:
     ) -> Callable[P, R]:
         @functools.wraps(func_sync)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            if not self._should_attempt():
-                raise CircuitBreakerError(
-                    f"Circuit {self.name} is open",
-                    state=self._state.state,
-                )
-
+            self._check_should_attempt_or_raise()
             is_half_open = self._state.state is CircuitState.HALF_OPEN
 
             try:
-                result = func_sync(*args, **kwargs)
-                return self._process_result(result)
-            except Exception as e:
-                self._handle_exception_in_call(e)
-                raise
+                return self._run_sync_and_process(func_sync, *args, **kwargs)
             finally:
                 self._decrement_half_open(is_half_open)
 
