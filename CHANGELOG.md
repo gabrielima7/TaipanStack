@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Python 3.15 Compatibility**: Added deterministic runtime detection (`PY315`), updated package metadata classifiers, and integrated isolated Python 3.15 runners into the CI test matrix.
 - MIT License for legal clarity
 - Comprehensive CONTRIBUTING.md guide
 - CHANGELOG.md following Keep a Changelog format
