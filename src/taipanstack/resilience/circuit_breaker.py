@@ -455,7 +455,7 @@ class CircuitBreaker:
             return self._handle_open_state()
         if state is CircuitState.HALF_OPEN:
             return self._handle_attempt_half_open(), None
-        return False, None  # type: ignore[unreachable]
+        return False, None
 
     def _evaluate_state_for_attempt(
         self,
@@ -603,24 +603,22 @@ class CircuitBreaker:
         self._update_failure_metrics()
         return self._get_failure_state_change()
 
-    def _try_acquire_failure_lock(self, exc: Exception) -> bool:
-        if self._is_excluded_exception(exc):
-            return False
-        return self._acquire_lock()
-
-    def _record_failure(self, exc: Exception) -> None:
-        """Record a failed call."""
-        if not self._try_acquire_failure_lock(exc):
-            return
-
-        state_change: tuple[CircuitState, CircuitState] | None = None
+    def _try_process_failure_change(self) -> tuple[CircuitState, CircuitState] | None:
         try:
-            state_change = self._process_failure_with_lock()
+            return self._process_failure_with_lock()
         finally:
             self._safe_release()
 
-        if state_change:
-            self._notify_state_change(*state_change)
+    def _execute_failure_record(self) -> None:
+        if self._acquire_lock():
+            state_change = self._try_process_failure_change()
+            if state_change:
+                self._notify_state_change(*state_change)
+
+    def _record_failure(self, exc: Exception) -> None:
+        """Record a failed call."""
+        if not self._is_excluded_exception(exc):
+            self._execute_failure_record()
 
     def _apply_reset_state(self) -> tuple[CircuitState, CircuitState] | None:
         old_state = self._state.state
