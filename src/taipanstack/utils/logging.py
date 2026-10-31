@@ -98,7 +98,9 @@ def _redact_list(obj: list[VT], seen: set[int], depth: int = 0) -> list[object]:
     return [_redact(item, seen, depth) for item in obj]
 
 
-def _redact_tuple(obj: tuple[VT, ...], seen: set[int], depth: int = 0) -> tuple[object, ...]:
+def _redact_tuple(
+    obj: tuple[VT, ...], seen: set[int], depth: int = 0
+) -> tuple[object, ...]:
     """Redact a tuple object."""
     seen.add(id(obj))
     return tuple(_redact(item, seen, depth) for item in obj)
@@ -112,7 +114,9 @@ def _is_unhashable(item: object) -> bool:
         return True
 
 
-def _redact_set(obj: set[VT], seen: set[int], depth: int = 0) -> set[object] | list[object]:
+def _redact_set(
+    obj: set[VT], seen: set[int], depth: int = 0
+) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
     redacted_items = [_redact(item, seen, depth) for item in obj]
