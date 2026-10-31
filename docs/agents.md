@@ -6,7 +6,7 @@ This document provides the context, architectural rules, and strict coding stand
 
 - **Name:** TaipanStack
 - **Goal:** A modern, secure, and high-performance Python foundation for production-grade applications.
-- **Core Stack:** Python 3.11+ (up to 3.14), Pydantic v2, Orjson, Uvloop, Structlog.
+- **Core Stack:** Python 3.11+ (up to 3.15), Pydantic v2, Orjson, Uvloop, Structlog.
 
 ## 2. Coding Standards & Strict Typing
 

@@ -93,7 +93,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ### Prerequisites
 
-- **Python 3.11+** (supports 3.11, 3.12, 3.13, 3.14)
+- **Python 3.11+** (supports 3.11, 3.12, 3.13, 3.14, 3.15)
 - **Poetry** ([install guide](https://python-poetry.org/docs/#installation))
 
 ### Installation
@@ -209,7 +209,7 @@ TaipanStack integrates security and quality at every level:
 
 ```yaml
 # Runs on every push/PR
-✓ Test Matrix     → Python 3.11-3.14 × (Ubuntu, macOS, Windows)
+✓ Test Matrix     → Python 3.11-3.15 × (Ubuntu, macOS, Windows)
 ✓ Linux Distros   → Ubuntu, Debian, Fedora, openSUSE, Arch, Alpine
 ✓ Code Quality    → Ruff check & format
 ✓ Type Check      → Mypy strict mode
