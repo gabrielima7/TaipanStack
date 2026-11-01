@@ -10,6 +10,7 @@ Let the state space $S = \{ \text{CLOSED}, \text{OPEN}, \text{HALF\_OPEN} \}$.
 Let the transition function $\delta : S \times E \rightarrow S$, where $E$ is the set of events.
 
 The events $E$ include:
+
 * $e_{fail}$: Operation failure (raises an exception not in `excluded_exceptions`).
 * $e_{success}$: Operation success.
 * $e_{timeout}$: The recovery timeout expires.
@@ -32,16 +33,19 @@ TaipanStack's security guards are designed with strict algorithmic efficiency bo
 Let $N$ be the character length of the input string payload.
 
 ### Command Injection Guard (`guard_command_injection`)
+
 * **Operation:** Iterates over the string checking against a pre-compiled set of static patterns via `re.search` (implemented internally in C).
 * **Complexity:** $O(N)$. The regex engine is restricted from using expensive backtracking. At worst, it scans the entire string once per checked pattern.
 * **Proof of bounds:** Given a maximum environment variable or argument length of $M_{max}$, the operations are strictly bounded to $k \cdot c \cdot M_{max}$, where $k$ is the number of static patterns and $c$ is a constant. Thus, it operates in $O(N)$ time and $O(1)$ auxiliary space.
 
 ### Path Traversal Guard (`guard_path_traversal`)
+
 * **Operation:** Resolves the path using `os.path.abspath` and string containment checks.
 * **Complexity:** $O(N)$. Resolving the absolute path involves traversing the path components, proportional to the length of the string.
 * **Proof of bounds:** The string checks (e.g., checking for `..` or `~`) scan the input linearly. Memory usage is bounded by the string copy, rendering space complexity $O(N)$.
 
 ### SSRF Guard (`guard_ssrf`)
+
 * **Operation:** Parses the URL, resolves the hostname to an IP address, and checks if the IP belongs to a reserved or private subnet space.
 * **Complexity:** $O(N)$ for string parsing (URL extraction), plus $O(1)$ network resolution time (assuming a constant timeout bound), and $O(1)$ IP range inclusion checks.
 * **Proof of bounds:** The subnet verification uses bitwise operations on 32-bit (IPv4) or 128-bit (IPv6) integers, operating in $O(1)$ time regardless of input size.
