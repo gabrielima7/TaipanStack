@@ -42,10 +42,12 @@
 **Independent Test**: `poetry run pytest tests/test_compat_standard_expected.py -v --cov=taipanstack.core.compat --cov-report=term-missing` and `poetry run mypy src/taipanstack/core/compat.py --strict`
 
 ### Tests for User Story 1 🧪
+
 - [X] T004 [US1] Add unit test `test_compat_standard_compat_py315_constant` and `__all__` assertion in `tests/test_compat_standard_expected.py`
 - [X] T005 [US1] Add simulated Python 3.15 mock test `test_compat_standard_compat_features_mock_315` in `tests/test_compat_standard_expected.py`
 
 ### Implementation for User Story 1
+
 - [X] T006 [US1] Declare constant `PY315: Final[bool] = PY_VERSION >= (3, 15)` and add `"PY315"` to `__all__` in `src/taipanstack/core/compat.py`
 - [X] T007 [US1] Run unit tests and strict type checking to verify 100% branch and statement coverage (`poetry run pytest tests/test_compat_standard_expected.py -v --cov=taipanstack.core.compat --cov-report=term-missing` and `poetry run mypy src/taipanstack/core/compat.py --strict`)
 
@@ -60,6 +62,7 @@
 **Independent Test**: `poetry check` passes cleanly, and `git diff` confirms exact badge text in `README.md`.
 
 ### Implementation for User Story 2
+
 - [X] T008 [P] [US2] Append `"Programming Language :: Python :: 3.15"` to `classifiers` array under `[project]` in `pyproject.toml`
 - [X] T009 [P] [US2] Update Python version shield badge to include `3.15` in `README.md`
 - [X] T010 [US2] Validate packaging metadata and configuration with `poetry check`
@@ -75,6 +78,7 @@
 **Independent Test**: YAML syntax validation passes, and matrix includes `"3.15"`.
 
 ### Implementation for User Story 3
+
 - [X] T011 [US3] Add `"3.15"` to `strategy.matrix.python-version` with `continue-on-error: true` in `.github/workflows/ci-push-validate.yml`
 - [X] T012 [US3] Validate CI workflow YAML syntax and matrix configuration in `.github/workflows/ci-push-validate.yml`
 
@@ -96,6 +100,7 @@
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
+
 - **Setup (Phase 1)**: No dependencies - starts immediately.
 - **Foundational (Phase 2)**: Depends on Setup - verifies baseline test coverage.
 - **User Story 1 (Phase 3)**: Core runtime compatibility and test coverage. (MVP)
@@ -104,6 +109,7 @@
 - **Polish (Phase 6)**: Final verification across all phases (`make all`, mkdocs).
 
 ### Parallel Opportunities
+
 - T008 (`pyproject.toml`) and T009 (`README.md`) can execute in parallel.
 - US2 and US3 can proceed concurrently once US1 completes.
 
@@ -112,12 +118,14 @@
 ## Implementation Strategy
 
 ### MVP First (User Story 1 Only)
+
 1. Complete Phase 1: Setup (T001, T002)
 2. Complete Phase 2: Foundational (T003)
 3. Complete Phase 3: User Story 1 (T004-T007)
 4. **Validate MVP**: `poetry run pytest tests/test_compat_standard_expected.py -v --cov=taipanstack.core.compat`
 
 ### Incremental Delivery
+
 1. Core runtime detection (`src/taipanstack/core/compat.py`) + tests -> MVP!
 2. Packaging metadata (`pyproject.toml`) + `README.md` -> PyPI readiness
 3. CI test matrix (`.github/workflows/ci-push-validate.yml`) -> Automated verification

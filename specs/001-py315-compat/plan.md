@@ -67,13 +67,13 @@ README.md                # Update Python version badge
 
 ## Phasing & Verification Strategy
 
-- **Phase 1**: Core Runtime Detection (`src/taipanstack/core/compat.py`)
-  - Checkpoint 1: `poetry run ruff check src/taipanstack/core/compat.py`, `poetry run mypy src/taipanstack/core/compat.py --strict`
-- **Phase 2**: Test Suite Expansion & Mock Verification (`tests/test_compat_standard_expected.py`)
-  - Checkpoint 2: `poetry run pytest tests/test_compat_standard_expected.py -v --cov=taipanstack.core.compat --cov-report=term-missing`
-- **Phase 3**: Package Metadata & Documentation (`pyproject.toml`, `README.md`)
-  - Checkpoint 3: `poetry check`, `git diff pyproject.toml README.md`
-- **Phase 4**: CI Workflow Configuration (`.github/workflows/ci-push-validate.yml`)
-  - Checkpoint 4: YAML syntax validation
-- **Phase 5**: Full Quality Gate Check
-  - Checkpoint 5: `make all`, `NO_MKDOCS_2_WARNING=1 poetry run mkdocs build --strict`
+* **Phase 1**: Core Runtime Detection (`src/taipanstack/core/compat.py`)
+  * Checkpoint 1: `poetry run ruff check src/taipanstack/core/compat.py`, `poetry run mypy src/taipanstack/core/compat.py --strict`
+* **Phase 2**: Test Suite Expansion & Mock Verification (`tests/test_compat_standard_expected.py`)
+  * Checkpoint 2: `poetry run pytest tests/test_compat_standard_expected.py -v --cov=taipanstack.core.compat --cov-report=term-missing`
+* **Phase 3**: Package Metadata & Documentation (`pyproject.toml`, `README.md`)
+  * Checkpoint 3: `poetry check`, `git diff pyproject.toml README.md`
+* **Phase 4**: CI Workflow Configuration (`.github/workflows/ci-push-validate.yml`)
+  * Checkpoint 4: YAML syntax validation
+* **Phase 5**: Full Quality Gate Check
+  * Checkpoint 5: `make all`, `NO_MKDOCS_2_WARNING=1 poetry run mkdocs build --strict`
