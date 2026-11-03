@@ -1,0 +1,31 @@
+⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠧ Generating mutants⠇ Generating mutants⠧ Generating mutants⠇ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠏ Generating mutants⠋ Generating mutants⠏ Generating mutants⠋ Generating mutants⠸ Generating mutants⠼ Generating mutants⠙ Generating mutants⠹ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠏ Generating mutants⠋ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠴ Generating mutants⠦ Generating mutants⠏ Generating mutants⠋ Generating mutants⠴ Generating mutants⠦ Generating mutants⠙ Generating mutants⠹ Generating mutants⠧ Generating mutants⠇ Generating mutants⠸ Generating mutants⠼ Generating mutants⠧ Generating mutants⠇ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠏ Generating mutants⠋ Generating mutants⠏ Generating mutants⠋ Generating mutants⠧ Generating mutants⠇ Generating mutants⠙ Generating mutants⠹ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠸ Generating mutants⠼ Generating mutants⠏ Generating mutants⠋ Generating mutants⠴ Generating mutants⠦ Generating mutants⠸ Generating mutants⠼ Generating mutants⠴ Generating mutants⠦ Generating mutants⠧ Generating mutants⠇ Generating mutants⠙ Generating mutants⠹ Generating mutants⠧ Generating mutants⠇ Generating mutants⠸ Generating mutants⠼ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants⠏ Generating mutants⠋ Generating mutants⠙ Generating mutants⠹ Generating mutants
+    done in 11786ms (52 files mutated, 0 ignored, 0 unmodified)
+⠧ Running stats     ⠇ Running stats⠏ Running stats⠋ Running stats⠙ Running stats⠹ Running stats⠸ Running stats⠼ Running stats⠴ Running stats⠦ Running stats⠧ Running stats⠇ Running stats⠏ Running stats⠋ Running stats⠙ Running stats⠹ Running stats⠸ Running stats⠼ Running stats⠴ Running stats⠦ Running stats⠧ Running stats⠇ Running stats⠏ Running stats⠋ Running stats⠙ Running stats⠹ Running stats⠸ Running stats⠼ Running stats⠴ Running stats⠦ Running stats⠧ Running stats⠇ Running stats⠏ Running stats⠋ Running stats
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /app/mutants
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, Faker-40.31.0, anyio-4.14.2, asyncio-1.4.0, hypothesis-6.170.14, xdist-3.8.0, timeout-2.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+timeout: 60.0s
+timeout method: signal
+timeout func_only: False
+collected 1229 items / 1 error
+
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/test_taipanstack_script_expected.py __________
+ImportError while importing test module '/app/mutants/tests/test_taipanstack_script_expected.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/jules/.pyenv/versions/3.12.13/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../tests/test_taipanstack_script_expected.py:11: in <module>
+    import taipanstack_bootstrapper as taipanstack
+E   ModuleNotFoundError: No module named 'taipanstack_bootstrapper'
+=========================== short test summary info ============================
+ERROR tests/test_taipanstack_script_expected.py
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 8.27s ===============================
+failed to collect stats. runner returned 1
