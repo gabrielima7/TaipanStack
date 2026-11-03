@@ -2764,10 +2764,12 @@
 <p>The <code>CircuitBreaker</code> operates as a deterministic finite state machine (FSM).</p>
 <p>Let the state space $S = { \text{CLOSED}, \text{OPEN}, \text{HALF_OPEN} }$.
 Let the transition function $\delta : S \times E \rightarrow S$, where $E$ is the set of events.</p>
-<p>The events $E$ include:
-* $e_{fail}$: Operation failure (raises an exception not in <code>excluded_exceptions</code>).
-* $e_{success}$: Operation success.
-* $e_{timeout}$: The recovery timeout expires.</p>
+<p>The events $E$ include:</p>
+<ul>
+<li>$e_{fail}$: Operation failure (raises an exception not in <code>excluded_exceptions</code>).</li>
+<li>$e_{success}$: Operation success.</li>
+<li>$e_{timeout}$: The recovery timeout expires.</li>
+</ul>
 <p><strong>Transition Rules ($\delta$):</strong></p>
 <ol>
 <li>$\delta(\text{CLOSED}, e_{fail}) = \text{OPEN}$ iff the failure count $f_c \ge F_{thresh}$ (Failure Threshold).</li>
