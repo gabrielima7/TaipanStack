@@ -82,6 +82,8 @@ TaipanStack provides observability utilities for production applications.
 
 ## Circuit Breaker (Shim)
 
+> **Deprecated:** New code should import resilience modules directly from `taipanstack.resilience`.
+
 ::: taipanstack.utils.circuit_breaker
     options:
       show_root_heading: false
@@ -91,6 +93,8 @@ TaipanStack provides observability utilities for production applications.
 
 ## Resilience (Shim)
 
+> **Deprecated:** New code should import resilience modules directly from `taipanstack.resilience`.
+
 ::: taipanstack.utils.resilience
     options:
       show_root_heading: false
@@ -99,6 +103,8 @@ TaipanStack provides observability utilities for production applications.
 ---
 
 ## Retry (Shim)
+
+> **Deprecated:** New code should import resilience modules directly from `taipanstack.resilience`.
 
 ::: taipanstack.utils.retry
     options:
