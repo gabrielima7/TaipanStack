@@ -686,13 +686,18 @@ class CircuitBreaker:
 
         """
         if is_half_open:
-            try:
-                acquired = self._state.lock.acquire(timeout=0.1)
-            except Exception:
-                acquired = False
+            acquired = False
+            with contextlib.suppress(Exception):
+                # Wait up to 1 second for the lock during cleanup to prevent starvation
+                acquired = self._state.lock.acquire(timeout=1.0)
 
             if not acquired:
+                # Fallback: forcefully decrement to avoid permanent starvation
+                # due to prolonged lock contention.
+                with contextlib.suppress(Exception):
+                    self._safe_decrement_half_open_attempts()
                 return
+
             try:
                 self._safe_decrement_half_open_attempts()
             finally:
