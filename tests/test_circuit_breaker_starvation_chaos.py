@@ -28,6 +28,7 @@ def test_circuit_breaker_half_open_starvation_chaos():
 
     def worker():
         import contextlib
+
         with contextlib.suppress(Exception):
             delayed_success()
 
