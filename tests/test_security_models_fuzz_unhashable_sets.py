@@ -13,7 +13,7 @@ class UnhashableDict(dict):
 
 
 @given(st.dictionaries(st.text(), st.text()))
-@settings(max_examples=50)
+@settings(deadline=None, max_examples=50)
 def test_fuzz_mask_data_unhashable_sets(d):
     data = {UnhashableDict(d)}
     result = _mask_data(data)

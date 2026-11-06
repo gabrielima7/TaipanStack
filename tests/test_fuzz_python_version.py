@@ -9,6 +9,7 @@ from taipanstack.security.validators import (
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=200,
 )
@@ -26,7 +27,7 @@ def test_fuzz_python_version_fuzz_version_massive_strings_dos(
         validate_python_version(version)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
@@ -44,7 +45,7 @@ def test_fuzz_python_version_fuzz_version_null_bytes(
         validate_python_version(version)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(

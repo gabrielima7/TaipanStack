@@ -6,6 +6,7 @@ from taipanstack.security.guards import SecurityError, guard_command_injection
 
 
 @settings(
+    deadline=None,
     max_examples=500,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
 )

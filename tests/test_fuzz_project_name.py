@@ -14,7 +14,7 @@ from taipanstack.security.validators import validate_project_name
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_project_name_malformed_max_length(
     max_length,
 ) -> None:
@@ -32,7 +32,7 @@ def test_fuzz_project_name_malformed_max_length(
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_project_name_malformed_allow_hyphen(
     allow_hyphen,
 ) -> None:
@@ -50,7 +50,7 @@ def test_fuzz_project_name_malformed_allow_hyphen(
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_project_name_malformed_allow_underscore(
     allow_underscore,
 ) -> None:

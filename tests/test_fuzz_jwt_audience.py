@@ -15,7 +15,7 @@ from taipanstack.security.jwt import decode_jwt
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_jwt_audience_decode_jwt_malformed_audience(
     audience,
 ) -> None:

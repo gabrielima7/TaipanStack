@@ -86,7 +86,7 @@ def _redact_mapping(
         k: (
             REDACTED_VALUE
             if _is_sensitive(k, _SENSITIVE_KEY_REGEX)
-            else _redact(v, seen, depth)
+            else _redact(v, seen, depth + 1)
         )
         for k, v in obj.items()
     }
@@ -95,7 +95,7 @@ def _redact_mapping(
 def _redact_list(obj: list[VT], seen: set[int], depth: int = 0) -> list[object]:
     """Redact a list object."""
     seen.add(id(obj))
-    return [_redact(item, seen, depth) for item in obj]
+    return [_redact(item, seen, depth + 1) for item in obj]
 
 
 def _redact_tuple(
@@ -103,7 +103,7 @@ def _redact_tuple(
 ) -> tuple[object, ...]:
     """Redact a tuple object."""
     seen.add(id(obj))
-    return tuple(_redact(item, seen, depth) for item in obj)
+    return tuple(_redact(item, seen, depth + 1) for item in obj)
 
 
 def _is_unhashable(item: object) -> bool:
@@ -119,7 +119,7 @@ def _redact_set(
 ) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
-    redacted_items = [_redact(item, seen, depth) for item in obj]
+    redacted_items = [_redact(item, seen, depth + 1) for item in obj]
     if any(_is_unhashable(item) for item in redacted_items):
         return redacted_items
     return set(redacted_items)
@@ -139,9 +139,11 @@ def _redact_iterable(obj: object, seen: set[int], depth: int = 0) -> object:
 def _redact_collection(obj: object, seen: set[int], depth: int = 0) -> object:
     """Dispatch redaction based on collection type."""
     if isinstance(obj, (dict, MutableMapping)):
-        return _redact_mapping(cast(MutableMapping[object, object], obj), seen, depth)
+        return _redact_mapping(
+            cast(MutableMapping[object, object], obj), seen, depth + 1
+        )
 
-    return _redact_iterable(obj, seen, depth)
+    return _redact_iterable(obj, seen, depth + 1)
 
 
 def _redact(obj: object, seen: set[int] | None = None, depth: int = 0) -> object:
@@ -169,7 +171,7 @@ def _redact(obj: object, seen: set[int] | None = None, depth: int = 0) -> object
     if id(obj) in seen:
         return REDACTED_VALUE
 
-    return _redact_collection(obj, seen, depth + 1)
+    return _redact_collection(obj, seen, depth)
 
 
 def _redact_dict(d: MutableMapping[str, object]) -> None:

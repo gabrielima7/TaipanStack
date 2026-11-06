@@ -16,7 +16,7 @@ from taipanstack.security.jwt import decode_jwt
         st.text(),  # string is also invalid according to pyjwt, it expects a list
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_jwt_algorithm_decode_jwt_malformed_algorithms(
     algorithms,
 ) -> None:

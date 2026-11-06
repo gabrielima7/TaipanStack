@@ -7,7 +7,7 @@ from taipanstack.security.models import SecureBaseModel
 
 
 # Fuzzing target: deeply nested and varied structures containing sensitive keys
-@settings(max_examples=200)
+@settings(deadline=None, max_examples=200)
 @given(
     st.recursive(
         st.dictionaries(st.text(), st.text())

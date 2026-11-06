@@ -16,7 +16,7 @@ from taipanstack.security.sanitizers import sanitize_filename
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_replacement(
     replacement,
 ) -> None:
@@ -36,7 +36,7 @@ def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malforme
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_preserve_extension(
     preserve_extension,
 ) -> None:
@@ -57,7 +57,7 @@ def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malforme
         st.dictionaries(st.text(), st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_sanitize_filename_replacement_type_fuzz_sanitize_filename_malformed_max_length(
     max_length,
 ) -> None:

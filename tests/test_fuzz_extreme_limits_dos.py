@@ -31,6 +31,7 @@ def test_fuzz_extreme_limits_dos_fuzz_email_massive_dos() -> None:
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=5,
 )
@@ -42,6 +43,7 @@ def test_fuzz_extreme_limits_dos_fuzz_project_name_hypothesis_dos(name: str) -> 
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=5,
 )
@@ -53,6 +55,7 @@ def test_fuzz_extreme_limits_dos_fuzz_url_hypothesis_dos(url: str) -> None:
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=5,
 )

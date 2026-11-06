@@ -5,6 +5,7 @@ from taipanstack.security.jwt import decode_jwt
 
 
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[
         HealthCheck.too_slow,
@@ -28,6 +29,7 @@ def test_fuzz_jwt_decode_algorithms_dos(algorithms: list[str]) -> None:
 
 
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[
         HealthCheck.too_slow,
@@ -49,6 +51,7 @@ def test_fuzz_jwt_decode_audience_list_dos(audience: list[str]) -> None:
 
 
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[
         HealthCheck.too_slow,

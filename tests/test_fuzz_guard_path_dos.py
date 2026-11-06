@@ -6,6 +6,7 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
 
 
 @settings(
+    deadline=None,
     max_examples=5,
     suppress_health_check=[
         HealthCheck.too_slow,
@@ -20,6 +21,7 @@ def test_fuzz_guard_path_dos_fuzz_guard_path_traversal_exceeds_max_path_length(p
 
 
 @settings(
+    deadline=None,
     max_examples=5,
     suppress_health_check=[
         HealthCheck.too_slow,

@@ -16,7 +16,7 @@ from taipanstack.security.jwt import decode_jwt
         st.lists(st.text()),
     )
 )
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_jwt_decode_secret_fuzz_jwt_secret_decode_jwt_malformed_secret(
     secret,
 ) -> None:

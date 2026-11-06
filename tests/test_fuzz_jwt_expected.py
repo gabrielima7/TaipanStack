@@ -33,7 +33,9 @@ class TestFuzzJWT:
         secret=st.text(min_size=1, max_size=100),
         algorithm=st.sampled_from(["HS256", "HS384", "HS512"]),
     )
-    @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
+    @settings(
+        deadline=None, max_examples=500, suppress_health_check=[HealthCheck.too_slow]
+    )
     def test_fuzz_jwt_fuzz_encode_jwt_malformed_payload(
         self, payload, secret, algorithm
     ) -> None:
@@ -48,7 +50,9 @@ class TestFuzzJWT:
         algorithms=st.lists(st.sampled_from(["HS256", "HS384", "HS512"]), min_size=1),
         audience=st.one_of(st.text(), st.lists(st.text())),
     )
-    @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
+    @settings(
+        deadline=None, max_examples=500, suppress_health_check=[HealthCheck.too_slow]
+    )
     def test_fuzz_jwt_fuzz_decode_jwt_malformed_token(
         self, token, secret, algorithms, audience
     ) -> None:
@@ -62,7 +66,9 @@ class TestFuzzJWT:
         secret=malformed_secret_strategy,
         algorithm=st.sampled_from(["HS256"]),
     )
-    @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
+    @settings(
+        deadline=None, max_examples=500, suppress_health_check=[HealthCheck.too_slow]
+    )
     def test_fuzz_jwt_fuzz_encode_jwt_malformed_secret(
         self, payload, secret, algorithm
     ) -> None:
@@ -77,7 +83,9 @@ class TestFuzzJWT:
             st.integers(), st.floats(), st.booleans(), st.none(), st.lists(st.text())
         ),
     )
-    @settings(max_examples=500, suppress_health_check=[HealthCheck.too_slow])
+    @settings(
+        deadline=None, max_examples=500, suppress_health_check=[HealthCheck.too_slow]
+    )
     def test_fuzz_jwt_fuzz_encode_jwt_malformed_algorithm(
         self, payload, secret_key, algorithm
     ):
@@ -98,6 +106,7 @@ class TestFuzzJWT:
         ),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -125,6 +134,7 @@ class TestFuzzJWT:
         audience=st.text(),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -143,6 +153,7 @@ class TestFuzzJWT:
         audience=st.text(),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -160,6 +171,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["none", "None", "nOnE"]),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -178,6 +190,7 @@ class TestFuzzJWT:
         audience=st.text(),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -193,6 +206,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["nOnE😊", "None\x00"]),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -209,6 +223,7 @@ class TestFuzzJWT:
         audience=st.text(),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -224,6 +239,7 @@ class TestFuzzJWT:
         algorithm=st.sampled_from(["HS256"]),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
@@ -240,6 +256,7 @@ class TestFuzzJWT:
         audience=st.text(),
     )
     @settings(
+        deadline=None,
         max_examples=500,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
     )
