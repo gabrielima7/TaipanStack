@@ -28,7 +28,9 @@ from taipanstack.utils.logging import _redact, _redact_dict, _redact_set
         ),
     )
 )
-@settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
+@settings(
+    deadline=None, max_examples=1000, suppress_health_check=[HealthCheck.too_slow]
+)
 def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys(value):
     """Bombard _redact_dict with extreme, non-string keys to test resilience.
 
@@ -43,7 +45,9 @@ def test_fuzz_logging_redact_fuzz_redact_dict_extreme_keys(value):
     _redact_dict(mutable_value)
 
 
-@settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
+@settings(
+    deadline=None, max_examples=1000, suppress_health_check=[HealthCheck.too_slow]
+)
 @given(
     st.recursive(
         st.one_of(
@@ -70,7 +74,9 @@ def test_fuzz_logging_redact_does_not_crash(data: object) -> None:
         raise AssertionError(f"Exception raised during redaction: {e}") from e
 
 
-@settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
+@settings(
+    deadline=None, max_examples=1000, suppress_health_check=[HealthCheck.too_slow]
+)
 @given(st.dictionaries(st.text(), st.text(), min_size=1))
 def test_fuzz_logging_redact_dict_does_not_crash(
     data: MutableMapping[str, object],

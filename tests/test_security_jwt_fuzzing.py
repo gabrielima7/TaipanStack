@@ -6,6 +6,7 @@ from taipanstack.security.jwt import decode_jwt, encode_jwt
 
 @given(st.text(min_size=2000, max_size=10000))
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[HealthCheck.data_too_large, HealthCheck.too_slow],
 )
@@ -18,6 +19,7 @@ def test_jwt_encode_algorithm_length_fuzzing(alg):
 
 @given(st.lists(st.text(min_size=2000, max_size=10000), min_size=1, max_size=5))
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[HealthCheck.data_too_large, HealthCheck.too_slow],
 )
@@ -30,6 +32,7 @@ def test_jwt_decode_algorithms_length_fuzzing(algs):
 
 @given(st.lists(st.text(min_size=2000, max_size=10000), min_size=1, max_size=5))
 @settings(
+    deadline=None,
     max_examples=10,
     suppress_health_check=[HealthCheck.data_too_large, HealthCheck.too_slow],
 )

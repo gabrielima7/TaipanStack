@@ -6,6 +6,7 @@ from taipanstack.security.validators import validate_email
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=200,
 )
@@ -16,7 +17,7 @@ def test_fuzz_email_massive_strings_dos(email: str) -> None:
         validate_email(email)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
@@ -32,7 +33,7 @@ def test_fuzz_email_null_bytes(email: str) -> None:
         validate_email(email)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(

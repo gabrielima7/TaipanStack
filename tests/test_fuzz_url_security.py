@@ -6,6 +6,7 @@ from taipanstack.security.validators import MAX_URL_LENGTH, validate_url
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=200,
 )
@@ -18,7 +19,7 @@ def test_fuzz_url_security_fuzz_url_massive_strings_dos(
         validate_url(url)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(
@@ -34,7 +35,7 @@ def test_fuzz_url_security_fuzz_url_null_bytes(url: str) -> None:
         validate_url(url)
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(

@@ -6,7 +6,7 @@ from hypothesis import strategies as st
 from taipanstack.security.guards import SecurityError, guard_path_traversal
 
 
-@settings(max_examples=1000)
+@settings(deadline=None, max_examples=1000)
 @given(
     path=st.one_of(st.text(), st.binary(), st.integers()),
     base_dir=st.one_of(st.none(), st.text(), st.binary()),

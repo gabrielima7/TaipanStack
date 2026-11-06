@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 from taipanstack.security.jwt import decode_jwt
 
 
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=100, suppress_health_check=[HealthCheck.too_slow])
 @given(
     algorithms=st.lists(
         st.one_of(

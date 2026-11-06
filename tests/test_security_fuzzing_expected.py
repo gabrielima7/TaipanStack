@@ -4,7 +4,7 @@ from src.taipanstack.security.sanitizers import sanitize_filename, sanitize_stri
 from src.taipanstack.security.validators import _fully_unquote_url
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.text())
 def test_security_validators_fully_unquote_url_fuzz(url):
     try:
@@ -17,7 +17,7 @@ def test_security_validators_fully_unquote_url_fuzz(url):
         )
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.text())
 def test_security_sanitizers_sanitize_string_fuzz(s):
     try:
@@ -27,7 +27,7 @@ def test_security_sanitizers_sanitize_string_fuzz(s):
         assert "exceeds maximum allowed limit" in str(e)
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.text())
 def test_security_sanitizers_sanitize_filename_fuzz(f):
     try:

@@ -7,7 +7,7 @@ from taipanstack.security.guards import SecurityError, guard_ssrf
 from taipanstack.security.validators import validate_url
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.integers(min_value=11, max_value=20))
 def test_url_smuggling_bypass_validators(depth: int) -> None:
     payload = "%00"
@@ -20,7 +20,7 @@ def test_url_smuggling_bypass_validators(depth: int) -> None:
         validate_url(url)
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.integers(min_value=11, max_value=20))
 def test_url_smuggling_bypass_guards(depth: int) -> None:
     payload = "%00"

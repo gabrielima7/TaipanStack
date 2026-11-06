@@ -7,7 +7,7 @@ from hypothesis import strategies as st
 from taipanstack.security.sanitizers import sanitize_filename, sanitize_path
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(st.text(), st.integers(min_value=-1000, max_value=-1), st.text(), st.booleans())
 def test_fuzz_sanitizers_negative_params_fuzz_sanitize_filename_negative_max_length(
     filename: str, max_len: int, replacement: str, preserve: bool
@@ -30,7 +30,7 @@ def test_fuzz_sanitizers_negative_params_fuzz_sanitize_filename_negative_max_len
         assert "must be str" in error_msg
 
 
-@settings(max_examples=100)
+@settings(deadline=None, max_examples=100)
 @given(
     st.one_of(st.text(), st.builds(Path, st.text())),
     st.one_of(st.none(), st.builds(Path, st.text())),

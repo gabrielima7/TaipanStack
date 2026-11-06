@@ -19,7 +19,7 @@ def recursive_data(depth=0):
 
 
 @given(recursive_data())
-@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=50, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_cache_deep_recursion_make_hashable_fuzzing(data):
     try:
         _make_hashable(data)

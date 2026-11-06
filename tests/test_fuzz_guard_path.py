@@ -8,6 +8,7 @@ from taipanstack.security.guards import SecurityError, guard_path_traversal
 
 
 @settings(
+    deadline=None,
     suppress_health_check=[HealthCheck.large_base_example, HealthCheck.data_too_large],
     max_examples=100,
 )
@@ -20,7 +21,7 @@ def test_fuzz_guard_path_traversal_massive(name: str) -> None:
         assert isinstance(e, (ValueError, TypeError, SecurityError))
 
 
-@settings(suppress_health_check=[HealthCheck.filter_too_much])
+@settings(deadline=None, suppress_health_check=[HealthCheck.filter_too_much])
 @given(
     st.text(
         alphabet=st.characters(

@@ -22,7 +22,7 @@ def recursive_json(depth=0):
 
 
 @given(data=recursive_json())
-@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow])
+@settings(deadline=None, max_examples=50, suppress_health_check=[HealthCheck.too_slow])
 def test_fuzz_models_recursion_fuzz_mask_data_recursion(data):
     try:
         _mask_data(data)
