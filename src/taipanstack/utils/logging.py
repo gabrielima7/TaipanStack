@@ -144,6 +144,14 @@ def _redact_collection(obj: object, seen: set[int], depth: int = 0) -> object:
     return _redact_iterable(obj, seen, depth)
 
 
+def _check_redact_early_returns(obj: object, depth: int) -> tuple[bool, object]:
+    if depth > MAX_REDACT_DEPTH:
+        return True, MAX_DEPTH_VALUE
+    if _SENSITIVE_KEY_REGEX is None:
+        return True, obj
+    return False, obj
+
+
 def _redact(obj: object, seen: set[int] | None = None, depth: int = 0) -> object:
     """Redact sensitive data recursively with circular reference protection.
 
@@ -156,20 +164,17 @@ def _redact(obj: object, seen: set[int] | None = None, depth: int = 0) -> object
         A new object with sensitive data redacted.
 
     """
-    if depth > MAX_REDACT_DEPTH:
-        return MAX_DEPTH_VALUE
+    should_return, val = _check_redact_early_returns(obj, depth)
+    if should_return:
+        return val
 
-    if _SENSITIVE_KEY_REGEX is None:
-        return obj
-
-    if seen is None:
-        seen = set()
+    seen_set = set() if seen is None else seen
 
     # Detect circular references
-    if id(obj) in seen:
+    if id(obj) in seen_set:
         return REDACTED_VALUE
 
-    return _redact_collection(obj, seen, depth + 1)
+    return _redact_collection(obj, seen_set, depth + 1)
 
 
 def _redact_dict(d: MutableMapping[str, object]) -> None:
