@@ -339,8 +339,8 @@ class CircuitBreaker:
 
     def _get_safe_timeout(self) -> float:
         try:
-            return float(self.config.timeout)
-        except (TypeError, ValueError):
+            return float(getattr(self, "config", None).timeout)
+        except Exception:
             return 30.0
 
     def _calculate_safe_elapsed(
@@ -396,7 +396,11 @@ class CircuitBreaker:
         self,
         elapsed: float,
     ) -> tuple[bool, tuple[CircuitState, CircuitState] | None]:
-        timeout = self._get_safe_threshold(self.config.timeout, 0, 30.0)
+        try:
+            config_timeout = getattr(self, "config", None).timeout
+        except Exception:
+            config_timeout = 30.0
+        timeout = self._get_safe_threshold(config_timeout, 0, 30.0)
         if elapsed >= timeout:
             return self._transition_to_half_open(elapsed)
         return False, None
@@ -423,8 +427,13 @@ class CircuitBreaker:
         if not self._is_valid_metric(self._state.half_open_attempts):
             return False
 
+        try:
+            config_success_threshold = getattr(self, "config", None).success_threshold
+        except Exception:
+            config_success_threshold = 2
+
         success_threshold = self._get_safe_threshold(
-            self.config.success_threshold,
+            config_success_threshold,
             1,
             2,
         )
@@ -478,8 +487,13 @@ class CircuitBreaker:
         else:
             self._state.success_count += 1
 
+        try:
+            config_success_threshold = getattr(self, "config", None).success_threshold
+        except Exception:
+            config_success_threshold = 2
+
         success_threshold = self._get_safe_threshold(
-            self.config.success_threshold,
+            config_success_threshold,
             1,
             2,
         )
@@ -539,8 +553,13 @@ class CircuitBreaker:
             )
             return (CircuitState.CLOSED, CircuitState.OPEN)
 
+        try:
+            config_failure_threshold = getattr(self, "config", None).failure_threshold
+        except Exception:
+            config_failure_threshold = 5
+
         failure_threshold = self._get_safe_threshold(
-            self.config.failure_threshold,
+            config_failure_threshold,
             1,
             5,
         )
@@ -561,7 +580,10 @@ class CircuitBreaker:
         if not self._is_valid_metric(self._state.failure_count):
             # Handle type mutation (e.g. failure_count became string) or Inf/NaN
             # Safe degradation: reset to max so it opens immediately
-            self._state.failure_count = self.config.failure_threshold
+            try:
+                self._state.failure_count = getattr(self, "config", None).failure_threshold
+            except Exception:
+                self._state.failure_count = 5
         else:
             self._state.failure_count += 1
 
@@ -586,8 +608,8 @@ class CircuitBreaker:
 
     def _is_excluded_exception(self, exc: Exception) -> bool:
         try:
-            return isinstance(exc, self.config.excluded_exceptions)
-        except TypeError:
+            return isinstance(exc, getattr(self, "config", None).excluded_exceptions)
+        except Exception:
             return False
 
     def _record_failure(self, exc: Exception) -> None:
@@ -631,8 +653,8 @@ class CircuitBreaker:
 
     def _is_failure_exception(self, exc: Exception) -> bool:
         try:
-            return isinstance(exc, self.config.failure_exceptions)
-        except TypeError:
+            return isinstance(exc, getattr(self, "config", None).failure_exceptions)
+        except Exception:
             return True
 
     def _process_result(self, result: R) -> R:
@@ -700,8 +722,8 @@ class CircuitBreaker:
 
     def _handle_exception_in_call(self, e: Exception) -> None:
         try:
-            is_failure = isinstance(e, self.config.failure_exceptions)
-        except TypeError:
+            is_failure = isinstance(e, getattr(self, "config", None).failure_exceptions)
+        except Exception:
             is_failure = True
         if is_failure:
             self._record_failure(e)
