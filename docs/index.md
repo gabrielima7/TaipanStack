@@ -20,6 +20,8 @@ hide:
 
 ## ✨ What's New
 
+### v0.6.4
+
 - **Clean Code & Refactoring**: Extracted validation logic into helpers and applied guard clauses to reduce nesting in `result.py` and `circuit_breaker.py` (PR #1195).
 
 ### v0.6.3
