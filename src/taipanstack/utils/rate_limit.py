@@ -165,11 +165,10 @@ class RateLimiter:
         if new_tokens is None:
             return False
 
-        if not self._apply_new_tokens(new_tokens):
-            return False
-
+        # Always advance time even if apply fails, to prevent starvation
+        apply_success = self._apply_new_tokens(new_tokens)
         self.last_update = now
-        return True
+        return apply_success
 
     def _check_tokens_validity(self) -> bool:
         """Check tokens validity."""
