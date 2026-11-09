@@ -1,5 +1,5 @@
-import pytest
 from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitState
+
 
 def test_chaos_circuit_breaker_half_open_starvation():
     breaker = CircuitBreaker(success_threshold=1, timeout=0.1)
