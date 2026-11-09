@@ -124,6 +124,6 @@ def test_chaos_circuit_breaker_lock_decrement_half_open_suppress_expected():
     breaker._state.state = CircuitState.HALF_OPEN
     breaker._state.half_open_attempts = 1
 
-    # Should suppress Exception and return
+    # Should suppress Exception and forcefully decrement
     breaker._decrement_half_open(True)
-    assert breaker._state.half_open_attempts == 1
+    assert breaker._state.half_open_attempts == 0
