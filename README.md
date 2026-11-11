@@ -141,7 +141,7 @@ make property-test
 
 TaipanStack follows a clean, layered architecture with strict dependency rules enforced by **Import Linter**.
 
-```text
+```
                     ┌────────────────────────────────────────────────────────┐
                     │                      Application                       │
                     │                   (src/app/main.py)                    │
@@ -165,7 +165,7 @@ TaipanStack follows a clean, layered architecture with strict dependency rules e
 
 ### Project Structure
 
-```text
+```
 TaipanStack/
 ├── src/
 │   ├── app/              # Application entry point
