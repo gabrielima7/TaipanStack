@@ -77,7 +77,7 @@ class ResilientDatabase:
 
     """
 
-    def __init__(
+    def __init__(  # type: ignore[no-any-unimported]
         self,
         engine: AsyncEngine,
         *,
@@ -143,7 +143,7 @@ class ResilientDatabase:
             return True
         return False
 
-    async def _execute_single_attempt(
+    async def _execute_single_attempt(  # type: ignore[no-any-unimported]
         self,
         statement: Executable,
         **kwargs: object,
@@ -155,7 +155,7 @@ class ResilientDatabase:
         except Exception as exc:
             return Err(exc)
 
-    async def _process_attempt(
+    async def _process_attempt(  # type: ignore[no-any-unimported]
         self,
         statement: Executable,
         attempt: int,
@@ -172,7 +172,7 @@ class ResilientDatabase:
         )
         return should_continue, last_error
 
-    async def _execute_loop(
+    async def _execute_loop(  # type: ignore[no-any-unimported]
         self,
         statement: Executable,
         max_attempts: int,
@@ -197,7 +197,7 @@ class ResilientDatabase:
 
         return Err(last_error)
 
-    async def execute(
+    async def execute(  # type: ignore[no-any-unimported]
         self,
         statement: Executable,
         **kwargs: object,
@@ -240,7 +240,7 @@ class ResilientRedis:
 
     """
 
-    def __init__(
+    def __init__(  # type: ignore[no-any-unimported]
         self,
         client: aioredis.Redis[bytes | str],
         *,
@@ -288,7 +288,7 @@ class ResilientRedis:
                 self._circuit_breaker._record_failure(exc)
             return Err(exc)
 
-    async def execute(
+    async def execute(  # type: ignore[no-any-unimported]
         self,
         command: str,
         *args: object,
