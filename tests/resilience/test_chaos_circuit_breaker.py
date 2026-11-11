@@ -21,7 +21,7 @@ def test_circuit_breaker_half_open_starvation():
         fail()
 
     assert breaker.is_open
-    time.sleep(0.15) # Wait for timeout to enter HALF_OPEN
+    time.sleep(0.15)  # Wait for timeout to enter HALF_OPEN
 
     def hold_lock():
         breaker._state.lock.acquire()
