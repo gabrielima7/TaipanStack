@@ -81,7 +81,7 @@ TaipanStack is a battle-tested foundation for production-grade Python projects t
 
 ```bash
 pip install taipanstack
-```text
+```
 
 ### From Source
 
@@ -89,7 +89,7 @@ pip install taipanstack
 git clone https://github.com/gabrielima7/TaipanStack.git
 cd TaipanStack
 poetry install --with dev
-```text
+```
 
 ### Verify Installation
 
@@ -102,7 +102,7 @@ make lint-imports
 
 # Run security scans
 make security
-```text
+```
 
 ---
 
@@ -122,7 +122,7 @@ match divide(10, 0):
         print(f"Result: {value}")
     case Err(error):
         print(f"Error: {error}")
-```text
+```
 
 ### Security Guards
 
@@ -136,7 +136,7 @@ from taipanstack.security.guards import (
 safe_path = guard_path_traversal(user_input, base_dir="/app/data")
 safe_cmd = guard_command_injection(["git", "clone", repo_url], allowed_commands=["git"])
 safe_key = guard_env_variable("API_KEY", allowed_names=["API_KEY"])
-```text
+```
 
 ### Rate Limiting
 
@@ -154,7 +154,7 @@ match fetch_data():
         print(f"Data: {value}")
     case Err(error):
         print(f"Rate limited: {error}")
-```text
+```
 
 ### 🔗 Combining Result + Circuit Breaker
 
@@ -176,7 +176,7 @@ match result:
         print(f"Payment successful: {receipt}")
     case Err(error):
         print(f"Payment failed safely: {error}")
-```text
+```
 
 ### 🔗 Combining Result + Retry with Monitoring
 
@@ -197,7 +197,7 @@ def fetch_user_profile(user_id: str) -> dict:
 
 # Retry handles transient failures, Result handles business errors
 profile = fetch_user_profile("usr_456").unwrap_or({"name": "Unknown"})
-```text
+```
 
 ### 🔗 Adaptive Resilience Pipeline
 
@@ -219,7 +219,7 @@ orch = (
 async def process_billing() -> Result[dict, Exception]:
     # The orchestrator handles all concurrency, retry, circuit breaking, and fallbacks
     return await orch.execute(stripe_gateway.charge)
-```text
+```
 
 ### Intelligent Caching
 
@@ -230,7 +230,7 @@ from taipanstack.core.result import Result
 @cached(ttl=60)
 async def get_user_data(user_id: int) -> Result[dict, Exception]:
     return await db.fetch(user_id) # Only Ok() results are cached
-```text
+```
 
 ### Fallbacks & Timeouts
 
@@ -242,13 +242,13 @@ from taipanstack.core.result import Result
 @timeout(seconds=5.0)
 async def fetch_remote_status() -> Result[dict, Exception]:
     return await api.get_status()
-```text
+```
 
 ---
 
 ## 📐 Architecture
 
-```text
+```
                     ┌────────────────────────────────────────────────────────┐
                     │                      Application                       │
                     │                   (src/app/main.py)                    │
@@ -268,7 +268,7 @@ async def fetch_remote_status() -> Result[dict, Exception]:
                                │              Core              │
                                │  Result types, optimizations   │
                                └────────────────────────────────┘
-```text
+```
 
 [Read the full architecture guide →](architecture.md)
 
