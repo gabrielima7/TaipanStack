@@ -288,7 +288,7 @@ class ResilientRedis:
                 self._circuit_breaker._record_failure(exc)
             return Err(exc)
 
-    async def execute(  # type: ignore[no-any-unimported]
+    async def execute(
         self,
         command: str,
         *args: object,
