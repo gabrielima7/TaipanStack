@@ -692,7 +692,7 @@ class CircuitBreaker:
                 acquired = False
 
             if not acquired:
-                # Forcefully decrement if we can't acquire the lock to prevent permanent starvation
+                # Forcefully decrement if lock fails to prevent permanent starvation
                 self._safe_decrement_half_open_attempts()
                 return
             try:

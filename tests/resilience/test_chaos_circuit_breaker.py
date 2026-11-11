@@ -1,7 +1,13 @@
-import pytest
-import time
 import threading
-from taipanstack.resilience.circuit_breaker import CircuitBreaker, CircuitBreakerError, CircuitState
+import time
+
+import pytest
+
+from taipanstack.resilience.circuit_breaker import (
+    CircuitBreaker,
+    CircuitState,
+)
+
 
 def test_circuit_breaker_half_open_starvation():
     breaker = CircuitBreaker(failure_threshold=1, success_threshold=2, timeout=0.1)
