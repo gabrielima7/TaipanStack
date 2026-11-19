@@ -54,6 +54,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generic coverage configuration in Pytest
 - Missing backup files extension in .gitignore
 
+## [0.6.5] - 2026-11-19
+
+### Added
+
+- **Python 3.15 Compatibility**: Added `PY315` runtime compatibility constant, CI matrix coverage, and package classifiers (PR #1307, #1309).
+- **Chaos & Property-Based Testing**: Added hypothesis fuzz tests for `Result`, `collect_results`, `default_encoder`, `JWT`, `RateLimiter`, `Bulkhead`, and `CircuitBreaker` (PR #1010, #1026, #1031, #1033, #1074, #1098, #1103, #1105, #1116, #1122, #1130, #1219, #1233, #1242, #1282, #1286, #1302).
+- **Formal Verification & Documentation**: Added `docs/formal_verification.md`, API reference for App layer, `make docs` target, and `docs/agents.md` links (PR #1047, #1061, #1086, #1108, #1114, #1125, #1191, #1215, #1216, #1275, #1297).
+
+### Changed & Refactored
+
+- **Static Typing & Linting**: Enabled `disallow_any_expr = true` and `disallow_any_unimported = true` in `pyproject.toml`, replaced `Any` with `TypeVar`/explicit signatures, and removed obsolete `# type: ignore` comments (PR #1049, #1051, #1064, #1071, #1196, #1220, #1273, #1337).
+- **Cyclomatic Complexity Reductions**: Refactored helpers across `result.py`, `resilience.py`, `retry.py`, `circuit_breaker.py`, `bulkhead.py`, `adaptive_breaker.py`, `adaptive_retry.py`, `orchestrator.py`, `rate_limit.py`, `cache.py`, `logging.py`, `guards.py`, `validators.py`, `sanitizers.py`, `jwt.py`, `models.py`, `subprocess.py`, `concurrency.py`, and `http_bridge.py` (PR #1022, #1028, #1034, #1039, #1043, #1046, #1056, #1072, #1077, #1087, #1089, #1100, #1104, #1110, #1118, #1124, #1141, #1154, #1168, #1173, #1176, #1182, #1183, #1187, #1193, #1195, #1197, #1200, #1202, #1205, #1214, #1217, #1231, #1251, #1269, #1271, #1280, #1288, #1295, #1303, #1308, #1326).
+- **Test Suite Standardization**: Standardized test naming (`test_<module>_<behavior>_<expected_result>`) and eliminated coverage bypasses (PR #1015, #1024, #1040, #1048, #1063, #1076, #1079, #1145, #1148, #1186, #1328).
+- **Performance**: Optimized `InMemoryUserRepository.save` to O(1) index lookups (PR #1178).
+- **Documentation & Formatting**: Synced `README.md`, `CHANGELOG.md`, `.env.example`, and MkDocs strict build links/code blocks (PR #1011, #1017, #1023, #1044, #1052, #1069, #1096, #1101, #1106, #1111, #1129, #1138, #1159, #1163, #1174, #1177, #1179, #1198, #1210, #1221, #1225, #1227, #1237, #1243, #1249, #1252, #1270, #1277, #1281, #1320, #1338).
+- **Dependencies**: Updated `dnspython` (2.9.2), `joserfc` (1.7.7), `filelock` (4.2.4), `actions/setup-python` (v7), and `dawidd6/action-download-artifact` (v28) (PR #1041, #1146, #1171, #1254, #1268, #1305, #1318, #1322, #1349).
+
+### Fixed & Security
+
+- **Security Hardening**: Fixed URL smuggling bypasses (`_fully_unquote_url`, obfuscated hostnames), email control chars, JWT algorithm/length/type DoS, cache key recursion DoS, `_redact` recursion DoS, and `_has_control_chars` O(n) DoS (PR #1012, #1016, #1082, #1102, #1112, #1115, #1126, #1164, #1253, #1266, #1290, #1313, #1327).
+- **Resilience & Concurrency**: Fixed `CircuitBreaker.reset()` deadlock, `AdaptiveCircuitBreaker`/`AdaptiveRetry` lock timeouts, thread crash/exhaustion in `timeout`, corrupt `__str__` in exceptions, `RateLimiter` token starvation, and `isfinite`/type checks (PR #1018, #1019, #1020, #1032, #1036, #1037, #1042, #1045, #1058, #1067, #1073, #1081, #1083, #1092, #1099, #1127, #1135, #1139, #1142, #1155, #1160, #1170, #1172, #1188, #1189, #1192, #1234, #1235, #1236, #1238, #1241, #1245, #1246, #1256, #1293, #1296, #1333).
+
+### Removed
+
+- Removed dead `health_check` methods from `db_bridge.py` and `evaluate_result` from `AdaptiveCircuitBreaker` (PR #1053), legacy resilience shims from `docs/api/utils.md` (PR #1212), and obsolete test/report artifacts.
+
+### Merged Pull Requests Since v0.6.1
+
+- PRs: #1009, #1010, #1011, #1012, #1015, #1016, #1017, #1018, #1019, #1020, #1022, #1023, #1024, #1026, #1028, #1031, #1032, #1033, #1034, #1036, #1037, #1039, #1040, #1041, #1042, #1043, #1044, #1045, #1046, #1047, #1048, #1049, #1051, #1052, #1053, #1056, #1058, #1061, #1063, #1064, #1067, #1069, #1071, #1072, #1073, #1074, #1076, #1077, #1078, #1079, #1081, #1082, #1083, #1086, #1087, #1088, #1089, #1092, #1096, #1098, #1099, #1100, #1101, #1102, #1103, #1104, #1105, #1106, #1108, #1110, #1111, #1112, #1114, #1115, #1116, #1118, #1122, #1124, #1125, #1126, #1127, #1129, #1130, #1135, #1138, #1139, #1141, #1142, #1145, #1146, #1148, #1154, #1155, #1158, #1159, #1160, #1163, #1164, #1168, #1170, #1171, #1172, #1173, #1174, #1176, #1177, #1178, #1179, #1182, #1183, #1186, #1187, #1188, #1189, #1191, #1192, #1193, #1195, #1196, #1197, #1198, #1200, #1202, #1205, #1210, #1212, #1213, #1214, #1215, #1216, #1217, #1219, #1220, #1221, #1225, #1227, #1231, #1233, #1234, #1235, #1236, #1237, #1238, #1241, #1242, #1243, #1245, #1246, #1249, #1251, #1252, #1253, #1254, #1256, #1266, #1268, #1269, #1270, #1271, #1273, #1275, #1277, #1280, #1281, #1282, #1286, #1288, #1290, #1293, #1295, #1296, #1297, #1302, #1303, #1305, #1307, #1308, #1309, #1313, #1318, #1320, #1322, #1326, #1328, #1337, #1338, #1349.
+
 ## [0.6.4] - 2026-09-08
 
 ### Clean Code & Refactoring
@@ -149,11 +179,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### QA & Testing
 
 - **Test Suite Standardization**: Renamed and standardized the naming convention across the entire test suite to resolve bypass methods and enforce strict validation rules (PR #886, PR #891, PR #894, PR #909, PR #912, PR #926, PR #930, PR #944, PR #954).
-- **Test Coverage & Chaos Testing**: Expanded the test suite to **1,430 passing tests** verifying 100% genuine code and branch coverage with zero bypasses (PR #882) and integrated comprehensive chaos testing for watchdogs, cache concurrency, and subprocess environment filtering (PR #890, PR #898, PR #902, PR #905, PR #913, PR #921, PR #941).
+- **Test Coverage & Chaos Testing**: Expanded the test suite to **1,430 passing tests** verifying 100% genuine code and branch coverage with zero bypasses (PR #882) and integrated comprehensive chaos testing for watchdogs, cache concurrency, and subprocess environment filtering (PR #890, #898, #902, #905, #913, #921, #941).
 
 ### Documentation
 
-- **API Guidelines & Examples**: Updated API guides, architecture mappings, environment templates, and ConfigWatcher examples to include validation error callback handling (PR #881, PR #888, PR #899, PR #920, PR #928).
+- **API Guidelines & Examples**: Updated API guides, architecture mappings, environment templates, and ConfigWatcher examples to include validation error callback handling (PR #881, #888, #899, #920, #928).
 - **Compare Link Repairs**: Restored compare links and resolved build warning regressions across all release notes (PR #877).
 
 ### Dependencies & Infrastructure
@@ -168,7 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Hardening**: Implemented fail-fast validation for the retry decorator and reverted capturing of `BaseException` to prevent masking critical system interrupts (PR #852).
 - **Hardening**: Hardened retry decorator against type mutations under chaos injection (PR #853).
 - **Hardening**: Hardened fallback decorator against runtime type mutations under chaos (PR #842).
-- **Hardening**: Enhanced circuit breaker resilience to time and state mutations (PR #856, PR #839).
+- **Hardening**: Enhanced circuit breaker resilience to time and state mutations (PR #856, #839).
 - **Hardening**: Allowed fatal system exceptions to propagate naturally during sleep inside retry decorator rather than masking them (PR #864).
 - **Fix**: Resolved mypy type binding issues in models and format code with ruff (Direct commit).
 
@@ -180,7 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactoring & Typing
 
-- **Complexity**: Proactively reduced cyclomatic and cognitive complexity in orchestrator and circuit breaker modules (PR #862, PR #844).
+- **Complexity**: Proactively reduced cyclomatic and cognitive complexity in orchestrator and circuit breaker modules (PR #862, #844).
 - **Complexity**: Proactively reduced cyclomatic complexity in utils/resilience modules and optimized collection type dispatch in `_redact_collection` (PR #866).
 - **Typing & Formatting**: Refactored static typing and formatting compliance across core modules (PR #869).
 
@@ -1008,7 +1038,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Regenerated `poetry.lock` to fix CI `pytest not found` error
 - Poetry lock was out of sync causing CI to install only 8 packages instead of full dev dependencies
 
-## 0.2.2 - 2026-02-13
+## [0.2.2] - 2026-02-13
 
 ### Changed
 
@@ -1016,7 +1046,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced test coverage using polyfactory for test data generation
 - Achieved 642 passing tests
 
-## 0.2.1 - 2026-02-12
+## [0.2.1] - 2026-02-12
 
 ### Fixed
 
@@ -1030,7 +1060,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added comprehensive tests for `config.version_config` (100% coverage)
 - Test coverage improved from 89.01% to 96.62% (642 tests)
 
-## 0.2.0 - 2026-02-03
+## [0.2.0] - 2026-02-03
 
 ### Changed
 
@@ -1063,7 +1093,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation in README
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.4...HEAD
+[Unreleased]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.5...HEAD
+[0.6.5]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/gabrielima7/TaipanStack/compare/v0.6.1...v0.6.2
