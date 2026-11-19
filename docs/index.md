@@ -20,6 +20,10 @@ hide:
 
 ## ✨ What's New
 
+### v0.6.5
+
+- **Security, Typing & Resilience**: Enforced `disallow_any_unimported = true`, hardened `_redact` recursion depth and `RateLimiter` token recovery, standardized tests, and updated `dnspython` (2.9.2) (PR #1322, #1326, #1328, #1337, #1338, #1349).
+
 - **Clean Code & Refactoring**: Extracted validation logic into helpers and applied guard clauses to reduce nesting in `result.py` and `circuit_breaker.py` (PR #1195).
 
 ### v0.6.3
