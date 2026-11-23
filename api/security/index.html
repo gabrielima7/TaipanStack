@@ -4826,8 +4826,8 @@ to remove potentially dangerous characters.</p>
 
 <details class="example" open>
   <summary>Example</summary>
-  <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">sanitize_string</span><span class="p">(</span><span class="s2">&quot;&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;Hello&quot;</span><span class="p">)</span>
-</span><span id="__span-0-2"><span class="c1"># Returns: &quot;scriptalert(&#39;xss&#39;)/scriptHello&quot;</span>
+  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-1"><span class="n">sanitize_string</span><span class="p">(</span><span class="s2">&quot;&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;Hello&quot;</span><span class="p">)</span>
+</span><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-2"><span class="c1"># Returns: &quot;scriptalert(&#39;xss&#39;)/scriptHello&quot;</span>
 </span></code></pre></div>
 </details>
 
@@ -4974,8 +4974,8 @@ to remove potentially dangerous characters.</p>
 
 <details class="example" open>
   <summary>Example</summary>
-  <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">sanitize_filename</span><span class="p">(</span><span class="s2">&quot;my/../file&lt;&gt;:name.txt&quot;</span><span class="p">)</span>
-</span><span id="__span-0-2"><span class="c1"># Returns: &#39;my_file_name.txt&#39;</span>
+  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-1"><span class="n">sanitize_filename</span><span class="p">(</span><span class="s2">&quot;my/../file&lt;&gt;:name.txt&quot;</span><span class="p">)</span>
+</span><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-2"><span class="c1"># Returns: &#39;my_file_name.txt&#39;</span>
 </span></code></pre></div>
 </details>
 
