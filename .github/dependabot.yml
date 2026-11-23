@@ -24,6 +24,7 @@ updates:
           - "py-spy"
           - "coverage*"
           - "types-*"
+          - "mkdocs*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

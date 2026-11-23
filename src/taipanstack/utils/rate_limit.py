@@ -294,7 +294,7 @@ def _async_rate_limit_wrapper(
             return Err(RateLimitError())
         return Ok(await func_coro(*args, **kwargs))
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _sync_rate_limit_wrapper(

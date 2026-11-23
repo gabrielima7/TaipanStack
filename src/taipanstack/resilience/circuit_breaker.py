@@ -729,7 +729,7 @@ class CircuitBreaker:
             finally:
                 self._decrement_half_open(is_half_open)
 
-        return async_wrapper  # type: ignore[misc]
+        return async_wrapper
 
     def _execute_sync_wrapper(
         self,
