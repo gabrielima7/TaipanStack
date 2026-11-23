@@ -5199,7 +5199,7 @@ returns a <code>Result</code> type.</p>
 
 
 <a href="#taipanstack.utils.concurrency.OverloadError" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">OverloadError</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;Concurrency limit reached&#39;</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">OverloadError</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'Concurrency limit reached'</span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5698,7 +5698,7 @@ atomic writes, and proper error handling using Result types.</p>
 <a href="#taipanstack.utils.filesystem.WriteOptions" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">WriteOptions</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">base_dir</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-3">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">create_parents</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="n">backup</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">atomic</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -5835,7 +5835,7 @@ atomic writes, and proper error handling using Result types.</p>
 </span><span id="__span-0-2">    <span class="n">path</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">base_dir</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">encoding</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">max_size_bytes</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
 </span><span id="__span-0-7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="taipanstack.core.result.Result">Result</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.utils.filesystem.ReadFileError">ReadFileError</span></span><span class="p">]</span>
 </span></code></pre></div>
@@ -6351,8 +6351,8 @@ context propagation, and proper formatting.</p>
 
 <a href="#taipanstack.utils.logging.StackLogger" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">StackLogger</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;taipanstack&quot;</span><span class="p">,</span>
-</span><span id="__span-0-3">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-0-2">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"taipanstack"</span><span class="p">,</span>
+</span><span id="__span-0-3">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"INFO"</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="o">*</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="n">use_structured</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-6"><span class="p">)</span>
@@ -7291,12 +7291,12 @@ value of any key whose name contains a sensitive substring with
 <a href="#taipanstack.utils.logging.setup_logging" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">setup_logging</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
-</span><span id="__span-0-3">        <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span>
-</span><span id="__span-0-4">    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3">        <span class="s2">"DEBUG"</span><span class="p">,</span> <span class="s2">"INFO"</span><span class="p">,</span> <span class="s2">"WARNING"</span><span class="p">,</span> <span class="s2">"ERROR"</span><span class="p">,</span> <span class="s2">"CRITICAL"</span>
+</span><span id="__span-0-4">    <span class="p">]</span> <span class="o">=</span> <span class="s2">"INFO"</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="o">*</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">format_type</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
-</span><span id="__span-0-7">        <span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="s2">&quot;detailed&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span>
-</span><span id="__span-0-8">    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detailed&quot;</span><span class="p">,</span>
+</span><span id="__span-0-7">        <span class="s2">"simple"</span><span class="p">,</span> <span class="s2">"detailed"</span><span class="p">,</span> <span class="s2">"json"</span>
+</span><span id="__span-0-8">    <span class="p">]</span> <span class="o">=</span> <span class="s2">"detailed"</span><span class="p">,</span>
 </span><span id="__span-0-9">    <span class="n">log_file</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-10">    <span class="n">use_structured</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
@@ -7412,9 +7412,9 @@ value of any key whose name contains a sensitive substring with
 
 <a href="#taipanstack.utils.logging.get_logger" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">get_logger</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;taipanstack&quot;</span><span class="p">,</span>
+</span><span id="__span-0-2">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"taipanstack"</span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"INFO"</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="n">use_structured</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            StackLogger (taipanstack.utils.logging.StackLogger)" href="#taipanstack.utils.logging.StackLogger">StackLogger</a></span>
 </span></code></pre></div>
@@ -7548,7 +7548,7 @@ logger.bind(request_id="123").info("Processing request")</p>
 </span><span id="__span-0-2">    <span class="n">operation</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">logger</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            StackLogger (taipanstack.utils.logging.StackLogger)" href="#taipanstack.utils.logging.StackLogger">StackLogger</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">level</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"INFO"</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">expected_exceptions</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
 </span><span id="__span-0-7">    <span class="o">|</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">]</span> <span class="o">=</span> <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span>
 </span><span id="__span-0-8"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="contextlib.AbstractContextManager">AbstractContextManager</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            StackLogger (taipanstack.utils.logging.StackLogger)" href="#taipanstack.utils.logging.StackLogger">StackLogger</a></span><span class="p">]</span>
@@ -7738,7 +7738,7 @@ or a <code>RateLimitError</code> error.</p>
 
 
 <a href="#taipanstack.utils.rate_limit.RateLimitError" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">RateLimitError</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;Rate limit exceeded&#39;</span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">RateLimitError</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">'Rate limit exceeded'</span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8335,8 +8335,8 @@ command validation, timeout handling, and retry logic.</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">SafeCommandResult</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">command</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">],</span>
 </span><span id="__span-0-3">    <span class="n">returncode</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">stdout</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">stderr</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">stdout</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">stderr</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">duration_seconds</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 </span><span id="__span-0-7"><span class="p">)</span>
 </span></code></pre></div>
@@ -8962,7 +8962,7 @@ location directly.</p>
 </span><span id="__span-0-7">    <span class="n">failure_exceptions</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="Exception">Exception</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
 </span><span id="__span-0-8">        <span class="n"><span title="Exception">Exception</span></span><span class="p">,</span>
 </span><span id="__span-0-9">    <span class="p">),</span>
-</span><span id="__span-0-10">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10">    <span class="n">name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"default"</span><span class="p">,</span>
 </span><span id="__span-0-11">    <span class="n">on_state_change</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
 </span><span id="__span-0-12">        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.resilience.circuit_breaker.CircuitState)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="            CircuitState (taipanstack.resilience.circuit_breaker.CircuitState)" href="../resilience/#taipanstack.resilience.circuit_breaker.CircuitState">CircuitState</a></span><span class="p">],</span> <span class="kc">None</span>
 </span><span id="__span-0-13">    <span class="p">]</span>

@@ -3752,7 +3752,7 @@ All guards raise SecurityError on violation.</p>
 <a href="#taipanstack.security.guards.SecurityError" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">SecurityError</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
-</span><span id="__span-0-3">    <span class="n">guard_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3">    <span class="n">guard_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"unknown"</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">value</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-5"><span class="p">)</span>
 </span></code></pre></div>
@@ -4826,8 +4826,8 @@ to remove potentially dangerous characters.</p>
 
 <details class="example" open>
   <summary>Example</summary>
-  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-1"><span class="n">sanitize_string</span><span class="p">(</span><span class="s2">&quot;&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;Hello&quot;</span><span class="p">)</span>
-</span><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-2"><span class="c1"># Returns: &quot;scriptalert(&#39;xss&#39;)/scriptHello&quot;</span>
+  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-1"><span class="n">sanitize_string</span><span class="p">(</span><span class="s2">"&lt;script&gt;alert('xss')&lt;/script&gt;Hello"</span><span class="p">)</span>
+</span><span id="taipanstack.security.sanitizers.sanitize_string--__span-0-2"><span class="c1"># Returns: "scriptalert('xss')/scriptHello"</span>
 </span></code></pre></div>
 </details>
 
@@ -4847,7 +4847,7 @@ to remove potentially dangerous characters.</p>
 </span><span id="__span-0-2">    <span class="n">filename</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">max_length</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">255</span><span class="p">,</span>
-</span><span id="__span-0-5">    <span class="n">replacement</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5">    <span class="n">replacement</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"_"</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">preserve_extension</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
@@ -4974,8 +4974,8 @@ to remove potentially dangerous characters.</p>
 
 <details class="example" open>
   <summary>Example</summary>
-  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-1"><span class="n">sanitize_filename</span><span class="p">(</span><span class="s2">&quot;my/../file&lt;&gt;:name.txt&quot;</span><span class="p">)</span>
-</span><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-2"><span class="c1"># Returns: &#39;my_file_name.txt&#39;</span>
+  <div class="language-python highlight"><pre><span></span><code><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-1"><span class="n">sanitize_filename</span><span class="p">(</span><span class="s2">"my/../file&lt;&gt;:name.txt"</span><span class="p">)</span>
+</span><span id="taipanstack.security.sanitizers.sanitize_filename--__span-0-2"><span class="c1"># Returns: 'my_file_name.txt'</span>
 </span></code></pre></div>
 </details>
 
@@ -5567,7 +5567,7 @@ without being overly strict.</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">validate_url</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">url</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">allowed_schemes</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">),</span>
+</span><span id="__span-0-4">    <span class="n">allowed_schemes</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"http"</span><span class="p">,</span> <span class="s2">"https"</span><span class="p">),</span>
 </span><span id="__span-0-5">    <span class="n">require_tld</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
@@ -5897,7 +5897,7 @@ any Python framework (Flask, FastAPI, Django, etc.).</p>
 
 <a href="#taipanstack.security.decorators.OperationTimeoutError" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">OperationTimeoutError</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">seconds</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;function&quot;</span>
+</span><span id="__span-0-2">    <span class="n">seconds</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"function"</span>
 </span><span id="__span-0-3"><span class="p">)</span>
 </span></code></pre></div>
 
@@ -6491,7 +6491,7 @@ TimeoutError: slow_operation timed out after 5.0 seconds</p>
 
 <a href="#taipanstack.security.decorators.deprecated" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">deprecated</span><span class="p">(</span>
-</span><span id="__span-0-2">    <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">removal_version</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-2">    <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">removal_version</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-3"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.security.decorators.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.security.decorators.R">R</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="taipanstack.security.decorators.P">P</span></span><span class="p">,</span> <span class="n"><span title="taipanstack.security.decorators.R">R</span></span><span class="p">]]</span>
 </span></code></pre></div>
 
@@ -6741,7 +6741,7 @@ All operations return <code>Result</code> types.</p>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">encode_jwt</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="n">payload</span><span class="p">:</span> <span class="n"><span title="taipanstack.security.jwt.JWTPayload">JWTPayload</span></span><span class="p">,</span>
 </span><span id="__span-0-3">    <span class="n">secret_key</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
-</span><span id="__span-0-4">    <span class="n">algorithm</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;HS256&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4">    <span class="n">algorithm</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"HS256"</span><span class="p">,</span>
 </span><span id="__span-0-5"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
 </span></code></pre></div>
 
@@ -7170,7 +7170,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
 <a href="#taipanstack.security.models.SecureBaseModel.model_dump" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><span class="nf">model_dump</span><span class="p">(</span>
 </span><span id="__span-0-2">    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-3">    <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3">    <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">"json"</span><span class="p">,</span> <span class="s2">"python"</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s2">"python"</span><span class="p">,</span>
 </span><span id="__span-0-4">    <span class="n">include</span><span class="p">:</span> <span class="n"><span title="pydantic.main.IncEx">IncEx</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-5">    <span class="n">exclude</span><span class="p">:</span> <span class="n"><span title="pydantic.main.IncEx">IncEx</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-6">    <span class="n">context</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7181,7 +7181,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
 </span><span id="__span-0-11">    <span class="n">exclude_computed_fields</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-12">    <span class="n">round_trip</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-13">    <span class="n">warnings</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span>
-</span><span id="__span-0-14">    <span class="o">|</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-14">    <span class="o">|</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">"none"</span><span class="p">,</span> <span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-15">    <span class="n">fallback</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="object">object</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-16">    <span class="n">serialize_as_any</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-17">    <span class="n">polymorphic_serialization</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7243,7 +7243,7 @@ and validated. Explicitly rejects the "none" algorithm.</p>
 </span><span id="__span-0-12">    <span class="n">exclude_computed_fields</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-13">    <span class="n">round_trip</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-14">    <span class="n">warnings</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span>
-</span><span id="__span-0-15">    <span class="o">|</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-15">    <span class="o">|</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">"none"</span><span class="p">,</span> <span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-16">    <span class="n">fallback</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="object">object</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-17">    <span class="n">serialize_as_any</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-18">    <span class="n">polymorphic_serialization</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
