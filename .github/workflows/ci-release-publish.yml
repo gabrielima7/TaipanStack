@@ -6,6 +6,7 @@ on:
       - main
     tags:
       - "v*"
+      - "[0-9]+.*"
   workflow_dispatch:
 
 concurrency:
@@ -43,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             RAW_TAG="${{ github.ref_name }}"
             VER="${RAW_TAG#v}"
             echo "Triggered by tag: $RAW_TAG (version: $VER)"

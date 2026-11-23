@@ -14,5 +14,5 @@ def test_version_consistency():
         data = tomllib.load(f)
     toml_version = data["project"]["version"]
     init_version = get_init_version()
-    assert toml_version == "0.7.0"
-    assert init_version == "0.7.0"
+    assert toml_version == init_version
+    assert re.match(r"^\d+\.\d+\.\d+$", toml_version) is not None

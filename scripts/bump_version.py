@@ -121,7 +121,7 @@ def main() -> None:
     current_ver = args.current or get_current_project_version()
     next_ver = calculate_next_version(current_ver)
 
-    if args.apply:
+    if args.apply or args.dry_run:
         update_project_files(next_ver, dry_run=args.dry_run)
     else:
         print(next_ver)
