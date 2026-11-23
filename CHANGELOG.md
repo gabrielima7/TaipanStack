@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-23
+
+### Added
+- Automated CI/CD release workflow with PyPI Trusted Publishing, Cosign signing, and GHCR Docker container image delivery.
+- Version calculation utility enforcing `.10` rollover rule (`x.y.10 -> x.(y+1).0`).
+- Automated categorized GitHub Releases.
+
+
 ### QA
 
 - **Property-Based Testing**: Added aggressive property-based fuzz tests using hypothesis for the serialization module to ensure JSON output correctness and maintain 100% test coverage robustness (PR #1233).

@@ -34,11 +34,11 @@
 
 TaipanStack is a battle-tested foundation for production-grade Python projects that combines **security**, **performance**, and **developer experience** into a single, cohesive toolkit.
 
-### ✨ What's New in v0.6.4
+### ✨ What's New in v0.7.0
 
-- **Security & Resilience**: Hardened `RateLimiter` against extreme type mutations and anomalous mathematical operations to gracefully degrade without crashing. Updated enum comparisons to use identity checks (`is`, `is not`) to prevent exceptions from `__eq__` overrides.
-- **Clean Code & Refactoring**: Significantly reduced cyclomatic complexity in `circuit_breaker.py`, `result.py`, and rate limiting components by extracting logic into unified helper methods and applying guard clauses.
-- **Typing**: Enhanced typing for `Adaptive Bulkhead` by explicitly using `Coroutine` for internal async tasks to resolve strict mypy typing errors.
+- **Automated CI/CD Delivery Pipeline**: Unified workflow publishing Python packages to PyPI with Sigstore Cosign signing and Docker images to GitHub Container Registry (GHCR).
+- **Automated Versioning (.10 Rollover)**: Continuous release bumping enforcing `.10` rollover (`x.y.10 -> x.(y+1).0`).
+- **Categorized GitHub Releases**: Automated release notes categorized into features, fixes, changes, and removals.
 
 <table>
 <tr>
