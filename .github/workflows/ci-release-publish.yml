@@ -1,91 +1,249 @@
 name: ci-release-publish
 
 on:
-    release:
-        types:
-            - published
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+      - "[0-9]+.*"
+  workflow_dispatch:
+
+concurrency:
+  group: release-publish-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+  packages: write
 
 jobs:
-    pypi-publish:
-        name: "[Deploy] Build and upload release to PyPI"
-        runs-on: ubuntu-latest
-        environment: pypi
-        permissions:
-            id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-            contents: write
-        steps:
-            - name: "[Setup] Checkout repository"
-              uses: actions/checkout@v7
+  version-and-release:
+    name: "[Release] Compute version, tag, and create GitHub release"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.resolve-version.outputs.version }}
+      tag_name: ${{ steps.resolve-version.outputs.tag_name }}
+    steps:
+      - name: "[Setup] Checkout repository"
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: "[Setup] Set up Python"
-              uses: actions/setup-python@v7
-              with:
-                  python-version: "3.11"
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
 
-            - name: "[Setup] Install Poetry"
-              run: pipx install poetry
+      - name: "[Version] Resolve next version"
+        id: resolve-version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            RAW_TAG="${{ github.ref_name }}"
+            VER="${RAW_TAG#v}"
+            echo "Triggered by tag: $RAW_TAG (version: $VER)"
+            echo "version=${VER}" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${RAW_TAG}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Triggered by branch: ${{ github.ref_name }}"
+            CURRENT_VER=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+            echo "Current version in pyproject.toml: $CURRENT_VER"
+            NEXT_VER=$(python scripts/bump_version.py --current "$CURRENT_VER")
+            TAG="v${NEXT_VER}"
+            echo "Computed next version: $NEXT_VER (tag: $TAG)"
 
-            - name: "[Build] Build project"
-              run: poetry build
+            # Apply version updates to repository files
+            python scripts/bump_version.py --current "$CURRENT_VER" --apply
 
-            - name: "[Deploy] Publish to PyPI"
-              uses: pypa/gh-action-pypi-publish@release/v1
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add pyproject.toml src/taipanstack/__init__.py
+            if ! git diff --staged --quiet; then
+              git commit -m "chore(release): bump version to ${TAG} [skip ci]"
+              git push origin main
+            fi
 
-            - name: "[Setup] Install syft"
-              uses: anchore/sbom-action/download-syft@v0
-              id: syft-install
+            # Create and push tag if not already present
+            if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+              git tag "$TAG"
+              git push origin "$TAG"
+            fi
 
-            - name: "[Audit] Generate SBOM (CycloneDX)"
-              run: |
-                WHEEL=$(ls dist/*.whl | head -1)
-                syft "${WHEEL}" -o cyclonedx-json=sbom.cdx.json
-                echo "Generated SBOM for ${WHEEL}"
-                echo "wheel_path=${WHEEL}" >> "$GITHUB_ENV"
-                echo "wheel_name=$(basename ${WHEEL})" >> "$GITHUB_ENV"
+            echo "version=${NEXT_VER}" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${TAG}" >> "$GITHUB_OUTPUT"
+          fi
 
-            - name: "[Setup] Install cosign"
-              uses: sigstore/cosign-installer@v3
+      - name: "[Release] Create GitHub Release"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.resolve-version.outputs.tag_name }}
+          name: "Release ${{ steps.resolve-version.outputs.tag_name }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
 
-            - name: "[Audit] Sign the wheel"
-              run: |
-                cosign sign-blob \
-                  --yes \
-                  --output-signature "${wheel_name}.sig" \
-                  --output-certificate "${wheel_name}.crt" \
-                  "${wheel_path}"
+  pypi-publish:
+    name: "[Deploy] Build and upload release to PyPI"
+    needs: [version-and-release]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: write
+    outputs:
+      wheel_name: ${{ steps.capture-wheel.outputs.wheel_name }}
+    steps:
+      - name: "[Setup] Checkout repository"
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.version-and-release.outputs.tag_name }}
 
-            - name: "[Audit] Sign the SBOM"
-              run: |
-                cosign sign-blob \
-                  --yes \
-                  --output-signature sbom.cdx.json.sig \
-                  --output-certificate sbom.cdx.json.crt \
-                  sbom.cdx.json
+      - name: "[Setup] Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
 
-            - name: "[Test] Verify wheel signature"
-              run: |
-                cosign verify-blob \
-                  --signature "${wheel_name}.sig" \
-                  --certificate "${wheel_name}.crt" \
-                  --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
-                  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-                  "${wheel_path}"
+      - name: "[Setup] Install Poetry"
+        run: pipx install poetry
 
-            - name: "[Test] Verify SBOM signature"
-              run: |
-                cosign verify-blob \
-                  --signature sbom.cdx.json.sig \
-                  --certificate sbom.cdx.json.crt \
-                  --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
-                  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-                  sbom.cdx.json
+      - name: "[Build] Build package"
+        run: poetry build
 
-            - name: "[Deploy] Upload artifacts to release"
-              uses: softprops/action-gh-release@v3
-              with:
-                files: |
-                  sbom.cdx.json
-                  sbom.cdx.json.sig
-                  sbom.cdx.json.crt
-                  ${{ env.wheel_name }}.sig
-                  ${{ env.wheel_name }}.crt
+      - name: "[Deploy] Publish to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: "[Setup] Install syft"
+        uses: anchore/sbom-action/download-syft@v0
+        id: syft-install
+
+      - name: "[Audit] Generate SBOM (CycloneDX)"
+        id: capture-wheel
+        run: |
+          WHEEL=$(ls dist/*.whl | head -1)
+          syft "${WHEEL}" -o cyclonedx-json=sbom.cdx.json
+          echo "Generated SBOM for ${WHEEL}"
+          echo "wheel_path=${WHEEL}" >> "$GITHUB_ENV"
+          W_NAME=$(basename "${WHEEL}")
+          echo "wheel_name=${W_NAME}" >> "$GITHUB_ENV"
+          echo "wheel_name=${W_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: "[Setup] Install cosign"
+        uses: sigstore/cosign-installer@v3
+
+      - name: "[Audit] Sign wheel"
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature "${wheel_name}.sig" \
+            --output-certificate "${wheel_name}.crt" \
+            "${wheel_path}"
+
+      - name: "[Audit] Sign SBOM"
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature sbom.cdx.json.sig \
+            --output-certificate sbom.cdx.json.crt \
+            sbom.cdx.json
+
+      - name: "[Test] Verify wheel signature"
+        run: |
+          cosign verify-blob \
+            --signature "${wheel_name}.sig" \
+            --certificate "${wheel_name}.crt" \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${wheel_path}"
+
+      - name: "[Test] Verify SBOM signature"
+        run: |
+          cosign verify-blob \
+            --signature sbom.cdx.json.sig \
+            --certificate sbom.cdx.json.crt \
+            --certificate-identity-regexp "https://github.com/gabrielima7/TaipanStack/" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            sbom.cdx.json
+
+      - name: "[Deploy] Upload signatures and SBOM to Release"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.version-and-release.outputs.tag_name }}
+          files: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+            sbom.cdx.json.crt
+            ${{ env.wheel_name }}.sig
+            ${{ env.wheel_name }}.crt
+
+  ghcr-publish:
+    name: "[Deploy] Build and publish Docker image to GHCR"
+    needs: [version-and-release]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+    steps:
+      - name: "[Setup] Checkout repository"
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.version-and-release.outputs.tag_name }}
+
+      - name: "[Setup] Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "[Setup] Log in to GitHub Container Registry"
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "[Setup] Compute image metadata"
+        id: meta
+        shell: bash
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE="ghcr.io/${OWNER}/taipanstack"
+          TAG="${{ needs.version-and-release.outputs.tag_name }}"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${IMAGE}:${TAG}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE=${IMAGE}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+
+      - name: "[Build & Publish] Build and push production image"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.IMAGE }}:latest
+
+  deploy:
+    name: "[Deploy] Verify production deployment and finalize release"
+    needs: [version-and-release, pypi-publish, ghcr-publish]
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+    steps:
+      - name: "[Deploy] Append artifact manifests to GitHub Release"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.version-and-release.outputs.tag_name }}
+          append_body: true
+          body: |
+
+            ---
+            ### 📦 Artefatos e Imagens Gerados
+            - **PyPI Release**: `taipanstack` v${{ needs.version-and-release.outputs.version }}
+            - **Python Wheel**: `${{ needs.pypi-publish.outputs.wheel_name }}` (assinado com Sigstore Cosign e SBOM CycloneDX anexo)
+            - **Container Image**: `${{ needs.ghcr-publish.outputs.image_tag }}`

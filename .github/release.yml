@@ -1,0 +1,23 @@
+changelog:
+  categories:
+    - title: "✨ Novas Funcionalidades"
+      labels:
+        - "feature"
+        - "enhancement"
+        - "feat"
+    - title: "🔄 Alterações"
+      labels:
+        - "change"
+        - "refactor"
+        - "chore"
+        - "perf"
+    - title: "🐛 Correções"
+      labels:
+        - "bug"
+        - "fix"
+        - "hotfix"
+    - title: "🗑️ Remoções e Depreciações"
+      labels:
+        - "deprecation"
+        - "removal"
+        - "breaking"
