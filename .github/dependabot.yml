@@ -7,23 +7,13 @@ updates:
     open-pull-requests-limit: 10
     groups:
       production-dependencies:
+        dependency-type: "production"
         patterns:
-          - "pydantic*"
-          - "structlog"
-          - "python-dotenv"
-          - "packaging"
+          - "*"
       dev-dependencies:
+        dependency-type: "development"
         patterns:
-          - "ruff"
-          - "mypy"
-          - "bandit"
-          - "safety"
-          - "pytest*"
-          - "pre-commit"
-          - "semgrep"
-          - "py-spy"
-          - "coverage*"
-          - "types-*"
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

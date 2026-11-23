@@ -90,7 +90,7 @@ def _execute_fallback_async_wrapper(
             func_coro, fallback_value, exceptions, *args, **kwargs
         )
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _run_fallback_sync(
@@ -243,7 +243,7 @@ def _execute_timeout_async_wrapper(
             return cast(Result[T, TimeoutError | E], val_err)
         return await _run_async_with_timeout(func_coro, seconds, *args, **kwargs)
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _process_sync_timeout_result(

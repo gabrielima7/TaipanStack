@@ -192,7 +192,7 @@ def _execute_cached_async_wrapper(
         finally:
             _release_lock(cache_key, locks, lock_waiters)
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _execute_cached_sync_wrapper(

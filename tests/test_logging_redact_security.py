@@ -29,3 +29,18 @@ def test_logging_redact_security_utils_logging_redact_no_regex_unmodified(
     monkeypatch.setattr("taipanstack.utils.logging._SENSITIVE_KEY_REGEX", None)
     obj = {"password": "123"}
     assert _redact(obj) is obj
+
+
+def test_logging_redact_security_utils_logging_redact_recursion_limit_dos():
+    from taipanstack.utils.logging import MAX_DEPTH_VALUE
+
+    data: dict[str, object] = {}
+    curr = data
+    for _ in range(5000):
+        curr["a"] = {}
+        curr = curr["a"]  # type: ignore[assignment]
+
+    # This should not raise a RecursionError
+    redacted = _redact(data)
+    redacted_str = str(redacted)
+    assert MAX_DEPTH_VALUE in redacted_str

@@ -108,7 +108,7 @@ def _handle_async_concurrency(
         finally:
             async_semaphore.release()
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _acquire_sync_semaphore(

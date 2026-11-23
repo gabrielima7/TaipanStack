@@ -48,6 +48,8 @@ _SENSITIVE_KEY_REGEX = (
 )
 
 REDACTED_VALUE = "***REDACTED***"
+MAX_REDACT_DEPTH = 100
+MAX_DEPTH_VALUE = "***MAX_DEPTH_REACHED***"
 
 
 @lru_cache(maxsize=1024)  # type: ignore[misc]
@@ -76,6 +78,7 @@ VT = TypeVar("VT")
 def _redact_mapping(
     obj: MutableMapping[KT, VT],
     seen: set[int],
+    depth: int = 0,
 ) -> dict[KT, object]:
     """Redact a mapping object."""
     seen.add(id(obj))
@@ -83,22 +86,24 @@ def _redact_mapping(
         k: (
             REDACTED_VALUE
             if _is_sensitive(k, _SENSITIVE_KEY_REGEX)
-            else _redact(v, seen)
+            else _redact(v, seen, depth + 1)
         )
         for k, v in obj.items()
     }
 
 
-def _redact_list(obj: list[VT], seen: set[int]) -> list[object]:
+def _redact_list(obj: list[VT], seen: set[int], depth: int = 0) -> list[object]:
     """Redact a list object."""
     seen.add(id(obj))
-    return [_redact(item, seen) for item in obj]
+    return [_redact(item, seen, depth + 1) for item in obj]
 
 
-def _redact_tuple(obj: tuple[VT, ...], seen: set[int]) -> tuple[object, ...]:
+def _redact_tuple(
+    obj: tuple[VT, ...], seen: set[int], depth: int = 0
+) -> tuple[object, ...]:
     """Redact a tuple object."""
     seen.add(id(obj))
-    return tuple(_redact(item, seen) for item in obj)
+    return tuple(_redact(item, seen, depth + 1) for item in obj)
 
 
 def _is_unhashable(item: object) -> bool:
@@ -109,56 +114,70 @@ def _is_unhashable(item: object) -> bool:
         return True
 
 
-def _redact_set(obj: set[VT], seen: set[int]) -> set[object] | list[object]:
+def _redact_set(
+    obj: set[VT], seen: set[int], depth: int = 0
+) -> set[object] | list[object]:
     """Redact a set object."""
     seen.add(id(obj))
-    redacted_items = [_redact(item, seen) for item in obj]
+    redacted_items = [_redact(item, seen, depth + 1) for item in obj]
     if any(_is_unhashable(item) for item in redacted_items):
         return redacted_items
     return set(redacted_items)
 
 
-def _redact_iterable(obj: object, seen: set[int]) -> object:
+def _redact_iterable(obj: object, seen: set[int], depth: int = 0) -> object:
     """Dispatch redaction based on iterable type."""
     if isinstance(obj, list):
-        return _redact_list(obj, seen)
+        return _redact_list(obj, seen, depth)
     if isinstance(obj, tuple):
-        return _redact_tuple(obj, seen)
+        return _redact_tuple(obj, seen, depth)
     if isinstance(obj, set):
-        return _redact_set(obj, seen)
+        return _redact_set(obj, seen, depth)
     return obj
 
 
-def _redact_collection(obj: object, seen: set[int]) -> object:
+def _redact_collection(obj: object, seen: set[int], depth: int = 0) -> object:
     """Dispatch redaction based on collection type."""
     if isinstance(obj, (dict, MutableMapping)):
-        return _redact_mapping(cast(MutableMapping[object, object], obj), seen)
+        return _redact_mapping(
+            cast(MutableMapping[object, object], obj), seen, depth + 1
+        )
 
-    return _redact_iterable(obj, seen)
+    return _redact_iterable(obj, seen, depth + 1)
 
 
-def _redact(obj: object, seen: set[int] | None = None) -> object:
+def _check_redact_early_returns(obj: object, depth: int) -> tuple[bool, object]:
+    """Check early return conditions for _redact."""
+    if depth > MAX_REDACT_DEPTH:
+        return True, MAX_DEPTH_VALUE
+    if _SENSITIVE_KEY_REGEX is None:
+        return True, obj
+    return False, obj
+
+
+def _redact(obj: object, seen: set[int] | None = None, depth: int = 0) -> object:
     """Redact sensitive data recursively with circular reference protection.
 
     Args:
         obj: The object to redact.
         seen: Set of IDs of already processed containers.
+        depth: The current recursion depth.
 
     Returns:
         A new object with sensitive data redacted.
 
     """
-    if _SENSITIVE_KEY_REGEX is None:
-        return obj
+    should_return, val = _check_redact_early_returns(obj, depth)
+    if should_return:
+        return val
 
-    if seen is None:
-        seen = set()
+    seen_set = set() if seen is None else seen
 
     # Detect circular references
-    if id(obj) in seen:
+    if id(obj) in seen_set:
         return REDACTED_VALUE
 
-    return _redact_collection(obj, seen)
+    return _redact_collection(obj, seen_set, depth)
 
 
 def _redact_dict(d: MutableMapping[str, object]) -> None:

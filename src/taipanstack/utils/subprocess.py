@@ -103,6 +103,12 @@ DEFAULT_ALLOWED_COMMANDS: frozenset[str] = frozenset(
 )
 
 
+def _get_command_whitelist(allowed_commands: Sequence[str] | None) -> list[str]:
+    if allowed_commands is not None:
+        return list(allowed_commands)
+    return list(DEFAULT_ALLOWED_COMMANDS)
+
+
 def _validate_and_resolve_command(
     command: Sequence[str],
     allowed_commands: Sequence[str] | None,
@@ -128,10 +134,7 @@ def _validate_and_resolve_command(
             guard_name="safe_command",
         )
 
-    if allowed_commands is not None:
-        whitelist = list(allowed_commands)
-    else:
-        whitelist = list(DEFAULT_ALLOWED_COMMANDS)
+    whitelist = _get_command_whitelist(allowed_commands)
 
     validated_cmd = guard_command_injection(cmd_list, allowed_commands=whitelist)
 

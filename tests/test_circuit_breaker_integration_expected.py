@@ -24,7 +24,7 @@ def _risky_action_circuit_breaker(cb: CircuitBreaker, payload: str):
     return Ok(payload)
 
 
-def test_integration_chaos():
+def test_circuit_breaker_integration_expected():
     cb = CircuitBreaker(failure_threshold=2, timeout=0.1)
 
     # We shouldn't use retry on expected guard failures if we want circuit breaking,
@@ -47,11 +47,11 @@ def test_integration_chaos():
     max_examples=50,
     suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large],
 )
-def test_fuzz_guard_path_traversal(text):
+def test_circuit_breaker_guard_path_traversal_expected(text):
     try:
         guard_path_traversal(text)
     except SecurityError:
-        pass  # Expected
+        assert True
     except Exception as e:
         pytest.fail(f"Unexpected exception type: {type(e)}")
 
@@ -61,17 +61,20 @@ def test_fuzz_guard_path_traversal(text):
     max_examples=50,
     suppress_health_check=[HealthCheck.too_slow, HealthCheck.data_too_large],
 )
-def test_fuzz_guard_ssrf(text):
+def test_circuit_breaker_guard_ssrf_expected(text):
     try:
         guard_ssrf(text)
     except SecurityError:
-        pass  # Expected
+        assert True
     except Exception as e:
         pytest.fail(f"Unexpected exception type: {type(e)}")
 
 
-def test_circuit_breaker_properties():
+def test_circuit_breaker_properties_expected():
     cb = CircuitBreaker(failure_threshold=2)
     assert cb.is_closed is True
     assert cb.is_open is False
     assert cb.is_half_open is False
+
+    cb._state.failure_count = 1
+    assert cb.failure_count == 1

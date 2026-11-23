@@ -50,7 +50,7 @@ class HttpRequestKwargs(TypedDict, total=False):
     params: (
         dict[
             str,
-            str | int | float | bool | None | Sequence[str | int | float | bool | None],
+            str | int | float | bool | Sequence[str | int | float | bool | None] | None,
         ]
         | list[tuple[str, str | int | float | bool | None]]
         | str

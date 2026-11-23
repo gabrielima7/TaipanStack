@@ -595,7 +595,7 @@ def _execute_async_wrapper(
             func_coro, func_name_coro, config, valid_on, reraise, *args, **kwargs
         )
 
-    return async_wrapper  # type: ignore[misc]
+    return async_wrapper
 
 
 def _run_retry_sync(
